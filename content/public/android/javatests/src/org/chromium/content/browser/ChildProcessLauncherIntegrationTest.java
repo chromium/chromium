@@ -366,7 +366,7 @@ public class ChildProcessLauncherIntegrationTest {
         final CrashOnLaunchChildProcessConnectionFactory factory =
                 new CrashOnLaunchChildProcessConnectionFactory();
         ChildProcessLauncherHelperImpl.setSandboxServicesSettingsForTesting(
-                factory, 1, null /* use default service name */);
+                factory, 2, null /* use default service name */);
 
         // Load url which should fail.
         String url = UrlUtils.getIsolatedTestFileUrl("content/test/data/android/title1.html");

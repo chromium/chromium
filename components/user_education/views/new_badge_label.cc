@@ -108,14 +108,6 @@ gfx::Size NewBadgeLabel::GetMinimumSize() const {
   return size;
 }
 
-int NewBadgeLabel::GetHeightForWidth(int w) const {
-  int height = Label::GetHeightForWidth(w);
-  if (display_new_badge_) {
-    height = std::max(height, GetNewBadgeSize().height());
-  }
-  return height;
-}
-
 void NewBadgeLabel::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                                float new_device_scale_factor) {
   UpdatePaddingForNewBadge();

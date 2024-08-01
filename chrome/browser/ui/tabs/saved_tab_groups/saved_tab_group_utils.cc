@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -18,8 +19,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -82,17 +83,16 @@ void SavedTabGroupUtils::RemoveGroupFromTabstrip(
 // static
 void SavedTabGroupUtils::UngroupSavedGroup(const Browser* browser,
                                            const base::Uuid& saved_group_guid) {
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
-  if (!saved_tab_group_service) {
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  if (!wrapper_service.get()) {
     return;
   }
 
   // The group must exist and be in the tabstrip for ungrouping.
-  const SavedTabGroup* group =
-      saved_tab_group_service->model()->Get(saved_group_guid);
-  if (!group || !group->local_group_id().has_value()) {
+  const std::optional<SavedTabGroup> group =
+      wrapper_service->GetGroup(saved_group_guid);
+  if (!group.has_value() || !group->local_group_id().has_value()) {
     return;
   }
 
@@ -124,32 +124,30 @@ void SavedTabGroupUtils::UngroupSavedGroup(const Browser* browser,
 // static
 void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
                                           const base::Uuid& saved_group_guid) {
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
-  if (!saved_tab_group_service) {
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  if (!wrapper_service.get()) {
     return;
   }
 
-  const SavedTabGroup* saved_group =
-      saved_tab_group_service->model()->Get(saved_group_guid);
-
-  if (!saved_group) {
+  const std::optional<SavedTabGroup> group =
+      wrapper_service->GetGroup(saved_group_guid);
+  if (!group.has_value()) {
     return;
   }
 
   base::OnceCallback<void()> close_callback = base::BindOnce(
       [](const Browser* browser, const base::Uuid& saved_group_guid) {
-        tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-            tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+        std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+            tab_groups::TabGroupServiceWrapper::GetForProfile(
                 browser->profile());
-        if (!saved_tab_group_service) {
+        if (!wrapper_service.get()) {
           return;
         }
 
-        const SavedTabGroup* group =
-            saved_tab_group_service->model()->Get(saved_group_guid);
-        if (!group) {
+        const std::optional<SavedTabGroup> group =
+            wrapper_service->GetGroup(saved_group_guid);
+        if (!group.has_value()) {
           return;
         }
 
@@ -157,39 +155,44 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
           SavedTabGroupUtils::RemoveGroupFromTabstrip(
               nullptr, group->local_group_id().value());
         }
-        saved_tab_group_service->model()->Remove(group->saved_guid());
+
+        wrapper_service->RemoveGroup(group->saved_guid());
       },
       browser, saved_group_guid);
 
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         tab_groups::DeletionDialogController::DialogType::DeleteSingle,
-        std::move(close_callback), saved_group->saved_tabs().size(), 1);
+        std::move(close_callback), group->saved_tabs().size(), 1);
   } else {
     std::move(close_callback).Run();
   }
 }
 
 // See comment for TabStripModelDelegate::ConfirmGroupDeletion
-bool SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     Browser* browser,
     DeletionDialogController::DialogType type,
     const std::vector<TabGroupId>& group_ids,
     base::OnceCallback<void()> callback) {
-  SavedTabGroupKeyedService* saved_tab_group_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+
+  CHECK(group_ids.size() > 0, base::NotFatalUntil::M130);
 
   // Confirmation is only needed if SavedTabGroups are being deleted. If the
   // service doesnt exist there are no saved tab groups.
-  if (!saved_tab_group_service || !IsTabGroupsSaveV2Enabled()) {
-    return true;
+  if (!wrapper_service.get() || !IsTabGroupsSaveV2Enabled()) {
+    std::move(callback).Run();
+    return;
   }
 
   // If there's no way to show the group deletion dialog, then fallback to
   // running the callback.
   auto* dialog_controller = browser->tab_group_deletion_dialog_controller();
   if (!dialog_controller || !dialog_controller->CanShowDialog()) {
-    return true;
+    std::move(callback).Run();
+    return;
   }
 
   // Check to see if any of the groups are saved. If so then show the dialog,
@@ -197,9 +200,9 @@ bool SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   int num_saved_tabs = 0;
   int num_saved_groups = 0;
   for (const auto& group : group_ids) {
-    const SavedTabGroup* const saved_group =
-        saved_tab_group_service->model()->Get(group);
-    if (!saved_group) {
+    const std::optional<SavedTabGroup> saved_group =
+        wrapper_service->GetGroup(group);
+    if (!saved_group.has_value()) {
       continue;
     }
 
@@ -208,10 +211,10 @@ bool SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   }
 
   if (num_saved_groups > 0) {
-    return !dialog_controller->MaybeShowDialog(
-        type, std::move(callback), num_saved_tabs, num_saved_groups);
+    dialog_controller->MaybeShowDialog(type, std::move(callback),
+                                       num_saved_tabs, num_saved_groups);
+    return;
   }
-  return true;
 }
 
 void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser, const GURL& url) {
@@ -224,11 +227,12 @@ void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser, const GURL& url) {
 void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     Browser* browser,
     const base::Uuid& saved_group_guid) {
-  auto* const service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-  const auto* const save_group = service->model()->Get(saved_group_guid);
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  std::optional<SavedTabGroup> save_group =
+      wrapper_service->GetGroup(saved_group_guid);
   // In case the group has been deleted or has no tabs.
-  if (!save_group || save_group->saved_tabs().empty()) {
+  if (!save_group.has_value() || save_group->saved_tabs().empty()) {
     return;
   }
 
@@ -243,12 +247,14 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     // NOTE: This action could cause `this` to be deleted. Make sure lines
     // following this have either copied data by value or hold pointers to the
     // objects it needs.
-    service->OpenSavedTabGroupInBrowser(
-        browser_with_local_group_id, saved_group_guid,
-        tab_groups::OpeningSource::kOpenedFromRevisitUi);
+    wrapper_service->OpenTabGroup(
+        saved_group_guid,
+        std::make_unique<TabGroupActionContextDesktop>(
+            browser_with_local_group_id, OpeningSource::kOpenedFromRevisitUi));
   }
 
   // Ensure that the saved group did open in the browser.
+  save_group = wrapper_service->GetGroup(saved_group_guid);
   CHECK(save_group->local_group_id().has_value());
 
   // Move the open group to a new browser window.
@@ -260,21 +266,26 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
 void SavedTabGroupUtils::ToggleGroupPinState(
     Browser* browser,
     const base::Uuid& saved_group_guid) {
-  auto* const service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-  service->model()->TogglePinState(saved_group_guid);
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  std::optional<SavedTabGroup> group =
+      wrapper_service->GetGroup(saved_group_guid);
+  CHECK(group.has_value());
+  wrapper_service->UpdateGroupPosition(saved_group_guid, !group->is_pinned(),
+                                       std::nullopt);
 }
 
 std::unique_ptr<ui::DialogModel>
 SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
     Browser* browser,
     const base::Uuid& saved_guid) {
-  const auto* const service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-  const auto* const saved_group = service->model()->Get(saved_guid);
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  const std::optional<SavedTabGroup> saved_group =
+      wrapper_service->GetGroup(saved_guid);
   ui::DialogModel::Builder dialog_model = ui::DialogModel::Builder();
   // In case the group has been deleted, return an empty dialog model.
-  if (!saved_group) {
+  if (!saved_group.has_value()) {
     return dialog_model.Build();
   }
   const auto& local_group_id = saved_group->local_group_id();
@@ -460,11 +471,14 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
 }
 
 std::unordered_set<std::string> SavedTabGroupUtils::GetURLsInSavedTabGroup(
-    const tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
+    Profile* profile,
     const base::Uuid& saved_id) {
-  const tab_groups::SavedTabGroup* const saved_group =
-      saved_tab_group_service.model()->Get(saved_id);
-  CHECK(saved_group);
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(profile);
+
+  const std::optional<SavedTabGroup> saved_group =
+      wrapper_service->GetGroup(saved_id);
+  CHECK(saved_group.has_value());
 
   std::unordered_set<std::string> saved_urls;
   for (const tab_groups::SavedTabGroupTab& saved_tab :
@@ -482,9 +496,10 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
     const base::Uuid& saved_group_id) {
   CHECK(source_browser);
   CHECK(target_browser);
-  tab_groups::SavedTabGroupKeyedService* const service =
-      SavedTabGroupServiceFactory::GetForProfile(source_browser->profile());
-  CHECK(service);
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(
+          source_browser->profile());
+  CHECK(wrapper_service.get());
 
   // Find the grouped tabs in `source_browser`.
   gfx::Range tabs_to_move = source_browser->tab_strip_model()
@@ -498,7 +513,9 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
             tabs_to_move.start());
 
   // Disconnect the group and move the tabs to `target_browser`.
-  service->DisconnectLocalTabGroup(local_group_id);
+  std::unique_ptr<ScopedLocalObservationPauser> observation_pauser =
+      wrapper_service->CreateScopedLocalObserverPauser();
+
   chrome::MoveTabsToExistingWindow(source_browser, target_browser,
                                    tab_indicies_to_move);
 
@@ -512,7 +529,6 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
   // Add group the tabs using the same local id, and reconnect everything.
   target_browser->tab_strip_model()->AddToGroupForRestore(tabs_to_add_to_group,
                                                           local_group_id);
-  service->ConnectLocalTabGroup(local_group_id, saved_group_id);
 }
 
 void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(

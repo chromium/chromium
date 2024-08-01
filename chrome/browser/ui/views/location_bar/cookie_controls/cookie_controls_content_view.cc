@@ -42,11 +42,6 @@ int GetDefaultIconSize() {
   return GetLayoutConstant(PAGE_INFO_ICON_SIZE);
 }
 
-bool IsNewUiEnabled() {
-  return base::FeatureList::IsEnabled(
-      privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
-}
-
 std::unique_ptr<views::View> CreateSeparator(bool padded) {
   int vmargin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
@@ -133,11 +128,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView,
                                       kFeedbackButton);
 
-CookieControlsContentView::CookieControlsContentView() {
+CookieControlsContentView::CookieControlsContentView(bool has_act_features)
+    : has_act_features_(has_act_features) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   AddChildView(CreateFullWidthSeparator());
-  if (IsNewUiEnabled()) {
+  if (has_act_features_) {
     AddDescriptionRow();
   } else {
     AddContentLabels();
@@ -190,7 +186,7 @@ void CookieControlsContentView::SetCookiesLabel(const std::u16string& label) {
   cookies_label_->SetTextStyle(views::style::STYLE_BODY_5);
   cookies_label_->SetProperty(
       views::kElementIdentifierKey,
-      IsNewUiEnabled() ? kThirdPartyCookiesLabel : kToggleLabel);
+      has_act_features_ ? kThirdPartyCookiesLabel : kToggleLabel);
 
   // TODO(https://b/344856056): Update this accessibility label for the new UI.
   const std::u16string accessible_name = base::JoinString(
@@ -254,7 +250,7 @@ const ui::ElementIdentifier CookieControlsContentView::GetFeatureIdentifier(
     content_settings::TrackingProtectionFeatureType feature_type) {
   switch (feature_type) {
     case content_settings::TrackingProtectionFeatureType::kThirdPartyCookies:
-      return IsNewUiEnabled() ? kThirdPartyCookiesLabel : kToggleLabel;
+      return has_act_features_ ? kThirdPartyCookiesLabel : kToggleLabel;
     default:
       return {};
   }
@@ -393,7 +389,7 @@ void CookieControlsContentView::AddFeedbackSection() {
 void CookieControlsContentView::UpdateContentLabels(
     const std::u16string& title,
     const std::u16string& description) {
-  if (IsNewUiEnabled()) {
+  if (has_act_features_) {
     description_row_->SetTitle(title);
     description_row_->SetDescription(description);
   } else {
@@ -404,7 +400,7 @@ void CookieControlsContentView::UpdateContentLabels(
 
 void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
   // Set visibility on the wrapper to ensure that margins are correctly updated.
-  if (IsNewUiEnabled()) {
+  if (has_act_features_) {
     description_row_->SetVisible(visible);
   } else {
     label_wrapper_->SetVisible(visible);
@@ -428,14 +424,14 @@ gfx::Size CookieControlsContentView::CalculatePreferredSize(
   const int margins = provider->GetInsetsMetric(views::INSETS_DIALOG).width();
 
   int title_width;
-  if (IsNewUiEnabled()) {
+  if (has_act_features_) {
     title_width = description_row_->GetPreferredSize().width() + margins;
   } else {
     title_width = title_->GetPreferredSize().width() + margins;
   }
 
   int desired_width = std::clamp(
-      IsNewUiEnabled()
+      has_act_features_
           ? title_width
           : std::max(title_width, cookies_row_->GetPreferredSize().width()),
       ChromeLayoutProvider::Get()->GetDistanceMetric(

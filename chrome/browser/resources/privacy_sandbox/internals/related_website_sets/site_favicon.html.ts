@@ -13,5 +13,5 @@ export function getHtml(this: SiteFaviconElement) {
     </div>
     <img is="cr-auto-img" id="downloadedFavicon"
         ?hidden="${!this.showDownloadedIcon_}" @load="${this.onLoadSuccess_}"
-        @error="${this.onLoadError_}" auto-src="${this.url}">`;
+        @error="${this.onLoadError_}" .autoSrc="${this.url}">`;
 }

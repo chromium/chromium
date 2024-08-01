@@ -192,7 +192,7 @@ class MergeTestFilterSwitchHandler : public DuplicateSwitchHandler {
   ~MergeTestFilterSwitchHandler() override;
 
   void ResolveDuplicate(std::string_view key,
-                        CommandLine::StringPieceType new_value,
+                        CommandLine::StringViewType new_value,
                         CommandLine::StringType& out_value) override;
 };
 

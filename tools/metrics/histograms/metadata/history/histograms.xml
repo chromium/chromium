@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDialogShown"
-    enum="BooleanShown" expires_after="2024-11-17">
+    enum="BooleanShown" expires_after="2025-01-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>1456716</component>
@@ -1236,7 +1236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.LoadCachesFromPrefs.Latency"
-    units="ms" expires_after="2024-10-06">
+    units="ms" expires_after="2025-01-26">
   <owner>pnoland@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -1492,16 +1492,6 @@ chromium-metrics-reviews@google.com.
     that the actual metrics (History.ForeignVisits*) are only recorded if any
     such visits were actually found, so the total counts will not match this
     histogram's.
-  </summary>
-</histogram>
-
-<histogram name="History.DatabaseMonthlyHostCountTime" units="ms"
-    expires_after="2020-03-01">
-  <owner>dimich@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    Time spent on computing the monthly count of hosts visited. Reported every
-    time computation is performed, which in turn is done approximately weekly.
   </summary>
 </histogram>
 
@@ -2247,7 +2237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <component>1456716</component>
@@ -2386,7 +2376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2535,16 +2525,6 @@ chromium-metrics-reviews@google.com.
     Unique URLs in History database urls table with last-visit times in the last
     7 days. Metrics are logged on initialization of the History DB on 0.3% of
     starts.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.ClickPosition" units="units"
-    expires_after="2020-02-23">
-  <owner>rpop@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    Number of entries that the clicked entry is older than in History page. Last
-    bucket is any entry of that value or higher.
   </summary>
 </histogram>
 

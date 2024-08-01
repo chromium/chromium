@@ -37,9 +37,6 @@ class CC_EXPORT TilesWithResourceIterator {
   void Next();
   Tile* GetCurrent();
 
-  // Returns the PrioritizedTile for the current tile, null if at the end.
-  PrioritizedTile* GetCurrentAsPrioritizedTile();
-
   // Returns true if the current tile is occluded, false if at the end.
   bool IsCurrentTileOccluded();
 
@@ -85,9 +82,6 @@ class CC_EXPORT TilesWithResourceIterator {
   // Set of tiles that have been visited. Used to ensure the same tile isn't
   // visited more than once.
   std::set<raw_ptr<Tile, SetExperimental>> visited_;
-
-  // Created when GetCurrentAsPrioritizedTile() is called.
-  std::optional<PrioritizedTile> prioritized_tile_;
 };
 
 }  // namespace cc

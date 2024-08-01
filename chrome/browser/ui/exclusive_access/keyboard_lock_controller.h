@@ -80,6 +80,10 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   // Notifies the exclusive access tab that it must deactivate keyboard lock.
   void UnlockKeyboard();
 
+  // Notifies `web_contents` that it must deactivate keyboard lock.
+  void UnlockKeyboardForWebContents(
+      base::WeakPtr<content::WebContents> web_contents);
+
   // Called when the user has held down Escape.
   void HandleUserHeldEscapeDeprecated();
 
@@ -105,4 +109,4 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   base::WeakPtrFactory<KeyboardLockController> weak_ptr_factory_{this};
 };
 
-#endif  //  CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_KEYBOARD_LOCK_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_KEYBOARD_LOCK_CONTROLLER_H_

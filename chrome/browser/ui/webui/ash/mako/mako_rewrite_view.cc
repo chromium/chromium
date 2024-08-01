@@ -12,6 +12,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -32,7 +33,8 @@ constexpr int kMakoRewriteHeightThreshold = 400;
 
 // Compute initial widget bounds.
 gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
-                                     gfx::Insets inset) {
+                                     gfx::Insets inset,
+                                     bool can_fallback_to_center_position) {
   gfx::Rect screen_work_area = display::Screen::GetScreen()
                                    ->GetDisplayMatching(caret_bounds)
                                    .work_area();
@@ -43,7 +45,15 @@ gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
   // Otherwise, try to place it under at the bottom left of the selection.
   gfx::Rect anchor = caret_bounds;
   anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
-  gfx::Rect mako_contents_bounds(anchor.bottom_left(), initial_size);
+
+  gfx::Rect mako_contents_bounds =
+      can_fallback_to_center_position && caret_bounds == gfx::Rect()
+          ? gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
+                          initial_size.width() / 2,
+                      screen_work_area.y() + screen_work_area.height() / 2 -
+                          initial_size.height() / 2,
+                      initial_size.width(), initial_size.height())
+          : gfx::Rect(anchor.bottom_left(), initial_size);
 
   // If horizontally offscreen, just move it to the right edge of the screen.
   if (mako_contents_bounds.right() > screen_work_area.right()) {
@@ -73,13 +83,15 @@ gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
 }  // namespace
 
 MakoRewriteView::MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
-                                 const gfx::Rect& caret_bounds)
+                                 const gfx::Rect& caret_bounds,
+                                 bool can_fallback_to_center_position)
     : WebUIBubbleDialogView(nullptr,
                             contents_wrapper->GetWeakPtr(),
                             std::nullopt,
                             views::BubbleBorder::TOP_RIGHT,
                             false),
-      caret_bounds_(caret_bounds) {
+      caret_bounds_(caret_bounds),
+      can_fallback_to_center_position_(can_fallback_to_center_position) {
   set_has_parent(false);
   set_corner_radius(kMakoRewriteCornerRadius);
   // Disable the default offscreen adjustment so that we can customise it.
@@ -117,7 +129,15 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   // Otherwise, try to place it under at the bottom left of the selection.
   gfx::Rect anchor = caret_bounds_;
   anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
-  gfx::Rect mako_contents_bounds(anchor.bottom_left(), new_size);
+
+  gfx::Rect mako_contents_bounds =
+      can_fallback_to_center_position_ && caret_bounds_ == gfx::Rect()
+          ? gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
+                          new_size.width() / 2,
+                      screen_work_area.y() + screen_work_area.height() / 2 -
+                          new_size.height() / 2,
+                      new_size.width(), new_size.height())
+          : gfx::Rect(anchor.bottom_left(), new_size);
 
   // If horizontally offscreen, just move it to the right edge of the screen.
   if (mako_contents_bounds.right() > screen_work_area.right()) {
@@ -269,7 +289,8 @@ void MakoRewriteView::SetupResizingSupport() {
   // `ResizeDueToAutoResize` callback and thus we need to setup widget bounds
   // here as part of ShowUI.
   GetWidget()->SetBounds(ComputeInitialWidgetBounds(
-      caret_bounds_, -GetBubbleFrameView()->bubble_border()->GetInsets()));
+      caret_bounds_, -GetBubbleFrameView()->bubble_border()->GetInsets(),
+      can_fallback_to_center_position_));
   resizing_initialized_ = true;
 }
 

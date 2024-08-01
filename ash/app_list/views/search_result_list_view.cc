@@ -91,14 +91,10 @@ SearchResultListView::SearchResultListView(
       u"", CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_LAUNCHER));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetAutoColorReadabilityEnabled(false);
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
-                                          *title_label_);
-    title_label_->SetEnabledColorId(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant));
-  } else {
-    title_label_->SetEnabledColorId(kColorAshTextColorSecondary);
-  }
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                        *title_label_);
+  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
@@ -337,10 +333,6 @@ void SearchResultListView::Layout(PassKey) {
 gfx::Size SearchResultListView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return results_container_->GetPreferredSize(available_size);
-}
-
-int SearchResultListView::GetHeightForWidth(int w) const {
-  return results_container_->GetHeightForWidth(w);
 }
 
 void SearchResultListView::SearchResultActivated(SearchResultView* view,

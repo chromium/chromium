@@ -120,12 +120,11 @@ TEST_F(InstallAttributesTest, Lock) {
                                        kTestDeviceId));
 
   // A non-matching mode should fail as well.
-  EXPECT_EQ(
-      InstallAttributes::LOCK_WRONG_MODE,
-      LockDeviceAndWaitForResult(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
-                                 std::string(),    // domain
-                                 std::string(),    // realm
-                                 std::string()));  // device id
+  EXPECT_EQ(InstallAttributes::LOCK_WRONG_MODE,
+            LockDeviceAndWaitForResult(policy::DEVICE_MODE_DEMO,
+                                       kTestDomain,      // domain
+                                       std::string(),    // realm
+                                       kTestDeviceId));  // device id
 }
 
 TEST_F(InstallAttributesTest, IsEnterpriseManagedCloud) {
@@ -205,25 +204,6 @@ TEST_F(InstallAttributesTest, ConsumerDevice) {
   EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
 }
 
-TEST_F(InstallAttributesTest, ConsumerKioskDevice) {
-  install_attributes_->Init(GetTempPath());
-  EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
-  // Lock the attributes for consumer kiosk.
-  ASSERT_EQ(
-      InstallAttributes::LOCK_SUCCESS,
-      LockDeviceAndWaitForResult(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
-                                 std::string(), std::string(), std::string()));
-
-  ASSERT_FALSE(install_attributes_util::InstallAttributesIsFirstInstall());
-  EXPECT_EQ(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
-            install_attributes_->GetMode());
-  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
-  EXPECT_EQ(std::string(), install_attributes_->GetRealm());
-  EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
-  ASSERT_TRUE(install_attributes_->IsConsumerKioskDeviceWithAutoLaunch());
-  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
-}
-
 TEST_F(InstallAttributesTest, Init) {
   cryptohome::SerializedInstallAttributes install_attrs_proto;
   SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseOwned,
@@ -232,21 +212,6 @@ TEST_F(InstallAttributesTest, Init) {
   ASSERT_TRUE(base::WriteFile(GetTempPath(), blob));
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
-  EXPECT_EQ(std::string(), install_attributes_->GetRealm());
-  EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
-  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
-}
-
-TEST_F(InstallAttributesTest, InitForConsumerKiosk) {
-  cryptohome::SerializedInstallAttributes install_attrs_proto;
-  SetAttribute(&install_attrs_proto,
-               InstallAttributes::kAttrConsumerKioskEnabled, "true");
-  const std::string blob(install_attrs_proto.SerializeAsString());
-  ASSERT_TRUE(base::WriteFile(GetTempPath(), blob));
-  install_attributes_->Init(GetTempPath());
-  EXPECT_EQ(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
-            install_attributes_->GetMode());
   EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());

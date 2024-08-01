@@ -1151,6 +1151,8 @@ component("net") {
       "device_bound_sessions/registration_fetcher.h",
       "device_bound_sessions/registration_fetcher_param.cc",
       "device_bound_sessions/registration_fetcher_param.h",
+      "device_bound_sessions/session.cc",
+      "device_bound_sessions/session.h",
       "device_bound_sessions/session_binding_utils.cc",
       "device_bound_sessions/session_binding_utils.h",
       "device_bound_sessions/session_inclusion_rules.cc",
@@ -1161,6 +1163,8 @@ component("net") {
       "device_bound_sessions/session_params.h",
       "device_bound_sessions/session_service.cc",
       "device_bound_sessions/session_service.h",
+      "device_bound_sessions/session_service_impl.cc",
+      "device_bound_sessions/session_service_impl.h",
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
     ]
@@ -2993,6 +2997,7 @@ test("net_unittests") {
       "reporting/mock_persistent_reporting_store_unittest.cc",
       "reporting/reporting_browsing_data_remover_unittest.cc",
       "reporting/reporting_cache_unittest.cc",
+      "reporting/reporting_context_unittest.cc",
       "reporting/reporting_delivery_agent_unittest.cc",
       "reporting/reporting_endpoint_manager_unittest.cc",
       "reporting/reporting_garbage_collector_unittest.cc",
@@ -3282,8 +3287,12 @@ test("net_unittests") {
       "device_bound_sessions/registration_fetcher_unittest.cc",
       "device_bound_sessions/session_binding_utils_unittest.cc",
       "device_bound_sessions/session_inclusion_rules_unittest.cc",
+      "device_bound_sessions/session_service_impl_unittest.cc",
+      "device_bound_sessions/session_service_unittest.cc",
+      "device_bound_sessions/session_unittest.cc",
       "device_bound_sessions/test_util.cc",
       "device_bound_sessions/test_util.h",
+      "device_bound_sessions/unexportable_key_service_factory_unittest.cc",
     ]
     deps += [ "//components/unexportable_keys:unexportable_keys" ]
   }

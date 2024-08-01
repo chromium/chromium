@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -178,7 +179,9 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   SetShowIcon(true);
   SetShowCloseButton(true);
 
-  std::u16string extension_name = base::UTF8ToUTF16(model_->extension_name());
+  std::u16string extension_name =
+      extensions::util::GetFixupExtensionNameForUIDisplay(
+          model_->extension_name());
   base::i18n::AdjustStringForLocaleDirection(&extension_name);
   SetTitle(l10n_util::GetStringFUTF16(IDS_EXTENSION_INSTALLED_HEADING,
                                       extension_name));

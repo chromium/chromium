@@ -18,6 +18,7 @@ source_set("interactive_ui_tests") {
     "//chrome/test/base/ash/interactive/bluetooth:interactive_ui_tests",
     "//chrome/test/base/ash/interactive/cellular:interactive_ui_tests",
     "//chrome/test/base/ash/interactive/hotspot:interactive_ui_tests",
+    "//chrome/test/base/ash/interactive/vpn:interactive_ui_tests",
     "//content/test:test_support",
     "//url:url",
   ]

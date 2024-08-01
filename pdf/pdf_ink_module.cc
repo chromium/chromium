@@ -22,6 +22,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "pdf/draw_utils/page_boundary_intersect.h"
 #include "pdf/ink/ink_affine_transform.h"
 #include "pdf/ink/ink_brush.h"
 #include "pdf/ink/ink_in_progress_stroke.h"
@@ -270,7 +271,9 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
     return false;
   }
 
-  return is_drawing_stroke() ? FinishStroke() : FinishEraseStroke();
+  gfx::PointF position = event.PositionInWidget();
+  return is_drawing_stroke() ? FinishStroke(position)
+                             : FinishEraseStroke(position);
 }
 
 bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
@@ -330,64 +333,80 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
     return false;
   }
 
-  int page_index = client_->VisiblePageIndexFromPoint(position);
-  if (page_index != state.page_index) {
-    // Stroke has left the page.  Do not add this input point.
-    if (!state.inputs.back().empty()) {
-      // Create a new segment to collect any further points.
-      state.inputs.push_back(StrokeInputSegment());
+  CHECK(state.input_last_event_position.has_value());
+  const gfx::PointF last_position = state.input_last_event_position.value();
+  if (position == last_position) {
+    // Since the position did not change, do nothing.
+    return true;
+  }
 
-      // Even if the last event position was not on the page boundary, no
-      // further points are captured in the stroke from that position to this
-      // new out-of-bounds position.  So there is no need to invalidate further
-      // from it, just drop it since it is now stale for any new points.
-      state.input_last_event_position.reset();
-    }
-
-    // Treat event as handled.
+  const int page_index = client_->VisiblePageIndexFromPoint(position);
+  const int last_page_index = client_->VisiblePageIndexFromPoint(last_position);
+  if (page_index != state.page_index && last_page_index != state.page_index) {
+    // If `position` is outside the page, and so was `last_position`, then just
+    // update `last_position` and treat the event as handled.
+    state.input_last_event_position = position;
     return true;
   }
 
   CHECK_GE(state.page_index, 0);
-  gfx::PointF page_position =
-      ConvertEventPositionToCanonicalPosition(position, state.page_index);
+  if (page_index != state.page_index) {
+    // `position` is outside the page, and `last_position` is inside the page.
+    CHECK_EQ(last_page_index, state.page_index);
+    const gfx::PointF boundary_position = CalculatePageBoundaryIntersectPoint(
+        client_->GetPageContentsRect(state.page_index), last_position,
+        position);
+    if (boundary_position != last_position) {
+      // Record the last point before leaving the page, if `last_position` was
+      // not already on the page boundary.
+      RecordStrokePosition(boundary_position);
+      client_->Invalidate(
+          state.brush->GetInvalidateArea(last_position, boundary_position));
+    }
 
-  base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
-  state.inputs.back().push_back({
-      .position = InkPoint{page_position.x(), page_position.y()},
-      .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
-  });
-
-  if (state.inputs.back().size() == 1u) {
-    // This is the start of a new segment, so only invalidate around this point.
-    CHECK(!state.input_last_event_position.has_value());
-    client_->Invalidate(state.brush->GetInvalidateArea(position, position));
-  } else {
-    // Invalidate area covering a straight line between this position and the
-    // previous one.  Update last location to support invalidating from here to
-    // the next position.
-    CHECK(state.input_last_event_position.has_value());
-    client_->Invalidate(state.brush->GetInvalidateArea(
-        position, state.input_last_event_position.value()));
+    // Remember `position` for use in the next event and treat event as handled.
+    state.input_last_event_position = position;
+    return true;
   }
 
-  // Update last location to support invalidating from here to
-  // the next position.
+  gfx::PointF invalidation_position = last_position;
+  if (last_page_index != state.page_index) {
+    // If the stroke left the page and is now re-entering, then start a new
+    // segment.
+    CHECK(!state.inputs.back().empty());
+    state.inputs.push_back(StrokeInputSegment());
+    const gfx::PointF boundary_position = CalculatePageBoundaryIntersectPoint(
+        client_->GetPageContentsRect(state.page_index), position,
+        last_position);
+    if (boundary_position != position) {
+      // Record the first point after entering the page.
+      RecordStrokePosition(boundary_position);
+      invalidation_position = boundary_position;
+    }
+  }
+
+  RecordStrokePosition(position);
+
+  // Invalidate area covering a straight line between this position and the
+  // previous one.
+  client_->Invalidate(
+      state.brush->GetInvalidateArea(position, invalidation_position));
+
+  // Remember `position` for use in the next event.
   state.input_last_event_position = position;
 
   return true;
 }
 
-bool PdfInkModule::FinishStroke() {
-  CHECK(is_drawing_stroke());
-  DrawingStrokeState& state = drawing_stroke_state();
-  if (!state.start_time.has_value()) {
-    // Ignore when not drawing.
+bool PdfInkModule::FinishStroke(const gfx::PointF& position) {
+  // Process `position` as though it was the last point of movement first,
+  // before moving on to various bookkeeping tasks.
+  if (!ContinueStroke(position)) {
     return false;
   }
 
-  // TODO(crbug.com/335524380): Add this method's caller's `event` to `inputs`
-  // before creating `in_progress_stroke_segments`?
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
   auto in_progress_stroke_segments = CreateInProgressStrokeSegmentsFromInputs();
   if (!in_progress_stroke_segments.empty()) {
     CHECK_GE(state.page_index, 0);
@@ -453,16 +472,18 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool PdfInkModule::FinishEraseStroke() {
-  CHECK(is_erasing_stroke());
-  EraserState& state = erasing_stroke_state();
-  if (!state.erasing) {
+bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
+  // Process `position` as though it was the last point of movement first,
+  // before moving on to various bookkeeping tasks.
+  if (!ContinueEraseStroke(position)) {
     return false;
   }
 
   bool undo_redo_success = undo_redo_model_.FinishErase();
   CHECK(undo_redo_success);
 
+  CHECK(is_erasing_stroke());
+  EraserState& state = erasing_stroke_state();
   if (state.did_erase_strokes) {
     client_->StrokeFinished();
   }
@@ -519,13 +540,11 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
 void PdfInkModule::HandleAnnotationRedoMessage(
     const base::Value::Dict& message) {
-  CHECK(enabled_);
   ApplyUndoRedoCommands(undo_redo_model_.Redo());
 }
 
 void PdfInkModule::HandleAnnotationUndoMessage(
     const base::Value::Dict& message) {
-  CHECK(enabled_);
   ApplyUndoRedoCommands(undo_redo_model_.Undo());
 }
 
@@ -626,6 +645,18 @@ gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
   return EventPositionToCanonicalPosition(position, client_->GetOrientation(),
                                           page_contents_rect,
                                           client_->GetZoom());
+}
+
+void PdfInkModule::RecordStrokePosition(const gfx::PointF& position) {
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
+  gfx::PointF canonical_position =
+      ConvertEventPositionToCanonicalPosition(position, state.page_index);
+  base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
+  state.inputs.back().push_back({
+      .position = InkPoint{canonical_position.x(), canonical_position.y()},
+      .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
+  });
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(

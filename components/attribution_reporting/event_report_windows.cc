@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -55,7 +54,7 @@ bool IsStrictlyIncreasing(const std::vector<base::TimeDelta>& end_times) {
 base::Time ReportTimeFromDeadline(base::Time source_time,
                                   base::TimeDelta deadline) {
   // Valid conversion reports should always have a valid reporting deadline.
-  CHECK(deadline.is_positive(), base::NotFatalUntil::M128);
+  CHECK(deadline.is_positive());
   return source_time + deadline;
 }
 
@@ -160,9 +159,8 @@ base::Time EventReportWindows::ComputeReportTime(
 
 base::Time EventReportWindows::ReportTimeAtWindow(base::Time source_time,
                                                   int window_index) const {
-  CHECK_GE(window_index, 0, base::NotFatalUntil::M128);
-  CHECK_LT(static_cast<size_t>(window_index), end_times_.size(),
-           base::NotFatalUntil::M128);
+  CHECK_GE(window_index, 0);
+  CHECK_LT(static_cast<size_t>(window_index), end_times_.size());
 
   return ReportTimeFromDeadline(source_time,
                                 *std::next(end_times_.begin(), window_index));
@@ -170,9 +168,8 @@ base::Time EventReportWindows::ReportTimeAtWindow(base::Time source_time,
 
 base::Time EventReportWindows::StartTimeAtWindow(base::Time source_time,
                                                  int window_index) const {
-  CHECK_GE(window_index, 0, base::NotFatalUntil::M128);
-  CHECK_LT(static_cast<size_t>(window_index), end_times_.size(),
-           base::NotFatalUntil::M128);
+  CHECK_GE(window_index, 0);
+  CHECK_LT(static_cast<size_t>(window_index), end_times_.size());
 
   if (window_index == 0) {
     return source_time + start_time_;

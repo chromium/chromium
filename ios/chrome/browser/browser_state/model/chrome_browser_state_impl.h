@@ -69,6 +69,12 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   void SetOffTheRecordChromeBrowserState(
       std::unique_ptr<ChromeBrowserState> otr_state);
 
+  // Called when the PrefService is done loading (may be called synchronously
+  // if the creation is done with `CreationMode::kSynchronous`).
+  void OnPrefsLoaded(CreationMode creation_mode,
+                     bool is_new_browser_state,
+                     bool success);
+
   // The ChromeBrowserState::Delegate that will be notified of the progress
   // of the initialisation if not null.
   raw_ptr<Delegate> delegate_;

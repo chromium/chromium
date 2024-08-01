@@ -7878,33 +7878,34 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   FormData form = test::CreateTestAddressFormData();
   FormFieldData& field = test_api(form).field(0);
 
+  Suggestion autocomplete_suggestion(test_value,
+                                     SuggestionType::kAutocompleteEntry);
   EXPECT_CALL(single_field_form_fill_router(),
-              OnSingleFieldSuggestionSelected(
-                  test_value, SuggestionType::kAutocompleteEntry));
+              OnSingleFieldSuggestionSelected(autocomplete_suggestion));
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kAutocompleteEntry, form, field);
-
-  EXPECT_CALL(single_field_form_fill_router(),
-              OnSingleFieldSuggestionSelected(
-                  test_value, SuggestionType::kAutocompleteEntry));
-
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kAutocompleteEntry, form, field);
-
-  EXPECT_CALL(
-      single_field_form_fill_router(),
-      OnSingleFieldSuggestionSelected(test_value, SuggestionType::kIbanEntry));
-
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kIbanEntry, form, field);
+      autocomplete_suggestion, form, field);
 
   EXPECT_CALL(single_field_form_fill_router(),
-              OnSingleFieldSuggestionSelected(
-                  test_value, SuggestionType::kMerchantPromoCodeEntry));
+              OnSingleFieldSuggestionSelected(autocomplete_suggestion));
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, SuggestionType::kMerchantPromoCodeEntry, form, field);
+      autocomplete_suggestion, form, field);
+
+  Suggestion iban_suggestion(test_value, SuggestionType::kIbanEntry);
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(iban_suggestion));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(iban_suggestion,
+                                                             form, field);
+
+  Suggestion merchant_promo_suggestion(test_value,
+                                       SuggestionType::kMerchantPromoCodeEntry);
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(merchant_promo_suggestion));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      merchant_promo_suggestion, form, field);
 }
 
 // Test that we correctly fill an address form and update the used profile.
@@ -8029,7 +8030,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShownWithAddressSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
 
   // Plus address suggestions request.
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
@@ -8073,7 +8074,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // Plus address suggestions request.
@@ -8113,7 +8114,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        NoPlusAddressOnlyIBANsSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // No plus address suggestions request.
@@ -8156,7 +8157,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        NoPlusAddressOnlyPromoCodesSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // No plus address suggestions request.
@@ -8202,7 +8203,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShownWithSingleFieldFormFillSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // Plus address suggestions request.
@@ -8252,7 +8253,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        NoStandaloneManagePlusAddressSuggestion) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{}));
@@ -8281,7 +8282,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 // a manual fallback for plus addresses.
 TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   EXPECT_CALL(
       plus_address_delegate(),
       GetSuggestions(

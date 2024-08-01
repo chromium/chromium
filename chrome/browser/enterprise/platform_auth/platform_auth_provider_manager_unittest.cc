@@ -40,8 +40,14 @@ class PlatformAuthProviderManagerTest : public ::testing::Test {
     ON_CALL(*mock_provider_, Die()).WillByDefault([this]() {
       this->mock_provider_ = nullptr;
     });
+
     // Expect the provider to be destroyed at some point.
     EXPECT_CALL(*mock_provider_, Die());
+  }
+
+  void SetUp() override {
+    EXPECT_CALL(*mock_provider(), SupportsOriginFiltering())
+        .WillOnce(::testing::Return(true));
   }
 
   std::unique_ptr<PlatformAuthProvider> TakeProvider() {
@@ -52,7 +58,6 @@ class PlatformAuthProviderManagerTest : public ::testing::Test {
     return mock_provider_;
   }
 
- private:
   std::unique_ptr<::testing::StrictMock<MockPlatformAuthProvider>>
       owned_provider_{
           std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>()};
@@ -139,6 +144,31 @@ TEST_F(PlatformAuthProviderManagerTest, OriginRemoval) {
   EnableManager(manager, true);
   EXPECT_NE(mock_provider(), nullptr);
   EXPECT_EQ(manager.GetOriginsForTesting(), std::vector<url::Origin>());
+}
+
+class PlatformAuthProviderManagerNoOriginFilteringTest
+    : public PlatformAuthProviderManagerTest {
+ protected:
+  void SetUp() override {
+    EXPECT_CALL(*mock_provider(), SupportsOriginFiltering())
+        .WillOnce(::testing::Return(false));
+  }
+};
+
+// Tests that enabling queries the provider and handles non-empty sets of
+// origins. A second enablement repeats the query, which then returns no
+// origins.
+TEST_F(PlatformAuthProviderManagerNoOriginFilteringTest,
+       OriginFilteringNotSupported) {
+  EXPECT_CALL(*mock_provider(), FetchOrigins(_)).Times(0);
+
+  PlatformAuthProviderManager manager(TakeProvider());
+  EnableManager(manager, true);
+  EXPECT_NE(mock_provider(), nullptr);
+  EnableManager(manager, false);
+  EXPECT_NE(mock_provider(), nullptr);
+  EnableManager(manager, true);
+  EXPECT_NE(mock_provider(), nullptr);
 }
 
 // Verifies that the expected metrics are recorded on a cookie fetch.

@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordNotificationsInteraction;
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordRevokedPermissionsInteraction;
+import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.getModuleState;
+import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.isBrowserStateSafe;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -24,6 +31,13 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModuleType;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleOption;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -117,6 +131,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         setUpBrowserStateModule();
 
         updateAllModules();
+        recordAllModulesState(LifecycleEvent.ON_IMPRESSION);
         setHasOptionsMenu(true);
 
         // Notify the magic stack to dismiss the active module.
@@ -189,10 +204,18 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> mDelegate.openGooglePlayStore(getContext()))
+                                v -> {
+                                    mDelegate.openGooglePlayStore(getContext());
+                                    recordDashboardInteractions(
+                                            DashboardInteractions.OPEN_PLAY_STORE);
+                                })
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> mDelegate.openGooglePlayStore(getContext()))
+                                v -> {
+                                    mDelegate.openGooglePlayStore(getContext());
+                                    recordDashboardInteractions(
+                                            DashboardInteractions.OPEN_PLAY_STORE);
+                                })
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -229,16 +252,29 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                                     mUnusedSitePermissionsBridge
                                                             .restoreRevokedPermissionsReviewList(
                                                                     (PermissionsData[]) actionData);
+                                                    recordRevokedPermissionsInteraction(
+                                                            PermissionsModuleInteractions
+                                                                    .UNDO_ACKNOWLEDGE_ALL);
                                                 }
                                             },
                                             permissionsDataList);
+                                    recordRevokedPermissionsInteraction(
+                                            PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
                                 })
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
-                                v -> launchSettingsActivity(SafetyHubPermissionsFragment.class))
+                                v -> {
+                                    launchSettingsActivity(SafetyHubPermissionsFragment.class);
+                                    recordRevokedPermissionsInteraction(
+                                            PermissionsModuleInteractions.OPEN_REVIEW_UI);
+                                })
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> launchSettingsActivity(SiteSettings.class))
+                                v -> {
+                                    launchSettingsActivity(SiteSettings.class);
+                                    recordRevokedPermissionsInteraction(
+                                            PermissionsModuleInteractions.GO_TO_SETTINGS);
+                                })
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -280,18 +316,30 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                                             .bulkAllowNotificationPermissions(
                                                                     (List<NotificationPermissions>)
                                                                             actionData);
+                                                    recordNotificationsInteraction(
+                                                            NotificationsModuleInteractions
+                                                                    .UNDO_BLOCK_ALL);
                                                 }
                                             },
                                             notificationPermissionsList);
+                                    recordNotificationsInteraction(
+                                            NotificationsModuleInteractions.BLOCK_ALL);
                                 })
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
-                                v -> launchSettingsActivity(SafetyHubNotificationsFragment.class))
+                                v -> {
+                                    launchSettingsActivity(SafetyHubNotificationsFragment.class);
+                                    recordNotificationsInteraction(
+                                            NotificationsModuleInteractions.OPEN_UI_REVIEW);
+                                })
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v ->
-                                        launchSiteSettingsActivity(
-                                                SiteSettingsCategory.Type.NOTIFICATIONS))
+                                v -> {
+                                    launchSiteSettingsActivity(
+                                            SiteSettingsCategory.Type.NOTIFICATIONS);
+                                    recordNotificationsInteraction(
+                                            NotificationsModuleInteractions.GO_TO_SETTINGS);
+                                })
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -310,10 +358,18 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> launchSettingsActivity(SafeBrowsingSettingsFragment.class))
+                                v -> {
+                                    launchSettingsActivity(SafeBrowsingSettingsFragment.class);
+                                    recordDashboardInteractions(
+                                            DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
+                                })
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> launchSettingsActivity(SafeBrowsingSettingsFragment.class))
+                                v -> {
+                                    launchSettingsActivity(SafeBrowsingSettingsFragment.class);
+                                    recordDashboardInteractions(
+                                            DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
+                                })
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -330,6 +386,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 .setOnPreferenceClickListener(
                         (preference) -> {
                             openUrlInCct(SAFETY_TOOLS_LEARN_MORE_URL);
+                            recordDashboardInteractions(
+                                    DashboardInteractions.OPEN_SAFETY_TOOLS_INFO);
                             return true;
                         });
 
@@ -337,6 +395,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 .setOnPreferenceClickListener(
                         (preference) -> {
                             openUrlInCct(INCOGNITO_LEARN_MORE_URL);
+                            recordDashboardInteractions(DashboardInteractions.OPEN_INCOGNITO_INFO);
                             return true;
                         });
 
@@ -344,6 +403,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 .setOnPreferenceClickListener(
                         (preference) -> {
                             openUrlInCct(SAFE_BROWSING_LEARN_MORE_URL);
+                            recordDashboardInteractions(
+                                    DashboardInteractions.OPEN_SAFE_BROWSING_INFO);
                             return true;
                         });
     }
@@ -362,6 +423,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             openUrlInCct(HELP_CENTER_URL);
+            recordDashboardInteractions(DashboardInteractions.OPEN_HELP_CENTER);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -399,6 +461,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        recordAllModulesState(LifecycleEvent.ON_EXIT);
+
         mNotificationPermissionReviewBridge.removeObserver(this);
         mUnusedSitePermissionsBridge.removeObserver(this);
         mSafetyHubFetchService.removeObserver(this);
@@ -520,14 +584,23 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         if (mDelegate.isSignedIn()) {
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                    v -> mDelegate.showPasswordCheckUI(getContext()));
+                    v -> {
+                        mDelegate.showPasswordCheckUI(getContext());
+                        recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
+                    });
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                    v -> mDelegate.showPasswordCheckUI(getContext()));
+                    v -> {
+                        mDelegate.showPasswordCheckUI(getContext());
+                        recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);
+                    });
         } else {
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                    v -> mDelegate.launchSyncOrSigninPromo(getContext()));
+                    v -> {
+                        mDelegate.launchSyncOrSigninPromo(getContext());
+                        recordDashboardInteractions(DashboardInteractions.SHOW_SIGN_IN_PROMO);
+                    });
         }
 
         mBrowserStateModule.set(
@@ -540,5 +613,35 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         UpdateStatusProvider.UpdateStatus updateStatus = mDelegate.getUpdateStatus();
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStateModule.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+    }
+
+    private void recordAllModulesState(@LifecycleEvent String event) {
+        @ModuleState
+        int updateState = getModuleState(mUpdateCheckPropertyModel, ModuleOption.UPDATE_CHECK);
+        recordModuleState(updateState, DashboardModuleType.UPDATE_CHECK, event);
+
+        @ModuleState
+        int passwordState =
+                getModuleState(mPasswordCheckPropertyModel, ModuleOption.ACCOUNT_PASSWORDS);
+        recordModuleState(passwordState, DashboardModuleType.PASSWORDS, event);
+
+        @ModuleState
+        int safeBrowsingState =
+                getModuleState(mSafeBrowsingPropertyModel, ModuleOption.SAFE_BROWSING);
+        recordModuleState(safeBrowsingState, DashboardModuleType.SAFE_BROWSING, event);
+
+        @ModuleState
+        int permissionsState = getModuleState(mPermissionsModel, ModuleOption.UNUSED_PERMISSIONS);
+        recordModuleState(permissionsState, DashboardModuleType.REVOKED_PERMISSIONS, event);
+
+        @ModuleState
+        int notificationsState =
+                getModuleState(mNotificationsModel, ModuleOption.NOTIFICATION_REVIEW);
+        recordModuleState(notificationsState, DashboardModuleType.NOTIFICATION_REVIEW, event);
+
+        @ModuleState
+        int browserState =
+                isBrowserStateSafe(mBrowserStateModule) ? ModuleState.SAFE : ModuleState.WARNING;
+        recordModuleState(browserState, DashboardModuleType.BROWSER_STATE, event);
     }
 }

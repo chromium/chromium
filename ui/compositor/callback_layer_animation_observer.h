@@ -139,6 +139,11 @@ class COMPOSITOR_EXPORT CallbackLayerAnimationObserver
  private:
   int GetNumSequencesCompleted();
 
+  // Checks if all sequences have been started,
+  // then if the started callback did not delete the observer,
+  // checks if all sequences have completed.
+  void CheckAllSequencesStartedAndCompleted();
+
   // Checks if all attached sequences have been started and invokes
   // |animation_started_callback_| if |active_| is true.
   void CheckAllSequencesStarted();

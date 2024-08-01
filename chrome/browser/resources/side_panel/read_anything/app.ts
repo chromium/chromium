@@ -91,11 +91,12 @@ export enum WordBoundaryMode {
 }
 
 export interface SpeechPlayingState {
-  // The first time the user presses `play` on a page, we initialize the tree
-  // traversal used for speech.
+  // If the speech tree for the current page has been initialized. This happens
+  // in updateContent before speech has been initiated by users but it can
+  // also be set to true via a play from selection.
   isSpeechTreeInitialized: boolean;
   // True when the user presses play, regardless of if audio has actually
-  // started yet.
+  // started yet. This will be false when speech is paused.
   isSpeechActive: boolean;
   // When `isSpeechActive` is false, this indicates how it became false. e.g.
   // via pause button click or because other speech settings were changed.
@@ -105,6 +106,12 @@ export interface SpeechPlayingState {
   // `isAudioCurrentlyPlaying` will tell us whether audio actually started
   // playing yet. This is a separate state because audio starting has a delay.
   isAudioCurrentlyPlaying: boolean;
+  // Indicates if speech has been triggered on the current page by a play
+  // button press. This will be true throughout the lifetime of reading
+  // the content on the page. It will only be reset when speech has completely
+  // stopped from reaching the end of content or changing pages. Pauses will
+  // not update it.
+  hasSpeechBeenTriggered: boolean;
 }
 
 export interface WordBoundaryState {
@@ -127,13 +134,8 @@ export interface ReadAnythingElement {
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
     container: HTMLElement,
+    containerParent: HTMLElement,
   };
-}
-
-interface PendingImageRequest {
-  resolver: (dataUrl: string) => void;
-  cancel: () => void;
-  nodeId: number;
 }
 
 function isInvalidHighlightForWordHighlighting(textToHighlight: string|
@@ -190,7 +192,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // index down the pipeline, so we store that info here.
   private highlightedNodeToOffsetInParent: Map<Node, number> = new Map();
   private imageNodeIdsToFetch_: Set<number> = new Set();
-  private pendingImageRequest_?: PendingImageRequest;
 
   private scrollingOnSelection_: boolean;
   private hasContent_: boolean;
@@ -269,6 +270,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     isSpeechActive: false,
     pauseSource: PauseActionSource.DEFAULT,
     isAudioCurrentlyPlaying: false,
+    hasSpeechBeenTriggered: false,
   };
 
   private imagesEnabled: boolean;
@@ -381,9 +383,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.previousHighlights_ = [];
     };
 
-    document.onscroll = () => {
+    // TODO (b/356186008): Write a test for this scrolling behavior.
+    this.$.containerParent.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
+
+      // If user scrolls to the bottom of the Reading Mode side panel,
+      // attempt to scroll the main page
+      if (Math.abs(
+              this.$.containerParent.scrollHeight -
+              this.$.containerParent.clientHeight -
+              this.$.containerParent.scrollTop) <= 1) {
+        chrome.readingMode.onScrolledToBottom();
+      }
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are
@@ -408,8 +420,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.updateImages();
     };
 
-    chrome.readingMode.updateImage = (nodeId) => {
-      this.updateImage(nodeId);
+    chrome.readingMode.onImageDownloaded = (nodeId) => {
+      this.onImageDownloaded(nodeId);
     };
 
     chrome.readingMode.updateSelection = () => {
@@ -445,28 +457,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     chrome.readingMode.onLockScreen = () => {
       this.onLockScreen();
     };
-  }
-
-  // Record metrics
-  private recordPlayClick() {
-    this.incrementMetricCount('Play');
-  }
-
-  private recordPauseClick() {
-    this.incrementMetricCount('Pause');
-  }
-
-  private recordNextClick() {
-    this.incrementMetricCount('NextButton');
-  }
-
-  private recordPreviousClick() {
-    this.incrementMetricCount('PreviousButton');
-  }
-
-  private incrementMetricCount(action: string) {
-    chrome.readingMode.incrementMetricCount(
-        'Accessibility.ReadAnything.ReadAloud' + action + 'SessionCount');
   }
 
   private getOffsetInAncestor(node: Node): number {
@@ -520,6 +510,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       htmlTag = 'div';
     }
 
+    // Images will be written to a canvas.
+    if (htmlTag === 'img') {
+      htmlTag = 'canvas';
+    }
+
     const url = chrome.readingMode.getUrl(nodeId);
 
     if (!this.shouldShowLinks() && htmlTag === 'a') {
@@ -538,14 +533,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       element.setAttribute('dir', direction);
     }
 
-    if (element.nodeName === 'IMG') {
-      const dataUrl = chrome.readingMode.getImageDataUrl(nodeId);
-      if (!dataUrl) {
-        this.imageNodeIdsToFetch_.add(nodeId);
-      }
-      element.setAttribute('src', dataUrl);
+    if (element.nodeName === 'CANVAS') {
+      this.imageNodeIdsToFetch_.add(nodeId);
       const altText = chrome.readingMode.getAltText(nodeId);
       element.setAttribute('alt', altText);
+      element.classList.add('downloaded-image');
     }
 
     if (url && element.nodeName === 'A') {
@@ -582,10 +574,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // node id to call InitAXPosition in playSpeech. If it's not saved here,
     // we have to retrieve it through a DOM search such as createTreeWalker,
     // which can be computationally expensive.
-    // However, since updateContent may be called after speech starts playing,
-    // don't call InitAXPosition from here to avoid interrupting current speech.
     if (!this.firstTextNodeSetForReadAloud) {
       this.firstTextNodeSetForReadAloud = nodeId;
+      this.initializeSpeechTree();
     }
 
     const textContent = chrome.readingMode.getTextContent(nodeId);
@@ -686,11 +677,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.logger_.logNewPage(/*speechPlayed=*/ false);
     }
 
-    if (chrome.readingMode.imagesFeatureEnabled) {
-      // Always load images even if they are disabled to ensure a fast response
-      // when toggling.
-      this.loadImages_();
-    }
+    // Always load images even if they are disabled to ensure a fast response
+    // when toggling.
+    this.loadImages_();
 
     container.scrollTop = 0;
     this.hasContent_ = true;
@@ -698,11 +687,21 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.updateImages();
   }
 
-  updateImage(nodeId: number) {
-    const dataurl = chrome.readingMode.getImageDataUrl(nodeId);
-    if (this.pendingImageRequest_ &&
-        this.pendingImageRequest_.nodeId === nodeId) {
-      this.pendingImageRequest_.resolver(dataurl);
+  async onImageDownloaded(nodeId: number) {
+    const data = chrome.readingMode.getImageBitmap(nodeId);
+    const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+    if (data && element && element instanceof HTMLCanvasElement) {
+      element.width = data.width;
+      element.height = data.height;
+      const context = element.getContext('2d');
+      // Context should not be null unless another was already requested.
+      assert(context);
+      const imgData = new ImageData(data.data, data.width);
+      const bitmap = await createImageBitmap(imgData, {
+        colorSpaceConversion: 'none',
+        premultiplyAlpha: 'premultiply',
+      });
+      context.drawImage(bitmap, 0, 0);
     }
   }
 
@@ -716,32 +715,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private async loadImages_() {
-    // Content was updated while a request was still pending.
-    if (this.pendingImageRequest_) {
-      this.pendingImageRequest_.cancel();
+    if (!chrome.readingMode.imagesFeatureEnabled) {
+      return;
     }
 
     for (const nodeId of this.imageNodeIdsToFetch_) {
-      // Create a promise that will be resolved on image updated.
-      try {
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          this.pendingImageRequest_ = {
-            resolver: resolve,
-            cancel: reject,
-            nodeId: nodeId,
-          };
-          chrome.readingMode.requestImageDataUrl(nodeId);
-        });
-        const node = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
-        if (node instanceof HTMLImageElement) {
-          node.src = dataUrl;
-        }
-      } catch {
-        // This catch will be called if cancel is called on the image request.
-        this.pendingImageRequest_ = undefined;
-        break;
-      }
+      chrome.readingMode.requestImageData(nodeId);
     }
+
     this.imageNodeIdsToFetch_.clear();
   }
 
@@ -855,6 +836,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   updateImages() {
     this.imagesEnabled = chrome.readingMode.imagesEnabled;
+    // There is some strange issue where the HTML css application does not work
+    // on canvases.
+    for (const canvas of document.querySelectorAll('canvas')) {
+      canvas.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
+    }
   }
 
   updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
@@ -1309,11 +1295,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private onPlayPauseClick_() {
     if (this.speechPlayingState.isSpeechActive) {
       this.logSpeechPlaySession_();
-      this.recordPauseClick();
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
     } else {
       this.playSessionStartTime = Date.now();
-      this.recordPlayClick();
       this.playSpeech();
     }
   }
@@ -1368,7 +1352,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private playNextGranularity_() {
-    this.recordNextClick();
     this.synth.cancel();
     this.resetPreviousHighlight_();
     // Reset the word boundary index whenever we move the granularity position.
@@ -1381,7 +1364,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private playPreviousGranularity_() {
-    this.recordPreviousClick();
     this.synth.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
@@ -1402,7 +1384,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.getSelection();
     const hasSelection =
         anchorNode !== focusNode || anchorOffset !== focusOffset;
-    if (this.speechPlayingState.isSpeechTreeInitialized &&
+    if (this.speechPlayingState.hasSpeechBeenTriggered &&
         !this.speechPlayingState.isSpeechActive) {
       const pausedFromButton = this.speechPlayingState.pauseSource ===
           PauseActionSource.BUTTON_CLICK;
@@ -1410,7 +1392,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       let playedFromSelection = false;
       if (hasSelection) {
         this.synth.cancel();
-        chrome.readingMode.onRestartReadAloud();
         this.resetToDefaultWordBoundaryState();
         playedFromSelection = this.playFromSelection();
       }
@@ -1434,10 +1415,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
 
       this.speechPlayingState = {
+        isSpeechTreeInitialized:
+            this.speechPlayingState.isSpeechTreeInitialized,
         isSpeechActive: true,
-        isSpeechTreeInitialized: true,
         isAudioCurrentlyPlaying:
             this.speechPlayingState.isAudioCurrentlyPlaying,
+        hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
       };
 
       // Hide links when speech resumes. We only hide links when the page was
@@ -1465,10 +1448,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // inflate the speech played number.
       this.logger_.logNewPage(/*speechPlayed=*/ true);
       this.speechPlayingState = {
+        isSpeechTreeInitialized:
+            this.speechPlayingState.isSpeechTreeInitialized,
         isSpeechActive: true,
-        isSpeechTreeInitialized: true,
         isAudioCurrentlyPlaying:
             this.speechPlayingState.isAudioCurrentlyPlaying,
+        hasSpeechBeenTriggered: true,
       };
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
@@ -1477,16 +1462,37 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       const playedFromSelection = hasSelection && this.playFromSelection();
       if (!playedFromSelection && this.firstTextNodeSetForReadAloud) {
-        // TODO(crbug.com/40927698): There should be a way to use AXPosition so
-        // that this step can be skipped.
-        chrome.readingMode.initAxPositionWithNode(
-            this.firstTextNodeSetForReadAloud);
+        if (!this.speechPlayingState.isSpeechTreeInitialized) {
+          this.initializeSpeechTree();
+        }
         if (!this.highlightAndPlayMessage()) {
           // Ensure we're updating Read Aloud state if there's no text to speak.
           this.onSpeechFinished();
         }
       }
     }
+  }
+
+  initializeSpeechTree() {
+    if (this.firstTextNodeSetForReadAloud) {
+      // TODO(crbug.com/40927698): There should be a way to use AXPosition so
+      // that this step can be skipped.
+      chrome.readingMode.initAxPositionWithNode(
+          this.firstTextNodeSetForReadAloud);
+      this.speechPlayingState = {
+        isAudioCurrentlyPlaying:
+            this.speechPlayingState.isAudioCurrentlyPlaying,
+        isSpeechActive: this.speechPlayingState.isSpeechActive,
+        isSpeechTreeInitialized: true,
+        hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
+      };
+
+      this.preprocessTextForSpeech();
+    }
+  }
+
+  async preprocessTextForSpeech() {
+    chrome.readingMode.preprocessTextForSpeech();
   }
 
   private getSelectedIds(): {
@@ -1548,8 +1554,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
-    chrome.readingMode.initAxPositionWithNode(
-        this.firstTextNodeSetForReadAloud);
+    chrome.readingMode.resetGranularityIndex();
 
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
@@ -2062,6 +2067,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       pauseSource: PauseActionSource.DEFAULT,
       isSpeechTreeInitialized: false,
       isAudioCurrentlyPlaying: false,
+      hasSpeechBeenTriggered: false,
     };
     this.previousHighlights_ = [];
     this.resetToDefaultWordBoundaryState();
@@ -2135,8 +2141,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private resetSpeechPostSettingChange_() {
-    // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
-    if (!this.speechPlayingState.isSpeechTreeInitialized) {
+    // Don't call stopSpeech() if the speech tree hasn't been initialized or
+    // if speech hasn't been triggered yet.
+    if (!this.speechPlayingState.isSpeechTreeInitialized ||
+        !this.speechPlayingState.hasSpeechBeenTriggered) {
       return;
     }
 
@@ -2276,7 +2284,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // shouldn't happen often, so just skip selecting a new voice for now.
     // Another option would be to update the voice and the call
     // resetSpeechPostSettingsChange(), but that could be jarring.
-    if (this.speechPlayingState.isSpeechTreeInitialized) {
+    if (this.speechPlayingState.hasSpeechBeenTriggered) {
       return;
     }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/video/video_encode_accelerator_adapter.h"
 
 #include <memory>
@@ -1274,7 +1279,7 @@ std::string PrintTestParams(
   return result;
 }
 
-#if BUILDFLAG(ENABLE_OPENH264)
+#if BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 SwVideoTestParams kH264Params[] = {
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_XRGB},
@@ -1309,7 +1314,7 @@ INSTANTIATE_TEST_SUITE_P(H264TemporalSvc,
                          SVCVideoEncoderTest,
                          ::testing::ValuesIn(kH264SVCParams),
                          PrintTestParams);
-#endif  // ENABLE_OPENH264
+#endif  // BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 #if BUILDFLAG(ENABLE_LIBVPX)
 SwVideoTestParams kVpxParams[] = {

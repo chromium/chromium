@@ -668,6 +668,8 @@ TEST_F(RenderAccessibilityImplTest, SendPendingAccessibilityEventsPostLoad) {
   // A load started event pauses logging.
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  GetRenderAccessibilityImpl()->DidCommitProvisionalLoad(
+      ui::PAGE_TRANSITION_LINK);
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadStart));
   SendPendingAccessibilityEvents();

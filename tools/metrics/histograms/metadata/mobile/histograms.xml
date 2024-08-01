@@ -172,6 +172,14 @@ chromium-metrics-reviews@google.com.
     this other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
   </summary>
   <token key="EntryPoint">
+    <variant name="AutofillManualFallbackAddressEntry"
+        summary="Autofill manual fallback address entry"/>
+    <variant name="AutofillManualFallbackAllPasswordsEntry"
+        summary="Autofill manual fallback all passwords entry"/>
+    <variant name="AutofillManualFallbackPasswordEntry"
+        summary="Autofill manual fallback password entry"/>
+    <variant name="AutofillManualFallbackPaymentEntry"
+        summary="Autofill manual fallback payment entry"/>
     <variant name="BookmarkEntry" summary="Bookmark entry"/>
     <variant name="BookmarkFolder" summary="Bookmark folder"/>
     <variant name="HistoryEntry" summary="History entry"/>
@@ -187,6 +195,10 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGridAddTo" summary="Tab Grid Add To"/>
     <variant name="TabGridEdit" summary="Tab Grid Edit"/>
     <variant name="TabGridSearchResult" summary="Tab Grid Search Result"/>
+    <variant name="TabGroupEntry" summary="Tab group view entry"/>
+    <variant name="TabGroupsPanelEntry" summary="Tab group panel entry"/>
+    <variant name="TabGroupViewEntry"
+        summary="Tab group view entry in tab grid"/>
     <variant name="TabStrip" summary="Tab Strip tab"/>
     <variant name="Toolbar" summary="Menu from a toolbar button"/>
     <variant name="WebImage" summary="Image on a Web page"/>
@@ -237,7 +249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Keyboard.LensSupportStatus" enum="IOSLensSupportStatus"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>
@@ -446,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.{EntryPoint}.Actions" enum="IOSShareAction"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -603,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.Change"
-    enum="BooleanEnabled" expires_after="2024-11-17">
+    enum="BooleanEnabled" expires_after="2025-01-26">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -615,7 +627,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe"
-    enum="Boolean" expires_after="2024-11-17">
+    enum="Boolean" expires_after="2025-01-26">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records whether the origin was already in the provisionally unsubscribed
@@ -627,7 +639,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
-    units="notifications" expires_after="2024-11-17">
+    units="notifications" expires_after="2025-01-26">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records the number of notifications that were suspended, each time the user
@@ -884,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.NativeInitialized" units="ms"
-    expires_after="2024-11-19">
+    expires_after="2025-01-26">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>

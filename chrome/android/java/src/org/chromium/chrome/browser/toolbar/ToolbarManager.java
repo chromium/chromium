@@ -39,6 +39,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -112,7 +113,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiOneshotSupplier;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -217,7 +218,7 @@ public class ToolbarManager
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
             new ObservableSupplierImpl<>();
     private TabModelSelector mTabModelSelector;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
@@ -464,6 +465,14 @@ public class ToolbarManager
             // Gestural navigation navigates backwards from both edges since this is an OS-level
             // gesture; users expect both edges to take them back.
             boolean navigatesForward = false;
+            if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
+                    navigatesForward, backEvent.getSwipeEdge())) {
+                // Always force to show the top control at the start of the gesture.
+                TabBrowserControlsConstraintsHelper.update(
+                        mLocationBarModel.getTab(),
+                        BrowserControlsState.SHOWN,
+                        /* animate= */ true);
+            }
             mHandler.onBackStarted(
                     backEvent.getTouchX(),
                     backEvent.getTouchY(),
@@ -1069,19 +1078,10 @@ public class ToolbarManager
                     }
                 };
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabStateInitialized() {
-                        mTabRestoreCompleted = true;
-                        handleTabRestoreCompleted();
-                    }
-
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        if (mTabModelSelector != null) {
-                            refreshSelectedTab(mTabModelSelector.getCurrentTab());
-                        }
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    if (mTabModelSelector != null) {
+                        refreshSelectedTab(mTabModelSelector.getCurrentTab());
                     }
                 };
 
@@ -1661,7 +1661,14 @@ public class ToolbarManager
         }
 
         mInitializedWithNative = true;
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        TabModelUtils.runOnTabStateInitialized(
+                mTabModelSelector,
+                mCallbackController.makeCancelable(
+                        (unusedTabModelSelector) -> {
+                            mTabRestoreCompleted = true;
+                            handleTabRestoreCompleted();
+                        }));
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
         maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
         if (mTabModelSelector.isTabStateInitialized()) mTabRestoreCompleted = true;
@@ -1762,7 +1769,7 @@ public class ToolbarManager
             mTabModelSelectorSupplier = null;
         }
         if (mTabModelSelector != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         }
         if (mTabGroupUiOneshotSupplier != null) {
             mTabGroupUiOneshotSupplier.destroy();

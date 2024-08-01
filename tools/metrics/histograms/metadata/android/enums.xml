@@ -189,6 +189,7 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="DEPRECATED: Restore status histogram sent (never recorded)"/>
   <int value="7" label="Failed: Sign-in timed-out or interrupted"/>
+  <int value="8" label="Failed: Restore flow timed-out or crashed"/>
 </enum>
 
 <enum name="AndroidSearchEngineChoiceEvents">
@@ -782,6 +783,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Autofill"/>
   <int value="2" label="Icognito"/>
   <int value="3" label="Device Lock Page"/>
+  <int value="4" label="Settings Batch Upload"/>
 </enum>
 
 <enum name="DeviceLockDialogAction">

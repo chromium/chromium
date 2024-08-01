@@ -16,8 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
@@ -93,6 +91,7 @@
 #include "components/account_id/account_id.h"
 
 class PrefService;
+struct AccessibilityStatusEventDetails;
 
 namespace policy {
 class AutoEnrollmentController;
@@ -104,6 +103,7 @@ class BaseScreen;
 class DemoSetupController;
 class ErrorScreen;
 struct Geoposition;
+class KioskApp;
 class SimpleGeolocationProvider;
 class TimeZoneProvider;
 struct TimeZoneResponseData;

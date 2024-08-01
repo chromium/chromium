@@ -20,6 +20,8 @@ static_library("ownership") {
     "ownership_histograms.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",
@@ -27,6 +29,7 @@ static_library("ownership") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -52,6 +55,7 @@ static_library("ownership") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/system",
+    "//chrome/browser/ash/settings",
   ]
 }
 
@@ -71,6 +75,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",

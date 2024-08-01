@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"

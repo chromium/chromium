@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './cpu_usage_chart.html.js';
+import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsCpuUsageChartElement {
   $: {
@@ -33,7 +34,14 @@ export class HealthdInternalsCpuUsageChartElement extends PolymerElement {
     const UNIT_PERCENTAGE: string[] = ['%'];
     this.$.lineChart.initCanvasDrawer(UNIT_PERCENTAGE, UNITBASE_NO_CARRY);
     this.$.lineChart.setChartMaxValue(100);
+
+    this.updateHelper = new UiUpdateHelper(() => {
+      this.$.lineChart.updateEndTime(Date.now());
+    });
   }
+
+  // Helper for updating UI regularly. Init in `connectedCallback`.
+  private updateHelper: UiUpdateHelper;
 
   addDataSeries(cpuUsageDataSeries: DataSeries[]) {
     for (const dataSeries of cpuUsageDataSeries) {
@@ -41,12 +49,13 @@ export class HealthdInternalsCpuUsageChartElement extends PolymerElement {
     }
   }
 
-  updateEndTime(timestamp: number) {
-    this.$.lineChart.updateEndTime(timestamp);
+  updateVisibility(isVisible: boolean) {
+    this.$.lineChart.updateVisibility(isVisible);
+    this.updateHelper.updateVisibility(isVisible);
   }
 
-  updateVisibility(isVisble: boolean) {
-    this.$.lineChart.updateVisibility(isVisble);
+  updateUiUpdateInterval(intervalSeconds: number) {
+    this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 }
 

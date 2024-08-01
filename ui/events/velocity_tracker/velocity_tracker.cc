@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/velocity_tracker/velocity_tracker.h"
 
 #include <stddef.h>
@@ -490,18 +495,11 @@ static bool SolveLeastSquares(const float* x,
                               uint32_t n,
                               float* out_b,
                               float* out_det) {
-  // MSVC does not support variable-length arrays (used by the original Android
-  // implementation of this function).
-#if defined(COMPILER_MSVC)
-  const uint32_t M_ARRAY_LENGTH =
+  constexpr uint32_t M_ARRAY_LENGTH =
       LeastSquaresVelocityTrackerStrategy::kHistorySize;
-  const uint32_t N_ARRAY_LENGTH = Estimator::kMaxDegree;
+  constexpr uint32_t N_ARRAY_LENGTH = Estimator::kMaxDegree;
   DCHECK_LE(m, M_ARRAY_LENGTH);
   DCHECK_LE(n, N_ARRAY_LENGTH);
-#else
-  const uint32_t M_ARRAY_LENGTH = m;
-  const uint32_t N_ARRAY_LENGTH = n;
-#endif
 
   // Expand the X vector to a matrix A, pre-multiplied by the weights.
   float a[N_ARRAY_LENGTH][M_ARRAY_LENGTH];  // column-major order

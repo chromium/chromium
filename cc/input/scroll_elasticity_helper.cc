@@ -69,7 +69,7 @@ void ScrollElasticityHelperImpl::SetStretchAmount(
   host_impl_->active_tree()->elastic_overscroll()->SetCurrent(stretch_amount);
   host_impl_->active_tree()->set_needs_update_draw_properties();
   host_impl_->SetNeedsCommit();
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   host_impl_->SetFullViewportDamage();
 }
 

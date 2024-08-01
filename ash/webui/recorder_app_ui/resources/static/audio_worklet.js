@@ -20,8 +20,11 @@ class AudioProcessor extends AudioWorkletProcessor {
     // TODO(pihsun): Supports multiple channels.
     const samples = inputs[0][0];
 
-    // Send samples to main thread via port
-    this.port.postMessage(samples);
+    // The samples can be undefined when no input is connected.
+    if (samples !== undefined) {
+      // Send samples to main thread via port
+      this.port.postMessage(samples);
+    }
 
     return true;
   }

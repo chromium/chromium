@@ -60,7 +60,7 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForBrowserState(
             browser_state_.get());

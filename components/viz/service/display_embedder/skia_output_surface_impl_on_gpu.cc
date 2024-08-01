@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 
 #include <memory>
@@ -1997,7 +2002,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 #else   // !BUILDFLAG(IS_WIN)
         AddChildWindowToBrowser(presenter_->GetWindow());
         output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
-            dependency_, shared_image_factory_.get(),
             shared_image_representation_factory_.get(), context_state_.get(),
             std::move(presenter), feature_info_,
             shared_gpu_deps_->memory_tracker(),
@@ -2156,7 +2160,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   if (presenter_) {
     AddChildWindowToBrowser(presenter_->GetWindow());
     output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
-        dependency_, shared_image_factory_.get(),
         shared_image_representation_factory_.get(), context_state_.get(),
         std::move(presenter), feature_info_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());

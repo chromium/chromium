@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Suggeriment: <ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="2662028055331606429">Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita el lloc web</translation>
+<translation id="2677748264148917807">Surt</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat fa <ph name="NUM_HOURS_ONE" /> hora}other{Creat fa <ph name="NUM_HOURS_MANY" /> hores}}</translation>
 <translation id="2801787514987684416">Vols consultar la informació de la botiga?</translation>
 <translation id="2928243913527329289">Google | Sobre aquesta botiga</translation>
 <translation id="2977480621796371840">Suprimeix del grup</translation>
 <translation id="3008554597174452548">Atura el seguiment del producte</translation>
 <translation id="3026391124054406831">Crea grups per organitzar les pestanyes.</translation>
+<translation id="3051031624272448591">Sempre pots recuperar-les a l'historial</translation>
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icona del color del grup de pestanyes (<ph name="COLOR_NAME" />)</translation>
 <translation id="3194464645767632461">puntuació</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="427987768447457592">Grup de pestanyes nou</translation>
-<translation id="4338724047016295066">Les pestanyes inactives es tancaran automàticament. Sempre les pots trobar a Historial.</translation>
 <translation id="4371591986692297148">inactiu</translation>
 <translation id="4460014764210899310">Desagrupa</translation>
+<translation id="4590027107044272416">Ara pots obrir una pestanya nova aquí</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vols tancar 1 pestanya inactiva?}other{Vols tancar <ph name="TAB_COUNT_MANY" /> pestanyes inactives?}}</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
 <translation id="4686942373615810936">Creat ara mateix</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Tanca al cap d'1 dia}other{Tanca al cap de <ph name="DAY_COUNT_MANY" /> dies}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ressenya)}other{(<ph name="REVIEWS_COUNT_MANY" /> ressenyes)}}</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4870911314065352661">Vols tancar totes les pestanyes?</translation>
+<translation id="4871719318659334896">Tanca el grup</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tanca la pestanya}other{Tanca les pestanyes}}</translation>
 <translation id="4908147833782857886">S'han desat <ph name="USER_EMAIL" /> grups (es tancaran les pestanyes i se suprimiran els grups)</translation>
@@ -100,7 +104,9 @@
 <translation id="5972844218283131174">Desselecciona-ho tot</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6040143037577758943">Tanca</translation>
+<translation id="6051432659151380973">Els teus grups de pestanyes es desen automàticament</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Perdràs immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6271513594716432922">Tanca totes les pestanyes inactives</translation>
@@ -115,7 +121,6 @@
 <translation id="6562820390860419811">Mou la pestanya cap a l'esquerra</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6744956528665271406">Edita el color del grup</translation>
-<translation id="6840760312327750441">Per agrupar les pestanyes, mantén-ne una premuda. A continuació, arrossega-la fins a una altra.</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>
 <translation id="7129458170538955174">S'ha obert a mitja alçada la informació sobre aquesta botiga</translation>
@@ -125,6 +130,7 @@
 <translation id="731648547091221002">S'ha seleccionat <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Consulta la política de devolució i més detalls</translation>
 <translation id="7352298686197644113">Descobreix quin element de les pestanyes que hi ha obertes té un preu més baix</translation>
+<translation id="7421293530411019405">Vols sortir del grup de pestanyes?</translation>
 <translation id="7452985128687107478">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els dispositius</translation>
 <translation id="747459581954555080">Restaura'ls tots</translation>
 <translation id="753732157349120914">Selector de pestanyes</translation>
@@ -152,12 +158,15 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Tanca les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="8398929769197326728">Carpeta nova : <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuració</translation>
+<translation id="8631711675211020168">Tothom perdrà immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /> i se suprimirà de tots els dispositius</translation>
+<translation id="870736955561925754">Vols tancar la pestanya i suprimir el grup?</translation>
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_MONTHS_ONE" /> mes}other{Creat fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
 <translation id="8887921976452567404">Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes.</translation>
+<translation id="8915916167043355778">Tanca-ho tot</translation>
 <translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Desplega el grup format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>
@@ -165,6 +174,5 @@
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="9216898458513705996">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
-<translation id="959682366969460160">Organitza el contingut</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

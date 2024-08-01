@@ -181,6 +181,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
     kSize,
     kAny,
     kAuto,
+    kContent,
 
     // The keywords below should match those accepted by
     // css_parsing_utils::ValidWidthOrHeightKeyword.

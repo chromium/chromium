@@ -77,6 +77,10 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
   }
 
   protected boldQuery_(site: string) {
+    if (site.includes('://')) {
+      site = site.split('://')[1]!;
+    }
+
     if (!this.query) {
       return site;
     }
@@ -85,6 +89,10 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
     const parts = site.split(new RegExp(`(${this.query})`, 'gi'));
     return parts.map(part =>
             part.toLowerCase() === queryLower ? html`<b>${part}</b>` : part);
+  }
+
+  protected getIconImageUrl_(): string {
+    return `${this.primarySite}/favicon.ico`;
   }
 }
 

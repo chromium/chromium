@@ -23,8 +23,11 @@ class SharedStorageRunOperationMethodOptions;
 
 static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
 
-static constexpr char kOpaqueOriginCheckErrorMessage[] =
+static constexpr char kOpaqueContextOriginCheckErrorMessage[] =
     "the method on sharedStorage is not allowed in an opaque origin context";
+
+static constexpr char kOpaqueDataOriginCheckErrorMessage[] =
+    "the method on sharedStorage is not allowed to have an opaque data origin";
 
 // This enum corresponds to the IDL enum `SharedStorageDataOrigin` in
 // shared_storage_worklet_options.idl.

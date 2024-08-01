@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -59,13 +58,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        RegularTabSwitcherStation tabSwitcher =
-                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
-
-        // TODO(crbug.com/347301237): The FAB and snackbar overlap. To avoid accidentally clicking
-        // undo dismiss the snackbar for now.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getSnackbarManager().dismissAllSnackbars());
+        RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         assertEquals(0, getCurrentTabModel().getCount());
 
@@ -87,7 +80,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Return to one non-incognito blank tab
         actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTab(PageStation.class);
+        page = actionMenu.selectCloseTabAndDisplayAnotherTab();
         assertFinalDestination(page);
     }
 
@@ -105,7 +98,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Return to one non-incognito blank tab
         actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTab(PageStation.class);
+        page = actionMenu.selectCloseTabAndDisplayRegularTab();
         assertFinalDestination(page);
     }
 
@@ -128,12 +121,12 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Close second regular tab opened.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTab(PageStation.class);
+        page = actionMenu.selectCloseTabAndDisplayAnotherTab();
 
         // Close first regular tab opened.
         actionMenu = page.openTabSwitcherActionMenu();
         RegularTabSwitcherStation regularTabSwitcher =
-                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
+                actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         // Only the incognito tab should still remain.
         assertEquals(0, regularTabModel.getCount());

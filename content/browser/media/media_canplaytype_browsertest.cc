@@ -93,16 +93,17 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AvcVariants) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-// High 10-bit profile is only available when we can use ffmpeg to decode H.264.
-// Even though FFmpeg is used on Android, we only use platform decoders for
-// H.264
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  ExecuteTest("testAvcVariants(true, true)");  // has_proprietary_codecs=true,
-                                               // has_software_avc=true
-#else
-  ExecuteTest("testAvcVariants(true, false)");  // has_proprietary_codecs=true,
-                                                // has_software_avc=false
-#endif
+  // High 10-bit profile is only available when we can use ffmpeg to decode
+  // H.264. Even though FFmpeg is used on Android, we only use platform decoders
+  // for H.264
+  if (media::IsBuiltInVideoCodec(media::VideoCodec::kH264)) {
+    ExecuteTest("testAvcVariants(true, true)");  // has_proprietary_codecs=true,
+                                                 // has_software_avc=true
+  } else {
+    ExecuteTest(
+        "testAvcVariants(true, false)");  // has_proprietary_codecs=true,
+                                          // has_software_avc=false
+  }
 #else
   ExecuteTest(
       "testAvcVariants(false, false)");  // has_proprietary_codecs=false,

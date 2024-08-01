@@ -30,7 +30,8 @@ using ::ui::ImageModel;
 class CookieControlsContentViewUnitTest : public TestWithBrowserView {
  public:
   CookieControlsContentViewUnitTest()
-      : view_(std::make_unique<CookieControlsContentView>()) {}
+      : view_(std::make_unique<CookieControlsContentView>(
+            /*has_act_features=*/false)) {}
 
  protected:
   views::View* GetFeedbackButton() {
@@ -85,7 +86,8 @@ class CookieControlsContentViewTrackingProtectionUnitTest
     : public TestWithBrowserView {
  public:
   CookieControlsContentViewTrackingProtectionUnitTest()
-      : view_(std::make_unique<CookieControlsContentView>()) {}
+      : view_(std::make_unique<CookieControlsContentView>(
+            /*has_act_features=*/true)) {}
 
   CookieControlsContentViewTrackingProtectionUnitTest(
       const CookieControlsContentViewTrackingProtectionUnitTest&) = delete;

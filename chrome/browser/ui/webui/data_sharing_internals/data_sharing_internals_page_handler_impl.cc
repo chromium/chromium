@@ -53,7 +53,7 @@ void DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone(
     std::vector<data_sharing_internals::mojom::GroupDataPtr> group_data;
     for (const auto& data : group_result.value()) {
       auto group_entry = data_sharing_internals::mojom::GroupData::New();
-      group_entry->group_id = data.group_id.value();
+      group_entry->group_id = data.group_token.group_id.value();
       group_entry->name = data.display_name;
       for (const auto& member : data.members) {
         auto group_member = data_sharing_internals::mojom::GroupMember::New();
@@ -63,6 +63,7 @@ void DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone(
         group_member->avatar_url = member.avatar_url;
         group_entry->members.emplace_back(std::move(group_member));
       }
+      group_entry->access_token = data.group_token.access_token;
       group_data.emplace_back(std::move(group_entry));
     }
     std::move(callback).Run(true, std::move(group_data));

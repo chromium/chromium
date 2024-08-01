@@ -4385,6 +4385,35 @@ TEST_F(ProjectorCaptureModeCameraTest, FirstCamSelectedByDefault) {
   EXPECT_TRUE(camera_controller->camera_preview_widget());
 }
 
+// Regression test for http://b/353883311. Tests that starting a default capture
+// mode session and dismissing it during an active Projector recording should
+// not revert the automatically selected camera for the on-going recording.
+TEST_F(ProjectorCaptureModeCameraTest,
+       DefaultCaptureSessionWhileProjectorRecording) {
+  AddDefaultCamera();
+
+  // Start a Projector-initiated session and start recording. The first
+  // available camera will be selected by default.
+  StartProjectorModeSession();
+  auto* camera_controller = GetCameraController();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  CaptureModeTestApi test_api;
+  test_api.PerformCapture();
+  WaitForRecordingToStart();
+  auto* controller = CaptureModeController::Get();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+
+  // Start a new default screenshot session while the projector recording is in
+  // progress. Ending this session should not revert the auto-selected camera.
+  test_api.StartForFullscreen(/*for_video=*/false);
+  controller->Stop();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+}
+
 TEST_F(ProjectorCaptureModeCameraTest,
        SessionStartsWithAnAlreadySelectedCamera) {
   const std::string model_id_1 = "model1";

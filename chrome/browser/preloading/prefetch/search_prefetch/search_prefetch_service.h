@@ -46,11 +46,9 @@ struct ResourceRequest;
 // numeric values should never be reused.
 //
 // Any updates to this class need to be propagated to enums.xml.
-//
-// If you change this, please follow the process in
-// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
-// or if you are not a Googler, please file an FYI bug on https://crbug.new with
-// component Internals>Preload.
+// This enum is used for UMA only. For recording a UKM PreloadingAttempt record,
+// use or introduce a corresponding enum to content::PreloadingEligibility or
+// ChromePreloadingEligibility.
 //
 // LINT.IfChange
 enum class SearchPrefetchEligibilityReason {
@@ -73,9 +71,11 @@ enum class SearchPrefetchEligibilityReason {
   kMaxAttemptsReached = 7,
   // A URLLoaderThrottle decided this request should not be issued.
   kThrottled = 8,
-  kMaxValue = kThrottled,
+  // The prefetch was suppressed because the network is too slow.
+  kSlowNetwork = 9,
+  kMaxValue = kSlowNetwork,
 };
-// LINT.ThenChange()
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchPrefetchEligibilityReason)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

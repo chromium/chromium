@@ -225,7 +225,7 @@ bool AppShimRevealDisabledForTest() {
 
 bool CopyStagingBundleToDestination(base::FilePath staging_path,
                                     base::FilePath dst_app_path) {
-  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+  if (!UseAdHocSigningForWebAppShims()) {
     return base::CopyDirectory(staging_path, dst_app_path, true);
   }
 
@@ -880,6 +880,8 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
   }
   plist[app_mode::kLSHasLocalizedDisplayNameKey] = @YES;
   plist[app_mode::kNSHighResolutionCapableKey] = @YES;
+  plist[app_mode::kCrAppModeIsAdHocSignedKey] =
+      @(UseAdHocSigningForWebAppShims());
 
   // 3. Fill in file handlers.
   // The plist needs to contain file handlers for all profiles the app is
@@ -1011,7 +1013,7 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
 
 bool WebAppShortcutCreator::UpdateSignature(
     const base::FilePath& app_path) const {
-  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+  if (!UseAdHocSigningForWebAppShims()) {
     return true;
   }
 

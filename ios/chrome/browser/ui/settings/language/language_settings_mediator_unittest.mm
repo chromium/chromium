@@ -95,7 +95,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
     // Create BrowserState.
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(CreatePrefService());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
     // Create TranslatePrefs.
     translate_prefs_ = ChromeIOSTranslateClient::CreateTranslatePrefs(

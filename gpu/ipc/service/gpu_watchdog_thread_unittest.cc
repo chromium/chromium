@@ -122,8 +122,7 @@ void GpuWatchdogTest::SetUp() {
   TimeOutType timeout_type = kNormal;
 
 #if BUILDFLAG(IS_MAC)
-  // Use a slow timeout for Mac versions <= 11.00 and for MacBookPro model <
-  // MacBookPro14,1.
+  // Use a slow timeout for for MacBookPro model < MacBookPro14,1.
   //
   // As per EveryMac, laptops older than MacBookPro14,1 max out at macOS 12
   // Monterey. When macOS 13 is the minimum required version for Chromium, this
@@ -131,19 +130,13 @@ void GpuWatchdogTest::SetUp() {
   //
   // Reference:
   //   https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
-  if (base::mac::MacOSMajorVersion() <= 11) {
-    // Check MacOS version.
-    timeout_type = kSlow;
-  } else {
-    // Check Mac machine model version.
-    std::string model_str = base::SysInfo::HardwareModelName();
-    std::optional<base::SysInfo::HardwareModelNameSplit> split =
-        base::SysInfo::SplitHardwareModelNameDoNotUse(model_str);
+  std::string model_str = base::SysInfo::HardwareModelName();
+  std::optional<base::SysInfo::HardwareModelNameSplit> split =
+      base::SysInfo::SplitHardwareModelNameDoNotUse(model_str);
 
-    if (split && split.value().category == "MacBookPro" &&
-        split.value().model < 14) {
-      timeout_type = kSlow;
-    }
+  if (split && split.value().category == "MacBookPro" &&
+      split.value().model < 14) {
+    timeout_type = kSlow;
   }
 
 #elif BUILDFLAG(IS_ANDROID)

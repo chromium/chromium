@@ -97,10 +97,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 // transactions complete.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseHostResolverCache);
 
-// Enables the DNS ServiceEndpointRequest API, which provides intermediate
-// service endpoints in the middle of a DNS transaction so that clients of this
-// API can attempt connections as soon as candidate endpoints are available.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseServiceEndpointRequest);
+// Enables the Happy Eyeballs v3, where we use intermediate DNS resolution
+// results to make connection attempts as soon as possible.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableHappyEyeballsV3);
 
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by
@@ -437,6 +436,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;
 // token server in the `Ip-Protection-Debug-Experiment-Arm` header. The default
 // value, 0, is not sent.
 NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
+
+// Caches tokens by geo allowing for tokens to be preserved on network/geo
+// changes. The default value of this feature is false which maintains existing
+// behavior by default.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
 
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android

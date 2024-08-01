@@ -24,6 +24,7 @@ static_library("vm") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/dbus/services",
     "//dbus",
     "//ui/shell_dialogs",
@@ -44,6 +45,7 @@ static_library("vm") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",

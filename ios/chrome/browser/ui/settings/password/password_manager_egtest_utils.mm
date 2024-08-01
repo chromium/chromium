@@ -238,13 +238,11 @@ void SaveMutedCompromisedPasswordFormToProfileStore(NSString* origin,
 
 #pragma mark - Saving passkeys
 
-void SaveExamplePasskeyToStore(NSString* credentialId,
-                               NSString* rpId,
+void SaveExamplePasskeyToStore(NSString* rpId,
                                NSString* userId,
                                NSString* username,
                                NSString* userDisplayName) {
-  [PasswordSettingsAppInterface saveExamplePasskeyToStore:credentialId
-                                                     rpId:rpId
+  [PasswordSettingsAppInterface saveExamplePasskeyToStore:rpId
                                                    userId:userId
                                                  username:username
                                           userDisplayName:userDisplayName];

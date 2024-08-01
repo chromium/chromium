@@ -14,7 +14,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.model_execution.ExecutionResult;
 import org.chromium.chrome.browser.model_execution.ModelExecutionFeature;
@@ -108,7 +107,6 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
             Context context,
             BottomSheetController bottomSheetController,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Tab tab) {
         PageSummaryMetrics.recordSummarySheetEvent(PageSummarySheetEvents.OPEN_SUMMARY_SHEET);
         if (!shouldShowInShareSheetInternal(tab, false)) return;
@@ -125,7 +123,6 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
                         context,
                         tab,
                         chromeOptionShareCallback,
-                        helpAndFeedbackLauncher,
                         mCurrentRequestInfoSupplier,
                         this::onRequestDestroyed,
                         bottomSheetController);

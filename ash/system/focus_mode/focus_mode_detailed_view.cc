@@ -487,18 +487,18 @@ void FocusModeDetailedView::CreateToggleView() {
         *toggle_view_->sub_text_label());
   }
 
-  toggle_view_->AddRightView(
-      std::make_unique<PillButton>(
-          base::BindRepeating(
-              &FocusModeController::ToggleFocusMode,
-              base::Unretained(focus_mode_controller),
-              focus_mode_histogram_names::ToggleSource::kFocusPanel),
-          l10n_util::GetStringUTF16(
-              in_focus_session
-                  ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL
-                  : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON),
-          PillButton::Type::kPrimaryLargeWithoutIcon, /*icon=*/nullptr)
-          .release());
+  auto toggle_button = std::make_unique<PillButton>(
+      base::BindRepeating(
+          &FocusModeController::ToggleFocusMode,
+          base::Unretained(focus_mode_controller),
+          focus_mode_histogram_names::ToggleSource::kFocusPanel),
+      l10n_util::GetStringUTF16(
+          in_focus_session
+              ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL
+              : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON),
+      PillButton::Type::kPrimaryLargeWithoutIcon, /*icon=*/nullptr);
+  toggle_button->SetUseLabelAsDefaultTooltip(false);
+  toggle_view_->AddRightView(toggle_button.release());
   UpdateToggleButtonAccessibility(in_focus_session);
 
   toggle_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
@@ -507,6 +507,15 @@ void FocusModeDetailedView::CreateToggleView() {
       toggle_view_->tri_view()->box_layout();
   toggle_view_tri_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  // We need to reset the accessible name for `toggle_view_`, so that ChromeVox
+  // will not announce the a11y name when tabbing on its `right_view()`.
+  views::ViewAccessibility& view_accessibility =
+      toggle_view_->GetViewAccessibility();
+  view_accessibility.SetName(std::u16string());
+  // Set a valid role for this view to avoid announcing the role for
+  // `toggle_view_`.
+  view_accessibility.SetRole(ax::mojom::Role::kRow);
 }
 
 void FocusModeDetailedView::UpdateToggleButtonAccessibility(
@@ -521,15 +530,11 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
     toggle_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE,
         duration_string));
-    toggle_button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON_ACCESSIBLE_NAME));
     return;
   }
 
   toggle_button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
-  toggle_button->SetTooltipText(
-      toggle_button->GetViewAccessibility().GetCachedName());
 }
 
 void FocusModeDetailedView::UpdateTimerAdjustmentButtonAccessibility() {

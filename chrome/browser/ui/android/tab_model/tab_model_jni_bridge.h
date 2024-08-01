@@ -29,7 +29,7 @@ class TabModelJniBridge : public TabModel {
                     const jni_zero::JavaRef<jobject>& jobj,
                     Profile* profile,
                     chrome::android::ActivityType activity_type,
-                    bool track_in_native_model_list);
+                    bool is_archived_tab_model);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   TabModelJniBridge(const TabModelJniBridge&) = delete;
@@ -53,7 +53,8 @@ class TabModelJniBridge : public TabModel {
   void CloseTabAt(int index) override;
 
   void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents) override;
+                 content::WebContents* web_contents,
+                 bool select) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
 
@@ -88,6 +89,8 @@ class TabModelJniBridge : public TabModel {
   // Returns a corresponding Java Class object.
   static jclass GetClazz(JNIEnv* env);
 
+  static TabModel* GetArchivedTabModelPtr();
+
  protected:
   JavaObjectWeakGlobalRef java_object_;
 
@@ -96,7 +99,7 @@ class TabModelJniBridge : public TabModel {
   // Java TabModelJniBridge.
   std::unique_ptr<TabModelObserverJniBridge> observer_bridge_;
 
-  bool track_in_native_model_list_;
+  bool is_archived_tab_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_

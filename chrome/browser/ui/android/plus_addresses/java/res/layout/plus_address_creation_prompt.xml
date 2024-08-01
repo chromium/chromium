@@ -94,7 +94,7 @@ found in the LICENSE file.
         android:layout_weight="0"
         android:src="@drawable/ic_refresh_white_24dp"
         android:contentDescription="@string/plus_address_model_refresh_button_accessible_name_android"
-        app:tint="@macro/default_icon_color_accent1"
+        app:tint="@color/refresh_plus_address_icon_tint_list"
         android:tintMode="src_in"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
@@ -142,5 +142,14 @@ found in the LICENSE file.
       android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
       android:minHeight="@dimen/min_touch_target_size"
       android:minWidth="@dimen/min_touch_target_size" />
+
+  <org.chromium.ui.widget.LoadingView
+      android:id="@+id/plus_address_creation_loading_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:layout_gravity="center"
+      android:visibility="gone"/>
 
 </LinearLayout>

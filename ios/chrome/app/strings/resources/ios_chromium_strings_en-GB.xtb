@@ -234,6 +234,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Use Chromium Everywhere</translation>
 <translation id="7523464085759699266">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
+<translation id="7531461704633548377">From Chromium</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
 <translation id="7710137812207066069">Opens a New Tab in Chromium.</translation>
 <translation id="7747820849741499258">Search in Chromium</translation>
@@ -264,6 +265,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8386869251364507178">Chromium actions</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
 <translation id="8458950033462118672">You can open links in Chromium automatically by making it your default browser app.</translation>
+<translation id="8502918057530111907">Use Chromium by default to easily get price insights</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>
 <translation id="858114650497379505">You can use the passwords that you saved to Password Manager in other apps on your iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>

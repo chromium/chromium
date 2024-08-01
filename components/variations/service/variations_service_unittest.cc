@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/variations/service/variations_service.h"
 
 #include <stddef.h>
@@ -563,9 +568,8 @@ TEST_F(VariationsServiceTest, RequestGzipCompressedSeed) {
       }));
   service.DoActualFetch();
 
-  std::string field;
-  ASSERT_TRUE(intercepted_headers.GetHeader("A-IM", &field));
-  EXPECT_EQ("gzip", field);
+  EXPECT_THAT(intercepted_headers.GetHeader("A-IM"),
+              ::testing::Optional(std::string("gzip")));
 }
 
 TEST_F(VariationsServiceTest, RequestDeltaCompressedSeed) {
@@ -595,11 +599,10 @@ TEST_F(VariationsServiceTest, RequestDeltaCompressedSeed) {
   service.DoActualFetch();
 
   // Make sure the initial request was generated with correct delta headers.
-  std::string field;
-  ASSERT_TRUE(intercepted_headers.GetHeader("A-IM", &field));
-  EXPECT_EQ("x-bm,gzip", field);
-  ASSERT_TRUE(intercepted_headers.GetHeader("If-None-Match", &field));
-  EXPECT_EQ("abc", field);
+  EXPECT_THAT(intercepted_headers.GetHeader("A-IM"),
+              ::testing::Optional(std::string("x-bm,gzip")));
+  EXPECT_THAT(intercepted_headers.GetHeader("If-None-Match"),
+              ::testing::Optional(std::string("abc")));
 
   // Do a retry.
   service.set_seed_stores_succeed(true);
@@ -608,11 +611,11 @@ TEST_F(VariationsServiceTest, RequestDeltaCompressedSeed) {
   service.DoActualFetch();
 
   // The retry request should not request delta compression.
-  ASSERT_TRUE(intercepted_headers.GetHeader("A-IM", &field));
-  EXPECT_EQ("gzip", field);
+  EXPECT_THAT(intercepted_headers.GetHeader("A-IM"),
+              ::testing::Optional(std::string("gzip")));
   // It should still provide the serial number.
-  ASSERT_TRUE(intercepted_headers.GetHeader("If-None-Match", &field));
-  EXPECT_EQ("abc", field);
+  EXPECT_THAT(intercepted_headers.GetHeader("If-None-Match"),
+              ::testing::Optional(std::string("abc")));
 }
 
 TEST_F(VariationsServiceTest, InstanceManipulations) {

@@ -43,7 +43,6 @@ class TestSessionRestorationService : public SessionRestorationService {
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) override;
   void PurgeUnassociatedData(base::OnceClosure closure) final;
-  bool PlaceholderTabsEnabled() const final;
   void ParseDataForBrowserAsync(
       Browser* browser,
       WebStateStorageIterationCallback iter_callback,

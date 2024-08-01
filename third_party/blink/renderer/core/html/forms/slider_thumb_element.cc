@@ -105,9 +105,8 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
     return;
 
   PhysicalOffset point_in_track = track_box->AbsoluteToLocalPoint(point);
-  const bool is_vertical = !thumb_box->StyleRef().IsHorizontalWritingMode();
-  bool is_left_to_right_direction =
-      thumb_box->StyleRef().IsLeftToRightDirection();
+  auto writing_direction = thumb_box->StyleRef().GetWritingDirection();
+  bool is_flipped = writing_direction.IsFlippedInlines();
   LayoutUnit track_size;
   LayoutUnit position;
   LayoutUnit current_position;
@@ -115,35 +114,21 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
   PhysicalOffset thumb_offset =
       thumb_box->LocalToAncestorPoint(PhysicalOffset(), input_box) -
       track_box->LocalToAncestorPoint(PhysicalOffset(), input_box);
-  if (is_vertical) {
+  if (!writing_direction.IsHorizontal()) {
     track_size = track_box->ContentHeight() - thumb_box->Size().height;
     position = point_in_track.top - thumb_box->Size().height / 2;
-    if (is_left_to_right_direction &&
-        !RuntimeEnabledFeatures::
-            FormControlsVerticalWritingModeDirectionSupportEnabled()) {
-      position -= thumb_box->MarginBottom();
-    } else {
-      position -= is_left_to_right_direction ? thumb_box->MarginTop()
-                                             : thumb_box->MarginBottom();
-    }
+    position -= is_flipped ? thumb_box->MarginBottom() : thumb_box->MarginTop();
     current_position = thumb_offset.top;
   } else {
     track_size = track_box->ContentWidth() - thumb_box->Size().width;
     position = point_in_track.left - thumb_box->Size().width / 2;
-    position -= is_left_to_right_direction ? thumb_box->MarginLeft()
-                                           : thumb_box->MarginRight();
+    position -= is_flipped ? thumb_box->MarginRight() : thumb_box->MarginLeft();
     current_position = thumb_offset.left;
   }
   position = std::min(position, track_size).ClampNegativeToZero();
   const Decimal ratio =
       Decimal::FromDouble(static_cast<double>(position) / track_size);
-  const Decimal fraction =
-      (is_vertical && is_left_to_right_direction &&
-       !RuntimeEnabledFeatures::
-           FormControlsVerticalWritingModeDirectionSupportEnabled()) ||
-              !is_left_to_right_direction
-          ? Decimal(1) - ratio
-          : ratio;
+  const Decimal fraction = is_flipped ? Decimal(1) - ratio : ratio;
   StepRange step_range(input->CreateStepRange(kRejectAny));
   Decimal value =
       step_range.ClampValue(step_range.ValueFromProportion(fraction));
@@ -153,12 +138,7 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
     double closest_fraction =
         step_range.ProportionFromValue(closest).ToDouble();
     double closest_ratio =
-        (is_vertical && is_left_to_right_direction &&
-         !RuntimeEnabledFeatures::
-             FormControlsVerticalWritingModeDirectionSupportEnabled()) ||
-                !is_left_to_right_direction
-            ? 1.0 - closest_fraction
-            : closest_fraction;
+        is_flipped ? 1.0 - closest_fraction : closest_fraction;
     LayoutUnit closest_position(track_size * closest_ratio);
     const LayoutUnit snapping_threshold(5);
     if ((closest_position - position).Abs() <= snapping_threshold)

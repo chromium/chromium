@@ -61,6 +61,11 @@ class AwBrowserPermissionRequestDelegateForTesting final
     RequestPermission(origin, PermissionType::GEOLOCATION, std::move(callback));
   }
 
+  void RequestStorageAccess(const url::Origin& origin,
+                            PermissionCallback callback) override {
+    NOTREACHED();
+  }
+
   void CancelGeolocationPermissionRequests(const GURL& origin) override {
     CancelPermission(origin, PermissionType::GEOLOCATION);
   }

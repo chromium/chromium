@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share.page_info_sheet;
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -42,7 +41,6 @@ public interface PageInfoSharingController {
             Context context,
             BottomSheetController bottomSheetController,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Tab tab);
 
     /**

@@ -46,24 +46,6 @@ struct AlignedByteLength {
 // graph represented by an IDMLCompiledOperator.
 class GraphImplDml final : public WebNNGraphImpl {
  public:
-  // This method builds and compiles a DML graph from mojom::GraphInfo via
-  // GraphBuilderDml, and then call CommandRecorder::InitializeOperator method
-  // to initialize the DML graph. Next, it calls CommandQueue::WaitAsync method
-  // to wait for the initialization work to be completed on GPU, the
-  // GraphImplDml instance will only be created and bound to the mojom receiver
-  // in GraphImplDml::OnInitializationComplete method.
-  static void CreateAndBuild(scoped_refptr<Adapter> adapter,
-                             base::WeakPtr<ContextImplDml> context,
-                             mojom::GraphInfoPtr graph_info,
-                             ComputeResourceInfo compute_resource_info,
-                             WebNNContextImpl::CreateGraphImplCallback callback,
-                             bool pass_dml_execution_disable_meta_commands);
-
-  GraphImplDml(const GraphImplDml&) = delete;
-  GraphImplDml& operator=(const GraphImplDml&) = delete;
-  ~GraphImplDml() override;
-
- private:
   // It records the graph's buffer binding info to create the buffer binding
   // (DML_BUFFER_BINDING) for the graph execution.
   struct GraphBufferBindingInfo {
@@ -90,7 +72,31 @@ class GraphImplDml final : public WebNNGraphImpl {
     // creating the DML_GRAPH_DESC.
     std::unordered_map<std::string, uint32_t> graph_output_name_to_index_map;
   };
+  static base::expected<void, mojom::ErrorPtr> CreateAndBuildInternal(
+      scoped_refptr<Adapter> adapter,
+      mojom::GraphInfoPtr& graph_info,
+      GraphBuilderDml& graph_builder,
+      std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+      GraphBufferBindingInfo& graph_buffer_binding_info);
 
+  // This method builds and compiles a DML graph from mojom::GraphInfo via
+  // GraphBuilderDml, and then calls the CommandRecorder::InitializeOperator
+  // method to initialize the DML graph. Next, it calls CommandQueue::WaitAsync
+  // method to wait for the initialization work to be completed on GPU. The
+  // GraphImplDml instance will only be created and bound to the mojom receiver
+  // in GraphImplDml::OnInitializationComplete method.
+  static void CreateAndBuild(scoped_refptr<Adapter> adapter,
+                             base::WeakPtr<ContextImplDml> context,
+                             mojom::GraphInfoPtr graph_info,
+                             ComputeResourceInfo compute_resource_info,
+                             WebNNContextImpl::CreateGraphImplCallback callback,
+                             bool pass_dml_execution_disable_meta_commands);
+
+  GraphImplDml(const GraphImplDml&) = delete;
+  GraphImplDml& operator=(const GraphImplDml&) = delete;
+  ~GraphImplDml() override;
+
+ private:
   // Contains the persistent resource for the graph initialization and execution
   // if the graph needs it. The resource should be kept alive until the GPU has
   // completed the execution.

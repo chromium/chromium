@@ -267,9 +267,13 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
 
   util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
                                                browser_context_);
+  // TODO(jlulejian): Do we need to start tracking this in initialization or
+  // could we start in `DidStartServiceWorkerContext()` instead since this is
+  // for a running (started) worker?
   ProcessManager::Get(browser_context_)
-      ->RegisterServiceWorker({extension_id, render_process_id,
-                               service_worker_version_id, thread_id});
+      ->StartTrackingServiceWorkerRunningInstance(
+          {extension_id, render_process_id, service_worker_version_id,
+           thread_id});
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
 
@@ -330,7 +334,8 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
 
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
-  ProcessManager::Get(browser_context_)->UnregisterServiceWorker(worker_id);
+  ProcessManager::Get(browser_context_)
+      ->StopTrackingServiceWorkerRunningInstance(worker_id);
   const SequencedContextId context_id = {extension_id, browser_context_,
                                          activation_token};
 
@@ -668,9 +673,16 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   DCHECK(worker_state);
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
-    UMA_HISTOGRAM_BOOLEAN(
+    base::UmaHistogramBoolean(
         "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
         success);
+    if (!success) {
+      // TODO(crbug.com/346732739): Create a test for this if it is feasible.
+      base::UmaHistogramEnumeration(
+          "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_"
+          "FailStatus",
+          status_code);
+    }
     if (g_test_observer) {
       g_test_observer->RegistrationMismatchMitigated(extension_id, success);
     }
@@ -692,8 +704,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
                                                 std::move(error));
     return;
   }
-  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.RegistrationTime",
-                      base::Time::Now() - start_time);
+  base::UmaHistogramTimes("Extensions.ServiceWorkerBackground.RegistrationTime",
+                          base::Time::Now() - start_time);
 
   worker_registered_.insert(context_id);
 
@@ -719,7 +731,6 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
       success);
-  // TODO(crbug.com/346732739): Emit `status` as a metric.
 
   if (g_test_observer) {
     g_test_observer->WorkerUnregistered(extension_id);
@@ -727,12 +738,26 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
 
   // Extension run with |activation_token| was already deactivated.
   if (!IsCurrentActivation(extension_id, activation_token)) {
+    if (!success) {
+      base::UmaHistogramEnumeration(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerUnregistrationFailureStatus_"
+          "DeactivateExtension_NotCurrentActivation",
+          status);
+    }
     return;
   }
 
   if (!success) {
     // TODO(crbug.com/346732739): Handle this case.
     LOG(ERROR) << "Failed to unregister service worker!";
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        status);
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+        "DeactivateExtension",
+        status);
   }
 }
 
@@ -899,7 +924,8 @@ void ServiceWorkerTaskQueue::OnStopped(int64_t version_id, const GURL& scope) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ProcessManager::Get(browser_context_)
-      ->UnregisterServiceWorker(/*extension_id=*/scope.host(), version_id);
+      ->StopTrackingServiceWorkerRunningInstance(/*extension_id=*/scope.host(),
+                                                 version_id);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 #include <stddef.h>
@@ -18,6 +23,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 
 namespace ui {
@@ -810,48 +816,50 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
     VkTestXkbKeyboardLayoutEngine::KeysymEntry test;
     KeyboardCode key_code;
   } kVkeyTestCase[] = {
-    {{DomCode::CONTROL_LEFT, EF_NONE, XKB_KEY_Control_L}, VKEY_CONTROL},
-    {{DomCode::CONTROL_RIGHT, EF_NONE, XKB_KEY_Control_R}, VKEY_CONTROL},
-    {{DomCode::SHIFT_LEFT, EF_NONE, XKB_KEY_Shift_L}, VKEY_SHIFT},
-    {{DomCode::SHIFT_RIGHT, EF_NONE, XKB_KEY_Shift_R}, VKEY_SHIFT},
-    {{DomCode::META_LEFT, EF_NONE, XKB_KEY_Super_L}, VKEY_LWIN},
-    {{DomCode::META_RIGHT, EF_NONE, XKB_KEY_Super_R}, VKEY_LWIN},
-    {{DomCode::ALT_LEFT, EF_NONE, XKB_KEY_Alt_L}, VKEY_MENU},
-    {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_Alt_R}, VKEY_MENU},
-    {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_ISO_Level3_Shift}, VKEY_ALTGR},
-    {{DomCode::DIGIT1, EF_NONE, XKB_KEY_1}, VKEY_1},
-    {{DomCode::NUMPAD1, EF_NONE, XKB_KEY_KP_1}, VKEY_1},
-    {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_Caps_Lock}, VKEY_CAPITAL},
-    {{DomCode::ENTER, EF_NONE, XKB_KEY_Return}, VKEY_RETURN},
-    {{DomCode::NUMPAD_ENTER, EF_NONE, XKB_KEY_KP_Enter}, VKEY_RETURN},
-    {{DomCode::SLEEP, EF_NONE, XKB_KEY_XF86Sleep}, VKEY_SLEEP},
-    // Verify that we can translate some Dom codes even if they are not
-    // known to XKB.
-    {{DomCode::LAUNCH_ASSISTANT, EF_NONE}, VKEY_ASSISTANT},
-    {{DomCode::LAUNCH_CONTROL_PANEL, EF_NONE}, VKEY_SETTINGS},
-    {{DomCode::PRIVACY_SCREEN_TOGGLE, EF_NONE}, VKEY_PRIVACY_SCREEN_TOGGLE},
-    {{DomCode::MICROPHONE_MUTE_TOGGLE, EF_NONE}, VKEY_MICROPHONE_MUTE_TOGGLE},
-    {{DomCode::EMOJI_PICKER, EF_NONE}, VKEY_EMOJI_PICKER},
-    {{DomCode::DICTATE, EF_NONE}, VKEY_DICTATE},
-    {{DomCode::ALL_APPLICATIONS, EF_NONE}, VKEY_ALL_APPLICATIONS},
-    // Verify the AC Application keys.
-    {{DomCode::NEW, EF_NONE}, VKEY_NEW},
-    {{DomCode::CLOSE, EF_NONE}, VKEY_CLOSE},
-    // Verify that number pad digits produce located VKEY codes.
-    {{DomCode::NUMPAD0, EF_NONE, XKB_KEY_KP_0, '0'}, VKEY_NUMPAD0},
-    {{DomCode::NUMPAD9, EF_NONE, XKB_KEY_KP_9, '9'}, VKEY_NUMPAD9},
-    // Verify AltGr+V & AltGr+W on de(neo) layout.
-    {{DomCode::US_W, EF_ALTGR_DOWN, XKB_KEY_BackSpace, 8}, VKEY_BACK},
-    {{DomCode::US_V, EF_ALTGR_DOWN, XKB_KEY_Return, 13}, VKEY_RETURN},
+      {{DomCode::CONTROL_LEFT, EF_NONE, XKB_KEY_Control_L}, VKEY_CONTROL},
+      {{DomCode::CONTROL_RIGHT, EF_NONE, XKB_KEY_Control_R}, VKEY_CONTROL},
+      {{DomCode::SHIFT_LEFT, EF_NONE, XKB_KEY_Shift_L}, VKEY_SHIFT},
+      {{DomCode::SHIFT_RIGHT, EF_NONE, XKB_KEY_Shift_R}, VKEY_SHIFT},
+      {{DomCode::META_LEFT, EF_NONE, XKB_KEY_Super_L}, VKEY_LWIN},
+      {{DomCode::META_RIGHT, EF_NONE, XKB_KEY_Super_R}, VKEY_LWIN},
+      {{DomCode::ALT_LEFT, EF_NONE, XKB_KEY_Alt_L}, VKEY_MENU},
+      {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_Alt_R}, VKEY_MENU},
+      {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_ISO_Level3_Shift}, VKEY_ALTGR},
+      {{DomCode::DIGIT1, EF_NONE, XKB_KEY_1}, VKEY_1},
+      {{DomCode::NUMPAD1, EF_NONE, XKB_KEY_KP_1}, VKEY_1},
+      {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_Caps_Lock}, VKEY_CAPITAL},
+      {{DomCode::ENTER, EF_NONE, XKB_KEY_Return}, VKEY_RETURN},
+      {{DomCode::NUMPAD_ENTER, EF_NONE, XKB_KEY_KP_Enter}, VKEY_RETURN},
+      {{DomCode::SLEEP, EF_NONE, XKB_KEY_XF86Sleep}, VKEY_SLEEP},
+      // Verify that we can translate some Dom codes even if they are not
+      // known to XKB.
+      {{DomCode::LAUNCH_ASSISTANT, EF_NONE}, VKEY_ASSISTANT},
+      {{DomCode::LAUNCH_CONTROL_PANEL, EF_NONE}, VKEY_SETTINGS},
+      {{DomCode::PRIVACY_SCREEN_TOGGLE, EF_NONE}, VKEY_PRIVACY_SCREEN_TOGGLE},
+      {{DomCode::MICROPHONE_MUTE_TOGGLE, EF_NONE}, VKEY_MICROPHONE_MUTE_TOGGLE},
+      {{DomCode::EMOJI_PICKER, EF_NONE}, VKEY_EMOJI_PICKER},
+      {{DomCode::DICTATE, EF_NONE}, VKEY_DICTATE},
+      {{DomCode::ALL_APPLICATIONS, EF_NONE}, VKEY_ALL_APPLICATIONS},
+      {{DomCode::ACCESSIBILITY, EF_NONE}, VKEY_ACCESSIBILITY},
+      // Verify the AC Application keys.
+      {{DomCode::NEW, EF_NONE}, VKEY_NEW},
+      {{DomCode::CLOSE, EF_NONE}, VKEY_CLOSE},
+      // Verify that number pad digits produce located VKEY codes.
+      {{DomCode::NUMPAD0, EF_NONE, XKB_KEY_KP_0, '0'}, VKEY_NUMPAD0},
+      {{DomCode::NUMPAD9, EF_NONE, XKB_KEY_KP_9, '9'}, VKEY_NUMPAD9},
+      // Verify AltGr+V & AltGr+W on de(neo) layout.
+      {{DomCode::US_W, EF_ALTGR_DOWN, XKB_KEY_BackSpace, 8}, VKEY_BACK},
+      {{DomCode::US_V, EF_ALTGR_DOWN, XKB_KEY_Return, 13}, VKEY_RETURN},
 #if BUILDFLAG(IS_CHROMEOS)
-    // Verify on ChromeOS PRINT maps to VKEY_PRINT not VKEY_SNAPSHOT.
-    {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_PRINT},
-    // On ChromeOS XKB_KEY_3270_PrintScreen is used for PRINT_SCREEN.
-    {{DomCode::PRINT_SCREEN, EF_NONE, XKB_KEY_3270_PrintScreen}, VKEY_SNAPSHOT},
+      // Verify on ChromeOS PRINT maps to VKEY_PRINT not VKEY_SNAPSHOT.
+      {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_PRINT},
+      // On ChromeOS XKB_KEY_3270_PrintScreen is used for PRINT_SCREEN.
+      {{DomCode::PRINT_SCREEN, EF_NONE, XKB_KEY_3270_PrintScreen},
+       VKEY_SNAPSHOT},
 #else   // !BUILDFLAG(IS_CHROMEOS)
-    // On Linux PRINT and PRINT_SCREEN map to VKEY_SNAPSHOT via XKB_KEY_Print
-    {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_SNAPSHOT},
-    {{DomCode::PRINT_SCREEN, EF_NONE, XKB_KEY_Print}, VKEY_SNAPSHOT},
+      // On Linux PRINT and PRINT_SCREEN map to VKEY_SNAPSHOT via XKB_KEY_Print
+      {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_SNAPSHOT},
+      {{DomCode::PRINT_SCREEN, EF_NONE, XKB_KEY_Print}, VKEY_SNAPSHOT},
 #endif  // BUILDFLAG(IS_CHROMEOS)
   };
   for (const auto& e : kVkeyTestCase) {

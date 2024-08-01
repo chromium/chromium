@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_MOCK_TAB_GROUP_SYNC_SERVICE_H_
 
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace tab_groups {
@@ -21,6 +22,11 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               UpdateVisualData,
               (const LocalTabGroupID, const tab_groups::TabGroupVisualData*));
+  MOCK_METHOD(void,
+              UpdateGroupPosition,
+              (const base::Uuid& sync_id,
+               std::optional<bool> is_pinned,
+               std ::optional<int> new_index));
   MOCK_METHOD(void,
               AddTab,
               (const LocalTabGroupID&,

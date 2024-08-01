@@ -10,10 +10,6 @@ namespace policy {
 
 namespace features {
 
-BASE_FEATURE(kEnablePolicyTestPage,
-             "EnablePolicyTestPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
 
 }  // namespace policy

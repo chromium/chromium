@@ -29,8 +29,10 @@ static std::unique_ptr<viz::CopyOutputRequest> CreateCopyRequest(
           viz::CopyOutputRequest::ResultFormat::RGBA,
           viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           std::move(callback));
-  float scale = ui::GetScaleFactorForNativeView(view);
-  request->set_area(gfx::ScaleToEnclosingRect(source_rect, scale));
+  if (!source_rect.IsEmpty()) {
+    float scale = ui::GetScaleFactorForNativeView(view);
+    request->set_area(gfx::ScaleToEnclosingRect(source_rect, scale));
+  }
   return request;
 }
 

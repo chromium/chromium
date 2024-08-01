@@ -41,8 +41,10 @@ public class TabGroupRowProperties {
             new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<Runnable> OPEN_RUNNABLE =
             new ReadableObjectPropertyKey<>();
-    public static final ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
-            new ReadableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> LEAVE_RUNNABLE =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
         ASYNC_FAVICON_TOP_LEFT,
@@ -54,6 +56,7 @@ public class TabGroupRowProperties {
         TITLE_DATA,
         CREATION_MILLIS,
         OPEN_RUNNABLE,
-        DELETE_RUNNABLE
+        DELETE_RUNNABLE,
+        LEAVE_RUNNABLE
     };
 }

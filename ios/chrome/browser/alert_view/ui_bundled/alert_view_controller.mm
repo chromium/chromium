@@ -65,6 +65,10 @@ constexpr CGFloat kTextfieldInset = 8;
 // UIViewAnimationOptions format. Must match the one in UIView.h.
 constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
+// The amount of time (in seconds) to wait before enabling the action buttons.
+// This is only used if `actionButtonsAreInitiallyDisabled` is true.
+constexpr NSTimeInterval kEnableActionButtonsDelay = 0.5;
+
 // Returns the width and height of a single pixel in point.
 CGFloat GetPixelLength() {
   return 1.0 / [UIScreen mainScreen].scale;
@@ -212,6 +216,9 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
 // Whether the activity indicator should be visible in the alert view.
 @property(nonatomic, assign) BOOL shouldShowActivityIndicator;
+
+// Whether the action buttons should initially be disabled.
+@property(nonatomic, assign) BOOL actionButtonsAreInitiallyDisabled;
 
 @end
 
@@ -592,6 +599,12 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
         [[NSMutableArray alloc] init];
     for (AlertAction* action in rowOfActions) {
       GrayHighlightButton* button = GetButtonForAction(action);
+      if (self.actionButtonsAreInitiallyDisabled) {
+        button.enabled = NO;
+        [self performSelector:@selector(enableActionButton:)
+                   withObject:button
+                   afterDelay:kEnableActionButtonsDelay];
+      }
       [button addTarget:self
                     action:@selector(didSelectActionForButton:)
           forControlEvents:UIControlEventTouchUpInside];
@@ -643,6 +656,11 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 // Dismiss the keyboard, if visible.
 - (void)dismissKeyboard {
   [self.lastFocusedTextField resignFirstResponder];
+}
+
+// Enables `button`.
+- (void)enableActionButton:(UIButton*)actionButton {
+  actionButton.enabled = YES;
 }
 
 @end

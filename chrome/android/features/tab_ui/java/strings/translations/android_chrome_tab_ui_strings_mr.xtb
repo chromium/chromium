@@ -36,6 +36,7 @@
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइटवर भेट द्या</translation>
+<translation id="2677748264148917807">सोडा</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> तासापूर्वी तयार केला आहे}other{<ph name="NUM_HOURS_MANY" /> तासांपूर्वी तयार केला आहे}}</translation>
 <translation id="2801787514987684416">स्टोअरची माहिती पाहायची आहे का?</translation>
 <translation id="2928243913527329289">Google | या स्टोअरबद्दल</translation>
@@ -65,9 +66,9 @@
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब असलेल्या <ph name="TITLE_OF_GROUP" /> या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब असलेल्या <ph name="TITLE_OF_GROUP" /> या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="427987768447457592">नवीन टॅब गट</translation>
-<translation id="4338724047016295066">इनॅक्टिव्ह टॅब आपोआप बंद होतील. तुम्ही ते इतिहास मध्ये कधीही पाहू शकता.</translation>
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4460014764210899310">गटामधून काढून टाका</translation>
+<translation id="4590027107044272416">तुम्ही आता इथे नवीन टॅब उघडू शकता</translation>
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
 <translation id="4686942373615810936">आता तयार केला आहे</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{एका दिवसानंतर बंद करा}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर बंद करा}}</translation>
@@ -75,6 +76,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>
+<translation id="4871719318659334896">गट बंद करा</translation>
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{टॅब बंद करा}other{टॅब बंद करा}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> गट सेव्ह केले आहेत (टॅब बंद करून गट हटवेल)</translation>
@@ -100,7 +102,9 @@
 <translation id="5972844218283131174">सर्व निवड रद्द करा</translation>
 <translation id="6017514345406065928">हिरवा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
+<translation id="6051432659151380973">तुमचे टॅब गट आपोआप सेव्ह होतात</translation>
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
+<translation id="6082313992897617440">तुम्ही लगेच <ph name="GROUP_NAME" /> या टॅब गटाचा ॲक्सेस गमवाल</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
@@ -115,7 +119,6 @@
 <translation id="6562820390860419811">टॅब डावीकडे हलवा</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
 <translation id="6744956528665271406">गटाचा रंग संपादित करा</translation>
-<translation id="6840760312327750441">टॅबचा गट करण्यासाठी, टॅबला स्पर्श करा आणि धरून ठेवा. नंतर, तो दुसऱ्या टॅबवर ड्रॅग करा.</translation>
 <translation id="6856809498882026482">एकाहून अधिक निवड मोड लपवा</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टॅब शेअर करा}other{टॅब शेअर करा}}</translation>
 <translation id="7129458170538955174">या स्टोअरविषयी माहिती अर्ध्या उंचीवर उघडली आहे</translation>
@@ -125,6 +128,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> निवडला आहे</translation>
 <translation id="7326879924029668159">रिटर्न धोरण आणि आणखी बरेच काही पहा</translation>
 <translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पहा</translation>
+<translation id="7421293530411019405">टॅब गटामधून बाहेर पडायचे आहे का?</translation>
 <translation id="7452985128687107478">टॅब गट आपोआप सेव्ह होतात आणि तुमच्या सर्व डिव्हाइसवर अपडेट होतात</translation>
 <translation id="747459581954555080">सर्व पुनर्संचयित करा</translation>
 <translation id="753732157349120914">टॅब स्विचर</translation>
@@ -152,6 +156,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बंद करा}}</translation>
 <translation id="8398929769197326728">नवीन फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
+<translation id="8631711675211020168">सर्वजण लगेच <ph name="GROUP_NAME" /> या टॅब गटाचा ॲक्सेस गमवतील आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
+<translation id="870736955561925754">टॅब बंद करून गट हटवायचा आहे का?</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8730999928494395583">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून काढून टाकली जाईल</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">गटामध्ये नवीन टॅब जोडा</translation>
 <translation id="9216898458513705996">टॅब या डिव्हाइसवर खुले राहतील, पण गट हा <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
-<translation id="959682366969460160">व्यवस्‍थापित करा</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

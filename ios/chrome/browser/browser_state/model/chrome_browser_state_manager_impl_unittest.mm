@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
 
 #import "base/containers/contains.h"
+#import "base/scoped_observation.h"
+#import "base/test/test_file_util.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -25,12 +28,54 @@ namespace {
 const char kProfileName1[] = "Profile1";
 const char kProfileName2[] = "Profile2";
 
-// Returns the name of the ChromeBrowserState.
-std::string GetChromeBrowserStateName(ChromeBrowserState* browser_state) {
-  // The name of the ChromeBrowserState is the basename of its StatePath.
-  // This is an invariant of ChromeBrowserStateManagerImpl.
-  return browser_state->GetStatePath().BaseName().AsUTF8Unsafe();
-}
+// A scoped ChromeBrowserStateManagerObsever which records which events
+// have been received.
+class ScopedTestChromeBrowserStateManagerObserver final
+    : public ChromeBrowserStateManagerObserver {
+ public:
+  explicit ScopedTestChromeBrowserStateManagerObserver(
+      ChromeBrowserStateManager& manager) {
+    scoped_observation_.Observe(&manager);
+  }
+
+  ~ScopedTestChromeBrowserStateManagerObserver() final = default;
+
+  // Accessor for the booleans used to store which method has been called.
+  bool on_chrome_browser_state_created_called() const {
+    return on_chrome_browser_state_created_called_;
+  }
+
+  bool on_chrome_browser_state_loaded_called() const {
+    return on_chrome_browser_state_loaded_called_;
+  }
+
+  // ChromeBrowserStateManagerObserver implementation:
+  void OnChromeBrowserStateManagerDestroyed(
+      ChromeBrowserStateManager* manager) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    scoped_observation_.Reset();
+  }
+
+  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
+                                   ChromeBrowserState* browser_state) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    on_chrome_browser_state_created_called_ = true;
+  }
+
+  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
+                                  ChromeBrowserState* browser_state) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    on_chrome_browser_state_loaded_called_ = true;
+  }
+
+ private:
+  base::ScopedObservation<ChromeBrowserStateManager,
+                          ChromeBrowserStateManagerObserver>
+      scoped_observation_{this};
+
+  bool on_chrome_browser_state_created_called_ = false;
+  bool on_chrome_browser_state_loaded_called_ = false;
+};
 
 }  // namespace
 
@@ -38,7 +83,9 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
  public:
   ChromeBrowserStateManagerImplTest()
       : web_task_environment_(
-            web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED) {
+            web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED),
+        browser_state_manager_(GetApplicationContext()->GetLocalState(),
+                               base::CreateUniqueTempDirectoryScopedToTest()) {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
@@ -105,7 +152,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
       // The name of the ChromeBrowserState is the basename of its StatePath.
       // This is an invariant of ChromeBrowserStateManagerImpl.
       const std::string browser_state_name =
-          GetChromeBrowserStateName(browser_state);
+          browser_state->GetBrowserStateName();
 
       CHECK(!base::Contains(browser_state_names, browser_state_name));
       browser_state_names.insert(browser_state_name);
@@ -114,7 +161,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
   }
 
  private:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
   web::WebTaskEnvironment web_task_environment_;
   ChromeBrowserStateManagerImpl browser_state_manager_;
@@ -127,10 +174,20 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
   // There should be no BrowserState loaded yet.
   EXPECT_EQ(GetLoadedBrowserStateNames(), (std::set<std::string>{}));
 
+  // Register an observer and check that it is correctly notified that
+  // a ChromeBrowserState is created and then fully loaded.
+  ScopedTestChromeBrowserStateManagerObserver observer(browser_state_manager());
+  ASSERT_FALSE(observer.on_chrome_browser_state_created_called());
+  ASSERT_FALSE(observer.on_chrome_browser_state_loaded_called());
+
   // Load the BrowserStates, this will implicitly add "Default" as a
   // BrowserState if there is no saved BrowserStates. Thus it should
   // load exactly one BrowserState.
   browser_state_manager().LoadBrowserStates();
+
+  // Check that the observer has been notified of the creation and load.
+  ASSERT_TRUE(observer.on_chrome_browser_state_created_called());
+  ASSERT_TRUE(observer.on_chrome_browser_state_loaded_called());
 
   // Exactly one ChromeBrowserState must be loaded, it must be the last
   // used ChromeBrowserState with name `kIOSChromeInitialBrowserState`.
@@ -138,7 +195,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state),
+  EXPECT_EQ(browser_state->GetBrowserStateName(),
             kIOSChromeInitialBrowserState);
   EXPECT_EQ(GetLoadedBrowserStateNames(),
             (std::set<std::string>{kIOSChromeInitialBrowserState}));
@@ -175,7 +232,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state), kProfileName1);
+  EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
   EXPECT_EQ(GetLoadedBrowserStateNames(),
             (std::set<std::string>{kProfileName1, kProfileName2}));
 }
@@ -208,7 +265,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state), kProfileName1);
+  EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
   EXPECT_EQ(GetLoadedBrowserStateNames(),
             (std::set<std::string>{kProfileName1}));
 }
@@ -244,7 +301,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state),
+  EXPECT_EQ(browser_state->GetBrowserStateName(),
             kIOSChromeInitialBrowserState);
   EXPECT_EQ(
       GetLoadedBrowserStateNames(),

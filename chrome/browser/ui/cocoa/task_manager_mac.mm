@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/cocoa/task_manager_mac_table_view.h"
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -802,15 +801,11 @@ namespace chrome {
 
 // Declared in browser_dialogs.h.
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  return base::FeatureList::IsEnabled(features::kViewsTaskManager)
-             ? ShowTaskManagerViews(browser)
-             : task_manager::TaskManagerMac::Show();
+  return task_manager::TaskManagerMac::Show();
 }
 
 void HideTaskManager() {
-  base::FeatureList::IsEnabled(features::kViewsTaskManager)
-      ? HideTaskManagerViews()
-      : task_manager::TaskManagerMac::Hide();
+  task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

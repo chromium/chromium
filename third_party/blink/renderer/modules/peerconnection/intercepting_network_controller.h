@@ -5,16 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_INTERCEPTING_NETWORK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_INTERCEPTING_NETWORK_CONTROLLER_H_
 
+#include "base/task/sequenced_task_runner.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/transport/network_control.h"
 
 namespace blink {
-
-class FeedbackReceiver : public WTF::ThreadSafeRefCounted<FeedbackReceiver> {
- public:
-  virtual ~FeedbackReceiver() = default;
-  virtual void OnFeedback(webrtc::TransportPacketsFeedback feedback) = 0;
-  virtual void OnSentPacket(webrtc::SentPacket sp) = 0;
-};
 
 // Implementation of NetworkControllerInterface intercepting calls to methods
 // we're interested in, forwarding the rest on to a supplied
@@ -93,11 +91,38 @@ class InterceptingNetworkController
     return fallback_controller_->OnNetworkStateEstimate(nse);
   }
 
-  void SetFeedbackReceiver(scoped_refptr<FeedbackReceiver> feedback_receiver) {
-    feedback_receiver_ = std::move(feedback_receiver);
+  void SetFeedbackReceiver(
+      CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_,
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    feedback_receiver_ = base::MakeRefCounted<FeedbackReceiver>(
+        rtp_transport_, std::move(task_runner));
   }
 
  private:
+  class FeedbackReceiver : public WTF::ThreadSafeRefCounted<FeedbackReceiver> {
+   public:
+    FeedbackReceiver(
+        CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_handle,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    void OnFeedback(webrtc::TransportPacketsFeedback feedback);
+
+    void OnSentPacket(webrtc::SentPacket sp);
+
+   private:
+    void OnFeedbackOnDestinationTaskRunner(
+        webrtc::TransportPacketsFeedback feedback,
+        RTCRtpTransport* rtp_transport);
+    void OnSentPacketOnDestinationTaskRunner(webrtc::SentPacket sp,
+                                             RTCRtpTransport* rtp_transport);
+
+    // Store just a CrossThreadWeakHandle pointing at an RTCRtpTransport, as
+    // we're constructed on a WebRTC thread, only unwrapping in tasks posted to
+    // the blink task runner which owns the RTCRtpTransport object.
+    const CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_handle_;
+    const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  };
+
   std::unique_ptr<webrtc::NetworkControllerInterface> fallback_controller_;
   scoped_refptr<FeedbackReceiver> feedback_receiver_ = nullptr;
 };

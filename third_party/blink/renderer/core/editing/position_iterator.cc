@@ -542,7 +542,7 @@ void FastPositionIteratorAlgorithm<Strategy>::AssertOffsetInContainerIsValid()
 template <typename Strategy>
 void FastPositionIteratorAlgorithm<Strategy>::AssertOffsetStackIsValid() const {
 #if DCHECK_IS_ON()
-  const auto* it = offset_stack_.begin();
+  auto it = offset_stack_.begin();
   for (const Node& ancestor : Strategy::AncestorsOf(*container_node_)) {
     if (it == offset_stack_.end())
       break;

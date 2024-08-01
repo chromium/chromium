@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 
+#include <memory>
+
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -82,6 +87,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     if (lens::features::IsLensOverlayEnabled()) {
       lens_overlay_entry_point_controller_->Initialize();
     }
+
+    auto* experiment_manager =
+        extensions::ManifestV2ExperimentManager::Get(browser->profile());
+    if (experiment_manager &&
+        experiment_manager->GetCurrentExperimentStage() ==
+            extensions::MV2ExperimentStage::kDisableWithReEnable) {
+      mv2_disabled_dialog_controller_ =
+          std::make_unique<extensions::Mv2DisabledDialogController>(browser);
+    }
   }
 }
 
@@ -99,6 +113,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   // conditional.
   if (side_panel_coordinator_) {
     side_panel_coordinator_->TearDownPreBrowserViewDestruction();
+  }
+
+  if (mv2_disabled_dialog_controller_) {
+    mv2_disabled_dialog_controller_->TearDown();
   }
 }
 

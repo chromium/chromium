@@ -4,9 +4,9 @@
 
 import type {PrintPreviewDestinationListElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getTrustedHTML} from 'chrome://print/print_preview.js';
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('DestinationListTest', function() {

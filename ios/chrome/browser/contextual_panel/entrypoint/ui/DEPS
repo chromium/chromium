@@ -1,5 +1,5 @@
 include_rules = [
 "+ios/chrome/browser/bubble/ui_bundled/bubble_util.h",
 "+ios/chrome/browser/ui/fullscreen",
-"+ios/chrome/browser/ui/location_bar/location_bar_constants.h",
+"+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
 ]

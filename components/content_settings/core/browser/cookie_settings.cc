@@ -378,9 +378,8 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    // 3PCs are blocked by default post-3PCD unless an enterprise policy is set.
-    return !pref_change_registrar_->prefs()->GetBoolean(
-        prefs::kAllowAll3pcToggleEnabled);
+    // 3PCs are blocked by default post-3PCD.
+    return true;
   }
 
   CookieControlsMode mode = static_cast<CookieControlsMode>(
@@ -400,10 +399,8 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() const {
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    // Mitigations should be on iff we are not blocking or allowing all 3PC.
-    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked() &&
-           !tracking_protection_settings_
-                ->AreThirdPartyCookiesAllowedByEnterprise();
+    // Mitigations should be on iff we are not blocking all 3PC.
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
   }
 
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {

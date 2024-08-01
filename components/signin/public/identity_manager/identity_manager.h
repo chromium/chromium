@@ -252,6 +252,15 @@ class IdentityManager : public KeyedService,
   bool HasAccountWithRefreshTokenInPersistentErrorState(
       const CoreAccountId& account_id) const;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Returns the wrapped binding key of a refresh token associated with
+  // `account_id`, if any.
+  // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
+  // and (b) the refresh token is bound to a device.
+  std::vector<uint8_t> GetWrappedBindingKeyOfRefreshTokenForAccount(
+      const CoreAccountId& account_id) const;
+#endif
+
   // Returns the error state of the refresh token associated with |account_id|.
   // In particular: Returns GoogleServiceAuthError::AuthErrorNone() if either
   // (a) no refresh token exists for |account_id|, or (b) the refresh token is

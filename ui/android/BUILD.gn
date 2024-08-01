@@ -41,6 +41,7 @@ component("android") {
     "resources/resource_manager.h",
     "resources/resource_manager_impl.cc",
     "resources/resource_manager_impl.h",
+    "resources/ui_resource_provider.cc",
     "resources/ui_resource_provider.h",
     "screen_android.h",
     "ui_android_export.h",
@@ -68,6 +69,7 @@ component("android") {
     "//components/viz/host",
     "//services/viz/public/mojom",
     "//skia",
+    "//third_party/android_opengl/etc1",
     "//third_party/blink/public:blink_headers",
     "//ui/base",
     "//ui/base/cursor",
@@ -408,6 +410,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/resources/statics/StaticResource.java",
     "java/src/org/chromium/ui/resources/statics/StaticResourceLoader.java",
     "java/src/org/chromium/ui/resources/system/SystemResourceLoader.java",
+    "java/src/org/chromium/ui/text/DownloadableFontTextAppearanceSpan.java",
     "java/src/org/chromium/ui/text/EmptyTextWatcher.java",
     "java/src/org/chromium/ui/text/NoUnderlineClickableSpan.java",
     "java/src/org/chromium/ui/text/SpanApplier.java",
@@ -571,6 +574,7 @@ robolectric_library("ui_android_junit_tests") {
   testonly = true
   resources_package = "org.chromium.ui"
   sources = [
+    "java/src/org/chromium/ui/text/DownloadableFontTextAppearanceSpanTest.java",
     "junit/src/org/chromium/ui/AsyncViewProviderTest.java",
     "junit/src/org/chromium/ui/AsyncViewStubTest.java",
     "junit/src/org/chromium/ui/InsetObserverTest.java",
@@ -741,6 +745,7 @@ android_library("ui_unit_device_javatests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 

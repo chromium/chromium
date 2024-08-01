@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -830,8 +831,8 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
   }
 
   if (calculate_checksum) {
-    char checksum[crypto::kSHA256Length];
-    checksum_ctx->Finish(checksum, sizeof(checksum));
+    std::array<char, crypto::kSHA256Length> checksum;
+    checksum_ctx->Finish(checksum.data(), checksum.size());
     for (size_t i = 0; i < crypto::kSHA256Length; i++) {
       if (checksum[i] != expected_checksum[i]) {
 #if DCHECK_IS_ON()
@@ -1032,8 +1033,8 @@ bool V4Store::VerifyChecksum() {
         *hash_prefix_map_, iterator_map, &next_smallest_prefix);
   }
 
-  char checksum[crypto::kSHA256Length];
-  checksum_ctx->Finish(checksum, sizeof(checksum));
+  std::array<char, crypto::kSHA256Length> checksum;
+  checksum_ctx->Finish(checksum.data(), checksum.size());
   for (size_t i = 0; i < crypto::kSHA256Length; i++) {
     if (checksum[i] != expected_checksum_[i]) {
       RecordApplyUpdateResult(kReadFromDisk, CHECKSUM_MISMATCH_FAILURE,

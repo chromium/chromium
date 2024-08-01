@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // A checked observer which receives MagicBoost state changes.
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnMagicBoostEnabledUpdated(bool enabled) {}
     virtual void OnHMREnabledUpdated(bool enabled) {}
     virtual void OnHMRConsentStatusUpdated(HMRConsentStatus status) {}
 
@@ -78,6 +79,10 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // Marks Orca consent status as rejected and disable the feature.
   virtual void DisableOrcaFeature() = 0;
 
+  base::expected<bool, Error> magic_boost_enabled() const {
+    return magic_boost_enabled_;
+  }
+
   base::expected<bool, Error> hmr_enabled() const { return hmr_enabled_; }
 
   base::expected<HMRConsentStatus, Error> hmr_consent_status() const {
@@ -89,6 +94,7 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   }
 
  protected:
+  void UpdateMagicBoostEnabled(bool enabled);
   void UpdateHMREnabled(bool enabled);
   void UpdateHMRConsentStatus(HMRConsentStatus status);
   void UpdateHMRConsentWindowDismissCount(int32_t count);
@@ -98,6 +104,8 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
 
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
+  base::expected<bool, Error> magic_boost_enabled_ =
+      base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> hmr_enabled_ =
       base::unexpected(Error::kUninitialized);
   base::expected<HMRConsentStatus, Error> hmr_consent_status_ =

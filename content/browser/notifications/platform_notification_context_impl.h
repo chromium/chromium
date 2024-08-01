@@ -336,6 +336,14 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void SetTaskRunnerForTesting(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  void DisplayNotification(const NotificationDatabaseData& data,
+                           WriteResultCallback callback);
+
+  void CloseNotifications(const std::set<std::string>& notification_ids);
+  void ScheduleTrigger(base::Time timestamp);
+  void ScheduleNotification(const NotificationDatabaseData& data);
+  void LogClose(const NotificationDatabaseData& data);
+
   base::FilePath path_;
   raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
 
@@ -359,7 +367,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   NotificationDatabase::UkmCallback ukm_callback_;
 
   // Flag if the |browser_context_| has been shutdown already.
-  bool has_shutdown_;
+  std::atomic_bool has_shutdown_;
 };
 
 }  // namespace content

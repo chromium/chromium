@@ -10,17 +10,22 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/fixed_array.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -304,13 +309,13 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafetyNetJavaArray(
     JNIEnv* env,
     const SBThreatTypeSet& threat_types) {
   DCHECK_LT(0u, threat_types.size());
-  int int_threat_types[threat_types.size()];
-  int* itr = &int_threat_types[0];
+  auto int_threat_types = base::HeapArray<int>::WithSize(threat_types.size());
+  auto itr = int_threat_types.begin();
   for (auto threat_type : threat_types) {
     *itr++ =
         static_cast<int>(SBThreatTypeToSafetyNetJavaThreatType(threat_type));
   }
-  return ToJavaIntArray(env, int_threat_types, threat_types.size());
+  return ToJavaIntArray(env, int_threat_types);
 }
 
 // Convert a Java threat type for SafeBrowsing to a SBThreatType.
@@ -365,8 +370,8 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
                      SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
           ? threat_types.size() + 1
           : threat_types.size();
-  int int_threat_types[threat_type_size];
-  int* itr = &int_threat_types[0];
+  auto int_threat_types = base::HeapArray<int>::WithSize(threat_type_size);
+  auto itr = int_threat_types.begin();
   for (auto threat_type : threat_types) {
     if (threat_type == SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
       *itr++ = static_cast<int>(
@@ -378,7 +383,7 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
           SBThreatTypeToSafeBrowsingApiJavaThreatType(threat_type));
     }
   }
-  return ToJavaIntArray(env, int_threat_types, threat_type_size);
+  return ToJavaIntArray(env, int_threat_types);
 }
 
 // The map that holds the callback_id used to reference each pending SafetyNet
@@ -654,13 +659,40 @@ void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
 //
 // SafeBrowsingApiHandlerBridge
 //
+SafeBrowsingApiHandlerBridge::SafeBrowsingApiHandlerBridge() {}
 SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() {}
+
+void SafeBrowsingApiHandlerBridge::ClearArtificialDatabase() {
+  artificially_marked_phishing_urls_.clear();
+}
+
+void SafeBrowsingApiHandlerBridge::PopulateArtificialDatabase() {
+  const std::string raw_artificial_urls =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kMarkAsPhishing);
+  base::StringTokenizer tokenizer(raw_artificial_urls, ",");
+  while (tokenizer.GetNext()) {
+    auto candidate_url = GURL(tokenizer.token_piece());
+    if (candidate_url.is_valid()) {
+      artificially_marked_phishing_urls_.insert(candidate_url);
+    }
+  }
+}
 
 void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     ResponseCallback callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   bool for_browse_url = SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types);
+  if (for_browse_url &&
+      base::Contains(threat_types, SBThreatType::SB_THREAT_TYPE_URL_PHISHING) &&
+      base::Contains(artificially_marked_phishing_urls_, url)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+                                  ThreatMetadata()));
+    return;
+  }
   if (for_browse_url && base::FeatureList::IsEnabled(
                             kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)) {
     StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,

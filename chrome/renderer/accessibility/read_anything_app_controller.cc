@@ -30,6 +30,7 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "read_anything_app_controller.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -37,6 +38,10 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
@@ -55,6 +60,7 @@
 #include "url/url_util.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-typed-array.h"
 
 namespace {
 
@@ -343,6 +349,17 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   return snapshot;
 }
 
+SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
+  SkBitmap converted;
+  converted.allocPixels(SkImageInfo::Make(
+      originalBitmap.width(), originalBitmap.height(),
+      SkColorType::kRGBA_8888_SkColorType, originalBitmap.alphaType()));
+
+  originalBitmap.readPixels(converted.info(), converted.getPixels(),
+                            converted.rowBytes(), 0, 0);
+  return converted;
+}
+
 }  // namespace
 
 // static
@@ -391,6 +408,7 @@ ReadAnythingAppController::ReadAnythingAppController(
                               /* recompute_display_nodes= */ true)) {
   renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
   distiller_ = std::make_unique<AXTreeDistiller>(
+      render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
   // TODO(crbug.com/40915547): Use a global ukm recorder instance instead.
@@ -487,12 +505,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     Draw(/* recompute_display_nodes= */ true);
   }
 
-  if (model_.image_to_update_node_id() != ui::kInvalidAXNodeID) {
-    ExecuteJavaScript("chrome.readingMode.updateImage(" +
-                      base::ToString(model_.image_to_update_node_id()) + ");");
-    model_.reset_image_to_update_node_id();
-  }
-
   // TODO(accessibility): it isn't clear this handles the pending updates path
   // correctly within the model.
   if (model_.requires_post_process_selection()) {
@@ -551,10 +563,6 @@ void ReadAnythingAppController::RecordNumSelections() {
       .SetTotalNumSelections(model_.num_selections())
       .Record(ukm_recorder_.get());
   model_.set_num_selections(0);
-}
-
-void ReadAnythingAppController::OnRestartReadAloud() {
-  read_aloud_model_.ResetReadAloudState();
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -766,7 +774,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
   model_.set_screen_ai_service_ready_for_data_collection(true);
-  distiller_->ScreenAIServiceReady(render_frame());
+  distiller_->ScreenAIServiceReady();
 }
 
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
@@ -895,6 +903,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetLanguageForTesting)
       .SetMethod("initAxPositionWithNode",
                  &ReadAnythingAppController::InitAXPositionWithNode)
+      .SetMethod("resetGranularityIndex",
+                 &ReadAnythingAppController::ResetGranularityIndex)
       .SetMethod("getCurrentTextStartIndex",
                  &ReadAnythingAppController::GetCurrentTextStartIndex)
       .SetMethod("getHighlightStartIndex",
@@ -902,6 +912,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
+      .SetMethod("preprocessTextForSpeech",
+                 &ReadAnythingAppController::PreprocessTextForSpeech)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
       .SetMethod("onSpeechPlayingStateChanged",
                  &ReadAnythingAppController::OnSpeechPlayingStateChanged)
@@ -911,9 +923,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::MovePositionToNextGranularity)
       .SetMethod("movePositionToPreviousGranularity",
                  &ReadAnythingAppController::MovePositionToPreviousGranularity)
-      .SetMethod("requestImageDataUrl",
+      .SetMethod("requestImageData",
                  &ReadAnythingAppController::RequestImageDataUrl)
-      .SetMethod("getImageDataUrl", &ReadAnythingAppController::GetImageDataUrl)
+      .SetMethod("getImageBitmap", &ReadAnythingAppController::GetImageBitmap)
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
       .SetMethod("incrementMetricCount",
@@ -922,14 +934,14 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
-      .SetMethod("onRestartReadAloud",
-                 &ReadAnythingAppController::OnRestartReadAloud)
       .SetMethod("getNodeIdForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
       .SetMethod("getNextWordHighlightLength",
                  &ReadAnythingAppController::GetNextWordHighlightLength)
       .SetMethod("getValidatedFontName",
-                 &ReadAnythingAppController::GetValidatedFontName);
+                 &ReadAnythingAppController::GetValidatedFontName)
+      .SetMethod("onScrolledToBottom",
+                 &ReadAnythingAppController::OnScrolledToBottom);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1333,6 +1345,70 @@ void ReadAnythingAppController::RequestImageDataUrl(
   }
 }
 
+void ReadAnythingAppController::OnImageDataDownloaded(
+    const ui::AXTreeID& tree_id,
+    ui::AXNodeID node_id,
+    const SkBitmap& image) {
+  // If the tree has changed since the request, do nothing with the downloaded
+  // image.
+  if (tree_id != model_.active_tree_id()) {
+    return;
+  }
+  // Temporarily store the image so that javascript can fetch it.
+  downloaded_images_[node_id] = image;
+  // Notify javascript to fetch the image.
+  ExecuteJavaScript("chrome.readingMode.onImageDownloaded(" +
+                    base::ToString(node_id) + ")");
+}
+
+v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
+    ui::AXNodeID node_id) {
+  // Get the isolate for reading mode.
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+
+  if (auto itr = downloaded_images_.find(node_id);
+      itr != downloaded_images_.end()) {
+    // Don't reference itr again.
+    SkBitmap bitmap = std::move(itr->second);
+    // Remove the downloaded image from the map.
+    downloaded_images_.erase(node_id);
+    // Ensure that the bitmap is in the correct color format.
+    if (bitmap.colorType() != SkColorType::kRGBA_8888_SkColorType) {
+      bitmap = CorrectColorOfBitMap(bitmap);
+    }
+
+    // Get the pixmap to compute the bytes.
+    auto pixmap = std::move(bitmap.pixmap());
+    auto size = pixmap.computeByteSize();
+    // Create an array buffer with the image bytes.
+    v8::Local<v8::ArrayBuffer> buffer = v8::ArrayBuffer::New(isolate, size);
+    // Copy the memory in.
+    memcpy(buffer->GetBackingStore()->Data(), pixmap.addr(), size);
+    // Create a clamped array so we can create an ImageData object on the
+    // javascript side.
+    v8::Local<v8::Uint8ClampedArray> array =
+        v8::Uint8ClampedArray::New(buffer, 0, size);
+
+    // Create an object with the image data and height.
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    auto created = obj->DefineOwnProperty(
+        isolate->GetCurrentContext(),
+        v8::String::NewFromUtf8(isolate, "data").ToLocalChecked(), array);
+    created = obj->DefineOwnProperty(
+        isolate->GetCurrentContext(),
+        v8::String::NewFromUtf8(isolate, "width").ToLocalChecked(),
+        v8::Number::New(isolate, bitmap.width()));
+    created = obj->DefineOwnProperty(
+        isolate->GetCurrentContext(),
+        v8::String::NewFromUtf8(isolate, "height").ToLocalChecked(),
+        v8::Number::New(isolate, bitmap.height()));
+    return obj;
+  }
+  // If there wasn't an image, return undefined.
+  return v8::Undefined(isolate);
+}
+
 std::string ReadAnythingAppController::GetImageDataUrl(
     ui::AXNodeID node_id) const {
   ui::AXNode* node = model_.GetAXNode(node_id);
@@ -1613,6 +1689,9 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 void ReadAnythingAppController::OnCollapseSelection() const {
   page_handler_->OnCollapseSelection();
 }
+void ReadAnythingAppController::ResetGranularityIndex() {
+  read_aloud_model_.ResetGranularityIndex();
+}
 void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
@@ -1625,6 +1704,14 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
                                                : &model_.selection_node_ids();
   return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
                                           node_ids);
+}
+
+void ReadAnythingAppController::PreprocessTextForSpeech() {
+  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
+                                               ? &model_.display_node_ids()
+                                               : &model_.selection_node_ids();
+  read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
+                                            node_ids);
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {
@@ -1767,4 +1854,8 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
 void ReadAnythingAppController::IncrementMetricCount(
     const std::string& metric) {
   read_aloud_model_.IncrementMetric(metric);
+}
+
+void ReadAnythingAppController::OnScrolledToBottom() {
+  // TODO (b/353590969): trigger an accessibility action to refresh/scroll more
 }

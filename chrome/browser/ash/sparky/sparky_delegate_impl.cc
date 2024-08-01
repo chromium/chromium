@@ -10,29 +10,53 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/sparky/keyboard_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/sparky/sparky_util.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/system_info_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "ui/display/types/display_constants.h"
+#include "ui/aura/client/cursor_client.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/text/bytes_formatting.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
-
 namespace {
+
 using SetPrefResult = extensions::settings_private::SetPrefResult;
 using SettingsPrivatePrefType = extensions::api::settings_private::PrefType;
+
 }  // namespace
 
 SparkyDelegateImpl::SparkyDelegateImpl(Profile* profile)
     : profile_(profile),
       prefs_util_(std::make_unique<extensions::PrefsUtil>(profile)),
-      screenshot_handler_(std::make_unique<sparky::ScreenshotHandler>()) {}
+      screenshot_handler_(std::make_unique<sparky::ScreenshotHandler>()),
+      total_disk_space_calculator_(profile),
+      free_disk_space_calculator_(profile) {
+  StartObservingCalculators();
+}
 
-SparkyDelegateImpl::~SparkyDelegateImpl() = default;
+SparkyDelegateImpl::~SparkyDelegateImpl() {
+  StopObservingCalculators();
+}
 
 bool SparkyDelegateImpl::SetSettings(
     std::unique_ptr<manta::SettingsData> settings_data) {
@@ -190,6 +214,147 @@ void SparkyDelegateImpl::LaunchApp(const std::string& app_id) {
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->Launch(app_id, ui::EF_IS_SYNTHESIZED, apps::LaunchSource::kFromSparky,
                 std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
+}
+
+void SparkyDelegateImpl::ObtainStorageInfo(
+    manta::StorageDataCallback storage_callback) {
+  storage_callback_ = std::move(storage_callback);
+  total_disk_space_calculator_.StartCalculation();
+  free_disk_space_calculator_.StartCalculation();
+}
+
+void SparkyDelegateImpl::Click(int x, int y) {
+  // Get the Window of the primary display.
+  const auto& display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  CHECK(host);
+  aura::Window* window = host->window();
+  CHECK(window);
+
+  // Create a point in window coordinates, which can be different from screen
+  // coordinates if multiple screens are present.
+  gfx::Point point(x, y);
+  ::wm::ConvertPointFromScreen(window, &point);
+
+  // Create a pair of pressed/released mouse events. These need to be scaled to
+  // the screen to account for non-1x scale factors.
+  ui::MouseEvent mouse_pressed(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent mouse_released(ui::EventType::kMouseReleased, point, point,
+                                ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED,
+                                ui::EF_LEFT_MOUSE_BUTTON);
+
+  mouse_pressed.UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+  mouse_released.UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+
+  // Other parts of the system can temporarily disable mouse events. If this is
+  // the case, re-enable them for the duration of our calls.
+  auto* cursor = aura::client::GetCursorClient(window);
+  const bool mouse_disabled = !cursor->IsMouseEventsEnabled();
+  if (mouse_disabled) {
+    cursor->EnableMouseEvents();
+  }
+
+  // No delay is needed between these events.
+  //
+  // DeliverEventToSink skips event rewriters, unlike SendEventToSink.
+  // TODO(b/351099209): understand if this is desirable.
+  host->DeliverEventToSink(&mouse_pressed);
+  host->DeliverEventToSink(&mouse_released);
+
+  if (mouse_disabled) {
+    cursor->DisableMouseEvents();
+  }
+}
+
+void SparkyDelegateImpl::KeyboardEntry(std::string text) {
+  // Get the window tree host for the primary display.
+  const auto& display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  CHECK(host);
+
+  auto key_events = KeyEventsForText(text);
+  if (!key_events) {
+    // TODO(b/351099209): report an error, `text` contains non-typeable
+    // characters.
+    return;
+  }
+
+  for (auto& key_event : key_events.value()) {
+    host->DeliverEventToSink(&key_event);
+  }
+}
+
+void SparkyDelegateImpl::StartObservingCalculators() {
+  total_disk_space_calculator_.AddObserver(this);
+  free_disk_space_calculator_.AddObserver(this);
+}
+
+void SparkyDelegateImpl::StopObservingCalculators() {
+  total_disk_space_calculator_.RemoveObserver(this);
+  free_disk_space_calculator_.RemoveObserver(this);
+}
+
+void SparkyDelegateImpl::OnSizeCalculated(
+    const SimpleSizeCalculator::CalculationType& calculation_type,
+    int64_t total_bytes) {
+  // The total disk space is rounded to the next power of 2.
+  if (calculation_type == SimpleSizeCalculator::CalculationType::kTotal) {
+    total_bytes = sparky::RoundByteSize(total_bytes);
+  }
+
+  // Store calculated item's size.
+  const int item_index = static_cast<int>(calculation_type);
+  storage_items_total_bytes_[item_index] = total_bytes;
+
+  // Mark item as calculated.
+  calculation_state_.set(item_index);
+  OnStorageInfoUpdated();
+}
+
+void SparkyDelegateImpl::OnStorageInfoUpdated() {
+  // If some size calculations are pending, return early and wait for all
+  // calculations to complete.
+  if (!calculation_state_.all()) {
+    return;
+  }
+
+  const int total_space_index =
+      static_cast<int>(SimpleSizeCalculator::CalculationType::kTotal);
+  const int free_disk_space_index =
+      static_cast<int>(SimpleSizeCalculator::CalculationType::kAvailable);
+
+  int64_t total_bytes = storage_items_total_bytes_[total_space_index];
+  int64_t available_bytes = storage_items_total_bytes_[free_disk_space_index];
+
+  if (total_bytes <= 0 || available_bytes < 0) {
+    // We can't get useful information from the storage page if total_bytes <=
+    // 0 or available_bytes is less than 0. This is not expected to happen.
+    NOTREACHED_IN_MIGRATION()
+        << "Unable to retrieve total or available disk space";
+    return;
+  }
+  std::move(storage_callback_)
+      .Run(std::make_unique<manta::StorageData>(
+          base::UTF16ToUTF8(ui::FormatBytes(available_bytes)),
+          base::UTF16ToUTF8(ui::FormatBytes(total_bytes))));
+}
+
+void SparkyDelegateImpl::LaunchFile(const std::string& file_path) {
+  // TODO (B:355316313) Implement this function.
+}
+
+void SparkyDelegateImpl::GetMyFiles(manta::FilesDataCallback callback,
+                                    bool obtain_bytes,
+                                    std::set<std::string> allowed_file_paths) {
+  // TODO (B:355316313) Implement this function.
+  auto files = std::vector<manta::FileData>();
+  std::move(callback).Run(files);
 }
 
 }  // namespace ash

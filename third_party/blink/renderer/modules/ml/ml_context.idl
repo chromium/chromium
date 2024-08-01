@@ -41,6 +41,11 @@ dictionary MLGatherSupportLimits {
   MLSupportLimits indices;
 };
 
+dictionary MLSingleInputSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits output;
+};
+
 dictionary MLWhereSupportLimits {
   MLSupportLimits condition;
   MLSupportLimits trueValue;
@@ -55,7 +60,17 @@ dictionary MLOpSupportLimits {
   MLArgMinMaxSupportLimits argMin;
   MLArgMinMaxSupportLimits argMax;
   MLConcatSupportLimits concat;
+  MLSingleInputSupportLimits elu;
   MLGatherSupportLimits gather;
+  MLSingleInputSupportLimits gelu;
+  MLSingleInputSupportLimits leakyRelu;
+  MLSingleInputSupportLimits relu;
+  MLSingleInputSupportLimits sigmoid;
+  MLSingleInputSupportLimits slice;
+  MLSingleInputSupportLimits softmax;
+  MLSingleInputSupportLimits softplus;
+  MLSingleInputSupportLimits softsign;
+  MLSingleInputSupportLimits split;
   MLWhereSupportLimits where;
 };
 
@@ -83,7 +98,7 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] MLBuffer createBuffer(MLBufferDescriptor descriptor);
+  ] Promise<MLBuffer> createBuffer(MLBufferDescriptor descriptor);
 
   // TODO(crbug.com/328105506): enable partial MLBuffer reads/writes.
   // TODO(crbug.com/40278771): consider moving arguments into a dictonary 

@@ -77,9 +77,6 @@ void AutofillProgressDialogControllerImpl::OnDismissed(
 
 std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
   switch (autofill_progress_dialog_type_) {
-    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE);
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
@@ -95,7 +92,6 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
 std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
     const {
   switch (autofill_progress_dialog_type_) {
-    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
@@ -109,8 +105,6 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
 std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
     const {
   switch (autofill_progress_dialog_type_) {
-    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
-      return l10n_util::GetStringUTF16(IDS_CANCEL);
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
     // TODO(crbug.com/296651406): Rename
@@ -126,8 +120,6 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
 
 std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
   switch (autofill_progress_dialog_type_) {
-    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
-      return std::u16string();
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
@@ -145,8 +137,6 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
 std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
     const {
   switch (autofill_progress_dialog_type_) {
-    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
-      return std::u16string();
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(

@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
@@ -80,6 +82,26 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
           weak_ptr_factory_.GetWeakPtr()));
 
   RestorePreviousSafetyCheckState();
+
+  // Run the Safety Check automatically, if eligible.
+  //
+  // TODO(crbug.com/354706390): Re-evaluate autorun eligibility during scene
+  // state changes for better accuracy and to support future increased autorun
+  // frequency.
+  //
+  // TODO(crbug.com/354707092): Replace
+  // `GetLastSafetyCheckRunTimeAcrossAllEntrypoints()` with
+  // `GetLastSafetyCheckRunTime()` once the Safety Check (via Settings) is
+  // refactored to use `IOSChromeSafetyCheckManager`. For now
+  // `GetLastSafetyCheckRunTimeAcrossAllEntrypoints()` returns the last run
+  // time, across both entry points.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    if (CanAutomaticallyRunSafetyCheck(
+            GetLatestSafetyCheckRunTimeAcrossAllEntrypoints(
+                local_pref_service))) {
+      StartSafetyCheck();
+    }
+  }
 }
 
 IOSChromeSafetyCheckManager::~IOSChromeSafetyCheckManager() {
@@ -337,13 +359,6 @@ void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
 
   safe_browsing_check_state_ = state;
 
-  // The safe browsing state changed, log a freshness signal for Safety Check.
-  bool should_log_freshness = state != SafeBrowsingSafetyCheckState::kDefault;
-
-  if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
-  }
-
   local_pref_service_->SetString(
       prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
       NameForSafetyCheckState(state));
@@ -433,6 +448,9 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
 
   if (should_log_freshness) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    base::UmaHistogramEnumeration(
+        "IOS.SafetyCheck.FreshnessTrigger",
+        IOSSafetyCheckFreshnessTrigger::kPasswordCheckStateChanged);
   }
 
   password_check_state_ = state;
@@ -489,6 +507,9 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
 
   if (should_log_freshness) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    base::UmaHistogramEnumeration(
+        "IOS.SafetyCheck.FreshnessTrigger",
+        IOSSafetyCheckFreshnessTrigger::kUpdateChromeCheckStateChanged);
   }
 
   update_chrome_check_state_ = state;

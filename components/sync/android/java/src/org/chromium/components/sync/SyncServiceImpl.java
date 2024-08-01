@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * usable from the same sequence as the native SyncServiceImpl. See
  * components/sync/service/sync_service_impl.h for more details.
  */
+@JNINamespace("syncer")
 public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     // Pointer to the C++ counterpart object. Set on construction and reset on destroy() to avoid
     // a dangling pointer.

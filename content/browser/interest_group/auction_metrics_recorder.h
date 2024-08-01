@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_METRICS_RECORDER_H_
 
 #include <stdint.h>
+
 #include <cstdint>
+#include <optional>
 #include <set>
 
 #include "base/containers/flat_map.h"
@@ -22,6 +24,32 @@
 #include "url/origin.h"
 
 namespace content {
+
+// AuctionMetricsRecorder instances need to outlive other objects that keep a
+// reference to them, e.g. AuctionWorkletManager, so that these objects can
+// effectively record metrics. AuctionMetricsRecorderManager is responsible for
+// owning instances of AuctionMetricsRecorder beyond the lifetime of any of
+// these referencing objects.
+class CONTENT_EXPORT AuctionMetricsRecorderManager {
+ public:
+  explicit AuctionMetricsRecorderManager(ukm::SourceId ukm_source_id);
+  ~AuctionMetricsRecorderManager();
+
+  AuctionMetricsRecorderManager(const AuctionMetricsRecorderManager&) = delete;
+  AuctionMetricsRecorderManager& operator=(
+      const AuctionMetricsRecorderManager&) = delete;
+
+  // Creates a new AuctionMetricsRecorder with the ukm_source_id provided in
+  // the AuctionMetricsRecorderManager constructor. The
+  // AuctionMetricsRecorderManager keeps ownership of this object and returns
+  // a usable pointer so that other objects can use this to record metrics.
+  AuctionMetricsRecorder* CreateAuctionMetricsRecorder();
+
+ private:
+  ukm::SourceId ukm_source_id_;
+  std::vector<std::unique_ptr<AuctionMetricsRecorder>>
+      owned_auction_metrics_recorders_;
+};
 
 // The AuctionMetricsRecorder is an auction-scoped collection of data used to
 // record UKMs used to investigate auction latency used to detect regressive
@@ -54,6 +82,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
 
   // Records LoadInterestGroupPhaseLatency
   void OnLoadInterestGroupPhaseComplete();
+
+  // Records the times at which a buyer or seller worklet was requested.
+  void OnWorkletRequested();
+
+  // Records the times at which a buyer or seller worklet was ready.
+  void OnWorkletReady();
 
   // Records how long it took for the config promises to be resolved since the
   // start of the auction. This is only called for auctions that have config
@@ -192,17 +226,65 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
     base::TimeDelta max_latency_;
   };
 
+  // Helper class for keeping track of the earliest recorded time among events
+  // that may occur many times during the auction, and specifically phase start
+  // times, used to better understand auction latency.
+  class EarliestTimeRecorder {
+   public:
+    EarliestTimeRecorder() = default;
+    EarliestTimeRecorder(const EarliestTimeRecorder&) = delete;
+    EarliestTimeRecorder& operator=(const EarliestTimeRecorder&) = delete;
+
+    // Records or overwrites the currently earliest time if this new time is
+    // earlier than any previously recorded time.
+    void MaybeRecordTime(base::TimeTicks time);
+
+    std::optional<base::TimeTicks> get_earliest_time() {
+      return earliest_time_;
+    }
+
+   private:
+    std::optional<base::TimeTicks> earliest_time_;
+  };
+
+  // Helper class for keeping track of the latest recorded time among events
+  // that may occur many times during the auction, and specifically phase end
+  // times, used to better understand auction latency.
+  class LatestTimeRecorder {
+   public:
+    LatestTimeRecorder() = default;
+    LatestTimeRecorder(const LatestTimeRecorder&) = delete;
+    LatestTimeRecorder& operator=(const LatestTimeRecorder&) = delete;
+
+    // Records or overwrites the currently latest time if this new time is
+    // later than any previously recorded time.
+    void MaybeRecordTime(base::TimeTicks time);
+
+    std::optional<base::TimeTicks> get_latest_time() { return latest_time_; }
+
+   private:
+    std::optional<base::TimeTicks> latest_time_;
+  };
+
   // Helper function to set a pair of Mean and Max metrics only if the number of
   // records is non-zero.
   void MaybeSetMeanAndMaxLatency(LatencyAggregator& aggregator,
                                  EntrySetFunction set_mean_function,
                                  EntrySetFunction set_max_function);
 
-  // Helper function to sets a Num metric unconditionally, and set a Mean metric
+  // Helper function to set a Num metric unconditionally, and set a Mean metric
   // only if the number of records is non-zero.
   void SetNumAndMaybeMeanLatency(LatencyAggregator& aggregator,
                                  EntrySetFunction set_num_function,
                                  EntrySetFunction set_mean_function);
+
+  // Helper function to set a metric representing phase start time.
+  void MaybeSetPhaseStartTime(EarliestTimeRecorder& earliest_start_time,
+                              EntrySetFunction set_function);
+
+  // Helper function to set a metric representing phase end time.
+  void MaybeSetPhaseEndTime(LatestTimeRecorder& latest_end_time,
+                            EntrySetFunction set_function);
 
   // Used internally to calculate GenerateBid Dependency critical path latency.
   struct GenerateBidDependencyCriticalPath {
@@ -223,6 +305,9 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       GenerateBidDependencyCriticalPath& critical_path);
   void RecordGenerateBidDependencyLatencyCriticalPath(
       GenerateBidDependencyCriticalPath& critical_path);
+  void MaybeRecordGenerateBidPhasesStartAndEndTimes(
+      const auction_worklet::mojom::GenerateBidDependencyLatencies&
+          generate_bid_dependency_latencies);
 
   struct ScoreAdDependencyCriticalPath {
     enum class Dependency {
@@ -241,6 +326,9 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       ScoreAdDependencyCriticalPath& critical_path);
   void RecordScoreAdDependencyLatencyCriticalPath(
       ScoreAdDependencyCriticalPath& critical_path);
+  void MaybeRecordScoreAdPhasesStartAndEndTimes(
+      const auction_worklet::mojom::ScoreAdDependencyLatencies&
+          score_ad_dependency_latencies);
 
   // The data structure we'll eventually record via the UkmRecorder.
   // We incrementally build this in all of the methods of this class.
@@ -253,6 +341,10 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // Time at which the LoadInterestGroup phase completed and the
   // BiddingAndScoring phase began.
   std::optional<base::TimeTicks> bidding_and_scoring_phase_start_time_;
+
+  // WorkletCreation phase metrics.
+  EarliestTimeRecorder worklet_creation_phase_start_time_;
+  LatestTimeRecorder worklet_creation_phase_end_time_;
 
   // Aggregate number of negative interest groups across all component auctions.
   // This only has a value if the auction (or any of the component auctions in
@@ -340,6 +432,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
       generate_bid_direct_from_seller_signals_critical_path_aggregator_,
       generate_bid_trusted_bidding_signals_critical_path_aggregator_;
 
+  // GenerateBid phase metrics.
+  EarliestTimeRecorder bid_signals_fetch_phase_start_time_;
+  LatestTimeRecorder bid_signals_fetch_phase_end_time_;
+  EarliestTimeRecorder bid_generation_phase_start_time_;
+  LatestTimeRecorder bid_generation_phase_end_time_;
+
   // Aggregated critical path latencies of bids generated before the
   // corresponding SellerWorklet is ready.
   LatencyAggregator top_level_bid_queued_waiting_for_seller_worklet_aggregator_,
@@ -360,6 +458,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   LatencyAggregator score_ad_code_ready_critical_path_aggregator_,
       score_ad_direct_from_seller_signals_critical_path_aggregator_,
       score_ad_trusted_scoring_signals_critical_path_aggregator_;
+
+  // ScoreAd phase metrics.
+  EarliestTimeRecorder score_signals_fetch_phase_start_time_;
+  LatestTimeRecorder score_signals_fetch_phase_end_time_;
+  EarliestTimeRecorder scoring_phase_start_time_;
+  LatestTimeRecorder scoring_phase_end_time_;
 };
 
 }  // namespace content

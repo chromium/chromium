@@ -35,6 +35,10 @@ class ASH_EXPORT PickerMainContainerView
   PickerMainContainerView& operator=(const PickerMainContainerView&) = delete;
   ~PickerMainContainerView() override;
 
+  // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
   // PickerTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;

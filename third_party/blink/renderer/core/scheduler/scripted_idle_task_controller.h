@@ -7,17 +7,18 @@
 
 #include "base/task/delayed_task_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/scheduler/idle_deadline.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/core/scheduler/idle_deadline.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class ExecutionContext;
 class IdleRequestOptions;
 class ThreadScheduler;
 
@@ -43,14 +44,12 @@ class CORE_EXPORT IdleTask : public GarbageCollected<IdleTask>,
 class CORE_EXPORT ScriptedIdleTaskController
     : public GarbageCollected<ScriptedIdleTaskController>,
       public ExecutionContextLifecycleStateObserver,
+      public Supplement<ExecutionContext>,
       public NameClient {
  public:
-  static ScriptedIdleTaskController* Create(ExecutionContext* context) {
-    ScriptedIdleTaskController* controller =
-        MakeGarbageCollected<ScriptedIdleTaskController>(context);
-    controller->UpdateStateIfNeeded();
-    return controller;
-  }
+  static const char kSupplementName[];
+
+  static ScriptedIdleTaskController& From(ExecutionContext& context);
 
   explicit ScriptedIdleTaskController(ExecutionContext*);
   ~ScriptedIdleTaskController() override;
@@ -111,8 +110,8 @@ class CORE_EXPORT ScriptedIdleTaskController
   ThreadScheduler* scheduler_;  // Not owned.
   HeapHashMap<CallbackId, Member<IdleTask>> idle_tasks_;
   Vector<CallbackId> pending_timeouts_;
-  CallbackId next_callback_id_;
-  bool paused_;
+  CallbackId next_callback_id_ = 0;
+  bool paused_ = false;
 };
 
 }  // namespace blink

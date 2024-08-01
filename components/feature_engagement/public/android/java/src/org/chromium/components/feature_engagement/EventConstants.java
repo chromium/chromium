@@ -203,6 +203,12 @@ public final class EventConstants {
 
     public static final String TAB_GROUP_SYNC_ON_STRIP_USED = "tab_group_sync_on_strip_used";
 
+    /** Description text for tab group sync functionality in the tab group creation dialog. */
+    public static final String TAB_GROUP_CREATION_DIALOG_SHOWN = "tab_group_creation_dialog_shown";
+
+    /** IPH dialog of RTL gesture navigation dialog is shown. */
+    public static final String RTL_GESTURE_NAVIGATION_DIALOG_SHOW = "rtl_gesture_iph_show";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }

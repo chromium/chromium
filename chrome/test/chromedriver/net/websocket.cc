@@ -146,7 +146,7 @@ bool WebSocket::Send(const std::string& message) {
   header_str.resize(header_size);
   CHECK_EQ(header_size,
            base::checked_cast<size_t>(net::WriteWebSocketFrameHeader(
-               header, &masking_key, &header_str[0], header_str.length())));
+               header, &masking_key, base::as_writable_byte_span(header_str))));
 
   std::string masked_message = message;
   net::MaskWebSocketFramePayload(

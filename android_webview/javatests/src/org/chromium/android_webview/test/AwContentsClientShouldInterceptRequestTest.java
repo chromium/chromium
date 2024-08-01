@@ -107,6 +107,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
         mShouldInterceptRequestHelper = mContentsClient.getShouldInterceptRequestHelper();
+        mAwContents.getSettings().setAllowFileAccess(true);
 
         mWebServer = TestWebServer.start();
     }

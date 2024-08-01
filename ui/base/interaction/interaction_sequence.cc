@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/interaction/interaction_sequence.h"
 
 #include <list>
@@ -875,6 +880,10 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     } else {
       current_step_->subscription = ElementTracker::Subscription();
     }
+
+    // Once a transition is successful, any remaining subsequences must be
+    // cleared to prevent them executing in the background.
+    current_step_->subsequence_data.clear();
 
     // If we've got a guard on the new current step's element having gone away
     // while we were waiting, we can release it.

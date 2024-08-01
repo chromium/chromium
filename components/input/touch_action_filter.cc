@@ -151,7 +151,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           return FilterGestureEventResult::kDelayed;
         }
         gesture_event->data.scroll_update.delta_y = 0;
-        gesture_event->data.scroll_update.velocity_y = 0;
       } else if (IsXAxisActionDisallowed(touch_action)) {
         if (!active_touch_action_.has_value() &&
             gesture_event->data.scroll_update.delta_x != 0) {
@@ -161,7 +160,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           return FilterGestureEventResult::kDelayed;
         }
         gesture_event->data.scroll_update.delta_x = 0;
-        gesture_event->data.scroll_update.velocity_x = 0;
       }
       break;
     }

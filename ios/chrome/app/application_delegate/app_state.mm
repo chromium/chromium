@@ -26,6 +26,7 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
@@ -279,7 +280,7 @@ void FlushCookieStoreOnIOThread(
 
   // TODO(crbug.com/325596562): Update this for multiple browser states and for
   // per-state cookie storage.
-  if (self.mainBrowserState && !_savingCookies) {
+  if (self.mainProfile.browserState && !_savingCookies) {
     // Record that saving the cookies has started to prevent posting multiple
     // tasks if the user quickly background, foreground and background the app
     // again.
@@ -302,10 +303,10 @@ void FlushCookieStoreOnIOThread(
     // Saving the cookies needs to happen on the IO thread.
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &FlushCookieStoreOnIOThread,
-            base::WrapRefCounted(self.mainBrowserState->GetRequestContext()),
-            std::move(closure)));
+        base::BindOnce(&FlushCookieStoreOnIOThread,
+                       base::WrapRefCounted(
+                           self.mainProfile.browserState->GetRequestContext()),
+                       std::move(closure)));
   }
 
   // Mark the startup as clean if it hasn't already been.

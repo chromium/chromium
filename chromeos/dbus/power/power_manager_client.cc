@@ -342,12 +342,18 @@ class PowerManagerClientImpl : public PowerManagerClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void SetAmbientLightSensorEnabled(bool enabled) override {
+  void SetAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override {
     dbus::MethodCall method_call(
         power_manager::kPowerManagerInterface,
         power_manager::kSetAmbientLightSensorEnabledMethod);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(enabled);
+    if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+      POWER_LOG(ERROR) << "Error serializing "
+                       << power_manager::kSetAmbientLightSensorEnabledMethod
+                       << " request";
+      return;
+    }
     power_manager_proxy_->CallMethod(&method_call,
                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                      base::DoNothing());
@@ -574,12 +580,19 @@ class PowerManagerClientImpl : public PowerManagerClient {
                                      base::DoNothing());
   }
 
-  void SetKeyboardAmbientLightSensorEnabled(bool enabled) override {
+  void SetKeyboardAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override {
     dbus::MethodCall method_call(
         power_manager::kPowerManagerInterface,
         power_manager::kSetKeyboardAmbientLightSensorEnabledMethod);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(enabled);
+    if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+      POWER_LOG(ERROR)
+          << "Error serializing "
+          << power_manager::kSetKeyboardAmbientLightSensorEnabledMethod
+          << " request";
+      return;
+    }
     power_manager_proxy_->CallMethod(&method_call,
                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                      base::DoNothing());

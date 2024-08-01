@@ -41,6 +41,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -48,9 +49,9 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
-import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -227,6 +228,38 @@ public class PasswordAccessorySheetViewTest {
 
     @Test
     @MediumTest
+    public void testAddingPlusAddressSectionToTheModelRendersClickableActions()
+            throws ExecutionException {
+        final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
+        assertThat(mView.get().getChildCount(), is(0));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new PlusAddressSection(
+                                            /* origin= */ "google.com",
+                                            new UserInfoField.Builder()
+                                                    .setDisplayText("example@gmail.com")
+                                                    .setTextToFill("example@gmail.com")
+                                                    .setIsObfuscated(false)
+                                                    .setCallback(unused -> clicked.set(true))
+                                                    .build()),
+                                    AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION));
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mView.get().getChildCount(), greaterThan(0)));
+
+        assertThat(getPlusAddressChipAt(0).getPrimaryTextView().getText(), is("example@gmail.com"));
+
+        // Plus address chip is clickable:
+        ThreadUtils.runOnUiThreadBlocking(getPlusAddressChipAt(0)::performClick);
+        assertThat(clicked.get(), is(true));
+    }
+
+    @Test
+    @MediumTest
     public void testAddingUserInfoWithObfuscatedTextAndNullCallbackRendersDialog()
             throws ExecutionException {
         final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
@@ -373,6 +406,13 @@ public class PasswordAccessorySheetViewTest {
 
     private String getString(@StringRes int strId) {
         return mView.get().getResources().getString(strId);
+    }
+
+    private ChipView getPlusAddressChipAt(int index) {
+        assertThat(mView.get().getChildCount(), is(greaterThan(index)));
+        assertThat(mView.get().getChildAt(index), instanceOf(ViewGroup.class));
+        LinearLayout plusAddressSection = (LinearLayout) mView.get().getChildAt(index);
+        return plusAddressSection.findViewById(R.id.plus_address);
     }
 
     private ChipView getPasskeyChipAt(int index) {

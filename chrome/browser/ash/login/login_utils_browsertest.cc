@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/rlz/rlz_tracker.h"
+#include "content/public/browser/browser_thread.h"
 #endif
 
 namespace ash {

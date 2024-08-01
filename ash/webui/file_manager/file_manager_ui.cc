@@ -5,6 +5,7 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/file_manager/file_manager_page_handler.h"

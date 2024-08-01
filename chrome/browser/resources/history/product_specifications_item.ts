@@ -72,6 +72,13 @@ export class ProductSpecificationsItemElement extends PolymerElement {
     this.shoppingApi_.showProductSpecificationsSetForUuid(this.item.uuid);
   }
 
+  private onLinkKeydown_(event: KeyboardEvent) {
+    if (event.key !== 'Enter') {
+      return;
+    }
+    this.shoppingApi_.showProductSpecificationsSetForUuid(this.item.uuid);
+  }
+
   // This is necessary for shift-checkbox detection: preventing the mousedown
   // allows the mousedown to happen at the checkbox before the on-change.
   private onRowPointerDown_(e: PointerEvent) {

@@ -19,7 +19,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -41,13 +40,12 @@ namespace content {
 
 class PrefetchBrowserTest
     : public PrefetchBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   PrefetchBrowserTest()
       : cross_origin_server_(std::make_unique<net::EmbeddedTestServer>()),
-        signed_exchange_enabled_(std::get<0>(GetParam())),
-        split_cache_enabled_(std::get<1>(GetParam())),
-        split_cache_by_credentials_enabled_(std::get<2>(GetParam())) {}
+        split_cache_enabled_(std::get<0>(GetParam())),
+        split_cache_by_credentials_enabled_(std::get<1>(GetParam())) {}
 
   PrefetchBrowserTest(const PrefetchBrowserTest&) = delete;
   PrefetchBrowserTest& operator=(const PrefetchBrowserTest&) = delete;
@@ -63,8 +61,6 @@ class PrefetchBrowserTest
     std::vector<base::test::FeatureRef> enable_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    (signed_exchange_enabled_ ? enable_features : disabled_features)
-        .push_back(features::kSignedHTTPExchange);
     (split_cache_enabled_ ? enable_features : disabled_features)
         .push_back(net::features::kSplitCacheByNetworkIsolationKey);
     (split_cache_by_credentials_enabled_ ? enable_features : disabled_features)
@@ -76,7 +72,6 @@ class PrefetchBrowserTest
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
-  const bool signed_exchange_enabled_;
   const bool split_cache_enabled_;
   const bool split_cache_by_credentials_enabled_;
 
@@ -979,10 +974,6 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, SignedExchangeWithPreload) {
   prefetch_waiter.Run();
   EXPECT_EQ(1, target_request_counter->GetRequestCount());
 
-  // Test after this point requires SignedHTTPExchange support
-  if (!signed_exchange_enabled_)
-    return;
-
   // If the header in the .sxg file is correctly extracted, we should
   // be able to also see the preload.
   preload_waiter.Run();
@@ -1057,9 +1048,6 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   prefetch_waiter.Run();
   EXPECT_EQ(1, target_request_counter->GetRequestCount());
 
-  // Test after this point requires SignedHTTPExchange support
-  if (!signed_exchange_enabled_)
-    return;
   // If the header in the .sxg file is correctly extracted, we should
   // be able to also see the preload.
   preload_waiter.Run();
@@ -1543,7 +1531,6 @@ IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
 INSTANTIATE_TEST_SUITE_P(PrefetchBrowserTest,
                          PrefetchBrowserTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(PrefetchBrowserTestPrivacyChanges,

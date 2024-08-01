@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/language_detection/core/language_detection_model.h"
+#include "components/language_detection/core/language_detection_provider.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 namespace ml {
@@ -21,7 +23,8 @@ LanguageDetector::~LanguageDetector() = default;
 
 scoped_refptr<LanguageDetector> LanguageDetector::Create(
     base::File model_file) {
-  auto model = std::make_unique<translate::LanguageDetectionModel>();
+  auto model = std::make_unique<translate::LanguageDetectionModel>(
+      &language_detection::GetLanguageDetectionModel());
   model->UpdateWithFile(std::move(model_file));
   if (!model->IsAvailable()) {
     return nullptr;
@@ -34,7 +37,7 @@ on_device_model::mojom::LanguageDetectionResultPtr
 LanguageDetector::DetectLanguage(std::string_view text) {
   const auto prediction = model_->DetectLanguage(base::UTF8ToUTF16(text));
   return on_device_model::mojom::LanguageDetectionResult::New(
-      prediction.language, prediction.reliability);
+      prediction.language, prediction.score);
 }
 
 }  // namespace ml

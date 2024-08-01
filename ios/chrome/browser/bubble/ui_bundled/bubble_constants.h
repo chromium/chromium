@@ -21,6 +21,8 @@ extern NSString* const kBubbleViewSnoozeButtonIdentifier;
 extern NSString* const kBubbleViewArrowViewIdentifier;
 // How long, in seconds, the bubble is visible on the screen.
 extern NSTimeInterval const kBubbleVisibilityDuration;
+// How long, in seconds, the default "long duration" bubbles are visible.
+extern NSTimeInterval const kDefaultLongDurationBubbleVisibility;
 
 // Metric name for bubble dismissal tracking.
 extern const char kUMAIPHDismissalReason[];

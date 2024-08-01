@@ -27,6 +27,7 @@ export interface AppearanceBrowserProxy {
   // </if>
 
   validateStartupPage(url: string): Promise<boolean>;
+  pinnedToolbarActionsAreDefault(): Promise<boolean>;
 }
 
 export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
@@ -75,6 +76,10 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
 
   validateStartupPage(url: string) {
     return sendWithPromise('validateStartupPage', url);
+  }
+
+  pinnedToolbarActionsAreDefault() {
+    return sendWithPromise('pinnedToolbarActionsAreDefault');
   }
 
   static getInstance(): AppearanceBrowserProxy {

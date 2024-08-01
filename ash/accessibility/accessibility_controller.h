@@ -94,6 +94,10 @@ enum class A11yNotificationType {
   kDicationOnlyPumpkinDownloaded,
   // Shown when the SODA DLC (but no other DLCs) have downloaded.
   kDictationOnlySodaDownloaded,
+  // Shown when the facegaze-assets DLC has successfully downloaded.
+  kFaceGazeAssetsDownloaded,
+  // Shown when the facegaze-assets DLC failed to download.
+  kFaceGazeAssetsFailed,
   // Shown when braille display is connected while spoken feedback is not
   // enabled yet. Note: in this case braille display connected would enable
   // spoken feedback.
@@ -568,6 +572,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
       const std::optional<std::u16string>& text,
       const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
+  // Shows a notification notifying the user about the FaceGaze DLC download.
+  void ShowNotificationForFaceGaze(FaceGazeNotificationType type);
+
   // Cancels all of spoken feedback's current and queued speech immediately.
   void SilenceSpokenFeedback();
 
@@ -662,6 +669,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   SelectToSpeakEventHandler* GetSelectToSpeakEventHandlerForTesting() const {
     return select_to_speak_event_handler_.get();
   }
+
+  void SetVirtualKeyboardVisibleCallbackForTesting(
+      base::RepeatingCallback<void()> callback);
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -764,6 +774,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;
   bool switch_access_disable_dialog_showing_ = false;
   bool skip_switch_access_notification_ = false;
+
+  base::RepeatingCallback<void()> set_virtual_keyboard_visible_callback_;
 
   // Used to control the highlights of caret, cursor and focus.
   std::unique_ptr<AccessibilityHighlightController>

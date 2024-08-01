@@ -2609,6 +2609,18 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
   UpdatePlayState();
 }
 
+void WebMediaPlayerImpl::OnFrameShown() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
+  // CL.
+}
+
+void WebMediaPlayerImpl::OnFrameHidden() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
+  // CL.
+}
+
 void WebMediaPlayerImpl::SetVolumeMultiplier(double multiplier) {
   volume_multiplier_ = multiplier;
   SetVolume(volume_);

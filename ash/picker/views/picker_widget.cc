@@ -21,9 +21,12 @@
 namespace ash {
 namespace {
 
+// This is the maximum size of PickerView, including emoji bar.
+constexpr int kPickerViewMaxHeight = 356;
+
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
 PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
-  return anchor_bounds.bottom() + kPickerViewMaxSize.height() <=
+  return anchor_bounds.bottom() + kPickerViewMaxHeight <=
                  display::Screen::GetScreen()
                      ->GetDisplayMatching(anchor_bounds)
                      .work_area()
@@ -37,9 +40,8 @@ views::Widget::InitParams CreateInitParams(
     const gfx::Rect& anchor_bounds,
     const base::TimeTicks trigger_event_timestamp) {
   const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
-  auto picker_view = std::make_unique<PickerView>(delegate, layout_type,
-                                                  trigger_event_timestamp);
-  picker_view->SetSize(kPickerViewMaxSize);
+  auto picker_view = std::make_unique<PickerView>(
+      delegate, anchor_bounds, layout_type, trigger_event_timestamp);
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
@@ -48,7 +50,6 @@ views::Widget::InitParams CreateInitParams(
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.bounds = picker_view->GetTargetBounds(anchor_bounds, layout_type);
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
   params.delegate = picker_view.release();

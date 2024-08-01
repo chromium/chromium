@@ -297,7 +297,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Verify that the batch upload section is not visible.
   ExpectNoBatchUploadDialog();
 
-  // Close the bookamrks manager.
+  // Close the bookmarks manager.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier)]

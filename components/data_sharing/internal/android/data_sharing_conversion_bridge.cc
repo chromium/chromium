@@ -15,6 +15,7 @@
 #include "components/data_sharing/internal/jni_headers/DataSharingConversionBridge_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupData_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupMember_jni.h"
+#include "components/data_sharing/public/jni_headers/GroupToken_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -35,6 +36,15 @@ ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaGroupMember(
 }
 
 // static
+ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaGroupToken(
+    JNIEnv* env,
+    const GroupToken& token) {
+  return Java_GroupToken_createGroupToken(
+      env, ConvertUTF8ToJavaString(env, token.group_id.value()),
+      ConvertUTF8ToJavaString(env, token.access_token));
+}
+
+// static
 ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaGroupData(
     JNIEnv* env,
     const GroupData& group_data) {
@@ -44,11 +54,13 @@ ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaGroupData(
     j_members.push_back(CreateJavaGroupMember(env, member));
   }
   return Java_GroupData_createGroupData(
-      env, ConvertUTF8ToJavaString(env, group_data.group_id.value()),
+      env,
+      ConvertUTF8ToJavaString(env, group_data.group_token.group_id.value()),
       ConvertUTF8ToJavaString(env, group_data.display_name),
       ToTypedJavaArrayOfObjects(
           env, base::make_span(j_members),
-          org_chromium_components_data_1sharing_GroupMember_clazz(env)));
+          org_chromium_components_data_1sharing_GroupMember_clazz(env)),
+      ConvertUTF8ToJavaString(env, group_data.group_token.access_token));
 }
 
 // static
@@ -99,6 +111,22 @@ DataSharingConversionBridge::CreatePeopleGroupActionOutcome(JNIEnv* env,
                                                             int value) {
   return Java_DataSharingConversionBridge_createPeopleGroupActionOutcome(
       AttachCurrentThread(), value);
+}
+
+// static
+ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateParseURLResult(
+    JNIEnv* env,
+    const DataSharingService::ParseURLResult& data) {
+  ScopedJavaLocalRef<jobject> j_group_data;
+  DataSharingService::ParseURLStatus status =
+      DataSharingService::ParseURLStatus::kUnknown;
+  if (data.has_value()) {
+    j_group_data = CreateJavaGroupToken(env, data.value());
+  } else {
+    status = data.error();
+  }
+  return Java_DataSharingConversionBridge_createParseURLResult(
+      env, j_group_data, static_cast<int>(status));
 }
 
 }  // namespace data_sharing

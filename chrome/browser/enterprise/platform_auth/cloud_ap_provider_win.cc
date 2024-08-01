@@ -391,6 +391,10 @@ CloudApProviderWin::CloudApProviderWin() = default;
 
 CloudApProviderWin::~CloudApProviderWin() = default;
 
+bool CloudApProviderWin::SupportsOriginFiltering() {
+  return true;
+}
+
 void CloudApProviderWin::FetchOrigins(FetchOriginsCallback on_fetch_complete) {
   // The strategy is as follows:
   // 1. See if the ProofOfPossessionCookieInfoManager can be instantiated. If

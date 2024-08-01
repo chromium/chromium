@@ -1918,9 +1918,9 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
     return hypertext_offset;
   }
 
-  // Case 3. Is the selection endpoint in a completely different part of the
-  // tree?
-  //
+  // Case 3. Selection endpoint is in a completely different part of the tree:
+  // - Return 0 if it's in an earlier part of the tree.
+  // - Return GetHypertext.size() if it's in a later part of the tree.
   // We can safely assume that the endpoint is in another part of the tree or
   // at common parent, and that this object is a descendant of common parent.
   std::optional<size_t> endpoint_index_in_common_parent;
@@ -1932,15 +1932,27 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
     }
   }
 
-  if (endpoint_index_in_common_parent < index_in_common_parent)
+  if (endpoint_index_in_common_parent < index_in_common_parent) {
+    // In earlier point in tree than endpoint_object.
     return 0;
-  if (endpoint_index_in_common_parent > index_in_common_parent)
+  }
+  if (endpoint_index_in_common_parent > index_in_common_parent) {
+    // In later point in the tree than endpoint_object.
     return static_cast<int>(GetHypertext().size());
+  }
 
   // TODO(crbug.com/40897578): Make sure this doesn't fire then turn the last
   // conditional into a CHECK_GT(endpoint_index_in_common_parent,
   // index_in_common_parent); and remove this code path.
-  DUMP_WILL_BE_NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED()
+      << "Was not in descendant, so the endpoint_index_in_common_parent should "
+         "be < or > than the index_in_common_parent:\n"
+      << "\n* This: " << this << "\n* Endpoint object: " << endpoint_object
+      << "\n* Endpoint offset: " << endpoint_offset
+      << "\n* Common parent: " << common_parent
+      << "\n* Index in common parent: " << index_in_common_parent.value_or(-99)
+      << "\n* Endpoint in common parent: "
+      << endpoint_index_in_common_parent.value_or(-99);
   return -1;
 }
 

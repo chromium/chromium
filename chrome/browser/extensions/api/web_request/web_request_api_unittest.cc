@@ -262,8 +262,9 @@ void TestInitFromValue(content::BrowserContext* browser_context,
   bool actual_return_code =
       GenerateInfoSpec(browser_context, values, &actual_info_spec);
   EXPECT_EQ(expected_return_code, actual_return_code);
-  if (expected_return_code)
+  if (expected_return_code) {
     EXPECT_EQ(expected_extra_info_spec, actual_info_spec);
+  }
 }
 
 }  // namespace
@@ -334,7 +335,6 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnBeforeRequestDelta) {
 
 TEST(ExtensionWebRequestHelpersTest, TestCalculateOnBeforeSendHeadersDelta) {
   const bool cancel = true;
-  std::string value;
   net::HttpRequestHeaders old_headers;
   old_headers.SetHeader("key1", "value1");
   old_headers.SetHeader("key2", "value2");
@@ -348,8 +348,8 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnBeforeSendHeadersDelta) {
       nullptr /* browser_context */, "extid", base::Time::Now(), cancel,
       &old_headers, &new_headers_added, 0 /* extra_info_spec */);
   EXPECT_TRUE(delta_added.cancel);
-  ASSERT_TRUE(delta_added.modified_request_headers.GetHeader("key3", &value));
-  EXPECT_EQ("value3", value);
+  EXPECT_THAT(delta_added.modified_request_headers.GetHeader("key3"),
+              testing::Optional(std::string("value3")));
 
   // Test deleting a header.
   net::HttpRequestHeaders new_headers_deleted;
@@ -368,9 +368,8 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnBeforeSendHeadersDelta) {
       nullptr /* browser_context */, "extid", base::Time::Now(), cancel,
       &old_headers, &new_headers_modified, 0 /* extra_info_spec */);
   EXPECT_TRUE(delta_modified.deleted_request_headers.empty());
-  ASSERT_TRUE(
-      delta_modified.modified_request_headers.GetHeader("key2", &value));
-  EXPECT_EQ("value3", value);
+  EXPECT_THAT(delta_modified.modified_request_headers.GetHeader("key2"),
+              testing::Optional(std::string("value3")));
 
   // Test modifying a header if extension author just appended a new (key,
   // value) pair with a key that existed before. This is incorrect
@@ -383,9 +382,8 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnBeforeSendHeadersDelta) {
       nullptr /* browser_context */, "extid", base::Time::Now(), cancel,
       &old_headers, &new_headers_modified, 0 /* extra_info_spec */);
   EXPECT_TRUE(delta_modified2.deleted_request_headers.empty());
-  ASSERT_TRUE(
-      delta_modified2.modified_request_headers.GetHeader("key2", &value));
-  EXPECT_EQ("value3", value);
+  EXPECT_THAT(delta_modified2.modified_request_headers.GetHeader("key2"),
+              testing::Optional(std::string("value3")));
 }
 
 TEST(ExtensionWebRequestHelpersTest,
@@ -407,9 +405,8 @@ TEST(ExtensionWebRequestHelpersTest,
     delta = CalculateOnBeforeSendHeadersDelta(
         nullptr /* browser_context */, "extid", base::Time::Now(), false,
         &old_headers, &new_headers, ExtraInfoSpec::EXTRA_HEADERS);
-    std::string value;
-    EXPECT_TRUE(delta.modified_request_headers.GetHeader(name, &value));
-    EXPECT_EQ("value", value);
+    EXPECT_THAT(delta.modified_request_headers.GetHeader(name),
+                testing::Optional(std::string("value")));
 
     // Test removing a special header.
     new_headers = old_headers;
@@ -773,7 +770,6 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   base_headers.SetHeader("key1", "value 1");
   base_headers.SetHeader("key2", "value 2");
   helpers::IgnoredActions ignored_actions;
-  std::string header_value;
   EventResponseDeltas deltas;
 
   // Check that we can handle not changing the headers.
@@ -792,10 +788,10 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   MergeOnBeforeSendHeadersResponses(
       info, deltas, &headers0, &ignored_actions, &ignore1, &ignore2,
       &request_headers_modified0, &matched_dnr_actions);
-  ASSERT_TRUE(headers0.GetHeader("key1", &header_value));
-  EXPECT_EQ("value 1", header_value);
-  ASSERT_TRUE(headers0.GetHeader("key2", &header_value));
-  EXPECT_EQ("value 2", header_value);
+  EXPECT_THAT(headers0.GetHeader("key1"),
+              testing::Optional(std::string("value 1")));
+  EXPECT_THAT(headers0.GetHeader("key2"),
+              testing::Optional(std::string("value 2")));
   EXPECT_EQ(0u, ignored_actions.size());
   EXPECT_FALSE(request_headers_modified0);
 
@@ -818,10 +814,10 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
       info, deltas, &headers1, &ignored_actions, &ignore1, &ignore2,
       &request_headers_modified1, &matched_dnr_actions);
   EXPECT_FALSE(headers1.HasHeader("key1"));
-  ASSERT_TRUE(headers1.GetHeader("key2", &header_value));
-  EXPECT_EQ("value 3", header_value);
-  ASSERT_TRUE(headers1.GetHeader("key3", &header_value));
-  EXPECT_EQ("value 3", header_value);
+  EXPECT_THAT(headers1.GetHeader("key2"),
+              testing::Optional(std::string("value 3")));
+  EXPECT_THAT(headers1.GetHeader("key3"),
+              testing::Optional(std::string("value 3")));
   EXPECT_EQ(0u, ignored_actions.size());
   EXPECT_TRUE(request_headers_modified1);
 
@@ -845,10 +841,10 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
       info, deltas, &headers2, &ignored_actions, &ignore1, &ignore2,
       &request_headers_modified2, &matched_dnr_actions);
   EXPECT_FALSE(headers2.HasHeader("key1"));
-  ASSERT_TRUE(headers2.GetHeader("key2", &header_value));
-  EXPECT_EQ("value 3", header_value);
-  ASSERT_TRUE(headers2.GetHeader("key3", &header_value));
-  EXPECT_EQ("value 3", header_value);
+  EXPECT_THAT(headers2.GetHeader("key2"),
+              testing::Optional(std::string("value 3")));
+  EXPECT_THAT(headers2.GetHeader("key3"),
+              testing::Optional(std::string("value 3")));
   EXPECT_FALSE(headers2.HasHeader("key4"));
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
@@ -876,12 +872,12 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
       info, deltas, &headers3, &ignored_actions, &ignore1, &ignore2,
       &request_headers_modified3, &matched_dnr_actions);
   EXPECT_FALSE(headers3.HasHeader("key1"));
-  ASSERT_TRUE(headers3.GetHeader("key2", &header_value));
-  EXPECT_EQ("value 3", header_value);
-  ASSERT_TRUE(headers3.GetHeader("key3", &header_value));
-  EXPECT_EQ("value 3", header_value);
-  ASSERT_TRUE(headers3.GetHeader("key5", &header_value));
-  EXPECT_EQ("value 5", header_value);
+  EXPECT_THAT(headers3.GetHeader("key2"),
+              testing::Optional(std::string("value 3")));
+  EXPECT_THAT(headers3.GetHeader("key3"),
+              testing::Optional(std::string("value 3")));
+  EXPECT_THAT(headers3.GetHeader("key5"),
+              testing::Optional(std::string("value 5")));
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
@@ -912,8 +908,8 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   // Deleted by |d1|.
   EXPECT_FALSE(headers4.HasHeader("key1"));
   // Added by |d1|.
-  ASSERT_TRUE(headers4.GetHeader("key2", &header_value));
-  EXPECT_EQ("value 3", header_value);
+  EXPECT_THAT(headers4.GetHeader("key2"),
+              testing::Optional(std::string("value 3")));
   // Removed by Declarative Net Request API.
   EXPECT_FALSE(headers4.HasHeader("key5"));
 
@@ -971,14 +967,14 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   // Deleted by |d1|.
   EXPECT_FALSE(headers5.HasHeader("key1"));
   // Added by |d1| (same value as added by Declarative Net Request API).
-  ASSERT_TRUE(headers5.GetHeader("key2", &header_value));
-  EXPECT_EQ("value 3", header_value);
+  EXPECT_THAT(headers5.GetHeader("key2"),
+              testing::Optional(std::string("value 3")));
   // Set by Declarative Net Request API.
-  ASSERT_TRUE(headers5.GetHeader("key5", &header_value));
-  EXPECT_EQ("dnr_value", header_value);
+  EXPECT_THAT(headers5.GetHeader("key5"),
+              testing::Optional(std::string("dnr_value")));
   // Added by Declarative Net Request API.
-  ASSERT_TRUE(headers5.GetHeader("cookie", &header_value));
-  EXPECT_EQ("cookey=value", header_value);
+  EXPECT_THAT(headers5.GetHeader("cookie"),
+              testing::Optional(std::string("cookey=value")));
 
   EXPECT_EQ(3u, ignored_actions.size());
   EXPECT_TRUE(
@@ -1021,10 +1017,8 @@ void ExecuteDNRActionsAndCheckHeaders(
     SCOPED_TRACE(base::StringPrintf("Testing header %s",
                                     expected_header.header_name.c_str()));
     if (expected_header.expected_value.has_value()) {
-      std::string header_value;
-      ASSERT_TRUE(
-          base_headers.GetHeader(expected_header.header_name, &header_value));
-      EXPECT_EQ(expected_header.expected_value, header_value);
+      EXPECT_THAT(base_headers.GetHeader(expected_header.header_name),
+                  testing::Optional(expected_header.expected_value.value()));
     } else {
       EXPECT_FALSE(base_headers.HasHeader(expected_header.header_name));
     }
@@ -1271,9 +1265,8 @@ TEST(ExtensionWebRequestHelpersTest,
       info, deltas, &headers, &ignored_actions, &removed_headers, &set_headers,
       &request_headers_modified, &matched_dnr_actions);
 
-  std::string header_value;
-  ASSERT_TRUE(headers.GetHeader("key1", &header_value));
-  EXPECT_EQ("ext1", header_value);
+  EXPECT_THAT(headers.GetHeader("key1"),
+              testing::Optional(std::string("ext1")));
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(request_headers_modified);
   EXPECT_THAT(removed_headers, ::testing::IsEmpty());
@@ -1338,8 +1331,9 @@ TEST(ExtensionWebRequestHelpersTest,
       info, deltas, &headers1, &ignored_actions, &ignore1, &ignore2,
       &request_headers_modified1, &matched_dnr_actions);
   EXPECT_TRUE(headers1.HasHeader("Cookie"));
-  ASSERT_TRUE(headers1.GetHeader("Cookie", &header_value));
-  EXPECT_EQ("name=new value; name2=new value; name4=\"value 4\"", header_value);
+  EXPECT_THAT(headers1.GetHeader("Cookie"),
+              testing::Optional(std::string(
+                  "name=new value; name2=new value; name4=\"value 4\"")));
   EXPECT_EQ(0u, ignored_actions.size());
   EXPECT_FALSE(request_headers_modified1);
 }

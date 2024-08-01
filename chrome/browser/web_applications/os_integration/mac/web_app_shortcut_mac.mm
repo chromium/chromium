@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/common/content_switches.h"
 
 namespace web_app {
@@ -59,6 +60,19 @@ std::string GetBundleIdentifierForShim(const std::string& app_id,
            normalized_profile_path + "-" + app_id;
   }
   return base::apple::BaseBundleID() + std::string(".app.") + app_id;
+}
+
+bool UseAdHocSigningForWebAppShims() {
+  if (@available(macOS 11.7, *)) {
+    // macOS 11.7 and above can code sign at runtime without requiring that the
+    // developer tools be installed.
+    return base::FeatureList::IsEnabled(
+        features::kUseAdHocSigningForWebAppShims);
+  }
+
+  // Code signing on older macOS versions invokes `codesign_allocate` from the
+  // developer tools, so we can't do it at runtime.
+  return false;
 }
 
 namespace internals {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/audio_input_device.h"
 
 #include <stdint.h>
@@ -494,7 +499,7 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   TRACE_EVENT_END2(
       "audio", "AudioInputDevice::AudioThreadCallback::Process",
       "capture_time (ms)", (capture_time - base::TimeTicks()).InMillisecondsF(),
-      "now_time (ms)", (now_time - base::TimeTicks()).InMillisecondsF());
+      "capture_delay (ms)", (now_time - capture_time).InMillisecondsF());
 }
 
 void AudioInputDevice::AudioThreadCallback::OnSocketError() {

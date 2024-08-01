@@ -125,7 +125,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
 }
 
 PublicURLManager::PublicURLManager(
-    base::PassKey<StorageAccessHandle>,
+    base::PassKey<GlobalStorageAccessHandle>,
     ExecutionContext* execution_context,
     mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>
         frame_url_store_remote)

@@ -102,23 +102,24 @@ bool MetaTable::SetMmapStatus(Database* db, int64_t status) {
 }
 
 // static
-bool MetaTable::RazeIfIncompatible(Database* db,
-                                   int lowest_supported_version,
-                                   int current_version) {
+RazeIfIncompatibleResult MetaTable::RazeIfIncompatible(
+    Database* db,
+    int lowest_supported_version,
+    int current_version) {
   DCHECK(db);
 
   if (!DoesTableExist(db)) {
-    return true;
+    return RazeIfIncompatibleResult::kCompatible;
   }
 
   sql::Statement select;
   if (!PrepareGetStatement(kVersionKey, *db, select)) {
-    return false;
+    return RazeIfIncompatibleResult::kFailed;
   }
   int64_t on_disk_schema_version = select.ColumnInt64(0);
 
   if (!PrepareGetStatement(kCompatibleVersionKey, *db, select)) {
-    return false;
+    return RazeIfIncompatibleResult::kFailed;
   }
   int64_t on_disk_compatible_version = select.ColumnInt(0);
 
@@ -127,9 +128,10 @@ bool MetaTable::RazeIfIncompatible(Database* db,
   if ((lowest_supported_version != kNoLowestSupportedVersion &&
        lowest_supported_version > on_disk_schema_version) ||
       (current_version < on_disk_compatible_version)) {
-    return db->Raze();
+    return db->Raze() ? RazeIfIncompatibleResult::kRazedSuccessfully
+                      : RazeIfIncompatibleResult::kFailed;
   }
-  return true;
+  return RazeIfIncompatibleResult::kCompatible;
 }
 
 bool MetaTable::Init(Database* db, int version, int compatible_version) {

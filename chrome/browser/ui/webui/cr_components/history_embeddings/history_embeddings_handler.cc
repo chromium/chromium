@@ -6,10 +6,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -77,7 +77,7 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   mojom_search_result->query = native_search_result.query;
-  mojom_search_result->answer = native_search_result.answer;
+  mojom_search_result->answer = native_search_result.AnswerText();
   for (history_embeddings::ScoredUrlRow& scored_url_row :
        native_search_result.scored_url_rows) {
     auto item = history_embeddings::mojom::SearchResultItem::New();

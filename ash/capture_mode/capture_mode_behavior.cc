@@ -19,6 +19,7 @@
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"

@@ -22,9 +22,18 @@ import java.util.List;
 public interface SelectionClient {
     /** The result of the text analysis. */
     public static class Result {
+        /** The surrounding text including the selection. */
+        public String text;
+
+        /** The start index of the selected text within the surrounding text. */
+        public int start;
+
+        /** The end index of the selected text within the surrounding text. */
+        public int end;
+
         /**
-         * The number of characters that the left boundary of the original
-         * selection should be moved. Negative number means moving left.
+         * The number of characters that the left boundary of the original selection should be
+         * moved. Negative number means moving left.
          */
         public int startAdjust;
 
@@ -78,8 +87,23 @@ public interface SelectionClient {
         void onClassified(Result result);
     }
 
+    public interface SurroundingTextCallback {
+        /**
+         * When the surrounding text is received from the native side. This will be called
+         * regardless if the selected text is valid or not.
+         */
+        void onSurroundingTextReceived(String text, int start, int end);
+    }
+
+    /** Adds an observer to the smart selection surrounding text received callback */
+    default void addSurroundingTextReceivedListeners(SurroundingTextCallback observer) {}
+
+    /** Removes an observer from the smart selection surrounding text received callback */
+    default void removeSurroundingTextReceivedListeners(SurroundingTextCallback observer) {}
+
     /**
      * Notification that the web content selection has changed, regardless of the causal action.
+     *
      * @param selection The newly established selection.
      */
     void onSelectionChanged(String selection);
@@ -144,6 +168,6 @@ public interface SelectionClient {
     public static SelectionClient createSmartSelectionClient(WebContents webContents) {
         SelectionClient.ResultCallback callback =
                 SelectionPopupController.fromWebContents(webContents).getResultCallback();
-        return SmartSelectionClient.create(callback, webContents);
+        return SmartSelectionClient.fromWebContents(callback, webContents);
     }
 }

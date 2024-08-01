@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gl/gl_surface_egl_x11_gles2.h"
 
 #include "ui/base/x/x11_util.h"
@@ -189,6 +194,7 @@ void NativeViewGLSurfaceEGLX11GLES2::OnEvent(const x11::Event& x11_event) {
 }
 
 NativeViewGLSurfaceEGLX11GLES2::~NativeViewGLSurfaceEGLX11GLES2() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 

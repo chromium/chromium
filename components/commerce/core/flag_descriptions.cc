@@ -52,6 +52,10 @@ const char kParcelTrackingTestDataDescription[] =
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 
+const char kDiscountOnShoppyPageName[] = "Discounts on Shoppy page";
+const char kDiscountOnShoppyPageDescription[] =
+    "Enable to show discounts on shoppy page if it's available";
+
 #if BUILDFLAG(IS_IOS)
 extern const char kPriceInsightsIosName[] = "Price Insights";
 extern const char kPriceInsightsIosDescription[] =

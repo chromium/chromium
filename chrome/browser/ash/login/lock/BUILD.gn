@@ -17,6 +17,7 @@ static_library("lock") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/lock_screen_apps",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
@@ -182,6 +183,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/lock_screen_apps",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/assistant",

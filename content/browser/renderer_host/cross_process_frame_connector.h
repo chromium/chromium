@@ -177,6 +177,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // for processing.
   void ForwardAckedTouchpadZoomEvent(
       const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
 
   // A gesture scroll sequence that is not consumed by a child must be bubbled

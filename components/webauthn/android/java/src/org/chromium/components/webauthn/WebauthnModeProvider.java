@@ -37,7 +37,7 @@ public class WebauthnModeProvider {
         int mode = getWebauthnMode(webContents);
         if (mode == WebauthnMode.APP) {
             return AppCredManRequestDecorator.getInstance();
-        } else if (mode == WebauthnMode.BROWSER) {
+        } else if (mode == WebauthnMode.BROWSER || mode == WebauthnMode.CHROME_3PP_ENABLED) {
             return BrowserCredManRequestDecorator.getInstance();
         } else if (mode == WebauthnMode.CHROME) {
             return GpmCredManRequestDecorator.getInstance();
@@ -51,7 +51,9 @@ public class WebauthnModeProvider {
         int mode = getWebauthnMode(webContents);
         if (mode == WebauthnMode.APP) {
             return Fido2ApiCall.APP_API;
-        } else if (mode == WebauthnMode.BROWSER || mode == WebauthnMode.CHROME) {
+        } else if (mode == WebauthnMode.BROWSER
+                || mode == WebauthnMode.CHROME
+                || mode == WebauthnMode.CHROME_3PP_ENABLED) {
             return Fido2ApiCall.BROWSER_API;
         } else {
             assert false : "WebauthnMode not set! See this class's JavaDoc.";
@@ -64,6 +66,10 @@ public class WebauthnModeProvider {
         return WebauthnModeProviderJni.get().getWebauthnModeForWebContents(webContents);
     }
 
+    public @WebauthnMode int getGlobalWebauthnMode() {
+        return mGlobalMode;
+    }
+
     public void setGlobalWebauthnMode(@WebauthnMode int mode) {
         mGlobalMode = mode;
     }
@@ -74,7 +80,12 @@ public class WebauthnModeProvider {
     }
 
     public static boolean isChrome(WebContents webContents) {
-        return getInstance().getWebauthnMode(webContents) == WebauthnMode.CHROME;
+        @WebauthnMode int mode = getInstance().getWebauthnMode(webContents);
+        return mode == WebauthnMode.CHROME || mode == WebauthnMode.CHROME_3PP_ENABLED;
+    }
+
+    public static boolean is(WebContents webContents, @WebauthnMode int expectedMode) {
+        return getInstance().getWebauthnMode(webContents) == expectedMode;
     }
 
     public static WebauthnModeProvider getInstance() {

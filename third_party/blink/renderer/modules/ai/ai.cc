@@ -7,23 +7,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -31,38 +25,17 @@
 
 namespace blink {
 
-namespace {
-
-V8AIModelAvailability AvailabilityToV8(AI::ModelAvailability availability) {
-  switch (availability) {
-    case AI::ModelAvailability::kReadily:
-      return V8AIModelAvailability(V8AIModelAvailability::Enum::kReadily);
-    case AI::ModelAvailability::kAfterDownload:
-      return V8AIModelAvailability(V8AIModelAvailability::Enum::kAfterDownload);
-    case AI::ModelAvailability::kNo:
-      return V8AIModelAvailability(V8AIModelAvailability::Enum::kNo);
-  }
-}
-
-void ResolveAvailability(ScriptPromiseResolver<V8AIModelAvailability>* resolver,
-                         AI::ModelAvailability availability) {
-  base::UmaHistogramEnumeration(AIMetrics::GetAIModelAvailabilityMetricName(
-                                    AIMetrics::AISessionType::kText),
-                                availability);
-  resolver->Resolve(AvailabilityToV8(availability));
-}
-
-}  // namespace
-
 AI::AI(ExecutionContext* context)
     : ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
-      ai_remote_(context) {}
+      ai_remote_(context),
+      text_session_factory_(context, task_runner_) {}
 
 void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
+  visitor->Trace(text_session_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -83,42 +56,20 @@ ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
     return ScriptPromise<V8AIModelAvailability>();
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
-      AIMetrics::AIAPI::kCanCreateSession);
-
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8AIModelAvailability>>(
           script_state);
   auto promise = resolver->Promise();
+  using ModelAvailabilityCheckResult =
+      mojom::blink::ModelAvailabilityCheckResult;
 
-  if (!GetAIRemote().is_connected()) {
-    ResolveAvailability(resolver, ModelAvailability::kNo);
-    return promise;
-  }
-
-  GetAIRemote()->CanCreateTextSession(WTF::BindOnce(
-      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver, AI* ai,
-         mojom::blink::ModelAvailabilityCheckResult result) {
-        if (result == mojom::blink::ModelAvailabilityCheckResult::kReadily) {
-          ResolveAvailability(resolver, ModelAvailability::kReadily);
-        } else if (result ==
-                   mojom::blink::ModelAvailabilityCheckResult::kAfterDownload) {
-          // TODO(crbug.com/345357441): Implement the
-          // `ontextmodeldownloadprogress` event.
-          ResolveAvailability(resolver, ModelAvailability::kAfterDownload);
-        } else {
-          // If the text session cannot be created, logs the error message to
-          // the console.
-          ai->GetExecutionContext()->AddConsoleMessage(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              ConvertModelAvailabilityCheckResultToDebugString(result));
-          ResolveAvailability(resolver, ModelAvailability::kNo);
-        }
+  text_session_factory_.CanCreateTextSession(WTF::BindOnce(
+      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver,
+         AIModelAvailability availability,
+         ModelAvailabilityCheckResult check_result) {
+        resolver->Resolve(AIModelAvailabilityToV8(availability));
       },
-      WrapPersistent(resolver), WrapWeakPersistent(this)));
-
+      WrapPersistent(resolver)));
   return promise;
 }
 
@@ -131,19 +82,9 @@ ScriptPromise<AITextSession> AI::createTextSession(
     return ScriptPromise<AITextSession>();
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
-      AIMetrics::AIAPI::kCreateSession);
-
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AITextSession>>(script_state);
   auto promise = resolver->Promise();
-
-  if (!GetAIRemote().is_connected()) {
-    RejectPromiseWithInternalError(resolver);
-    return promise;
-  }
-
   mojom::blink::AITextSessionSamplingParamsPtr sampling_params;
   if (options) {
     if (!options->hasTopK() && !options->hasTemperature()) {
@@ -159,42 +100,35 @@ ScriptPromise<AITextSession> AI::createTextSession(
     }
   }
 
-  AITextSession* text_session =
-      MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
-  GetAIRemote()->CreateTextSession(
-      text_session->GetModelSessionReceiver(), std::move(sampling_params),
+  text_session_factory_.CreateTextSession(
+      std::move(sampling_params),
       WTF::BindOnce(
           [](ScriptPromiseResolver<AITextSession>* resolver,
-             AITextSession* text_session, bool success) {
-            if (success) {
-              resolver->Resolve(text_session);
+             base::expected<AITextSession*, DOMException*> result) {
+            if (result.has_value()) {
+              resolver->Resolve(result.value());
             } else {
-              resolver->Reject(DOMException::Create(
-                  kExceptionMessageUnableToCreateSession,
-                  DOMException::GetErrorName(
-                      DOMExceptionCode::kInvalidStateError)));
+              resolver->Reject(result.error());
             }
           },
-          WrapPersistent(resolver), WrapPersistent(text_session)));
-
+          WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise<AITextSessionOptions> AI::defaultTextSessionOptions(
+ScriptPromise<AITextModelInfo> AI::textModelInfo(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AITextSessionOptions>();
+    return ScriptPromise<AITextModelInfo>();
   }
 
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
-      AIMetrics::AIAPI::kDefaultTextSessionOptions);
+      AIMetrics::AIAPI::kTextModelInfo);
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AITextSessionOptions>>(
-          script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AITextModelInfo>>(
+      script_state);
   auto promise = resolver->Promise();
 
   if (!GetAIRemote().is_connected()) {
@@ -202,17 +136,17 @@ ScriptPromise<AITextSessionOptions> AI::defaultTextSessionOptions(
     return promise;
   }
 
-  GetAIRemote()->GetDefaultTextSessionSamplingParams(WTF::BindOnce(
-      [](ScriptPromiseResolver<AITextSessionOptions>* resolver,
-         mojom::blink::AITextSessionSamplingParamsPtr default_params) {
-        AITextSessionOptions* options = AITextSessionOptions::Create();
-        CHECK(default_params);
-        options->setTopK(default_params->top_k);
-        options->setTemperature(default_params->temperature);
+  GetAIRemote()->GetTextModelInfo(WTF::BindOnce(
+      [](ScriptPromiseResolver<AITextModelInfo>* resolver,
+         mojom::blink::AITextModelInfoPtr text_model_info) {
+        AITextModelInfo* options = AITextModelInfo::Create();
+        CHECK(text_model_info);
+        options->setDefaultTopK(text_model_info->default_top_k);
+        options->setMaxTopK(text_model_info->max_top_k);
+        options->setDefaultTemperature(text_model_info->default_temperature);
         resolver->Resolve(options);
       },
       WrapPersistent(resolver)));
-
   return promise;
 }
 

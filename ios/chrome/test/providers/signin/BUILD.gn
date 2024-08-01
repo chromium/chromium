@@ -61,12 +61,23 @@ source_set("signin_sso") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("trusted_vault_provider") {
+  testonly = true
+  sources = [ "test_trusted_vault.mm" ]
+  deps = [
+    ":trusted_vault",
+    "//base",
+    "//ios/chrome/browser/signin/model:trusted_vault",
+    "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("trusted_vault") {
   testonly = true
   sources = [
     "fake_trusted_vault_client_backend.h",
     "fake_trusted_vault_client_backend.mm",
-    "test_trusted_vault.mm",
   ]
   deps = [
     "//base",

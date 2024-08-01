@@ -9,12 +9,12 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
@@ -23,6 +23,8 @@ class ProxyResolutionService;
 }  // namespace net
 
 namespace network {
+
+using ip_protection::MaskedDomainListManager;
 
 // IpProtectionProxyDelegate is used to support IP protection, by injecting
 // proxies for requests where IP should be protected.
@@ -37,11 +39,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
     kMaxValue = kEligible,
   };
 
-  // Both network_service_proxy_allow_list and ipp_config_cache must be
-  // non-null. The network_service_proxy_allow_list (MaskedDomainList) feature
+  // Both masked_domain_list_manager and ipp_config_cache must be
+  // non-null. The masked_domain_list_manager (MaskedDomainList) feature
   // must be enabled.
   IpProtectionProxyDelegate(
-      NetworkServiceProxyAllowList* network_service_proxy_allow_list,
+      MaskedDomainListManager* masked_domain_list_manager,
       std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
       bool is_ip_protection_enabled);
 
@@ -104,7 +106,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
       const net::ProxyList& existing_proxy_list,
       const net::ProxyList& custom_proxy_list);
 
-  const raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
+  const raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 
   const std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
 

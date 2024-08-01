@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_PRESENTATION_INFOBAR_BANNER_PRESENTATION_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_PRESENTATION_INFOBAR_BANNER_PRESENTATION_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_controller.h"
 
 @protocol InfobarBannerPositioner;
 

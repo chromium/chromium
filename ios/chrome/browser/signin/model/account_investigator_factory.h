@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_INVESTIGATOR_FACTORY_H_
+#define IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_INVESTIGATOR_FACTORY_H_
+
+#include <memory>
+
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+
+class AccountInvestigator;
+class ChromeBrowserState;
+class PrefRegistrySyncable;
+
+namespace ios {
+
+// Singleton that creates the AccountInvestigatorFactory(s) and associates those
+// services with browser states.
+class AccountInvestigatorFactory : public BrowserStateKeyedServiceFactory {
+ public:
+  // Returns the instance of AccountInvestigator associated with this
+  // browser state (creating one if none exists). Returns null if this browser
+  // state cannot have an AccountInvestigatorFactory (for example, if it is
+  // incognito).
+  static AccountInvestigator* GetForBrowserState(
+      ChromeBrowserState* browser_state);
+
+  // Returns an instance of the factory singleton.
+  static AccountInvestigatorFactory* GetInstance();
+
+  AccountInvestigatorFactory(const AccountInvestigatorFactory&) = delete;
+  AccountInvestigatorFactory& operator=(const AccountInvestigatorFactory&) =
+      delete;
+
+ private:
+  friend class base::NoDestructor<AccountInvestigatorFactory>;
+
+  AccountInvestigatorFactory();
+  ~AccountInvestigatorFactory() override;
+
+  // BrowserStateKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      web::BrowserState* context) const override;
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
+  bool ServiceIsCreatedWithBrowserState() const override;
+  bool ServiceIsNULLWhileTesting() const override;
+};
+
+}  // namespace ios
+
+#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_INVESTIGATOR_FACTORY_H_

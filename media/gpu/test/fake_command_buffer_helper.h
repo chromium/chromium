@@ -42,31 +42,15 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
 #if !BUILDFLAG(IS_ANDROID)
   // CommandBufferHelper implementation.
   gpu::SharedImageStub* GetSharedImageStub() override;
-#if BUILDFLAG(IS_WIN)
-  gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
-#endif
-
   gpu::MemoryTypeTracker* GetMemoryTypeTracker() override;
   gpu::SharedImageManager* GetSharedImageManager() override;
-  bool HasStub() override;
-  bool MakeContextCurrent() override;
-  std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
-      std::unique_ptr<gpu::SharedImageBacking> backing) override;
-  void AddWillDestroyStubCB(WillDestroyStubCB callback) override;
 #endif
 
  private:
   ~FakeCommandBufferHelper() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  bool has_stub_ = true;
-  bool is_context_lost_ = false;
-  bool is_context_current_ = false;
-
   std::map<gpu::SyncToken, base::OnceClosure> waits_;
-
-  std::vector<WillDestroyStubCB> will_destroy_stub_callbacks_;
 };
 
 }  // namespace media

@@ -24,6 +24,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/language_detection/core/language_detection_model.h"
+#include "components/language_detection/core/language_detection_provider.h"
 #include "components/translate/content/renderer/isolated_world_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
@@ -75,7 +77,8 @@ constexpr char kCLDModelVersion[] = "CLD3";
 // Returns the language detection model that is shared across the RenderFrames
 // in the renderer.
 translate::LanguageDetectionModel& GetLanguageDetectionModel() {
-  static base::NoDestructor<translate::LanguageDetectionModel> instance;
+  static base::NoDestructor<translate::LanguageDetectionModel> instance(
+      &language_detection::GetLanguageDetectionModel());
   return *instance;
 }
 
@@ -615,19 +618,16 @@ void TranslateAgent::NotifyBrowserTranslationFailed(TranslateErrors error) {
 
 const mojo::Remote<mojom::ContentTranslateDriver>&
 TranslateAgent::GetTranslateHandler() {
-  if (!translate_handler_) {
-    render_frame()->GetBrowserInterfaceBroker().GetInterface(
-        translate_handler_.BindNewPipeAndPassReceiver());
-    return translate_handler_;
+  if (translate_handler_) {
+    if (translate_handler_.is_connected()) {
+      return translate_handler_;
+    }
+    // The translate handler can become unbound or disconnected in testing
+    // so this catches that case and reconnects so `this` can connect to
+    // the driver in the browser.
+    translate_handler_.reset();
   }
 
-  // The translate handler can become unbound or disconnected in testing
-  // so this catches that case and reconnects so `this` can connect to
-  // the driver in the browser.
-  if (translate_handler_.is_bound() && translate_handler_.is_connected())
-    return translate_handler_;
-
-  translate_handler_.reset();
   render_frame()->GetBrowserInterfaceBroker().GetInterface(
       translate_handler_.BindNewPipeAndPassReceiver());
   return translate_handler_;

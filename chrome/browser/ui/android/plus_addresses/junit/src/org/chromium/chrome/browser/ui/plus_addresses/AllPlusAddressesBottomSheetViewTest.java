@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -52,6 +53,7 @@ public class AllPlusAddressesBottomSheetViewTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private FaviconHelper mFaviconHelper;
     @Mock private BottomSheetController mBottomSheetController;
 
     private Activity mActivity;
@@ -126,7 +128,7 @@ public class AllPlusAddressesBottomSheetViewTest {
                                         .createPlusProfileModel(PROFILE_1, callback)));
         mView.setSheetItemListAdapter(
                 AllPlusAddressesBottomSheetCoordinator.createSheetItemListAdapter(
-                        model.get(PLUS_PROFILES)));
+                        model.get(PLUS_PROFILES), mFaviconHelper));
 
         // Robolectric runner doesn't layout recycler views.
         layoutPlusAddressView();

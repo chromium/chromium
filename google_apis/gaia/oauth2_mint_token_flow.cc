@@ -32,6 +32,7 @@
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -67,6 +68,8 @@ const char kMessage[] = "message";
 
 const char kTokenBindingChallengeHeader[] =
     "X-Chrome-Auth-Token-Binding-Challenge";
+constexpr char kTokenBindingResponseKey[] = "tokenBindingResponse";
+constexpr char kDirectedResponseKey[] = "directedResponse";
 
 static GoogleServiceAuthError CreateAuthError(
     int net_error,
@@ -254,6 +257,12 @@ GURL OAuth2MintTokenFlow::CreateApiCallUrl() {
   return GaiaUrls::GetInstance()->oauth2_issue_token_url();
 }
 
+net::HttpRequestHeaders OAuth2MintTokenFlow::CreateApiCallHeaders() {
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("X-OAuth-Client-ID", parameters_.client_id);
+  return headers;
+}
+
 std::string OAuth2MintTokenFlow::CreateApiCallBody() {
   const char* force_value = (parameters_.mode == MODE_MINT_TOKEN_FORCE ||
                              parameters_.mode == MODE_RECORD_GRANT)
@@ -414,6 +423,14 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::Value::Dict& dict) {
   }
   result.granted_scopes.insert(granted_scopes_vector.begin(),
                                granted_scopes_vector.end());
+
+  const base::Value::Dict* token_binding_response =
+      dict.FindDict(kTokenBindingResponseKey);
+  // The presence of `kDirectedResponseKey` indicates that the returned token is
+  // encrypted to the public key provided by the client earlier.
+  result.is_token_encrypted =
+      token_binding_response &&
+      token_binding_response->FindDict(kDirectedResponseKey);
 
   return result;
 }

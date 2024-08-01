@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_config.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -64,22 +63,6 @@ void OomInterventionTabHelper::OnHighMemoryUsage() {
     near_oom_reduction_message_delegate_.ShowMessage(web_contents(), this);
     intervention_state_ = InterventionState::UI_SHOWN;
   }
-  if (!last_navigation_timestamp_.is_null()) {
-    base::TimeDelta time_since_last_navigation =
-        base::TimeTicks::Now() - last_navigation_timestamp_;
-    UMA_HISTOGRAM_COUNTS_1M(
-        "Memory.Experimental.OomIntervention."
-        "RendererTimeSinceLastNavigationAtDetection",
-        time_since_last_navigation.InSeconds());
-  }
-
-  DCHECK(!start_monitor_timestamp_.is_null());
-  base::TimeDelta time_since_start_monitor =
-      base::TimeTicks::Now() - start_monitor_timestamp_;
-  UMA_HISTOGRAM_COUNTS_1M(
-      "Memory.Experimental.OomIntervention."
-      "RendererTimeSinceStartMonitoringAtDetection",
-      time_since_start_monitor.InSeconds());
 
   near_oom_detected_time_ = base::TimeTicks::Now();
   renderer_detection_timer_.AbandonAndStop();
@@ -136,8 +119,6 @@ void OomInterventionTabHelper::DidStartNavigation(
       navigation_handle->IsSameDocument()) {
     return;
   }
-
-  last_navigation_timestamp_ = base::TimeTicks::Now();
 
   // Filter out the first navigation.
   if (!navigation_started_) {
@@ -198,16 +179,6 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
     ResetInterventionState();
   }
 
-  base::TimeDelta time_since_last_navigation;
-  if (!last_navigation_timestamp_.is_null()) {
-    time_since_last_navigation =
-        base::TimeTicks::Now() - last_navigation_timestamp_;
-  }
-  UMA_HISTOGRAM_COUNTS_1M(
-      "Memory.Experimental.OomIntervention."
-      "RendererTimeSinceLastNavigationAtOOM",
-      time_since_last_navigation.InSeconds());
-
   if (decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
     const std::string& host = web_contents()->GetVisibleURL().host();
@@ -263,8 +234,6 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
       return;
     }
   }
-
-  start_monitor_timestamp_ = base::TimeTicks::Now();
 
   content::RenderFrameHost& main_frame =
       web_contents()->GetPrimaryPage().GetMainDocument();

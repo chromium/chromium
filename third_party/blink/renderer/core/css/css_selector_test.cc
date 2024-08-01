@@ -347,4 +347,51 @@ TEST(CSSSelector, ExplicitScopeSpecificity) {
             selector[0].Specificity());
 }
 
+TEST(CSSSelector, CheckSelectorTextExpandingPseudoParent) {
+  test::TaskEnvironment task_environment;
+
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(
+      ".a { .b { .c, &.c, .c:has(&) {} } }"
+      ".d .e { .f:has(> &) {} }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  base::span<const RuleData> rules = rule_set.ClassRules(AtomicString("a"));
+  ASSERT_EQ(1u, rules.size());
+  const CSSSelector* selector = &rules[0].Selector();
+  EXPECT_EQ(".a", selector->SelectorText());
+
+  rules = rule_set.ClassRules(AtomicString("b"));
+  ASSERT_EQ(1u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ("& .b", selector->SelectorText());
+  EXPECT_EQ(":is(.a) .b", selector->SelectorTextExpandingPseudoParent());
+
+  rules = rule_set.ClassRules(AtomicString("c"));
+  ASSERT_EQ(3u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ("& .c", selector->SelectorText());
+  EXPECT_EQ(":is(:is(.a) .b) .c",
+            selector->SelectorTextExpandingPseudoParent());
+  selector = &rules[1].Selector();
+  EXPECT_EQ("&.c", selector->SelectorText());
+  EXPECT_EQ(":is(:is(.a) .b).c", selector->SelectorTextExpandingPseudoParent());
+  selector = &rules[2].Selector();
+  EXPECT_EQ(".c:has(&)", selector->SelectorText());
+  EXPECT_EQ(".c:has(:is(:is(.a) .b))",
+            selector->SelectorTextExpandingPseudoParent());
+
+  rules = rule_set.ClassRules(AtomicString("e"));
+  ASSERT_EQ(1u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ(".d .e", selector->SelectorText());
+
+  rules = rule_set.ClassRules(AtomicString("f"));
+  ASSERT_EQ(1u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ(".f:has(> &)", selector->SelectorText());
+  EXPECT_EQ(".f:has(> :is(.d .e))",
+            selector->SelectorTextExpandingPseudoParent());
+}
+
 }  // namespace blink

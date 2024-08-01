@@ -150,6 +150,16 @@ def _dict2list(d):
   return d
 
 
+def _UpdateExtrasListener(extras, new_listener):
+  existing_listeners = extras.get('listener')
+  if existing_listeners:
+    # Comma is used to specify multiple listeners. See AndroidJUnitRunner.java
+    # in androidx code.
+    extras['listener'] = ','.join([existing_listeners, new_listener])
+  else:
+    extras['listener'] = new_listener
+
+
 class _TestListPickleException(Exception):
   pass
 
@@ -969,6 +979,10 @@ class LocalDeviceInstrumentationTestRun(
                                 (coverage_basename, '%2m_%p%c'))
       extras[EXTRA_CLANG_COVERAGE_DEVICE_FILE] = posixpath.join(
           device_clang_profile_dir, clang_profile_filename)
+      if self._test_instance.use_native_coverage_listener:
+        _UpdateExtrasListener(
+            extras,
+            'org.chromium.base.test.NativeCoverageInstrumentationRunListener')
 
     if self._test_instance.enable_breakpad_dump:
       # Use external storage directory so that the breakpad dump can be accessed
@@ -1413,8 +1427,8 @@ class LocalDeviceInstrumentationTestRun(
         # adds the listener). This is needed to enable the the listener when
         # using AndroidJUnitRunner directly.
         if self._test_instance.has_chromium_test_listener:
-          extras['listener'] = (
-              'org.chromium.testing.TestListInstrumentationRunListener')
+          _UpdateExtrasListener(
+              extras, 'org.chromium.testing.TestListInstrumentationRunListener')
         elif not run_disabled:
           extras['notAnnotation'] = 'androidx.test.filters.FlakyTest'
 

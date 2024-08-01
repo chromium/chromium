@@ -33,7 +33,7 @@ struct PermissionsPref {
 
 @implementation PushNotificationAccountContextManager {
   // Used to retrieve BrowserStates located at a given path.
-  raw_ptr<ios::ChromeBrowserStateManager> _chromeBrowserStateManager;
+  raw_ptr<ChromeBrowserStateManager> _chromeBrowserStateManager;
 
   // A dictionary that maps a user's GAIA ID to an unsigned integer representing
   // the number of times the account is signed in across BrowserStates.
@@ -41,7 +41,7 @@ struct PermissionsPref {
 }
 
 - (instancetype)initWithChromeBrowserStateManager:
-    (ios::ChromeBrowserStateManager*)manager {
+    (ChromeBrowserStateManager*)manager {
   self = [super init];
 
   if (self) {
@@ -203,6 +203,7 @@ struct PermissionsPref {
               prefs::kFeaturePushNotificationPermissions, clientKey};
     }
     case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSafetyCheck:
       return {GetApplicationContext()->GetLocalState(),
               prefs::kAppLevelPushNotificationPermissions, clientKey};
   }

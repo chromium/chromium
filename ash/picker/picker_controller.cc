@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_action_on_next_focus_request.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_copy_media.h"
@@ -50,6 +52,7 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
@@ -61,8 +64,10 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -166,12 +171,14 @@ InsertionContent GetInsertionContentForResult(
             return data;
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
-              -> ReturnType { return PickerLinkMedia(data.url); },
+              -> ReturnType {
+            return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
+          },
           [](const PickerSearchResult::LocalFileData& data) -> ReturnType {
             return PickerLocalFileMedia(data.file_path);
           },
           [](const PickerSearchResult::DriveFileData& data) -> ReturnType {
-            return PickerLinkMedia(data.url);
+            return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
             return std::monostate();
@@ -209,10 +216,6 @@ bool u16_isalpha(char16_t ch) {
   return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
 }
 
-bool u16_is_sentence_end(char16_t ch) {
-  return ch == u'.' || ch == u'!' || ch == '?';
-}
-
 std::u16string ToTitleCase(std::u16string_view text) {
   std::u16string result(text);
   std::u16string uppercase_text = base::i18n::ToUpper(text);
@@ -224,33 +227,14 @@ std::u16string ToTitleCase(std::u16string_view text) {
   return result;
 }
 
-std::u16string ToSentenceCase(std::u16string_view text) {
-  std::u16string result(text);
-  std::u16string uppercase_text = base::i18n::ToUpper(text);
-  bool sentence_start = true;
-  for (size_t i = 0; i < result.length(); i++) {
-    if (u16_isalpha(result[i]) && sentence_start) {
-      result[i] = uppercase_text[i];
-    }
-    if (u16_is_sentence_end(result[i])) {
-      sentence_start = true;
-    } else if (result[i] != u' ') {
-      sentence_start = false;
-    }
-  }
-  return result;
-}
-
 std::u16string TransformText(std::u16string_view text,
                              PickerSearchResult::CaseTransformData::Type type) {
   switch (type) {
-    case PickerSearchResult::CaseTransformData::Type ::kUpperCase:
+    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
       return base::i18n::ToUpper(text);
-    case PickerSearchResult::CaseTransformData::Type ::kLowerCase:
+    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
       return base::i18n::ToLower(text);
-    case PickerSearchResult::CaseTransformData::Type ::kSentenceCase:
-      return ToSentenceCase(text);
-    case PickerSearchResult::CaseTransformData::Type ::kTitleCase:
+    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
       return ToTitleCase(text);
   }
   NOTREACHED_NORETURN();
@@ -365,11 +349,18 @@ void PickerController::ToggleWidget(
   }
 
   // Show the feature tour if it's the first time this feature is used.
+  const ui::TextInputClient* focused_client = GetFocusedTextInputClient();
+  const bool has_focus =
+      focused_client != nullptr && focused_client->GetTextInputType() !=
+                                       ui::TextInputType::TEXT_INPUT_TYPE_NONE;
   if (PrefService* prefs = client_->GetPrefs();
       prefs &&
       feature_tour_.MaybeShowForFirstUse(
-          prefs, base::BindRepeating(&PickerController::OnFeatureTourCompleted,
-                                     weak_ptr_factory_.GetWeakPtr()))) {
+          prefs,
+          base::BindRepeating(&PickerController::OnFeatureTourLearnMore,
+                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&PickerController::OnFeatureTourCompleted,
+                              weak_ptr_factory_.GetWeakPtr(), has_focus))) {
     return;
   }
 
@@ -451,15 +442,14 @@ void PickerController::InsertResultOnNextFocus(
             insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
                 input_method, media, kInsertMediaTimeout,
                 base::BindOnce(
-                    [](const PickerRichMedia& media,
-                       PickerInsertMediaRequest::Result result) {
-                      // Fallback to copying to the clipboard on failure.
-                      if (result !=
-                          PickerInsertMediaRequest::Result::kSuccess) {
-                        CopyMediaToClipboard(media);
-                      }
+                    [](base::WeakPtr<PickerController> weak_controller) {
+                      return weak_controller
+                                 ? weak_controller->GetWebPasteTarget()
+                                 : std::nullopt;
                     },
-                    media));
+                    weak_ptr_factory_.GetWeakPtr()),
+                base::BindOnce(&PickerController::OnInsertCompleted,
+                               weak_ptr_factory_.GetWeakPtr(), media));
           },
           [&](PickerSearchResult::ClipboardData data) {
             // This cancels the previous request if there was one.
@@ -554,6 +544,7 @@ PickerSessionMetrics& PickerController::GetSessionMetrics() {
 
 PickerActionType PickerController::GetActionForResult(
     const PickerSearchResult& result) {
+  CHECK(model_);
   const PickerModeType mode = model_->GetMode();
   return std::visit(
       base::Overloaded{
@@ -619,11 +610,18 @@ bool PickerController::IsGifsEnabled() {
   return model_->IsGifsEnabled(client_->GetPrefs());
 }
 
-void PickerController::OnWidgetDestroying(views::Widget* widget) {
+PickerModeType PickerController::GetMode() {
+  CHECK(model_);
+  return model_->GetMode();
+}
+
+void PickerController::OnViewIsDeleting(views::View* view) {
+  view_observation_.Reset();
+
   caps_lock_state_view_ = nullptr;
+  model_.reset();
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
-  widget_observation_.Reset();
   emoji_suggester_.reset();
   emoji_history_model_.reset();
 }
@@ -651,7 +649,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
     caps_lock_state_view_ = new PickerCapsLockStateView(
         GetParentView(), should_enable, GetCaretBounds());
     caps_lock_state_view_->Show();
-    widget_observation_.Observe(caps_lock_state_view_->GetWidget());
+    view_observation_.Observe(caps_lock_state_view_);
     caps_lock_state_view_close_timer_.Start(
         FROM_HERE, kCapsLockStateViewDisplayTime,
         base::BindOnce(&PickerController::CloseCapsLockStateView,
@@ -674,26 +672,62 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
   widget_->Show();
 
   session_metrics_->OnStartSession(GetFocusedTextInputClient());
-  widget_observation_.Observe(widget_.get());
+  view_observation_.Observe(widget_->GetContentsView());
 }
 
 void PickerController::CloseWidget() {
   session_metrics_->SetOutcome(
       PickerSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
-  model_.reset();
 }
 
 void PickerController::CloseCapsLockStateView() {
   caps_lock_state_view_close_timer_.Stop();
   if (caps_lock_state_view_) {
     caps_lock_state_view_->Close();
-    OnWidgetDestroying(caps_lock_state_view_->GetWidget());
+    OnViewIsDeleting(caps_lock_state_view_);
   }
 }
 
-void PickerController::OnFeatureTourCompleted() {
+void PickerController::OnFeatureTourLearnMore() {
+  OpenLink(GURL("about:blank"));
+}
+
+void PickerController::OnFeatureTourCompleted(
+    bool had_focus_before_feature_tour) {
+  if (had_focus_before_feature_tour) {
+    ui::InputMethod* input_method =
+        IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+    if (input_method == nullptr) {
+      return;
+    }
+    action_on_next_focus_request_ =
+        std::make_unique<PickerActionOnNextFocusRequest>(
+            input_method, kShowWidgetPostFeatureTourTimeout,
+            base::BindOnce(&PickerController::ShowWidgetPostFeatureTour,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&PickerController::ShowWidgetPostFeatureTour,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    ShowWidgetPostFeatureTour();
+  }
+}
+
+void PickerController::ShowWidgetPostFeatureTour() {
   ShowWidget(base::TimeTicks::Now());
+}
+
+std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
+  return client_ ? client_->GetWebPasteTarget() : std::nullopt;
+}
+
+void PickerController::OnInsertCompleted(
+    const PickerRichMedia& media,
+    PickerInsertMediaRequest::Result result) {
+  // Fallback to copying to the clipboard on failure.
+  if (result != PickerInsertMediaRequest::Result::kSuccess) {
+    CopyMediaToClipboard(media);
+  }
 }
 
 }  // namespace ash

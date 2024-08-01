@@ -46,6 +46,15 @@ void ConvertKnowledgeFactorHashInfoToProto(
       hash_info.should_generate_key_store);
 }
 
+PinStatus PasrePinFactorStatus(const user_data_auth::StatusInfo& proto) {
+  base::TimeDelta available_in = base::TimeDelta::Max();
+  if (proto.time_available_in() != std::numeric_limits<uint64_t>::max()) {
+    available_in = base::Milliseconds(proto.time_available_in());
+  }
+  CHECK(!available_in.is_negative());
+  return PinStatus{available_in};
+}
+
 PasswordMetadata ParsePasswordMetadata(
     const user_data_auth::AuthFactor& proto) {
   std::optional<KnowledgeFactorHashInfo> hash_info;
@@ -362,7 +371,13 @@ AuthFactor DeserializeAuthFactor(
     case AuthFactorType::kPin: {
       DCHECK(factor_proto.has_pin_metadata());
       auto pin_metadata = ParsePinMetadata(factor_proto);
-      PinStatus pin_status{factor_proto.pin_metadata().auth_locked()};
+      PinStatus pin_status = proto.has_status_info()
+                                 ? PasrePinFactorStatus(proto.status_info())
+                                 : PinStatus();
+      // Extra check to ensure consistency until we move away from
+      // using pin_metadata().auth_locked() for the lockout status check.
+      CHECK_EQ(factor_proto.pin_metadata().auth_locked(),
+               pin_status.IsLockedFactor());
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(pin_metadata), std::move(pin_status));
     }

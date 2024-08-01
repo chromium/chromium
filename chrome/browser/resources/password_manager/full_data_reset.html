@@ -34,6 +34,7 @@
   .counter-summary {
     font-size: 105%;
     font-weight: 500;
+    margin: 0;
     color: var(--cr-primary-text-color);
   }
 
@@ -50,14 +51,14 @@
     label="$i18n{fullResetTitle}"
     sub-label="$i18n{fullResetRowDescription}">
     <cr-button id="deleteAllButton" class="cr-row-action-button"
-        on-click="onDeleteAllClick_">
+        on-click="onDeleteAllClick_" aria-label="[[getAriaLabel_()]]">
       $i18n{fullResetDeleteAll}
     </cr-button>
 </cr-link-row>
 
 <cr-dialog id="dialog">
   <div slot="title" class="dialog-title" id="confirmationDialogTitle">
-    [[getConfirmationDialogTitle_(isSyncingPasswords)]]
+    [[getConfirmationDialogTitle_(isSyncingPasswords, isAccountStoreUser)]]
   </div>
   <div slot="body">
     <div id="detailsContainer">
@@ -65,7 +66,7 @@
         <iron-icon icon="passwords-icon:password">
         </iron-icon>
         <div>
-          <div class="counter-summary">[[passwordsCount_]]</div>
+          <h3 class="counter-summary">[[passwordsCount_]]</h3>
           <div class="counter-details">[[passwordsCountDetails_]]</div>
         </div>
       </div>
@@ -73,7 +74,7 @@
         <iron-icon icon="passwords-icon:passkey-filled">
         </iron-icon>
         <div>
-          <div class="counter-summary">[[passkeysCount_]]</div>
+          <h3 class="counter-summary">[[passkeysCount_]]</h3>
           <div class="counter-details">[[passkeysCountDetails_]]</div>
         </div>
       </div>

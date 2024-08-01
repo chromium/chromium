@@ -13,6 +13,7 @@
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
@@ -32,7 +33,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mutator.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -1238,9 +1238,13 @@ const CGFloat kFeedContainerExtraHeight = 500;
   [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
 
   if (IsHomeCustomizationEnabled()) {
-    // If there's a module below the header, anchor the header to it.
-    if ([self.viewControllersAboveFeed lastObject] !=
+    // If all modules are disabled, the fake omnibox doesn't need additional
+    // constraints.
+    if ([self.viewControllersAboveFeed lastObject] ==
         self.headerViewController) {
+      self.fakeOmniboxConstraints = @[];
+    } else {
+      // Otherwise, anchor the header to the module below it.
       NSInteger headerIndex = [self.viewControllersAboveFeed
           indexOfObject:self.headerViewController];
       UIView* viewBelowHeader =
@@ -1429,6 +1433,19 @@ const CGFloat kFeedContainerExtraHeight = 500;
         sendActionsForControlEvents:UIControlEventTouchUpInside];
   } else {
     [self unfocusOmnibox];
+  }
+
+  if (IsHomeCustomizationEnabled()) {
+    CGRect customizationMenuBounds =
+        [[self.headerViewController customizationMenuButton]
+            convertRect:[self.headerViewController customizationMenuButton]
+                            .bounds
+                 toView:self.view];
+
+    if (CGRectContainsPoint(customizationMenuBounds, location)) {
+      [[self.headerViewController customizationMenuButton]
+          sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
   }
 }
 

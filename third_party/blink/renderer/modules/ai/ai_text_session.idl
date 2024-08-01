@@ -28,5 +28,11 @@ interface AITextSession {
     CallWith=ScriptState,
     RaisesException
   ]
+  Promise<AITextSession> clone();
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
   void destroy();
 };

@@ -166,8 +166,9 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
       /*removed_forms=*/{});
 
   // Simulates an autofill event.
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      u"TestValue", SuggestionType::kIbanEntry, form, field);
+  Suggestion suggestion(u"TestValue", SuggestionType::kIbanEntry);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(suggestion, form,
+                                                             field);
 
   ASSERT_OK_AND_ASSIGN(
       auto expected_data,
@@ -198,8 +199,9 @@ TEST_F(AutofillFeedbackDataUnitTest,
       /*removed_forms=*/{});
 
   // Simulates an autofill event.
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      u"TestValue", SuggestionType::kIbanEntry, form, field);
+  Suggestion suggestion(u"TestValue", SuggestionType::kIbanEntry);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(suggestion, form,
+                                                             field);
 
   // Advance the clock 4 minutes should disregard the last autofill event log.
   clock.Advance(base::Minutes(4));

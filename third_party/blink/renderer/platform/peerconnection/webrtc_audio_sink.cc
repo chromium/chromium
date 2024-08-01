@@ -255,7 +255,7 @@ void WebRtcAudioSink::Adapter::RemoveSink(
   SendLogMessage(
       base::StringPrintf("Adapter::RemoveSink([label=%s])", label_.c_str()));
   base::AutoLock auto_lock(lock_);
-  auto** it = base::ranges::find(sinks_, sink);
+  auto it = base::ranges::find(sinks_, sink);
   if (it != sinks_.end())
     sinks_.erase(it);
 }

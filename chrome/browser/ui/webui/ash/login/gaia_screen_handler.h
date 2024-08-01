@@ -22,9 +22,9 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
-#include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -43,6 +43,7 @@ namespace ash {
 
 class PublicSamlUrlFetcher;
 class ErrorScreensHistogramHelper;
+class SamlChallengeKeyHandler;
 
 class GaiaView {
  public:

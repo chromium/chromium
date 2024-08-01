@@ -952,20 +952,29 @@ class InvalidIteratorAnalysis
   clang::dataflow::Value* GetContainerFromImplicitArg(
       const clang::dataflow::Environment& env,
       const clang::CallExpr& expr) {
-    const clang::CXXMemberCallExpr* member_expr =
+    const clang::CXXMemberCallExpr* member_call_expression =
         clang::cast<clang::CXXMemberCallExpr>(&expr);
 
-    clang::dataflow::Value* container = nullptr;
+    clang::Expr* callee = member_call_expression->getImplicitObjectArgument();
 
-    if (!member_expr->getImplicitObjectArgument()->getType()->isRecordType()) {
-      container = env.getValue(*member_expr->getImplicitObjectArgument());
-    } else {
-      clang::dataflow::RecordStorageLocation* loc =
-          env.get<clang::dataflow::RecordStorageLocation>(
-              *member_expr->getImplicitObjectArgument());
+    if (callee->getType()->isRecordType()) {
+      auto* callee_location =
+          env.get<clang::dataflow::RecordStorageLocation>(*callee);
 
-      if (loc) {
-        container = GetContainerValue(env, *loc);
+      return callee_location ? GetContainerValue(env, *callee_location)
+                             : nullptr;
+    }
+
+    clang::dataflow::Value* container = env.getValue(*callee);
+
+    // The `RecordStorageLocation` of a container can be accessed by its pointer
+    // using the related `PointerValue`.
+    if (auto* pointer_value =
+            clang::dyn_cast_or_null<clang::dataflow::PointerValue>(container)) {
+      if (auto* pointee_location =
+              clang::dyn_cast<clang::dataflow::RecordStorageLocation>(
+                  &pointer_value->getPointeeLoc())) {
+        return GetContainerValue(env, *pointee_location);
       }
     }
 

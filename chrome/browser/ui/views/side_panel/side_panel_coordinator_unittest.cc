@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
@@ -1123,6 +1123,15 @@ class TestSidePanelObserver : public SidePanelEntryObserver {
     registry_->Deregister(entry->key());
   }
 
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override {
+    last_entry_will_hide_entry_id_ = entry->key().id();
+    last_entry_will_hide_reason_ = reason;
+  }
+
+  std::optional<SidePanelEntry::Id> last_entry_will_hide_entry_id_;
+  std::optional<SidePanelEntryHideReason> last_entry_will_hide_reason_;
+
  private:
   raw_ptr<SidePanelRegistry> registry_;
 };
@@ -1144,7 +1153,11 @@ TEST_F(SidePanelCoordinatorTest,
   // Switch to another entry.
   coordinator_->Show(SidePanelEntry::Id::kReadingList);
 
-  // Verify that the previous entry has deregistered.
+  // Verify that the previous entry has deregistered and is hidden.
+  EXPECT_THAT(observer->last_entry_will_hide_entry_id_,
+              testing::Optional(SidePanelEntry::Id::kAboutThisSite));
+  EXPECT_THAT(observer->last_entry_will_hide_reason_,
+              testing::Optional(SidePanelEntryHideReason::kReplaced));
   EXPECT_FALSE(contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite)));
 }
@@ -1166,7 +1179,11 @@ TEST_F(SidePanelCoordinatorTest,
   // Close the side panel.
   coordinator_->Close();
 
-  // Verify that the previous entry has deregistered.
+  // Verify that the previous entry has deregistered and is hidden.
+  EXPECT_THAT(observer->last_entry_will_hide_entry_id_,
+              testing::Optional(SidePanelEntry::Id::kAboutThisSite));
+  EXPECT_THAT(observer->last_entry_will_hide_reason_,
+              testing::Optional(SidePanelEntryHideReason::kSidePanelClosed));
   EXPECT_FALSE(contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite)));
 }

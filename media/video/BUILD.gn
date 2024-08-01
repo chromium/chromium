@@ -101,8 +101,6 @@ static_library("test_support") {
     "mock_gpu_memory_buffer_video_frame_pool.h",
     "mock_gpu_video_accelerator_factories.cc",
     "mock_gpu_video_accelerator_factories.h",
-    "mock_video_decode_accelerator.cc",
-    "mock_video_decode_accelerator.h",
     "mock_video_encode_accelerator.cc",
     "mock_video_encode_accelerator.h",
   ]

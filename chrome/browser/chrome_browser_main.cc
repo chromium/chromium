@@ -33,6 +33,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/profiler/process_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -78,7 +79,6 @@
 #include "chrome/browser/metrics/shutdown_watcher_helper.h"
 #include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
@@ -138,7 +138,6 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -201,10 +200,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
-
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 #include "chrome/browser/component_updater/registration.h"
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 
 #if BUILDFLAG(ENABLE_UPDATER)
 #include "chrome/browser/updater/scheduler.h"
@@ -577,7 +573,7 @@ bool ShouldInstallSodaDuringPostProfileInit(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);
-#elif !BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(ENABLE_COMPONENT_UPDATER)
+#elif !BUILDFLAG(IS_CHROMEOS_LACROS)
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #else
   return false;
@@ -1212,7 +1208,7 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   // stages.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::Thread::kIo));
+                                base::ProfilerThreadType::kIo));
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !BUILDFLAG(IS_ANDROID)
@@ -1398,8 +1394,6 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
     headless::ReportHeadlessActionMetrics();
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-  SystemPermissionSettings::Create(profile);
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1656,12 +1650,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // Needs to be done before PostProfileInit, since the SODA Installer setup is
   // called inside PostProfileInit and depends on it.
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
   }
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 
   // `profile` may be nullptr if the profile picker is shown.
   Profile* profile = profile_info.profile;

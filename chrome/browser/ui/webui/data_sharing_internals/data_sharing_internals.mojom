@@ -39,6 +39,10 @@ struct GroupData {
 
    // A list of members in this group.
   array<GroupMember> members;
+
+  // Access token of the group. Fetched by browser services via an RPC to the
+  // server.
+  string access_token;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

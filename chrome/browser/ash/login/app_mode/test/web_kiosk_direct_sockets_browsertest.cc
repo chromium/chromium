@@ -82,7 +82,8 @@ class WebKioskDirectSocketsTest : public WebKioskBaseTest {
   base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
 };
 
-IN_PROC_BROWSER_TEST_F(WebKioskDirectSocketsTest, ApiAvailability) {
+// TODO(crbug.com/355290700): Re-enable this test
+IN_PROC_BROWSER_TEST_F(WebKioskDirectSocketsTest, DISABLED_ApiAvailability) {
   InitializeRegularOnlineKiosk();
   SelectFirstBrowser();
 

@@ -44,7 +44,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
       const PictureLayerTiling* tiling) const override;
   bool RequiresHighResToDraw() const override;
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
-  void OnTilesAdded() override;
+  void OnAllTilesDoneCleared() override;
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const override;
   ScrollOffsetMap GetRasterInducingScrollOffsets() const override;

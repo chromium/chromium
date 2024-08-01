@@ -234,6 +234,7 @@
 <translation id="7395825497086981028">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中。</translation>
 <translation id="7400689562045506105">Chromium 隨時隨地都能派上用場</translation>
 <translation id="7523464085759699266">開啟「關閉 Chromium 時鎖定無痕分頁」。</translation>
+<translation id="7531461704633548377">來自 Chromium</translation>
 <translation id="7674213385180944843">請前往 [設定] &gt; [隱私權] &gt; [相機] &gt; [Chromium]，並開啟相機。</translation>
 <translation id="7710137812207066069">使用 Chromium 開啟新分頁。</translation>
 <translation id="7747820849741499258">在 Chromium 中搜尋</translation>
@@ -264,6 +265,7 @@
 <translation id="8386869251364507178">Chromium 動作</translation>
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="8458950033462118672">只要將 Chromium 設為預設瀏覽器應用程式，即可自動在 Chromium 中開啟連結。</translation>
+<translation id="8502918057530111907">預設使用 Chromium，輕鬆取得價格分析</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>

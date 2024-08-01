@@ -704,6 +704,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCommitAndDrawCompositorFrame() override;
   void WasHidden() override;
   void WasShown() override;
+  void OnFrameVisibilityChanged(
+      blink::mojom::FrameVisibility render_status) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

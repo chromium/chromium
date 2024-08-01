@@ -14,6 +14,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -67,6 +68,7 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {

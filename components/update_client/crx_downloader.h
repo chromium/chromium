@@ -54,6 +54,7 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   struct Result {
     // Download error: 0 indicates success.
     int error = 0;
+    int extra_code1 = 0;
 
     // Path of the downloaded file if the download was successful.
     base::FilePath response;

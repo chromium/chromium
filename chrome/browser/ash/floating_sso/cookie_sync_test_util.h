@@ -32,7 +32,11 @@ inline constexpr int kPortForTests = 19;
 // Returns a cookie proto with a name `kNamesForTests[i]` and a key
 // `kUniqueKeysForTests[i]`, other fields will always be the same regardless of
 // the value of `i`.
-sync_pb::CookieSpecifics CookieSpecificsForTest(size_t i = 0);
+sync_pb::CookieSpecifics CreatePredefinedCookieSpecificsForTest(size_t i = 0);
+// Creates a cookie proto with the provided unique key and name.
+sync_pb::CookieSpecifics CreateCookieSpecificsForTest(
+    const std::string& unique_key,
+    const std::string& name);
 
 }  // namespace ash::floating_sso
 

@@ -170,8 +170,8 @@ public class TabModelImpl extends TabModelJniBridge {
             AsyncTabParamsManager asyncTabParamsManager,
             TabModelDelegate modelDelegate,
             boolean supportUndo,
-            boolean trackInNativeModelList) {
-        super(profile, activityType, trackInNativeModelList);
+            boolean isArchivedTabModel) {
+        super(profile, activityType, isArchivedTabModel);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
@@ -858,9 +858,14 @@ public class TabModelImpl extends TabModelJniBridge {
     /** Used to restore tabs from native. */
     @Override
     protected boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents) {
+            Tab parent, Profile profile, WebContents webContents, boolean select) {
         return getTabCreator(profile.isOffTheRecord())
-                .createTabWithWebContents(parent, webContents, TabLaunchType.FROM_RECENT_TABS);
+                .createTabWithWebContents(
+                        parent,
+                        webContents,
+                        select
+                                ? TabLaunchType.FROM_RECENT_TABS_FOREGROUND
+                                : TabLaunchType.FROM_RECENT_TABS);
     }
 
     @Override
@@ -965,7 +970,6 @@ public class TabModelImpl extends TabModelJniBridge {
             if (tab.isCustomTab()) continue;
 
             final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
-
             if (recentNavigationTime >= beginTimeMs && recentNavigationTime < endTimeMs) {
                 tabList.add(tab);
             }

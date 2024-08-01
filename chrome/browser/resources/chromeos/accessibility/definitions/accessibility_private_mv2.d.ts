@@ -164,6 +164,7 @@ declare global {
         y: number;
         touchAccessibility?: boolean;
         mouseButton?: SyntheticMouseEventButton;
+        isDoubleClick?: boolean;
       }
 
       export enum SelectToSpeakState {

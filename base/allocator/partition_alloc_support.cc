@@ -15,6 +15,7 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
@@ -606,10 +607,10 @@ void CheckDanglingRawPtrBufferEmpty() {
         internal::InstanceTracer::GetStackTracesForDanglingRefs(entry->id);
     for (const auto& raw_stack_trace : stack_traces) {
       LOG(ERROR) << "Dangling reference from:\n";
-      LOG(ERROR) << debug::StackTrace(raw_stack_trace.data(),
-                                      raw_stack_trace.size() -
-                                          static_cast<size_t>(ranges::count(
-                                              raw_stack_trace, nullptr)))
+      LOG(ERROR) << debug::StackTrace(
+                        make_span(raw_stack_trace)
+                            .first(static_cast<size_t>(
+                                ranges::count(raw_stack_trace, nullptr))))
                  << "\n";
     }
 #else

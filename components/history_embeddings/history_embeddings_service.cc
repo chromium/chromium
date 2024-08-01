@@ -12,12 +12,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/token.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
@@ -34,7 +34,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -77,9 +76,6 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
   std::move(callback).Run(std::move(valid_passages));
 }
 
-// This is run on the HistoryService's worker thread to access the full URL
-// database and finish the results for a completed embeddings search.
-// Finished results are then sent to the given callback using the task_runner.
 void FinishSearchResultWithHistory(
     const scoped_refptr<base::SequencedTaskRunner> task_runner,
     SearchResultCallback callback,
@@ -105,7 +101,6 @@ void FinishSearchResultWithHistory(
     }
   }
   task_runner->PostTask(FROM_HERE, base::BindOnce(callback, std::move(result)));
-  // TODO(b/353733210): Invoke answerer with same callback.
 }
 
 size_t CountWords(const std::string& s) {
@@ -195,12 +190,16 @@ std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SearchResult::SearchResult() : session_id(SessionID::InvalidValue()) {}
+SearchResult::SearchResult() = default;
 SearchResult::SearchResult(const SearchResult&) = default;
 SearchResult::SearchResult(SearchResult&&) = default;
 SearchResult::~SearchResult() = default;
 SearchResult& SearchResult::operator=(const SearchResult&) = default;
 SearchResult& SearchResult::operator=(SearchResult&&) = default;
+
+const std::string& SearchResult::AnswerText() const {
+  return answerer_result.answer.text();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -249,13 +248,15 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
   embedder_ = std::make_unique<SchedulingEmbedder>(
       std::move(embedder_), kScheduledEmbeddingsMax.Get());
 
-  if (kUseMlAnswerer.Get()) {
-    answerer_ =
-        optimization_guide_model_executor
-            ? std::make_unique<MlAnswerer>(optimization_guide_model_executor)
-            : nullptr;
-  } else {
-    answerer_ = std::make_unique<MockAnswerer>();
+  if (kEnableAnswers.Get()) {
+    if (kUseMlAnswerer.Get()) {
+      answerer_ =
+          optimization_guide_model_executor
+              ? std::make_unique<MlAnswerer>(optimization_guide_model_executor)
+              : nullptr;
+    } else {
+      answerer_ = std::make_unique<MockAnswerer>();
+    }
   }
 
   if (optimization_guide_decider_) {
@@ -351,7 +352,7 @@ void HistoryEmbeddingsService::Search(
     size_t count,
     SearchResultCallback callback) {
   SearchResult result;
-  result.session_id = SessionID::NewUnique();
+  result.session_id = base::Token::CreateRandom().ToString();
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
@@ -434,7 +435,7 @@ void HistoryEmbeddingsService::SendQualityLog(
       result.time_range_start.has_value()
           ? (base::Time::Now() - result.time_range_start.value()).InDays() + 1
           : 0;
-  quality_proto->set_session_id(base::NumberToString(result.session_id.id()));
+  quality_proto->set_session_id(result.session_id);
   quality_proto->set_user_feedback(user_feedback);
   quality_proto->set_embedding_model_version(
       embedder_metadata_.value().model_version);
@@ -579,6 +580,19 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
         [&](const Embedding& embedding) {
           return embedding.ScoreWith(query_embedding);
         });
+  }
+
+  for (const auto& sr : scored_url_rows) {
+    VLOG(3) << "URL: " << sr.row.url().spec()
+            << " Score: " << sr.scored_url.score;
+    VLOG(3) << "# passages: "
+            << sr.passages_embeddings.url_passages.passages.passages_size()
+            << " # scores: " << sr.scores.size();
+    for (size_t i = 0; i < sr.scores.size(); i++) {
+      VLOG(3) << "score: " << sr.scores[i];
+      VLOG(3) << "passage: "
+              << sr.passages_embeddings.url_passages.passages.passages(i);
+    }
   }
 
   return scored_url_rows;
@@ -759,6 +773,7 @@ void HistoryEmbeddingsService::OnSearchCompleted(
                });
   VLOG(3) << "Search found " << scored_url_rows.size() << " results and kept "
           << filtered.size() << " after score filtering";
+
   base::UmaHistogramCounts100("History.Embeddings.NumUrlsDiscardedForLowScore",
                               scored_url_rows.size() - filtered.size());
   DeterminePassageVisibility(std::move(callback), std::move(result),
@@ -836,8 +851,46 @@ void HistoryEmbeddingsService::OnPassageVisibilityCalculated(
   // other standard async machinery.
   history_service_->ScheduleDBTaskForUI(base::BindOnce(
       &FinishSearchResultWithHistory,
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindRepeating(&HistoryEmbeddingsService::OnPrimarySearchResultReady,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       std::move(result), std::move(scored_url_rows)));
+}
+
+void HistoryEmbeddingsService::OnPrimarySearchResultReady(
+    SearchResultCallback callback,
+    SearchResult result) {
+  callback.Run(result);
+  if (answerer_) {
+    Answerer::Context context(result.session_id);
+    for (const ScoredUrlRow& scored_url_row : result.scored_url_rows) {
+      std::vector<size_t> best_indices = scored_url_row.GetBestScoreIndices(
+          0, kContextPassagesMinimumWordCount.Get());
+      std::vector<std::string>& best_passages =
+          context.url_passages_map[scored_url_row.row.url().spec()];
+      best_passages.reserve(best_indices.size());
+      for (size_t index : best_indices) {
+        best_passages.push_back(
+            scored_url_row.passages_embeddings.url_passages.passages.passages(
+                index));
+      }
+    }
+    answerer_->ComputeAnswer(
+        result.query, std::move(context),
+        base::BindOnce(&HistoryEmbeddingsService::OnAnswerComputed,
+                       weak_ptr_factory_.GetWeakPtr(), callback,
+                       std::move(result)));
+  }
+}
+
+void HistoryEmbeddingsService::OnAnswerComputed(
+    SearchResultCallback callback,
+    SearchResult search_result,
+    AnswererResult answerer_result) {
+  search_result.answerer_result = std::move(answerer_result);
+  VLOG(3) << "Query '" << search_result.answerer_result.query
+          << "' computed answer '" << search_result.AnswerText() << "'";
+  callback.Run(std::move(search_result));
 }
 
 void HistoryEmbeddingsService::RebuildAbsentEmbeddings(

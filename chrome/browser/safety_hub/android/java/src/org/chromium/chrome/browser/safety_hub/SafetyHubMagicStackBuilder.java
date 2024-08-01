@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -27,17 +26,14 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final TabModelSelector mTabModelSelector;
-    private final SettingsLauncher mSettingsLauncher;
 
     public SafetyHubMagicStackBuilder(
             @NonNull Context context,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull SettingsLauncher settingsLauncher) {
+            @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mTabModelSelector = tabModelSelector;
-        mSettingsLauncher = settingsLauncher;
     }
 
     @Override
@@ -46,7 +42,7 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
         Profile profile = getRegularProfile();
         SafetyHubMagicStackCoordinator coordinator =
                 new SafetyHubMagicStackCoordinator(
-                        mContext, profile, mTabModelSelector, moduleDelegate, mSettingsLauncher);
+                        mContext, profile, mTabModelSelector, moduleDelegate);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }

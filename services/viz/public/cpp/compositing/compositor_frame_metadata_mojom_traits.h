@@ -16,6 +16,7 @@
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/frame_interval_inputs_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
@@ -166,6 +167,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
 
   static bool is_software(const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_software;
+  }
+
+  static const viz::FrameIntervalInputs& frame_interval_inputs(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.frame_interval_inputs;
   }
 
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,

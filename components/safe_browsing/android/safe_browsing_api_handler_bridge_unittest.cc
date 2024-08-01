@@ -7,14 +7,17 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/heap_array.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/fixed_array.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +74,9 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         {safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
          safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kMarkAsPhishing,
+        "https://1.example.com,https://examples.com/page1");
   }
 
   void SetUp() override {
@@ -94,15 +100,14 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
                                          expected_threats_of_interest) {
     ScopedJavaLocalRef<jstring> j_url =
         ConvertUTF8ToJavaString(env_, url.spec());
-    int int_threats_of_interest[expected_threats_of_interest.size()];
-    int* itr = &int_threats_of_interest[0];
+    auto int_threats_of_interest =
+        base::HeapArray<int>::WithSize(expected_threats_of_interest.size());
+    auto itr = int_threats_of_interest.begin();
     for (auto threat_type : expected_threats_of_interest) {
       *itr++ = static_cast<int>(threat_type);
     }
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafetyNetApiHandlerThreatsOfInterest(
-        env_, j_url,
-        ToJavaIntArray(env_, int_threats_of_interest,
-                       expected_threats_of_interest.size()));
+        env_, j_url, ToJavaIntArray(env_, int_threats_of_interest));
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiHandlerMetadata(
         env_, j_url, ConvertUTF8ToJavaString(env_, metadata));
   }
@@ -118,24 +123,24 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
       const SafeBrowsingJavaProtocol& expected_protocol) {
     ScopedJavaLocalRef<jstring> j_url =
         ConvertUTF8ToJavaString(env_, url.spec());
-    int int_threat_types[expected_threat_types.size()];
-    int* itr = &int_threat_types[0];
+    auto int_threat_types =
+        base::HeapArray<int>::WithSize(expected_threat_types.size());
+    auto itr = int_threat_types.begin();
     for (auto expected_threat_type : expected_threat_types) {
       *itr++ = static_cast<int>(expected_threat_type);
     }
-    int int_threat_attributes[returned_threat_attributes.size()];
-    itr = &int_threat_attributes[0];
+    auto int_threat_attributes =
+        base::HeapArray<int>::WithSize(returned_threat_attributes.size());
+    itr = int_threat_attributes.begin();
     for (auto returned_threat_attribute : returned_threat_attributes) {
       *itr++ = static_cast<int>(returned_threat_attribute);
     }
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafeBrowsingApiHandlerResponse(
-        env_, j_url,
-        ToJavaIntArray(env_, int_threat_types, expected_threat_types.size()),
+        env_, j_url, ToJavaIntArray(env_, int_threat_types),
         static_cast<int>(expected_protocol),
         static_cast<int>(returned_lookup_result),
         static_cast<int>(returned_threat_type),
-        ToJavaIntArray(env_, int_threat_attributes,
-                       returned_threat_attributes.size()),
+        ToJavaIntArray(env_, int_threat_attributes),
         static_cast<int>(returned_response_status));
   }
 
@@ -494,6 +499,21 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
       /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/std::nullopt,
       /*expected_response_status=*/std::nullopt);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_FromCommandline) {
+  SafeBrowsingApiHandlerBridge::GetInstance().PopulateArtificialDatabase();
+  GURL url1("https://1.example.com/");
+  GURL url2("https://examples.com/page1");
+
+  RunHashDatabaseUrlCheck(url1,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashDatabaseUrlCheck(url2,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {

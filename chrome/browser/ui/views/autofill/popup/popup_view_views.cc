@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -147,6 +148,40 @@ BrowserView* GetLastActiveBrowserView() {
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
+// If `is_root_popup` is `true`, the result list corresponds to sides defined in
+// `PopupBaseView::kDefaultPreferredPopupSides`, when `prefer_prev_arrow_side`
+// is also `true` the side of the `prev_arrow` is added at the beginning of
+// the list. Having the previous arrow side preferred allows to avoid popup
+// jumpings in most cases when the updated suggestions change the popup size
+// as well and a new side is considered optimal.
+// For non root popups, the values are taken from `kDefaultSubPopupSides[RTL]`.
+std::vector<views::BubbleArrowSide> GetPreferredPopupSides(
+    bool is_root_popup,
+    bool prefer_prev_arrow_side,
+    BubbleBorder::Arrow prev_arrow) {
+  if (is_root_popup && prefer_prev_arrow_side &&
+      prev_arrow != BubbleBorder::Arrow::NONE) {
+    static constexpr size_t n_default_preferred_sides =
+        PopupBaseView::kDefaultPreferredPopupSides.size();
+    std::vector<views::BubbleArrowSide> preferred_popup_sides(
+        n_default_preferred_sides + 1);
+    // The first element is filled with the previous arrow side to minimize
+    // jumping due to changed popup size and potentially new optimal position.
+    preferred_popup_sides[0] = views::GetBubbleArrowSide(prev_arrow);
+
+    // Fill the rest of elements with the default ones.
+    base::span(preferred_popup_sides)
+        .last(n_default_preferred_sides)
+        .copy_from(PopupBaseView::kDefaultPreferredPopupSides);
+
+    return preferred_popup_sides;
+  } else if (is_root_popup) {
+    return base::ToVector(PopupBaseView::kDefaultPreferredPopupSides);
+  }
+  return base::ToVector(base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
+                                            : kDefaultSubPopupSides);
+}
+
 }  // namespace
 
 // Creates a new popup view instance. The Widget parent is taken either from
@@ -160,8 +195,6 @@ PopupViewViews::PopupViewViews(
     : PopupBaseView(controller,
                     parent_widget,
                     views::Widget::InitParams::Activatable::kDefault,
-                    base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
-                                        : kDefaultSubPopupSides,
                     /*show_arrow_pointer=*/false),
       controller_(controller),
       parent_(parent) {
@@ -644,13 +677,13 @@ bool PopupViewViews::RemoveSelectedCell() {
   return true;
 }
 
-void PopupViewViews::OnSuggestionsChanged() {
+void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
   // New suggestions invalidate this scheduling (if it's running), cancel it.
   open_sub_popup_timer_.Stop();
   SetRowWithOpenSubPopup(std::nullopt);
 
   CreateSuggestionViews();
-  DoUpdateBoundsAndRedrawPopup();
+  DoUpdateBoundsAndRedrawPopup(prefer_prev_arrow_side);
 }
 
 bool PopupViewViews::OverlapsWithPictureInPictureWindow() const {
@@ -1112,6 +1145,10 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
 }
 
 bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
+  return DoUpdateBoundsAndRedrawPopup(/*prefer_prev_arrow_side=*/false);
+}
+
+bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
   gfx::Size preferred_size = CalculatePreferredSize({});
   gfx::Rect popup_bounds;
 
@@ -1177,8 +1214,15 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
                                       kAutofillPopupMinWidth,
                                       kAutofillPopupMaxWidth));
 
+  views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
+      GetWidget()->GetRootView()->GetBorder());
+  std::vector<views::BubbleArrowSide> preferred_popup_sides =
+      GetPreferredPopupSides(
+          /*is_root_popup=*/!parent_, prefer_prev_arrow_side,
+          /*prev_arrow=*/border ? border->arrow() : BubbleBorder::Arrow::NONE);
   popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
-      element_bounds, content_area_bounds, preferred_size);
+      element_bounds, content_area_bounds, preferred_size,
+      preferred_popup_sides);
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
                                      controller_->GetWebContents())) {

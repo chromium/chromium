@@ -104,7 +104,7 @@ class PictureInPictureBrowserFrameView
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 #if BUILDFLAG(IS_LINUX)
-  gfx::Insets MirroredFrameBorderInsets() const override;
+  gfx::Insets RestoredMirroredFrameBorderInsets() const override;
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;
 #endif

@@ -1639,6 +1639,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;window...
         </message>
+        <message name="IDS_COMPACT_MODE" desc="The text label of the Toggle Compact Mode item, used to make the browser compact.">
+          &amp;Toggle Compact Mode
+        </message>
         <message name="IDS_CHROMELABS" desc="The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
         </message>
@@ -1688,6 +1691,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;Window...
+        </message>
+        <message name="IDS_COMPACT_MODE" desc="The text label of the Toggle Compact Mode item, used to make the browser compact.">
+          &amp;Toggle Compact Mode
         </message>
         <message name="IDS_CHROMELABS" desc="In Title Case: The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
@@ -2666,6 +2672,27 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK"
                desc="On the downloads page, the accept risk survey option in the interstitial to bypass a dangerous download warning.">
         I'm willing to accept the risk
+      </message>
+      <!-- Dangerous Download Interstitial Accessibility -->
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE_ACCESSIBLE"
+               desc="On the downloads page, the accessible label text for the survey title in the interstitial to bypass a dangerous download warning.">
+        Tell us why you're downloading this file anyway survey
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE_ACCESSIBLE"
+               desc="On the downloads page, the accessible label text for the created file survey option in the interstitial to bypass a dangerous download warning.">
+        I created this file, radio button group, 1 of 3
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL_ACCESSIBLE"
+               desc="On the downloads page, the accessible label text for the trust site survey option within the interstitial to bypass a dangerous download warning.">
+        I trust the site, radio button group, 2 of 3
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL_ACCESSIBLE"
+               desc="On the downloads page, the accessible label text for the trust site survey option with a url within the interstitial to bypass a dangerous download warning.">
+        I trust the site (<ph name="SITE_URL">$1<ex>https://example.com</ex></ph>), radio button group, 2 of 3
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK_ACCESSIBLE"
+               desc="On the downloads page, the accessible label text for the accept risk survey option in the interstitial to bypass a dangerous download warning.">
+        I'm willing to accept the risk, radio button group, 3 of 3
       </message>
 
       <!-- Download Alerts for Accessibility -->
@@ -7753,6 +7780,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_SEARCH_BOX_MULTIMODAL_IMAGE_THUMBNAIL" desc="Aria label for the Lens image selection thumbnail in the multimodal searchbox. Spoken by screen readers when the thumbnail is highlighted, and instructs the user to press enter or backspace to delete the selection.">
         Your Google Lens selection. Press enter or backspace to delete your Google Lens selection
       </message>
+      <message name="IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT" desc="The text displayed in the lens searchboxes when they are empty.">
+        Search
+      </message>
       <message name="IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TOOLTIP" desc="The tooltip for adding a custom link shortcut. (On the New Tab Page)">
         Add shortcut
       </message>
@@ -11445,10 +11475,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_INPUT_ARIA_LABEL" desc="The a11y label of the tab group name input in the tab organization UI" is_accessibility_with_no_ui="true">
         Tab group name: <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
-      <message name="IDS_TAB_ORGANIZATION_EDIT_ARIA_LABEL" desc="The a11y label of the tab group edit button in the tab organization UI" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_EDIT_ARIA_LABEL" desc="The a11y label and tooltip of the tab group edit button in the tab organization UI">
         Edit group name <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
-      <message name="IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL" desc="The a11y label of the tab group reject button in the tab organization UI" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL" desc="The a11y label and tooltip of the tab group reject button in the tab organization UI">
         Remove group <ph name="NAME">$1<ex>My tab group</ex></ph>
       </message>
       <message name="IDS_TAB_ORGANIZATION_THUMBS_DOWN" desc="Accessibility label for the thumbs down icon that a user can click to provide negative feedback about a tab organization." is_accessibility_with_no_ui="true">
@@ -11571,22 +11601,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               other {Ungroup Tab Groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Close Tab and Delete Group?}
-              other {Close Tab and Delete Groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Close Tabs and Delete Group?}
-              other {Close Tabs and Delete Groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Close Tab and Delete Group?}
+            =1 {Close Tabs and Delete Group?}
+            other {Close Tabs and Delete Groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Remove Tab and Delete Group?}
-              other {Remove Tab and Delete Groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Remove Tabs and Delete Group?}
-              other {Remove Tabs and Delete Groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Remove Tab and Delete Group?}
+            =1 {Remove Tabs and Delete Group?}
+            other {Remove Tabs and Delete Groups?}}
         </message>
         <!-- OK Text -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
@@ -11615,22 +11639,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
               other {Ungroup tab groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Close tab and delete group?}
-              other {Close tab and delete groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Close tabs and delete group?}
-              other {Close tabs and delete groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Close tab and delete group?}
+            =1 {Close tabs and delete group?}
+            other {Close tabs and delete groups?}}
         </message>
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
-          {TAB_COUNT, plural,
-            =1 {{GROUP_COUNT, plural,
-              =1 {Remove tab and delete group?}
-              other {Remove tab and delete groups?}}}
-            other {{GROUP_COUNT, plural,
-              =1 {Remove tabs and delete group?}
-              other {Remove tabs and delete groups?}}}}
+          {MULTI_GROUP_TAB_COUNT, plural,
+            =0 {Remove tab and delete group?}
+            =1 {Remove tabs and delete group?}
+            other {Remove tabs and delete groups?}}
         </message>
         <!-- OK Text -->
         <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
@@ -15587,14 +15605,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <if expr="not is_android">
       <!-- Device Chooser Prompt -->
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF" desc="Text of a link the user can click to get help information when Bluetooth adapter is turned off.">
-        <ph name="TURN_ON_BLUETOOTH_LINK">$1<ex>Turn on Bluetooth</ex></ph> to allow pairing
+      <message name="IDS_SERIAL_DEVICE_CHOOSER_ADAPTER_OFF" desc="Text of a link the user can click to get help information when Bluetooth adapter is turned off.">
+        <ph name="TURN_ON_BLUETOOTH_LINK">$1<ex>Turn on Bluetooth</ex></ph> to explore Bluetooth devices
       </message>
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT" desc="Text of the 'Turn on Bluetooth' link when Bluetooth adapter is turned off.">
+      <message name="IDS_SERIAL_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT" desc="Text of the link for turning on Bluetooth when Bluetooth adapter is turned off.">
         Turn on Bluetooth
       </message>
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT" desc="Text of the 'Open Preferences' link when browser does not have Bluetooth permission.">
-        Open System Preferences
+      <message name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT" desc="Text of the link for opening system settings when browser does not have Bluetooth permission.">
+        System Settings
       </message>
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN" desc="Text of a button the user can click to start a new scan for Bluetooth devices.">
         Re-scan
@@ -16602,6 +16620,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_DESC" desc="The description of a dialog that is shown when a user is verifying their presence in passkey creation / sign-in flows explaining that the website requires that.">
         <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you
       </message>
+      <message name="IDS_WEBAUTHN_GPM_SIX_DIGIT_PIN_ACCESSIBILITY_LABEL" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering a 6-digit pin, informing which digit should be entered now and how to remove the last typed digit.">
+        Enter PIN digit <ph name="NUM_DIGIT">$1<ex>3</ex></ph> of 6. Use backspace or delete to remove the last digit.
+      </message>
       <message name="IDS_WEBAUTHN_FORGOT_GPM_PIN_BUTTON" desc="The label of a button that is displayed in a user verification dialog with a Google Password Manager PIN that allows to reset it.">
         Forgot PIN
       </message>
@@ -16645,6 +16666,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_SAVED_LINK" desc="Link text within a bubble that is displayed as a confirmation that a passkey was created and saved in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_SAVED_LABEL for more details.">
         Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_TITLE" desc="The title of a bubble that is displayed to notify that the creation of a new passkey is necessary because the old passkey was deleted from Google Password Manager.">
+        Passkey update needed
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_LABEL" desc="The label in a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager, explaining to the user to sign in to create a new one. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Sign in to this site to create a new passkey. The old one was deleted from Google Password Manager.
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_MANAGE_PASSKEYS_BUTTON" desc="The label of the 'Manage passkeys' button in the passkey-deleted-confirmation bubble. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Manage passkeys
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_GOT_IT_BUTTON" desc="The label of the 'Got it' button in the passkey-deleted-confirmation bubble.">
+        Got it
       </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->

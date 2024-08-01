@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -28,7 +29,7 @@ class HFSIteratorTest : public testing::Test {
   void GetTargetFiles(bool case_sensitive,
                       std::set<std::u16string>* files,
                       std::set<std::u16string>* dirs) {
-    const char16_t* const kBaseFiles[] = {
+    const auto kBaseFiles = std::to_array({
         u"first/second/third/fourth/fifth/random",
         u"first/second/third/fourth/Hello World",
         u"first/second/third/symlink-random",
@@ -36,16 +37,16 @@ class HFSIteratorTest : public testing::Test {
         u"first/unicode_name",
         u"README.txt",
         u".metadata_never_index",
-    };
+    });
 
-    const char16_t* const kBaseDirs[] = {
+    const auto kBaseDirs = std::to_array({
         u"first/second/third/fourth/fifth",
         u"first/second/third/fourth",
         u"first/second/third",
         u"first/second",
         u"first",
         u".Trashes",
-    };
+    });
 
     const std::u16string dmg_name = u"SafeBrowsingDMG/";
 

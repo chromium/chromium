@@ -225,7 +225,7 @@ bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
       return false;
     }
     PasswordParserOverrides overrides =
-        PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)
+        PasswordParserOverrides::FromPasswordForm(*pw_form, *form_structure)
             .value_or(PasswordParserOverrides());
     return cached_data_->password_parser_overrides == overrides;
   }
@@ -770,7 +770,8 @@ void AndroidAutofillProvider::MaybeSendPrefillRequest(
       form_structure->ToFormData(), CreateSessionId());
   cached_data_->cached_form->UpdateFieldTypes(*form_structure);
   if (std::optional<PasswordParserOverrides> overrides =
-          PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)) {
+          PasswordParserOverrides::FromPasswordForm(*pw_form,
+                                                    *form_structure)) {
     // If we manage to match the fields that the password form parser
     // identified as username and password fields, override their types.
     cached_data_->password_parser_overrides = *std::move(overrides);
@@ -789,12 +790,15 @@ AndroidAutofillProvider::PasswordParserOverrides::ToFieldTypeMap() const {
   if (password_field_id) {
     result.emplace(*password_field_id, FieldType::PASSWORD);
   }
+  if (new_password_field_id) {
+    result.emplace(*new_password_field_id, FieldType::NEW_PASSWORD);
+  }
   return result;
 }
 
 // static
 std::optional<AndroidAutofillProvider::PasswordParserOverrides>
-AndroidAutofillProvider::PasswordParserOverrides::FromLoginForm(
+AndroidAutofillProvider::PasswordParserOverrides::FromPasswordForm(
     const PasswordForm& pw_form,
     const FormStructure& form_structure) {
   PasswordParserOverrides result;
@@ -811,30 +815,20 @@ AndroidAutofillProvider::PasswordParserOverrides::FromLoginForm(
       result.password_field_id = field->global_id();
     }
   }
-  // A login form must always have a username field and a password field.
-  if (!result.username_field_id || !result.password_field_id) {
-    // TODO(crbug.com/41496211): This should never be reachable. Remove once
-    // it is clear how it can happen.
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.username_id",
-                            pw_form.username_element_renderer_id.value());
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.password_id",
-                            pw_form.password_element_renderer_id.value());
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.fields.size",
-                            form_structure.fields().size());
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.form_signature",
-                            form_structure.form_signature().value());
-    SCOPED_CRASH_KEY_STRING1024("crbug1523259", "fs.fields.global_ids", [&] {
-      std::ostringstream ss;
-      for (size_t i = 0;
-           i < std::min<size_t>(10u, form_structure.fields().size()); ++i) {
-        ss << form_structure.fields()[i]->global_id() << " ";
-      }
-      return ss.str();
-    }());
-    base::debug::DumpWithoutCrashing();
-    return std::nullopt;
+
+  // Perform consistency checks to confirm that the lifting was successful.
+  if (pw_form.IsLikelyLoginForm() && result.username_field_id &&
+      result.password_field_id) {
+    return result;
   }
-  return result;
+  if (pw_form.IsLikelyChangePasswordForm() && result.password_field_id &&
+      result.new_password_field_id &&
+      base::FeatureList::IsEnabled(
+          features::kAndroidAutofillPrefillRequestsForChangePassword)) {
+    return result;
+  }
+
+  return std::nullopt;
 }
 
 AndroidAutofillProvider::CachedData::CachedData() = default;

@@ -757,8 +757,11 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 
     PublisherTest::SetUp();
 
-    // This test class could be inherited and set different feature flag, we
-    // only expect Lacros is the primary browser when the Lacros flags are set.
+    // TODO(b/354842935): Remove the assert when removing the `kLacrosOnly`
+    // feature flag.
+    // This test class could be inherited and set different
+    // feature flag, we only expect Lacros is the primary browser when the
+    // Lacros flags are set.
     ASSERT_EQ(base::FeatureList::IsEnabled(
                   ash::standalone_browser::features::kLacrosOnly),
               crosapi::browser_util::IsLacrosEnabled());

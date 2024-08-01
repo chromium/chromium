@@ -32,6 +32,9 @@ namespace policy {
 namespace {
 
 constexpr char kInvalidJson[] = R"({"foo": "bar")";
+constexpr char16_t kInvalidJsonParsingError[] =
+    u"Policy parsing error: Invalid JSON string: Line: 1, column: 14, Syntax "
+    u"error.";
 
 constexpr char kInvalidPolicyName[] = "invalid-policy-name";
 
@@ -87,6 +90,29 @@ constexpr char kValidDeviceWeeklyScheduledSuspendList[] = R"([
         "time": 25200000
       }
     }
+])";
+
+constexpr char kValidDeviceRestrictionScheduleJson[] = R"([
+  {
+    "start": {
+        "day_of_week": "WEDNESDAY",
+        "milliseconds_since_midnight": 43200000
+    },
+    "end": {
+        "day_of_week": "WEDNESDAY",
+        "milliseconds_since_midnight": 75600000
+    }
+  },
+  {
+    "start": {
+        "day_of_week": "FRIDAY",
+        "milliseconds_since_midnight": 64800000
+    },
+    "end": {
+        "day_of_week": "MONDAY",
+        "milliseconds_since_midnight": 21600000
+    }
+  }
 ])";
 
 }  // namespace
@@ -873,6 +899,44 @@ TEST_F(DevicePolicyDecoderTest, DevicePostQuantumKeyAgreementEnabled) {
   DecodeDevicePolicyTestHelper(device_policy,
                                key::kDevicePostQuantumKeyAgreementEnabled,
                                std::move(devicepostquantumkeyagreementenabled));
+}
+
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceRestrictionSchedule) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceRestrictionSchedule);
+
+  auto decoding_result = DecodeJsonStringAndNormalize(
+      kValidDeviceRestrictionScheduleJson, key::kDeviceRestrictionSchedule);
+  ASSERT_TRUE(decoding_result.has_value());
+  base::Value device_restriction_schedule(
+      decoding_result->decoded_json.Clone());
+
+  device_policy.mutable_devicerestrictionschedule()->set_value(
+      kValidDeviceRestrictionScheduleJson);
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceRestrictionSchedule,
+                               std::move(device_restriction_schedule));
+}
+
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceRestrictionScheduleError) {
+  em::ChromeDeviceSettingsProto device_policy;
+  device_policy.mutable_devicerestrictionschedule()->set_value(kInvalidJson);
+
+  PolicyBundle bundle;
+  PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
+
+  base::WeakPtr<ExternalDataManager> external_data_manager;
+  DecodeDevicePolicy(device_policy, external_data_manager, &policies);
+
+  const PolicyMap::Entry* entry = policies.Get(key::kDeviceRestrictionSchedule);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_TRUE(entry->HasMessage(PolicyMap::MessageType::kError));
+  EXPECT_EQ(
+      kInvalidJsonParsingError,
+      entry->GetLocalizedMessages(PolicyMap::MessageType::kError,
+                                  PolicyMap::Entry::L10nLookupFunction()));
 }
 
 }  // namespace policy

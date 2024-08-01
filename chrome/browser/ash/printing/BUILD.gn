@@ -147,7 +147,10 @@ static_library("printing") {
     deps += [ "//chrome/services/cups_proxy" ]
   }
 
-  public_deps = [ "//chromeos:chromeos_export" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos:chromeos_export",
+  ]
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/printing/enterprise",
@@ -209,6 +212,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/oauth2:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/printscanmgr",
     "//third_party/libipp",
   ]

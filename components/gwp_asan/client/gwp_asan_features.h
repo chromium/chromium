@@ -22,6 +22,7 @@ GWP_ASAN_EXPORT extern const base::FeatureParam<int>
 enum class ExtremeLightweightUAFDetectorTargetProcesses {
   kAllProcesses,
   kBrowserProcessOnly,
+  kNonRendererProcesses,
 };
 GWP_ASAN_EXPORT extern const base::FeatureParam<
     ExtremeLightweightUAFDetectorTargetProcesses>

@@ -53,6 +53,7 @@ static_library("dbus") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/dbus/vm",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/policy/messaging_layer/storage_selector",
@@ -91,6 +92,7 @@ static_library("dbus") {
     "//chrome/browser/ash/power/ml",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
@@ -254,6 +256,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/dbus/vm:unit_tests",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos:test_support",
     "//chrome/test:test_support",

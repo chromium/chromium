@@ -794,13 +794,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:prefetchQuery") {
     replacements->push_back(Replacement(GOOGLE_PREFETCH_QUERY, start));
   } else if (parameter == "google:prefetchSource") {
-    if (base::FeatureList::IsEnabled(switches::kPrefetchParameterFix)) {
-      // Do nothing here as assistedQueryStats attentively takes over this
-      // component. See crbug.com/345275145 for details.
-      // Do not delete this branch.
-    } else {
-      replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
-    }
+    replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
   } else if (parameter == "google:RLZ") {
     replacements->push_back(Replacement(GOOGLE_RLZ, start));
   } else if (parameter == "google:searchClient") {
@@ -846,7 +840,11 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (!prepopulated_) {
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
                               /* is externally supplied template? */ false);
-    if (!base::FeatureList::IsEnabled(
+    // Note: in certain scenarios this function is tested before FeatureFlag is
+    // initialized. Check whether FeatureList has been instantiated before
+    // testing the flag to avoid talking to EarlyFeatureAccessTracker.
+    if (!base::FeatureList::GetInstance() ||
+        !base::FeatureList::IsEnabled(
             omnibox::kDropUnrecognizedTemplateUrlParameters)) {
       url->insert(start, full_parameter.data(), full_parameter.size());
       return false;
@@ -1152,11 +1150,15 @@ std::string TemplateURLRef::HandleReplacements(
         // TODO(crbug.com/345275145): Use GOOGLE_ASSISTED_QUERY_STATS which is
         // on both the server and local configuration to attach the prefetch
         // param. If this approach works well, remove the prefetchSource
-        // component.
+        // component. If the browser process is starting up,
+        // base::FeatureList::GetInstance may return null, in this case we treat
+        // it as enabled to ensure the prefetch parameter is always attached to
+        // the URL.
         bool is_search_prefetch = !search_terms_args.prefetch_param.empty();
         bool should_attach_prefetch_param =
-            base::FeatureList::IsEnabled(switches::kPrefetchParameterFix) &&
-            is_search_prefetch;
+            is_search_prefetch &&
+            (!base::FeatureList::GetInstance() ||
+             base::FeatureList::IsEnabled(switches::kPrefetchParameterFix));
         if (should_attach_prefetch_param) {
           // Ensure the prefetch param is attached even if gs_lcrp is not
           // needed.
@@ -1305,8 +1307,12 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       case GOOGLE_PREFETCH_SOURCE: {
-        CHECK(!base::FeatureList::IsEnabled(switches::kPrefetchParameterFix));
-        if (!search_terms_args.prefetch_param.empty()) {
+        // Ignore this replacement if the fix feature flag is enabled; the
+        // parameter will be handled by `GOOGLE_ASSISTED_QUERY_STATS`. See
+        // crbug.com/345275145 for details.
+        if ((base::FeatureList::GetInstance() &&
+             !base::FeatureList::IsEnabled(switches::kPrefetchParameterFix)) &&
+            !search_terms_args.prefetch_param.empty()) {
           HandleReplacement("pf", search_terms_args.prefetch_param, replacement,
                             &url);
         }

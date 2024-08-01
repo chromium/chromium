@@ -840,7 +840,7 @@ void PhysicalBoxFragment::MutableForOofFragmentation::Merge(
       fragment_.oof_data_ = MakeGarbageCollected<OofData>();
     }
     for (auto entry : *query) {
-      fragment_.oof_data_->anchor_query.insert(entry.key, entry.value);
+      fragment_.oof_data_->AnchorQuery().insert(entry.key, entry.value);
     }
   }
 
@@ -1082,11 +1082,12 @@ void PhysicalBoxFragment::AddOutlineRects(
     // additional_offset to be an offset from containing_block.
     // Since containing_block is our layout object, offset must be 0,0.
     // https://crbug.com/968019
-    OutlineRectCollector* child_collector = collector.ForDescendantCollector();
+    std::unique_ptr<OutlineRectCollector> child_collector =
+        collector.ForDescendantCollector();
     AddOutlineRectsForNormalChildren(
         *child_collector, PhysicalOffset(), outline_type,
         To<LayoutBoxModelObject>(GetLayoutObject()));
-    collector.Combine(child_collector, additional_offset);
+    collector.Combine(child_collector.get(), additional_offset);
 
     if (ShouldIncludeBlockInkOverflowForAnchorOnly(outline_type)) {
       for (const auto& child : PostLayoutChildren()) {
@@ -1126,7 +1127,8 @@ void PhysicalBoxFragment::AddOutlineRectsForInlineBox(
   DCHECK(GetLayoutObject());
   DCHECK(GetLayoutObject()->IsLayoutInline());
   const auto* layout_object = To<LayoutInline>(GetLayoutObject());
-  auto* cursor_collector = collector.ForDescendantCollector();
+  std::unique_ptr<OutlineRectCollector> cursor_collector =
+      collector.ForDescendantCollector();
   InlineCursor cursor(*container);
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
@@ -1168,7 +1170,7 @@ void PhysicalBoxFragment::AddOutlineRectsForInlineBox(
   // Adjust the rectangles using |additional_offset| and |container_relative|.
   if (!container_relative)
     additional_offset -= this_offset_in_container;
-  collector.Combine(cursor_collector, additional_offset);
+  collector.Combine(cursor_collector.get(), additional_offset);
 
   if (ShouldIncludeBlockInkOverflowForAnchorOnly(outline_type) &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {

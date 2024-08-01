@@ -50,6 +50,10 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   virtual void DiscoverSinksNow();
 
+  // Resets `local_state_change_registrar_` and thus stops propagating changes
+  // to the allow all IPS pref.
+  void StopObservingPrefChanges();
+
   // Marked virtual for tests.
   virtual std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
   CreateImpl(const OnSinksDiscoveredCallback& sinks_discovered_cb,

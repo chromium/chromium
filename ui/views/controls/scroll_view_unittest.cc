@@ -33,6 +33,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
@@ -874,6 +875,100 @@ TEST_F(ScrollViewTest, ScrollToPositionUpdatesScrollBar) {
   EXPECT_EQ(0, scroll_bar->GetPosition());
   scroll_view_->ScrollToPosition(scroll_bar, 20);
   EXPECT_GT(scroll_bar->GetPosition(), 0);
+}
+
+TEST_F(ScrollViewTest, HorizontalScrollBarAccessibleScrollXProperties) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+  View* contents = InstallContents();
+  contents->SetBounds(0, 0, 500, 20);
+  InvalidateAndRunScheduledLayoutOnScrollView();
+  auto* scroll_bar = test_api.GetScrollBar(HORIZONTAL);
+  ASSERT_TRUE(scroll_bar);
+
+  // Verify kScrollXMin and kScrollXMax with initial content size.
+  ui::AXNodeData scroll_view_node_data;
+  scroll_view_node_data = ui::AXNodeData();
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &scroll_view_node_data);
+  EXPECT_TRUE(scroll_view_node_data.GetBoolAttribute(
+      ax::mojom::BoolAttribute::kScrollable));
+  EXPECT_EQ(scroll_bar->GetMinPosition(),
+            scroll_view_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kScrollXMin));
+  EXPECT_EQ(scroll_bar->GetMaxPosition(),
+            scroll_view_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kScrollXMax));
+
+  // Set the content width to 400 after which kScrollXMax should be updated
+  // and kScrollXMin remains 0 as GetMinPosition() always returns 0.
+  contents->SetBounds(0, 0, 400, 50);
+  InvalidateAndRunScheduledLayoutOnScrollView();
+  scroll_view_node_data = ui::AXNodeData();
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &scroll_view_node_data);
+  EXPECT_EQ(0, scroll_view_node_data.GetIntAttribute(
+                   ax::mojom::IntAttribute::kScrollXMin));
+  EXPECT_EQ(400 - test_api.contents_viewport()->width(),
+            scroll_view_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kScrollXMax));
+
+  // Scroll the horizontal scrollbar after which kScrollX should be updated.
+  EXPECT_EQ(0, scroll_view_node_data.GetIntAttribute(
+                   ax::mojom::IntAttribute::kScrollX));
+  scroll_view_->ScrollToPosition(scroll_bar, 20);
+  scroll_view_node_data = ui::AXNodeData();
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &scroll_view_node_data);
+  EXPECT_EQ(
+      test_api.CurrentOffset().x(),
+      scroll_view_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
+}
+
+TEST_F(ScrollViewTest, VerticalScrollBarAccessibleScrollYProperties) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+  View* contents = InstallContents();
+  contents->SetBounds(0, 0, 50, 500);
+  InvalidateAndRunScheduledLayoutOnScrollView();
+  auto* scroll_bar = test_api.GetScrollBar(VERTICAL);
+  ASSERT_TRUE(scroll_bar);
+
+  // Verify kScrollYMin and kScrollYMax with initial content size.
+  ui::AXNodeData scroll_view_node_data;
+  scroll_view_node_data = ui::AXNodeData();
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &scroll_view_node_data);
+  EXPECT_TRUE(scroll_view_node_data.GetBoolAttribute(
+      ax::mojom::BoolAttribute::kScrollable));
+  EXPECT_EQ(scroll_bar->GetMinPosition(),
+            scroll_view_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kScrollYMin));
+  EXPECT_EQ(scroll_bar->GetMaxPosition(),
+            scroll_view_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kScrollYMax));
+
+  // Set the content width to 400 after which kScrollYMax should be updated
+  // and kScrollYMin remains 0 as GetMinPosition() always returns 0.
+  contents->SetBounds(0, 0, 50, 400);
+  InvalidateAndRunScheduledLayoutOnScrollView();
+  scroll_view_node_data = ui::AXNodeData();
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &scroll_view_node_data);
+  EXPECT_EQ(0, scroll_view_node_data.GetIntAttribute(
+                   ax::mojom::IntAttribute::kScrollYMin));
+  EXPECT_EQ(400 - test_api.contents_viewport()->height(),
+            scroll_view_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kScrollYMax));
+
+  // Scroll the vertical scrollbar after which kScrollY should be updated.
+  EXPECT_EQ(0, scroll_view_node_data.GetIntAttribute(
+                   ax::mojom::IntAttribute::kScrollY));
+  scroll_view_->ScrollToPosition(scroll_bar, 20);
+  scroll_view_node_data = ui::AXNodeData();
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &scroll_view_node_data);
+  EXPECT_EQ(
+      test_api.CurrentOffset().y(),
+      scroll_view_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollY));
 }
 
 // Test that calling ScrollToPosition() also updates the position of the

@@ -25,6 +25,8 @@ const char* UseCaseToString(UseCase use_case) {
       return "loading";
     case UseCase::kMainThreadGesture:
       return "main_thread_gesture";
+    case UseCase::kDiscreteInputResponse:
+      return "discrete_input_response";
   }
 }
 

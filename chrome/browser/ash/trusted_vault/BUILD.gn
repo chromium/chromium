@@ -18,6 +18,7 @@ static_library("trusted_vault") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/crosapi/mojom",
     "//components/keyed_service/core",

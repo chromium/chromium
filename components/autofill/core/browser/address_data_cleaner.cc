@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/address_data_cleaner.h"
 
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/address_data_manager.h"
@@ -236,13 +237,10 @@ AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
     const AutofillProfileComparator& comparator) {
   // Unfortunately, a vector of non-pointers is needed for
   // `CalculateMinimalIncompatibleTypeSets()`.
-  std::vector<AutofillProfile> existing_profiles_copy;
-  existing_profiles_copy.reserve(existing_profiles.size());
-  for (const AutofillProfile* profile : existing_profiles) {
-    existing_profiles_copy.push_back(*profile);
-  }
   return CalculateMinimalIncompatibleTypeSets(
-      import_candidate, existing_profiles_copy, comparator);
+      import_candidate,
+      base::ToVector(existing_profiles, [](auto* x) { return *x; }),
+      comparator);
 }
 
 // static

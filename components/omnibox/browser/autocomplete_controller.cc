@@ -1048,11 +1048,12 @@ bool AutocompleteController::ShouldRunProvider(
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kBookmarks);
 
-        // @History starter pack scope - run history quick and history url
-        // providers.
+        // @History starter pack scope - run the history providers & featured
+        // search for embeddings IPH suggestions.
         case AutocompleteProvider::TYPE_HISTORY_QUICK:
         case AutocompleteProvider::TYPE_HISTORY_URL:
         case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
+        case AutocompleteProvider::TYPE_FEATURED_SEARCH:
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kHistory);
 
@@ -1572,6 +1573,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // to a typical search.
       match.answer.reset();
       match.answer_template.reset();
+      match.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
       match.associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
                                                  input_));

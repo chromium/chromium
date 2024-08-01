@@ -31,4 +31,4 @@ enum OsRegistrationResult {
   kExcessiveQueueSize = 4,
   kRejectedByOs = 5,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionOsRegistrationResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionOsRegistrationResult)

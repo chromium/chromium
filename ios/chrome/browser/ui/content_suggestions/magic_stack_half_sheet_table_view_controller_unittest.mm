@@ -27,7 +27,7 @@ class MagicStackHalfSheetTableViewControllerUnittest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   MagicStackHalfSheetTableViewController* view_controller_;
 };
 

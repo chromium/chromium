@@ -77,6 +77,19 @@ declare_args() {
                                   use_partition_alloc_as_malloc_default
 }
 
+declare_args() {
+  # Whether PartitionAlloc dispatch can be replaced with another dispatch with
+  # some more safety checks at runtime or not.  When true, the allocator shim
+  # provides an extended API to swap PartitionAlloc.
+  # TODO(https://crbug.com/351974425): Enable this when `use_partition_alloc_as_malloc` is true.
+  enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support =
+      false
+}
+
+assert(
+    !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
+    "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
+
 assert(!use_allocator_shim || (is_android || is_apple || is_chromeos ||
                                    is_fuchsia || is_linux || is_win),
        "The allocator shim does not (yet) support the platform.")

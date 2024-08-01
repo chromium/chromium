@@ -37,6 +37,7 @@ class CloudApProviderWin : public PlatformAuthProvider {
   ~CloudApProviderWin() override;
 
   // enterprise_auth::PlatformAuthProvider:
+  bool SupportsOriginFiltering() override;
   void FetchOrigins(FetchOriginsCallback on_fetch_complete) override;
   void GetData(const GURL& url,
                PlatformAuthProviderManager::GetDataCallback callback) override;

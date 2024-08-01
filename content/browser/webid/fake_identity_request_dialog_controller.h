@@ -68,6 +68,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   content::WebContents* ShowModalDialog(
       const GURL& url,
+      blink::mojom::RpMode rp_mode,
       DismissCallback dismiss_callback) override;
 
   void CloseModalDialog() override;

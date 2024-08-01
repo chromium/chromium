@@ -73,6 +73,8 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadUpdateUrl(&out->update_url) ||
       !data.ReadTrustedBiddingSignalsUrl(&out->trusted_bidding_signals_url) ||
       !data.ReadTrustedBiddingSignalsKeys(&out->trusted_bidding_signals_keys) ||
+      !data.ReadTrustedBiddingSignalsCoordinator(
+          &out->trusted_bidding_signals_coordinator) ||
       !data.ReadUserBiddingSignals(&out->user_bidding_signals) ||
       !data.ReadAds(&out->ads) || !data.ReadAdComponents(&out->ad_components) ||
       !data.ReadAdSizes(&out->ad_sizes) ||

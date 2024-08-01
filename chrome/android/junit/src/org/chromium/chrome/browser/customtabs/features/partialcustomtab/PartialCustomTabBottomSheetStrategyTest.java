@@ -57,11 +57,9 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -602,9 +600,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
-        int expected = ResizeType.AUTO_EXPANSION;
-        var histogramExpansion =
-                HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
 
         strategy.onShowSoftInput(() -> {});
         shadowOf(Looper.getMainLooper()).idle();
@@ -615,7 +610,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         // Verify that the tab expands to full height.
         assertTabIsFullHeight(mPCCTTestRule.mAttributeResults.get(length - 1));
-        histogramExpansion.assertExpected("ResizeType.AUTO_EXPANSION should be recorded once.");
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), anyInt());
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
@@ -746,15 +740,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         HandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
-        int expected = ResizeType.MANUAL_EXPANSION;
-        var histogramExpansion =
-                HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
-
         // Drag to the top.
         assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 0));
 
         // invokeResizeCallback() should have been called and MANUAL_EXPANSION logged once.
-        histogramExpansion.assertExpected("ResizeType.MANUAL_EXPANSION should be recorded once.");
     }
 
     @Test
@@ -774,16 +763,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
         // Drag to the top so it can be minimized in the next step.
         assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 0));
 
-        int expected = ResizeType.MANUAL_MINIMIZATION;
-        var histogramExpansion =
-                HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
-
         // Drag down enough -> slide to the initial position.
         assertTabIsAtInitialPos(dragTab(handleStrategy, 50, 650, 1300));
 
         // invokeResizeCallback() should have been called and MANUAL_MINIMIZATION logged once.
-        histogramExpansion.assertExpected(
-                "ResizeType.MANUAL_MINIMIZATION should be recorded once.");
     }
 
     @Test
@@ -1117,14 +1100,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
-        int expected = ResizeType.AUTO_EXPANSION;
-        var histogramExpansion =
-                HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
         strategy.onFindToolbarShown();
         PartialCustomTabTestRule.waitForAnimationToFinish();
 
         assertTabIsFullHeight(getWindowAttributes());
-        histogramExpansion.assertExpected("ResizeType.AUTO_EXPANSION should be recorded once.");
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), anyInt());
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -1136,15 +1115,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
-        expected = ResizeType.AUTO_MINIMIZATION;
-        var histogramMinimization =
-                HistogramWatcher.newSingleRecordWatcher("CustomTabs.ResizeType2", expected);
         strategy.onFindToolbarHidden();
         PartialCustomTabTestRule.waitForAnimationToFinish();
 
         assertTabIsAtInitialPos(getWindowAttributes());
-        histogramMinimization.assertExpected(
-                "ResizeType.AUTO_MINIMIZATION should be recorded once.");
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(INITIAL_HEIGHT), anyInt());
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)

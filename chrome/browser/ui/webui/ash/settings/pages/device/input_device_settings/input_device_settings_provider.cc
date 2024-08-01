@@ -431,7 +431,8 @@ void InputDeviceSettingsProvider::SetKeyboardAmbientLightSensorEnabled(
     return;
   }
   keyboard_brightness_control_delegate_
-      ->HandleSetKeyboardAmbientLightSensorEnabled(enabled);
+      ->HandleSetKeyboardAmbientLightSensorEnabled(
+          enabled, KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp);
 
   // Record the keyboard auto-brightness toggle event.
   base::UmaHistogramBoolean(

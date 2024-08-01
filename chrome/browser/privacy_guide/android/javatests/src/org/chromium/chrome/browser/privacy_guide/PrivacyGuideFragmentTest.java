@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -58,9 +59,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment.FragmentType;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -99,6 +101,7 @@ public class PrivacyGuideFragmentTest {
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
     private static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
 
+    @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -115,9 +118,11 @@ public class PrivacyGuideFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setRevision(1)
                     .build();
 
     @Mock private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegateMock;
+    @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
 
     private UserActionTester mActionTester;
 
@@ -132,6 +137,10 @@ public class PrivacyGuideFragmentTest {
             mAllFragments = PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER;
         }
         mChromeBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+
+        mMocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridgeJni);
+        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(true);
+
         mActionTester = new UserActionTester();
     }
 
@@ -266,6 +275,13 @@ public class PrivacyGuideFragmentTest {
                                 ProfileManager.getLastUsedRegularProfile(), preloadPagesState));
     }
 
+    private void setAdTopicsState(boolean isAdTopicsOn) {
+        runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isAdTopicsOn));
+    }
+
     private void executeWhileCapturingIntents(Runnable func) {
         Intents.init();
         try {
@@ -367,74 +383,7 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet_friendlier");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
-    public void testRenderSBFriendlierEnhancedBottomSheet() throws IOException {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet_friendlier");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    public void testRenderSBStandardBottomSheet() throws IOException {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
-        mRenderTestRule.render(getRootView(), "privacy_guide_sb_standard_sheet");
-    }
-
-    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings standard protection
-    // is
-    // launched.
-    @Test
-    @LargeTest
-    @Feature({"HashPrefixRealTimeLookupsTest"})
-    @DisableFeatures({
-        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION,
-        ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS
-    })
-    public void testRenderSBStandardBottomSheetTextWithoutProxy() throws IOException {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
-        onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_two))
-                .check(matches(isDisplayed()));
-        onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_three))
-                .check(matches(isDisplayed()));
-    }
-
-    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings standard protection
-    // is
-    // launched.
-    @Test
-    @LargeTest
-    @Feature({"HashPrefixRealTimeLookupsTest"})
-    @EnableFeatures(ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS)
-    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
-    public void testRenderSBStandardBottomSheetTextWithProxy() throws IOException {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
-        if (BuildConfig.IS_CHROME_BRANDED) {
-            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_two_proxy))
-                    .check(matches(isDisplayed()));
-            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_three_proxy))
-                    .check(matches(isDisplayed()));
-        } else {
-            // hash-prefix real-time check is disabled on Chromium build.
-            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_two))
-                    .check(matches(isDisplayed()));
-            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_three))
-                    .check(matches(isDisplayed()));
-        }
+        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet");
     }
 
     @Test
@@ -547,6 +496,7 @@ public class PrivacyGuideFragmentTest {
         setPreloadStatePG3(PreloadPagesState.STANDARD_PRELOADING);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+        setAdTopicsState(false);
 
         launchPrivacyGuide();
         testButtonVisibility(false, false, false);
@@ -1300,7 +1250,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
     public void testSafeBrowsingCard_enhancedBottomSheetBackButtonBehaviour() {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
@@ -1311,41 +1260,6 @@ public class PrivacyGuideFragmentTest {
         pressBack();
         onViewWaiting(withText(R.string.privacy_guide_safe_browsing_enhanced_title))
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"PrivacyGuide"})
-    @EnableFeatures({
-        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION
-    })
-    public void testSafeBrowsingCard_enhancedFriendlierBottomSheetBackButtonBehaviour() {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        onViewWaiting(withId(R.id.sb_enhanced_sheet_updated)).check(matches(isDisplayed()));
-
-        pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_enhanced_title))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"PrivacyGuide"})
-    public void testSafeBrowsingCard_standardBottomSheetBackButtonBehaviour() {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
-        onViewWaiting(withId(R.id.sb_standard_sheet)).check(matches(isDisplayed()));
-
-        pressBack();
-        onViewWaiting(
-                allOf(
-                        withText(R.string.privacy_guide_safe_browsing_standard_title),
-                        isDisplayed()));
     }
 
     @Test
@@ -1764,24 +1678,11 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
-    public void testBottomSheetControllerOnRecreateOriginal() {
-        launchPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-        mPrivacyGuideTestRule.recreateActivity();
-        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"PrivacyGuide"})
-    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
     public void testBottomSheetControllerOnRecreate() {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
         mPrivacyGuideTestRule.recreateActivity();
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
-        onViewWaiting(withId(R.id.sb_enhanced_sheet_updated)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
     }
 }

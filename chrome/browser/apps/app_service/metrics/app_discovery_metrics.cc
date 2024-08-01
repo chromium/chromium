@@ -101,6 +101,7 @@ std::optional<std::string> AppDiscoveryMetrics::GetAppStringToRecordForPackage(
           GURL(package_id.identifier()));
     case apps::PackageType::kGeForceNow:
       // GFN is not currently supported by the metrics system.
+    case apps::PackageType::kWebsite:
     case apps::PackageType::kSystem:
     case apps::PackageType::kUnknown:
       return std::nullopt;

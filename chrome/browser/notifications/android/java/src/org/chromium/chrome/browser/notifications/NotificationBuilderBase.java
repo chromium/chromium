@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Icon;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -21,7 +22,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -497,7 +497,7 @@ public abstract class NotificationBuilderBase {
             Bitmap publicIcon =
                     mSmallIconBitmapForStatusBar.copy(
                             mSmallIconBitmapForStatusBar.getConfig(), true);
-            builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(publicIcon));
+            builder.setSmallIcon(Icon.createWithBitmap(publicIcon));
         }
         return builder.build();
     }
@@ -521,7 +521,7 @@ public abstract class NotificationBuilderBase {
     protected static void setStatusBarIcon(
             NotificationWrapperBuilder builder, int iconId, @Nullable Bitmap iconBitmap) {
         if (iconBitmap != null) {
-            builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(iconBitmap));
+            builder.setSmallIcon(Icon.createWithBitmap(iconBitmap));
         } else {
             builder.setSmallIcon(iconId);
         }

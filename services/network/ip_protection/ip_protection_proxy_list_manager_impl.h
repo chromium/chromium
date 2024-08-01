@@ -5,15 +5,17 @@
 #ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_IMPL_H_
 #define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_IMPL_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/ip_protection/ip_protection_config_getter.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
@@ -32,7 +34,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   };
 
   explicit IpProtectionProxyListManagerImpl(
-      mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
+      IpProtectionConfigGetter* config_getter,
       bool disable_proxy_refreshing_for_testing = false);
   ~IpProtectionProxyListManagerImpl() override;
 
@@ -56,10 +58,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
 
  private:
   void RefreshProxyList();
-  void OnGotProxyList(
-      base::TimeTicks refresh_start_time_for_metrics,
-      const std::optional<std::vector<net::ProxyChain>>& proxy_list,
-      const network::mojom::GeoHintPtr geo_hint);
+  void OnGotProxyList(base::TimeTicks refresh_start_time_for_metrics,
+                      std::optional<std::vector<net::ProxyChain>> proxy_list,
+                      std::optional<GeoHint> geo_hint);
 
   // Latest fetched proxy list.
   std::vector<net::ProxyChain> proxy_list_;
@@ -75,8 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   bool have_fetched_proxy_list_ = false;
 
   // Source of proxy list, when needed.
-  raw_ptr<mojo::Remote<network::mojom::IpProtectionConfigGetter>>
-      config_getter_;
+  raw_ptr<IpProtectionConfigGetter> config_getter_;
 
   // The last time this instance began refreshing the proxy list.
   base::Time last_proxy_list_refresh_;

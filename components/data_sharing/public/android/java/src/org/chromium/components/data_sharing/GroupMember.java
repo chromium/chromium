@@ -4,6 +4,8 @@
 
 package org.chromium.components.data_sharing;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -19,7 +21,8 @@ public class GroupMember {
     public final @MemberRole int role;
     public final GURL avatarUrl;
 
-    GroupMember(String gaiaId, String displayName, String email, int role, GURL avatarUrl) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public GroupMember(String gaiaId, String displayName, String email, int role, GURL avatarUrl) {
         this.gaiaId = gaiaId;
         this.displayName = displayName;
         this.email = email;

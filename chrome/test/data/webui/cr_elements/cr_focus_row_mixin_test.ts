@@ -5,7 +5,8 @@
 // clang-format off
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {down, pressAndReleaseKeyOn, up} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {down, up} from 'chrome://webui-test/mouse_mock_interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -150,19 +151,20 @@ suite('cr-focus-row-mixin-test', function() {
     assertFalse(focused);
   });
 
-  test('when focus-override is defined, returned element gains focus', () => {
-    const lastButton = document.createElement('button');
-    lastButton.setAttribute('focus-type', 'fake-btn-three');
-    testElement.lastFocused = lastButton;
+  test(
+      'when focus-override is defined, returned element gains focus',
+      async () => {
+        const lastButton = document.createElement('button');
+        lastButton.setAttribute('focus-type', 'fake-btn-three');
+        testElement.lastFocused = lastButton;
 
-    const wait = eventToPromise('focus', testElement);
-    testElement.dispatchEvent(new CustomEvent('focus'));
-    return wait.then(() => {
-      const button = getDeepActiveElement();
-      assertTrue(!!button);
-      assertEquals('fake button three', button.textContent!.trim());
-    });
-  });
+        const whenFocus = eventToPromise('focus', testElement);
+        testElement.dispatchEvent(new CustomEvent('focus'));
+        await whenFocus;
+        const button = getDeepActiveElement();
+        assertTrue(!!button);
+        assertEquals('fake button three', button.textContent!.trim());
+      });
 
   test('when shift+tab pressed on first control, focus on container', () => {
     const first = testElement.$.control;

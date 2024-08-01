@@ -45,7 +45,7 @@ class Seat : public aura::client::FocusChangeObserver,
              public ui::PlatformEventObserver,
              public ui::EventHandler,
              public ui::ClipboardObserver,
-             public ash::ImeControllerImpl::Observer,
+             public ash::ImeController::Observer,
              public DataSourceObserver {
  public:
   explicit Seat(std::unique_ptr<DataExchangeDelegate> delegate);
@@ -140,7 +140,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Overridden from DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
-  // Overridden from ash::ImeControllerImpl::Observer:
+  // Overridden from ash::ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 

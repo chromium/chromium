@@ -55,6 +55,7 @@
 #include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_owner.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -66,6 +67,8 @@
 namespace content {
 
 namespace {
+
+using testing::Optional;
 
 class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
  public:
@@ -348,10 +351,9 @@ class NavigationURLLoaderImplTest : public testing::Test {
       EXPECT_FALSE(most_recent_resource_request_->headers.HasHeader(
           net::HttpRequestHeaders::kOrigin));
     } else {
-      std::string origin_header;
-      EXPECT_TRUE(most_recent_resource_request_->headers.GetHeader(
-          net::HttpRequestHeaders::kOrigin, &origin_header));
-      EXPECT_EQ(expected_origin_value, origin_header);
+      EXPECT_THAT(most_recent_resource_request_->headers.GetHeader(
+                      net::HttpRequestHeaders::kOrigin),
+                  Optional(expected_origin_value));
     }
   }
 
@@ -529,13 +531,10 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   ASSERT_TRUE(most_recent_resource_request_);
 
   // Initial request should only have initial headers.
-  std::string header1, header2;
-  EXPECT_TRUE(
-      most_recent_resource_request_->headers.GetHeader("Header1", &header1));
-  EXPECT_EQ("Value1", header1);
-  EXPECT_TRUE(
-      most_recent_resource_request_->headers.GetHeader("Header2", &header2));
-  EXPECT_EQ("Value2", header2);
+  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header1"),
+              Optional(std::string("Value1")));
+  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header2"),
+              Optional(std::string("Value2")));
   EXPECT_FALSE(most_recent_resource_request_->headers.HasHeader("Header3"));
 
   // Overwrite Header2 and add Header3.
@@ -546,16 +545,12 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   delegate.WaitForResponseStarted();
 
   // Redirected request should also have modified headers.
-  EXPECT_TRUE(
-      most_recent_resource_request_->headers.GetHeader("Header1", &header1));
-  EXPECT_EQ("Value1", header1);
-  EXPECT_TRUE(
-      most_recent_resource_request_->headers.GetHeader("Header2", &header2));
-  EXPECT_EQ("", header2);
-  std::string header3;
-  EXPECT_TRUE(
-      most_recent_resource_request_->headers.GetHeader("Header3", &header3));
-  EXPECT_EQ("Value3", header3);
+  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header1"),
+              Optional(std::string("Value1")));
+  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header2"),
+              Optional(std::string("")));
+  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header3"),
+              Optional(std::string("Value3")));
 }
 
 // Tests that the Upgrade If Insecure flag is obeyed.

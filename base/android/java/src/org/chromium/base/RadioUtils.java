@@ -20,9 +20,6 @@ import androidx.annotation.RequiresApi;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.base.compat.ApiHelperForP;
-
 /** Exposes radio related information about the current device. */
 @JNINamespace("base::android")
 public class RadioUtils {
@@ -89,7 +86,7 @@ public class RadioUtils {
                     (ConnectivityManager)
                             ContextUtils.getApplicationContext()
                                     .getSystemService(Context.CONNECTIVITY_SERVICE);
-            Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
+            Network network = connectivityManager.getActiveNetwork();
             if (network == null) {
                 return false;
             }
@@ -118,7 +115,7 @@ public class RadioUtils {
                                     .getSystemService(Context.TELEPHONY_SERVICE);
             int level = -1;
             try {
-                SignalStrength signalStrength = ApiHelperForP.getSignalStrength(telephonyManager);
+                SignalStrength signalStrength = telephonyManager.getSignalStrength();
                 if (signalStrength != null) {
                     level = signalStrength.getLevel();
                 }

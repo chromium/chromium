@@ -41,14 +41,6 @@ fuzzer_test("courgette_fuzzer") {
   ]
 }
 
-fuzzer_test("language_detection_fuzzer") {
-  sources = [ "language_detection_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//components/translate/core/language_detection:language_detection",
-  ]
-}
-
 fuzzer_test("snappy_compress_fuzzer") {
   sources = [ "snappy_compress_fuzzer.cc" ]
   deps = [ "//third_party/snappy:snappy" ]

@@ -32,7 +32,7 @@ class HistoryTabHelperTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();

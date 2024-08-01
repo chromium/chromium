@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_MODE;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SET_FOCUS_VIEW_CALLBACK;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
 import android.graphics.Bitmap;
@@ -161,37 +162,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(IDP_BRAND_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-    }
-
-    @Test
-    public void testBrandIconDownloadFails() {
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) {
-                                Callback<Bitmap> callback =
-                                        (Callback<Bitmap>) invocation.getArguments()[1];
-                                callback.onResult(null);
-                                return null;
-                            }
-                        })
-                .when(mMockImageFetcher)
-                .fetchImage(any(), any(Callback.class));
-
-        mMediator.showAccounts(
-                mTestEtldPlusOne,
-                mTestEtldPlusOne2,
-                Arrays.asList(mAnaAccount),
-                mIdpMetadata,
-                mClientIdMetadata,
-                /* isAutoReauthn= */ false,
-                RpContext.SIGN_IN,
-                /* requestPermission= */ true);
-
-        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
-        // Brand icon should be transparent placeholder icon. This is useful so that the header text
-        // wrapping does not change in the case that the brand icon download succeeds.
-        assertNotNull(headerModel.get(IDP_BRAND_ICON));
     }
 
     /**
@@ -823,6 +793,30 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         verify(mMockBottomSheetController, never()).requestShowContent(any(), anyBoolean());
         mMediator.getTabObserver().onInteractabilityChanged(mTab, true);
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
+    }
+
+    @Test
+    public void testSetFocusViewCallback() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mNewUserAccount),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true);
+
+        assertNotNull(mModel.get(ItemProperties.HEADER).get(SET_FOCUS_VIEW_CALLBACK));
+        assertNotNull(
+                mModel.get(ItemProperties.CONTINUE_BUTTON)
+                        .get(ContinueButtonProperties.PROPERTIES)
+                        .mSetFocusViewCallback);
+        assertNotNull(
+                mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                        .get(DataSharingConsentProperties.PROPERTIES)
+                        .mSetFocusViewCallback);
     }
 
     private void pressBack() {

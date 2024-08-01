@@ -10,6 +10,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -162,6 +163,10 @@ SkColor ShellNativeAppWindow::InactiveFrameColor() const {
 
 gfx::Insets ShellNativeAppWindow::GetFrameInsets() const {
   return gfx::Insets();
+}
+
+gfx::RoundedCornersF ShellNativeAppWindow::GetWindowRadii() const {
+  return gfx::RoundedCornersF();
 }
 
 void ShellNativeAppWindow::SetContentSizeConstraints(

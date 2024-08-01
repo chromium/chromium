@@ -189,7 +189,10 @@ void RealtimeAudioDestinationHandler::Render(
     const AudioCallbackMetric& metric,
     base::TimeDelta playout_delay,
     const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT0("webaudio", "RealtimeAudioDestinationHandler::Render");
+  TRACE_EVENT("webaudio", "RealtimeAudioDestinationHandler::Render", "frames",
+              number_of_frames, "playout_delay (ms)",
+              playout_delay.InMillisecondsF());
+  glitch_info.MaybeAddTraceEvent();
 
   // Denormals can seriously hurt performance of audio processing. This will
   // take care of all AudioNode processes within this scope.

@@ -594,7 +594,7 @@ export class RealboxElement extends RealboxElementBase {
           // thumbnail isn't part of the text input.
           this.queryAutocomplete_(inputValue);
           e.preventDefault();
-        } else if (e.key === 'Tab') {
+        } else if (e.key === 'Tab' && !e.shiftKey) {
           this.$.input.focus();
           e.preventDefault();
         } else if (

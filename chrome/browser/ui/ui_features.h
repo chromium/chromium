@@ -78,8 +78,6 @@ bool IsExtensionMenuInRootAppMenu();
 BASE_DECLARE_FEATURE(kAccessCodeCastUI);
 #endif
 
-BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif
@@ -260,7 +258,6 @@ BASE_DECLARE_FEATURE(kWebUITabStripContextMenuAfterTap);
 // Cocoa to views migration.
 #if BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kViewsFirstRunDialog);
-BASE_DECLARE_FEATURE(kViewsTaskManager);
 BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
 #endif
 
@@ -270,6 +267,10 @@ BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
 BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 #endif
 
+// This feature introduces a toggle that allows users to switch between the
+// standard UI and a compact version of the UI by right clicking the empty area
+// in the Tabstrip.
+BASE_DECLARE_FEATURE(kCompactMode);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

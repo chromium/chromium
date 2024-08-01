@@ -16,8 +16,10 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "content/public/browser/browser_context.h"
-#include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/views/widget/widget.h"
+
+namespace views {
+class Widget;
+}
 
 class Profile;
 
@@ -110,7 +112,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // buttons or textfield to receive keyboard or mouse input.
   void DisableEditorMenu();
 
-  views::UniqueWidgetPtr editor_menu_widget_;
+  std::unique_ptr<views::Widget> editor_menu_widget_;
 
   // May hold the currently active editor card session. If this is nullptr then
   // no session is active.

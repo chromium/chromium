@@ -57,8 +57,9 @@ enum class AutofillManagerEvent {
 // this case, it expects a total of at least `k` OnAfterFoo() events to happen
 // or have happened.
 //
-// The waiter resets itself on OnAutofillManagerDestroyed() events. This makes
-// it suitable for use with TestAutofillManagerInjector.
+// The waiter resets itself on OnAutofillManagerStateChanged() events for
+// kPendingReset. This makes it suitable for use with
+// TestAutofillManagerInjector.
 //
 // Typical usage is as follows:
 //
@@ -151,8 +152,10 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   void Increment(Event event, const base::Location& location = FROM_HERE);
   void Decrement(Event event, const base::Location& location = FROM_HERE);
 
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
-  void OnAutofillManagerReset(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
 
   void OnBeforeLanguageDetermined(AutofillManager& manager) override;
   void OnAfterLanguageDetermined(AutofillManager& manager) override;
@@ -272,11 +275,12 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
 
  private:
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAutofillManagerDestroyed, manager);
-  }
-  void OnAutofillManagerReset(AutofillManager& manager) override {
-    MaybeQuit(&Observer::OnAutofillManagerReset, manager);
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override {
+    MaybeQuit(&Observer::OnAutofillManagerStateChanged, manager, old_state,
+              new_state);
   }
   void OnBeforeLanguageDetermined(AutofillManager& manager) override {
     MaybeQuit(&Observer::OnBeforeLanguageDetermined, manager);

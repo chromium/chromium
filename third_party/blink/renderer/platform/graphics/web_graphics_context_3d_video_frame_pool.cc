@@ -24,8 +24,10 @@
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "perfetto/tracing/track_event_args.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
@@ -103,13 +105,18 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return client_shared_image;
   }
 
-  void DestroySharedImage(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
+  void DestroySharedImage(const gpu::SyncToken& sync_token,
+                          scoped_refptr<gpu::ClientSharedImage> shared_image,
+                          const bool is_mappable_si_enabled) override {
     auto* sii = SharedImageInterface();
     if (!sii)
       return;
-    sii->DestroySharedImage(sync_token, std::move(shared_image));
+    CHECK(shared_image);
+    if (is_mappable_si_enabled) {
+      shared_image->UpdateDestructionSyncToken(sync_token);
+    } else {
+      sii->DestroySharedImage(sync_token, std::move(shared_image));
+    }
   }
 
  private:
@@ -134,7 +141,7 @@ WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
         weak_context_provider)
     : WebGraphicsContext3DVideoFramePool(
           std::move(weak_context_provider),
-          Platform::Current()->GetGpuMemoryBufferManager()) {}
+          SharedGpuContext::GetGpuMemoryBufferManager()) {}
 
 WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
@@ -221,7 +228,15 @@ void CopyToGpuMemoryBuffer(
   auto* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
 
+  // Async version of SII::CopyToGpuMemoryBufferAsync() can't be safely used
+  // in a worker's context. The worker can be terminated at any time
+  // and in such cases `dst_frame` destructor might be call on mojo IO-thread
+  // instead of the worker's thread. It breaks threading rules for using GPU
+  // objects. Ideally we'd like to delay the worker's thread destruction
+  // until SII::CopyToGpuMemoryBufferAsync's callback is done, but I haven't
+  // found a reasonable way to do it yet.
   bool use_async_copy =
+      IsMainThread() &&
       base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync) &&
       dst_frame->shared_image_format_type() ==
           media::SharedImageFormatType::kSharedImageFormat;

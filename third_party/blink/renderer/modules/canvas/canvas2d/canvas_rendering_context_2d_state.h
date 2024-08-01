@@ -45,6 +45,13 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
+namespace v8 {
+class Isolate;
+template <class T>
+class Local;
+class String;
+}  // namespace v8
+
 namespace blink {
 
 class BaseRenderingContext2D;

@@ -21,9 +21,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/proc_maps_linux.h"
@@ -42,6 +39,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
+#include "partition_alloc/thread_cache.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
 namespace partition_alloc::tools {

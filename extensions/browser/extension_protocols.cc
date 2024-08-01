@@ -190,6 +190,15 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
     return false;
   }
 
+  // Prevent unexpected use of a dynamic url request. `chrome.runtime.getURL()`
+  // returns a dynamic url when using the extension feature and when
+  // `use_dynamic_url` is true for the resource.
+  if (extension && extension->guid() == request.url.host() &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDynamicURLRedirection)) {
+    return false;
+  }
+
   // The following checks are meant to replicate similar set of checks in the
   // renderer process, performed by ResourceRequestPolicy::CanRequestResource.
   // These are not exactly equivalent, because we don't have the same bits of

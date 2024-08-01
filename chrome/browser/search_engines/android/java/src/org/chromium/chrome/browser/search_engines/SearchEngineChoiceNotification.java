@@ -15,10 +15,10 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,17 +36,15 @@ public final class SearchEngineChoiceNotification {
      */
     private static class NotificationSnackbarController implements SnackbarController {
         @NonNull private final Context mContext;
-        @NonNull private final SettingsLauncher mSettingsLauncher;
 
-        private NotificationSnackbarController(
-                @NonNull Context context, @NonNull SettingsLauncher settingsLauncher) {
+        private NotificationSnackbarController(@NonNull Context context) {
             mContext = context;
-            mSettingsLauncher = settingsLauncher;
         }
 
         @Override
         public void onAction(Object actionData) {
-            mSettingsLauncher.launchSettingsActivity(mContext, SearchEngineSettings.class);
+            SettingsLauncherFactory.createSettingsLauncher()
+                    .launchSettingsActivity(mContext, SearchEngineSettings.class);
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.PROMPT_FOLLOWED);
             SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice();
         }
@@ -70,12 +68,9 @@ public final class SearchEngineChoiceNotification {
      *
      * @param context Context in which to show the Snackbar.
      * @param snackbarManager Snackbar manager which will shown and manage the Snackbar.
-     * @param settingsLauncher Launcher of settings activity.
      */
     public static void handleSearchEngineChoice(
-            @NonNull Context context,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull SettingsLauncher settingsLauncher) {
+            @NonNull Context context, @NonNull SnackbarManager snackbarManager) {
         boolean searchEngineChoiceRequested = wasSearchEngineChoiceRequested();
         boolean searchEngineChoicePresented = wasSearchEngineChoicePresented();
         boolean searchEngineChoiceAvailable =
@@ -85,7 +80,7 @@ public final class SearchEngineChoiceNotification {
         if (searchEngineChoiceRequested
                 && searchEngineChoiceAvailable
                 && !searchEngineChoicePresented) {
-            snackbarManager.showSnackbar(buildSnackbarNotification(context, settingsLauncher));
+            snackbarManager.showSnackbar(buildSnackbarNotification(context));
             updateSearchEngineChoicePresented();
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.SNACKBAR_SHOWN);
         } else {
@@ -96,11 +91,10 @@ public final class SearchEngineChoiceNotification {
         }
     }
 
-    private static Snackbar buildSnackbarNotification(
-            @NonNull Context context, @NonNull SettingsLauncher settingsLauncher) {
+    private static Snackbar buildSnackbarNotification(@NonNull Context context) {
         return Snackbar.make(
                         context.getString(R.string.search_engine_choice_prompt),
-                        new NotificationSnackbarController(context, settingsLauncher),
+                        new NotificationSnackbarController(context),
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_SEARCH_ENGINE_CHOICE_NOTIFICATION)
                 .setAction(context.getString(R.string.settings), null)

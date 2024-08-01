@@ -15,6 +15,7 @@
 
 #include "base/allocator/dispatcher/tls.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -116,7 +117,7 @@ const char* UpdateAndGetThreadName(const char* name) {
 // Checks whether unwinding from this function works.
 [[maybe_unused]] StackUnwinder CheckForDefaultUnwindTables() {
   const void* stack[kMaxStackEntries];
-  size_t frame_count = base::debug::CollectStackTrace(stack, kMaxStackEntries);
+  size_t frame_count = base::debug::CollectStackTrace(stack);
   // First frame is the current function and can be found without unwind tables.
   return frame_count > 1 ? StackUnwinder::kDefault
                          : StackUnwinder::kUnavailable;
@@ -199,35 +200,29 @@ const char* SamplingHeapProfiler::CachedThreadName() {
   return UpdateAndGetThreadName(nullptr);
 }
 
-const void** SamplingHeapProfiler::CaptureStackTrace(const void** frames,
-                                                     size_t max_entries,
-                                                     size_t* count) {
-  // Skip top frames as they correspond to the profiler itself.
-  size_t skip_frames = 3;
+span<const void*> SamplingHeapProfiler::CaptureStackTrace(
+    span<const void*> frames) {
+  size_t skip_frames = 0;
   size_t frame_count = 0;
   switch (unwinder_) {
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
     case StackUnwinder::kFramePointers:
-      frame_count = base::debug::TraceStackFramePointers(
-          const_cast<const void**>(frames), max_entries, skip_frames);
-      skip_frames = 0;
-      break;
+      frame_count = base::debug::TraceStackFramePointers(frames, skip_frames);
+      return frames.first(frame_count);
 #endif
     case StackUnwinder::kDefault:
       // Fall-back to capturing the stack with base::debug::CollectStackTrace,
       // which is likely slower, but more reliable.
-      frame_count = base::debug::CollectStackTrace(frames, max_entries);
-      break;
+      frame_count = base::debug::CollectStackTrace(frames);
+      // Skip top frames as they correspond to the profiler itself.
+      skip_frames = std::min(frame_count, size_t{3});
+      return frames.first(frame_count).subspan(skip_frames);
     default:
       // Profiler should not be started if ChooseStackUnwinder() returns
       // anything else.
       NOTREACHED_IN_MIGRATION();
-      break;
+      return frames;
   }
-
-  skip_frames = std::min(skip_frames, frame_count);
-  *count = frame_count - skip_frames;
-  return frames + skip_frames;
 }
 
 void SamplingHeapProfiler::SampleAdded(void* address,
@@ -264,12 +259,10 @@ void SamplingHeapProfiler::SampleAdded(void* address,
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
                                               Sample* sample) {
   const void* stack[kMaxStackEntries];
-  size_t frame_count;
-  // One frame is reserved for the thread name.
-  const void** first_frame =
-      CaptureStackTrace(stack, kMaxStackEntries - 1, &frame_count);
-  DCHECK_LT(frame_count, kMaxStackEntries);
-  sample->stack.assign(first_frame, first_frame + frame_count);
+  span<const void*> frames = CaptureStackTrace(
+      // One frame is reserved for the thread name.
+      base::span(stack).first(kMaxStackEntries - 1));
+  sample->stack = ToVector(frames);
 
   if (record_thread_names_)
     sample->thread_name = CachedThreadName();

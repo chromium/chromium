@@ -157,6 +157,10 @@ extern NSString* const kLastRunAppBundlePathPrefsKey;
 extern NSString* const kCrAppModeMajorVersionKey;
 extern NSString* const kCrAppModeMinorVersionKey;
 
+// Info.plist key that indicates whether a PWA is ad-hoc signed.
+// Intended for use by `app_mode_loader` prior to checking in with the browser.
+extern NSString* const kCrAppModeIsAdHocSignedKey;
+
 // Placeholders used in the app mode loader bundle' Info.plist:
 extern NSString* const kShortcutIdPlaceholder; // Extension shortcut ID.
 extern NSString* const kShortcutNamePlaceholder; // Extension name.
@@ -249,10 +253,6 @@ struct ChromeConnectionConfig {
   // Parses a path value into a configuration.
   static ChromeConnectionConfig DecodeFromPath(const base::FilePath& path);
 };
-
-// Returns true when running on version of macOS that can perform code signing
-// at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
-bool UseAdHocSigningForWebAppShims();
 
 }  // namespace app_mode
 

@@ -5,9 +5,10 @@
 import type {BookmarksFolderNodeElement, BookmarksItemElement, BookmarksListElement, SelectFolderAction, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {BookmarkManagerApiProxyImpl, BookmarksApiProxyImpl, BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
@@ -132,7 +133,7 @@ suite('<bookmarks-command-manager>', function() {
     store.data.selection.items = new Set(['12', '13']);
     store.notifyObservers();
 
-    pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
+    pressAndReleaseKeyOn(document.body, 46, [], 'Delete');
     testCommandManager.assertLastCommand(Command.DELETE, ['12', '13']);
   });
 
@@ -161,7 +162,7 @@ suite('<bookmarks-command-manager>', function() {
   test('undo and redo commands trigger', function() {
     const undoModifier = isMac ? 'meta' : 'ctrl';
     const undoKey = 'z';
-    const redoModifier = isMac ? ['meta', 'shift'] : 'ctrl';
+    const redoModifier: ModifiersParam = isMac ? ['meta', 'shift'] : 'ctrl';
     const redoKey = isMac ? 'Z' : 'y';
 
     pressAndReleaseKeyOn(document.body, 0, undoModifier, undoKey);
@@ -369,11 +370,11 @@ suite('<bookmarks-command-manager>', function() {
     store.notifyObservers();
 
     const editKey = isMac ? 'Enter' : 'F2';
-    pressAndReleaseKeyOn(document.body, 0, '', editKey);
+    pressAndReleaseKeyOn(document.body, 0, [], editKey);
     testCommandManager.assertLastCommand(Command.EDIT);
     assertTrue(DialogFocusManager.getInstance().hasOpenDialog());
 
-    pressAndReleaseKeyOn(document.body, 0, '', 'Delete');
+    pressAndReleaseKeyOn(document.body, 0, [], 'Delete');
     testCommandManager.assertLastCommand(null);
   });
 

@@ -113,16 +113,16 @@ void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
 }
 
 void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
-    const std::u16string& value,
-    SuggestionType type) {
+    const Suggestion& suggestion) {
+  SuggestionType type = suggestion.type;
   if (merchant_promo_code_manager_ &&
       (type == SuggestionType::kMerchantPromoCodeEntry ||
        type == SuggestionType::kSeePromoCodeDetails)) {
-    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value, type);
+    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(suggestion);
   } else if (iban_manager_ && type == SuggestionType::kIbanEntry) {
-    iban_manager_->OnSingleFieldSuggestionSelected(value, type);
+    iban_manager_->OnSingleFieldSuggestionSelected(suggestion);
   } else if (type == SuggestionType::kAutocompleteEntry) {
-    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value, type);
+    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(suggestion);
   }
 }
 

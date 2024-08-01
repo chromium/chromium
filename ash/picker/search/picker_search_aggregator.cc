@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
 
@@ -87,15 +88,15 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   CHECK(!current_callback_.is_null())
       << "Results were obtained after \"no more results\"";
   const PickerSectionType section_type = SectionTypeFromSearchSource(source);
+  UnpublishedResults& accumulated =
+      accumulated_results_[base::to_underlying(section_type)];
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
   if (section_type == PickerSectionType::kNone) {
     // Suggested results cannot have more results, since it's not a proper
     // category.
     CHECK(!has_more_results);
-    base::ranges::move(
-        results,
-        std::back_inserter(results_[PickerSectionType::kNone].results));
+    base::ranges::move(results, std::back_inserter(accumulated.results));
     return;
   }
 
@@ -109,9 +110,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     return;
   }
 
-  const auto& [unused, inserted] = results_.emplace(
-      section_type, PickerSearchResults(std::move(results), has_more_results));
-  CHECK(inserted);
+  CHECK(accumulated.results.empty());
+  accumulated = UnpublishedResults(std::move(results), has_more_results);
 }
 
 void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
@@ -128,21 +128,21 @@ void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
   current_callback_.Reset();
 }
 
-PickerSearchAggregator::PickerSearchResults::PickerSearchResults() = default;
+PickerSearchAggregator::UnpublishedResults::UnpublishedResults() = default;
 
-PickerSearchAggregator::PickerSearchResults::PickerSearchResults(
+PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
     std::vector<PickerSearchResult> results,
     bool has_more)
     : results(std::move(results)), has_more(has_more) {}
 
-PickerSearchAggregator::PickerSearchResults::PickerSearchResults(
-    PickerSearchResults&& other) = default;
+PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
+    UnpublishedResults&& other) = default;
 
-PickerSearchAggregator::PickerSearchResults&
-PickerSearchAggregator::PickerSearchResults::operator=(
-    PickerSearchResults&& other) = default;
+PickerSearchAggregator::UnpublishedResults&
+PickerSearchAggregator::UnpublishedResults::operator=(
+    UnpublishedResults&& other) = default;
 
-PickerSearchAggregator::PickerSearchResults::~PickerSearchResults() = default;
+PickerSearchAggregator::UnpublishedResults::~UnpublishedResults() = default;
 
 bool PickerSearchAggregator::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
@@ -153,10 +153,10 @@ void PickerSearchAggregator::PublishBurnInResults() {
   base::flat_set<PickerSectionType> published_types;
 
   // The None section always goes first.
-  if (auto it = results_.find(PickerSectionType::kNone);
-      it != results_.end() && !it->second.results.empty()) {
+  if (UnpublishedResults* none_results =
+          AccumulatedResultsForSection(PickerSectionType::kNone)) {
     sections.emplace_back(PickerSectionType::kNone,
-                          std::move(it->second.results),
+                          std::move(none_results->results),
                           /*has_more=*/false);
     published_types.insert(PickerSectionType::kNone);
   }
@@ -168,11 +168,10 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kDriveFiles,
            PickerSectionType::kClipboard,
        }) {
-    if (auto it = results_.find(type);
-        it != results_.end() &&
-        base::ranges::any_of(it->second.results, &ShouldPromote)) {
-      sections.emplace_back(type, std::move(it->second.results),
-                            it->second.has_more);
+    if (UnpublishedResults* results = AccumulatedResultsForSection(type);
+        results && base::ranges::any_of(results->results, &ShouldPromote)) {
+      sections.emplace_back(type, std::move(results->results),
+                            results->has_more);
       published_types.insert(type);
     }
   }
@@ -189,10 +188,9 @@ void PickerSearchAggregator::PublishBurnInResults() {
     if (published_types.contains(type)) {
       continue;
     }
-    if (auto it = results_.find(type);
-        it != results_.end() && !it->second.results.empty()) {
-      sections.emplace_back(type, std::move(it->second.results),
-                            it->second.has_more);
+    if (UnpublishedResults* results = AccumulatedResultsForSection(type)) {
+      sections.emplace_back(type, std::move(results->results),
+                            results->has_more);
     }
   }
   if (!sections.empty()) {
@@ -202,6 +200,16 @@ void PickerSearchAggregator::PublishBurnInResults() {
 
 base::WeakPtr<PickerSearchAggregator> PickerSearchAggregator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+PickerSearchAggregator::UnpublishedResults*
+PickerSearchAggregator::AccumulatedResultsForSection(PickerSectionType type) {
+  UnpublishedResults& accumulated =
+      accumulated_results_[base::to_underlying(type)];
+  if (accumulated.results.empty()) {
+    return nullptr;
+  }
+  return &accumulated;
 }
 
 }  // namespace ash

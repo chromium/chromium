@@ -6,7 +6,7 @@ import type {ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojof
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertShowAnnotationsButton} from './test_util.js';
+import {assertCheckboxMenuButton, openToolbarMenu} from './test_util.js';
 
 function createToolbar() {
   document.body.innerHTML = '';
@@ -216,48 +216,66 @@ const tests = [
 
   async function testTwoPageViewToggle() {
     const toolbar = createToolbar();
+
+    // The menu needs to be open to check for visible menu elements.
+    openToolbarMenu(toolbar);
+
     toolbar.twoUpViewEnabled = false;
     const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
         '#two-page-view-button')!;
-    assertShowAnnotationsButton(button, false);
+    assertCheckboxMenuButton(toolbar, button, false);
 
     let whenChanged = eventToPromise('two-up-view-changed', toolbar);
     button.click();
     let event = await whenChanged;
 
+    // Clicking the button closes the menu, so re-open it.
+    openToolbarMenu(toolbar);
+
     // Happens in the parent.
     toolbar.twoUpViewEnabled = true;
     chrome.test.assertEq(true, event.detail);
-    assertShowAnnotationsButton(button, true);
+    assertCheckboxMenuButton(toolbar, button, true);
     whenChanged = eventToPromise('two-up-view-changed', toolbar);
     button.click();
     event = await whenChanged;
 
+    openToolbarMenu(toolbar);
+
     // Happens in the parent.
     toolbar.twoUpViewEnabled = false;
     chrome.test.assertEq(false, event.detail);
-    assertShowAnnotationsButton(button, false);
+    assertCheckboxMenuButton(toolbar, button, false);
     chrome.test.succeed();
   },
 
   async function testShowAnnotationsToggle() {
     const toolbar = createToolbar();
+
+    // The menu needs to be open to check for visible menu elements.
+    openToolbarMenu(toolbar);
+
     const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
         '#show-annotations-button')!;
-    assertShowAnnotationsButton(button, true);
+    assertCheckboxMenuButton(toolbar, button, true);
 
     let whenChanged = eventToPromise('display-annotations-changed', toolbar);
     button.click();
     let event = await whenChanged;
 
+    // Clicking the button closes the menu, so re-open it.
+    openToolbarMenu(toolbar);
+
     chrome.test.assertEq(false, event.detail);
-    assertShowAnnotationsButton(button, false);
+    assertCheckboxMenuButton(toolbar, button, false);
     whenChanged = eventToPromise('display-annotations-changed', toolbar);
     button.click();
     event = await whenChanged;
 
+    openToolbarMenu(toolbar);
+
     chrome.test.assertEq(true, event.detail);
-    assertShowAnnotationsButton(button, true);
+    assertCheckboxMenuButton(toolbar, button, true);
     chrome.test.succeed();
   },
 

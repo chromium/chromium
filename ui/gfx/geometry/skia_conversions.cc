@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include <stddef.h>
@@ -60,8 +65,9 @@ SkRect RectFToSkRect(const RectF& rect) {
 }
 
 RectF SkRectToRectF(const SkRect& rect) {
-  return RectF(SkScalarToFloat(rect.x()), SkScalarToFloat(rect.y()),
-               SkScalarToFloat(rect.width()), SkScalarToFloat(rect.height()));
+  return BoundingRect(
+      PointF(SkScalarToFloat(rect.left()), SkScalarToFloat(rect.top())),
+      PointF(SkScalarToFloat(rect.right()), SkScalarToFloat(rect.bottom())));
 }
 
 SkSize SizeFToSkSize(const SizeF& size) {

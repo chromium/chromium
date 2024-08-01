@@ -18,6 +18,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../icons.html.js';
+import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';

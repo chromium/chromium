@@ -181,7 +181,10 @@ class KioskVisionTest : public testing::Test {
         .WillByDefault(
             testing::Invoke([this](video_capture::mojom::VideoSourceProvider::
                                        GetSourceInfosCallback& callback) {
-              std::move(callback).Run(device_infos_);
+              std::move(callback).Run(
+                  video_capture::mojom::VideoSourceProvider::
+                      GetSourceInfosResult::kSuccess,
+                  device_infos_);
             }));
 
     ON_CALL(mock_source_provider_, DoGetVideoSource(testing::_, testing::_))

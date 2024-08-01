@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.7.0-alpha01" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha01">
+<issues format="6" by="lint 8.7.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha03">
 
     <issue
         id="NewApi"
@@ -15,12 +15,12 @@
     <issue
         id="RequiresFeature"
         message="`getInstance` should only be called if the feature `TRACING_CONTROLLER_BASIC_USAGE` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="            TracingController tracingController = TracingController.getInstance();"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                TracingController tracingController = TracingController.getInstance();"
+        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="216"
-            column="51"/>
+            line="226"
+            column="55"/>
     </issue>
 
     <issue
@@ -30,7 +30,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="238"
+            line="249"
             column="13"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="243"
+            line="254"
             column="13"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="248"
+            line="259"
             column="13"/>
     </issue>
 

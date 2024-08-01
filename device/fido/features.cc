@@ -4,8 +4,6 @@
 
 #include "device/fido/features.h"
 
-#include <vector>
-
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -122,11 +120,6 @@ BASE_FEATURE(kWebAuthnRelatedOrigin,
 // Enabled in M122. Remove in or after M125.
 BASE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds,
              "AllowExtensionsToSetWebAuthnRpIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Default enabled in M122. Remove in or after M125.
-BASE_FEATURE(kWebAuthnAndroidFidoJson,
-             "WebAuthenticationAndroidFidoJson",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default enabled in M123. Remove in or after M126.

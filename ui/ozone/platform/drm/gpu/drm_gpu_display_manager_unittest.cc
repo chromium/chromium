@@ -1012,35 +1012,61 @@ class DrmGpuDisplayManagerGetSeamlessRefreshRateTest
   void SetUp() override {
     DrmGpuDisplayManagerMockedDeviceTest::SetUp();
 
-    // Create a FakeDrmDevice with state that represents a display with
-    // one downclock mode, and some other modes with different resolutions
-    // than the first (native) mode.
     fake_drm_device_ = AddDrmDevice();
     fake_drm_device_->ResetStateWithAllProperties();
-    fake_drm_device_->AddCrtcWithPrimaryAndCursorPlanes();
 
-    auto& encoder = fake_drm_device_->AddEncoder();
-    encoder.possible_crtcs = 0b1;
+    // Add internal display with a possible downclock mode and without VRR
+    // capability.
+    {
+      fake_drm_device_->AddCrtcWithPrimaryAndCursorPlanes();
 
-    // 120 and 60 are seamless refresh rate candidates; 90 and 40 have different
-    // sizes and thus are not.
-    auto& connector = fake_drm_device_->AddConnector();
-    connector.connection = true;
-    connector.modes = {
-        ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},
-        ResolutionAndRefreshRate{gfx::Size(3840, 2160), 60u},
-        ResolutionAndRefreshRate{gfx::Size(1920, 1080), 90u},
-        ResolutionAndRefreshRate{gfx::Size(1920, 1080), 40u},
-    };
-    connector.encoders = std::vector<uint32_t>{encoder.id};
-    connector.edid_blob = std::vector<uint8_t>(
-        kInternalDisplay, kInternalDisplay + kInternalDisplayLength);
+      auto& encoder = fake_drm_device_->AddEncoder();
+      encoder.possible_crtcs = 0b1;
+
+      auto& connector = fake_drm_device_->AddConnector();
+      connector.connection = true;
+      connector.modes = {
+          // native mode.
+          ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},
+          // downclock mode.
+          ResolutionAndRefreshRate{gfx::Size(3840, 2160), 60u},
+      };
+      connector.encoders = std::vector<uint32_t>{encoder.id};
+      connector.edid_blob = std::vector<uint8_t>(
+          kInternalDisplay, kInternalDisplay + kInternalDisplayLength);
+    }
+
+    // Add external display with a possible downclock mode and with VRR
+    // capability.
+    {
+      fake_drm_device_->AddCrtcWithPrimaryAndCursorPlanes();
+
+      auto& encoder = fake_drm_device_->AddEncoder();
+      encoder.possible_crtcs = 0b10;
+
+      auto& connector = fake_drm_device_->AddConnector();
+      connector.connection = true;
+      connector.modes = {
+          // native mode.
+          ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},
+          // downclock mode.
+          ResolutionAndRefreshRate{gfx::Size(3840, 2160), 60u},
+      };
+      connector.encoders = std::vector<uint32_t>{encoder.id};
+      // Use HPz32x because it sets vsync_rate_min=24Hz, which is required for
+      // VRR capability.
+      connector.edid_blob =
+          std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+      fake_drm_device_->AddProperty(connector.id,
+                                    {.id = kVrrCapablePropId, .value = 1});
+    }
+
     fake_drm_device_->InitializeState(/* use_atomic */ true);
     mock_drm_device_ = static_cast<MockDrmDevice*>(fake_drm_device_.get());
 
     // Do an initial configuration of the display.
     auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
-    CHECK_EQ(display_snapshots.size(), 1u);
+    CHECK_EQ(display_snapshots.size(), 2u);
     CHECK(ConfigureDisplays(display_snapshots,
                             {display::ModesetFlag::kCommitModeset}));
   }
@@ -1116,8 +1142,8 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   ASSERT_FALSE(snapshots.empty());
   const auto& snapshot = snapshots[0];
   const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
-  const display::DisplayMode nonmatching_mode = display::DisplayMode(
-      snapshot->native_mode()->size(), false, 600, 0, 0, 0);
+  const display::DisplayMode nonmatching_mode(snapshot->native_mode()->size(),
+                                              false, 600);
   const std::vector<display::DisplayConfigurationParams> config_requests = {
       display::DisplayConfigurationParams(
           snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
@@ -1156,19 +1182,21 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
       drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
 }
 
-TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
-       ConfigureDisplaysSeamlessModeMatching_ExistingNonSeamlessMode) {
+TEST_F(
+    DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+    ConfigureDisplaysSeamlessModeMatching_ExistingModeFailingSeamlessVerification) {
   const auto snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_FALSE(snapshots.empty());
   const auto& snapshot = snapshots[0];
   const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
                                        display::ModesetFlag::kSeamlessModeset};
-  const display::DisplayMode* nonseamless_mode = snapshot->modes().back().get();
+  const display::DisplayMode* failing_mode = snapshot->modes().back().get();
   const std::vector<display::DisplayConfigurationParams> config_requests = {
-      display::DisplayConfigurationParams(
-          snapshot->display_id(), snapshot->origin(), nonseamless_mode)};
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(), failing_mode)};
 
   const uint32_t seamless_test_flags = DRM_MODE_ATOMIC_TEST_ONLY;
+  // Override mock behavior to fail seamless verification.
   EXPECT_CALL(*mock_drm_device_, CommitProperties(_, seamless_test_flags, _, _))
       .Times(1)
       .WillOnce(Return(false));
@@ -1183,8 +1211,188 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   const auto& snapshot = snapshots[0];
   const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
                                        display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode nonmatching_mode(snapshot->native_mode()->size(),
+                                              false, 600);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysModeMatching_UnsetMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(), nullptr)};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysModeMatching_ExistingMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), snapshot->native_mode())};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysModeMatching_NonExistingFasterMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
   const display::DisplayMode nonmatching_mode = display::DisplayMode(
-      snapshot->native_mode()->size(), false, 600, 0, 0, 0);
+      snapshot->native_mode()->size(), false, 600, std::nullopt);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysModeMatching_NonExistingSlowerMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 50, std::nullopt);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysModeMatching_NonExistingSlowerModeBelowVSyncMin) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 20, std::nullopt);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysSeamlessModeMatching_UnsetMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(), nullptr)};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysSeamlessModeMatching_ExistingSeamlessMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), snapshot->native_mode())};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(
+    DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+    ConfigureVrrDisplaysSeamlessModeMatching_ExistingModeFailingSeamlessVerification) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode* failing_mode = snapshot->modes().back().get();
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(snapshot->display_id(),
+                                          snapshot->origin(), failing_mode)};
+
+  const uint32_t seamless_test_flags = DRM_MODE_ATOMIC_TEST_ONLY;
+  // Override mock behavior to fail seamless verification.
+  EXPECT_CALL(*mock_drm_device_, CommitProperties(_, seamless_test_flags, _, _))
+      .Times(3)
+      .WillRepeatedly(Return(false));
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysSeamlessModeMatching_NonExistingFasterMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 600, std::nullopt);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_FALSE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       ConfigureVrrDisplaysSeamlessModeMatching_NonExistingSlowerMode) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 50, std::nullopt);
+  const std::vector<display::DisplayConfigurationParams> config_requests = {
+      display::DisplayConfigurationParams(
+          snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};
+
+  EXPECT_TRUE(
+      drm_gpu_display_manager_->ConfigureDisplays(config_requests, flags));
+}
+
+TEST_F(
+    DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+    ConfigureVrrDisplaysSeamlessModeMatching_NonExistingSlowerModeBelowVSyncMin) {
+  const auto snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_FALSE(snapshots.empty());
+  const auto& snapshot = snapshots[1];
+  const display::ModesetFlags flags = {display::ModesetFlag::kTestModeset,
+                                       display::ModesetFlag::kSeamlessModeset};
+  const display::DisplayMode nonmatching_mode = display::DisplayMode(
+      snapshot->native_mode()->size(), false, 20, std::nullopt);
   const std::vector<display::DisplayConfigurationParams> config_requests = {
       display::DisplayConfigurationParams(
           snapshot->display_id(), snapshot->origin(), &nonmatching_mode)};

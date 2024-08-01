@@ -666,6 +666,11 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Text for the link to the help page about why Chrome blocks some downloaded files.">
         Learn why Chrome blocks some downloads
       </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK_ACCESSIBLE"
+               desc="On the downloads page, accessible text for the link to the help center in the prompt to bypass a dangerous download warning.">
+        Learn why Chrome blocks some files, opens in new tab
+      </message>
+
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_LOCAL_DECRYPTION"
         desc="Subpage summary of warning for a file where we recommend providing the password for on-device decryption">
         This file may be dangerous<ph name="LINE_BREAK">$1</ph>Chrome can check this download for you if you provide the password. Info about the file gets sent to Google Safe Browsing, but the file content and password stay on your device.
@@ -2028,8 +2033,8 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Device Chooser Prompt -->
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
-        Google Chrome needs Bluetooth access to continue &#10; pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
+      <message name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Web Serial Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
+        Google Chrome needs Bluetooth access to explore &#10; Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
       </message>
 
       <!-- Tailored Security -->

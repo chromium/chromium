@@ -110,6 +110,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsIncognitoModeAvailable() const override;
   bool IsSharingHubAvailable() const override;
   bool IsHistoryEmbeddingsEnabled() const override;
+  bool IsHistoryEmbeddingsSettingVisible() const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
 
   // OmniboxAction::Client:

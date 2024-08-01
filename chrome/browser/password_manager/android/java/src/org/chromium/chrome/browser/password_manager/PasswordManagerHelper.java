@@ -31,6 +31,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -38,8 +41,8 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -152,7 +155,6 @@ public class PasswordManagerHelper {
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
             @Nullable String account) {
@@ -162,6 +164,17 @@ public class PasswordManagerHelper {
                 ManagePasswordsReferrer.MAX_VALUE + 1);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
+
+        @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
+        if (warningType != PasswordAccessLossWarningType.NONE) {
+            new PasswordAccessLossDialogSettingsCoordinator()
+                    .showPasswordAccessLossDialog(
+                            context,
+                            modalDialogManagerSupplier.get(),
+                            warningType,
+                            PasswordManagerHelper::launchGmsUpdate);
+            return;
+        }
 
         // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
         // Password settings will fail and instead the blocking dialog with the suggestion to update
@@ -212,8 +225,9 @@ public class PasswordManagerHelper {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(
-                settingsLauncher.createSettingsActivityIntent(
-                        context, SettingsFragment.PASSWORDS, fragmentArgs));
+                SettingsLauncherFactory.createSettingsLauncher()
+                        .createSettingsActivityIntent(
+                                context, SettingsFragment.PASSWORDS, fragmentArgs));
     }
 
     /**
@@ -753,6 +767,17 @@ public class PasswordManagerHelper {
             } catch (ActivityNotFoundException e) {
             }
         }
+    }
+
+    public @PasswordAccessLossWarningType int getAccessLossWarningType(PrefService prefService) {
+        // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
+        // PasswordManagerHelperTest in all tests before launch.
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            return PasswordAccessLossWarningType.NONE;
+        }
+        return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 
     @NativeMethods

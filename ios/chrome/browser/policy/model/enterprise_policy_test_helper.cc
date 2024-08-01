@@ -17,8 +17,15 @@
 #include "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+const char kProfileName[] = "Test";
+
+}
+
 EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
-    const base::FilePath& state_directory_path) {
+    const base::FilePath& data_dir) {
+  const base::FilePath state_directory_path = data_dir.Append(kProfileName);
   policy_provider_.SetDefaultReturns(
       true /* is_initialization_complete_return */,
       true /* is_first_policy_load_complete_return */);
@@ -53,12 +60,13 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
           state_directory_path,
           base::SingleThreadTaskRunner::GetCurrentDefault().get(),
           pref_registry, browser_state_policy_connector_->GetPolicyService(),
-          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr);
+          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr,
+          /*async=*/false);
 
   TestChromeBrowserState::Builder builder;
-  builder.SetPath(state_directory_path);
+  builder.SetName(kProfileName);
   builder.SetPrefService(std::move(pref_service));
-  browser_state_ = builder.Build();
+  browser_state_ = std::move(builder).Build(data_dir);
 }
 
 EnterprisePolicyTestHelper::~EnterprisePolicyTestHelper() = default;

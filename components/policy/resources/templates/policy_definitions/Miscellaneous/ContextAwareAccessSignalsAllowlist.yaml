@@ -22,8 +22,6 @@ features:
   per_profile: true
 owners:
 - rodmartin@google.com
-- rogerta@chromium.org
-- mad@chromium.org
 - seblalancette@chromium.org
 - cbe-device-trust-eng@google.com
 schema:

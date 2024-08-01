@@ -60,8 +60,9 @@ class AutofillPlusAddressDelegate {
   virtual void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
-      AutofillClient::PasswordFormType focused_form_type,
-      std::u16string_view focused_field_value,
+      const AutofillClient::PasswordFormClassification&
+          focused_form_classification,
+      const FormFieldData& focused_field,
       AutofillSuggestionTriggerSource trigger_source,
       GetSuggestionsCallback callback) = 0;
 
@@ -104,7 +105,7 @@ class AutofillPlusAddressDelegate {
       FormGlobalId form,
       FieldGlobalId field,
       SuggestionContext suggestion_context,
-      AutofillClient::PasswordFormType form_type,
+      AutofillClient::PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
 };
 

@@ -16,7 +16,6 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -37,29 +36,28 @@ public class ActionConfirmationDialog {
         void onDismiss(boolean isPositive, boolean stopShowing);
     }
 
-    private final Profile mProfile;
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
 
     public ActionConfirmationDialog(
-            @NonNull Profile profile,
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager) {
-        mProfile = profile;
+            @NonNull Context context, @NonNull ModalDialogManager modalDialogManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
     }
 
     public void show(
-            @StringRes int titleRes,
+            Function<Resources, String> titleResolver,
             Function<Resources, String> descriptionResolver,
             @StringRes int positiveButtonRes,
+            boolean supportStopShowing,
             @NonNull ConfirmationDialogResult onResult) {
         Resources resources = mContext.getResources();
+
         View customView =
                 LayoutInflater.from(mContext).inflate(R.layout.action_confirmation_dialog, null);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         CheckBox stopShowingCheckBox = customView.findViewById(R.id.stop_showing_check_box);
+        stopShowingCheckBox.setVisibility(supportStopShowing ? View.VISIBLE : View.GONE);
 
         String descriptionText = descriptionResolver.apply(resources);
         descriptionTextView.setText(descriptionText);
@@ -74,7 +72,7 @@ public class ActionConfirmationDialog {
         ModalDialogProperties.Controller dialogController =
                 new WasPositiveController(mModalDialogManager, onDismissWhetherPositive);
 
-        String titleText = resources.getString(titleRes);
+        String titleText = titleResolver.apply(resources);
         String positiveText = resources.getString(positiveButtonRes);
         String negativeText = resources.getString(R.string.cancel);
 

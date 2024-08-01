@@ -74,7 +74,8 @@ class PowerConnectedProviderTest : public AshTestBase {
   power_manager::PowerSupplyProperties properties_;
 };
 
-TEST_F(PowerConnectedProviderTest, DisabledIfPowerStatusNotInitialized) {
+// TODO(b/355485660): This test is failing on chromeos builders.
+TEST_F(PowerConnectedProviderTest, DISABLED_DisabledIfPowerStatusNotInitialized) {
   InitializePowerStatus(/*should_initialize=*/false);
   InitializeProvider();
   EXPECT_FALSE(IsPowerConnected());

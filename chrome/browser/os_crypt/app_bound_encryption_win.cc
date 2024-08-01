@@ -58,7 +58,7 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
   if (::GetProfileType(&profile_type)) {
     // App-Bound binds the encryption key to the SYSTEM DPAPI key, which does
     // not roam with a roaming profile.
-    if (profile_type == PT_ROAMING || profile_type == PT_ROAMING_PREEXISTING) {
+    if (profile_type > 0) {
       return SupportLevel::kDisabledByRoamingWindowsProfile;
     }
   }

@@ -121,13 +121,18 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return client_shared_image;
   }
 
-  void DestroySharedImage(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
+  void DestroySharedImage(const gpu::SyncToken& sync_token,
+                          scoped_refptr<gpu::ClientSharedImage> shared_image,
+                          const bool is_mappable_si_enabled) override {
     auto* sii = SharedImageInterface();
     if (!sii)
       return;
-    sii->DestroySharedImage(sync_token, std::move(shared_image));
+    CHECK(shared_image);
+    if (is_mappable_si_enabled) {
+      shared_image->UpdateDestructionSyncToken(sync_token);
+    } else {
+      sii->DestroySharedImage(sync_token, std::move(shared_image));
+    }
   }
 
  private:

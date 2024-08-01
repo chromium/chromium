@@ -8,11 +8,10 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -53,7 +52,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
  public:
   ChromeAccountManagerServiceTest() {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
         browser_state_.get());
@@ -79,7 +78,7 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
   }
 
  protected:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<ChromeAccountManagerService> account_manager_;

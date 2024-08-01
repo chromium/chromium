@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberSearchPerformedDone"
-    enum="Boolean" expires_after="2024-11-20">
+    enum="Boolean" expires_after="2025-01-26">
   <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>

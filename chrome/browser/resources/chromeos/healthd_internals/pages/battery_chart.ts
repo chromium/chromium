@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './battery_chart.html.js';
+import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsBatteryChartElement {
   $: {
@@ -32,7 +33,14 @@ export class HealthdInternalsBatteryChartElement extends PolymerElement {
     const UNITBASE_NO_CARRY: number = 1;
     const UNIT_PURE_NUMBER: string[] = [''];
     this.$.lineChart.initCanvasDrawer(UNIT_PURE_NUMBER, UNITBASE_NO_CARRY);
+
+    this.updateHelper = new UiUpdateHelper(() => {
+      this.$.lineChart.updateEndTime(Date.now());
+    });
   }
+
+  // Helper for updating UI regularly. Init in `connectedCallback`.
+  private updateHelper: UiUpdateHelper;
 
   addDataSeries(batteryDataSeries: DataSeries[]) {
     for (const dataSeries of batteryDataSeries) {
@@ -40,12 +48,13 @@ export class HealthdInternalsBatteryChartElement extends PolymerElement {
     }
   }
 
-  updateEndTime(timestamp: number) {
-    this.$.lineChart.updateEndTime(timestamp);
+  updateVisibility(isVisible: boolean) {
+    this.$.lineChart.updateVisibility(isVisible);
+    this.updateHelper.updateVisibility(isVisible);
   }
 
-  updateVisibility(isVisble: boolean) {
-    this.$.lineChart.updateVisibility(isVisble);
+  updateUiUpdateInterval(intervalSeconds: number) {
+    this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 }
 

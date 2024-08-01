@@ -68,39 +68,48 @@ bool IsIgnorableReadError(MojoResult read_result) {
 }  // namespace
 
 ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
-                                   const base::Version& extension_version,
                                    const base::FilePath& extension_root,
-                                   const base::FilePath& relative_path,
-                                   int manifest_version,
-                                   FailureCallback failure_callback)
-    : done_reading_(false),
-      hashes_ready_(false),
-      total_bytes_read_(0),
-      current_block_(0),
-      current_hash_byte_count_(0),
-      extension_id_(extension_id),
-      extension_version_(extension_version),
+                                   const base::FilePath& relative_path)
+    : extension_id_(extension_id),
       extension_root_(extension_root),
-      relative_path_(relative_path),
-      manifest_version_(manifest_version),
-      failure_callback_(std::move(failure_callback)),
-      failed_(false) {}
+      relative_path_(relative_path) {}
 
 ContentVerifyJob::~ContentVerifyJob() = default;
 
-void ContentVerifyJob::Start(ContentVerifier* verifier) {
+void ContentVerifyJob::Start(ContentVerifier* verifier,
+                             const base::Version& extension_version,
+                             int manifest_version,
+                             FailureCallback failure_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
-  verifier->GetContentHash(
-      extension_id_, extension_root_, extension_version_,
-      true /* force_missing_computed_hashes_creation */,
-      base::BindOnce(&ContentVerifyJob::DidGetContentHashOnIO, this));
+  manifest_version_ = manifest_version;
+  failure_callback_ = std::move(failure_callback);
+
+  // The content verification hashes are most likely already cached.
+  auto content_hash = verifier->GetCachedContentHash(
+      extension_id_, extension_version,
+      /*force_missing_computed_hashes_creation=*/true);
+  if (content_hash) {
+    StartWithContentHash(std::move(content_hash));
+    return;
+  }
+
+  verifier->CreateContentHash(
+      extension_id_, extension_root_, extension_version,
+      /*force_missing_computed_hashes_creation=*/true,
+      base::BindOnce(&ContentVerifyJob::DidCreateContentHashOnIO, this));
 }
 
-void ContentVerifyJob::DidGetContentHashOnIO(
+void ContentVerifyJob::DidCreateContentHashOnIO(
     scoped_refptr<const ContentHash> content_hash) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
+  StartWithContentHash(std::move(content_hash));
+}
+
+void ContentVerifyJob::StartWithContentHash(
+    scoped_refptr<const ContentHash> content_hash) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer)
     test_observer->JobStarted(extension_id_, relative_path_);

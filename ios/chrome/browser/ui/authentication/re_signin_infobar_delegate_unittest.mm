@@ -37,7 +37,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());

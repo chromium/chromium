@@ -30,7 +30,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/performance_manager/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -814,19 +813,7 @@ TEST_F(AlertIndicatorButtonTest, 1SecondFadeoutAnimationTest) {
             get_fadeout_animation_duration_for_testing_(media_tab));
 }
 
-class TabTestWithDiscardRingImprovements : public TabTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kDiscardRingImprovements);
-    TabTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(TabTestWithDiscardRingImprovements, DiscardIndicatorResponsiveness) {
+TEST_F(TabTest, DiscardIndicatorResponsiveness) {
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);

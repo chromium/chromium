@@ -31,10 +31,12 @@ class AuthenticatorGPMPinView : public views::View,
     virtual std::u16string GetPinAccessibleName() = 0;
   };
 
-  explicit AuthenticatorGPMPinView(int pin_digits_count,
-                                   bool ui_disabled,
-                                   const std::u16string& pin,
-                                   Delegate* delegate);
+  explicit AuthenticatorGPMPinView(
+      int pin_digits_count,
+      bool ui_disabled,
+      const std::u16string& pin,
+      const std::u16string& pin_accessible_description,
+      Delegate* delegate);
 
   AuthenticatorGPMPinView(const AuthenticatorGPMPinView&) = delete;
   AuthenticatorGPMPinView& operator=(const AuthenticatorGPMPinView&) = delete;

@@ -404,21 +404,6 @@ const char kEnableFeedHeaderSettingsName[] =
 const char kEnableFeedHeaderSettingsDescription[] =
     "When enabled, some UI elements of the feed header can be modified.";
 
-const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[] =
-    "Enable friendlier safe browsing settings enhanced protection";
-const char
-    kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[] =
-        "Updates the text, layout, icons, and links on both the privacy guide "
-        "and the security settings page.";
-
-const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[] =
-    "Enable Friendlier Safe Browsing Settings for standard protection";
-const char
-    kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[] =
-        "Updates the text and layout on both the privacy guide and the "
-        "security "
-        "settings page.";
-
 const char kDisableLensCameraName[] = "Disable Lens camera experience";
 const char kDisableLensCameraDescription[] =
     "When enabled, the option use Lens to search for images from your device "
@@ -545,6 +530,11 @@ const char kIdentityDiscAccountMenuDescription[] =
     "When enabled, tapping the identity disc on the New Tab page shows the "
     "account menu UI.";
 
+const char kIdentityConfirmationSnackbarName[] =
+    "Identity Confirmation Snackbar";
+const char kIdentityConfirmationSnackbarDescription[] =
+    "When enabled, the identity confirmation snackbar will show on startup.";
+
 const char kInactiveTabButtonRefactoringName[] =
     "Inactive tab button refactoring";
 const char kInactiveTabButtonRefactoringDescription[] =
@@ -599,12 +589,6 @@ const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";
 const char kIOSKeyboardAccessoryUpgradeDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented.";
-
-const char kIOSPasswordAuthOnEntryV2Name[] =
-    "Password Manager Auth on Entry V2";
-const char kIOSPasswordAuthOnEntryV2Description[] =
-    "Requires Local Authentication before showing saved credentials in "
-    "Password Manager subpages.";
 
 const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
@@ -948,12 +932,6 @@ const char kDownloadedPDFOpeningName[] = "Enables downloaded PDF opening";
 const char kDownloadedPDFOpeningDescription[] =
     "Enables the direct opening of downloaded PDF files in Chrome";
 
-const char kEnablePolicyTestPageName[] =
-    "Enable access to the policy test page";
-const char kEnablePolicyTestPageDescription[] =
-    "When enabled, allows the policy test page to be accessed at "
-    "chrome://policy/test.";
-
 const char kPrivacyGuideIosName[] = "Privacy Guide on iOS";
 const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
@@ -1037,7 +1015,7 @@ const char kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
 const char kSegmentedDefaultBrowserPromoName[] =
     "Enable Personalized Messaging in Default Browser Promos";
 const char kSegmentedDefaultBrowserPromoDescription[] =
-    "Enabled Default Browser promos with personalized messaging (using "
+    "Enables Default Browser promos with personalized messaging (using "
     "Segmentation Platform).";
 
 const char kSendTabToSelfIOSPushNotificationsName[] =

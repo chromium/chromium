@@ -12,6 +12,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditText.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextModelBase.java",
+    "java/src/org/chromium/chrome/browser/omnibox/AutocompleteInputConnection.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteState.java",
     "java/src/org/chromium/chrome/browser/omnibox/BackKeyBehaviorDelegate.java",
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteProviderClient.java",
@@ -178,6 +179,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/quick_delete:java",
     "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/settings:factory_java",
     "//chrome/browser/share:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
@@ -495,6 +497,7 @@ robolectric_library("junit") {
     "//chrome/browser/privacy:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/settings:factory_java",
     "//chrome/browser/share:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",

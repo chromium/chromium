@@ -4206,6 +4206,7 @@ var mapperTab = (function () {
 	NetworkUtils.isSpecialScheme = isSpecialScheme;
 	NetworkUtils.matchUrlPattern = matchUrlPattern;
 	NetworkUtils.bidiBodySizeFromCdpPostDataEntries = bidiBodySizeFromCdpPostDataEntries;
+	NetworkUtils.getTiming = getTiming;
 	const ErrorResponse_js_1 = ErrorResponse;
 	const Base64_js_1 = Base64;
 	const UrlPattern_js_1 = UrlPattern;
@@ -4457,6 +4458,15 @@ var mapperTab = (function () {
 	        size += atob(entry.bytes ?? '').length;
 	    }
 	    return size;
+	}
+	function getTiming(timing) {
+	    if (!timing) {
+	        return 0;
+	    }
+	    if (timing < 0) {
+	        return 0;
+	    }
+	    return timing;
 	}
 
 	Object.defineProperty(StorageProcessor$1, "__esModule", { value: true });
@@ -7647,6 +7657,7 @@ var mapperTab = (function () {
 	class CdpTargetManager {
 	    #browserCdpClient;
 	    #cdpConnection;
+	    #targetKeysToBeIgnoredByAutoAttach = new Set();
 	    #selfTargetId;
 	    #eventManager;
 	    #browsingContextStorage;
@@ -7659,6 +7670,7 @@ var mapperTab = (function () {
 	    constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, defaultUserContextId, unhandledPromptBehavior, logger) {
 	        this.#cdpConnection = cdpConnection;
 	        this.#browserCdpClient = browserCdpClient;
+	        this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
 	        this.#selfTargetId = selfTargetId;
 	        this.#eventManager = eventManager;
 	        this.#browsingContextStorage = browsingContextStorage;
@@ -7705,15 +7717,41 @@ var mapperTab = (function () {
 	    #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
 	        const { sessionId, targetInfo } = params;
 	        const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+	        const detach = async () => {
+	            // Detaches and resumes the target suppressing errors.
+	            await targetCdpClient
+	                .sendCommand('Runtime.runIfWaitingForDebugger')
+	                .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
+	                .catch((error) => this.#logger?.(log_js_1$6.LogType.debugError, error));
+	        };
+	        if (this.#selfTargetId !== targetInfo.targetId) {
+	            // Service workers are special case because they attach to the
+	            // browser target and the page target (so twice per worker) during
+	            // the regular auto-attach and might hang if the CDP session on
+	            // the browser level is not detached. The logic to detach the
+	            // right session is handled in the switch below.
+	            const targetKey = targetInfo.type === 'service_worker'
+	                ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+	                : targetInfo.targetId;
+	            // Mapper generally only needs one session per target. If we
+	            // receive additional auto-attached sessions, that is very likely
+	            // coming from custom CDP sessions.
+	            if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
+	                // Return to leave the session untouched.
+	                return;
+	            }
+	            this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
+	        }
 	        switch (targetInfo.type) {
 	            case 'page':
 	            case 'iframe': {
-	                if (targetInfo.targetId === this.#selfTargetId) {
-	                    break;
+	                if (this.#selfTargetId === targetInfo.targetId) {
+	                    void detach();
+	                    return;
 	                }
 	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
 	                const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
-	                if (maybeContext) {
+	                if (maybeContext && targetInfo.type === 'iframe') {
 	                    // OOPiF.
 	                    maybeContext.updateCdpTarget(cdpTarget);
 	                }
@@ -7743,7 +7781,8 @@ var mapperTab = (function () {
 	                });
 	                // If there is no browsing context, this worker is already terminated.
 	                if (!realm) {
-	                    break;
+	                    void detach();
+	                    return;
 	                }
 	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
 	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
@@ -7761,10 +7800,7 @@ var mapperTab = (function () {
 	        }
 	        // DevTools or some other not supported by BiDi target. Just release
 	        // debugger and ignore them.
-	        targetCdpClient
-	            .sendCommand('Runtime.runIfWaitingForDebugger')
-	            .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
-	            .catch((error) => this.#logger?.(log_js_1$6.LogType.debugError, error));
+	        void detach();
 	    }
 	    #createCdpTarget(targetCdpClient, targetInfo) {
 	        this.#setEventListeners(targetCdpClient);
@@ -8118,22 +8154,25 @@ var mapperTab = (function () {
 	        }
 	        return authChallenges;
 	    }
-	    // TODO: implement.
 	    get #timings() {
 	        return {
-	            timeOrigin: 0,
-	            requestTime: 0,
+	            // TODO: Verify this is correct
+	            timeOrigin: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.requestTime),
+	            requestTime: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.requestTime),
 	            redirectStart: 0,
 	            redirectEnd: 0,
-	            fetchStart: 0,
-	            dnsStart: 0,
-	            dnsEnd: 0,
-	            connectStart: 0,
-	            connectEnd: 0,
-	            tlsStart: 0,
-	            requestStart: 0,
-	            responseStart: 0,
-	            responseEnd: 0,
+	            // TODO: Verify this is correct
+	            // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
+	            fetchStart: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.requestTime),
+	            dnsStart: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.dnsStart),
+	            dnsEnd: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.dnsEnd),
+	            connectStart: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.connectStart),
+	            connectEnd: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.connectEnd),
+	            tlsStart: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.sslStart),
+	            requestStart: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.sendStart),
+	            // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
+	            responseStart: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.receiveHeadersStart),
+	            responseEnd: (0, NetworkUtils_js_1$1.getTiming)(this.#response.info?.timing?.receiveHeadersEnd),
 	        };
 	    }
 	    #phaseChanged() {
@@ -8474,7 +8513,7 @@ var mapperTab = (function () {
 	            redirectCount: this.#redirectCount,
 	            request: this.#getRequestData(),
 	            // Timestamp should be in milliseconds, while CDP provides it in seconds.
-	            timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
+	            timestamp: Math.round((0, NetworkUtils_js_1$1.getTiming)(this.#request.info?.wallTime) * 1000),
 	            // Contains isBlocked and intercepts
 	            ...interceptProps,
 	        };

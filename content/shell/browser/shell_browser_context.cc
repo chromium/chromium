@@ -31,7 +31,6 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_content_index_provider.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
-#include "content/shell/browser/shell_federated_permission_context.h"
 #include "content/shell/browser/shell_paths.h"
 #include "content/shell/browser/shell_permission_manager.h"
 #include "content/shell/common/shell_switches.h"
@@ -186,33 +185,6 @@ ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
   if (!content_index_provider_)
     content_index_provider_ = std::make_unique<ShellContentIndexProvider>();
   return content_index_provider_.get();
-}
-
-FederatedIdentityApiPermissionContextDelegate*
-ShellBrowserContext::GetFederatedIdentityApiPermissionContext() {
-  return GetShellFederatedPermissionContext();
-}
-
-FederatedIdentityAutoReauthnPermissionContextDelegate*
-ShellBrowserContext::GetFederatedIdentityAutoReauthnPermissionContext() {
-  return GetShellFederatedPermissionContext();
-}
-
-FederatedIdentityPermissionContextDelegate*
-ShellBrowserContext::GetFederatedIdentityPermissionContext() {
-  return GetShellFederatedPermissionContext();
-}
-
-ShellFederatedPermissionContext*
-ShellBrowserContext::GetShellFederatedPermissionContext() {
-  if (!federated_permission_context_)
-    federated_permission_context_ =
-        std::make_unique<ShellFederatedPermissionContext>();
-  return federated_permission_context_.get();
-}
-
-void ShellBrowserContext::ResetFederatedPermissionContext() {
-  federated_permission_context_.reset();
 }
 
 ReduceAcceptLanguageControllerDelegate*

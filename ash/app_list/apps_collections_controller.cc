@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_service.h"

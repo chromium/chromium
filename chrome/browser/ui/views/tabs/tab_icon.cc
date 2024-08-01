@@ -24,7 +24,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -53,8 +52,6 @@ namespace {
 
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
-
-constexpr double kDiscardedIconFinalOpacity = 0.8;
 
 bool NetworkStateIsAnimated(TabNetworkState network_state) {
   return network_state != TabNetworkState::kNone &&
@@ -445,19 +442,9 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
     canvas->Translate(gfx::Vector2d(-bounds.x(), -bounds.y()));
   }
 
-  cc::PaintFlags opacity_flag;
-  if (!base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardRingImprovements) &&
-      was_discard_indicator_shown_) {
-    opacity_flag.setAlphaf(gfx::Tween::FloatValueBetween(
-        gfx::Tween::CalculateValue(gfx::Tween::EASE_OUT,
-                                   tab_discard_animation_.GetCurrentValue()),
-        1.0, kDiscardedIconFinalOpacity));
-  }
-
   canvas->DrawImageInt(icon, 0, 0, bounds.width(), bounds.height(), bounds.x(),
                        bounds.y(), bounds.width(), bounds.height(),
-                       use_scale_filter, opacity_flag);
+                       use_scale_filter);
 
   // Emits a custom event when the favicon finishes shrinking and the discard
   // ring gets painted

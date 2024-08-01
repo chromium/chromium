@@ -210,6 +210,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PageChange) {
   RunTestsInJsModule("page_change_test.js", "test-bookmarks.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PageSelector) {
+  RunTestsInJsModule("page_selector_test.js", "test-bookmarks.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ScrollWithFormFieldFocusedTest) {
   RunTestsInJsModule("scroll_with_form_field_focused_test.js",
                      "test-bookmarks.pdf");
@@ -480,10 +484,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SidePanel) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2AnnotationBar) {
-  RunTestsInJsModule("ink2_annotation_bar_test.js", "test.pdf");
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

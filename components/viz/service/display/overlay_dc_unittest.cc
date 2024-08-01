@@ -2865,15 +2865,28 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest,
   AggregatedRenderPassList pass_list;
 
   auto pass = CreateRenderPass();
-  // Non-overlay candidate resource will prevent delegation
-  CreateTextureQuadAt(resource_provider_.get(), child_resource_provider_.get(),
-                      child_provider_.get(),
-                      pass->shared_quad_state_list.back(), pass.get(),
-                      gfx::Rect(0, 0, 50, 50), /*is_overlay_candidate=*/false);
+
+  // Add a video quad we expect to go to overlay.
   auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   ResourceId video_resource_id = video_quad->resource_id();
+
+  {
+    // A RPDQ with a backdrop filter occluding another quad will cause delegated
+    // compositing to fail.
+    auto child_pass = CreateRenderPass(AggregatedRenderPassId(2));
+    child_pass->backdrop_filters.Append(
+        cc::FilterOperation::CreateBlurFilter(1.f));
+    CreateRenderPassDrawQuadAt(pass.get(), pass->shared_quad_state_list.back(),
+                               gfx::Rect(0, 0, 50, 50), child_pass->id);
+    pass_list.push_back(std::move(child_pass));
+
+    CreateSolidColorQuadAt(pass->shared_quad_state_list.back(),
+                           SkColors::kGreen, pass.get(),
+                           gfx::Rect(0, 0, 50, 50));
+  }
+
   pass_list.push_back(std::move(pass));
 
   auto result = TryProcessForDelegatedOverlays(pass_list);

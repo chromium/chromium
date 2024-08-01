@@ -792,27 +792,6 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
   }
 
   if (isConnected() && IsLink()) {
-    static const bool speculative_service_worker_warm_up_enabled =
-        base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp);
-    if (speculative_service_worker_warm_up_enabled) {
-      static const bool warm_up_on_visible =
-          features::kSpeculativeServiceWorkerWarmUpOnVisible.Get();
-      static const bool warm_up_on_inserted_into_dom =
-          features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get();
-      if (warm_up_on_visible || warm_up_on_inserted_into_dom) {
-        Document& top_document = GetDocument().TopDocument();
-        if (auto* observer =
-                AnchorElementObserverForServiceWorker::From(top_document)) {
-          if (warm_up_on_visible) {
-            observer->ObserveAnchorElementVisibility(*this);
-          }
-          if (warm_up_on_inserted_into_dom) {
-            observer->MaybeSendNavigationTargetLinks({this});
-          }
-        }
-      }
-    }
-
     if (auto* document_rules =
             DocumentSpeculationRules::FromIfExists(GetDocument())) {
       document_rules->LinkInserted(this);

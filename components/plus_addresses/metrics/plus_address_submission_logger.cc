@@ -93,7 +93,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
     FormGlobalId form,
     FieldGlobalId field,
     autofill::AutofillPlusAddressDelegate::SuggestionContext suggestion_context,
-    autofill::AutofillClient::PasswordFormType form_type,
+    autofill::AutofillClient::PasswordFormClassification::Type form_type,
     SuggestionType suggestion_type,
     size_t plus_address_count) {
   const CoreAccountInfo core_account_info =
@@ -150,14 +150,20 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
   records_[&manager].insert_or_assign(field, std::move(record));
 }
 
-void PlusAddressSubmissionLogger::OnAutofillManagerDestroyed(
-    autofill::AutofillManager& manager) {
-  RemoveManagerObservation(manager);
-}
-
-void PlusAddressSubmissionLogger::OnAutofillManagerReset(
-    autofill::AutofillManager& manager) {
-  RemoveManagerObservation(manager);
+void PlusAddressSubmissionLogger::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    autofill::AutofillManager::LifecycleState old_state,
+    autofill::AutofillManager::LifecycleState new_state) {
+  using enum autofill::AutofillManager::LifecycleState;
+  switch (new_state) {
+    case kInactive:
+    case kActive:
+      break;
+    case kPendingReset:
+    case kPendingDeletion:
+      RemoveManagerObservation(manager);
+      break;
+  }
 }
 
 void PlusAddressSubmissionLogger::OnFormSubmitted(

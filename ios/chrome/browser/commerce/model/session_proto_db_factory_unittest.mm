@@ -15,9 +15,9 @@ class SessionProtoDBFactoryTest : public PlatformTest {
 
   void SetUp() override {
     TestChromeBrowserState::Builder builder_a;
-    browser_state_a_ = builder_a.Build();
+    browser_state_a_ = std::move(builder_a).Build();
     TestChromeBrowserState::Builder builder_b;
-    browser_state_b_ = builder_b.Build();
+    browser_state_b_ = std::move(builder_b).Build();
   }
 
  protected:

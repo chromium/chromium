@@ -632,6 +632,99 @@ TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
   }
 }
 
+TEST(CSSMathExpressionNode, TestColorChannelExpressionWithSubstitution) {
+  const struct TestCase {
+    const String input;
+    const CalculationResultCategory category;
+    const double output;
+  } test_cases[] = {
+      {"h / 2", CalculationResultCategory::kCalcNumber, 120.0f},
+  };
+
+  const CSSColorChannelMap color_channel_map = {
+      {CSSValueID::kH, 240.0f},
+      {CSSValueID::kS, 50.0f},
+      {CSSValueID::kL, 75.0f},
+      {CSSValueID::kAlpha, 1.0f},
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(test_case.input);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* css_node =
+        CSSMathExpressionNode::ParseMathFunction(
+            CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+            kCSSAnchorQueryTypesNone, color_channel_map);
+    EXPECT_EQ(css_node->Category(), test_case.category);
+    EXPECT_TRUE(css_node->IsNumericLiteral());
+    scoped_refptr<const CalculationExpressionNode> calc_node =
+        css_node->ToCalculationExpression(CSSToLengthConversionData());
+    EXPECT_TRUE(calc_node->IsNumber());
+    EXPECT_EQ(calc_node->Evaluate(FLT_MAX, {}), test_case.output);
+  }
+}
+
+TEST(CSSMathExpressionNode, TestColorChannelExpressionWithInvalidChannelName) {
+  const String test_cases[] = {
+      "r / 2",
+  };
+
+  const CSSColorChannelMap color_channel_map = {
+      {CSSValueID::kH, 240.0f},
+      {CSSValueID::kS, 50.0f},
+      {CSSValueID::kL, 75.0f},
+      {CSSValueID::kAlpha, 1.0f},
+  };
+
+  for (const auto& test_case : test_cases) {
+    CSSTokenizer tokenizer(test_case);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    const CSSParserTokenRange range(tokens);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* css_node =
+        CSSMathExpressionNode::ParseMathFunction(
+            CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+            kCSSAnchorQueryTypesNone, color_channel_map);
+    EXPECT_EQ(css_node, nullptr);
+  }
+}
+
+TEST(CSSMathExpressionNode, TestColorChannelExpressionWithoutSubstitution) {
+  const String input = "h / 2";
+
+  const CSSColorChannelMap color_channel_map = {
+      {CSSValueID::kH, std::nullopt},
+      {CSSValueID::kS, std::nullopt},
+      {CSSValueID::kL, std::nullopt},
+      {CSSValueID::kAlpha, std::nullopt},
+  };
+
+  CSSTokenizer tokenizer(input);
+  const auto tokens = tokenizer.TokenizeToEOF();
+  const CSSParserTokenRange range(tokens);
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  const CSSMathExpressionNode* css_node =
+      CSSMathExpressionNode::ParseMathFunction(
+          CSSValueID::kCalc, range, *context, Flags({Flag::AllowPercent}),
+          kCSSAnchorQueryTypesNone, color_channel_map);
+  EXPECT_EQ(css_node->Category(), CalculationResultCategory::kCalcNumber);
+  EXPECT_TRUE(css_node->IsOperation());
+  const CSSMathExpressionOperation* css_op =
+      To<CSSMathExpressionOperation>(css_node);
+  const CSSMathExpressionNode* operand = css_op->GetOperands()[0];
+  EXPECT_TRUE(operand->IsKeywordLiteral());
+  const CSSMathExpressionKeywordLiteral* keyword =
+      To<CSSMathExpressionKeywordLiteral>(operand);
+  EXPECT_EQ(keyword->GetValue(), CSSValueID::kH);
+  EXPECT_EQ(keyword->GetContext(),
+            CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

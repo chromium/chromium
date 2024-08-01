@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is only for utilities used by the UI mediators.
+# TODO(ssid): Move this into a module and remove UI deps from here.
+data_sharing_java_sources = [
+  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManager.java",
+  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabObserver.java",
+  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabSwitcherDelegate.java",
+]
+
+data_sharing_java_tests = [
+  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManagerUnitTest.java",
+  "//chrome/browser/data_sharing/android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabObserverUnitTest.java",
+]

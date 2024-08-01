@@ -16,10 +16,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -28,12 +28,17 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -58,7 +63,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -152,6 +160,7 @@ public class TabGridDialogMediator
     private final Runnable mShowInviteFlowUIRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
 
+    private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
@@ -159,7 +168,6 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
-    private Callback<Integer> mToolbarMenuCallback;
     private Activity mActivity;
 
     TabGridDialogMediator(
@@ -420,27 +428,6 @@ public class TabGridDialogMediator
         mTabGroupTitleEditor = tabGroupTitleEditor;
 
         assert mCurrentTabModelFilterSupplier.get() instanceof TabGroupModelFilter;
-
-        mToolbarMenuCallback =
-                result -> {
-                    if (result == R.id.ungroup_tab || result == R.id.select_tabs) {
-                        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
-                        if (setupAndShowTabListEditor(mCurrentTabId)) {
-                            TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
-                                    TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
-                        }
-                    }
-
-                    if (result == R.id.edit_group_name) {
-                        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
-                    }
-
-                    if (result == R.id.edit_group_color) {
-                        mShowColorPickerPopupRunnable.run();
-                        TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
-                                TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
-                    }
-                };
 
         setupToolbarClickHandlers();
         setupToolbarEditText();
@@ -728,7 +715,8 @@ public class TabGridDialogMediator
                         mContext,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
-                        IconPosition.START));
+                        IconPosition.START,
+                        mActionConfirmationManager));
         actions.add(
                 TabListEditorUngroupAction.createAction(
                         mContext,
@@ -830,10 +818,85 @@ public class TabGridDialogMediator
         };
     }
 
+    @VisibleForTesting
+    public void onToolbarMenuItemClick(int menuId, int tabId) {
+        assert tabId == mCurrentTabId;
+        if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
+            RecordUserAction.record("TabGridDialogMenu.SelectTabs");
+            mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
+            if (setupAndShowTabListEditor(tabId)) {
+                TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
+                        TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
+            }
+        } else if (menuId == R.id.edit_group_name) {
+            RecordUserAction.record("TabGridDialogMenu.Rename");
+            mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
+        } else if (menuId == R.id.edit_group_color) {
+            RecordUserAction.record("TabGridDialogMenu.EditColor");
+            mShowColorPickerPopupRunnable.run();
+            TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
+                    TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
+        } else if (menuId == R.id.manage_sharing) {
+            RecordUserAction.record("TabGridDialogMenu.ManageSharing");
+            // TODO(crbug.com/348731625): Make this do something.
+        } else if (menuId == R.id.recent_activity) {
+            RecordUserAction.record("TabGridDialogMenu.RecentActivity");
+            // TODO(crbug.com/348731625): Make this do something.
+        } else if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
+            boolean hideTabGroups = menuId == R.id.close_tab;
+            if (hideTabGroups) {
+                RecordUserAction.record("TabGridDialogMenu.Close");
+            } else {
+                RecordUserAction.record("TabGridDialogMenu.Delete");
+            }
+            TabUiUtils.closeTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId,
+                    hideTabGroups);
+        } else if (menuId == R.id.delete_shared_group) {
+            RecordUserAction.record("TabGridDialogMenu.DeleteShared");
+            TabUiUtils.deleteSharedTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId);
+        } else if (menuId == R.id.leave_group) {
+            RecordUserAction.record("TabGridDialogMenu.LeaveShared");
+            TabUiUtils.leaveTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId);
+        }
+    }
+
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
-                mToolbarMenuCallback, mModel.get(TabGridDialogProperties.IS_INCOGNITO));
+        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        Profile profile = tabModel.getProfile().getOriginalProfile();
+        boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+
+        IdentityManager identityManager = null;
+        TabGroupSyncService tabGroupSyncService = null;
+        DataSharingService dataSharingService = null;
+        if (isTabGroupSyncEnabled
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+            identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+            dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+        }
+        if (mTabGridDialogMenuCoordinator == null) {
+            mTabGridDialogMenuCoordinator =
+                    new TabGridDialogMenuCoordinator(
+                            this::onToolbarMenuItemClick,
+                            () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
+                            () -> mCurrentTabId,
+                            isTabGroupSyncEnabled,
+                            identityManager,
+                            tabGroupSyncService,
+                            dataSharingService);
+        }
+
+        return mTabGridDialogMenuCoordinator.getOnClickListener();
     }
 
     private View.OnClickListener getShareBarClickListener() {
@@ -1049,10 +1112,6 @@ public class TabGridDialogMediator
 
     String getCurrentGroupModifiedTitleForTesting() {
         return mCurrentGroupModifiedTitle;
-    }
-
-    Callback<Integer> getToolbarMenuCallbackForTesting() {
-        return mToolbarMenuCallback;
     }
 
     Runnable getScrimClickRunnableForTesting() {

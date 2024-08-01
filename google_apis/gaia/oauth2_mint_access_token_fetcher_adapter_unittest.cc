@@ -81,11 +81,13 @@ class MockOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
 
   void SimulateMintTokenSuccess(const std::string& access_token,
                                 const std::set<std::string>& granted_scopes,
-                                int time_to_live) {
+                                int time_to_live,
+                                bool is_encrypted) {
     MintTokenResult result;
     result.access_token = access_token;
     result.granted_scopes = granted_scopes;
     result.time_to_live = base::Seconds(time_to_live);
+    result.is_token_encrypted = is_encrypted;
     delegate_->OnMintTokenSuccess(result);
   }
   void SimulateMintTokenFailure(const GoogleServiceAuthError& error) {
@@ -227,7 +229,8 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Success) {
   EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
                                     kTestAccessToken, kTimeToLive)));
   mock_flow()->SimulateMintTokenSuccess(kTestAccessToken, {kTestScope},
-                                        kTimeToLive.InSeconds());
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/false);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithEncryption) {
@@ -243,7 +246,23 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithEncryption) {
   EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
                                     kTestAccessToken, kTimeToLive)));
   mock_flow()->SimulateMintTokenSuccess(kTestEncryptedToken, {kTestScope},
-                                        kTimeToLive.InSeconds());
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/true);
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessDecryptorUnused) {
+  auto fetcher = CreateFetcher();
+  base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenDecryptor>
+      mock_decryptor;
+  fetcher->SetTokenDecryptor(mock_decryptor.Get());
+  EXPECT_CALL(mock_decryptor, Run).Times(0);
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
+                                    kTestAccessToken, kTimeToLive)));
+  mock_flow()->SimulateMintTokenSuccess(kTestAccessToken, {kTestScope},
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/false);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Failure) {
@@ -272,7 +291,21 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, DecryptionFailure) {
       OnGetTokenFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
           "Failed to decrypt token")));
   mock_flow()->SimulateMintTokenSuccess(kTestEncryptedToken, {kTestScope},
-                                        kTimeToLive.InSeconds());
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/true);
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, NoDecryptorFailure) {
+  auto fetcher = CreateFetcher();
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(
+      *mock_consumer(),
+      OnGetTokenFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
+          "Unexpectedly received an encrypted token")));
+  mock_flow()->SimulateMintTokenSuccess(kTestAccessToken, {kTestScope},
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/true);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, UnexpectedConsentResult) {

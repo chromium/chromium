@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -28,7 +29,8 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
   Document* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
   Element* div = document->CreateRawElement(html_names::kDivTag);
-  InlineStylePropertyMap map(div);
+  InlineStylePropertyMap* map =
+      MakeGarbageCollected<InlineStylePropertyMap>(div);
 
   // For each shorthand, create a declaration with a var() reference and try
   // reifying all longhands.
@@ -43,9 +45,9 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
     div->SetInlineStyleProperty(property_id, "var(--dummy)");
     const StylePropertyShorthand& longhands = shorthandForProperty(property_id);
     for (unsigned i = 0; i < longhands.length(); i++) {
-      map.get(document->GetExecutionContext(),
-              longhands.properties()[i]->GetCSSPropertyName().ToAtomicString(),
-              ASSERT_NO_EXCEPTION);
+      map->get(document->GetExecutionContext(),
+               longhands.properties()[i]->GetCSSPropertyName().ToAtomicString(),
+               ASSERT_NO_EXCEPTION);
     }
   }
 }

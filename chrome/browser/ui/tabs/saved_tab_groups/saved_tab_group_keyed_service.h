@@ -99,6 +99,12 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   std::optional<std::string> GetLocalCacheGuid() const;
 
+  // Helper function used to pause and resume tracking of all objects stored in
+  // `listener_`. This is an RAII object which pauses tracking on construction,
+  // and resumes tracking on destruction.
+  std::unique_ptr<ScopedLocalObservationPauser>
+  CreateScopedLocalObserverPauser();
+
   void OnTabAddedToGroupLocally(const base::Uuid& group_guid);
 
   void OnTabRemovedFromGroupLocally(const base::Uuid& group_guid,

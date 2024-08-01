@@ -18,23 +18,12 @@ BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
              "EnableOverwritingPlaceholderUsernames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, username fields for forgot password flows are recognized
-// and filled.
-BASE_FEATURE(kForgotPasswordFormSupport,
-             "ForgotPasswordFormSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // Enables password bottom sheet to be triggered on autofocus events (on iOS).
 BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              "kIOSPasswordBottomSheetAutofocus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
-
-// Enables filling and saving for forms in shadow DOM.
-BASE_FEATURE(kShadowDomSupport,
-             "ShadowDomSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables password reuse detection.
 BASE_FEATURE(kPasswordReuseDetectionEnabled,

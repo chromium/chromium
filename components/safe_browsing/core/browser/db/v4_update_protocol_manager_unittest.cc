@@ -36,6 +36,8 @@ using base::Time;
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 class V4UpdateProtocolManagerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();

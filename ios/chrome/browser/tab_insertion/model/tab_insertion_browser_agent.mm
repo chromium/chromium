@@ -107,7 +107,11 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
                                            ui::PAGE_TRANSITION_LINK)) {
     params = WebStateList::InsertionParams::AtIndex(web_state_list->count());
   }
-  params.Activate(!tab_insertion_params.in_background)
+
+  bool should_activate =
+      !tab_insertion_params.in_background || web_state_list->empty();
+
+  params.Activate(should_activate)
       .InheritOpener(tab_insertion_params.inherit_opener)
       .WithOpener(WebStateOpener(tab_insertion_params.parent));
   if (tab_insertion_params.insert_in_group && tab_insertion_params.tab_group) {

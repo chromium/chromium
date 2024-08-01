@@ -72,6 +72,12 @@ int TcpStreamAttempt::StartInternal() {
   return rv;
 }
 
+base::Value::Dict TcpStreamAttempt::GetNetLogStartParams() {
+  base::Value::Dict dict;
+  dict.Set("ip_endpoint", ip_endpoint().ToValue());
+  return dict;
+}
+
 void TcpStreamAttempt::HandleCompletion() {
   next_state_ = State::kNone;
   timeout_timer_.Stop();

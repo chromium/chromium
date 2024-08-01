@@ -4,15 +4,19 @@
 
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/views/mock_picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
+#include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
@@ -22,8 +26,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/test_widget_builder.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
@@ -53,7 +60,7 @@ class PickerAccessibilityBrowserTest : public InProcessBrowserTest {
 
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
     // Ignore the intro.
-    sm_.ExpectSpeechPattern("*");
+    sm_.ExpectSpeechPattern("ChromeVox*");
     // Disable earcons which can be annoying in tests.
     sm_.Call([this]() {
       ImportJSModuleForChromeVox("ChromeVox",
@@ -143,6 +150,40 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       SetDescendantAnnouncesDescendantAfterKeyEvent) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* container_view =
+      widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
+  auto* search_field_view =
+      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* other_view =
+      container_view->AddChildView(std::make_unique<views::Label>(u"test"));
+  search_field_view->SetPlaceholderText(u"cat");
+
+  sm_.Call([search_field_view]() { search_field_view->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
+
+  sm_.Call([search_field_view, other_view]() {
+    ui::test::EventGenerator event_generator(
+        ash::Shell::Get()->GetPrimaryRootWindow());
+    event_generator.PressAndReleaseKey(ui::VKEY_A);
+    search_field_view->SetTextfieldActiveDescendant(other_view);
+  });
+
+  sm_.ExpectSpeechPattern("A");
+  sm_.ExpectSpeechPattern("test");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
                        SetDescendantToTextfieldAnnouncesPlaceholder) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -177,6 +218,43 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern("cat");
   sm_.ExpectSpeechPattern("Edit text");
+  sm_.Replay();
+}
+
+// TODO(crbug.com/356567533): flaky on MSAN. Deflake and re-enable the test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant \
+  DISABLED_SetDescendantThenFocusingSearchFieldAnnouncesDescendant
+#else
+#define MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant \
+  SetDescendantThenFocusingSearchFieldAnnouncesDescendant
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PickerAccessibilityBrowserTest,
+    MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::PickerKeyEventHandler key_event_handler;
+  ash::PickerPerformanceMetrics metrics;
+  auto* container_view =
+      widget->SetContentsView(views::Builder<views::BoxLayoutView>().Build());
+  auto* search_field_view =
+      container_view->AddChildView(std::make_unique<ash::PickerSearchFieldView>(
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  auto* other_view =
+      container_view->AddChildView(std::make_unique<views::Label>(u"test"));
+  search_field_view->SetPlaceholderText(u"cat");
+
+  sm_.Call([search_field_view, other_view]() {
+    search_field_view->SetTextfieldActiveDescendant(other_view);
+    search_field_view->RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.ExpectSpeechPattern("test");
   sm_.Replay();
 }
 
@@ -553,6 +631,65 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("surprise emoticon");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       StoppingSearchAnnouncesEmojiResults) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
+          &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  sm_.Call([view]() {
+    view->SetNumEmojiResultsForA11y(5);
+    view->SearchStopped(/*illustration=*/{}, /*description=*/u"");
+  });
+  sm_.ExpectSpeechPattern("5 emojis. No other results.");
+  sm_.ExpectSpeechPattern("Status");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       StoppingSearchAnnouncesNoResults) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
+          &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  sm_.Call([view]() {
+    view->SearchStopped(/*illustration=*/{}, /*description=*/u"");
+  });
+  sm_.ExpectSpeechPattern("No results found.");
+  sm_.ExpectSpeechPattern("Status");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       ShowingFeatureTourAnnouncesContents) {
+  ash::PickerFeatureTour feature_tour;
+
+  sm_.Call([this, &feature_tour]() {
+    feature_tour.MaybeShowForFirstUse(browser()->profile()->GetPrefs(),
+                                      base::DoNothing(), base::DoNothing());
+  });
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  sm_.ExpectSpeechPattern("*insert content*");
+#endif
+  sm_.ExpectSpeechPattern("Dialog");
+  sm_.ExpectSpeechPattern("Get started");
+  sm_.ExpectSpeechPattern("Button");
   sm_.Replay();
 }
 

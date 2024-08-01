@@ -166,4 +166,8 @@ void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+std::string_view UserCloudPolicyTokenForwarder::name() const {
+  return "UserCloudPolicyTokenForwarder";
+}
+
 }  // namespace policy

@@ -195,4 +195,8 @@ void ProfileTokenPolicyWebSigninService::InitializeOnProfileReady(
   }
 }
 
+std::string_view ProfileTokenPolicyWebSigninService::name() const {
+  return "ProfileTokenPolicyWebSigninService";
+}
+
 }  // namespace policy

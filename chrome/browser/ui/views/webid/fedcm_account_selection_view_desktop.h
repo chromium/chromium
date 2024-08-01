@@ -115,7 +115,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void SetIdpSigninPopupWindowForTesting(std::unique_ptr<FedCmModalDialogView>);
 
   // AccountSelectionBubbleView::Observer:
-  content::WebContents* ShowModalDialog(const GURL& url) override;
+  content::WebContents* ShowModalDialog(const GURL& url,
+                                        blink::mojom::RpMode rp_mode) override;
   void CloseModalDialog() override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
 
@@ -126,6 +127,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Setter method for testing only.
   void SetIsLensOverlayShowingForTesting(bool value);
+
+  base::WeakPtr<FedCmAccountSelectionView> GetWeakPtr();
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -249,14 +252,22 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome an account chooser and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
+  // AccountChooserResult in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
   enum class AccountChooserResult {
     kAccountRow,
     kCancelButton,
     kUseOtherAccountButton,
     kTabClosed,
+    // Android-specific
+    kSwipe,
+    // Android-specific
+    kBackPress,
+    // Android-specific
+    kTapScrim,
 
-    kMaxValue = kTabClosed
+    kMaxValue = kTapScrim
   };
 
   // views::WidgetObserver:

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
@@ -103,7 +103,6 @@ enum class TabGridPageConfiguration {
                         KeyCommandActions,
                         TabGridConsumer,
                         TabGridIdleStatusHandler,
-                        TabGridPaging,
                         TabGridToolbarsMainTabGridDelegate,
                         TabGridTransitionLayoutProviding,
                         UISearchBarDelegate>
@@ -126,7 +125,6 @@ enum class TabGridPageConfiguration {
 
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularGridHandler;
-@property(nonatomic, weak) id<GridCommands> inactiveGridHandler;
 @property(nonatomic, weak) id<GridCommands> incognitoGridHandler;
 
 // Data source for acquiring data which power the PriceCardView
@@ -179,6 +177,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak)
     GridContainerViewController* remoteGridContainerViewController;
 
+// Active page of the tab grid. The active page is the page that
+// contains the most recent active tab.
+@property(nonatomic, assign, readonly) TabGridPage activePage;
 // The currently visible page.
 @property(nonatomic, assign, readonly) TabGridPage currentPage;
 

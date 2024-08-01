@@ -182,8 +182,9 @@ scoped_refptr<Extension> TestExtensionPrefs::AddExtensionWithManifestAndFlags(
   scoped_refptr<Extension> extension =
       Extension::Create(path, location, manifest, extra_flags, &errors);
   EXPECT_TRUE(extension.get()) << errors;
-  if (!extension.get())
+  if (!extension.get()) {
     return nullptr;
+  }
 
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
   prefs()->OnExtensionInstalled(extension.get(),

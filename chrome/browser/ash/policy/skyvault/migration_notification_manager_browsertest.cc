@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/common/chrome_features.h"
@@ -102,10 +103,28 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerTest,
       display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
 
   MigrationNotificationManager manager(profile());
-  manager.ShowMigrationErrorNotification(CloudProvider(), /*errors=*/{});
-  // TODO(aidazolic): Uncomment when finished.
-  // EXPECT_TRUE(
-  //   display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+  manager.ShowMigrationErrorNotification(CloudProvider(), base::FilePath(),
+                                         /*errors=*/{});
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+
+  manager.CloseAll();
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+}
+
+// Tests that a policy configuration error notification is shown, and closed
+// when CloseAll() is called.
+IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerTest,
+                       ShowConfigurationErrorNotification) {
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+
+  MigrationNotificationManager manager(profile());
+  manager.ShowConfigurationErrorNotification(CloudProvider());
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
 
   manager.CloseAll();
   EXPECT_FALSE(

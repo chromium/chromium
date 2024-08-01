@@ -49,6 +49,11 @@ class ASH_EXPORT YouTubeMusicClient {
   void PlaybackQueueNext(const std::string& playback_queue_id,
                          GetPlaybackContextCallback callback);
 
+  // Invokes a request to report the playback to the API server.
+  void ReportPlayback(const std::string& playback_reporting_token,
+                      const PlaybackData& playback_data,
+                      ReportPlaybackCallback callback);
+
  private:
   google_apis::RequestSender* GetRequestSender();
 
@@ -81,6 +86,13 @@ class ASH_EXPORT YouTubeMusicClient {
           std::unique_ptr<google_apis::youtube_music::QueueContainer>,
           google_apis::ApiErrorCode> result);
 
+  // Triggered when report playback request is done.
+  void OnReportPlaybackRequestDone(
+      const base::Time& request_start_time,
+      base::expected<
+          std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
+          google_apis::ApiErrorCode> result);
+
   // Callback passed in at initialization time for creating request sender.
   CreateRequestSenderCallback create_request_sender_callback_;
 
@@ -97,6 +109,9 @@ class ASH_EXPORT YouTubeMusicClient {
   // Callback that runs when playback context data is fetched by requesting next
   // in the playback queue.
   GetPlaybackContextCallback playback_context_next_callback_;
+
+  // Callback that runs when playback report is done.
+  ReportPlaybackCallback report_playback_callback_;
 
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;

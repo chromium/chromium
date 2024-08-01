@@ -19,8 +19,8 @@ suite('SiteFaviconTest', () => {
   });
 
   test('on successful download', async () => {
-    icon.setDomainForTesting('https://test.com');
-    icon.setUrlForTesting('chrome://resources/images/chrome_logo_dark.svg');
+    icon.domain = 'https://test.com';
+    icon.url = 'chrome://resources/images/chrome_logo_dark.svg';
     await eventToPromise('site-favicon-loaded', icon);
 
     assertTrue(isVisible(icon.$.downloadedFavicon));
@@ -28,8 +28,8 @@ suite('SiteFaviconTest', () => {
   });
 
   test('on failed download', async () => {
-    icon.setDomainForTesting('https://test.com');
-    icon.setUrlForTesting('chrome://resources/images/invalid_url');
+    icon.domain = 'https://test.com';
+    icon.url = 'chrome://resources/images/invalid_url';
     await eventToPromise('site-favicon-error', icon);
 
     assertFalse(isVisible(icon.$.downloadedFavicon));
@@ -37,14 +37,14 @@ suite('SiteFaviconTest', () => {
   });
 
   test('url change', async () => {
-    icon.setDomainForTesting('https://test.com');
-    icon.setUrlForTesting('chrome://resources/images/chrome_logo_dark.svg');
+    icon.domain = 'https://test.com';
+    icon.url = 'chrome://resources/images/chrome_logo_dark.svg';
     await eventToPromise('site-favicon-loaded', icon);
 
     assertTrue(isVisible(icon.$.downloadedFavicon));
     assertFalse(isVisible(icon.$.favicon));
 
-    icon.setUrlForTesting('');
+    icon.url = '';
     await microtasksFinished();
     assertFalse(isVisible(icon.$.downloadedFavicon));
     assertTrue(isVisible(icon.$.favicon));

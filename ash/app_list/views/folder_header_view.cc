@@ -417,18 +417,13 @@ FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate,
       delegate_(delegate),
       folder_name_visible_(true),
       is_tablet_mode_(tablet_mode) {
-  if (chromeos::features::IsJellyEnabled()) {
-    SystemTextfield* typed_folder_name_view =
-        AddChildView(std::make_unique<FolderNameJellyView>(tablet_mode));
-    folder_name_view_ = typed_folder_name_view;
-    folder_name_controller_ = std::make_unique<FolderNameViewController>(
-        typed_folder_name_view,
-        base::BindRepeating(&FolderHeaderView::UpdateFolderName,
-                            base::Unretained(this)));
-  } else {
-    folder_name_view_ = AddChildView(std::make_unique<FolderNameView>(this));
-    folder_name_view_->set_controller(this);
-  }
+  SystemTextfield* typed_folder_name_view =
+      AddChildView(std::make_unique<FolderNameJellyView>(tablet_mode));
+  folder_name_view_ = typed_folder_name_view;
+  folder_name_controller_ = std::make_unique<FolderNameViewController>(
+      typed_folder_name_view,
+      base::BindRepeating(&FolderHeaderView::UpdateFolderName,
+                          base::Unretained(this)));
   folder_name_view_->SetPlaceholderText(folder_name_placeholder_text_);
 
   SetPaintToLayer();

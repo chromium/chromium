@@ -9,6 +9,11 @@
 //  2 parsing steps
 //  3 parsed values (selected)
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/vp9_parser.h"
 
 #include <algorithm>
@@ -281,13 +286,6 @@ bool IsByteNEncrypted(off_t byte,
 }
 
 }  // namespace
-
-Vp9FrameHeader::Vp9FrameHeader() = default;
-Vp9FrameHeader::Vp9FrameHeader(const Vp9FrameHeader&) = default;
-Vp9FrameHeader::Vp9FrameHeader(Vp9FrameHeader&&) = default;
-Vp9FrameHeader& Vp9FrameHeader::operator=(const Vp9FrameHeader&) = default;
-Vp9FrameHeader& Vp9FrameHeader::operator=(Vp9FrameHeader&&) = default;
-Vp9FrameHeader::~Vp9FrameHeader() = default;
 
 bool Vp9FrameHeader::IsKeyframe() const {
   // When show_existing_frame is true, the frame header does not precede an

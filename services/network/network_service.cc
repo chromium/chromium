@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -78,7 +79,6 @@
 #include "services/network/dns_config_change_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/http_auth_cache_copier.h"
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
 #include "services/network/network_context.h"
@@ -469,8 +469,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   tpcd_metadata_manager_ = std::make_unique<network::tpcd::metadata::Manager>();
 
-  network_service_proxy_allow_list_ =
-      std::make_unique<NetworkServiceProxyAllowList>(
+  masked_domain_list_manager_ =
+      std::make_unique<ip_protection::MaskedDomainListManager>(
           params->ip_protection_proxy_bypass_policy);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -928,8 +928,8 @@ void NetworkService::UpdateMaskedDomainList(
     UMA_HISTOGRAM_MEMORY_KB("NetworkService.MaskedDomainList.SizeInKB",
                             mdl->ByteSizeLong() / 1024);
 
-    network_service_proxy_allow_list_->UseMaskedDomainList(mdl.value(),
-                                                           exclusion_list);
+    masked_domain_list_manager_->UpdateMaskedDomainList(mdl.value(),
+                                                        exclusion_list);
 
     base::UmaHistogramBoolean(
         "NetworkService.IpProtection.ProxyAllowList."

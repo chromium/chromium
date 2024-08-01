@@ -55,30 +55,17 @@ void CheckColorForImageRep(NSImageRep* rep, SkColor expected_color) {
   SkBitmap bitmap(
       skia::NSImageRepToSkBitmap(rep, rep.size, /*is_opaque=*/false));
 
-  // Ignore alpha channel on macOS 10.15. None of the images in this test should
-  // have an alpha channel, but despite that sometimes NSImageRepToSkBitmap ends
-  // up with an (incorrect) alpha value anyway.
-  auto fixup_color = [](SkColor input) {
-    if (@available(macOS 11.0, *)) {
-      return input;
-    } else {
-      return SkColorSetA(input, SK_AlphaOPAQUE);
-    }
-  };
-
   // Check the corners and center pixel, which should be good enough for these
   // tests.
-  gfx::test::CheckColors(expected_color, fixup_color(bitmap.getColor(0, 0)));
+  gfx::test::CheckColors(expected_color, bitmap.getColor(0, 0));
   gfx::test::CheckColors(expected_color,
-                         fixup_color(bitmap.getColor(bitmap.width() - 1, 0)));
+                         bitmap.getColor(bitmap.width() - 1, 0));
   gfx::test::CheckColors(expected_color,
-                         fixup_color(bitmap.getColor(0, bitmap.height() - 1)));
+                         bitmap.getColor(0, bitmap.height() - 1));
   gfx::test::CheckColors(
-      expected_color,
-      fixup_color(bitmap.getColor(bitmap.width() - 1, bitmap.height() - 1)));
+      expected_color, bitmap.getColor(bitmap.width() - 1, bitmap.height() - 1));
   gfx::test::CheckColors(
-      expected_color,
-      fixup_color(bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2)));
+      expected_color, bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
 }
 
 }  // namespace

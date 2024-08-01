@@ -255,51 +255,9 @@ TEST_F(AACTest, XHE_AAC) {
   // ADTS conversion should do nothing since xHE-AAC can't be represented with
   // only two bits for the profile.
   int adts_header_size = 1;  // Choose a non-zero value to make sure it's set.
-  EXPECT_TRUE(aac_.ConvertEsdsToADTS(&data, &adts_header_size));
+  auto adts_buffer = aac_.CreateAdtsFromEsds(data, &adts_header_size);
+  EXPECT_TRUE(adts_buffer.empty());
   EXPECT_EQ(adts_header_size, 0);
-  EXPECT_EQ(data.size(), sizeof(buffer));
-}
-
-TEST_F(AACTest, ConvertEsdsToADTS) {
-  // Prime `aac_` with a codec description.
-  uint8_t buffer[] = {0x12, 0x10};
-  std::vector<uint8_t> codec_desc(buffer, buffer + sizeof(buffer));
-  EXPECT_TRUE(Parse(codec_desc));
-
-  // Build a packet with arbitrary data.
-  uint8_t packet_data[] = {0x00, 0x01, 0x03, 0x04};
-  std::vector<uint8_t> packet(packet_data, packet_data + sizeof(packet_data));
-
-  int adts_header_size = 0;
-  EXPECT_TRUE(aac_.ConvertEsdsToADTS(&packet, &adts_header_size));
-
-  // Make sure the conversion succeeded.
-  const size_t total_size = adts_header_size + sizeof(packet_data);
-  EXPECT_EQ(adts_header_size, kADTSHeaderMinSize);
-  EXPECT_EQ(packet.size(), total_size);
-
-  // Verify the packet data.
-  EXPECT_EQ(0, memcmp(packet.data() + adts_header_size, packet_data,
-                      sizeof(packet_data)));
-
-  // Verify the header data.
-  ADTSStreamParser adts_parser;
-
-  int frame_size = 0;
-  int sample_rate = 0;
-  ChannelLayout channel_layout;
-  int sample_count = 0;
-  bool metadata_frame;
-  std::vector<uint8_t> extra_data;
-
-  adts_parser.ParseFrameHeader(packet.data(), total_size, &frame_size,
-                               &sample_rate, &channel_layout, &sample_count,
-                               &metadata_frame, &extra_data);
-
-  EXPECT_EQ(frame_size, static_cast<int>(total_size));
-  EXPECT_EQ(sample_rate, 44100);
-  EXPECT_EQ(channel_layout, ChannelLayout::CHANNEL_LAYOUT_STEREO);
-  EXPECT_EQ(0, memcmp(extra_data.data(), buffer, extra_data.size()));
 }
 
 TEST_F(AACTest, CreateAdtsFromEsds) {

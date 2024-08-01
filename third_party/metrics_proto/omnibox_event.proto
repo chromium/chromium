@@ -430,7 +430,7 @@ message OmniboxEventProto {
     // |is_keyword_suggestion|.
     optional bool is_keyword_suggestion = 9;
 
-    // Signals for machine learning scoring (logged by client code)
+    // Signals for machine learning scoring (logged by client code).
     // See details: http://shortn/_B21YgmkLs9.
     //
     // Currently, this message is populated for both URL and Search suggestions
@@ -552,6 +552,7 @@ message OmniboxEventProto {
       //   - Zero:     Search suggestion with `relevance_from_server` set to
       //               `false` OR non-Search suggestion (obtained from any
       //               source)
+      //   - Unset:    Otherwise (due to unexpected client-side behavior)
       optional int32 search_suggest_relevance = 25;
       // Moved to OmniboxScoringSignals proto in cl/651828883:
       optional bool is_search_suggest_entity = 26 [deprecated = true];

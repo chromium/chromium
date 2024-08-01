@@ -328,7 +328,7 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 }
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
-  auto* it = base::ranges::remove(rule_sets_, rule_set);
+  auto it = base::ranges::remove(rule_sets_, rule_set);
   CHECK(it != rule_sets_.end(), base::NotFatalUntil::M130)
       << "rule set was removed without existing";
   rule_sets_.erase(it, rule_sets_.end());
@@ -430,17 +430,6 @@ void DocumentSpeculationRules::DocumentReferrerPolicyChanged() {
 }
 
 void DocumentSpeculationRules::DocumentBaseURLChanged() {
-  // Replace every existing rule set with a new copy that is parsed using the
-  // updated document base URL.
-  for (Member<SpeculationRuleSet>& rule_set : rule_sets_) {
-    SpeculationRuleSet::Source* source = rule_set->source();
-    rule_set = SpeculationRuleSet::Parse(
-        source, GetSupplementable()->GetExecutionContext());
-    // There should not be any parsing errors as these rule sets have already
-    // been parsed once without errors, and an updated base URL should not cause
-    // new errors. There may however still be warnings.
-    DCHECK(rule_set);
-  }
   if (initialized_)
     InvalidateAllLinks();
   QueueUpdateSpeculationCandidates();
@@ -722,7 +711,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   // Note that the document's URL is not necessarily the same as the base URL
   // (e,g., when a <base> element is present in the document).
   const KURL& document_url = document.Url();
-  auto* last = base::ranges::remove_if(candidates, [&](const auto& candidate) {
+  auto last = base::ranges::remove_if(candidates, [&](const auto& candidate) {
     const KURL& url = candidate->url();
     return url.HasFragmentIdentifier() &&
            EqualIgnoringFragmentIdentifier(url, document_url);

@@ -63,6 +63,12 @@ struct ScoreAdDependencyLatencies {
 
   // Download of TrustedScoringSignals
   mojo_base.mojom.TimeDelta? trusted_scoring_signals_latency;
+
+  // Times of each step of the ScoreAd flow, used to compute start and end
+  // times for latency phase UKMs.
+  mojo_base.mojom.TimeTicks deps_wait_start_time;
+  mojo_base.mojom.TimeTicks score_ad_start_time;
+  mojo_base.mojom.TimeTicks score_ad_finish_time;
 };
 
 // Interface for returning ScoreAd results. The advantage of having an interface

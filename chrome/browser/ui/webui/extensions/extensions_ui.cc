@@ -57,8 +57,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ui/webui/extensions/ash/kiosk_apps_handler.h"
 #endif
 
 namespace extensions {
@@ -531,11 +529,6 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
   auto safety_check_hats_handler =
       std::make_unique<ExtensionsHatsHandler>(profile);
   web_ui->AddMessageHandler(std::move(safety_check_hats_handler));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui->AddMessageHandler(std::make_unique<ash::KioskAppsHandler>(
-      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile)));
-#endif
 
   // Need to allow <object> elements so that the <extensionoptions> browser
   // plugin can be loaded within chrome://extensions.

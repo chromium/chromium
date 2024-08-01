@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/permissions/system/platform_handle.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This causes a gn error on Android builds, because gn does not understand
@@ -47,11 +48,17 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
 }
 
 void GlobalFeatures::Init() {
+  system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (user_education::features::IsWhatsNewV2()) {
     whats_new_registry_ = CreateWhatsNewRegistry();
   }
 #endif
+}
+
+std::unique_ptr<system_permission_settings::PlatformHandle>
+GlobalFeatures::CreateSystemPermissionsPlatformHandle() {
+  return system_permission_settings::PlatformHandle::Create();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

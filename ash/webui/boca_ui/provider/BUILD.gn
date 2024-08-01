@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "Boca is ChromeOS only")
+
+mojom("classroom_mojo_bindings") {
+  sources = [ "classroom.mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}
+
+static_library("classroom") {
+  sources = [
+    "classroom_page_handler_impl.cc",
+    "classroom_page_handler_impl.h",
+  ]
+  deps = [
+    "//chrome/browser/ash/boca/classroom:classroom_mojo_bindings",
+    "//chrome/browser/profiles:profile",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//google_apis/classroom",
+    "//google_apis/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "classroom_page_handler_impl_unittest.cc" ]
+
+  deps = [
+    ":classroom",
+    ":classroom_mojo_bindings",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//google_apis:test_support",
+    "//google_apis/common:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

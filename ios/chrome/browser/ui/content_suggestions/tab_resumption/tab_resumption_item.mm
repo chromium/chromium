@@ -34,6 +34,7 @@
   _sessionName = item.sessionName;
   _tabTitle = item.tabTitle;
   _tabURL = item.tabURL;
+  _reason = item.reason;
   _syncedTime = item.syncedTime;
   _faviconImage = item.faviconImage;
   _contentImage = item.contentImage;

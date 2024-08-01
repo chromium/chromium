@@ -12,9 +12,18 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "media/base/container_names.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 
 namespace media {
+
+// Kill switches in case things explode. Remove after M132.
+BASE_FEATURE(kAllowOnlyAudioCodecsDuringDemuxing,
+             "AllowOnlyAudioCodecsDuringDemuxing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kForbidH264ParsingDuringDemuxing,
+             "ForbidH264ParsingDuringDemuxing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Internal buffer size used by AVIO for reading.
 // TODO(dalecurtis): Experiment with this buffer size and measure impact on
@@ -108,6 +117,12 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   // Enable fast, but inaccurate seeks for MP3.
   format_context_->flags |= AVFMT_FLAG_FAST_SEEK;
 
+  // We don't allow H.264 parsing during demuxing since we have our own parser
+  // and the ffmpeg one increases memory usage unnecessarily.
+  if (base::FeatureList::IsEnabled(kForbidH264ParsingDuringDemuxing)) {
+    format_context_->flags |= AVFMT_FLAG_NOH264PARSE;
+  }
+
   // Ensures format parsing errors will bail out. From an audit on 11/2017, all
   // instances were real failures. Solves bugs like http://crbug.com/710791.
   format_context_->error_recognition |= AV_EF_EXPLODE;
@@ -122,6 +137,13 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
     // deprecations and when an external ffmpeg is used this adds extra
     // security.
     static const base::NoDestructor<std::string> kCombinedCodecList([]() {
+      if (base::FeatureList::IsEnabled(kAllowOnlyAudioCodecsDuringDemuxing)) {
+        // We also don't allow ffmpeg to use any video decoders during demuxing
+        // since it's unnecessary for the codecs we use and just increases
+        // memory usage.
+        return std::string(GetAllowedAudioDecoders());
+      }
+
       return base::JoinString(
           {GetAllowedAudioDecoders(), GetAllowedVideoDecoders()}, ",");
     }());
@@ -149,19 +171,12 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
 
 // static
 const char* FFmpegGlue::GetAllowedVideoDecoders() {
-  static const base::NoDestructor<std::string> kAllowedVideoCodecs([]() {
   // This should match the configured lists in //third_party/ffmpeg.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-    std::vector<std::string> allowed_decoders;
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    allowed_decoders.push_back("h264");
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-    return base::JoinString(allowed_decoders, ",");
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264" : "";
 #else
-    return std::string();
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  }());
-  return kAllowedVideoCodecs->c_str();
+  return "";
+#endif
 }
 
 bool FFmpegGlue::OpenContext(bool is_local_file) {

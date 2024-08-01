@@ -164,7 +164,6 @@ class CORE_EXPORT InspectorCSSAgent final
       protocol::Maybe<
           protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
       protocol::Maybe<int>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,

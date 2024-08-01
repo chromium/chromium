@@ -33,8 +33,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-exception.h"
 
 namespace blink {
+class ExceptionContext;
 
 class CORE_EXPORT DOMException : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -82,6 +84,8 @@ class CORE_EXPORT DOMException : public ScriptWrappable {
   // This is the message that's exposed to the console: if an unsanitized
   // message is present, we prefer it.
   String ToStringForConsole() const;
+
+  void AddContextToMessages(const ExceptionContext&);
 
  private:
   uint16_t legacy_code_;

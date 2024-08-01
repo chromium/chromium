@@ -575,18 +575,24 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   ASSERT_TRUE(keyed_service->model());
 
   // Add 3 saved tab groups.
-  keyed_service->model()->Add(tab_groups::SavedTabGroup(
-      std::u16string(u"tab group 1"), tab_groups::TabGroupColorId::kGrey, {},
-      std::nullopt));
+  keyed_service->model()->Add(
+      tab_groups::SavedTabGroup(std::u16string(u"tab group 1"),
+                                tab_groups::TabGroupColorId::kGrey, {},
+                                std::nullopt)
+          .SetPinned(true));
 
   base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
-  keyed_service->model()->Add(tab_groups::SavedTabGroup(
-      std::u16string(u"tab group 2"), tab_groups::TabGroupColorId::kGrey, {},
-      std::nullopt, button_2_id));
+  keyed_service->model()->Add(
+      tab_groups::SavedTabGroup(std::u16string(u"tab group 2"),
+                                tab_groups::TabGroupColorId::kGrey, {},
+                                std::nullopt, button_2_id)
+          .SetPinned(true));
 
-  keyed_service->model()->Add(tab_groups::SavedTabGroup(
-      std::u16string(u"tab group 3"), tab_groups::TabGroupColorId::kGrey, {},
-      std::nullopt));
+  keyed_service->model()->Add(
+      tab_groups::SavedTabGroup(std::u16string(u"tab group 3"),
+                                tab_groups::TabGroupColorId::kGrey, {},
+                                std::nullopt)
+          .SetPinned(true));
 
   // Save the position of the 3rd button. The 4th button is an overflow menu
   // that is only visible when there are more than 4 groups saved.

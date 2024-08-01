@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.sync.SyncFeatureMap;
 
@@ -46,10 +45,8 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
                 R.drawable.improved_bookmark_save_flow_single_pane_background);
 
         if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    mBookmarkTitleView, R.style.TextAppearance_TextMedium_Secondary);
-            ApiCompatibilityUtils.setTextAppearance(
-                    mBookmarkSubtitleView, R.style.TextAppearance_TextMedium_Secondary);
+            mBookmarkTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
+            mBookmarkSubtitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
         }
     }
 

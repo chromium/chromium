@@ -51,6 +51,12 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               ScanCreditCard,
               (CreditCardScanCallback callback),
               (override));
+  MOCK_METHOD(bool,
+              ShowTouchToFillCreditCard,
+              ((base::WeakPtr<autofill::TouchToFillDelegate> delegate),
+               (base::span<const CreditCard> cards_to_suggest),
+               (const std::vector<bool>& card_acceptabilities)),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -65,12 +71,6 @@ class MockAutofillClient : public TestAutofillClient {
 
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(bool,
-              ShowTouchToFillCreditCard,
-              ((base::WeakPtr<autofill::TouchToFillDelegate> delegate),
-               (base::span<const CreditCard> cards_to_suggest),
-               (const std::vector<bool>& card_acceptabilities)),
-              (override));
-  MOCK_METHOD(bool,
               ShowTouchToFillIban,
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
                base::span<const Iban> ibanns_to_suggest),
@@ -81,8 +81,12 @@ class MockAutofillClient : public TestAutofillClient {
               (SuggestionHidingReason reason),
               (override));
 
+  // TODO(crbug.com/40937065): Move this method into MockPaymentsAutofillClient
+  // once HideTouchToFillCreditCard is moved.
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHideForCards() {
-    EXPECT_CALL(*this, ShowTouchToFillCreditCard)
+    EXPECT_CALL(
+        *static_cast<MockPaymentsAutofillClient*>(GetPaymentsAutofillClient()),
+        ShowTouchToFillCreditCard)
         .WillOnce([this](base::WeakPtr<autofill::TouchToFillDelegate> delegate,
                          base::span<const CreditCard> cards_to_suggest,
                          std::vector<bool> card_acceptabilities) {
@@ -178,7 +182,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     // Default setup for successful `TryToShowTouchToFill`.
     ON_CALL(*browser_autofill_manager_, CanShowAutofillUi)
         .WillByDefault(Return(true));
-    ON_CALL(autofill_client_, ShowTouchToFillCreditCard)
+    ON_CALL(payments_autofill_client(), ShowTouchToFillCreditCard)
         .WillByDefault(Return(true));
     ON_CALL(autofill_client_, ShowTouchToFillIban).WillByDefault(Return(true));
     // Calling HideTouchToFillCreditCard in production code leads to that
@@ -652,7 +656,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsIfShowFails) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard)
+  EXPECT_CALL(payments_autofill_client(), ShowTouchToFillCreditCard)
       .WillOnce(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -686,7 +690,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
       ->payments_data_manager()
       .AddCreditCard(expired_card);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard)
+  EXPECT_CALL(payments_autofill_client(), ShowTouchToFillCreditCard)
       .WillOnce(Return(true));
 
   TryToShowTouchToFill(/*expected_success=*/true);
@@ -711,7 +715,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
           .GetCreditCardsToSuggest();
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(autofill_client_,
+  EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillCreditCard(
                   _, ElementsAreArray(GetCardsToSuggest(credit_cards)), _));
 
@@ -737,7 +741,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   ASSERT_TRUE(credit_card.IsCompleteValidCard());
   ASSERT_FALSE(disused_expired_card.IsCompleteValidCard());
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(autofill_client_,
+  EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillCreditCard(_, ElementsAre(credit_card), _));
 
   TryToShowTouchToFill(/*expected_success=*/true);
@@ -766,7 +770,7 @@ TEST_F(
   // disabled, no virtual card suggestion is shown for virtual card number
   // enrolled card.
   std::vector<bool> expected_acceptability{true};
-  EXPECT_CALL(autofill_client_,
+  EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillCreditCard(_, ElementsAre(credit_card),
                                         expected_acceptability));
   TryToShowTouchToFill(/*expected_success=*/true);
@@ -790,7 +794,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   // Since the card is enrolled into the virtual cards feature, a virtual card
   // suggestion should be created and added before the real card.
-  EXPECT_CALL(autofill_client_,
+  EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillCreditCard(
                   _,
                   ElementsAreArray({CreditCard::CreateVirtualCard(credit_card),
@@ -833,7 +837,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
           ->payments_data_manager()
           .GetCreditCardsToSuggest();
 
-  EXPECT_CALL(autofill_client_,
+  EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillCreditCard(
                   _, ElementsAreArray(GetCardsToSuggest(credit_cards)), _));
 
@@ -1103,7 +1107,7 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
   // Since VCN gray-out is enabled, the virtual card should be displayed in the
   // bottomsheet, but the corresponding suggestion should not be acceptable.
   std::vector<bool> expected_acceptability{false, true};
-  EXPECT_CALL(autofill_client_,
+  EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillCreditCard(
                   _, ElementsAreArray({virtual_card, credit_card}),
                   expected_acceptability));

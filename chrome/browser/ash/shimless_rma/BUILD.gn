@@ -14,12 +14,15 @@ static_library("shimless_rma") {
     "diagnostics_app_profile_helper.h",
     "diagnostics_app_profile_helper_constants.h",
   ]
+
   public_deps = [
     "//ash/webui/shimless_rma/backend",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//components/webapps/common",
     "//url",
   ]
+
   deps = [
     "//ash/constants",
     "//ash/strings",
@@ -32,6 +35,7 @@ static_library("shimless_rma") {
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/common/chromeos/extensions",

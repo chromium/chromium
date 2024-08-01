@@ -12,24 +12,53 @@ static_library("profiles") {
     "browser_context_helper_delegate_impl.h",
     "profile_helper.cc",
     "profile_helper.h",
-    "signin_profile_handler.cc",
-    "signin_profile_handler.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
-    "//chrome/browser/browsing_data:constants",
-    "//chrome/browser/profiles",
-    "//chrome/common:non_code_constants",
+    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
-    "//components/account_id",
+    "//components/user_manager",
+  ]
+}
+
+static_library("signin_profile_handler") {
+  sources = [
+    "signin_profile_handler.cc",
+    "signin_profile_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/signin",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/crx_file",
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/browser",
+  ]
 
-    # TODO(crbug.com/353407730): Use //chrome/browser/ui instead after fixing cyclic dependency.
-    "//components/paint_preview/buildflags",
+  # Entry points to call SigninProfileHandler.
+  # TODO: remove the dependencies.
+  deps += [
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ui/webui/ash/login",
+  ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ui/webui/ash/login",
   ]
 }

@@ -127,10 +127,10 @@ public class RecentlyClosedBridgeTest {
                 });
     }
 
-    /** Tests opening the most recently closed tab in the background. */
+    /** Tests opening the most recently closed tab in the foreground. */
     @Test
     @MediumTest
-    public void testOpenMostRecentlyClosedEntry_Tab_InBackground() {
+    public void testOpenMostRecentlyClosedEntry_Tab_InForeground() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A), getUrl(TEST_PAGE_B)};
         final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
         final Tab tabB = sActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
@@ -170,8 +170,8 @@ public class RecentlyClosedBridgeTest {
         Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // No Renderer for background tabA.
-                    Assert.assertNull(tabs.get(1).getWebContents().getRenderWidgetHostView());
+                    // tabA is launched in foreground.
+                    Assert.assertNotNull(tabs.get(1).getWebContents().getRenderWidgetHostView());
                 });
     }
 
@@ -1438,6 +1438,112 @@ public class RecentlyClosedBridgeTest {
         final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
         Assert.assertEquals(1, tabCount);
         Assert.assertEquals(0, recentEntries.size());
+    }
+
+    /** Tests closing a tab will be saved as a TAB session entry in tab restore service. */
+    @Test
+    @MediumTest
+    public void testCloseTabSaveAsTabSessionRestoreEntry() {
+        final String[] urls = new String[] {getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    titles[0] = tabA.getTitle();
+                    mTabModel.closeTab(tabA, false, true);
+                    mTabModel.commitTabClosure(tabA.getId());
+                });
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    recentEntries.addAll(
+                            mRecentlyClosedBridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT));
+                });
+        Assert.assertEquals(1, recentEntries.size());
+        RecentlyClosedEntry recentEntry = recentEntries.get(0);
+        // Verify recentEntry is from a TAB session entry returned by tab restore service.
+        // Note: RecentlyClosedBridgeJni.getRecentlyClosedEntries returns a RecentlyClosedTab
+        // instance for a session entry of type sessions::tab_restore::Type::TAB.
+        Assert.assertTrue(RecentlyClosedTab.class.isInstance(recentEntry));
+        final List<RecentlyClosedTab> recentTabs =
+                (List<RecentlyClosedTab>) (List<? extends RecentlyClosedEntry>) recentEntries;
+        Assert.assertEquals(1, recentTabs.size());
+        assertTabsAre(recentTabs, titles, urls);
+    }
+
+    /** Tests closing all tabs will be saved as a WINDOW session entry in tab restore service. */
+    @Test
+    @MediumTest
+    public void testCloseAllTabsSaveAsWindowSessionRestoreEntry() {
+        // Tab order is inverted in RecentlyClosedEntry as most recent comes first so log data in
+        // reverse.
+        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
+        final Tab tabB = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[2];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    titles[1] = tabA.getTitle();
+                    titles[0] = tabB.getTitle();
+                    mTabModel.closeAllTabs(/* uponExit= */ false);
+                    mTabModel.commitAllTabClosures();
+                });
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    recentEntries.addAll(
+                            mRecentlyClosedBridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT));
+                });
+        Assert.assertEquals(1, recentEntries.size());
+        RecentlyClosedEntry recentEntry = recentEntries.get(0);
+        // Verify recentEntry is from a WINDOW session entry returned by tab restore service.
+        // Note: RecentlyClosedBridgeJni.getRecentlyClosedEntries returns a RecentlyClosedBulkEvent
+        // instance for a session entry of type sessions::tab_restore::Type::WINDOW.
+        Assert.assertTrue(RecentlyClosedBulkEvent.class.isInstance(recentEntry));
+        final RecentlyClosedBulkEvent event = (RecentlyClosedBulkEvent) recentEntry;
+        final List<RecentlyClosedTab> recentTabs = event.getTabs();
+        Assert.assertEquals(2, recentTabs.size());
+        assertTabsAre(recentTabs, titles, urls);
+    }
+
+    /**
+     * Tests closing multiple tabs will be saved as a WINDOW session entry in tab restore service.
+     */
+    @Test
+    @MediumTest
+    public void testCloseMultipleTabsSaveAsWindowSessionRestoreEntry() {
+        // Tab order is inverted in RecentlyClosedEntry as most recent comes first so log data in
+        // reverse.
+        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
+        final Tab tabB = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[2];
+        final int[] tabCountBeforeClosingTabs = new int[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    titles[1] = tabA.getTitle();
+                    titles[0] = tabB.getTitle();
+                    tabCountBeforeClosingTabs[0] = mTabModel.getCount();
+                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), true);
+                    mTabModel.commitAllTabClosures();
+                });
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        final int tabCountAfterClosingTabs = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(3, tabCountBeforeClosingTabs[0]);
+        Assert.assertEquals(1, tabCountAfterClosingTabs);
+        Assert.assertEquals(1, recentEntries.size());
+        RecentlyClosedEntry recentEntry = recentEntries.get(0);
+        // Verify recentEntry is from a WINDOW session entry returned by tab restore service.
+        // Note: RecentlyClosedBridgeJni.getRecentlyClosedEntries returns a RecentlyClosedBulkEvent
+        // instance for a session entry of type sessions::tab_restore::Type::WINDOW.
+        Assert.assertTrue(RecentlyClosedBulkEvent.class.isInstance(recentEntry));
+        final RecentlyClosedBulkEvent event = (RecentlyClosedBulkEvent) recentEntry;
+        final List<RecentlyClosedTab> recentTabs = event.getTabs();
+        Assert.assertEquals(2, recentTabs.size());
+        assertTabsAre(recentTabs, titles, urls);
     }
 
     // TODO(crbug.com/40218713): Add a test a case where bulk closures remain in the native service,

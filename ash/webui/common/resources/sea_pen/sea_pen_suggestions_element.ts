@@ -13,10 +13,10 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {SEA_PEN_SUGGESTIONS} from './constants.js';
 import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
+import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
 
 const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';

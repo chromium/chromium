@@ -24,7 +24,7 @@ std::string GetCrtcAction(
       display_config_params.id, display_config_params.origin.x(),
       display_config_params.origin.y(),
       display_config_params.mode
-          ? display_config_params.mode->ToString().c_str()
+          ? display_config_params.mode->ToStringForTest().c_str()
           : "NULL",
       display_config_params.enable_vrr);
 }

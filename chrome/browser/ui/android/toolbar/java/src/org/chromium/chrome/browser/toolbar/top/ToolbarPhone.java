@@ -150,8 +150,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private boolean mForceTextureCapture;
 
-    private TabSwitcherDrawable mTabSwitcherAnimationTabStackDrawable;
-
     @ViewDebug.ExportedProperty(category = "chrome")
     protected boolean mUrlFocusChangeInProgress;
 
@@ -239,7 +237,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private @ColorInt int mToolbarBackgroundColorForNtp;
     private @ColorInt int mLocationBarBackgroundColorForNtp;
-    private boolean mHasFocus;
 
     /** Used to specify the visual state of the toolbar. */
     @IntDef({
@@ -880,7 +877,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (mTextureCaptureMode) {
-            draWithoutBackground(canvas);
+            drawWithoutBackground(canvas);
         } else {
             super.dispatchDraw(canvas);
         }
@@ -894,7 +891,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void onNtpScrollChanged(float scrollFraction) {
         mNtpSearchBoxScrollFraction = scrollFraction;
         if (mNtpSearchBoxScrollFraction > 0) {
-            updateLocationBarForNtp(mVisualState, mHasFocus);
+            updateLocationBarForNtp(mVisualState, urlHasFocus());
         }
         updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
@@ -1411,30 +1408,21 @@ public class ToolbarPhone extends ToolbarLayout
 
     /** Draws all the browsing mode views at full alpha, but without a background. */
     @VisibleForTesting
-    void draWithoutBackground(Canvas canvas) {
+    void drawWithoutBackground(Canvas canvas) {
         if (!isNativeLibraryReady()) return;
 
-        float floatAlpha = 1.0f;
         int rgbAlpha = 255;
         canvas.save();
         canvas.clipRect(mBackgroundOverlayBounds);
 
-        float previousAlpha;
         if (mHomeButton.getVisibility() != View.GONE) {
-            previousAlpha = mHomeButton.getAlpha();
-            mHomeButton.setAlpha(previousAlpha * floatAlpha);
             drawChild(canvas, mHomeButton, SystemClock.uptimeMillis());
-            mHomeButton.setAlpha(previousAlpha);
         }
 
         // Draw the location/URL bar.
-        previousAlpha = mLocationBar.getPhoneCoordinator().getAlpha();
-        mLocationBar.getPhoneCoordinator().setAlpha(previousAlpha * floatAlpha);
-        // If the location bar is now fully transparent, do not bother drawing it.
         if (mLocationBar.getPhoneCoordinator().getAlpha() != 0 && isLocationBarCurrentlyShown()) {
             drawLocationBar(canvas, SystemClock.uptimeMillis());
         }
-        mLocationBar.getPhoneCoordinator().setAlpha(previousAlpha);
 
         // Translate to draw end toolbar buttons.
         ViewUtils.translateCanvasToView(this, mToolbarButtonsContainer, canvas);
@@ -1456,36 +1444,12 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Draw the tab stack button and associated text if necessary.
-        if (mTabSwitcherAnimationTabStackDrawable != null
-                && mToggleTabStackButton != null
-                && mUrlExpansionFraction != 1f) {
+        if (mToggleTabStackButton != null && mUrlExpansionFraction != 1f) {
             // Draw the tab stack button image.
             canvas.save();
             ViewUtils.translateCanvasToView(
                     mToolbarButtonsContainer, mToggleTabStackButton, canvas);
-
-            int backgroundWidth = mToggleTabStackButton.getDrawable().getIntrinsicWidth();
-            int backgroundHeight = mToggleTabStackButton.getDrawable().getIntrinsicHeight();
-            int backgroundLeft =
-                    (mToggleTabStackButton.getWidth()
-                                    - mToggleTabStackButton.getPaddingLeft()
-                                    - mToggleTabStackButton.getPaddingRight()
-                                    - backgroundWidth)
-                            / 2;
-            backgroundLeft += mToggleTabStackButton.getPaddingLeft();
-            int backgroundTop =
-                    (mToggleTabStackButton.getHeight()
-                                    - mToggleTabStackButton.getPaddingTop()
-                                    - mToggleTabStackButton.getPaddingBottom()
-                                    - backgroundHeight)
-                            / 2;
-            backgroundTop += mToggleTabStackButton.getPaddingTop();
-            canvas.translate(backgroundLeft, backgroundTop);
-
-            mTabSwitcherAnimationTabStackDrawable.setBounds(
-                    mToggleTabStackButton.getDrawable().getBounds());
-            mTabSwitcherAnimationTabStackDrawable.setAlpha(rgbAlpha);
-            mTabSwitcherAnimationTabStackDrawable.draw(canvas);
+            mToggleTabStackButton.drawDrawable(canvas);
             canvas.restore();
         }
 
@@ -1749,11 +1713,13 @@ public class ToolbarPhone extends ToolbarLayout
 
             mForceTextureCapture = mPhoneCaptureStateToken.getTint() != getTint().getDefaultColor();
 
-            if (mTabSwitcherAnimationTabStackDrawable != null && mToggleTabStackButton != null) {
+            if (mToggleTabStackButton != null) {
                 mForceTextureCapture =
                         mForceTextureCapture
                                 || mPhoneCaptureStateToken.getTabCount()
-                                        != mTabSwitcherAnimationTabStackDrawable.getTabCount();
+                                        != ((TabSwitcherDrawable)
+                                                        mToggleTabStackButton.getDrawable())
+                                                .getTabCount();
             }
 
             return mForceTextureCapture;
@@ -1846,9 +1812,6 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (mToggleTabStackButton != null) {
             mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
-            if (mTabSwitcherAnimationTabStackDrawable != null) {
-                mTabSwitcherAnimationTabStackDrawable.setTint(tint);
-            }
         }
 
         if (mOptionalButtonCoordinator != null) {
@@ -2149,11 +2112,9 @@ public class ToolbarPhone extends ToolbarLayout
     public void onUrlFocusChange(final boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
 
-        mHasFocus = hasFocus;
-
         updateBackground(hasFocus);
 
-        updateLocationBarForNtp(mVisualState, mHasFocus);
+        updateLocationBarForNtp(mVisualState, urlHasFocus());
 
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
@@ -2273,24 +2234,12 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void onTabCountChanged(int numberOfTabs) {
         mHomeButton.setEnabled(true);
-        if (mToggleTabStackButton == null) return;
-
-        @BrandedColorScheme
-        int overlayTabStackDrawableScheme =
-                OmniboxResourceProvider.getBrandedColorScheme(
-                        getContext(), isIncognito(), getTabThemeColor());
-        if (mTabSwitcherAnimationTabStackDrawable == null
-                || mOverlayTabStackDrawableScheme != overlayTabStackDrawableScheme) {
-            mTabSwitcherAnimationTabStackDrawable =
-                    TabSwitcherDrawable.createTabSwitcherDrawable(
-                            getContext(), overlayTabStackDrawableScheme);
-            int[] stateSet = {android.R.attr.state_enabled};
-            mTabSwitcherAnimationTabStackDrawable.setState(stateSet);
-            mOverlayTabStackDrawableScheme = overlayTabStackDrawableScheme;
-        }
-
-        if (mTabSwitcherAnimationTabStackDrawable != null) {
-            mTabSwitcherAnimationTabStackDrawable.updateForTabCount(numberOfTabs, isIncognito());
+        if (mToggleTabStackButton != null) {
+            @BrandedColorScheme
+            int overlayTabStackDrawableScheme =
+                    OmniboxResourceProvider.getBrandedColorScheme(
+                            getContext(), isIncognito(), getTabThemeColor());
+            mToggleTabStackButton.setBrandedColorScheme(overlayTabStackDrawableScheme);
         }
     }
 
@@ -2574,7 +2523,7 @@ public class ToolbarPhone extends ToolbarLayout
                 mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
 
         @VisualState int newVisualState = computeVisualState();
-        updateLocationBarForNtp(newVisualState, mHasFocus);
+        updateLocationBarForNtp(newVisualState, urlHasFocus());
 
         if (newVisualState == VisualState.NEW_TAB_NORMAL && mHomeButton != null) {
             mHomeButton.setAccessibilityTraversalBefore(R.id.toolbar_buttons);

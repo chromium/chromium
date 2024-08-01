@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
 @interface HomeCustomizationCoordinator () <
     HomeCustomizationNavigationDelegate,
@@ -52,8 +54,14 @@
       initWithPrefService:ChromeBrowserState::FromBrowserState(
                               self.browser->GetBrowserState())
                               ->GetPrefs()];
+
   _mainViewController.mutator = _mediator;
+  _discoverViewController.mutator = _mediator;
+  _magicStackViewController.mutator = _mediator;
+
   _mediator.mainPageConsumer = _mainViewController;
+  _mediator.discoverPageConsumer = _discoverViewController;
+  _mediator.magicStackPageConsumer = _magicStackViewController;
   _mediator.navigationDelegate = self;
 
   [super start];
@@ -77,30 +85,17 @@
   self.navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.mainViewController];
   self.navigationController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
+      UIModalPresentationFormSheet;
   self.navigationController.presentationController.delegate = self;
 
   // Configure the presentation controller with a custom initial detent.
   UISheetPresentationController* presentationController =
       self.navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
-
-  // TODO(crbug.com/350990359): Dynamically calculate height.
-  CGFloat bottomSheetHeight = 200;
-  auto detentResolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return bottomSheetHeight;
-  };
-  UISheetPresentationControllerDetent* initialDetent =
-      [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kBottomSheetDetentIdentifier
-                            resolver:detentResolver];
   presentationController.detents = @[
-    initialDetent,
     UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent,
   ];
-  presentationController.selectedDetentIdentifier =
-      kBottomSheetDetentIdentifier;
 
   // Present the navigation controller.
   [self.baseViewController presentViewController:self.navigationController
@@ -115,7 +110,6 @@
 
 #pragma mark - HomeCustomizationNavigationDelegate
 
-// Navigates to a given page within the customization menu.
 - (void)navigateToPage:(CustomizationMenuPage)page {
   switch (page) {
     case CustomizationMenuPage::kMain:
@@ -123,17 +117,29 @@
                                            animated:YES];
       break;
     case CustomizationMenuPage::kMagicStack:
+      [self expandMenu];
       [self.navigationController
           pushViewController:self.magicStackViewController
                     animated:YES];
+      [self.mediator configureMagicStackPageData];
       break;
     case CustomizationMenuPage::kDiscover:
+      [self expandMenu];
       [self.navigationController pushViewController:self.discoverViewController
                                            animated:YES];
+      [self.mediator configureDiscoverPageData];
       break;
     case CustomizationMenuPage::kUnknown:
       NOTREACHED_NORETURN();
   }
+}
+
+- (void)navigateToURL:(GURL)URL {
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)
+      ->Load(UrlLoadParams::InCurrentTab(URL));
+  [self.mainViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -141,6 +147,18 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.delegate handleCustomizationMenuDismissed:self];
+}
+
+#pragma mark - Private
+
+// Expands the menu to a large detent.
+- (void)expandMenu {
+  UISheetPresentationController* presentationController =
+      self.navigationController.sheetPresentationController;
+  [presentationController animateChanges:^{
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }];
 }
 
 @end

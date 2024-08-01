@@ -39,7 +39,7 @@ def _GenerateCompileCommands(files, include_paths):
       'directory':
       os.path.dirname(f),
       'command':
-      'clang++ -std=c++20 -fsyntax-only %s -c %s' %
+      'clang++ -std=c++20 -fsyntax-only %s %s' %
       (include_path_flags, os.path.basename(f)),
       'file':
       os.path.basename(f)

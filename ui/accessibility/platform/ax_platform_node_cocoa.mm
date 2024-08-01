@@ -2641,23 +2641,21 @@ void CollectAncestorRoles(
 //
 
 - (NSArray*)accessibilityCustomContent {
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return nil;
-
-  if (@available(macOS 11.0, *)) {
-    NSString* description = [self descriptionIfFromAriaDescription];
-    if ([description length]) {
-      AXCustomContent* contentItem =
-          [AXCustomContent customContentWithLabel:@"description"
-                                            value:description];
-      // A custom content importance of high causes it to be spoken
-      // automatically, rather than "More content available".
-      [contentItem setImportance:AXCustomContentImportanceHigh];
-      return @[ contentItem ];
-    }
   }
 
-  return nil;
+  NSString* description = [self descriptionIfFromAriaDescription];
+  if (!description.length) {
+    return nil;
+  }
+
+  AXCustomContent* contentItem =
+      [AXCustomContent customContentWithLabel:@"description" value:description];
+  // A custom content importance of high causes it to be spoken
+  // automatically, rather than "More content available".
+  contentItem.importance = AXCustomContentImportanceHigh;
+  return @[ contentItem ];
 }
 
 // MathML attributes.

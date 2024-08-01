@@ -39,6 +39,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/base/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/atl.h"
@@ -2823,6 +2824,32 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_TRUE(
       input->HasIntListAttribute(ax::mojom::IntListAttribute::kTextOperations));
 }
+
+#if BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       IdDeletedOnNodeRemoval) {
+  // Load some HTML.
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML("<div>One</div><div id="div-02">Two</div>)HTML");
+
+  // Count the number of unique IDs in the RFHI.
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  size_t starting_unique_id_count = rfh_impl->GetAxUniqueIdCountForTesting();
+
+  // Delete a node and wait for the corresponding events to be handled.
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+    ExecuteScript("document.getElementById('div-02').remove()");
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  // Verify that the number of unique IDs has dropped.
+  ASSERT_LT(rfh_impl->GetAxUniqueIdCountForTesting(), starting_unique_id_count);
+}
+#endif
 
 class AriaNotifyCrossPlatformAccessibilityBrowserTest
     : public CrossPlatformAccessibilityBrowserTest {

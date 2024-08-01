@@ -94,12 +94,12 @@ class SmartCardPermissionContext::ReaderObserver
     // Compare the new reader state with its previous one to find out whether
     // its card has been removed. If so, notify the PermissionContext.
 
-    if (!known_info_map_.contains(reader_info.name)) {
+    auto it = known_info_map_.find(reader_info.name);
+    if (it == known_info_map_.end()) {
       known_info_map_.emplace(reader_info.name, reader_info);
       return;
     }
 
-    auto it = known_info_map_.find(reader_info.name);
     SmartCardReaderTracker::ReaderInfo& known_info = it->second;
 
     // Either the card was removed or there was both a removal and an insertion

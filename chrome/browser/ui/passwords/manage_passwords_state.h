@@ -101,6 +101,9 @@ class ManagePasswordsState {
   // passkey and whether GPM pin was created in the same flow.
   void OnPasskeySaved(const std::u16string& username, bool gpm_pin_created);
 
+  // Move to PASSKEY_DELETED_CONFIRMATION_STATE.
+  void OnPasskeyDeleted();
+
   // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
   void OnPasswordMovable(

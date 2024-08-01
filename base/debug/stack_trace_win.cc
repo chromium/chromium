@@ -255,15 +255,14 @@ class SymbolContext {
   // LOG(FATAL) here because this code is called might be triggered by a
   // LOG(FATAL) itself. Also, it should not be calling complex code that is
   // extensible like PathService since that can in turn fire CHECKs.
-  void OutputTraceToStream(const void* const* trace,
-                           size_t count,
+  void OutputTraceToStream(base::span<const void* const> traces,
                            std::ostream* os,
                            cstring_view prefix_string) {
     AutoLock lock(lock_);
 
-    for (size_t i = 0; (i < count) && os->good(); ++i) {
+    for (size_t i = 0; (i < traces.size()) && os->good(); ++i) {
       const int kMaxNameLength = 256;
-      DWORD_PTR frame = reinterpret_cast<DWORD_PTR>(trace[i]);
+      DWORD_PTR frame = reinterpret_cast<DWORD_PTR>(traces[i]);
 
       // Code adapted from MSDN example:
       // http://msdn.microsoft.com/en-us/library/ms680578(VS.85).aspx
@@ -292,11 +291,11 @@ class SymbolContext {
       // Output the backtrace line.
       (*os) << prefix_string << "\t";
       if (has_symbol) {
-        (*os) << symbol->Name << " [0x" << trace[i] << "+"
-              << sym_displacement << "]";
+        (*os) << symbol->Name << " [0x" << traces[i] << "+" << sym_displacement
+              << "]";
       } else {
         // If there is no symbol information, add a spacer.
-        (*os) << "(No symbol) [0x" << trace[i] << "]";
+        (*os) << "(No symbol) [0x" << traces[i] << "]";
       }
       if (has_line) {
         (*os) << " (" << line.FileName << ":" << line.LineNumber << ")";
@@ -328,9 +327,10 @@ bool EnableInProcessStackDumping() {
   return InitializeSymbols();
 }
 
-NOINLINE size_t CollectStackTrace(const void** trace, size_t count) {
+NOINLINE size_t CollectStackTrace(span<const void*> trace) {
   // When walking our own stack, use CaptureStackBackTrace().
-  return CaptureStackBackTrace(0, count, const_cast<void**>(trace), NULL);
+  return CaptureStackBackTrace(0, trace.size(),
+                               const_cast<void**>(trace.data()), NULL);
 }
 
 StackTrace::StackTrace(EXCEPTION_POINTERS* exception_pointers) {
@@ -389,8 +389,7 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
     trace_[count_++] = reinterpret_cast<void*>(stack_frame.AddrPC.Offset);
   }
 
-  for (size_t i = count_; i < std::size(trace_); ++i)
-    trace_[i] = NULL;
+  base::ranges::fill(span(trace_).last(trace_.size() - count_), nullptr);
 }
 
 // static
@@ -414,7 +413,7 @@ void StackTrace::OutputToStreamWithPrefixImpl(
       (*os) << prefix_string << "\t" << trace_[i] << "\n";
     }
   } else {
-    context->OutputTraceToStream(trace_, count_, os, prefix_string);
+    context->OutputTraceToStream(addresses(), os, prefix_string);
   }
 }
 

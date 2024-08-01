@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
@@ -25,10 +26,12 @@ class ServiceProxy {
     SegmentStatus(SegmentId segment_id,
                   const std::string& segment_metadata,
                   const std::string& prediction_result,
+                  base::Time prediction_timestamp,
                   bool can_execute_segment);
     SegmentId segment_id;
     std::string segment_metadata;
     std::string prediction_result;
+    base::Time prediction_timestamp;
     bool can_execute_segment;
   };
 

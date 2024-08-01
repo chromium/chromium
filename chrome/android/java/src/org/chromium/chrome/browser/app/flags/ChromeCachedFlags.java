@@ -102,6 +102,9 @@ public class ChromeCachedFlags {
                         DseNewTabUrlManager.SWAP_OUT_NTP,
                         BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST,
                         BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE,
+                        BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE,
+                        BottomBarConfigCreator
+                                .GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE,
                         BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED,
                         HubFieldTrial.ALTERNATIVE_FAB_COLOR,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,
@@ -122,6 +125,7 @@ public class ChromeCachedFlags {
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
+                        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING,
                         TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,

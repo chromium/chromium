@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/logging.h"
+#include "base/functional/function_ref.h"
 #include "content/public/browser/webui_config.h"
 
 namespace content {
@@ -31,6 +31,10 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
   static TopChromeWebUIConfig* From(content::BrowserContext* browser_context,
                                     const GURL& url);
 
+  // Calls `on_config` for every top-chrome WebUIConfig.
+  static void ForEachConfig(
+      base::FunctionRef<void(TopChromeWebUIConfig*)> on_config);
+
   // Common Top Chrome WebUI properties -------------------------------
 
   // Returns the WebUI name used for logging metrics.
@@ -38,6 +42,17 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
 
   // Returns true if the host should automatically resize to fit the page size.
   virtual bool ShouldAutoResizeHost() = 0;
+
+  // Returns true to allow preloading. Some considerations:
+  // * Preloaded might happen during startup when some data is not available
+  //   (e.g. bookmark). Preloadable WebUIs must be resilient to that.
+  // * GetCommandIdForTesting() must return a non-null command id. This is used
+  //   in tests to trigger preloaded WebUIs and ensure they don't crash.
+  virtual bool IsPreloadable() = 0;
+
+  // Returns the command id that can be used in tests to trigger the UI.
+  // Optional if this WebUI is not preloadable.
+  virtual std::optional<int> GetCommandIdForTesting() = 0;
 };
 
 template <typename T>
@@ -58,6 +73,8 @@ class DefaultTopChromeWebUIConfig : public TopChromeWebUIConfig {
       const GURL& url) override {
     return std::make_unique<T>(web_ui);
   }
+  bool IsPreloadable() override { return false; }
+  std::optional<int> GetCommandIdForTesting() override { return std::nullopt; }
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_CONFIG_H_

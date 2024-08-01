@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
@@ -94,6 +95,8 @@ class TabGridViewControllerTest : public PlatformTest,
     }
     view_controller_.pinnedTabsViewController =
         [[PinnedTabsViewController alloc] init];
+
+    view_controller_.mutator = mock_mutator_;
   }
 
   // Checks that `view_controller_` can perform the `action`. The sender is set
@@ -111,7 +114,7 @@ class TabGridViewControllerTest : public PlatformTest,
 
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::UserActionTester user_action_tester_;
   TabGridViewController* view_controller_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -119,6 +122,7 @@ class TabGridViewControllerTest : public PlatformTest,
   GridContainerViewController* regular_grid_;
   GridContainerViewController* incognito_grid_;
   GridContainerViewController* third_panel_grid_;
+  id mock_mutator_ = OCMProtocolMock(@protocol(TabGridMutator));
 };
 
 // Checks that TabGridViewController returns key commands.
@@ -194,9 +198,28 @@ TEST_P(TabGridViewControllerTest,
 TEST_P(TabGridViewControllerTest, ImplementsActions) {
   // Load the view.
   std::ignore = view_controller_.view;
+
   [view_controller_ keyCommand_openNewTab];
   [view_controller_ keyCommand_openNewRegularTab];
   [view_controller_ keyCommand_openNewIncognitoTab];
+
+  OCMStub([mock_mutator_ pageChanged:TabGridPageIncognitoTabs
+                         interaction:TabSwitcherPageChangeInteraction::kNone]);
+  [view_controller_ keyCommand_select1];
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+  EXPECT_EQ(TabGridPageIncognitoTabs, view_controller_.currentPage);
+
+  OCMStub([mock_mutator_ pageChanged:TabGridPageRegularTabs
+                         interaction:TabSwitcherPageChangeInteraction::kNone]);
+  [view_controller_ keyCommand_select2];
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+  EXPECT_EQ(TabGridPageRegularTabs, view_controller_.currentPage);
+
+  OCMStub([mock_mutator_ pageChanged:TabGridPageRemoteTabs
+                         interaction:TabSwitcherPageChangeInteraction::kNone]);
+  [view_controller_ keyCommand_select3];
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+  EXPECT_EQ(TabGridPageRemoteTabs, view_controller_.currentPage);
 }
 
 // Checks that metrics are correctly reported.

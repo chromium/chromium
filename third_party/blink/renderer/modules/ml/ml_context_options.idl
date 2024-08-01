@@ -2,21 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This will be a shared interface by two APIs:
-// - The Model Loader API,
-//     https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
-// - The WebNN API,
-//     https://github.com/webmachinelearning/webnn/blob/main/explainer.md
-
-enum MLDevicePreference {
-  // Let the backend selects the most suitable device.
-  "auto",
-  // The backend will use GPU to do model inference. If some operator is not
-  // supported by GPU, it will fall back to CPU.
-  "gpu",
-  // The backend will use CPU to do model inference.
-  "cpu"
-};
+// https://www.w3.org/TR/webnn/#api-mlcontextoptions
 
 // Corresponds to WebNN MLDeviceType enum
 // https://www.w3.org/TR/webnn/#enumdef-mldevicetype
@@ -27,8 +13,8 @@ enum MLDeviceType {
 };
 
 enum MLPowerPreference {
-  // Let the backend selects the most suitable behavior.
-  "auto",
+  // Let the user agent select the most suitable behavior.
+  "default",
   // Prioritizes execution speed over power consumption.
   "high-performance",
   // Prioritizes power consumption over other considerations such as execution
@@ -36,25 +22,18 @@ enum MLPowerPreference {
   "low-power",
 };
 
-enum MLModelFormat {
-  // Tensorflow-lite flatbuffer.
-  "tflite"
-};
-
 dictionary MLContextOptions {
-  // Preferred kind of device used for model loader API.
-  MLDevicePreference devicePreference = "auto";
-
   // Specified type of device used for WebNN API.
   MLDeviceType deviceType = "cpu";
 
   // Preference as related to power consumption.
-  MLPowerPreference powerPreference = "auto";
-
-  // Model format for the model loader API.
-  MLModelFormat modelFormat = "tflite";
+  MLPowerPreference powerPreference = "default";
 
   // Number of thread to use.
   // "0" means the backend can determine it automatically.
+  //
+  // TODO(crbug.com/338162119): Figure out why the TFLite XNNPACK delegate
+  // choosing its own thread count is not resulting in good performance, then
+  // remove this.
   unsigned long numThreads = 0;
 };

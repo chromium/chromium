@@ -107,6 +107,13 @@
   BOOL shouldShowFooter =
       _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   [_consumer setShouldShowFooter:shouldShowFooter];
+  [_consumer
+      setHistorySelection:_prefs->GetBoolean(
+                              browsing_data::prefs::kDeleteBrowsingHistory)];
+  [_consumer setSiteDataSelection:_prefs->GetBoolean(
+                                      browsing_data::prefs::kDeleteCookies)];
+  [_consumer setPasswordsSelection:_prefs->GetBoolean(
+                                       browsing_data::prefs::kDeletePasswords)];
   [_consumer setAutofillSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteFormData)];
 
@@ -184,6 +191,18 @@
   _browsingDataRemover->Remove(
       timePeriod, removeMask,
       base::BindOnce(removeBrowsingDidFinishCompletionBlock));
+}
+
+- (void)updateHistorySelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, selected);
+}
+
+- (void)updateSiteDataSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeleteCookies, selected);
+}
+
+- (void)updatePasswordsSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeletePasswords, selected);
 }
 
 - (void)updateAutofillSelection:(BOOL)selected {
@@ -522,8 +541,20 @@
 - (void)updateResultOnConsumer:
     (const browsing_data::BrowsingDataCounter::Result*)result {
   std::string prefName = result->source()->GetPrefName();
+
+  if (prefName == browsing_data::prefs::kDeleteBrowsingHistory) {
+    [_consumer updateHistoryWithResult:*result];
+    return;
+  }
+
+  if (prefName == browsing_data::prefs::kDeletePasswords) {
+    [_consumer updatePasswordsWithResult:*result];
+    return;
+  }
+
   if (prefName == browsing_data::prefs::kDeleteFormData) {
     [_consumer updateAutofillWithResult:*result];
+    return;
   }
 
   // TODO(crbug.com/341107834): Update other pref results here.

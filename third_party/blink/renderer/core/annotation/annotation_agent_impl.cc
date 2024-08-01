@@ -249,7 +249,7 @@ void AnnotationAgentImpl::ScrollIntoView() const {
   bounding_box.SetHeight(LayoutUnit());
 
   mojom::blink::ScrollIntoViewParamsPtr params =
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterAlways(), ScrollAlignment::CenterAlways(),
           mojom::blink::ScrollType::kProgrammatic);
   params->cross_origin_boundaries = false;

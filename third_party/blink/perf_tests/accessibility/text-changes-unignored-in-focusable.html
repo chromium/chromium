@@ -4,15 +4,16 @@
   <script src="../resources/runner.js"></script>
 </head>
 <body tabindex="-1">
-  <div tabindex=-1>
-    <div id="container" tabindex="-1"></div>
-  </div>
 </body>
 
 <script>
 
 var isDone = false;
 var startTime;
+
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
+appendManyElements(document.body, 6);
 
 function runTest() {
   if (startTime) {
@@ -23,10 +24,7 @@ function runTest() {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
-    document.body.innerHTML = '';
-    appendManyElements(document.body, 6);
-
-    setTimeout(changeLeafText, 250);
+    changeLeafText();
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's
@@ -52,7 +50,7 @@ function appendManyElements(start, depth) {
 function changeLeafText(text) {
   let elements = document.querySelectorAll('unignored');
   for (let count = 0; count < elements.length; count ++)
-    elements[count].textContent = 'B';
+    elements[count].textContent = elements[count].textContent == 'A' ? 'B' : 'A';
 }
 
 

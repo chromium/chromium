@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef CC_TREES_LAYER_TREE_IMPL_H_
 #define CC_TREES_LAYER_TREE_IMPL_H_
 
@@ -505,8 +510,13 @@ class CC_EXPORT LayerTreeImpl {
   // priorities. Returns false if it was unable to update.  Updating lcd
   // text may cause invalidations, so should only be done after a commit.
   bool UpdateDrawProperties(
-      bool update_image_animation_controller = true,
+      bool update_tiles,
+      bool update_image_animation_controller,
       LayerImplList* output_update_layer_list_for_testing = nullptr);
+
+  // Update picture layers' tiles. Return true if any layer's tile priority
+  // is updated.
+  bool UpdateTiles();
 
   void set_needs_update_draw_properties() {
     needs_update_draw_properties_ = true;
@@ -606,7 +616,7 @@ class CC_EXPORT LayerTreeImpl {
   void ClearSwapPromises();
   void BreakSwapPromises(SwapPromise::DidNotSwapReason reason);
 
-  void DidModifyTilePriorities();
+  void DidModifyTilePriorities(bool pending_update_tiles = false);
 
   viz::ResourceId ResourceIdForUIResource(UIResourceId uid) const;
   void ProcessUIResourceRequestQueue();
@@ -888,6 +898,8 @@ class CC_EXPORT LayerTreeImpl {
   bool new_local_surface_id_request_ : 1 = false;
 
   bool needs_update_draw_properties_ : 1 = true;
+
+  bool needs_update_tiles_ : 1 = false;
 
   // True if a scrollbar geometry value has changed. For example, if the scroll
   // offset changes, scrollbar thumb positions need to be updated.

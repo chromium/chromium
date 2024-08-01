@@ -1,0 +1,43 @@
+Tests that Network.setCookie validates input
+Result of Network.setCookie({"url":"ht2tp://127.0.0.1","name":"foo1","value":"bar1"}): {
+    error : {
+        code : -32602
+        message : URL must have scheme http or https
+    }
+    id : <number>
+    sessionId : <string>
+}
+Result of Network.setCookie({"url":"http://127.0.0.1","name":"foo2\u0000\r\na","value":"bar2"}): {
+    error : {
+        code : -32602
+        message : Sanitizing cookie failed
+    }
+    id : <number>
+    sessionId : <string>
+}
+Result of Network.setCookie({"url":"http://127.0.0.1","name":"foo3","value":"bar3","sourceScheme":"SomeInvalidValue"}): {
+    error : {
+        code : -32602
+        message : Invalid cookie source scheme
+    }
+    id : <number>
+    sessionId : <string>
+}
+Result of Network.setCookie({"url":"http://127.0.0.1","name":"foo4","value":"bar3","sourcePort":-1234}): {
+    error : {
+        code : -32602
+        message : Invalid source port
+    }
+    id : <number>
+    sessionId : <string>
+}
+Result of Network.setCookie({"url":"","name":"foo4","value":"bar3"}): {
+    error : {
+        code : -32602
+        message : At least one of the url or domain needs to be specified
+    }
+    id : <number>
+    sessionId : <string>
+}
+Num of cookies 0
+

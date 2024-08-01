@@ -97,6 +97,7 @@ source_set("onc") {
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
+      "//chrome/browser/ui/webui/ash/login",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/settings",
@@ -108,6 +109,7 @@ source_set("onc") {
     allow_circular_includes_from = [
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ui/webui/ash/login",
     ]
   }
 }
@@ -221,6 +223,7 @@ source_set("policy_specific_browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser",
+    "//chrome/browser/media/webrtc",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/policy/core/common",
@@ -328,6 +331,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -534,6 +538,8 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/settings",
+      "//chrome/browser/ash/settings:test_support",
       "//chromeos/ash/components/system",
     ]
   }

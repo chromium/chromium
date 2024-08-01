@@ -55,14 +55,22 @@ enum class IbanSuggestionsEvent {
   // suggestions for the same field, or if the user alternates between this IBAN
   // field and the other non-IBAN fields.
   kIbanSuggestionsShownOnce = 1,
-  // An individual IBAN suggestion was selected.
-  kIbanSuggestionSelected = 2,
-  // An individual IBAN suggestion was selected. Logged only once per IBAN
+  // An individual local IBAN suggestion was selected.
+  kLocalIbanSuggestionSelected = 2,
+  // An individual local IBAN suggestion was selected. Logged only once per IBAN
   // field. It won't log more than once if the user repeatedly selects IBAN
   // suggestion for the same field, or if the user alternates between this IBAN
   // field and the other non-IBAN fields and then click on IBAN suggestion.
-  kIbanSuggestionSelectedOnce = 3,
-  kMaxValue = kIbanSuggestionSelectedOnce,
+  kLocalIbanSuggestionSelectedOnce = 3,
+
+  // An individual server IBAN suggestion was selected.
+  kServerIbanSuggestionSelected = 4,
+  // An individual server IBAN suggestion was selected. Logged only once per
+  // IBAN field. It won't log more than once if the user repeatedly selects IBAN
+  // suggestion for the same field, or if the user alternates between this IBAN
+  // field and the other non-IBAN fields and then click on IBAN suggestion.
+  kServerIbanSuggestionSelectedOnce = 5,
+  kMaxValue = kServerIbanSuggestionSelectedOnce,
 };
 
 // Metrics to track the site blocklist status when showing IBAN suggestions.

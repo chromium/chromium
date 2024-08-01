@@ -262,8 +262,7 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
     case ContentSettingsType::MEDIASTREAM_CAMERA:
       if (base::FeatureList::IsEnabled(
               content_settings::features::kLeftHandSideActivityIndicators) &&
-          SystemPermissionSettings::GetInstance() &&
-          SystemPermissionSettings::GetInstance()->IsDenied(type)) {
+          system_permission_settings::IsDenied(type)) {
         *text_id = IDS_PAGE_INFO_CAMERA_SYSTEM_SETTINGS_DESCRIPTION;
         *link_id = IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK;
         return true;
@@ -272,8 +271,7 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
     case ContentSettingsType::MEDIASTREAM_MIC:
       if (base::FeatureList::IsEnabled(
               content_settings::features::kLeftHandSideActivityIndicators) &&
-          SystemPermissionSettings::GetInstance() &&
-          SystemPermissionSettings::GetInstance()->IsDenied(type)) {
+          system_permission_settings::IsDenied(type)) {
         *text_id = IDS_PAGE_INFO_MICROPHONE_SYSTEM_SETTINGS_DESCRIPTION;
         *link_id = IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK;
         return true;
@@ -285,8 +283,7 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
 }
 
 void ChromePageInfoUiDelegate::SettingsLinkClicked(ContentSettingsType type) {
-  SystemPermissionSettings::GetInstance()->OpenSystemSettings(web_contents_,
-                                                              type);
+  system_permission_settings::OpenSystemSettings(web_contents_, type);
 }
 
 bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {

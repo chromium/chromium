@@ -51,8 +51,6 @@ namespace ash {
 
 namespace {
 
-// TODO(http://b/322359738): Localize all these strings.
-
 constexpr int kButtonContainerChildSpacing = 10;
 // The margins for the container view which houses the cancel and restore
 // buttons. The distance between this container and its siblings will be the
@@ -129,9 +127,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.activatable = features::IsOverviewNewFocusEnabled()
-                           ? views::Widget::InitParams::Activatable::kYes
-                           : views::Widget::InitParams::Activatable::kNo;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.bounds = contents_bounds;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);

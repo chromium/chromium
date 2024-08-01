@@ -96,7 +96,7 @@ class ImageBitmapTest : public testing::Test {
         ThreadState::StackState::kNoHeapPointers);
 
     ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
  protected:

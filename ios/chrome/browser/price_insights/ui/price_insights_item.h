@@ -19,12 +19,6 @@ class GURL;
 @property(nonatomic, copy) NSString* title;
 // The product variants.
 @property(nonatomic, copy) NSString* variants;
-// The product typically low price.
-@property(nonatomic, assign) int64_t lowPrice;
-// The product typically high price.
-@property(nonatomic, assign) int64_t highPrice;
-// The product current price.
-@property(nonatomic, assign) int64_t currentPrice;
 // The product price currency.
 @property(nonatomic, assign) std::string currency;
 // The product country code.

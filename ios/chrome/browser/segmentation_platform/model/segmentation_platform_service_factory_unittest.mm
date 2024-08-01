@@ -150,7 +150,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
       builder.AddTestingFactory(
           SegmentationPlatformServiceFactory::GetInstance(),
           SegmentationPlatformServiceFactory::GetDefaultFactory());
-      browser_state = builder.Build();
+      browser_state = std::move(builder).Build();
 
       browser_state->GetPrefs()->SetString(kSegmentationClientResultPrefs,
                                            result_pref);

@@ -14,6 +14,8 @@ static_library("screen_capture") {
     "arc_screen_capture_session.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",

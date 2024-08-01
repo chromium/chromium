@@ -5,16 +5,20 @@
 #ifndef COMPONENTS_MANTA_SPARKY_SPARKY_DELEGATE_H_
 #define COMPONENTS_MANTA_SPARKY_SPARKY_DELEGATE_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "components/manta/sparky/system_info_delegate.h"
 
 namespace manta {
 
@@ -51,6 +55,24 @@ struct COMPONENT_EXPORT(MANTA) SettingsData {
   double double_val;
 };
 
+struct COMPONENT_EXPORT(MANTA) FileData {
+  FileData(const std::string& path,
+           const std::string& name,
+           const std::string& date_modified);
+
+  ~FileData();
+
+  FileData(const FileData&);
+  FileData& operator=(const FileData&);
+
+  std::string path;
+  std::string name;
+  std::optional<std::vector<uint8_t>> bytes;
+  int64_t size_in_bytes;
+  std::string date_modified;
+  std::string summary;
+};
+
 using ScreenshotDataCallback =
     base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
 
@@ -68,6 +90,10 @@ struct COMPONENT_EXPORT(MANTA) AppsData {
   std::string id;
   std::vector<std::string> searchable_text;
 };
+using StorageDataCallback =
+    base::OnceCallback<void(std::unique_ptr<StorageData>)>;
+
+using FilesDataCallback = base::OnceCallback<void(std::vector<FileData>)>;
 
 // Virtual class to handle the information requests and actions taken within
 // Sparky Provider which have a Chrome dependency.
@@ -87,6 +113,13 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual void GetScreenshot(ScreenshotDataCallback callback) = 0;
   virtual std::vector<AppsData> GetAppsList() = 0;
   virtual void LaunchApp(const std::string& app_id) = 0;
+  virtual void ObtainStorageInfo(StorageDataCallback storage_callback) = 0;
+  virtual void Click(int x, int y) = 0;
+  virtual void KeyboardEntry(std::string text) = 0;
+  virtual void GetMyFiles(FilesDataCallback callback,
+                          bool obtain_bytes,
+                          std::set<std::string> allowed_file_paths) = 0;
+  virtual void LaunchFile(const std::string& file_path) = 0;
 };
 
 }  // namespace manta

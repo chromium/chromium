@@ -9,7 +9,7 @@ namespace debug {
 
 StackTrace::StackTrace() = default;
 StackTrace::StackTrace(size_t count) : StackTrace() {}
-StackTrace::StackTrace(const void* const* trace, size_t count) : StackTrace() {}
+StackTrace::StackTrace(span<const void* const> trace) : StackTrace() {}
 
 void StackTrace::Print() const {}
 

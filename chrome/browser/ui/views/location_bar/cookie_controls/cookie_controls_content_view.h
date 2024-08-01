@@ -32,7 +32,7 @@ class CookieControlsContentView : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleLabel);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kThirdPartyCookiesLabel);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFeedbackButton);
-  CookieControlsContentView();
+  explicit CookieControlsContentView(bool has_act_features);
 
   ~CookieControlsContentView() override;
 
@@ -76,7 +76,7 @@ class CookieControlsContentView : public views::View {
   void NotifyToggleButtonPressedCallback();
   void NotifyFeedbackButtonPressedCallback();
 
-  // Used for legacy UI.
+  // Used for 3PC-only UI.
   void AddContentLabels();
   void AddToggleRow();
   void AddFeedbackSection();
@@ -88,7 +88,8 @@ class CookieControlsContentView : public views::View {
   raw_ptr<views::Label> cookies_label_ = nullptr;
   raw_ptr<views::ImageView> enforced_icon_ = nullptr;
 
-  // Used for new UI.
+  // Used for ACT features UI.
+  bool has_act_features_ = false;
   void AddDescriptionRow();
   const ui::ElementIdentifier GetFeatureIdentifier(
       content_settings::TrackingProtectionFeatureType feature_type);

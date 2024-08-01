@@ -181,8 +181,14 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
 
   extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
   ASSERT_TRUE(web_view_guest);
+
   content::RenderFrameHost* controlled_frame =
       web_view_guest->GetGuestMainFrame();
+
+  // Focus <controlledframe> with a fake click.
+  content::SimulateMouseClick(
+      content::WebContents::FromRenderFrameHost(controlled_frame),
+      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft);
 
   SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                       test_param.calls_allow);
@@ -213,15 +219,13 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
       content::EvalJs(controlled_frame, test_case.test_script).ExtractString(),
       StartsWith(std::move(callback).Run(test_param.expected_success)));
 
-  // TODO(b/349841268): Make permissions policy check happen before extensions
-  // event for media permissions.
-  if (test_case.permission_name != "media") {
-    EXPECT_EQ(event_observer.events().size(),
-              test_param.embedder_policy ==
-                      EmbedderPolicy::kBothEmbedderAndRequestingOrigin
-                  ? 1ul
-                  : 0ul);
-  }
+  // The permission event should only be fired when the embedder has the
+  // permissions policy for both the embedder and the requesting origin.
+  bool should_fire_permission_event =
+      test_param.embedder_policy ==
+      EmbedderPolicy::kBothEmbedderAndRequestingOrigin;
+  EXPECT_EQ(event_observer.events().size(),
+            should_fire_permission_event ? 1ul : 0ul);
 
   if (event_observer.events().size()) {
     EXPECT_THAT(event_observer.events().back(),

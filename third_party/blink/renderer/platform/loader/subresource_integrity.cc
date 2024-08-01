@@ -301,7 +301,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
   Vector<UChar> characters;
   attribute.StripWhiteSpace().AppendTo(characters);
   const UChar* position = characters.data();
-  const UChar* end = characters.end();
+  const UChar* end = characters.data() + characters.size();
   const UChar* current_integrity_end;
 
   // The integrity attribute takes the form:

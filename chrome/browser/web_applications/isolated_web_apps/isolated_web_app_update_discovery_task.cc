@@ -7,6 +7,7 @@
 #include <optional>
 #include <ostream>
 
+#include "base/containers/to_value_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -163,35 +164,28 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     return;
   }
 
-  base::Value::List available_versions;
-  for (const auto& version_entry : update_manifest.versions()) {
-    available_versions.Append(version_entry.version().GetString());
-  }
-  debug_log_.Set("available_versions", std::move(available_versions));
+  debug_log_.Set(
+      "available_versions",
+      base::ToValueList(update_manifest.versions(), [](const auto& entry) {
+        return entry.version().GetString();
+      }));
   debug_log_.Set(
       "latest_version",
       base::Value::Dict()
           .Set("version", latest_version_entry->version().GetString())
           .Set("src", latest_version_entry->src().spec()));
 
-  const WebApp* web_app = registrar_->GetAppById(url_info_.app_id());
-  if (!web_app) {
-    FailWith(Error::kIwaNotInstalled);
-    return;
-  }
-  std::optional<WebApp::IsolationData> isolation_data =
-      web_app->isolation_data();
-  if (!isolation_data) {
-    FailWith(Error::kIwaNotInstalled);
-    return;
-  }
-  base::Version currently_installed_version = isolation_data->version;
+  ASSIGN_OR_RETURN(
+      const WebApp& iwa, GetIsolatedWebAppById(*registrar_, url_info_.app_id()),
+      [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
+  const auto& isolation_data = *iwa.isolation_data();
+  base::Version currently_installed_version = isolation_data.version;
 
   debug_log_.Set("currently_installed_version",
                  currently_installed_version.GetString());
 
-  if (isolation_data->pending_update_info().has_value() &&
-      isolation_data->pending_update_info()->version ==
+  if (isolation_data.pending_update_info() &&
+      isolation_data.pending_update_info()->version ==
           latest_version_entry->version()) {
     // If we already have a pending update for this version, stop. However, we
     // do allow overwriting a pending update with a different pending update

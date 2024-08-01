@@ -53,9 +53,6 @@ class GpuArcVideoDecodeAccelerator
 
   // Implementation of media::VideoDecodeAccelerator::Client interface.
   void NotifyInitializationComplete(media::DecoderStatus status) override;
-  void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
-                             media::VideoPixelFormat format,
-                             const gfx::Size& dimensions) override;
   void ProvidePictureBuffersWithVisibleRect(
       uint32_t requested_num_of_buffers,
       media::VideoPixelFormat format,

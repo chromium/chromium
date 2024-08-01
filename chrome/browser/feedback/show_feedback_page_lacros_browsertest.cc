@@ -5,7 +5,7 @@
 #include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/version_info/version_info.h"

@@ -15,7 +15,6 @@ import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -89,11 +88,11 @@ public class BookmarkSaveFlowViewBinder implements ViewBinder<PropertyModel, Vie
                 drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
             }
 
-            ApiCompatibilityUtils.setTextAppearance(
-                    view.findViewById(R.id.notification_switch_title),
-                    enabled
-                            ? R.style.TextAppearance_TextMedium_Primary
-                            : R.style.TextAppearance_TextMedium_Disabled);
+            ((TextView) view.findViewById(R.id.notification_switch_title))
+                    .setTextAppearance(
+                            enabled
+                                    ? R.style.TextAppearance_TextMedium_Primary
+                                    : R.style.TextAppearance_TextMedium_Disabled);
         } else if (propertyKey == BookmarkSaveFlowProperties.SUBTITLE_TEXT) {
             ((TextView) view.findViewById(R.id.subtitle_text))
                     .setText(model.get(BookmarkSaveFlowProperties.SUBTITLE_TEXT));

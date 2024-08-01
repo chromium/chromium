@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -72,7 +73,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
       std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>

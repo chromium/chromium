@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -14,7 +15,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
 /** A class that provides the current {@link Tab} for various states of the browser's activity. */
@@ -75,7 +75,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
     private TabModelSelectorTabModelObserver mTabModelObserver;
 
     /** An observer for watching tab model switching event. */
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver;
 
     /** Default constructor. */
     public ActivityTabProvider() {
@@ -104,6 +104,12 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                         }
                     }
                 };
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    // Send a signal with null tab if a new model has no tab. Other cases
+                    // are taken care of by TabModelSelectorTabModelObserver#didSelectTab.
+                    if (tabModel.getCount() == 0) triggerActivityTabChangeEvent(null);
+                };
     }
 
     /**
@@ -129,16 +135,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     }
                 };
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        // Send a signal with null tab if a new model has no tab. Other cases
-                        // are taken care of by TabModelSelectorTabModelObserver#didSelectTab.
-                        if (newModel.getCount() == 0) triggerActivityTabChangeEvent(null);
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
     }
 
     /**
@@ -172,9 +169,8 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
         if (mLayoutStateProvider != null) mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         mLayoutStateProvider = null;
         if (mTabModelObserver != null) mTabModelObserver.destroy();
-        if (mTabModelSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-            mTabModelSelectorObserver = null;
+        if (mTabModelSelector != null) {
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         }
         mTabModelSelector = null;
     }

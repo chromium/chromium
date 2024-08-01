@@ -136,7 +136,7 @@ void ImageContentAnnotator::AnnotateEncodedImage(
   if (!mapped_region.IsValid()) {
     return;
   }
-  memcpy(mapped_region.mapping.memory(), data.data(), data.length());
+  base::span(mapped_region.mapping).copy_from(data.bytes());
 
   EnsureAnnotatorIsConnected();
   image_content_annotator_->AnnotateEncodedImage(

@@ -8,6 +8,7 @@ specific_include_rules = {
   # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
   ".*test\.cc": [
     "+ash/public/cpp/session",
+    "+ash/session/session_controller_impl.h",
     "+ash/shell.h",
     "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   ],

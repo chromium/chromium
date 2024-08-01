@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -297,19 +298,19 @@ TEST(ScriptWebBundleRuleTest, InvalidResourcesType) {
 
 TEST(ScriptWebBundleRuleTest, UnknownKey) {
   const KURL base_url("https://example.com/");
-  MockConsoleLogger logger;
+  MockConsoleLogger* logger = MakeGarbageCollected<MockConsoleLogger>();
   auto result = ScriptWebBundleRule::ParseJson(
       R"({
         "source": "foo.wbn",
         "unknown": []
       })",
-      base_url, &logger);
+      base_url, logger);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
   auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_TRUE(rule.scope_urls().empty());
   EXPECT_TRUE(rule.resource_urls().empty());
-  EXPECT_EQ(logger.Message(),
+  EXPECT_EQ(logger->Message(),
             "Invalid top-level key \"unknown\" in WebBundle rule.");
 }
 

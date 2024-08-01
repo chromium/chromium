@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -86,8 +87,11 @@ PickerZeroStateView::PickerZeroStateView(
     base::span<const PickerCategory> available_categories,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher,
-    PickerSubmenuController* submenu_controller)
-    : delegate_(delegate), submenu_controller_(submenu_controller) {
+    PickerSubmenuController* submenu_controller,
+    PickerPreviewBubbleController* preview_controller)
+    : delegate_(delegate),
+      submenu_controller_(submenu_controller),
+      preview_controller_(preview_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -107,10 +111,12 @@ PickerZeroStateView::PickerZeroStateView(
 
     auto result = PickerSearchResult::Category(category);
     GetOrCreateSectionView(category)->AddResult(
-        std::move(result), &preview_controller_,
+        std::move(result), preview_controller_,
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
+
+  delegate_->OnZeroStateViewHeightChanged();
 }
 
 PickerZeroStateView::~PickerZeroStateView() = default;
@@ -258,7 +264,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                               weak_ptr_factory_.GetWeakPtr(), result);
       switch (GetEditorSubmenu(editor_data->category)) {
         case EditorSubmenu::kNone:
-          primary_section_view_->AddResult(result, &preview_controller_,
+          primary_section_view_->AddResult(result, preview_controller_,
                                            std::move(callback));
           break;
         case EditorSubmenu::kLength:
@@ -275,7 +281,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                                       weak_ptr_factory_.GetWeakPtr(), result));
     } else {
       PickerItemView* view = primary_section_view_->AddResult(
-          result, &preview_controller_,
+          result, preview_controller_,
           base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result));
 
@@ -304,6 +310,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   }
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
+  delegate_->OnZeroStateViewHeightChanged();
 }
 
 BEGIN_METADATA(PickerZeroStateView)

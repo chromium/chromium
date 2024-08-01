@@ -63,10 +63,18 @@ class AutofillDriverRouter;
 // Chrome is implemented by AutofillAgent, and a BrowserAutofillManager.
 //
 // AutofillDriverIOS is associated with exactly one WebFrame and its lifecycle
-// is bound to that WebFrame.
-class AutofillDriverIOS : public AutofillDriver,
-                          public AutofillManager::Observer,
-                          public web::WebFrameUserData<AutofillDriverIOS> {
+// is bound to that WebFrame. Since WebFrames do not survive cross-document
+// navigations, AutofillDriverIOS does not survive them either.
+//
+// AutofillDriverIOS is final because its constructor and destructor calls
+// AutofillManager::SetLifecycleState(), which must be called at the very
+// end/beginning of con-/destruction.
+//
+// TODO: crbug.com/355907668 - Move ownership to AutofillDriverIOSFactory.
+class AutofillDriverIOS final
+    : public AutofillDriver,
+      public AutofillManager::Observer,
+      public web::WebFrameUserData<AutofillDriverIOS> {
  public:
   // Returns the AutofillDriverIOS for `web_state` and `web_frame`. Creates the
   // driver if necessary.
@@ -125,12 +133,6 @@ class AutofillDriverIOS : public AutofillDriver,
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
 
-  void set_autofill_manager_for_testing(
-      std::unique_ptr<BrowserAutofillManager> manager) {
-    manager_ = std::move(manager);
-    manager_observation_.Observe(manager_.get());
-  }
-
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
@@ -161,6 +163,7 @@ class AutofillDriverIOS : public AutofillDriver,
                           base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
+
   // Notification that forms or formless fields have been removed. Since Bling's
   // renderer does not have API's to detect async form submissions, we use he
   // removal last interacted form or formless field as an indication that the
@@ -168,8 +171,16 @@ class AutofillDriverIOS : public AutofillDriver,
   void FormsRemoved(const std::set<FormRendererId>& removed_forms,
                     const std::set<FieldRendererId>& removed_unowned_fields);
 
+  // Unregisters the driver as a standalone node which means that the
+  // corresponding frame is now invalid. It is possible to unregister without
+  // deleting the frame so it is definitely possible that the frame lives while
+  // not being registered. Can't be rolled back where the driver cannot be
+  // re-registered after being unregistered.
+  void Unregister();
+
  private:
-  friend AutofillDriverIOSFactory;
+  friend class AutofillDriverIOSFactory;
+  friend class AutofillDriverIOSTestApi;
 
   // Represents the last form or formless field where the user entered data.
   struct LastInteractedForm {
@@ -224,7 +235,10 @@ class AutofillDriverIOS : public AutofillDriver,
   using web::WebFrameUserData<AutofillDriverIOS>::FromWebFrame;
 
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
   void OnAfterFormsSeen(AutofillManager& manager,
                         base::span<const FormGlobalId> forms) override;
 
@@ -272,6 +286,9 @@ class AutofillDriverIOS : public AutofillDriver,
       manager_observation_{this};
 
   raw_ptr<AutofillDriverRouter> router_;
+
+  // True if the drive was once unregistered.
+  bool unregistered_ = false;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

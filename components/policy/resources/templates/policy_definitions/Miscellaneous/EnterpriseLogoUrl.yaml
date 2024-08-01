@@ -18,6 +18,7 @@ example_value: https://example.com/image.png
 features:
   dynamic_refresh: true
   per_profile: true
+  user_only: true
 supported_on:
 - chrome.*:125-
 owners:

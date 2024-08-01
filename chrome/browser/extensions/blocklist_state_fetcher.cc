@@ -51,8 +51,9 @@ void BlocklistStateFetcher::Request(const std::string& id,
 
   bool request_already_sent = base::Contains(callbacks_, id);
   callbacks_.insert(std::make_pair(id, std::move(callback)));
-  if (request_already_sent)
+  if (request_already_sent) {
     return;
+  }
 
   SendRequest(id);
 }
@@ -133,12 +134,14 @@ void BlocklistStateFetcher::OnURLLoaderComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   int response_code = 0;
-  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
 
   std::string response_body_str;
-  if (response_body.get())
+  if (response_body.get()) {
     response_body_str = std::move(*response_body.get());
+  }
 
   OnURLLoaderCompleteInternal(url_loader, response_body_str, response_code,
                               url_loader->NetError());

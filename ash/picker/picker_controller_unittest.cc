@@ -274,7 +274,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
 }
 
 TEST_F(PickerControllerTest,
-       ToggleWidgetShowsWidgetAfterCompletingFeatureTour) {
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   RegisterUserProfilePrefs(client.registry(), /*country=*/"",
@@ -282,13 +282,56 @@ TEST_F(PickerControllerTest,
   controller.ToggleWidget();
   auto& feature_tour = controller.feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
-  views::Button* button = feature_tour.complete_button_for_testing();
+  const views::Button* button = feature_tour.complete_button_for_testing();
   ASSERT_NE(button, nullptr);
-  ViewDrawnWaiter().Wait(button);
   LeftClickOn(button);
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
 
   views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithFocus) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  RegisterUserProfilePrefs(client.registry(), /*country=*/"",
+                           /*for_test=*/true);
+  controller.ToggleWidget();
+  auto& feature_tour = controller.feature_tour_for_testing();
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  // Simulate losing focus from the input field while the feature tour is shown.
+  input_method->DetachTextInputClient(&input_field);
+  // Complete the feature tour.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  // Regain focus after the feature tour is complete.
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
+}
+
+TEST_F(PickerControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  RegisterUserProfilePrefs(client.registry(), /*country=*/"",
+                           /*for_test=*/true);
+  controller.ToggleWidget();
+  auto& feature_tour = controller.feature_tour_for_testing();
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+
+  EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("about:blank"), _, _))
+      .Times(1);
+
+  const views::Button* button = feature_tour.learn_more_button_for_testing();
+  ASSERT_NE(button, nullptr);
+  LeftClickOn(button);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+
+  EXPECT_FALSE(controller.widget_for_testing());
 }
 
 TEST_F(PickerControllerTest,
@@ -539,24 +582,6 @@ TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
   EXPECT_EQ(input_field.text(), u"How Are You");
 }
 
-TEST_F(PickerControllerTest, OpenSentenceCaseResultCommitsSentenceCase) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"how are you? fine. thanks!  ok",
-                                  gfx::Range(0, 30));
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.ToggleWidget();
-  controller.OpenResult(PickerSearchResult::CaseTransform(
-      PickerSearchResult::CaseTransformData::Type::kSentenceCase));
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
-}
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
@@ -868,6 +893,23 @@ TEST_F(PickerControllerTest, SearchesCaseTransformWhenSelectedText) {
 
   controller.ToggleWidget();
   controller.StartSearch(u"uppercase", /*category=*/{}, callback.Get());
+}
+
+TEST_F(PickerControllerTest, IsValidDuringWidgetClose) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+  views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
+
+  controller.ToggleWidget();
+  controller.GetActionForResult(PickerSearchResult::Text(u"a"));
+  controller.IsGifsEnabled();
+  controller.GetAvailableCategories();
 }
 
 struct ActionTestCase {

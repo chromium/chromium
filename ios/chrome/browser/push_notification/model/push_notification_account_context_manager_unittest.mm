@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -72,14 +72,12 @@ void AddTestCasesToManagerAndValidate(
 class PushNotificationAccountContextManagerTest : public PlatformTest {
  public:
   PushNotificationAccountContextManagerTest() {
-    test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
 
     browser_state_info()->RemoveBrowserState(browser_state_name());
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithChromeBrowserStateManager:test_manager_.get()];
+        initWithChromeBrowserStateManager:&browser_state_manager_];
   }
 
   BrowserStateInfoCache* browser_state_info() const {
@@ -89,14 +87,15 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
   }
 
   const std::string& browser_state_name() const {
-    return test_manager_->GetLastUsedBrowserStateForTesting()
-        ->GetBrowserStateName();
+    return browser_state_->GetBrowserStateName();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   PushNotificationAccountContextManager* manager_;
-  std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
 };
 
 // This test ensures that the AccountContextManager can store a new account ID.

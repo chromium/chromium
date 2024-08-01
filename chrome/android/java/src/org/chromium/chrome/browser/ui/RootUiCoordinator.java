@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -103,6 +104,7 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.price_insights.PriceInsightsButtonController;
 import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
@@ -115,7 +117,6 @@ import org.chromium.chrome.browser.readaloud.ReadAloudToolbarButtonController;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -163,6 +164,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.wallet.BoardingPassController;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -1390,13 +1392,27 @@ public class RootUiCoordinator
             mCurrentTabPriceTrackingStateSupplier =
                     new CurrentTabPriceTrackingStateSupplier(
                             mActivityTabProvider, mProfileSupplier);
+            PriceInsightsDelegate priceInsightsDelegate =
+                    new PriceInsightsDelegate() {
+                        @Override
+                        public BookmarkId getBookmarkIdForTab(Tab tab) {
+                            BookmarkModel bookmarkModel =
+                                    BookmarkModel.getForProfile(tab.getProfile());
+                            return bookmarkModel != null
+                                    ? bookmarkModel.getUserBookmarkIdForTab(tab)
+                                    : null;
+                        }
+                    };
             PriceInsightsButtonController priceInsightsButtonController =
                     new PriceInsightsButtonController(
                             mActivity,
                             mActivityTabProvider,
+                            mTabModelSelectorSupplier,
+                            () -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
                             mModalDialogManagerSupplier.get(),
                             getBottomSheetController(),
                             mSnackbarManagerSupplier.get(),
+                            priceInsightsDelegate,
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.ic_trending_down_24dp));
             PriceTrackingButtonController priceTrackingButtonController =
@@ -1490,7 +1506,6 @@ public class RootUiCoordinator
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(
                             mActivity,
-                            new SettingsLauncherImpl(),
                             mActivityLifecycleDispatcher,
                             mProfileSupplier,
                             new AdaptiveButtonActionMenuCoordinator(),
@@ -1529,7 +1544,6 @@ public class RootUiCoordinator
                     new OmniboxActionDelegateImpl(
                             mActivity,
                             mActivityTabProvider,
-                            new SettingsLauncherImpl(),
                             // TODO(ender): phase out callbacks when the modules below are
                             // components.
                             // Open URL in an existing, else new regular tab.
@@ -1565,7 +1579,10 @@ public class RootUiCoordinator
                                         mModalDialogManagerSupplier.get(),
                                         mSnackbarManagerSupplier.get(),
                                         mLayoutManager,
-                                        mTabModelSelectorSupplier.get());
+                                        mTabModelSelectorSupplier.get(),
+                                        ArchivedTabModelOrchestrator.getForProfile(
+                                                        mProfileSupplier.get())
+                                                .getTabModelSelector());
                             });
 
             mToolbarManager =

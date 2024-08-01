@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Select an image as background.
   base::RunLoop run_loop2;
   sea_pen_provider_remote_->SelectRecentSeaPenImage(
-      existing_image_ids_[0],
+      existing_image_ids_[0], /*preview_mode=*/false,
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_TRUE(call_succeeded);
         run_loop2.Quit();
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Select an deleted image should return false.
   base::RunLoop run_loop5;
   sea_pen_provider_remote_->SelectRecentSeaPenImage(
-      existing_image_ids_[1],
+      existing_image_ids_[1], /*preview_mode=*/false,
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_FALSE(call_succeeded);
         run_loop5.Quit();
@@ -213,7 +213,8 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, ObserverTests) {
 
     base::test::TestFuture<bool> sea_pen_select_future;
     sea_pen_provider_->SelectRecentSeaPenImage(
-        existing_image_ids_[1], sea_pen_select_future.GetCallback());
+        existing_image_ids_[1], /*preview_mode=*/false,
+        sea_pen_select_future.GetCallback());
     ASSERT_TRUE(sea_pen_select_future.Get());
 
     // Simulate the camera system updating the effect.

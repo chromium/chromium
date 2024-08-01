@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
 function getViewer(): PdfViewerElement {
   return document.body.querySelector('pdf-viewer')!;
@@ -25,8 +26,8 @@ function getCurrentPage(): number {
   return getViewer().viewport.getMostVisiblePage();
 }
 
-function getAllPossibleKeyModifiers() {
-  const modifiers: Array<string|string[]> = ['shift', 'ctrl', 'alt', 'meta'];
+function getAllPossibleKeyModifiers(): ModifiersParam[] {
+  const modifiers: ModifiersParam[] = ['shift', 'ctrl', 'alt', 'meta'];
   modifiers.push(
       ['shift', 'ctrl'], ['shift', 'alt'], ['shift', 'meta'], ['ctrl', 'alt'],
       ['ctrl', 'meta'], ['alt', 'meta']);
@@ -43,11 +44,11 @@ const tests = [
    */
   function testPageChangesWithArrows() {
     // Right arrow -> Go to page 2.
-    pressAndReleaseKeyOn(document.documentElement, 39, '', 'ArrowRight');
+    pressAndReleaseKeyOn(document.documentElement, 39, [], 'ArrowRight');
     chrome.test.assertEq(1, getCurrentPage());
 
     // Left arrow -> Back to page 1.
-    pressAndReleaseKeyOn(document.documentElement, 37, '', 'ArrowLeft');
+    pressAndReleaseKeyOn(document.documentElement, 37, [], 'ArrowLeft');
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();
@@ -64,10 +65,10 @@ const tests = [
     simulateFormFocusChange(true);
 
     // Page should not change when left/right are pressed.
-    pressAndReleaseKeyOn(document.documentElement, 39, '', 'ArrowLeft');
+    pressAndReleaseKeyOn(document.documentElement, 39, [], 'ArrowLeft');
     chrome.test.assertEq(0, getCurrentPage());
 
-    pressAndReleaseKeyOn(document.documentElement, 37, '', 'ArrowRight');
+    pressAndReleaseKeyOn(document.documentElement, 37, [], 'ArrowRight');
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();
@@ -90,7 +91,7 @@ const tests = [
     }
 
     // Page down -> Go to page 2.
-    pressAndReleaseKeyOn(document.documentElement, 34, '', 'PageDown');
+    pressAndReleaseKeyOn(document.documentElement, 34, [], 'PageDown');
     chrome.test.assertEq(1, getCurrentPage());
 
     // Modifiers + Page up -> Does not change the page.
@@ -100,7 +101,7 @@ const tests = [
     }
 
     // Page up -> Back to page 1.
-    pressAndReleaseKeyOn(document.documentElement, 33, '', 'PageUp');
+    pressAndReleaseKeyOn(document.documentElement, 33, [], 'PageUp');
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();

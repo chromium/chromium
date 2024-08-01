@@ -56,6 +56,9 @@ const CGFloat kLabelStackSpacing = 5.0;
 // Title constants.
 const CGFloat kTitleLineSpacing = 18.0;
 
+// The inset around the reason label.
+const CGFloat kReasonInset = 4;
+
 // Adds the fallback image that should be used if there is no salient nor
 // favicon image.
 void SetFallbackImageToImageView(UIImageView* image_view,
@@ -83,6 +86,12 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   TabResumptionItem* _item;
   // The view container.
   UIStackView* _containerStackView;
+
+  // The reason views. Keep track to update corner radius.
+  UILabel* _reasonLabel;
+  UIView* _reasonLabelContainer;
+  NSLayoutConstraint* _leadingLabelConstraint;
+  NSLayoutConstraint* _trailingLabelConstraint;
 }
 
 - (instancetype)initWithItem:(TabResumptionItem*)item {
@@ -104,6 +113,24 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  if (!_reasonLabelContainer) {
+    return;
+  }
+
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self updateCornerRadius];
+  }
+}
+#endif
+
 #pragma mark - Private methods
 
 // Creates all the subviews.
@@ -120,27 +147,35 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   UIStackView* labelStackView = [self configuredLabelStackView];
   [_containerStackView addArrangedSubview:labelStackView];
 
+  NSMutableArray* accessibilityLabel = [NSMutableArray array];
   UILabel* sessionLabel;
   if (_item.itemType == TabResumptionItemType::kLastSyncedTab &&
       !IsTabResumption1_5Enabled()) {
     sessionLabel = [self configuredSessionLabel];
     [labelStackView addArrangedSubview:sessionLabel];
+    [accessibilityLabel addObject:sessionLabel.text];
   }
   UILabel* tabTitleLabel = [self configuredTabTitleLabel];
   [labelStackView addArrangedSubview:tabTitleLabel];
+  [accessibilityLabel addObject:tabTitleLabel.text];
   UILabel* hostnameAndSyncTimeLabel = [self configuredHostNameAndSyncTimeLabel];
   [labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
+  [accessibilityLabel addObject:hostnameAndSyncTimeLabel.text];
 
-  if (_item.itemType == TabResumptionItemType::kLastSyncedTab &&
-      !IsTabResumption1_5Enabled()) {
-    self.accessibilityLabel = [NSString
-        stringWithFormat:@"%@,%@,%@", sessionLabel.text, tabTitleLabel.text,
-                         hostnameAndSyncTimeLabel.text];
-  } else {
-    self.accessibilityLabel =
-        [NSString stringWithFormat:@"%@,%@", tabTitleLabel.text,
-                                   hostnameAndSyncTimeLabel.text];
+  if (IsTabResumption2BubbleEnabled() && _item.reason) {
+    // If there is a reason, limit the title to 1 line and add the reason.
+    tabTitleLabel.numberOfLines = 1;
+    UIView* reasonLabel = [self configuredReasonLabel];
+    [labelStackView addArrangedSubview:reasonLabel];
+    [accessibilityLabel addObject:_reasonLabel.text];
+    if (@available(iOS 17, *)) {
+      [self
+          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+                       withAction:@selector(updateCornerRadius)];
+    }
   }
+
+  self.accessibilityLabel = [accessibilityLabel componentsJoinedByString:@","];
 
   [self addSubview:_containerStackView];
   AddSameConstraints(_containerStackView, self);
@@ -170,6 +205,7 @@ void SetFallbackImageToImageView(UIImageView* image_view,
 - (UIStackView*)configuredLabelStackView {
   UIStackView* labelStackView = [[UIStackView alloc] init];
   labelStackView.axis = UILayoutConstraintAxisVertical;
+  labelStackView.alignment = UIStackViewAlignmentLeading;
   if (IsTabResumption1_5Enabled()) {
     labelStackView.spacing = kNewLabelStackSpacing;
   } else {
@@ -431,6 +467,52 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   return label;
+}
+
+// Configures and returns the UILabel that contains the reason. Note: The label
+// is contained in a background UIView, hence the UIView return type.
+- (UIView*)configuredReasonLabel {
+  _reasonLabel = [[UILabel alloc] init];
+  _reasonLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _reasonLabel.adjustsFontForContentSizeCategory = YES;
+  _reasonLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  [_reasonLabel setText:_item.reason];
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+  _reasonLabel.font = font;
+
+  _reasonLabelContainer = [[UIView alloc] init];
+  _reasonLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [_reasonLabelContainer addSubview:_reasonLabel];
+  _reasonLabelContainer.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  _leadingLabelConstraint = [_reasonLabel.leadingAnchor
+      constraintEqualToAnchor:_reasonLabelContainer.leadingAnchor];
+  _trailingLabelConstraint = [_reasonLabel.trailingAnchor
+      constraintEqualToAnchor:_reasonLabelContainer.trailingAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    _leadingLabelConstraint,
+    _trailingLabelConstraint,
+    [_reasonLabel.topAnchor
+        constraintEqualToAnchor:_reasonLabelContainer.topAnchor
+                       constant:kReasonInset],
+    [_reasonLabel.bottomAnchor
+        constraintEqualToAnchor:_reasonLabelContainer.bottomAnchor
+                       constant:-kReasonInset],
+  ]];
+  [self updateCornerRadius];
+
+  return _reasonLabelContainer;
+}
+
+// Updates the corner radius of the reason label container.
+- (void)updateCornerRadius {
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+  CGFloat radius = font.lineHeight / 2 + kReasonInset;
+  _leadingLabelConstraint.constant = font.lineHeight / 2;
+  _trailingLabelConstraint.constant = -font.lineHeight / 2;
+  _reasonLabelContainer.layer.cornerRadius = radius;
 }
 
 // Returns the tab hostname from the given `URL`.

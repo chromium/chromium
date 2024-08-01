@@ -12,6 +12,7 @@ import './certificate_list_v2.js';
 import './certificate_info_dialog.js';
 import './certificate_password_dialog.js';
 import './certificate_subpage_v2.js';
+import './certificate_manager_v2_icons.html.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -21,7 +22,8 @@ import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
@@ -43,18 +45,10 @@ import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+import {Page} from './navigation_v2.js';
 
 interface PasswordResult {
   password: string|null;
-}
-
-export enum Page {
-  LOCAL_CERTS = 'localcerts',
-  CLIENT_CERTS = 'clientcerts',
-  CRS_CERTS = 'crscerts',
-  // Sub-pages
-  ADMIN_CERTS = 'admincerts',
-  PLATFORM_CERTS = 'platformcerts',
 }
 
 const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
@@ -62,6 +56,7 @@ const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
 export interface CertificateManagerV2Element {
   $: {
     crsCerts: CertificateListV2Element,
+    toolbar: HTMLElement,
     platformClientCerts: CertificateListV2Element,
     // <if expr="is_win or is_macosx or is_linux">
     provisionedClientCerts: CertificateListV2Element,
@@ -73,6 +68,7 @@ export interface CertificateManagerV2Element {
     importOsCerts: CrToggleElement,
     importOsCertsManagedIcon: HTMLElement,
     viewOsImportedCerts: HTMLElement,
+    viewOsImportedClientCerts: HTMLElement,
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
     manageOsImportedClientCerts: HTMLElement,
@@ -88,6 +84,7 @@ export interface CertificateManagerV2Element {
     adminCertsInstalledLinkRow: HTMLElement,
     adminCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
+    platformClientCertsSection: CertificateSubpageV2Element,
     numSystemCerts: HTMLElement,
   };
 }
@@ -114,18 +111,21 @@ export class CertificateManagerV2Element extends
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kEnterpriseTrustedCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kEnterpriseIntermediateCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kEnterpriseDistrustedCerts,
               hideExport: false,
+              showImport: false,
             },
           ];
         },
@@ -139,21 +139,29 @@ export class CertificateManagerV2Element extends
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kPlatformUserTrustedCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kPlatformUserIntermediateCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kPlatformUserDistrustedCerts,
               hideExport: false,
+              showImport: false,
             },
           ];
         },
+      },
+
+      clientPlatformSubpageLists_: {
+        type: Array,
+        computed: 'computeClientPlatformSubpageLists_(showClientCertImport_)',
       },
 
       toastMessage_: String,
@@ -187,6 +195,11 @@ export class CertificateManagerV2Element extends
         type: Object,
         value: CertificateSource,
       },
+
+      pageEnum_: {
+        type: Object,
+        value: Page,
+      },
     };
   }
 
@@ -205,6 +218,7 @@ export class CertificateManagerV2Element extends
   private importOsCertsEnabledManaged_: boolean;
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
+  private clientPlatformSubpageLists_: SubpageCertificateList[];
   // <if expr="not chromeos_ash">
   private showClientCertImport_: boolean = false;
   // </if>
@@ -278,10 +292,23 @@ export class CertificateManagerV2Element extends
     e.preventDefault();
   }
 
+  private switchToPage_(page: Page) {
+    this.selectedPage_ = page;
+    switch (this.selectedPage_) {
+      case Page.ADMIN_CERTS:
+      case Page.PLATFORM_CERTS:
+      case Page.PLATFORM_CLIENT_CERTS:
+        this.$.toolbar.classList.add('toolbar-shadow');
+        break;
+      default:
+        this.$.toolbar.classList.remove('toolbar-shadow');
+    }
+  }
+
   private onMenuItemSelect_(e: CustomEvent<{item: HTMLElement}>) {
     const page = e.detail.item.getAttribute('path');
     assert(page, 'Page is not available');
-    this.selectedPage_ = page as Page;
+    this.switchToPage_(page as Page);
   }
 
   private getSelectedTopLevelPage_(): string {
@@ -289,6 +316,8 @@ export class CertificateManagerV2Element extends
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
         return Page.LOCAL_CERTS;
+      case Page.PLATFORM_CLIENT_CERTS:
+        return Page.CLIENT_CERTS;
       default:
         return this.selectedPage_;
     }
@@ -296,22 +325,24 @@ export class CertificateManagerV2Element extends
 
   private onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.selectedPage_ = Page.PLATFORM_CERTS;
+    this.switchToPage_(Page.PLATFORM_CERTS);
     this.$.platformCertsSection.setInitialFocus();
+  }
+
+  private onClientPlatformCertsLinkRowClick_(e: Event) {
+    e.preventDefault();
+    this.switchToPage_(Page.PLATFORM_CLIENT_CERTS);
+    this.$.platformClientCertsSection.setInitialFocus();
   }
 
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.selectedPage_ = Page.ADMIN_CERTS;
+    this.switchToPage_(Page.ADMIN_CERTS);
     this.$.adminCertsSection.setInitialFocus();
   }
 
-  // TODO(crbug.com/40928765): Make this work with multiple subpages, either by
-  // adding a page name to the event payload, or making multiple different
-  // navigateBack handlers (using the naming template
-  // on<OptionalContext><EventName>_).
-  private onNavigateBack_() {
-    this.selectedPage_ = Page.LOCAL_CERTS;
+  private onNavigateBack_(e: CustomEvent<{target: Page}>) {
+    this.switchToPage_(e.detail.target);
     focusWithoutInk(this.$.localMenuItem);
   }
 
@@ -338,6 +369,18 @@ export class CertificateManagerV2Element extends
 
   private computeImportOsCertsManaged_(): boolean {
     return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
+  }
+
+  private computeClientPlatformSubpageLists_(): SubpageCertificateList[] {
+    return [
+      {
+        headerText: loadTimeData.getString(
+            'certificateManagerV2ClientCertsFromPlatform'),
+        certSource: CertificateSource.kPlatformClientCert,
+        hideExport: true,
+        showImport: this.showClientCertImport_,
+      },
+    ];
   }
 
   // If true, show the Custom Certs section.

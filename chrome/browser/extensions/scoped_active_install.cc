@@ -22,8 +22,9 @@ ScopedActiveInstall::ScopedActiveInstall(InstallTracker* tracker,
 }
 
 ScopedActiveInstall::~ScopedActiveInstall() {
-  if (tracker_)
+  if (tracker_) {
     tracker_->RemoveActiveInstall(extension_id_);
+  }
 }
 
 void ScopedActiveInstall::CancelDeregister() {

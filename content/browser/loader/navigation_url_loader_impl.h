@@ -165,6 +165,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       size_t next_interceptor_index,
       std::optional<NavigationLoaderInterceptor::Result> interceptor_result);
 
+  // Called from `MaybeStartLoader` when the request is elected to be
+  // intercepted. Intercepts the request with `single_request_factory`.
+  void StartInterceptedRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
+
   // Start a loader with the default behavior. This should be used when no
   // interceptors have elected to handle the request in the first place.
   void StartNonInterceptedRequest(ResponseHeadUpdateParams head_update_params);

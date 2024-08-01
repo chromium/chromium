@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
@@ -91,6 +92,22 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       is_foldable_(GetIntParam(params, 31)),
       soc_manufacturer_(StrDupParam(params, 32)),
       is_debug_app_(GetIntParam(params, 33)) {}
+
+BuildInfo::~BuildInfo() = default;
+
+void BuildInfo::set_gms_version_code_for_test(
+    const std::string& gms_version_code) {
+  // This leaks the string, just like production code.
+  gms_version_code_ = strdup(gms_version_code.c_str());
+  Java_BuildInfo_setGmsVersionCodeForTest(AttachCurrentThread(),
+                                          gms_version_code);
+}
+
+std::string BuildInfo::host_signing_cert_sha256() {
+  JNIEnv* env = AttachCurrentThread();
+  return base::android::ConvertJavaStringToUTF8(
+      env, Java_BuildInfo_lazyGetHostSigningCertSha256(env));
+}
 
 // static
 BuildInfo* BuildInfo::GetInstance() {

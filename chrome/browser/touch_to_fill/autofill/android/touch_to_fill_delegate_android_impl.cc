@@ -197,9 +197,12 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   if (dry_run.outcome == TriggerOutcome::kShown) {
     if (std::vector<CreditCard>* cards_to_suggest =
             absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest);
-        cards_to_suggest && !manager_->client().ShowTouchToFillCreditCard(
-                                GetWeakPtr(), *cards_to_suggest,
-                                GetCardAcceptabilities(*cards_to_suggest))) {
+        cards_to_suggest &&
+        !manager_->client()
+             .GetPaymentsAutofillClient()
+             ->ShowTouchToFillCreditCard(
+                 GetWeakPtr(), *cards_to_suggest,
+                 GetCardAcceptabilities(*cards_to_suggest))) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     } else if (std::vector<Iban>* ibans_to_suggest =
                    absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);

@@ -179,6 +179,7 @@ component("google_apis") {
 
   deps = [
     ":proto",
+    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//crypto",
@@ -276,6 +277,7 @@ test("google_apis_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//google_apis/calendar:calendar_unittests",

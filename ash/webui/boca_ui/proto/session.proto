@@ -153,6 +153,8 @@ message CaptionsActivity {
 message TeacherCaptionsConfig {
   string capturing_audio_device_id = 1;
 
+  string capturing_audio_language_code = 3;
+
   map<string, DeviceCaptionsConfig> device_captions_configs = 2;
 }
 

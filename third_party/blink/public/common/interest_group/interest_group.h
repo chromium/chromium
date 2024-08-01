@@ -165,6 +165,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
       TrustedBiddingSignalsSlotSizeMode::kNone;
   int32_t max_trusted_bidding_signals_url_length = 0;
+  std::optional<url::Origin> trusted_bidding_signals_coordinator;
   std::optional<std::string> user_bidding_signals;
   std::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
   std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
@@ -176,7 +177,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::optional<AdditionalBidKey> additional_bid_key;
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 179, R"(
+  static_assert(__LINE__ == 180, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

@@ -46,20 +46,8 @@ using ChromeMLSession = uintptr_t;
 // Opaque handle to an object that allows canceling operations.
 using ChromeMLCancel = uintptr_t;
 
-// Function called to release resources.
-using ChromeMLDisposeFn = std::function<void()>;
-
 // Describes a ChromeML model's underlying tensors.
 struct ChromeMLModelData {
-  // Points to a serialized description of the model's tensors.
-  const void* model_proto_data;
-
-  // The size in bytes of the serialized proto at `model_proto_data`.
-  size_t model_proto_size;
-
-  // Called when the model_proto data is no longer needed.
-  const ChromeMLDisposeFn* model_proto_dispose;
-
   // File holding the weights data. The file will be owned by the inference
   // library and closed once weight loading is complete.
   PlatformFile weights_file;
@@ -67,15 +55,6 @@ struct ChromeMLModelData {
 
 // Describes a model to use with ChromeML.
 struct ChromeMLModelDescriptor {
-  // Points to a serialized sentencepiece.ModelProto proto.
-  const void* sentencepiece_model_proto_data;
-
-  // The size in bytes of the serialized proto at `sentencepiece_model_data`.
-  size_t sentencepiece_model_proto_size;
-
-  // Called when the sentencepiece_model_proto data is no longer needed.
-  const ChromeMLDisposeFn* sentencepiece_model_proto_dispose;
-
   // The model data to use.
   const ChromeMLModelData* model_data;
 
@@ -167,20 +146,6 @@ using ChromeMLCancelFn = std::function<void()>;
 using ChromeMLExecutionOutputFn =
     std::function<void(const ChromeMLExecutionOutput* output)>;
 
-// Receives tokens from a call to RunModel(). This will be called on the
-// internal thread executing the model. If no completion callback is provided to
-// ExecuteModel(), this function will be invoked with std::nullopt to signify
-// that model execution is complete.
-//
-// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
-using ChromeMLOutputFn = std::function<void(const std::optional<std::string>&)>;
-
-// Receives periodic updates to TS scores, per `score_ts_interval` set in
-// ChromeMLExecuteOptions.
-//
-// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
-using ChromeMLScoreTSFn = std::function<void(const std::vector<float>&)>;
-
 // Called with the number of tokens processed after a call to RunModel()
 // which has the kSave ContextMode set. This will be called on the internal
 // thread executing the model.
@@ -194,33 +159,13 @@ using ChromeMLSizeInTokensFn = std::function<void(int)>;
 // This will be called on the internal thread executing the model.
 using ChromeMLScoreFn = std::function<void(float)>;
 
-// Conveys details regarding a completed model execution.
-struct ChromeMLExecutionResult {
-  // If true, all prior output received for this model execution is effectively
-  // retracted by the library and should be discarded by the client.
-  //
-  // DEPRECATED: Clients should ignore this field. It will be deleted.
-  bool retracted;
-};
-
-// Called when a model has finished executing. No other functions given to
-// ExecuteModel() will be invoked after this.
-//
-// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
-using ChromeMLCompletionFn =
-    std::function<void(const ChromeMLExecutionResult&)>;
-
 struct ChromeMLExecuteOptions {
   const char* prompt;
   int context_mode;
   uint32_t max_tokens;
   uint32_t token_offset;
   uint32_t max_output_tokens;
-  int32_t score_ts_interval;
-  const ChromeMLOutputFn* output_fn;
-  const ChromeMLScoreTSFn* score_ts_fn;
   const ChromeMLContextSavedFn* context_saved_fn;
-  const ChromeMLCompletionFn* completion_fn;
   const ChromeMLExecutionOutputFn* execution_output_fn;
   // Optional adaptation ID for this request.
   uint32_t* adaptation_id;

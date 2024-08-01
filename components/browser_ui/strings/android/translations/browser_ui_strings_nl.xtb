@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Kaart met prijsdaling verbergen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1192844206376121885">Hiermee verwijder je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Hulp en feedback</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
-<translation id="2550801787432930915">Kaart met prijsdaling</translation>
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
 <translation id="2586657967955657006">Klembord</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Vooruit zoeken</translation>
 <translation id="3895926599014793903">Zoom verplicht aan</translation>
+<translation id="3905475044299942653">Houd veel meldingen tegen</translation>
 <translation id="3908288065506437185">Cookies van derden blokkeren in de incognitomodus</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sommige functies werken misschien niet. Gerelateerde sites kunnen nog steeds cookies van derden gebruiken.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="662080504995468778">Blijven</translation>
 <translation id="6653342741369270081">Druk op de knop Terug om het volledige scherm te sluiten.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Doorgaan met dit tabblad verbergen}other{Doorgaan met deze tabbladen verbergen}}</translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Actieve downloads</translation>
 <translation id="6722828510648505498">Hiermee worden inlogprompts van identiteitsservices geblokkeerd.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Selecteer een optie voor <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6818926723028410516">Items selecteren</translation>
+<translation id="6840760312327750441">Groepeer tabbladen door ze vast te houden en naar andere tabbladen te slepen.</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
 <translation id="930525582205581608">Deze site vergeten?</translation>
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
+<translation id="959682366969460160">Georganiseerd werken</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
 </translationbundle>

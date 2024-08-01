@@ -29,8 +29,12 @@ export function getHtml(this: DisclosureAppElement) {
     </div>
   </div>
 
-  <!-- TODO(b/): implement click handler. -->
-  <cr-button id="acceptButton" class="action-button">
-    ${this.i18n('acceptDisclosure')}
-  </cr-button>`;
+  <div id="actionsContainer">
+    <cr-button class="tonal-button" @click=${this.declineDisclosure()}>
+      ${this.i18n('declineDisclosure')}
+    </cr-button>
+    <cr-button class="action-button" @click=${this.acceptDisclosure()}>
+      ${this.i18n('acceptDisclosure')}
+    </cr-button>
+  </div>`;
 }

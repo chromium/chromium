@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "v8/include/v8.h"
@@ -243,6 +244,8 @@ CORE_EXPORT void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
     const QualifiedName& content_attribute,
     const char* interface_name,
     const char* attribute_name);
+
+CORE_EXPORT void CountWebDXFeature(v8::Isolate* isolate, WebDXFeature feature);
 
 }  // namespace bindings
 

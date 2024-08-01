@@ -10,6 +10,7 @@ source_set("impl") {
   public_deps = [ "//chromeos/ash/components/auth_panel/public" ]
 
   deps = [
+    "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//ash/style",

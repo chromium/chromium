@@ -59,7 +59,7 @@ TaskTrace::TaskTrace() {
     ++length;
   if (length == 0)
     return;
-  stack_trace_.emplace(task_trace.data(), length);
+  stack_trace_.emplace(span(task_trace).first(length));
   trace_overflow_ = current_task->task_backtrace_overflow;
 }
 

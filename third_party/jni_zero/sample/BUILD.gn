@@ -18,10 +18,7 @@ android_library("sample_java") {
     "java/src/org/jni_zero/sample/SampleActivity.java",
   ]
 
-  deps = [
-    "//build/android:build_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
+  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 source_set("sample_native_side") {

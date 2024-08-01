@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/fixed_array.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -130,12 +131,12 @@ void FakeAudioCapturer::ProducePackets() {
   if (!binding_.is_bound()) {
     return;
   }
-  char data[GetPacketSize()];
-  memset(data, 0, GetPacketSize());
+  base::FixedArray<char> data(GetPacketSize());
+  memset(data.data(), 0, data.memsize());
   SendData(start_timestamp_ + base::Seconds(1) * packet_index_ *
                                   frames_per_packet_ /
                                   stream_type_->frames_per_second,
-           data);
+           data.data());
   packet_index_++;
   timer_.Start(FROM_HERE,
                start_timestamp_ +

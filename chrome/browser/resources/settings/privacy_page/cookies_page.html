@@ -4,7 +4,6 @@
       }
 
       #explanationText,
-      #exceptionHeader,
       #generalControls {
         padding: 0 var(--cr-section-padding);
       }
@@ -19,16 +18,7 @@
         padding-bottom: 6px;
       }
 
-      #additionalProtectionsHeader {
-        padding: 0;
-      }
-
-      #additionalProtectionsDescription {
-        padding-top: 6px;
-      }
-
-      #exceptionHeader3pcd,
-      #exceptionHeaderTrackingProtection {
+      #exceptionHeader3pcd {
         padding: 0 var(--cr-section-padding);
         margin-bottom: -32px;
       }
@@ -116,7 +106,7 @@
     </picture>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <div id="explanationText" class="secondary">
-        [[getThirdPartyCookiesPageTitle_()]]
+        $i18n{thirdPartyCookiesAlignedPageDescription}
       </div>
       <div id="generalControls">
         <settings-radio-group id="primarySettingGroup" no-set-pref
@@ -203,13 +193,8 @@
       </div>
     </template>
     <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-      <div id="default">
-        <h2 id="defaultHeader" hidden="[[!enableTrackingProtectionRolloutUx_]]">
-          $i18n{trackingProtectionDefaultHeader}
-        </h2>
-        <div class="secondary"
-            inner-h-t-m-l="[[getTrackingProtectionDefaultDescription_()]]">
-        </div>
+      <div id="default" class="secondary">
+        $i18n{trackingProtectionPageDescription}
       </div>
       <div>
         <div class="bullet-row">
@@ -227,101 +212,46 @@
           </iron-icon>
           <div>
             $i18n{trackingProtectionBulletTwo}
-            <div class="secondary"
-                inner-h-t-m-l="[[getTrackingProtectionBulletTwo_()]]">
+            <div class="secondary">
+              $i18nRaw{trackingProtectionBulletTwoDescription}
             </div>
           </div>
         </div>
       </div>
     </template>
-    <div id="additionalProtections">
-      <h2 id="additionalProtectionsHeader">
-        [[getTrackingProtectionAdditionalProtectionsHeader_()]]
-      </h2>
-      <div class="secondary" id="additionalProtectionsDescription"
-          hidden="[[!enableTrackingProtectionRolloutUx_]]">
-        $i18nRaw{trackingProtectionAdditionalProtectionsDescription}
-      </div>
-    </div>
-    <template is="dom-if" if="[[!enableTrackingProtectionRolloutUx_]]">
-      <settings-toggle-button
-          id="blockThirdPartyToggle"
-          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
-          sub-label="
-            $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
-          learn-more-url="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
-          learn-more-aria-label="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
-          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
-          hidden="[[!is3pcdRedesignEnabled_]]"
-          icon="settings:visibility-off">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if" if="[[enableTrackingProtectionRolloutUx_]]">
-      <settings-toggle-button
-          id="blockThirdPartyToggle"
-          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
-          sub-label="$i18n{trackingProtectionBlockAll3pcsSubLabel}"
-          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
-          hidden="[[!is3pcdRedesignEnabled_]]"
-          icon="settings:visibility-off">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if" if="[[isIpProtectionAvailable_]]">
-      <settings-toggle-button
-          id="ipProtectionToggle"
-          pref="{{prefs.tracking_protection.ip_protection_enabled}}"
-          label="$i18n{trackingProtectionIpProtectionToggleLabel}"
-          sub-label-with-link="
-            $i18n{trackingProtectionIpProtectionToggleSubLabel}"
-          on-sub-label-link-clicked="onIpProtectionLearnMoreClicked_"
-          on-settings-boolean-control-change="onIpProtectionChanged_"
-          icon="settings:location-disabled">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if" if="[[isFingerprintingProtectionAvailable_]]">
-      <settings-toggle-button
-          id="fingerprintingProtectionToggle"
-          pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
-          label="$i18n{trackingProtectionFingerprintingProtectionToggleLabel}"
-          sub-label="
-            $i18n{trackingProtectionFingerprintingProtectionToggleSubLabel}"
-          on-settings-boolean-control-change="onFpProtectionChanged_"
-          icon="settings:fingerprint-off">
-      </settings-toggle-button>
-    </template>
+    <h2 id="additionalProtections">
+      $i18n{trackingProtectionAdvancedLabel}
+    </h2>
+    <settings-toggle-button
+        id="blockThirdPartyToggle"
+        pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+        label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+        sub-label="
+          $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
+        learn-more-url="
+          $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
+        learn-more-aria-label="
+          $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
+        on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
+        hidden="[[!is3pcdRedesignEnabled_]]"
+        icon="settings:visibility-off">
+    </settings-toggle-button>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <cr-link-row id="site-data-trigger" class="hr"
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if="[[!showTrackingProtectionExceptions_]]">
-      <div id="exceptionHeader3pcd">
-        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
-      </div>
-      <site-list id="allow3pcExceptionsList"
-          category="[[cookiesContentSettingType_]]"
-          category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
-          search-filter="[[searchTerm]]"
-          cookies-exception-type="third-party">
-      </site-list>
-    </template>
-    <template is="dom-if" if="[[showTrackingProtectionExceptions_]]">
-      <div id="exceptionHeaderTrackingProtection">
-        <h2>[[getTrackingProtectionExceptionsTitle_()]]</h2>
-      </div>
-      <site-list id="trackingProtectionExceptionsList"
-          category="[[trackingProtectionContentSettingType_]]"
-          category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="[[getTrackingProtectionExceptionsDescription_()]]"
-          search-filter="[[searchTerm]]">
-      </site-list>
-    </template>
+    <div id="exceptionHeader3pcd">
+      <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
+    </div>
+    <site-list id="allow3pcExceptionsList"
+        category="[[cookiesContentSettingType_]]"
+        category-subtype="[[contentSetting_.ALLOW]]"
+        category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
+        search-filter="[[searchTerm]]"
+        cookies-exception-type="third-party">
+    </site-list>
     <cr-toast id="toast">
       <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
       <cr-button on-click="onPrivacySandboxClick_">

@@ -45,6 +45,11 @@ class BuildResolverTest(LoggingTestCase):
                         },
                         'number': 123,
                         'status': 'FAILURE',
+                        'output': {
+                            'properties': {
+                                'failure_type': 'TEST_FAILURE',
+                            },
+                        },
                     }],
                 },
             }],
@@ -53,7 +58,7 @@ class BuildResolverTest(LoggingTestCase):
             [Build('Fake Test Linux', bucket='ci')])
         self.assertEqual(build_statuses, {
             Build('Fake Test Linux', 123, '123', 'ci'):
-            BuildStatus.FAILURE,
+            BuildStatus.TEST_FAILURE,
         })
         (_, body), = self.host.web.requests
         self.assertEqual(
@@ -92,6 +97,11 @@ class BuildResolverTest(LoggingTestCase):
                     },
                     'number': 123,
                     'status': 'FAILURE',
+                    'output': {
+                        'properties': {
+                            'failure_type': 'TEST_FAILURE',
+                        },
+                    },
                 },
             }, {
                 'getBuild': {
@@ -112,7 +122,7 @@ class BuildResolverTest(LoggingTestCase):
         self.assertEqual(
             build_statuses, {
                 Build('Fake Test Linux', 123, '123', 'ci'):
-                BuildStatus.FAILURE,
+                BuildStatus.TEST_FAILURE,
                 Build('linux-rel', 456, '456'): BuildStatus.SCHEDULED,
             })
         (_, body), = self.host.web.requests
@@ -234,7 +244,7 @@ class BuildResolverTest(LoggingTestCase):
             build_statuses, {
                 Build('linux-rel', 1, '1'): BuildStatus.INFRA_FAILURE,
                 Build('linux-rel', 2, '2'): BuildStatus.INFRA_FAILURE,
-                Build('linux-rel', 3, '3'): BuildStatus.FAILURE,
+                Build('linux-rel', 3, '3'): BuildStatus.OTHER_FAILURE,
                 Build('linux-rel', 4, '4'): BuildStatus.INFRA_FAILURE,
             })
 
@@ -258,9 +268,10 @@ class BuildResolverTest(LoggingTestCase):
             }],
         })
         build_statuses = self.resolver.resolve_builds([Build('linux-rel', 1)])
-        self.assertEqual(build_statuses, {
-            Build('linux-rel', 1, '1'): BuildStatus.INFRA_FAILURE,
-        })
+        self.assertEqual(
+            build_statuses, {
+                Build('linux-rel', 1, '1'): BuildStatus.COMPILE_FAILURE,
+            })
 
     def test_latest_nontrivial_patchset(self):
         self.gerrit.cl = MockGerritCL(

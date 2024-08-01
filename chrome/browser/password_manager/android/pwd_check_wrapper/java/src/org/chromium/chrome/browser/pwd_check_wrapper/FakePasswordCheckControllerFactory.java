@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
@@ -18,7 +17,6 @@ public class FakePasswordCheckControllerFactory extends PasswordCheckControllerF
             SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
-            SettingsLauncher settingsLauncher,
             PasswordManagerHelper passwordManagerHelper) {
         mPasswordCheckController = new FakePasswordCheckController();
         return mPasswordCheckController;

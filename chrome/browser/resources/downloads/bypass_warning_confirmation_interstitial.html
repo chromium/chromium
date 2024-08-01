@@ -1,12 +1,18 @@
 <style>
   #dialog {
-    align-items: center;
+    align-items: flex-start;
     background-color: var(--google-red-40);
     border: none;
     box-sizing: border-box;
     color: white;
     display: flex;
-    font-size: 125%;
+    /*Value is contrived from phishing interstitial:
+        font-size = [(125% * 75%) / 81.25%]
+        phishing interstitial html font-size = 125%
+        phishing interstitial body font-size = 75%
+        download interstitial body font-size = 81.25%
+    */
+    font-size: 115.38%;
     height: 100vh;
     justify-content: center;
     max-height: 100vh;
@@ -15,7 +21,8 @@
   }
 
   #interstitial-wrapper {
-    max-width: 736px;
+    max-width: 600px;
+    margin-top: 14vh;
   }
 
   #icon {
@@ -23,7 +30,7 @@
     width: 72px;
   }
 
-  #main-message{
+  #main-message {
     margin: 30px 0;
   }
 
@@ -36,17 +43,18 @@
 
   #button-container {
     display: flex;
+    font-size: 0.875em;
     justify-content: space-between;
     padding-bottom: 30px;
   }
 
-  #back-to-safety-button {
+  #backToSafetyButton {
     background: white;
     border: none;
     color: var(--google-primary-40);
   }
 
-  #back-to-safety-button:hover {
+  #backToSafetyButton:hover {
     background: var(--google-primary-90);
   }
 
@@ -74,6 +82,7 @@
   cr-radio-button {
     --cr-radio-button-checked-color: #fff;
     --cr-radio-button-unchecked-color: #fff;
+    --cr-radio-group-item-padding: 8px;
   }
 
   #survey-wrapper {
@@ -81,7 +90,7 @@
   }
 
   #survey-title {
-    margin: 2px 0;
+    margin: 8px 0;
   }
 </style>
 <dialog id="dialog">
@@ -97,7 +106,8 @@
           <!-- noopener cuts off the script connection between
             chrome://downloads, which has sensitive capabilities, and the newly
             opened web renderer, which may be more readily compromised. -->
-          <a href="$i18n{blockedLearnMoreUrl}" target="_blank" rel="noopener">
+          <a href="$i18n{blockedLearnMoreUrl}" target="_blank" rel="noopener"
+              aria-label="$i18n{warningBypassPromptLearnMoreLinkAccessible}">
             $i18n{warningBypassPromptLearnMoreLink}
           </a>
         </p>
@@ -107,7 +117,7 @@
           on-click="onContinueAnywayClick_">
           $i18n{warningBypassInterstitialContinue}
         </cr-button>
-        <cr-button id="back-to-safety-button" on-click="onBackToSafetyClick_">
+        <cr-button id="backToSafetyButton" on-click="onBackToSafetyClick_">
           $i18n{warningBypassInterstitialCancel}
         </cr-button>
       </div>
@@ -116,15 +126,26 @@
       id="survey-and-download-button-wrapper">
       <div id="survey-wrapper">
         <p id="survey-title">$i18n{warningBypassInterstitialSurveyTitle}</p>
-        <cr-radio-group selected="{{selectedRadioOption_}}">
-          <cr-radio-button name="CreatedFile">
-            $i18n{warningBypassInterstitialSurveyCreatedFile}
+        <cr-radio-group
+            aria-label="$i18n{warningBypassInterstitialSurveyTitleAccessible}"
+            selected="{{selectedRadioOption_}}">
+          <cr-radio-button name="CreatedFile"
+            label="$i18n{warningBypassInterstitialSurveyCreatedFileAccessible}"
+            hide-label-text>
+            <span aria-hidden="true">
+              $i18n{warningBypassInterstitialSurveyCreatedFile}
+            </span>
           </cr-radio-button>
-          <cr-radio-button name="TrustSite">
-            [[trustSiteLine]]
+          <cr-radio-button name="TrustSite"
+            label="[[trustSiteLineAccessibleText]]" hide-label-text>
+            <span aria-hidden="true">[[trustSiteLine]]</span>
           </cr-radio-button>
-          <cr-radio-button name="AcceptRisk">
-            $i18n{warningBypassInterstitialSurveyAcceptRisk}
+          <cr-radio-button name="AcceptRisk"
+            label="$i18n{warningBypassInterstitialSurveyAcceptRiskAccessible}"
+            hide-label-text>
+            <span aria-hidden="true">
+              $i18n{warningBypassInterstitialSurveyAcceptRisk}
+            </span>
           </cr-radio-button>
         </cr-radio-group>
       </div>

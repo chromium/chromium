@@ -16,6 +16,8 @@ static_library("invalidation") {
     "affiliated_invalidation_service_provider_impl.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",

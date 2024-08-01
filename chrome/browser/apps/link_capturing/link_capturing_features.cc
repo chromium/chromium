@@ -26,4 +26,12 @@ bool ShouldShowLinkCapturingUX() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+bool IsLinkCapturingReimplementationEnabled() {
+  return base::FeatureList::IsEnabled(::features::kDesktopPWAsLinkCapturing) &&
+         (::features::kLinkCapturingDefaultState.Get() ==
+              ::features::LinkCapturingState::kReimplDefaultOn ||
+          ::features::kLinkCapturingDefaultState.Get() ==
+              ::features::LinkCapturingState::kReimplDefaultOff);
+}
+
 }  // namespace apps::features

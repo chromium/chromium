@@ -22,6 +22,8 @@ static_library("omnibox") {
     "open_tab_result.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

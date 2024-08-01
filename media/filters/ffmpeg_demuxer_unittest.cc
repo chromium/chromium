@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/ffmpeg_demuxer.h"
 
 #include <stddef.h>
@@ -302,6 +307,7 @@ class FFmpegDemuxerTest : public testing::Test {
   // Fixture members.
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{kBuiltInH264Decoder};
 
   // TODO(wolenetz): Consider expanding MediaLog verification coverage here
   // using StrictMock<MockMediaLog> for all FFmpegDemuxerTests. See

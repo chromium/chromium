@@ -121,8 +121,7 @@ GetRequiredModelAdaptationLoaders(
     base::WeakPtr<OnDeviceModelServiceController>
         on_device_model_service_controller) {
   std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader> loaders;
-  for (const auto user_visible_feature : kAllUserVisibleFeatureKeys) {
-    const auto feature = ToModelBasedCapabilityKey(user_visible_feature);
+  for (const auto feature : kAllModelBasedCapabilityKeys) {
     if (!features::internal::IsOnDeviceModelEnabled(feature) ||
         !features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
       continue;

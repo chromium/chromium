@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
+import org.chromium.chrome.browser.pdf.PdfUtils;
+import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -562,6 +564,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return hasTab() && TabbedPaintPreview.get(mTab).isShowing();
     }
 
+    private int getPdfPageType() {
+        if (!hasTab()) {
+            return 0;
+        }
+        return PdfUtils.getPdfPageType(mTab.getNativePage());
+    }
+
     @Override
     public int getSecurityLevel() {
         return getSecurityLevel(getTab(), isOfflinePage());
@@ -586,7 +595,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 getSecurityLevel(getTab(), isOfflinePage),
                 !isTablet,
                 isOfflinePage,
-                isPaintPreview());
+                isPaintPreview(),
+                getPdfPageType());
     }
 
     @Override
@@ -626,7 +636,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             int securityLevel,
             boolean isSmallDevice,
             boolean isOfflinePage,
-            boolean isPaintPreview) {
+            boolean isPaintPreview,
+            int pdfPageType) {
         // Paint Preview appears on top of WebContents and shows a visual representation of the page
         // that has been previously stored locally.
         if (isPaintPreview) return R.drawable.omnibox_info;
@@ -635,6 +646,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // on a slow connection. In this case, the previews UI takes precedence.
         if (isOfflinePage) {
             return R.drawable.ic_offline_pin_24dp;
+        }
+
+        // Pdf page is a native page used to render downloaded pdf files.
+        // Show warning icon for pdf from insecure source (e.g. mixed content download).
+        if (pdfPageType == PdfPageType.TRANSIENT_INSECURE) {
+            return R.drawable.omnibox_not_secure_warning;
+        }
+        // Show info icon for other pdf pages.
+        if (pdfPageType == PdfPageType.TRANSIENT_SECURE || pdfPageType == PdfPageType.LOCAL) {
+            return R.drawable.omnibox_info;
         }
 
         // Return early if native initialization hasn't been done yet.

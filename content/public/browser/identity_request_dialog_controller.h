@@ -97,12 +97,18 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   enum class DismissReason {
     kOther = 0,
     kCloseButton = 1,
+    // Android-specific
     kSwipe = 2,
+    // Android-specific
     kVirtualKeyboardShown = 3,
     kGotItButton = 4,
     kMoreDetailsButton = 5,
+    // Android-specific
+    kBackPress = 6,
+    // Android-specific
+    kTapScrim = 7,
 
-    kMaxValue = kMoreDetailsButton,
+    kMaxValue = kTapScrim,
   };
 
   // A Java counterpart will be generated for this enum.
@@ -208,6 +214,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Show a modal dialog that loads content from the IdP.
   virtual WebContents* ShowModalDialog(const GURL& url,
+                                       blink::mojom::RpMode rp_mode,
                                        DismissCallback dismiss_callback);
 
   // Closes the modal dialog.

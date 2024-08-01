@@ -65,18 +65,6 @@ source_set("chromeos") {
     "mahi/mahi_tab_helper.h",
     "mahi/mahi_web_contents_manager.cc",
     "mahi/mahi_web_contents_manager.h",
-    "network/network_portal_signin_window.cc",
-    "network/network_portal_signin_window.h",
-    "platform_keys/extension_key_permissions_service.cc",
-    "platform_keys/extension_key_permissions_service.h",
-    "platform_keys/extension_key_permissions_service_factory.cc",
-    "platform_keys/extension_key_permissions_service_factory.h",
-    "platform_keys/extension_platform_keys_service.cc",
-    "platform_keys/extension_platform_keys_service.h",
-    "platform_keys/extension_platform_keys_service_factory.cc",
-    "platform_keys/extension_platform_keys_service_factory.h",
-    "platform_keys/platform_keys.cc",
-    "platform_keys/platform_keys.h",
     "policy/dlp/clipboard_bubble.cc",
     "policy/dlp/clipboard_bubble.h",
     "policy/dlp/data_transfer_dlp_controller.cc",
@@ -148,8 +136,6 @@ source_set("chromeos") {
     "printing/print_preview/print_view_manager_cros_basic.h",
     "printing/print_preview/printing_init_cros.cc",
     "printing/print_preview/printing_init_cros.h",
-    "quickoffice/quickoffice_prefs.cc",
-    "quickoffice/quickoffice_prefs.h",
     "reporting/local_state_reporting_settings.cc",
     "reporting/local_state_reporting_settings.h",
     "reporting/metric_default_utils.cc",
@@ -171,18 +157,6 @@ source_set("chromeos") {
     "reporting/websites/website_usage_observer.h",
     "reporting/websites/website_usage_telemetry_sampler.cc",
     "reporting/websites/website_usage_telemetry_sampler.h",
-    "upload_office_to_cloud/upload_office_to_cloud.cc",
-    "upload_office_to_cloud/upload_office_to_cloud.h",
-    "video_conference/video_conference_manager_client.cc",
-    "video_conference/video_conference_manager_client.h",
-    "video_conference/video_conference_manager_client_common.cc",
-    "video_conference/video_conference_manager_client_common.h",
-    "video_conference/video_conference_media_listener.cc",
-    "video_conference/video_conference_media_listener.h",
-    "video_conference/video_conference_ukm_helper.cc",
-    "video_conference/video_conference_ukm_helper.h",
-    "video_conference/video_conference_web_app.cc",
-    "video_conference/video_conference_web_app.h",
 
     # Extension API implementations.
     "extensions/desk_api/desk_api_extension_manager.cc",
@@ -203,7 +177,9 @@ source_set("chromeos") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/enterprise/cloud_storage",
     "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
   ]
+
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -214,6 +190,7 @@ source_set("chromeos") {
     "//chrome/browser/web_applications",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/common/extensions/api",
+    "//chromeos/components/mahi/public/cpp:cpp",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/dlp:dlp_proto",
@@ -252,6 +229,7 @@ source_set("chromeos") {
     "//ui/views",
     "//url",
   ]
+
   deps = [
     ":system_stack_sampled_metrics_status_proto",
     "//chrome/app:command_ids",
@@ -273,6 +251,7 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/tast_support",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/favicon",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
     "//chrome/common",
@@ -305,6 +284,7 @@ source_set("chromeos") {
     "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:rate_limiter_slide_window",
     "//components/services/app_service",
+    "//components/sharing_message",
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/sync_device_info",
@@ -399,6 +379,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/webui/ash/cloud_upload",
     ]
     public_deps += [
       "//ash/constants",
@@ -450,6 +431,7 @@ source_set("chromeos") {
       "//chrome/browser/ui/ash/network",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util",
       "//chromeos/ash/components/login/auth/public:authpublic",
@@ -616,7 +598,6 @@ source_set("unit_tests") {
     "reporting/websites/website_events_observer_unittest.cc",
     "reporting/websites/website_usage_observer_unittest.cc",
     "reporting/websites/website_usage_telemetry_sampler_unittest.cc",
-    "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -669,6 +650,7 @@ source_set("unit_tests") {
     "//components/reporting/storage:test_support",
     "//components/reporting/util:status",
     "//components/reporting/util:test_callbacks_support",
+    "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
     "//components/strings:components_strings",
     "//components/ukm",
@@ -700,6 +682,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
+    "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
 
   if (is_chromeos_ash) {
@@ -784,12 +767,30 @@ source_set("unit_tests") {
 group("browser_tests") {
   testonly = true
 
-  deps = []
+  deps = [
+    # Browser tests from subdirectories.
+    "//chrome/browser/chromeos/kcer:browser_tests",
+  ]
 
   if (is_chromeos_ash) {
     deps += [
       # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
+      "//chrome/browser/chromeos/video_conference:browser_tests",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  group("lacros_chrome_browsertests") {
+    testonly = true
+
+    deps = [
+      # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/kcer:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
     ]
   }
 }

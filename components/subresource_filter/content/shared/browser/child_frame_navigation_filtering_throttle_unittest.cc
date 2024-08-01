@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "child_frame_navigation_filtering_throttle.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -31,13 +32,13 @@ class TestChildFrameNavigationFilteringThrottle
   TestChildFrameNavigationFilteringThrottle(
       content::NavigationHandle* handle,
       AsyncDocumentSubresourceFilter* parent_frame_filter,
-      bool bypass_alias_check,
+      bool alias_check_enabled,
       base::RepeatingCallback<std::string(const GURL& url)>
           disallow_message_callback)
       : ChildFrameNavigationFilteringThrottle(
             handle,
             parent_frame_filter,
-            bypass_alias_check,
+            alias_check_enabled,
             std::move(disallow_message_callback)) {}
 
   TestChildFrameNavigationFilteringThrottle(
@@ -90,7 +91,7 @@ class ChildFrameNavigationFilteringThrottleTest
       auto throttle =
           std::make_unique<TestChildFrameNavigationFilteringThrottle>(
               navigation_handle, parent_filter_.get(),
-              /*bypass_alias_check=*/false,
+              /*alias_check_enabled=*/alias_check_enabled_,
               base::BindRepeating([](const GURL& filtered_url) {
                 // Same as GetFilterConsoleMessage().
                 return base::StringPrintf(
@@ -101,6 +102,9 @@ class ChildFrameNavigationFilteringThrottleTest
       navigation_handle->RegisterThrottleForTesting(std::move(throttle));
     }
   }
+
+ protected:
+  bool alias_check_enabled_ = false;
 };
 
 TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnStart) {
@@ -206,14 +210,12 @@ class ChildFrameNavigationFilteringThrottleDnsAliasTest
     : public ChildFrameNavigationFilteringThrottleTest {
  public:
   ChildFrameNavigationFilteringThrottleDnsAliasTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSendCnameAliasesToSubresourceFilterFromBrowser);
+    alias_check_enabled_ = true;
   }
 
   ~ChildFrameNavigationFilteringThrottleDnsAliasTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

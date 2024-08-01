@@ -68,6 +68,8 @@ static_library("file_manager") {
     "system_notification_manager.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",
@@ -100,12 +102,15 @@ static_library("file_manager") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/devtools",
+    "//chrome/browser/feedback",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/webui/ash/manage_mirrorsync",
     "//chrome/common",
     "//chrome/services/media_gallery_util/public/cpp",
     "//chrome/services/media_gallery_util/public/mojom",
@@ -179,6 +184,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/cros_disks",
@@ -215,6 +221,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos:test_support",
     "//chrome/browser/ui",

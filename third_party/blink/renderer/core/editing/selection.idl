@@ -58,7 +58,8 @@
     [MeasureAs=SelectionContainsNode] boolean containsNode(Node node, optional boolean allowPartialContainment = false);
     [MeasureAs=SelectionDOMString] stringifier;
 
-    [RuntimeEnabled=SelectionAcrossShadowDOM] readonly attribute DOMString direction;
+    [MeasureAs=SelectionDirection, RuntimeEnabled=SelectionAcrossShadowDOM] readonly attribute DOMString direction;
+    [MeasureAs=SelectionGetComposedRanges, RuntimeEnabled=SelectionAcrossShadowDOM] sequence<StaticRange> getComposedRanges(ShadowRoot... shadowRoots);
 
     // Non-standard APIs
 

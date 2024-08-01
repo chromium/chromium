@@ -5,10 +5,11 @@
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {RealboxElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {BrowserProxyImpl, MetricsReporterImpl, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {BrowserProxyImpl, MetricsReporterImpl, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -17,7 +18,7 @@ import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
 
 function createAutocompleteMatch(): AutocompleteMatch {
   return {
-    a11yLabel: mojoString16(''),
+    a11yLabel: stringToMojoString16(''),
     actions: [],
     allowedToBeDefaultMatch: false,
     answer: null,
@@ -26,17 +27,17 @@ function createAutocompleteMatch(): AutocompleteMatch {
     swapContentsAndDescription: false,
     supportsDeletion: false,
     suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
-    contents: mojoString16(''),
+    contents: stringToMojoString16(''),
     contentsClass: [{offset: 0, style: 0}],
-    description: mojoString16(''),
+    description: stringToMojoString16(''),
     descriptionClass: [{offset: 0, style: 0}],
     destinationUrl: {url: ''},
-    inlineAutocompletion: mojoString16(''),
-    fillIntoEdit: mojoString16(''),
+    inlineAutocompletion: stringToMojoString16(''),
+    fillIntoEdit: stringToMojoString16(''),
     iconUrl: '',
     imageDominantColor: '',
     imageUrl: '',
-    removeButtonA11yLabel: mojoString16(''),
+    removeButtonA11yLabel: stringToMojoString16(''),
     tailSuggestCommonPrefix: null,
     type: '',
     isRichSuggestion: false,
@@ -127,7 +128,7 @@ suite('Lens search', () => {
 
     const matches = [createAutocompleteMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: mojoString16(realbox.$.input.value.trimStart()),
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
       matches,
       suggestionGroupsMap: {},
     });

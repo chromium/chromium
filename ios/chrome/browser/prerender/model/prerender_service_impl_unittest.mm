@@ -17,7 +17,7 @@ class PrerenderServiceImplTest : public PlatformTest {
  public:
   PrerenderServiceImplTest() {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     service_ = std::make_unique<PrerenderServiceImpl>(browser_state_.get());
   }
 

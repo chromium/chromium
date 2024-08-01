@@ -19,6 +19,10 @@ enum WebauthnMode {
   BROWSER = 2,
   // WebAuthn is enabled for Chrome. It is a special browser mode for Chrome.
   CHROME = 3,
+  // WebAuthn is enabled for Chrome using 3rd Party Password Managers. Unlike
+  // CHROME mode, this mode does not support conditional requests pre
+  // Android 14.
+  CHROME_3PP_ENABLED = 4,
 };
 
 }  // namespace webauthn

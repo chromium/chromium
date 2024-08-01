@@ -57,7 +57,21 @@ with the updater).
 
 #### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
-installing an application with `needsadmin=true` or `needsadmin=prefers`.
+it is being run at medium integrity with UAC on and installing an application
+with `needsadmin=true` or `needsadmin=prefers`.
+
+More information is in the
+[design document](design_doc.md#elevation)
+.
+
+#### De-elevation (Windows)
+The metainstaller parses its tag and re-launches itself at medium integrity if
+it is being run at high integrity with UAC on and installing an application with
+`needsadmin=false`.
+
+More information is in the
+[design document](design_doc.md#de_elevation)
+.
 
 #### Localization
 Metainstaller localization presents the metainstaller UI with the user's

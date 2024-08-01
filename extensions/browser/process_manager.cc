@@ -963,17 +963,19 @@ void ProcessManager::UnregisterExtension(const ExtensionId& extension_id) {
   background_page_data_.erase(extension_id);
 
   for (const WorkerId& worker_id :
-       all_extension_workers_.GetAllForExtension(extension_id)) {
-    UnregisterServiceWorker(worker_id);
+       all_running_extension_workers_.GetAllForExtension(extension_id)) {
+    StopTrackingServiceWorkerRunningInstance(worker_id);
   }
 #if DCHECK_IS_ON()
   // Sanity check: No worker entry should exist for |extension_id|.
-  DCHECK(all_extension_workers_.GetAllForExtension(extension_id).empty());
+  DCHECK(
+      all_running_extension_workers_.GetAllForExtension(extension_id).empty());
 #endif
 }
 
-void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
-  all_extension_workers_.Add(worker_id, browser_context_);
+void ProcessManager::StartTrackingServiceWorkerRunningInstance(
+    const WorkerId& worker_id) {
+  all_running_extension_workers_.Add(worker_id, browser_context_);
   worker_context_ids_[worker_id] = base::Uuid::GenerateRandomV4();
 
   // Observe the RenderProcessHost for cleaning up on process shutdown.
@@ -990,7 +992,7 @@ void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
       process_observations_.AddObservation(render_process_host);
     }
     for (auto& observer : observer_list_)
-      observer.OnServiceWorkerRegistered(worker_id);
+      observer.OnStartedTrackingServiceWorkerInstance(worker_id);
   }
 }
 
@@ -1006,24 +1008,27 @@ void ProcessManager::RenderProcessExited(
   // TODO(lazyboy): Revisit this once incognito is tested for extension SWs, as
   // the cleanup below only works because regular and OTR ProcessManagers are
   // separate. The conclusive approach would be to have a
-  // all_extension_workers_.RemoveAllForProcess(render_process_id) method:
+  // all_running_extension_workers_.RemoveAllForProcess(render_process_id)
+  // method:
   //   Pros: We won't need worker_process_to_extension_ids_ anymore.
   //   Cons: We would require traversing all workers within
-  //         |all_extension_workers_| (slow) as things stand right now.
+  //         |all_running_extension_workers_| (slow) as things stand right now.
   auto iter = worker_process_to_extension_ids_.find(render_process_id);
   if (iter == worker_process_to_extension_ids_.end())
     return;
   for (const ExtensionId& extension_id : iter->second) {
-    for (const WorkerId& worker_id : all_extension_workers_.GetAllForExtension(
-             extension_id, render_process_id)) {
-      UnregisterServiceWorker(worker_id);
+    for (const WorkerId& worker_id :
+         all_running_extension_workers_.GetAllForExtension(extension_id,
+                                                           render_process_id)) {
+      StopTrackingServiceWorkerRunningInstance(worker_id);
     }
   }
 #if DCHECK_IS_ON()
   // Sanity check: No worker entry should exist for any |extension_id| running
   // inside the RenderProcessHost that died.
   for (const ExtensionId& extension_id : iter->second)
-    DCHECK(all_extension_workers_.GetAllForExtension(extension_id).empty());
+    DCHECK(all_running_extension_workers_.GetAllForExtension(extension_id)
+               .empty());
 #endif
   worker_process_to_extension_ids_.erase(iter);
 }
@@ -1046,34 +1051,36 @@ void ProcessManager::HandleCloseExtensionHost(ExtensionHost* host) {
   // WARNING: `host` is deleted at this point!
 }
 
-void ProcessManager::UnregisterServiceWorker(const WorkerId& worker_id) {
+void ProcessManager::StopTrackingServiceWorkerRunningInstance(
+    const WorkerId& worker_id) {
   // TODO(crbug.com/40936639): Remove the ability for multiple workers to be
   // stored for an extension and then remove all these similar checks and loops
   // that are assuming there can be more than one.
-  if (!all_extension_workers_.Contains(worker_id)) {
+  if (!all_running_extension_workers_.Contains(worker_id)) {
     // Multiple notifications can try to remove a worker when the worker
     // stops (DidStopServiceWorkerContext(),
     // ProcessManager::RenderProcessExit(), or extension uninstall/disable).
     return;
   }
 
-  all_extension_workers_.Remove(worker_id);
+  all_running_extension_workers_.Remove(worker_id);
   worker_context_ids_.erase(worker_id);
   for (auto& observer : observer_list_)
-    observer.OnServiceWorkerUnregistered(worker_id);
+    observer.OnStoppedTrackingServiceWorkerInstance(worker_id);
 }
 
 // TODO(crbug.com/40936639): Deduplicate this method with it's other overload
 // once multi workers per extension is fixed.
-void ProcessManager::UnregisterServiceWorker(const ExtensionId& extension_id,
-                                             int64_t worker_version_id) {
+void ProcessManager::StopTrackingServiceWorkerRunningInstance(
+    const ExtensionId& extension_id,
+    int64_t worker_version_id) {
   // We need the specific version because an extension could be
-  // re-activated before UnregisterServiceWorker() is called. In that case we
-  // might try to unregister the new version of the running worker if we don't
-  // check the version id.
+  // re-activated before StopTrackingServiceWorkerRunningInstance() is called.
+  // In that case we might try to stop tracking the new version instance of the
+  // running worker if we don't check the version id.
   std::vector<WorkerId> worker_ids_for_extension =
-      all_extension_workers_.GetAllForExtension(extension_id,
-                                                worker_version_id);
+      all_running_extension_workers_.GetAllForExtension(extension_id,
+                                                        worker_version_id);
 
   if (worker_ids_for_extension.empty()) {
     // Multiple notifications can try to remove a worker when the worker
@@ -1083,24 +1090,24 @@ void ProcessManager::UnregisterServiceWorker(const ExtensionId& extension_id,
   }
 
   // TODO(crbug.com/40936639): After the fix releases there should only be one
-  // worker registered for each extension at any time. If there is still more
-  // than one then do not delete it so we will count it and know about it.
+  // worker instance tracked for each extension at any time. If there is still
+  // more than one then do not delete it so we will count it and know about it.
   // Confirm more thoroughly with DUMP_WILL_BE_CHECK() if metrics look
   // promising.
   if (worker_ids_for_extension.size() > 1u) {
     return;
   }
 
-  UnregisterServiceWorker(worker_ids_for_extension[0]);
+  StopTrackingServiceWorkerRunningInstance(worker_ids_for_extension[0]);
 }
 
 bool ProcessManager::HasServiceWorker(const WorkerId& worker_id) const {
-  return all_extension_workers_.Contains(worker_id);
+  return all_running_extension_workers_.Contains(worker_id);
 }
 
 std::vector<WorkerId> ProcessManager::GetServiceWorkersForExtension(
     const ExtensionId& extension_id) const {
-  return all_extension_workers_.GetAllForExtension(extension_id);
+  return all_running_extension_workers_.GetAllForExtension(extension_id);
 }
 
 base::Uuid ProcessManager::GetContextIdForWorker(
@@ -1123,7 +1130,7 @@ ProcessManager::GetServiceWorkerKeepaliveDataForRecords(
 }
 
 std::vector<WorkerId> ProcessManager::GetAllWorkersIdsForTesting() {
-  return all_extension_workers_.GetAllForTesting();
+  return all_running_extension_workers_.GetAllForTesting();  // IN-TEST
 }
 
 void ProcessManager::ClearBackgroundPageData(const ExtensionId& extension_id) {

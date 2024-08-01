@@ -771,24 +771,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="kDisconnected"/>
 </enum>
 
-<enum name="AttributionDestinationRateLimitResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Disallowed (global limit)"/>
-  <int value="2" label="Disallowed (reporting site limit)"/>
-  <int value="3" label="Disallowed (both limits)"/>
-  <int value="4" label="Internal error"/>
-</enum>
-
-<!-- LINT.IfChange(AttributionSourceDestinationLimitResult) -->
-
-<enum name="AttributionSourceDestinationLimitResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Allowed but limit hit"/>
-  <int value="2" label="Disallowed"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:DestinationLimitResult) -->
-
 <enum name="AuctionInvalidServerResponseReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not Witnessed"/>
@@ -3316,546 +3298,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not seen, from Long-press"/>
 </enum>
 
-<!-- LINT.IfChange(ConversionAggregatableDebugReportingRegistrationError) -->
-
-<enum name="ConversionAggregatableDebugReportingRegistrationError">
-  <int value="0" label="Root JSON value has wrong type"/>
-  <int value="1" label="budget invalid"/>
-  <int value="2" label="key_piece invalid"/>
-  <int value="3" label="debug_data invalid"/>
-  <int value="4" label="debug_data key_piece invalid"/>
-  <int value="5" label="debug_data value invalid"/>
-  <int value="6" label="debug_data types invalid"/>
-  <int value="7" label="aggregation_coordinator_origin invalid"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/aggregatable_debug_reporting_config.h:AggregatableDebugReportingConfigError) -->
-
-<!-- LINT.IfChange(ConversionAggregatableDebugReportProcessResult) -->
-
-<enum name="ConversionAggregatableDebugReportProcessResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="No debug data"/>
-  <int value="2" label="Insufficient budget"/>
-  <int value="3" label="Excessive reports"/>
-  <int value="4" label="Global rate-limit reached"/>
-  <int value="5" label="Per reporting site rate-limit reached"/>
-  <int value="6" label="Both rate-limits reached"/>
-  <int value="7" label="Internal error"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom:ProcessAggregatableDebugReportResult) -->
-
-<enum name="ConversionAndroidOperationResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unknown error"/>
-  <int value="2" label="Illegal argument error"/>
-  <int value="3" label="IO error"/>
-  <int value="4" label="Illegal state error"/>
-  <int value="5" label="Security error"/>
-  <int value="6" label="Timeout error"/>
-  <int value="7" label="Limit exceeded error"/>
-  <int value="8" label="Internal error"/>
-  <int value="9" label="Background caller error"/>
-  <int value="10" label="Version unsupported"/>
-  <int value="11" label="Permission ungranted"/>
-  <int value="12" label="Service unavailable"/>
-  <int value="13" label="API rate limit exeeded"/>
-  <int value="14" label="Server rate limit exeeded"/>
-  <int value="15" label="Caller not allowed to cross user boundary"/>
-  <int value="16" label="Caller not allowed on behalf"/>
-  <int value="17" label="Permission not requested"/>
-  <int value="18" label="Caller not allowed"/>
-  <int value="19" label="Encryption failure"/>
-  <int value="20" label="Service not found"/>
-  <int value="21" label="Invalid object from the server"/>
-</enum>
-
-<!-- LINT.IfChange(ConversionAssembleAggregatableReportStatus) -->
-
-<enum name="ConversionAssembleAggregatableReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Aggregation service unavailable"/>
-  <int value="2" label="Failed to create request"/>
-  <int value="3" label="Failed to assemble report"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_attribution_utils.h:AssembleAggregatableReportStatus) -->
-
-<enum name="ConversionAttributionBehavior">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="App Source and Web Trigger"/>
-  <int value="2" label="Web source and Web Trigger"/>
-  <int value="3" label="App Source and App Trigger"/>
-</enum>
-
-<enum name="ConversionAttributionOsLevelApiState">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="Enabled"/>
-</enum>
-
-<!-- LINT.IfChange(ConversionAttributionResult) -->
-
-<enum name="ConversionAttributionResult">
-  <int value="0" label="Event-level report only"/>
-  <int value="1" label="Aggregatable report only"/>
-  <int value="2" label="Both"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:AttributionResult) -->
-
-<enum name="ConversionAttributionSrcRequestStatus">
-  <int value="0" label="Requested"/>
-  <int value="1" label="Received"/>
-  <int value="2" label="Failed"/>
-</enum>
-
-<!-- LINT.IfChange(ConversionBackgroundNavigationOutcome) -->
-
-<enum name="ConversionBackgroundNavigationOutcome">
-  <int value="0" label="Tied immediately"/>
-  <int value="1" label="Tied with delay"/>
-  <int value="2" label="Never tied: Timeout"/>
-  <int value="3" label="Never tied: Ineligible navigation"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:BackgroundNavigationOutcome) -->
-
-<!-- LINT.IfChange(ConversionCorruptReportStatus) -->
-
-<enum name="ConversionCorruptReportStatus">
-  <int value="0" label="Any field corrupted"/>
-  <int value="1" label="Invalid failed_send_attempts field"/>
-  <int value="2" label="Invalid external_report_id field"/>
-  <int value="3" label="Invalid context_origin field"/>
-  <int value="4" label="Invalid reporting_origin field"/>
-  <int value="5" label="Invalid report_type field"/>
-  <int value="6" label="Mismatched reporting origin between source and report"/>
-  <int value="7"
-      label="(Obsolete) Metadata could not be read from database. Removed in
-             2023/12."/>
-  <int value="8" label="Source data missing - event level report"/>
-  <int value="9" label="Source data missing - aggregatable report"/>
-  <int value="10" label="Source data found - null aggregatable report"/>
-  <int value="11" label="Metadata could not be deserialized"/>
-  <int value="12" label="Corresponding source not found"/>
-  <int value="13" label="Corresponding source - invalid source origin"/>
-  <int value="14" label="Corresponding source - invalid reporting origin"/>
-  <int value="15" label="Corresponding source - invalid source type"/>
-  <int value="16" label="Corresponding source - invalid attribution logic"/>
-  <int value="17" label="Corresponding source - invalid number of conversions"/>
-  <int value="18"
-      label="Corresponding source - invalid number of aggregatable reports"/>
-  <int value="19" label="Corresponding source - invalid aggregation keys"/>
-  <int value="20" label="Corresponding source - invalid filter data"/>
-  <int value="21" label="Corresponding source - invalid active state"/>
-  <int value="22" label="Corresponding source - invalid read only source data"/>
-  <int value="23"
-      label="(Obsolete): Corresponding source - invalid event report windows.
-             Removed in 2024/02."/>
-  <int value="24"
-      label="Corresponding source - invalid max event level reports"/>
-  <int value="25" label="Corresponding source - invalid event level epsilon"/>
-  <int value="26"
-      label="Corresponding source - destination sites query failed"/>
-  <int value="27" label="Corresponding source - invalid destination sites"/>
-  <int value="28" label="Corresponding source - construction failed"/>
-  <int value="29" label="Corresponding source - invalid trigger specs"/>
-  <int value="30" label="Corresponding source - dedup key query failed"/>
-  <int value="31"
-      label="Corresponding source - invalid randomized response rate"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->
-
-<!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
-
-<enum name="ConversionCreateAggregatableReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="No capacity for conversion destination"/>
-  <int value="3" label="No matching impressions"/>
-  <int value="4" label="Excessive attributions"/>
-  <int value="5" label="Excessive reporting origins"/>
-  <int value="6" label="No histograms created"/>
-  <int value="7" label="Insufficient aggregatable budget"/>
-  <int value="8" label="No matching source filter data"/>
-  <int value="9" label="Not registered"/>
-  <int value="10" label="Prohibited by browser policy"/>
-  <int value="11" label="Deduplicated"/>
-  <int value="12" label="Report window has passed"/>
-  <int value="13" label="Excessive reports"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
-
-<!-- LINT.IfChange(ConversionNavigationDataHostStatus) -->
-
-<enum name="ConversionNavigationDataHostStatus">
-  <int value="0" label="Registered"/>
-  <int value="1" label="Not found"/>
-  <int value="2" label="Ineligible"/>
-  <int value="3" label="Processed"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:NavigationDataHostStatus) -->
-
-<!-- LINT.IfChange(ConversionNavigationUnexpectedRegistration) -->
-
-<enum name="ConversionNavigationUnexpectedRegistration">
-  <int value="0" label="Registration already exists"/>
-  <int value="1" label="Registration missing upon receiving data"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:NavigationUnexpectedRegistration) -->
-
-<!-- LINT.IfChange(ConversionOsRegistrationResult) -->
-
-<enum name="ConversionOsRegistrationResult">
-  <int value="0" label="Passed to OS"/>
-  <int value="2" label="Invalid registration url"/>
-  <int value="3" label="Prohibited by browser policy"/>
-  <int value="4" label="Excessive queue size"/>
-  <int value="5" label="Rejected by OS"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_reporting.mojom:OsRegistrationResult) -->
-
-<enum name="ConversionOsRegistrationsBufferFlushReason">
-  <int value="0" label="Navigation is done"/>
-  <int value="1" label="Buffer is full"/>
-  <int value="2" label="Timeout reached"/>
-</enum>
-
-<!-- LINT.IfChange(ConversionRegisterDataHostOutcome) -->
-
-<enum name="ConversionRegisterDataHostOutcome">
-  <int value="0" label="Processed immediately"/>
-  <int value="1" label="Deferred"/>
-  <int value="2" label="Dropped"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:RegisterDataHostOutcome) -->
-
-<!-- LINT.IfChange(ConversionRegistrationInfoError) -->
-
-<enum name="ConversionRegistrationInfoError">
-  <int value="0" label="Root value has wrong type"/>
-  <int value="1" label="preferred-platform invalid"/>
-  <int value="2" label="report-header-errors invalid"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/registration_info.h:RegistrationInfoError) -->
-
-<!-- LINT.IfChange(ConversionRegistrationRegistrarIssue) -->
-
-<enum name="ConversionRegistrationRegistrarIssue">
-  <int value="0" label="Both web and OS headers"/>
-  <int value="1" label="Web header ignored due to no web support"/>
-  <int value="2" label="OS header ignored due to no OS support"/>
-  <int value="3" label="Missing preferred web header"/>
-  <int value="4" label="Missing preferred OS header"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/registrar_info.h:RegistrarIssue) -->
-
-<!-- LINT.IfChange(ConversionReportSendOutcome) -->
-
-<enum name="ConversionReportSendOutcome">
-  <int value="0" label="Sent"/>
-  <int value="1" label="Failed due to error"/>
-  <int value="2" label="Dropped due to embedder disabling the API"/>
-  <int value="3" label="Failed to assemble"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendOutcome) -->
-
-<!-- LINT.IfChange(ConversionReportSendRetryCount) -->
-
-<enum name="ConversionReportSendRetryCount">
-  <int value="0" label="None"/>
-  <int value="1" label="One retry"/>
-  <int value="2" label="Two retries"/>
-  <int value="3" label="Failed"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->
-
-<!-- LINT.IfChange(ConversionReportStatus) -->
-
-<enum name="ConversionReportStatus">
-  <int value="0" label="OK"/>
-  <int value="1" label="Internal network error"/>
-  <int value="2" label="External non-200 HTTP error"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_report_network_sender.cc:Status) -->
-
-<!-- LINT.IfChange(ConversionRequestSupportHeader) -->
-
-<enum name="ConversionRequestSupportHeader">
-  <int value="0" label="Web"/>
-  <int value="1" label="Web and OS"/>
-  <int value="2" label="OS"/>
-  <int value="3" label="None"/>
-  <int value="4" label="Unset"/>
-</enum>
-
-<!-- LINT.ThenChange(//services/network/public/mojom/attribution.mojom:AttributionSupport) -->
-
-<!-- LINT.IfChange(ConversionSourceRegistrationError) -->
-
-<enum name="ConversionSourceRegistrationError">
-  <int value="0" label="Invalid JSON"/>
-  <int value="1" label="Root JSON value has wrong type"/>
-  <int value="2" label="destination missing"/>
-  <int value="3" label="destination has wrong type"/>
-  <int value="4" label="destination not potentially trustworthy"/>
-  <int value="5" label="destination list value not potentially trustworthy"/>
-  <int value="6" label="filter_data key too long"/>
-  <int value="7" label="filter_data key reserved"/>
-  <int value="8" label="filter_data not a valid dictionary"/>
-  <int value="9" label="filter_data value not a valid list"/>
-  <int value="10" label="filter_data list value invalid"/>
-  <int value="11" label="aggregation_keys key too long"/>
-  <int value="12" label="aggregation_keys not a valid dictionary"/>
-  <int value="13" label="aggregation_keys value invalid"/>
-  <int value="14" label="source_event_id value is invalid"/>
-  <int value="15" label="priority value is invalid"/>
-  <int value="16" label="expiry value is invalid"/>
-  <int value="17" label="event_report_window value is invalid"/>
-  <int value="18" label="aggregatable_report_window value is invalid"/>
-  <int value="19" label="max_event_level_reports value is invalid"/>
-  <int value="20" label="event_report_windows has wrong type"/>
-  <int value="21" label="event_report_windows' end_times missing"/>
-  <int value="22"
-      label="event_report_windows' end duration is less than or equal to
-             start duration"/>
-  <int value="23"
-      label="event_report_windows and event_report_window are mutually
-             exclusive"/>
-  <int value="24" label="event_report_windows' end_times not a valid list"/>
-  <int value="25" label="event_report_windows' start_time value is invalid"/>
-  <int value="26" label="event_report_windows' end time value is invalid"/>
-  <int value="27" label="trigger_data_matching value is invalid"/>
-  <int value="28" label="trigger_specs has wrong type"/>
-  <int value="29" label="trigger spec's trigger_data missing"/>
-  <int value="30" label="trigger_spec's trigger_data not a valid list"/>
-  <int value="31" label="trigger_data not a valid list"/>
-  <int value="32" label="duplicate trigger data"/>
-  <int value="33" label="trigger_specs duplicate trigger data"/>
-  <int value="34" label="excessive trigger data"/>
-  <int value="35" label="trigger_specs excessive trigger data"/>
-  <int value="36" label="invalid trigger data for matching mode"/>
-  <int value="37"
-      label="top-level trigger_data and specs are mutually exclusive"/>
-  <int value="38" label="summary_operator value is invalid"/>
-  <int value="39" label="summary_buckets not a valid list"/>
-  <int value="40" label="summary_buckets value invalid"/>
-  <int value="41" label="event_level_epsilon value is invalid"/>
-  <int value="42" label="destination_limit_priority is invalid"/>
-  <int value="43" label="attribution_scope_limit value is invalid"/>
-  <int value="44"
-      label="attribution_scope_limit is required for this configuration"/>
-  <int value="45" label="max_event_states value is invalid"/>
-  <int value="46" label="attribution_scopes value not a valid list"/>
-  <int value="47" label="attribution_scopes list value is invalid"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
-
-<!-- LINT.IfChange(ConversionsRegistrationMethod) -->
-
-<enum name="ConversionsRegistrationMethod">
-  <int value="0" label="kNavForeground: Registered via foreground navigation"/>
-  <int value="1"
-      label="kNavBackgroundBlink: Registered from blink via a background
-             request tied to a navigation"/>
-  <int value="2"
-      label="kNavBackgroundBlinkViaSW: Registered from blink via a background
-             request tied to a navigation via a service worker"/>
-  <int value="3"
-      label="kNavBackgroundBrowser: Registered from browser via a background
-             request tied to a navigation"/>
-  <int value="4"
-      label="kFencedFrameBeacon: Registered from a fenced frame beacon"/>
-  <int value="5"
-      label="kFencedFrameAutomaticBeacon: Registered from an automatic fenced
-             frame beacon"/>
-  <int value="6"
-      label="kForegroundBlink: Registered from blink from a foreground
-             request"/>
-  <int value="7"
-      label="kForegroundBlinkViaSw: Registered from blink from a foreground
-             request via a service worker"/>
-  <int value="8"
-      label="kBackgroundBlink: Registered from blink from a background
-             request"/>
-  <int value="9"
-      label="kBackgroundBlinkViaSW: Registered from blink from a foreground
-             request via a service worker"/>
-  <int value="10"
-      label="kForegroundOrBackgroundBrowser: Registered from browser from a
-             foreground or background request"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:RegistrationMethod) -->
-
-<!-- LINT.IfChange(ConversionStorageCreateReportStatus) -->
-
-<enum name="ConversionStorageCreateReportStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Success, but dropped lower-priority report"/>
-  <int value="2" label="Internal error"/>
-  <int value="3" label="No capacity for conversion destination"/>
-  <int value="4" label="No matching impressions"/>
-  <int value="5" label="Deduplicated against existing report"/>
-  <int value="6" label="Excessive attributions"/>
-  <int value="7" label="Priority lower than existing reports"/>
-  <int value="8" label="Source never attributed (noised)"/>
-  <int value="9" label="Excessive reporting origins"/>
-  <int value="10" label="No matching source filter data"/>
-  <int value="11" label="Prohibited by browser policy"/>
-  <int value="12" label="No matching configurations"/>
-  <int value="13" label="Excessive reports"/>
-  <int value="14" label="Falsely attributed source"/>
-  <int value="15" label="Report window has passed"/>
-  <int value="16" label="Not registered"/>
-  <int value="17" label="Report window has not started"/>
-  <int value="18" label="No matching trigger data"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/event_level_result.mojom:EventLevelResult) -->
-
-<!-- LINT.IfChange(ConversionStorageSourceStatus) -->
-
-<enum name="ConversionStorageSourceStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="No capacity for source site"/>
-  <int value="3" label="Excessive unique destination sites"/>
-  <int value="4" label="Excessive reporting orgins"/>
-  <int value="5" label="Prohibited by browser policy"/>
-  <int value="6" label="Success but noise applied"/>
-  <int value="7" label="Excessive destinations (per-reporting rate-limit)"/>
-  <int value="8" label="Excessive destinations (global rate-limit)"/>
-  <int value="9" label="Excessive destinations (both rate-limits)"/>
-  <int value="10" label="Excessive reporting origins per site limit"/>
-  <int value="11" label="Excessive channel capacity"/>
-  <int value="12"
-      label="(Obsolete) Event Report Windows start time is invalid. Removed
-             in 2023/10."/>
-  <int value="13" label="Excessive trigger state cardinality"/>
-  <int value="14" label="Excessive destinations (per reporting site per day)"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
-
-<!-- LINT.IfChange(ConversionStorageSqlInitStatus) -->
-
-<enum name="ConversionStorageSqlInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed to open DB in memory"/>
-  <int value="2" label="Failed to open DB file"/>
-  <int value="3" label="Failed to create directory"/>
-  <int value="4" label="Failed to initialize schema"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:InitStatus) -->
-
-<!-- LINT.IfChange(ConversionTriggerRegistrationError) -->
-
-<enum name="ConversionTriggerRegistrationError">
-  <int value="0" label="Invalid JSON"/>
-  <int value="1" label="Root JSON value has wrong type"/>
-  <int value="2" label="Filters has wrong type"/>
-  <int value="3" label="Filters value is invalid"/>
-  <int value="4" label="Filters lookback window value is invalid"/>
-  <int value="5"
-      label="Filters is using a reserved key (starts with &quot;_&quot;)"/>
-  <int value="6" label="Filters list value is invalid"/>
-  <int value="7" label="Filters list lookback window value is invalid"/>
-  <int value="8"
-      label="Filters list is using a reserved key (starts with &quot;_&quot;)"/>
-  <int value="9" label="aggregatable_values has wrong type"/>
-  <int value="10" label="aggregatable_values key too long"/>
-  <int value="11"
-      label="aggregatable_values list value is missing values field"/>
-  <int value="12" label="aggregatable_values value is invalid"/>
-  <int value="13" label="aggregatable_values list key too long"/>
-  <int value="14" label="aggregatable_values list value is invalid"/>
-  <int value="15" label="aggregatable_trigger_data has wrong type"/>
-  <int value="16" label="aggregatable_trigger_data value key_piece missing"/>
-  <int value="17"
-      label="aggregatable_tsrigger_data value source_keys is invalid"/>
-  <int value="18" label="aggregatable_trigger_data value key_piece is invalid"/>
-  <int value="19" label="event_trigger_data has wrong type"/>
-  <int value="20" label="event_trigger_data value is invalid"/>
-  <int value="21" label="event_trigger priority value is invalid"/>
-  <int value="22" label="event_trigger dedup key value is invalid"/>
-  <int value="23" label="aggregation_coordinator_identifier value is invalid"/>
-  <int value="24" label="aggregatable_deduplication_keys value is invalid"/>
-  <int value="25" label="aggregatable_deduplication_keys has wrong type"/>
-  <int value="26"
-      label="aggregatable_source_registration_time valid is invalid"/>
-  <int value="27" label="trigger_context_id value is invalid"/>
-  <int value="28"
-      label="trigger_context_id disallowed for
-             aggregatable_source_registration_time"/>
-  <int value="29" label="event_trigger_data value field is invalid"/>
-  <int value="30" label="aggregatable_filtering_id_max_bytes field is invalid"/>
-  <int value="31"
-      label="non-default aggregatable_filtering_id_max_bytes is disallowed
-             for aggregatable_source_registration_time"/>
-  <int value="32" label="attribution_scopes value not a valid list"/>
-  <int value="33" label="attribution_scopes list value is invalid"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/trigger_registration_error.mojom:TriggerRegistrationError) -->
-
-<!-- LINT.IfChange(ConversionVerboseDebugReportType) -->
-
-<enum name="ConversionVerboseDebugReportType">
-  <int value="0" label="source-destination-limit"/>
-  <int value="1" label="source-noised"/>
-  <int value="2" label="source-storage-limit"/>
-  <int value="3" label="source-success"/>
-  <int value="4" label="source-unknown-error"/>
-  <int value="5" label="source-destination-rate-limit"/>
-  <int value="6" label="trigger-no-matching-source"/>
-  <int value="8" label="trigger-no-matching-filter-data"/>
-  <int value="9" label="trigger-reporting-origin-limit"/>
-  <int value="10" label="trigger-event-deduplicated"/>
-  <int value="11" label="trigger-event-no-matching-configurations"/>
-  <int value="12" label="trigger-event-noise"/>
-  <int value="13" label="trigger-event-low-priority"/>
-  <int value="14" label="trigger-event-excessive-reports"/>
-  <int value="15" label="trigger-event-storage-limit"/>
-  <int value="16" label="trigger-event-report-window-passed"/>
-  <int value="17" label="trigger-aggregate-deduplicated"/>
-  <int value="18" label="trigger-aggregate-no-contributions"/>
-  <int value="19" label="trigger-aggregate-insufficient-budget"/>
-  <int value="20" label="trigger-aggregate-storage-limit"/>
-  <int value="21" label="trigger-aggregate-report-window-passed"/>
-  <int value="22" label="trigger-aggregate-excessive-reports"/>
-  <int value="23" label="trigger-unknown-error"/>
-  <int value="24" label="os-source-delegated"/>
-  <int value="25" label="os-trigger-delegated"/>
-  <int value="26" label="trigger-event-report-window-not-started"/>
-  <int value="27" label="trigger-event-no-matching-trigger-data"/>
-  <int value="28" label="header-parsing-error"/>
-  <int value="29" label="source-reporting-origin-per-site-limit"/>
-  <int value="30"
-      label="trigger-event-attributions-per-source-destination-limit"/>
-  <int value="31"
-      label="trigger-aggregate-attributions-per-source-destination-limit"/>
-  <int value="32" label="source-channel-capacity-limit"/>
-  <int value="33" label="source-trigger-state-cardinality-limit"/>
-  <int value="36" label="source-destination-per-day-rate-limit"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->
-
 <enum name="CookieAccessType">
   <int value="-1" label="Unknown cookie access"/>
   <int value="0" label="Did not read or write any cookies"/>
@@ -4728,6 +4170,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="Removal not allowed (should not be reported)"/>
   <int value="3" label="Resources already removed (should not be reported)"/>
   <int value="4" label="Removal failed"/>
+</enum>
+
+<enum name="DeprecatedArcKioskUserStatus">
+  <int value="0" label="Hide ARC kiosk user on the login screen"/>
+  <int value="1" label="Attempt to delete cryptohome for ARC kiosk user"/>
 </enum>
 
 <enum name="DescFailureReason">
@@ -10425,8 +9872,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4283" label="OBSOLETE_kV8PendingBeacon_SendNow_Method"/>
   <int value="4284" label="TabSharingBarSwitchToCapturer"/>
   <int value="4285" label="TabSharingBarSwitchToCapturee"/>
-  <int value="4286" label="AutomaticLazyAds"/>
-  <int value="4287" label="AutomaticLazyEmbeds"/>
+  <int value="4286" label="OBSOLATE_AutomaticLazyAds"/>
+  <int value="4287" label="OBSOLATE_AutomaticLazyEmbeds"/>
   <int value="4288" label="OBSOLETE_TouchActionChangedAtPointerDown"/>
   <int value="4289" label="DeviceOrientationPermissionRequested"/>
   <int value="4290" label="DeviceOrientationUsedWithoutPermissionRequest"/>
@@ -11211,7 +10658,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4985" label="V8AITextSession_PromptStreaming_Method"/>
   <int value="4986" label="V8AI_CanCreateTextSession_Method"/>
   <int value="4987" label="V8AI_CreateTextSession_Method"/>
-  <int value="4988" label="V8AI_DefaultTextSessionOptions_Method"/>
+  <int value="4988" label="OBSOLETE_V8AI_DefaultTextSessionOptions_Method"/>
   <int value="4989" label="V8AITextSession_Destroy_Method"/>
   <int value="4990" label="ImportMapIntegrity"/>
   <int value="4991" label="SelectElementAppearanceNone"/>
@@ -11263,6 +10710,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5035" label="WebGPUSubgroupsFeatures"/>
   <int value="5036" label="AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
+  <int value="5038" label="V8AITextSession_Clone_Method"/>
+  <int value="5039" label="GamepadHapticActuatorType"/>
+  <int value="5040" label="SelectionDirection"/>
+  <int value="5041" label="SelectionGetComposedRanges"/>
+  <int value="5042" label="EyeDropperOpen"/>
+  <int value="5043" label="FlexNewColumnWrapIntrinsicSize"/>
+  <int value="5044" label="V8AI_TextModelInfo_Method"/>
+  <int value="5045" label="EventTimingSimulatedClickWithNoKeyboardInteraction"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -11392,6 +10847,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="118" label="SpeakerSelection"/>
   <int value="119" label="DeferredFetch"/>
   <int value="120" label="DigitalCredentialsGet"/>
+  <int value="121" label="MediaPlaybackWhileNotVisible"/>
+  <int value="122" label="AllScreensCapture"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">
@@ -11463,6 +10920,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Same-origin with config URL"/>
   <int value="1" label="Cross-origin same-site with config URL"/>
   <int value="2" label="Cross-site with config URL"/>
+</enum>
+
+<enum name="FedCmJavaObjectCreationOutcome">
+  <int value="0" label="New Java object created"/>
+  <int value="1" label="Existing Java object reused"/>
+  <int value="2" label="New Java object creation failed"/>
+  <int value="3" label="No native view"/>
+  <int value="4" label="No window"/>
 </enum>
 
 <enum name="FedCmMultipleRequestsRpMode">
@@ -15763,6 +15228,7 @@ from previous Chrome versions.
   <int value="-2143113994" label="enable-ephemeral-apps-in-webstore"/>
   <int value="-2142729205"
       label="PriceTrackingSubscriptionServiceLocaleKey:disabled"/>
+  <int value="-2142707203" label="FreezingOnBatterySaver:enabled"/>
   <int value="-2142665444" label="ScrollableTabStrip:disabled"/>
   <int value="-2141661938" label="AnimatedAppMenuIcon:enabled"/>
   <int value="-2141657384" label="AndroidAppIntegration:disabled"/>
@@ -15894,6 +15360,7 @@ from previous Chrome versions.
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097737027" label="SkiaGraphite:disabled"/>
   <int value="-2097515669" label="disable-cast"/>
+  <int value="-2097013050" label="WaylandTextInputV3:disabled"/>
   <int value="-2096845406" label="QuickAnswersRichCard:enabled"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
@@ -15914,6 +15381,7 @@ from previous Chrome versions.
   <int value="-2086690409"
       label="EnableExtensionsPermissionsForSupervisedUsersOnDesktop:enabled"/>
   <int value="-2086380381" label="FedCmIdpSigninStatusEnabled:disabled"/>
+  <int value="-2086191354" label="TabReorganization:disabled"/>
   <int value="-2085842174" label="SupportF11AndF12KeyShortcuts:enabled"/>
   <int value="-2085212970" label="FastPairHID:enabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
@@ -16031,6 +15499,8 @@ from previous Chrome versions.
   <int value="-2038281501" label="ClipboardHistoryWebContentsPaste:enabled"/>
   <int value="-2038175774"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:enabled"/>
+  <int value="-2038165391"
+      label="AckOnSurfaceActivationWhenInteractive:enabled"/>
   <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
@@ -16098,7 +15568,6 @@ from previous Chrome versions.
       label="(Obsolete) AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
-  <int value="-2014920890" label="ForgotPasswordFormSupport:disabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -16424,6 +15893,7 @@ from previous Chrome versions.
   <int value="-1886760950" label="ImprovedScreenCaptureSettings:enabled"/>
   <int value="-1886713568"
       label="AutofillGetPaymentsIdentityFromSync:disabled"/>
+  <int value="-1885663926" label="DynamicSafeAreaInsets:disabled"/>
   <int value="-1885548175" label="OmniboxFuzzyUrlSuggestions:enabled"/>
   <int value="-1885188914" label="OmniboxAsyncViewInflation:disabled"/>
   <int value="-1885074774" label="ShelfScrollable:enabled"/>
@@ -16518,7 +15988,6 @@ from previous Chrome versions.
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
-  <int value="-1846358874" label="ForgotPasswordFormSupport:enabled"/>
   <int value="-1846070594" label="AllowWindowDragUsingSystemDragDrop:disabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"
@@ -16629,6 +16098,7 @@ from previous Chrome versions.
   <int value="-1804027916"
       label="PrivateNetworkAccessForWorkersWarningOnly:disabled"/>
   <int value="-1802905985" label="OmniboxExpandedStateSuggestIcons:enabled"/>
+  <int value="-1802806823" label="TabReorganizationDivider:disabled"/>
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
   <int value="-1801515363" label="ThreadedPreloadScanner:enabled"/>
@@ -16895,6 +16365,7 @@ from previous Chrome versions.
       label="SwapSideVolumeButtonsForOrientation:disabled"/>
   <int value="-1672098165" label="SearchResultInlineIcon:enabled"/>
   <int value="-1671494049" label="TrimOnFreeze:disabled"/>
+  <int value="-1671116979" label="FreezingOnBatterySaver:disabled"/>
   <int value="-1670137340"
       label="OptimizeLoadingIPCForSmallResources:disabled"/>
   <int value="-1669727073"
@@ -17214,6 +16685,8 @@ from previous Chrome versions.
   <int value="-1543066715" label="VideoConference:disabled"/>
   <int value="-1541362086" label="NearbySharing:disabled"/>
   <int value="-1541187160" label="UsernameFirstFlow:disabled"/>
+  <int value="-1540949674"
+      label="AckOnSurfaceActivationWhenInteractive:disabled"/>
   <int value="-1540007054" label="ArcHostVpn:disabled"/>
   <int value="-1539513973" label="ContentSettingsRedesign:disabled"/>
   <int value="-1538921509" label="AutofillEnableCardBenefits:disabled"/>
@@ -17397,6 +16870,7 @@ from previous Chrome versions.
   <int value="-1466600231" label="WakeOnWifiAllowed:enabled"/>
   <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
   <int value="-1466100014" label="EchePhoneHubPermissionsOnboarding:disabled"/>
+  <int value="-1466088621" label="CompactMode:enabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
   <int value="-1465138299" label="GifRecording:disabled"/>
   <int value="-1464860971" label="BluetoothCoredump:enabled"/>
@@ -17621,6 +17095,7 @@ from previous Chrome versions.
   <int value="-1377186702" label="DesktopIOSPromotion:disabled"/>
   <int value="-1376510363" label="ServiceWorkerScriptFullCodeCache:disabled"/>
   <int value="-1376258171" label="InstanceSwitcher:enabled"/>
+  <int value="-1376148942" label="TabOrganizationSettingsVisibility:enabled"/>
   <int value="-1376006534" label="WinUseBrowserSpellChecker:disabled"/>
   <int value="-1375111024" label="enable-fixed-position-compositing"/>
   <int value="-1374377956" label="SeparateWebAppShortcutBadgeIcon:disabled"/>
@@ -17662,6 +17137,7 @@ from previous Chrome versions.
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
   <int value="-1354983077" label="CameraAppAutoQRDetection:disabled"/>
+  <int value="-1354845182" label="DynamicSafeAreaInsetsOnScroll:enabled"/>
   <int value="-1353926640" label="GMSCoreEmoji:disabled"/>
   <int value="-1353897328" label="FileTransferEnterpriseConnectorUI:disabled"/>
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
@@ -17837,6 +17313,7 @@ from previous Chrome versions.
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
   <int value="-1284303269" label="SidePanelWebView:enabled"/>
+  <int value="-1283915653" label="BatteryBadgeIcon:disabled"/>
   <int value="-1283306503" label="LensSearchOptimizations:disabled"/>
   <int value="-1283235938" label="FedCmRevoke:disabled"/>
   <int value="-1283164264" label="CroshSWA:disabled"/>
@@ -18651,6 +18128,7 @@ from previous Chrome versions.
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
+  <int value="-942935700" label="FastPairKeyboards:disabled"/>
   <int value="-941056354" label="CdmStorageDatabase:enabled"/>
   <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
@@ -18870,6 +18348,7 @@ from previous Chrome versions.
   <int value="-850108109" label="UseNetworkFrameworkForCastDiscovery:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
+  <int value="-848407281" label="TabReorganizationDivider:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
   <int value="-846670837" label="QuickAppAccessTestUI:enabled"/>
@@ -18913,8 +18392,6 @@ from previous Chrome versions.
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-826010284" label="EnterpriseReportingUI:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
-  <int value="-825692398"
-      label="SecurePaymentConfirmationInlineNetworkAndIssuerIcons:disabled"/>
   <int value="-825514105" label="TimeOfDayDlc:enabled"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
@@ -19230,6 +18707,7 @@ from previous Chrome versions.
   <int value="-694783082" label="MostVisitedTilesSelectExistingTab:enabled"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
+  <int value="-693684972" label="FreezingOnBatterySaverForTesting:enabled"/>
   <int value="-691977647"
       label="ReleaseNotesNotificationAlwaysEligible:enabled"/>
   <int value="-690852008"
@@ -19426,6 +18904,7 @@ from previous Chrome versions.
   <int value="-609034895" label="QuickActionSearchWidgetAndroid:enabled"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
   <int value="-608691289" label="EnableHeatmapPalmDetection:enabled"/>
+  <int value="-608174849" label="RelatedSearchesSwitch:disabled"/>
   <int value="-608065163" label="PermissionChipRequestTypeSensitive:disabled"/>
   <int value="-607970607" label="PostQuantumKyber:enabled"/>
   <int value="-607925721" label="WebViewVulkan:disabled"/>
@@ -20513,6 +19992,7 @@ from previous Chrome versions.
   <int value="-149260874" label="StorageAccessHeaders:disabled"/>
   <int value="-148627978" label="GlanceablesV2CalendarView:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
+  <int value="-147955528" label="BottomBrowserControlsRefactor:enabled"/>
   <int value="-147560822" label="ArcInputOverlay:enabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-146780296" label="EstablishGpuChannelAsync:enabled"/>
@@ -20522,6 +20002,7 @@ from previous Chrome versions.
       label="CrOSLateBootAudioOffloadCrasDSPToSOF:disabled"/>
   <int value="-145804373"
       label="DocumentPictureInPictureAnimateResize:disabled"/>
+  <int value="-145792524" label="RelatedSearchesSwitch:enabled"/>
   <int value="-145418947" label="webview-disable-package-allowlist-throttling"/>
   <int value="-145345223" label="ThirdPartyStoragePartitioning:enabled"/>
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
@@ -20786,6 +20267,7 @@ from previous Chrome versions.
   <int value="-30997499" label="ForceReSyncDrive:disabled"/>
   <int value="-30966385" label="enable-hardware-overlays"/>
   <int value="-30208692" label="webview-enable-modern-cookie-same-site"/>
+  <int value="-29920412" label="DynamicSafeAreaInsetsOnScroll:disabled"/>
   <int value="-29877377" label="TabHoverCardImages:disabled"/>
   <int value="-29847483" label="MemoryAblation:enabled"/>
   <int value="-29507521" label="ContextualNudges:disabled"/>
@@ -20892,6 +20374,7 @@ from previous Chrome versions.
   <int value="7642326" label="hdrnet-override"/>
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
+  <int value="9692911" label="BatteryBadgeIcon:enabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
@@ -21049,11 +20532,14 @@ from previous Chrome versions.
   <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
   <int value="84092881" label="ComposeProactiveNudge:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
+  <int value="86386196"
+      label="SafeBrowsingExtensionTelemetryForEnterprise:enabled"/>
   <int value="86563978" label="CCTTextFragmentLookupApiEnabled:enabled"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
+  <int value="89036875" label="DeferRendererTasksAfterInput:disabled"/>
   <int value="89357752" label="PdfXfaSupport:enabled"/>
   <int value="89758831" label="FontAccessChooser:enabled"/>
   <int value="89785725"
@@ -21082,7 +20568,6 @@ from previous Chrome versions.
   <int value="98134240" label="material-design-ink-drop-animation-speed"/>
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
   <int value="98773632" label="DesktopPWAsTabStripCustomizations:enabled"/>
-  <int value="99119827" label="IndexedDBShardBackingStores:disabled"/>
   <int value="99128921"
       label="SyncOnlySeparateUserDisplayModeForCrOS:disabled"/>
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
@@ -21294,6 +20779,7 @@ from previous Chrome versions.
   <int value="186463628" label="DnsOverHttps:disabled"/>
   <int value="187109402" label="SyncingCompromisedCredentials:enabled"/>
   <int value="188213654" label="PageInfoHideSiteSettings:disabled"/>
+  <int value="188531208" label="HidGetFeatureReportFix:disabled"/>
   <int value="188610022" label="NewMessageListView:enabled"/>
   <int value="189728101" label="FasterLocationReload:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
@@ -21968,6 +21454,7 @@ from previous Chrome versions.
   <int value="464979219" label="CrOSLateBootAudioHFPOffload:disabled"/>
   <int value="465600939" label="DefaultPassthroughCommandDecoder:enabled"/>
   <int value="466248382" label="disable-push-api-background-mode"/>
+  <int value="467188653" label="FreezingOnBatterySaverForTesting:disabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
   <int value="468959230"
@@ -21989,7 +21476,6 @@ from previous Chrome versions.
   <int value="476261104" label="SidePanelResizing:enabled"/>
   <int value="476685184" label="ResetShortcutCustomizations:enabled"/>
   <int value="476814335" label="AutoDisableAccessibilityV2:enabled"/>
-  <int value="476954509" label="ShadowDomSupport:disabled"/>
   <int value="477796416" label="ReleaseNotes:enabled"/>
   <int value="477967119" label="enable-unified-media-pipeline"/>
   <int value="478380451" label="BlockMigratedDefaultChromeAppSync:disabled"/>
@@ -22062,6 +21548,7 @@ from previous Chrome versions.
   <int value="506680761" label="WebNFC:disabled"/>
   <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
+  <int value="509197340" label="DeferRendererTasksAfterInput:enabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>
   <int value="510493780" label="EnableCertManagementUIV2:enabled"/>
@@ -22197,6 +21684,7 @@ from previous Chrome versions.
   <int value="570445904" label="WGIGamepadTriggerRumble:disabled"/>
   <int value="570469494" label="LoginDetection:disabled"/>
   <int value="570882482" label="CrOSDspBasedAecAllowed:enabled"/>
+  <int value="571127047" label="TabOrganizationSettingsVisibility:disabled"/>
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>
   <int value="571562912" label="InstallableAmbientBadgeMessage:disabled"/>
   <int value="573385109" label="SharedClipboardUI:enabled"/>
@@ -22247,6 +21735,7 @@ from previous Chrome versions.
   <int value="597542937" label="TabbedAppOverflowMenuRegroup:enabled"/>
   <int value="598312195" label="DestroySystemProfiles:disabled"/>
   <int value="598414726" label="EnablePixDetectionOnCopyEvent:enabled"/>
+  <int value="598741917" label="BottomBrowserControlsRefactor:disabled"/>
   <int value="598827460" label="enable-roboto-font-ui"/>
   <int value="598926697" label="VrLaunchIntent:disabled"/>
   <int value="600037637" label="AndroidSigninPromos:enabled"/>
@@ -22332,6 +21821,7 @@ from previous Chrome versions.
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="633573061"
       label="UnifiedPasswordManagerSyncOnlyInGMSCore:enabled"/>
+  <int value="634557307" label="HidGetFeatureReportFix:enabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>
@@ -22415,6 +21905,7 @@ from previous Chrome versions.
   <int value="664591021" label="EnableContinueReading:enabled"/>
   <int value="664905954" label="CrosBatterySaver:disabled"/>
   <int value="664925558" label="MainThreadCompositingPriority:enabled"/>
+  <int value="665169811" label="CompactMode:disabled"/>
   <int value="665320858" label="WebViewHitTestInBlinkOnTouchStart:disabled"/>
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>
@@ -22517,6 +22008,7 @@ from previous Chrome versions.
   <int value="705946076"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:disabled"/>
   <int value="706280254" label="StoragePressureEvent:enabled"/>
+  <int value="707463326" label="DynamicSafeAreaInsets:enabled"/>
   <int value="708015891"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:enabled"/>
   <int value="708185835" label="WebViewThrottleBackgroundBeginFrame:enabled"/>
@@ -23073,7 +22565,6 @@ from previous Chrome versions.
   <int value="943447234" label="NtpDriveModule:disabled"/>
   <int value="944342622" label="QuickDeleteForAndroid:enabled"/>
   <int value="944484780" label="EnableEmbeddedAssistantUI:enabled"/>
-  <int value="945747753" label="ShadowDomSupport:enabled"/>
   <int value="946185008" label="EnableAppDataSearch:disabled"/>
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
   <int value="946922321" label="LacrosForkZygotesAtLoginScreen:disabled"/>
@@ -23102,6 +22593,7 @@ from previous Chrome versions.
   <int value="957333504" label="OmniboxSteadyStateHeight:enabled"/>
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
   <int value="959247978" label="EnablePixDetectionOnCopyEvent:disabled"/>
+  <int value="960173644" label="TabOrganization:disabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
   <int value="960696967" label="TabResumptionModuleAndroid:enabled"/>
   <int value="961019394" label="IOSPromoRefreshedPasswordBubble:disabled"/>
@@ -23191,6 +22683,8 @@ from previous Chrome versions.
   <int value="997264173" label="MacLoopbackAudioForCast:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="998857679" label="DiscardExceptionsImprovements:enabled"/>
+  <int value="1000025209"
+      label="ExperimentalWebMachineLearningNeuralNetwork:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000630368" label="lacros-stability"/>
   <int value="1000706989" label="AutomaticTabDiscarding:disabled"/>
@@ -23364,6 +22858,7 @@ from previous Chrome versions.
   <int value="1076477581"
       label="GridTabSwitcherLandscapeAspectRatioPhones:disabled"/>
   <int value="1077140728" label="UseGMSCoreForBrandingInfo:disabled"/>
+  <int value="1077901257" label="WaylandTextInputV3:enabled"/>
   <int value="1077910471" label="RestoreTabsOnFRE:disabled"/>
   <int value="1079017005" label="LayoutExtraction:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>
@@ -23692,6 +23187,8 @@ from previous Chrome versions.
   <int value="1214246730" label="TerminalAlternativeRenderer:enabled"/>
   <int value="1214455758" label="VideoRotateToFullscreen:disabled"/>
   <int value="1214580867" label="ArcS2Idle:disabled"/>
+  <int value="1214804717"
+      label="ExperimentalWebMachineLearningNeuralNetwork:enabled"/>
   <int value="1215512170" label="DrawEdgeToEdge:disabled"/>
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
@@ -23930,6 +23427,7 @@ from previous Chrome versions.
   <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
+  <int value="1304989988" label="EnableDiscountInfoApi:disabled"/>
   <int value="1305339782"
       label="MayLaunchUrlUsesSeparateStoragePartition:disabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
@@ -24081,8 +23579,6 @@ from previous Chrome versions.
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
-  <int value="1375497914"
-      label="SecurePaymentConfirmationInlineNetworkAndIssuerIcons:enabled"/>
   <int value="1376062044" label="StopAppIndexingReport:enabled"/>
   <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
@@ -24337,6 +23833,7 @@ from previous Chrome versions.
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1478835676" label="VcRelightingInferenceBackend:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
+  <int value="1479951837" label="FastPairKeyboards:enabled"/>
   <int value="1480073052" label="WallpaperSearchSettingsVisibility:enabled"/>
   <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>
   <int value="1481562816" label="disable-password-link"/>
@@ -24452,6 +23949,7 @@ from previous Chrome versions.
   <int value="1528149296" label="TabGroupPaneAndroid:enabled"/>
   <int value="1528633042"
       label="kFileSystemAccessPersistentPermissionsUpdatedPageInfo:disabled"/>
+  <int value="1529231831" label="ClassifyUrlOnProcessResponseEvent:disabled"/>
   <int value="1529285725"
       label="VirtualKeyboardGlobalEmojiPreferences:disabled"/>
   <int value="1529979182" label="EnablePasswordSelection:enabled"/>
@@ -24476,6 +23974,7 @@ from previous Chrome versions.
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>
   <int value="1537685016" label="NtpDriveModuleSegmentation:disabled"/>
   <int value="1537693783" label="KioskEnableAppService:enabled"/>
+  <int value="1538052363" label="TabReorganization:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
   <int value="1539399467" label="PerAppLanguage:disabled"/>
@@ -25021,6 +24520,8 @@ from previous Chrome versions.
   <int value="1766676896" label="affiliation-based-matching:disabled"/>
   <int value="1767218791" label="TouchDragAndContextMenu:enabled"/>
   <int value="1767411597" label="DisallowUnsafeHttpDownloads:enabled"/>
+  <int value="1767460580"
+      label="SafeBrowsingExtensionTelemetryForEnterprise:disabled"/>
   <int value="1767482084" label="TopLevelTpcdSupportSettings:disabled"/>
   <int value="1767843685" label="Canvas2DHibernation:enabled"/>
   <int value="1768173143" label="EnableExpKitTextClassifier:disabled"/>
@@ -25169,6 +24670,7 @@ from previous Chrome versions.
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
   <int value="1818473884" label="TabGroupSyncServiceDesktopMigration:disabled"/>
   <int value="1818829958" label="IdentityDisc:enabled"/>
+  <int value="1819437867" label="EnableDiscountInfoApi:enabled"/>
   <int value="1819536169" label="disable-cast-streaming-hw-encoding"/>
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>
   <int value="1820359113"
@@ -25289,6 +24791,7 @@ from previous Chrome versions.
   <int value="1862050002" label="CastStreamingPerformanceOverlay:enabled"/>
   <int value="1862126613" label="DesktopPWAsRunOnOsLogin:enabled"/>
   <int value="1862207743" label="enable-android-spellchecker"/>
+  <int value="1862628690" label="MultiTabOrganization:disabled"/>
   <int value="1863622457" label="WebAuthentication:enabled"/>
   <int value="1864062646" label="ChromeWhatsNewUI:disabled"/>
   <int value="1864412948" label="AvatarsCloudMigration:disabled"/>
@@ -25405,6 +24908,7 @@ from previous Chrome versions.
   <int value="1915178511" label="disable-blink-features"/>
   <int value="1915397372" label="WifiConcurrency:disabled"/>
   <int value="1916637435" label="TranslateSubFrames:enabled"/>
+  <int value="1917650219" label="ClassifyUrlOnProcessResponseEvent:enabled"/>
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
   <int value="1918229773"
       label="OmniboxMatchToolbarAndStatusBarColor:disabled"/>
@@ -25699,7 +25203,6 @@ from previous Chrome versions.
   <int value="2037623368" label="attribution-reporting-debug-mode"/>
   <int value="2037756154" label="enable-impl-side-painting"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
-  <int value="2038834893" label="IndexedDBShardBackingStores:enabled"/>
   <int value="2039276757" label="EnableOverviewRoundedCorners:enabled"/>
   <int value="2040216830" label="ArcTouchscreenEmulation:disabled"/>
   <int value="2041570184" label="UsePreferredIntervalForVideo:enabled"/>
@@ -25723,6 +25226,7 @@ from previous Chrome versions.
   <int value="2053269084" label="EcheLauncher:disabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
+  <int value="2057112994" label="TabOrganization:enabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
   <int value="2058283872" label="CCTModuleCache:disabled"/>
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
@@ -25877,6 +25381,7 @@ from previous Chrome versions.
   <int value="2114894984" label="DelayCompetingLowPriorityRequests:enabled"/>
   <int value="2116535245" label="PasswordEditDialogWithDetails:disabled"/>
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
+  <int value="2117507147" label="MultiTabOrganization:enabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
   <int value="2119575519" label="ComposeUiRefinement:enabled"/>
@@ -29784,6 +29289,8 @@ Called by update_net_error_codes.py.-->
   <int value="80" label="kJavaScriptInterfaceRemoved"/>
   <int value="81" label="kCancelAllHosts"/>
   <int value="82" label="kWindowClosed"/>
+  <int value="83" label="kSlowNetwork"/>
+  <int value="84" label="kOtherPrerenderedPageActivated"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">
@@ -31609,6 +31116,7 @@ Called by update_net_error_codes.py.-->
   <int value="41" label="AndroidHomeModuleRanker"/>
   <int value="45" label="ComposePromotion"/>
   <int value="46" label="UrlVisitResumptionRanker"/>
+  <int value="50" label="MetricsClustering"/>
 </enum>
 
 <enum name="SegmentationPlatformTrainingDataCollectionEvent">
@@ -32575,6 +32083,11 @@ Called by update_net_error_codes.py.-->
   <int value="64" label="UMA_SIGN_OUT"/>
   <int value="65" label="UMA_TAB_GROUP_DELETE_UNDO"/>
   <int value="66" label="UMA_SINGLE_TAB_GROUP_DELETE_UNDO"/>
+  <int value="67" label="UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION"/>
+  <int value="68" label="UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS"/>
+  <int value="69" label="UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS"/>
+  <int value="70" label="UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS"/>
+  <int value="71" label="UMA_SETTINGS_BATCH_UPLOAD"/>
 </enum>
 
 <enum name="SnapshotItemId">
@@ -32625,15 +32138,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Wasted, relocked"/>
   <int value="4" label="Used, relocked"/>
 </enum>
-
-<!-- LINT.IfChange(SourceRegistrationTimeConfig) -->
-
-<enum name="SourceRegistrationTimeConfig">
-  <int value="0" label="include"/>
-  <int value="1" label="exclude"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/attribution_reporting/source_registration_time_config.mojom:SourceRegistrationTimeConfig) -->
 
 <enum name="SpecialLocalePromoAction">
   <int value="0" label="Use Sogou"/>
@@ -34130,6 +33634,41 @@ Called by update_net_error_codes.py.-->
   <int value="73" label=".raf"/>
   <int value="74" label=".rw2"/>
   <int value="75" label=".tini"/>
+  <int value="76" label=".7z"/>
+  <int value="77" label=".apk"/>
+  <int value="78" label=".apng"/>
+  <int value="79" label=".avif"/>
+  <int value="80" label=".bz2"/>
+  <int value="81" label=".c"/>
+  <int value="82" label=".crswap"/>
+  <int value="83" label=".css"/>
+  <int value="84" label=".dat"/>
+  <int value="85" label=".email"/>
+  <int value="86" label=".eml"/>
+  <int value="87" label=".eps"/>
+  <int value="88" label=".gz"/>
+  <int value="89" label=".ico"/>
+  <int value="90" label=".ics"/>
+  <int value="91" label=".iso"/>
+  <int value="92" label=".java"/>
+  <int value="93" label=".jxl"/>
+  <int value="94" label=".mpeg"/>
+  <int value="95" label=".msg"/>
+  <int value="96" label=".msi"/>
+  <int value="97" label=".pps"/>
+  <int value="98" label=".ppsx"/>
+  <int value="99" label=".psd"/>
+  <int value="100" label=".py"/>
+  <int value="101" label=".sh"/>
+  <int value="102" label=".svg"/>
+  <int value="103" label=".svgz"/>
+  <int value="104" label=".tar"/>
+  <int value="105" label=".tgz"/>
+  <int value="106" label=".tif"/>
+  <int value="107" label=".tiff"/>
+  <int value="108" label=".vcf"/>
+  <int value="109" label=".xml"/>
+  <int value="110" label=".xz"/>
 </enum>
 
 <enum name="VoiceInteractionEventSource">
@@ -34424,6 +33963,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="88" label="AbortsignalAny"/>
   <int value="89" label="Navigation"/>
   <int value="90" label="Mathml"/>
+  <int value="91" label="CanvasCreateconicgradient"/>
+  <int value="92" label="CanvasReset"/>
+  <int value="93" label="CanvasRoundrect"/>
+  <int value="94" label="CanvasTextBaselines"/>
 </enum>
 
 <enum name="WebFontCacheHit">

@@ -190,7 +190,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   EXPECT_TRUE(
       table_.RemoveAutofillProfile(home_profile.guid(), profile_source()));
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  EXPECT_TRUE(table_.GetAutofillProfiles(profile_source(), &profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles(profile_source(), profiles));
   EXPECT_TRUE(profiles.empty());
 }
 
@@ -208,10 +208,10 @@ TEST_F(AddressAutofillTableTest, GetAutofillProfiles) {
 
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   EXPECT_TRUE(table_.GetAutofillProfiles(
-      AutofillProfile::Source::kLocalOrSyncable, &profiles));
+      AutofillProfile::Source::kLocalOrSyncable, profiles));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(local_profile)));
   EXPECT_TRUE(
-      table_.GetAutofillProfiles(AutofillProfile::Source::kAccount, &profiles));
+      table_.GetAutofillProfiles(AutofillProfile::Source::kAccount, profiles));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(account_profile)));
 }
 
@@ -229,7 +229,7 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
 
   // Expect that the profiles from `profile_source()` are gone.
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  ASSERT_TRUE(table_.GetAutofillProfiles(profile_source(), &profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles(profile_source(), profiles));
   EXPECT_TRUE(profiles.empty());
 
   // Expect that the profile from the opposite source remains.
@@ -237,7 +237,7 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
       profile_source() == AutofillProfile::Source::kAccount
           ? AutofillProfile::Source::kLocalOrSyncable
           : AutofillProfile::Source::kAccount;
-  ASSERT_TRUE(table_.GetAutofillProfiles(other_source, &profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles(other_source, profiles));
   EXPECT_EQ(profiles.size(), 1u);
 }
 
@@ -347,7 +347,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Remove all entries modified in the bounded time range [17,41).
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   table_.RemoveAutofillDataModifiedBetween(Time::FromTimeT(17),
-                                           Time::FromTimeT(41), &profiles);
+                                           Time::FromTimeT(41), profiles);
 
   // Two profiles should have been removed.
   ASSERT_EQ(2UL, profiles.size());
@@ -386,7 +386,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Remove all entries modified on or after time 51 (unbounded range).
   table_.RemoveAutofillDataModifiedBetween(Time::FromTimeT(51), Time(),
-                                           &profiles);
+                                           profiles);
   ASSERT_EQ(2UL, profiles.size());
   EXPECT_EQ("00000000-0000-0000-0000-000000000004", profiles[0]->guid());
   EXPECT_EQ("00000000-0000-0000-0000-000000000005", profiles[1]->guid());
@@ -414,7 +414,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   EXPECT_FALSE(s_autofill_profile_names_unbounded.Step());
 
   // Remove all remaining entries.
-  table_.RemoveAutofillDataModifiedBetween(Time(), Time(), &profiles);
+  table_.RemoveAutofillDataModifiedBetween(Time(), Time(), profiles);
 
   // Two profiles should have been removed.
   ASSERT_EQ(2UL, profiles.size());

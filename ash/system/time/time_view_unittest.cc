@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -247,6 +248,48 @@ TEST_F(TimeViewTest, UpdateSize) {
   // Move to 10:00AM. There should be a layout change of the `time_view()`.
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
+}
+
+// Test that for horizontal clocks, the "AM/PM" text can be enabled and
+// disabled.
+TEST_F(TimeViewTest, EnableAmPmText) {
+  // Set current time to 8:00AM for testing.
+  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                   base::Hours(32) - base::Time::Now());
+
+  // A newly created horizontal clock only has the horizontal label.
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK, TimeView::kTime);
+
+  // Ensure that the "AM/PM" flag is disabled by default.
+  ASSERT_EQ(time_view()->GetAmPmClockTypeForTesting(),
+            base::AmPmClockType::kDropAmPm);
+  auto* horizontal_label = time_view()->GetHorizontalTimeLabelForTesting();
+
+  // Ensure that the "AM/PM" text isn't visible.
+  ASSERT_FALSE(horizontal_label->GetText().ends_with(u"AM"));
+  ASSERT_FALSE(horizontal_label->GetText().ends_with(u"PM"));
+
+  // Ensure that the "AM/PM" flag can be enabled.
+  time_view()->SetAmPmClockType(base::AmPmClockType::kKeepAmPm);
+  ASSERT_EQ(time_view()->GetAmPmClockTypeForTesting(),
+            base::AmPmClockType::kKeepAmPm);
+
+  // Ensure that the "AM/PM" text is visible.
+  ASSERT_TRUE(horizontal_label->GetText().ends_with(u"AM"));
+
+  // Advance time by 12 hours.
+  task_environment()->FastForwardBy(base::Hours(12));
+
+  // Ensure that the transition from "AM" to "PM" occurs as time moves.
+  ASSERT_TRUE(horizontal_label->GetText().ends_with(u"PM"));
+
+  // Ensure that the "AM/PM" text isn't visible in vertical clocks.
+  time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
+  auto* vertical_minutes_label =
+      time_view()->GetVerticalMinutesLabelForTesting();
+  auto* vertical_hours_label = time_view()->GetVerticalHoursLabelForTesting();
+  ASSERT_FALSE(vertical_minutes_label->GetText().ends_with(u"AM"));
+  ASSERT_FALSE(vertical_hours_label->GetText().ends_with(u"PM"));
 }
 
 // Test the Date view of the time view.

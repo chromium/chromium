@@ -78,6 +78,7 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::
     kOffAndMigrationPending;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
+using password_manager_android_util::PasswordAccessLossWarningType;
 
 namespace password_manager_android_util {
 namespace {
@@ -213,7 +214,7 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
     }
   }
 
-  PrefService* pref_service() { return &pref_service_; }
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
   const base::FilePath& login_db_directory() { return login_db_directory_; }
 
@@ -1782,6 +1783,154 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
     DestroyProfile();
   }
 }
+
+struct GetPasswordAccessLossWarningTypeTestCase {
+  std::string test_case_desc;
+  std::string gms_core_version;
+  bool migration_attempted;
+  bool local_passwords_migration_failed;
+  bool profile_store_password_count;
+  bool is_auto;
+  PasswordAccessLossWarningType expected_result;
+};
+
+class GetPasswordAccessLossWarningTypeTest
+    : public PasswordManagerAndroidUtilTest,
+      public testing::WithParamInterface<
+          GetPasswordAccessLossWarningTypeTestCase> {
+ protected:
+  void SetUp() override {
+    GetPasswordAccessLossWarningTypeTestCase test_case = GetParam();
+
+    int use_upm_and_separate_stores = 0;
+    if (!test_case.migration_attempted) {
+      use_upm_and_separate_stores = static_cast<int>(kOff);
+    } else if (test_case.local_passwords_migration_failed) {
+      use_upm_and_separate_stores = static_cast<int>(kOffAndMigrationPending);
+    } else {
+      use_upm_and_separate_stores = static_cast<int>(kOn);
+    }
+    pref_service()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        use_upm_and_separate_stores);
+    pref_service()->registry()->RegisterIntegerPref(
+        password_manager::prefs::kTotalPasswordsAvailableForProfile,
+        test_case.profile_store_password_count);
+  }
+};
+
+TEST_P(GetPasswordAccessLossWarningTypeTest, GetPasswordAccessLossWarningType) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive() !=
+      GetParam().is_auto) {
+    GTEST_SKIP() << "Automotive tests don't need to run on non-auto devices "
+                    "and vice-versa.";
+  }
+
+  // This call is needed to set the variable whether the migration is failed.
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  PasswordAccessLossWarningType result = GetPasswordAccessLossWarningType(
+      GetParam().gms_core_version, pref_service());
+
+  EXPECT_EQ(GetParam().expected_result, result);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GetPasswordAccessLossWarningTypeTest,
+    testing::Values(
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"NoGmsNoPwds",
+            /*gms_core_version=*/"",
+            /*migration_attempted=*/false,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/0,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"NoGmsButPwds",
+            /*gms_core_version=*/"",
+            /*migration_attempted=*/false,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kNoGmsCore),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"NoUpmNoPwds",
+            /*gms_core_version=*/"222912000",
+            /*migration_attempted=*/false,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/0,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"NoUpmButPwds",
+            /*gms_core_version=*/"222912000",
+            /*migration_attempted=*/false,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kNoUpm),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"AccountGmsNoPwds",
+            /*gms_core_version=*/"223012000",
+            /*migration_attempted=*/false,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/0,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"AccountGmsLocalPwds",
+            /*gms_core_version=*/"223012000",
+            /*migration_attempted=*/true,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"MigrationFailed",
+            /*gms_core_version=*/"240212000",
+            /*migration_attempted=*/true,
+            /*local_passwords_migration_failed=*/true,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/false,
+            /*expected_result=*/
+            PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"MigrationSucceeded",
+            /*gms_core_version=*/"240212000",
+            /*migration_attempted=*/true,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/false,
+            /*expected_result=*/PasswordAccessLossWarningType::kNone),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"AccountGmsLocalPwdsAuto",
+            /*gms_core_version=*/"241412000",
+            /*migration_attempted=*/false,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/true,
+            /*expected_result=*/PasswordAccessLossWarningType::kOnlyAccountUpm),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"MigrationFailedAuto",
+            /*gms_core_version=*/"241512000",
+            /*migration_attempted=*/true,
+            /*local_passwords_migration_failed=*/true,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/true,
+            /*expected_result=*/
+            PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed),
+        GetPasswordAccessLossWarningTypeTestCase(
+            /*test_case_desc=*/"MigrationSucceededAuto",
+            /*gms_core_version=*/"241512000",
+            /*migration_attempted=*/true,
+            /*local_passwords_migration_failed=*/false,
+            /*profile_store_password_count=*/10,
+            /*is_auto=*/true,
+            /*expected_result=*/PasswordAccessLossWarningType::kNone)),
+    [](const ::testing::TestParamInfo<GetPasswordAccessLossWarningTypeTestCase>&
+           info) { return info.param.test_case_desc; });
 
 }  // namespace
 }  // namespace password_manager_android_util

@@ -190,7 +190,7 @@ tree and a shadow tree should be considered separately, from a node tree's
 perspective. (`──/`) is _NOT_ a parent-child relationship in a node tree.
 
 For example, even though _B_ _hosts_ the shadow tree, _shadowRoot_ is not
-considered as a _child_ of _B_. The means the following traversal:
+considered as a _child_ of _B_. That means the following traversal:
 
 ```c++
 // In C++
@@ -225,7 +225,7 @@ Each `Node` has a `tree_scope_` pointer, which points to:
 - [owner document](https://dom.spec.whatwg.org/#concept-node-documentOwnerDocument),
   otherwise.
 
-The means `tree_scope_` pointer is always non-null (except for while in a DOM
+That means `tree_scope_` pointer is always non-null (except for while in a DOM
 mutation), but it doesn't always point to the node's root.
 
 Since each node doesn't have a pointer which _always_ points to the root,
@@ -477,7 +477,7 @@ _similar_ to the structure of a document tree; where only one node tree,
 _document tree_, is being involved there.
 
 Since the Web Platform got Shadow DOM, we now have a composed tree which is
-composed of multiple node trees, instead of a single node tree. That means We
+composed of multiple node trees, instead of a single node tree. That means we
 have to _flatten_ the composed tree to the one node tree, called a _flat tree_,
 from which a layout tree is constructed.
 
@@ -532,8 +532,8 @@ document
                 └── f2
 ```
 
-We can't explain the exact algorithm how to flatten a composed tree into a flat
-tree until we explain the concept of _slots_ and _slot assignment_. If we
+We can't explain the exact algorithm of how to flatten a composed tree into a
+flat tree until we explain the concept of _slots_ and _slot assignment_. If we
 ignore the effect of `<slot>`, we can define a flat tree as:
 
 - A root of a flat tree: _document_

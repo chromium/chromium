@@ -268,6 +268,7 @@ Textfield::Textfield()
   // accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
   UpdateAccessibilityTextDirection();
+  UpdateAccessibleDefaultActionVerb();
 }
 
 Textfield::~Textfield() {
@@ -536,6 +537,7 @@ void Textfield::SetSelectedRange(const gfx::Range& range) {
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
       kPropertyEffectsPaint);
+  UpdateAccessibleTextSelection();
 }
 
 void Textfield::AddSecondarySelectedRange(const gfx::Range& range) {
@@ -543,6 +545,7 @@ void Textfield::AddSecondarySelectedRange(const gfx::Range& range) {
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&model_, kTextfieldSelectedRange),
       kPropertyEffectsPaint);
+  UpdateAccessibleTextSelection();
 }
 
 const gfx::SelectionModel& Textfield::GetSelectionModel() const {
@@ -1034,33 +1037,26 @@ void Textfield::OnDragDone() {
   drop_cursor_visible_ = false;
 }
 
+void Textfield::UpdateAccessibleTextSelection() {
+  const gfx::Range range = GetSelectedRange();
+  GetViewAccessibility().SetTextSelStart(
+      base::checked_cast<int32_t>(range.start()));
+  GetViewAccessibility().SetTextSelEnd(
+      base::checked_cast<int32_t>(range.end()));
+}
+
 void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
 
   // Editable state indicates support of editable interface, and is always set
   // for a textfield, even if disabled or readonly.
   node_data->AddState(ax::mojom::State::kEditable);
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
-  }
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->SetValue(std::u16string(
         GetText().size(), gfx::RenderText::kPasswordReplacementChar));
   } else {
     node_data->SetValue(GetText());
   }
-
-  const gfx::Range range = GetSelectedRange();
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
-                             base::checked_cast<int32_t>(range.start()));
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
-                             base::checked_cast<int32_t>(range.end()));
-
-  // TODO(crbug.com/325137417): In order to update the cache whenever the offset
-  // changes, we could set this attribute in
-  // Textfield::UpdateCursorViewPosition.
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
-                             GetRenderText()->GetUpdatedDisplayOffset().x());
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   std::u16string ax_value =
@@ -1696,6 +1692,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
       RevealPasswordChar(change_offset - 1, duration);
     }
   }
+  UpdateAccessibleTextSelection();
 }
 
 ui::TextInputType Textfield::GetTextInputType() const {
@@ -1870,6 +1867,7 @@ void Textfield::ExtendSelectionAndDelete(size_t before, size_t after) {
   gfx::Range text_range;
   if (GetTextRange(&text_range) && text_range.Contains(range))
     DeleteRange(range);
+  UpdateAccessibleTextSelection();
 }
 
 void Textfield::EnsureCaretNotInRect(const gfx::Rect& rect_in_screen) {
@@ -2711,6 +2709,8 @@ void Textfield::UpdateAfterChange(
     OnCaretBoundsChanged();
   if (anything_changed)
     SchedulePaint();
+
+  UpdateAccessibleTextSelection();
 }
 
 void Textfield::UpdateAccessibilityTextDirection() {
@@ -2748,6 +2748,8 @@ gfx::Rect Textfield::CalculateCursorViewBounds() const {
 
 void Textfield::UpdateCursorViewPosition() {
   cursor_view_->SetBoundsRect(CalculateCursorViewBounds());
+  GetViewAccessibility().SetScrollX(
+      GetRenderText()->GetUpdatedDisplayOffset().x());
 }
 
 int Textfield::GetTextStyle() const {
@@ -2846,6 +2848,8 @@ bool Textfield::Cut() {
       model_->Cut()) {
     if (controller_)
       controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
+
+    UpdateAccessibleTextSelection();
     return true;
   }
   return false;
@@ -2864,6 +2868,8 @@ bool Textfield::Paste() {
   if (!GetReadOnly() && model_->Paste()) {
     if (controller_)
       controller_->OnAfterPaste();
+
+    UpdateAccessibleTextSelection();
     return true;
   }
   return false;
@@ -3015,6 +3021,7 @@ void Textfield::OnEnabledChanged() {
   if (GetEnabled() && GetReadOnly()) {
     GetViewAccessibility().SetReadOnly(true);
   }
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void Textfield::DropDraggedText(
@@ -3220,6 +3227,15 @@ void Textfield::StopSelectionDragging() {
   }
   selection_dragging_state_ = SelectionDraggingState::kNone;
   selection_drag_type_ = std::nullopt;
+}
+
+void Textfield::UpdateAccessibleDefaultActionVerb() {
+  if (GetEnabled()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kActivate);
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
 }
 
 BEGIN_METADATA(Textfield)

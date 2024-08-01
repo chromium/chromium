@@ -12,7 +12,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,10 +85,10 @@ public class HomeModulesConfigManager {
      * Menu click handler on customize button.
      *
      * @param context {@link Context} used for launching a settings activity.
-     * @param settingsLauncher {@link SettingsLauncher} used for launching a settings activity.
      */
-    public void onMenuClick(Context context, SettingsLauncher settingsLauncher) {
-        settingsLauncher.launchSettingsActivity(context, HomeModulesConfigSettings.class);
+    public void onMenuClick(Context context) {
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, HomeModulesConfigSettings.class);
     }
 
     /**

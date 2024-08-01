@@ -369,9 +369,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   HTMLDataListOptionsCollection* options = data_list->options();
   bool flip_tick_direction =
       (is_horizontal && o.StyleRef().IsLeftToRightDirection()) ||
-      (RuntimeEnabledFeatures::
-           FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-       is_writing_mode_vertical && o.StyleRef().IsLeftToRightDirection());
+      (is_writing_mode_vertical && o.StyleRef().IsLeftToRightDirection());
   for (unsigned i = 0; HTMLOptionElement* option_element = options->Item(i);
        i++) {
     String value = option_element->value();

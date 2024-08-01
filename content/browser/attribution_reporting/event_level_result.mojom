@@ -35,4 +35,4 @@ enum EventLevelResult {
   kReportWindowNotStarted = 17,
   kNoMatchingTriggerData = 18,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionStorageCreateReportStatus)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionStorageCreateReportStatus)

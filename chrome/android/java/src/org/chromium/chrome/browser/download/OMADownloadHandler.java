@@ -322,7 +322,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 ParcelFileDescriptor fd = null;
                 if (isContentUri) {
                     int fileDescriptor =
-                            ContentUriUtils.openContentUriForRead(mDownloadInfo.getFilePath());
+                            ContentUriUtils.openContentUri(mDownloadInfo.getFilePath(), "r");
                     if (fileDescriptor > 0) {
                         fd = ParcelFileDescriptor.fromFd(fileDescriptor);
                     }

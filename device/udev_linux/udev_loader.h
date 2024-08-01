@@ -24,8 +24,8 @@ struct udev_monitor;
 namespace device {
 
 // Interface to libudev. Accessed through the static Get() function, which
-// will try to load libudev1 first and then libudev0 on first use. If neither
-// libraries load successfully, the program will fail with a crash.
+// will try to load libudev1. If the libraries does not load successfully, the
+// program will fail with a crash.
 //
 // All the methods have the same signatures as libudev's functions. e.g.
 // udev_monitor_get_fd(mon) simply becomes device::udev_monitor_get_fd(mon).

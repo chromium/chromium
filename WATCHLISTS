@@ -1386,9 +1386,9 @@
     },
     'ip_protection': {
       'filepath': 'chrome/browser/ip_protection/' \
+                  '|components/ip_protection/' \
                   '|components/privacy_sandbox/masked_domain_list/' \
                   '|services/network/ip_protection/' \
-                  '|services/network/masked_domain_list/' \
                   '|services/network/network_service_proxy_delegate',
     },
     'ipcz': {
@@ -1750,6 +1750,10 @@
     },
     'page_load_metrics' : {
       'filepath': '/page_load_metrics/'
+    },
+    'page_load_metrics_abandoned_navigations': {
+      'filepath': 'chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.(cc|h)$|' \
+                  'components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.(cc|h)$'
     },
     'panels': {
       'filepath': 'chrome/browser/ui/panels'\
@@ -3101,6 +3105,7 @@
                            'loading-reviews+metrics@chromium.org',
                            'speed-metrics-reviews@chromium.org',
                            'haoliuk+watch@chromium.org'],
+    'page_load_metrics_abandoned_navigations': ['suzukikeita+watch@chromium.org'],
     'panels': ['dimich@chromium.org',
                'jennb@chromium.org',
                'jianli@chromium.org'],
@@ -3201,8 +3206,7 @@
                              'cros-settings+reviews@google.com'],
     'settings_os_settings_languages':
         ['mlcui+watch-os-settings-languages@google.com'],
-    'sharing': ['knollr+watch-sharing@chromium.org',
-                'mvanouwerkerk+watch-sharing@chromium.org'],
+    'sharing': ['knollr+watch-sharing@chromium.org'],
     'shimless_rma': ['zentaro+watch-shimless@chromium.org',
                      'jimmyxgong+watch-shimless@chromium.org',
                      'michaelcheco+watch-shimless@google.com'],

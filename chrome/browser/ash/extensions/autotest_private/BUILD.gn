@@ -12,6 +12,11 @@ static_library("autotest_private") {
     "autotest_private_api.h",
   ]
 
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+  ]
+
   deps = [
     "//ash",
     "//ash/components/arc",
@@ -43,8 +48,10 @@ static_library("autotest_private") {
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
@@ -117,6 +124,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/arc/tracing/test:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

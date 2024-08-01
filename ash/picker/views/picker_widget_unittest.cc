@@ -60,6 +60,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   }
   std::vector<PickerSearchResult> GetSuggestedEmoji() override { return {}; }
   bool IsGifsEnabled() override { return true; }
+  PickerModeType GetMode() override { return PickerModeType::kNoSelection; }
 
  private:
   PickerSessionMetrics session_metrics_;

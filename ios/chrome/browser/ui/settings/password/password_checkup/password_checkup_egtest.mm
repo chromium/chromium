@@ -531,6 +531,27 @@ NSString* LeakedPasswordDescription() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests opening the Password Issues page.
+- (void)testOpeningPasswordIssues {
+  SaveCompromisedPasswordFormToProfileStore();
+
+  OpenPasswordCheckupHomepage(
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_password_count=*/1);
+
+  // Auth should not be required to open Password Issues. The user is
+  // authenticated when opening the Password Manager page. Catch any unexpected
+  // authentication requests.
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  // Open the compromised issues page.
+  [[EarlGrey selectElementWithMatcher:
+                 PasswordCheckupHomepageCompromisedPasswordsItem()]
+      performAction:grey_tap()];
+
+  VerifyCompromisedPasswordIssuesPageIsVisible(/*issue_count=*/1);
+}
+
 // Tests dismissing a compromised password warning.
 - (void)testPasswordCheckupDismissCompromisedPasswordWarning {
   SaveCompromisedPasswordFormToProfileStore();

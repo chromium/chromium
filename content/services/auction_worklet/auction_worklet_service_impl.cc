@@ -16,6 +16,7 @@
 #include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/seller_worklet.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -257,7 +258,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-    std::optional<uint16_t> experiment_group_id) {
+    std::optional<uint16_t> experiment_group_id,
+    mojom::TrustedSignalsPublicKeyPtr public_key) {
   // If needed, expand the thread pool to match the number of threads requested.
   for (size_t i = auction_bidder_v8_helper_holders_.size();
        i < shared_storage_hosts.size(); ++i) {
@@ -276,7 +278,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
       std::move(auction_network_events_handler), script_source_url,
       wasm_helper_url, trusted_bidding_signals_url,
       trusted_bidding_signals_slot_size_param, top_window_origin,
-      std::move(permissions_policy_state), experiment_group_id);
+      std::move(permissions_policy_state), experiment_group_id,
+      /*public_key=*/nullptr);
   auto* bidder_worklet_ptr = bidder_worklet.get();
 
   mojo::ReceiverId receiver_id = bidder_worklets_.Add(

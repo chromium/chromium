@@ -48,7 +48,6 @@ class BirchChipButton : public BirchChipButtonBase,
   const BirchItem* GetItem() const override;
   BirchItem* GetItem() override;
   void Shutdown() override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -62,6 +61,7 @@ class BirchChipButton : public BirchChipButtonBase,
   void OnRemoveComponentPressed();
 
   // Sets the item icon.
+  // TODO(jamescook): Eliminate `success`; it is not used.
   void SetIconImage(const ui::ImageModel& icon_image, bool success);
 
   // The chip context menu controller.

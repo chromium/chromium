@@ -1592,6 +1592,10 @@ base::Value::Dict SerializeDownloadWarningAction(
         OPEN_LEARN_MORE_LINK:
       action = "OPEN_LEARN_MORE_LINK";
       break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        ACCEPT_DEEP_SCAN:
+      action = "ACCEPT_DEEP_SCAN";
+      break;
   }
   action_dict.Set("action", action);
   action_dict.Set("is_terminal_action",
@@ -1824,6 +1828,9 @@ std::string SerializeHitReport(const HitReport& hit_report) {
     case ExtendedReportingLevel::SBER_LEVEL_SCOUT:
       extended_reporting_level = "SBER_LEVEL_SCOUT";
       break;
+    case ExtendedReportingLevel::SBER_LEVEL_ENHANCED_PROTECTION:
+      extended_reporting_level = "SBER_LEVEL_ENHANCED_PROTECTION";
+      break;
   }
   hit_report_dict.Set("extended_reporting_level", extended_reporting_level);
   hit_report_dict.Set("is_enhanced_protection",
@@ -1941,6 +1948,9 @@ base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event) {
         break;
       case PasswordReuseDetected::SafeBrowsingStatus::SCOUT:
         reporting_population = "SCOUT";
+        break;
+      case PasswordReuseDetected::SafeBrowsingStatus::ENHANCED_PROTECTION:
+        reporting_population = "ENHANCED_PROTECTION";
         break;
     }
     event_dict.SetByDottedPath("reuse_detected.status.reporting_population",

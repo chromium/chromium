@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
 import org.chromium.chrome.tab_ui.R;
@@ -95,9 +96,12 @@ public class TabGroupRowView extends LinearLayout {
         drawable.setColor(color);
     }
 
-    void setMenuRunnables(@Nullable Runnable openRunnable, @Nullable Runnable deleteRunnable) {
+    void setMenuRunnables(
+            @Nullable Runnable openRunnable,
+            @Nullable Runnable deleteRunnable,
+            @Nullable Runnable leaveRunnable) {
         setOnClickListener(openRunnable == null ? null : v -> openRunnable.run());
-        mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable));
+        mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
     }
 
     void resetOnBind() {
@@ -107,7 +111,9 @@ public class TabGroupRowView extends LinearLayout {
     }
 
     private ListMenu getListMenu(
-            @Nullable Runnable openRunnable, @Nullable Runnable deleteRunnable) {
+            @Nullable Runnable openRunnable,
+            @Nullable Runnable deleteRunnable,
+            @Nullable Runnable leaveRunnable) {
         ModelList listItems = new ModelList();
         if (openRunnable != null) {
             listItems.add(buildMenuListItem(R.string.open_tab_group_menu_item, 0, 0));
@@ -115,21 +121,27 @@ public class TabGroupRowView extends LinearLayout {
         if (deleteRunnable != null) {
             listItems.add(buildMenuListItem(R.string.delete_tab_group_menu_item, 0, 0));
         }
+        if (leaveRunnable != null) {
+            listItems.add(buildMenuListItem(R.string.leave_tab_group_menu_item, 0, 0));
+        }
         return BrowserUiListMenuUtils.getBasicListMenu(
                 getContext(),
                 listItems,
-                (item) -> onItemSelected(item, openRunnable, deleteRunnable));
+                (item) -> onItemSelected(item, openRunnable, deleteRunnable, leaveRunnable));
     }
 
     private void onItemSelected(
             PropertyModel item,
             @Nullable Runnable openRunnable,
-            @Nullable Runnable deleteRunnable) {
-        int textId = item.get(ListMenuItemProperties.TITLE_ID);
+            @Nullable Runnable deleteRunnable,
+            @Nullable Runnable leaveRunnable) {
+        @StringRes int textId = item.get(ListMenuItemProperties.TITLE_ID);
         if (textId == R.string.open_tab_group_menu_item && openRunnable != null) {
             openRunnable.run();
         } else if (textId == R.string.delete_tab_group_menu_item && deleteRunnable != null) {
             deleteRunnable.run();
+        } else if (textId == R.string.leave_tab_group_menu_item && leaveRunnable != null) {
+            leaveRunnable.run();
         }
     }
 

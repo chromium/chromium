@@ -62,7 +62,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
         HttpsUpgradeServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeHttpsUpgradeService));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     web_state_.SetBrowserState(browser_state_.get());
 
     switch (GetParam()) {

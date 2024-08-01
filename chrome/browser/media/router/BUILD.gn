@@ -75,6 +75,7 @@ static_library("router") {
   ]
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/media/webrtc",
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",

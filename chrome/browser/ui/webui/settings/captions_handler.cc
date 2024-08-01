@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
+#include <string>
 #include <unordered_set>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -233,6 +236,10 @@ void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)),
                     base::Value(speech::GetLanguageName(language_code)));
+  newly_installed_languages_.insert(language_code);
+
+  installed_string_timer_.Start(FROM_HERE, base::Seconds(30), this,
+                                &CaptionsHandler::OnSodaInstallCleanProgress);
 }
 
 void CaptionsHandler::OnSodaInstallError(
@@ -300,6 +307,16 @@ void CaptionsHandler::OnSodaProgress(speech::LanguageCode language_code,
       base::Value(l10n_util::GetStringFUTF16Int(
           IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress)),
       base::Value(speech::GetLanguageName(language_code)));
+}
+
+void CaptionsHandler::OnSodaInstallCleanProgress() {
+  for (const auto& language_code : newly_installed_languages_) {
+    // Update the webui to show an empty str for progress.
+    FireWebUIListener("soda-download-progress-changed",
+                      base::Value(std::u16string()),
+                      base::Value(speech::GetLanguageName(language_code)));
+  }
+  newly_installed_languages_.clear();
 }
 
 }  // namespace settings

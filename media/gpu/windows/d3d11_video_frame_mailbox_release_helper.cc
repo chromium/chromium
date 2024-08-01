@@ -12,10 +12,6 @@
 
 namespace media {
 
-BASE_FEATURE(kCallMakeCurrentForReleaseHelper,
-             "CallMakeCurrentForReleaseHelper",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 D3D11VideoFrameMailboxReleaseHelper::D3D11VideoFrameMailboxReleaseHelper(
     std::unique_ptr<MediaLog> media_log,
     base::OnceCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb)
@@ -46,21 +42,8 @@ void D3D11VideoFrameMailboxReleaseHelper::Initialize(InitCB init_cb) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kCallMakeCurrentForReleaseHelper)) {
-    if (!helper_->MakeContextCurrent()) {
-      if (media_log_) {
-        MEDIA_LOG(ERROR, media_log_) << "Failed to make context current.";
-      }
-
-      helper_.reset();
-      std::move(init_cb).Run(false, ReleaseMailboxCB());
-      return;
-    }
-  }
-
   // Note: Since this is a RefCounted class it can't own any callbacks that are
   // bound to itself or the ref count will never reach zero and thus leak.
-
   std::move(init_cb).Run(
       true,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(

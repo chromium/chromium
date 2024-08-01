@@ -128,6 +128,7 @@ public class HubLayoutUnitTest {
     @Mock private HubLayoutScrimController mScrimController;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
+    @Mock private Pane mTabGroupPane;
     @Mock private HubLayoutAnimator mHubLayoutAnimatorMock;
     @Mock private HubLayoutAnimatorProvider mHubLayoutAnimatorProviderMock;
     @Mock private Bitmap mBitmap;
@@ -149,6 +150,7 @@ public class HubLayoutUnitTest {
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
+    private HubShowPaneHelper mHubShowPaneHelper;
 
     @Before
     public void setUp() {
@@ -162,6 +164,12 @@ public class HubLayoutUnitTest {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         when(mTabSwitcherPane.createShowHubLayoutAnimatorProvider(any()))
+                .thenReturn(mHubLayoutAnimatorProviderMock);
+        when(mTabSwitcherPane.createHideHubLayoutAnimatorProvider(any()))
+                .thenReturn(mHubLayoutAnimatorProviderMock);
+        when(mTabGroupPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+        when(mTabGroupPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
+        when(mTabGroupPane.createShowHubLayoutAnimatorProvider(any()))
                 .thenReturn(mHubLayoutAnimatorProviderMock);
         when(mTabSwitcherPane.createHideHubLayoutAnimatorProvider(any()))
                 .thenReturn(mHubLayoutAnimatorProviderMock);
@@ -212,6 +220,9 @@ public class HubLayoutUnitTest {
                                 case PaneId.INCOGNITO_TAB_SWITCHER:
                                     mPaneSupplier.set(mIncognitoTabSwitcherPane);
                                     break;
+                                case PaneId.TAB_GROUPS:
+                                    mPaneSupplier.set(mTabGroupPane);
+                                    break;
                                 default:
                                     fail("Invalid pane id" + paneId);
                             }
@@ -221,6 +232,8 @@ public class HubLayoutUnitTest {
                 .focusPane(anyInt());
         when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
         when(mHubManager.getHubController()).thenReturn(mHubController);
+        mHubShowPaneHelper = new HubShowPaneHelper();
+        when(mHubManager.getHubShowPaneHelper()).thenReturn(mHubShowPaneHelper);
         doAnswer(
                         invocation -> {
                             Pane pane = (Pane) invocation.getArguments()[0];
@@ -356,6 +369,20 @@ public class HubLayoutUnitTest {
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
         verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+
+        verify(mSolidColorSceneLayerJni).setBackgroundColor(FAKE_NATIVE_ADDRESS_2, DEFAULT_COLOR);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowWithSelectedPane() {
+        setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.SHRINK_TAB);
+
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        mHubShowPaneHelper.setPaneToShow(PaneId.TAB_GROUPS);
+        show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
+        verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
+        verify(mPaneManager).focusPane(PaneId.TAB_GROUPS);
 
         verify(mSolidColorSceneLayerJni).setBackgroundColor(FAKE_NATIVE_ADDRESS_2, DEFAULT_COLOR);
     }

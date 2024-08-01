@@ -72,13 +72,12 @@ class ProxyingSourceStream : public SourceStream {
 
 void AddAcceptEncoding(HttpRequestHeaders* request_headers,
                        std::string_view encoding_header) {
-  std::string accept_encoding;
+  std::optional<std::string> accept_encoding =
+      request_headers->GetHeader(HttpRequestHeaders::kAcceptEncoding);
   request_headers->SetHeader(
       HttpRequestHeaders::kAcceptEncoding,
-      request_headers->GetHeader(HttpRequestHeaders::kAcceptEncoding,
-                                 &accept_encoding)
-          ? base::StrCat({accept_encoding, ", ", encoding_header})
-          : std::string(encoding_header));
+      accept_encoding ? base::StrCat({*accept_encoding, ", ", encoding_header})
+                      : std::string(encoding_header));
 }
 
 }  // namespace

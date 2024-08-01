@@ -11,9 +11,12 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/browser_frame_context_data.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace controlled_frame {
@@ -31,6 +34,11 @@ GetPermissionPolicyFeatureForMediaStreamType(
     default:
       return blink::mojom::PermissionsPolicyFeature::kNotFound;
   }
+}
+
+bool IsMediaStreamTypeSupported(blink::mojom::MediaStreamType type) {
+  return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
+         type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
 }
 
 }  // namespace
@@ -53,34 +61,16 @@ bool ControlledFrameMediaAccessHandler::SupportsStreamType(
     return false;
   }
 
-  extensions::BrowserFrameContextData context_data(
-      web_contents->GetPrimaryMainFrame());
-  content::RenderFrameHost* embedder_rfh =
-      web_contents->GetOutermostWebContents()->GetPrimaryMainFrame();
-  extensions::BrowserFrameContextData embedder_context_data(embedder_rfh);
+  // TODO(b/40238394): |GuestView| should be looked up from |RenderFrameHost|
+  // instead of |WebContents|. To fix this, |SupportsStreamType| could pass
+  // |RenderFrameHost| instead of |WebContents|.
+  extensions::WebViewGuest* web_view =
+      extensions::WebViewGuest::FromWebContents(web_contents);
 
-  // This first call to this function will be from the embedded frame. Store
-  // a mapping of the IWA URL to the embedded page's URL and return false to
-  // allow for the permission request event to be fired to the Isolated Web App
-  // that embeds this frame.
-  bool is_controlled_frame = !context_data.IsIsolatedApplication() &&
-                             embedder_context_data.IsIsolatedApplication();
-  if (is_controlled_frame) {
-    pending_requests_[embedder_rfh->GetLastCommittedOrigin()].emplace_back(
-        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(), type);
-    return false;
-  }
+  bool is_controlled_frame = web_view && web_view->attached() &&
+                             web_view->IsOwnedByControlledFrameEmbedder();
 
-  // The second call to this function will be from the Isolated Web App after
-  // handling and allowing the permission request event that was fired from the
-  // Controlled Frame.
-  bool is_isolated_web_app = context_data.IsIsolatedApplication() &&
-                             embedder_context_data.IsIsolatedApplication();
-  return is_isolated_web_app &&
-         pending_requests_.contains(
-             web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()) &&
-         (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-          type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  return is_controlled_frame && IsMediaStreamTypeSupported(type);
 }
 
 bool ControlledFrameMediaAccessHandler::CheckMediaAccessPermission(
@@ -89,7 +79,38 @@ bool ControlledFrameMediaAccessHandler::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   CHECK(!extension);
-  return IsPermissionAllowed(render_frame_host, security_origin, type);
+
+  extensions::WebViewGuest* web_view =
+      extensions::WebViewGuest::FromRenderFrameHost(render_frame_host);
+  CHECK(web_view);
+
+  if (!IsAllowedByPermissionsPolicy(web_view, security_origin, type)) {
+    return false;
+  }
+
+  const url::Origin& embedder_origin =
+      web_view->embedder_rfh()->GetLastCommittedOrigin();
+  const url::Origin& requesting_origin =
+      render_frame_host->GetLastCommittedOrigin();
+
+  // Technically, Controlled Frame permission check needs to be done
+  // asynchronously (via an event handled by the embedder). However, this method
+  // must return immediately. |requests_| is used as a caching mechanism. An
+  // embedder origin + requesting origin pair in |requests_| must have already
+  // passed the asynchronous checks at least once. Unfortunately, this means
+  // once a permission is granted, it cannot be revoked in the same session.
+  // Note that the type check can be omitted here because WebView Permission
+  // Request API does not differentiate audio and video requests, they are both
+  // treated as "media".
+  if (!requests_[embedder_origin].contains(requesting_origin)) {
+    return false;
+  }
+
+  return web_view->embedder_web_contents()->GetDelegate() &&
+         web_view->embedder_web_contents()
+             ->GetDelegate()
+             ->CheckMediaAccessPermission(web_view->embedder_rfh(),
+                                          embedder_origin, type);
 }
 
 void ControlledFrameMediaAccessHandler::HandleRequest(
@@ -98,66 +119,113 @@ void ControlledFrameMediaAccessHandler::HandleRequest(
     content::MediaResponseCallback callback,
     const extensions::Extension* extension) {
   CHECK(!extension);
-  if (!pending_requests_.contains(
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+
+  content::RenderFrameHost* requesting_rfh = content::RenderFrameHost::FromID(
+      request.render_process_id, request.render_frame_id);
+  CHECK(requesting_rfh);
+  extensions::WebViewGuest* web_view =
+      extensions::WebViewGuest::FromRenderFrameHost(requesting_rfh);
+  CHECK(web_view);
+  CHECK(web_view->attached());
+  CHECK(web_view->IsOwnedByControlledFrameEmbedder());
+
+  const url::Origin& embedder_origin =
+      web_view->embedder_rfh()->GetLastCommittedOrigin();
+  const url::Origin& requesting_origin = request.url_origin;
+
+  requests_[embedder_origin].insert(requesting_origin);
+
+  if (request.audio_type !=
+          blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
+      request.video_type !=
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
+        std::unique_ptr<content::MediaStreamUI>());
     return;
   }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  bool audio_allowed =
+
+  bool audio_denied =
       request.audio_type ==
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
-      IsPermissionAllowed(web_contents->GetPrimaryMainFrame(),
-                          request.url_origin, request.audio_type) &&
-      GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
-                      prefs::kAudioCaptureAllowed,
-                      prefs::kAudioCaptureAllowedUrls) != ALWAYS_DENY;
+      (!IsAllowedByPermissionsPolicy(web_view, requesting_origin,
+                                     request.audio_type) ||
+       GetDevicePolicy(profile,
+                       web_view->GetGuestMainFrame()->GetLastCommittedURL(),
+                       prefs::kAudioCaptureAllowed,
+                       prefs::kAudioCaptureAllowedUrls) == ALWAYS_DENY);
 
-  bool video_allowed =
+  bool video_denied =
       request.video_type ==
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
-      IsPermissionAllowed(web_contents->GetPrimaryMainFrame(),
-                          request.url_origin, request.video_type) &&
-      GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
-                      prefs::kVideoCaptureAllowed,
-                      prefs::kVideoCaptureAllowedUrls) != ALWAYS_DENY;
+      (!IsAllowedByPermissionsPolicy(web_view, requesting_origin,
+                                     request.video_type) ||
+       GetDevicePolicy(profile,
+                       web_view->GetGuestMainFrame()->GetLastCommittedURL(),
+                       prefs::kVideoCaptureAllowed,
+                       prefs::kVideoCaptureAllowedUrls) == ALWAYS_DENY);
 
-  CheckDevicesAndRunCallback(web_contents, request, std::move(callback),
-                             audio_allowed, video_allowed);
+  if (audio_denied || video_denied) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+        std::unique_ptr<content::MediaStreamUI>());
+    return;
+  }
+
+  content::GlobalRenderFrameHostId embedder_rfh_id =
+      web_view->embedder_rfh()->GetGlobalId();
+  content::MediaStreamRequest embedder_request = request;
+  embedder_request.render_process_id = embedder_rfh_id.child_id;
+  embedder_request.render_frame_id = embedder_rfh_id.frame_routing_id;
+  embedder_request.url_origin = embedder_origin;
+  embedder_request.security_origin = embedder_request.url_origin.GetURL();
+
+  if (!web_view->embedder_web_contents()->GetDelegate()) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+        std::unique_ptr<content::MediaStreamUI>());
+    return;
+  }
+  web_view->embedder_web_contents()
+      ->GetDelegate()
+      ->RequestMediaAccessPermission(web_view->embedder_web_contents(),
+                                     embedder_request, std::move(callback));
 }
 
-bool ControlledFrameMediaAccessHandler::IsPermissionAllowed(
-    content::RenderFrameHost* embedder_rfh,
-    const url::Origin& request_origin,
+bool ControlledFrameMediaAccessHandler::IsAllowedByPermissionsPolicy(
+    extensions::WebViewGuest* web_view,
+    const url::Origin& requesting_origin,
     blink::mojom::MediaStreamType type) {
-  extensions::BrowserFrameContextData embedder_context_data(embedder_rfh);
-  if (!embedder_context_data.IsIsolatedApplication()) {
+  if (!IsMediaStreamTypeSupported(type)) {
     return false;
   }
 
-  const url::Origin& embedder_origin = embedder_rfh->GetLastCommittedOrigin();
-  if (!pending_requests_.contains(embedder_origin)) {
-    return false;
-  }
-
-  // Verify that there is a pending request for the given permission type and
-  // remove the request.
-  std::vector<PendingMediaAccessRequestDetails> details =
-      pending_requests_.at(embedder_origin);
-  auto it = std::find_if(details.cbegin(), details.cend(),
-                         [&](const PendingMediaAccessRequestDetails& detail) {
-                           return detail.type == type;
-                         });
-  if (it == details.cend() || it->embedded_frame_origin != request_origin) {
-    return false;
-  }
-  details.erase(it);
+  // Checks that embedder's permissions policy allows for both the embedder
+  // origin and requesting origin.
+  content::RenderFrameHost* embedder_rfh = web_view->embedder_rfh();
+  CHECK(embedder_rfh);
 
   const blink::PermissionsPolicy* permissions_policy =
       embedder_rfh->GetPermissionsPolicy();
-  return permissions_policy->IsFeatureEnabledForOrigin(
-      GetPermissionPolicyFeatureForMediaStreamType(type), request_origin);
+  CHECK(permissions_policy);
+  if (!permissions_policy->IsFeatureEnabledForOrigin(
+          GetPermissionPolicyFeatureForMediaStreamType(type),
+          requesting_origin)) {
+    return false;
+  }
+
+  if (!permissions_policy->IsFeatureEnabledForOrigin(
+          GetPermissionPolicyFeatureForMediaStreamType(type),
+          embedder_rfh->GetLastCommittedOrigin())) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace controlled_frame

@@ -29,6 +29,10 @@ signin::Tribool IsPrimaryAccountSubjectToParentalControls(
     signin::IdentityManager* identity_manager) {
   CoreAccountInfo core_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (core_account_info.IsEmpty()) {
+    // Signed-out users are not subject to parental controls.
+    return signin::Tribool::kFalse;
+  }
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfo(core_account_info);
   return account_info.capabilities.is_subject_to_parental_controls();

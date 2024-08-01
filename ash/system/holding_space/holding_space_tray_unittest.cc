@@ -514,11 +514,8 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
 class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
  public:
   HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {
-                features::kHoldingSpacePredictability,
-                features::kHoldingSpaceSuggestions,
-            });
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kHoldingSpaceSuggestions);
   }
 
   // Verifies that the user's preferences and the suggestion section's visual
@@ -2170,6 +2167,52 @@ TEST_F(HoldingSpaceTrayTest, SupportsScrollingOfPinnedFiles) {
   EXPECT_LT(chips[0]->GetBoundsInScreen().y(), previous_y);
 }
 
+TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
+  StartSession();
+
+  test_api()->Show();
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+
+  // Background.
+  auto* background = bubble->GetBackground();
+  ASSERT_TRUE(background);
+  EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
+
+  // Border.
+  EXPECT_FALSE(bubble->GetBorder());
+
+  // Corner radius.
+  EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
+  EXPECT_EQ(bubble->layer()->rounded_corner_radii(), gfx::RoundedCornersF(0.f));
+}
+
+TEST_F(HoldingSpaceTrayTest, CheckTrayAccessibilityText) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_EQ(GetTray()->GetAccessibleNameForTray(),
+            u"Tote: recent screen captures, downloads, and pinned files");
+}
+
+TEST_F(HoldingSpaceTrayTest, TrayButtonWithRefreshIcon) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *test_api()->GetDefaultTrayIcon()->GetImage().bitmap(),
+      *gfx::CreateVectorIcon(
+           kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
+           test_api()->GetDefaultTrayIcon()->GetColorProvider()->GetColor(
+               kColorAshIconColorPrimary))
+           .bitmap()));
+}
+
+TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
+}
+
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;
 
 TEST_F(HoldingSpacePreviewsTrayTest, HideButtonOnChangeToEmptyModel) {
@@ -3419,171 +3462,20 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, HasAnimatedProgressIndicators) {
   }
 }
 
-class HoldingSpaceTrayPredictableFeatureTest
-    : public HoldingSpaceTrayTestBase,
-      public ::testing::WithParamInterface<bool> {
- public:
-  HoldingSpaceTrayPredictableFeatureTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpacePredictability,
-        IsHoldingSpacePredictabilityEnabled());
-  }
-
-  // Convenience function for verifying that when there are no previewable items
-  // in the holding space, the default tray icon is shown if and only if the
-  // feature flag is enabled.
-  void ExpectDefaultTrayVisibility() {
-    EXPECT_EQ(test_api()->IsShowingInShelf(),
-              IsHoldingSpacePredictabilityEnabled());
-    if (test_api()->IsShowingInShelf()) {
-      EXPECT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
-      EXPECT_FALSE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
-    }
-  }
-
-  bool IsHoldingSpacePredictabilityEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayPredictableFeatureTest,
-                         ::testing::Bool());
-
-// If the predictable feature flag is enabled, then the holding space button
-// should always be visible.
-TEST_P(HoldingSpaceTrayPredictableFeatureTest,
-       AlwaysShowHoldingSpaceTrayButtonWhenFeatureFlagIsEnabled) {
-  StartSession(/*pre_mark_time_of_first_add=*/false);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  ExpectDefaultTrayVisibility();
-}
-
-// If the predictable feature flag is enabled, then the holding space button
-// default icon should be shown.
-TEST_P(HoldingSpaceTrayPredictableFeatureTest,
-       ShowDefaultIconWhenFeatureFlagIsEnabled) {
-  StartSession(/*pre_mark_time_of_first_add=*/false);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  ExpectDefaultTrayVisibility();
-
-  // Add a download item.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
-  MarkTimeOfFirstAdd();
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_EQ(IsViewVisible(test_api()->GetDefaultTrayIcon()),
-            IsHoldingSpacePredictabilityEnabled());
-  EXPECT_EQ(IsViewVisible(test_api()->GetPreviewsTrayIcon()),
-            !IsHoldingSpacePredictabilityEnabled());
-}
-
-// If the predictable feature flag is enabled and the user has set their
-// preference to see the previews icon, then the holding space button previews
-// should be shown instead of default.
-TEST_P(
-    HoldingSpaceTrayPredictableFeatureTest,
-    ShowPreviewsIconWhenFeatureFlagIsEnabledAndUserHasSetPreferenceToShowPreviews) {
-  StartSession();
-  EnableTrayIconPreviews();
-
-  // Add a download item - the previews button should be shown.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
-}
-
-TEST_P(HoldingSpaceTrayPredictableFeatureTest,
-       TrayPreviewsNotShownForSuggestions) {
-  MarkTimeOfFirstPin();
-  StartSession();
-  EnableTrayIconPreviews();
-  {
-    SCOPED_TRACE("Initial state.");
-    ExpectDefaultTrayVisibility();
-  }
-
-  // Add suggestions. The tray button should remain hidden.
-  AddItem(HoldingSpaceItem::Type::kDriveSuggestion,
-          base::FilePath("/tmp/fake_1"));
-  {
-    SCOPED_TRACE("Drive suggestion.");
-    ExpectDefaultTrayVisibility();
-  }
-
-  AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
-          base::FilePath("/tmp/fake_2"));
-  {
-    SCOPED_TRACE("Local suggestion.");
-    ExpectDefaultTrayVisibility();
-  }
-
-  // Add a previewable item and verify that the tray shows the preview icon.
-  auto* const item =
-      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_3"));
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
-  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
-
-  // Remove the previewable item. The tray button should return to its default
-  // icon and visibility.
-  model()->RemoveItem(item->id());
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  {
-    SCOPED_TRACE("Previewable item removed.");
-    ExpectDefaultTrayVisibility();
-  }
-}
-
-// If the predictable feature flag is enabled and the user has no items in the
-// screen captures or downloads sections, then show a placeholder.
-TEST_P(HoldingSpaceTrayPredictableFeatureTest,
-       ShowRecentFilesPlaceholderWhenNoScreenCapturesOrDownloadsExist) {
-  StartSession();
-
-  // Assert we have no items to display in the recent files holding space
-  // sections.
-  ASSERT_EQ(model()->items().size(), 0u);
-
-  test_api()->Show();
-  ASSERT_TRUE(test_api()->IsShowing());
-
-  // Expect that the recent files bubble and its placeholder are shown if the
-  // feature is enabled.
-  EXPECT_EQ(test_api()->RecentFilesBubbleShown(),
-            IsHoldingSpacePredictabilityEnabled());
-  EXPECT_EQ(test_api()->RecentFilesPlaceholderShown(),
-            IsHoldingSpacePredictabilityEnabled());
-}
-
 class HoldingSpaceTraySuggestionsFeatureTest
     : public HoldingSpaceTrayTestBase,
-      public ::testing::WithParamInterface<std::tuple<
-          /*predictability_enabled=*/bool,
-          /*suggestions_enabled=*/bool>> {
+      public ::testing::WithParamInterface</*suggestions_enabled=*/bool> {
  public:
   HoldingSpaceTraySuggestionsFeatureTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHoldingSpacePredictability,
-          IsHoldingSpacePredictabilityEnabled()},
-         {features::kHoldingSpaceSuggestions,
-          IsHoldingSpaceSuggestionsEnabled()}});
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceSuggestions, IsHoldingSpaceSuggestionsEnabled());
   }
 
   void SetDisableDrive(bool disable) {
     ON_CALL(*client(), IsDriveDisabled).WillByDefault(testing::Return(disable));
   }
 
-  bool IsHoldingSpacePredictabilityEnabled() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool IsHoldingSpaceSuggestionsEnabled() const {
-    return std::get<1>(GetParam());
-  }
+  bool IsHoldingSpaceSuggestionsEnabled() const { return GetParam(); }
 
   bool IsGoogleChromeBranded() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3608,9 +3500,7 @@ class HoldingSpaceTraySuggestionsFeatureTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceTraySuggestionsFeatureTest,
-                         ::testing::Combine(
-                             /*predictability_enabled=*/testing::Bool(),
-                             /*suggestions_enabled=*/testing::Bool()));
+                         /*suggestions_enabled=*/testing::Bool());
 
 TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
        PinnedFilesPlaceholderShowsAfterPinUnpin) {
@@ -3623,42 +3513,33 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   test_api()->Show();
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
-  // Pin an item, then clear the model. Whether the placeholder shows should
-  // depend on the state of the predictability flag.
+  // Pin an item, then clear the model. The placeholder should not be shown.
   AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake"));
   MarkTimeOfFirstPin();
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
   RemoveAllItems();
-  EXPECT_EQ(test_api()->RecentFilesBubbleShown(),
-            IsHoldingSpacePredictabilityEnabled());
-  EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
-            IsHoldingSpacePredictabilityEnabled());
-  EXPECT_EQ(test_api()->IsShowingInShelf(),
-            IsHoldingSpacePredictabilityEnabled());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
 
-  // Add a downloaded file. Now the pinned placeholder should show if either
-  // the predictability or suggestions flags are enabled.
+  // Add a downloaded file. Now the pinned placeholder should show if the
+  // suggestions flag is enabled.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
   test_api()->Show();
   EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
   EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
-            IsHoldingSpaceSuggestionsEnabled() ||
-                IsHoldingSpacePredictabilityEnabled());
+            IsHoldingSpaceSuggestionsEnabled());
 
   if (test_api()->PinnedFilesBubbleShown()) {
     views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
     ASSERT_TRUE(pinned_files_bubble);
 
     // If the suggestions feature is enabled, then the placeholder with the G
-    // Suite icons should be showing. If it is disabled but the predictability
-    // feature is enabled, then the files app chip should be showing. Otherwise,
-    // The placeholder shouldn't be showing at all.
-    bool has_files_app_chip =
-        pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-    EXPECT_EQ(has_files_app_chip, IsHoldingSpacePredictabilityEnabled() &&
-                                      !IsHoldingSpaceSuggestionsEnabled());
+    // Suite icons should be showing without the Files app chip. Otherwise, the
+    // placeholder shouldn't be showing at all.
+    EXPECT_FALSE(pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId));
     EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
         pinned_files_bubble));
   }
@@ -3667,11 +3548,9 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
 TEST_P(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
 
-  // For the suggestions changes, the tray should still not show by default
-  // in the shelf. If the predictability feature is enabled, it should show
-  // no matter what.
-  EXPECT_EQ(test_api()->IsShowingInShelf(),
-            IsHoldingSpacePredictabilityEnabled());
+  // For the suggestions feature, the tray should still not show by default
+  // in the shelf.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   MarkTimeOfFirstAdd();
 
@@ -3685,12 +3564,10 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
        PlaceholderContainsGSuitePrompt) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
 
-  // Show the bubble. Only the pinned files bubble should be visible if the
-  // predictable flag is off, otherwise both should be shown.
+  // Show the bubble. Only the pinned files bubble should be visible.
   test_api()->Show();
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_EQ(test_api()->RecentFilesBubbleShown(),
-            IsHoldingSpacePredictabilityEnabled());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   // The new suggestions placeholder text and icons should exist in the pinned
   // files bubble.
@@ -3735,177 +3612,6 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_NE(has_files_app_chip, IsHoldingSpaceSuggestionsEnabled());
   EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
       pinned_files_bubble));
-}
-
-// Base class for tests of holding space parameterized by whether the
-// `kHoldingSpaceRefresh` feature flag is enabled.
-class HoldingSpaceTrayRefreshTest
-    : public HoldingSpaceTrayTestBase,
-      public testing::WithParamInterface</*refresh_enabled=*/bool> {
- public:
-  HoldingSpaceTrayRefreshTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRefresh,
-                                              IsHoldingSpaceRefreshEnabled());
-  }
-
-  bool IsHoldingSpaceRefreshEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayRefreshTest,
-                         /*refresh_enabled=*/testing::Bool());
-
-TEST_P(HoldingSpaceTrayRefreshTest, HasExpectedBubbleTreatment) {
-  StartSession();
-
-  test_api()->Show();
-  views::View* bubble = test_api()->GetBubble();
-  ASSERT_TRUE(bubble);
-
-  if (IsHoldingSpaceRefreshEnabled()) {
-    // Background.
-    auto* background = bubble->GetBackground();
-    ASSERT_TRUE(background);
-    if (chromeos::features::IsJellyEnabled()) {
-      EXPECT_EQ(background->get_color(),
-                bubble->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysSystemBaseElevated));
-    } else {
-      EXPECT_EQ(background->get_color(),
-                bubble->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
-    }
-    EXPECT_EQ(bubble->layer()->background_blur(),
-              ColorProvider::kBackgroundBlurSigma);
-
-    // Border.
-    EXPECT_TRUE(bubble->GetBorder());
-
-    // Corner radius.
-    EXPECT_TRUE(bubble->layer()->is_fast_rounded_corner());
-    EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
-              gfx::RoundedCornersF(GetBubbleCornerRadius()));
-
-    // Header.
-    auto* header = bubble->GetViewByID(kHoldingSpaceHeaderLabelId);
-    ASSERT_TRUE(header);
-    EXPECT_EQ(views::AsViewClass<views::Label>(header)->GetText(),
-              u"Quick files");
-  } else {
-    // Background.
-    auto* background = bubble->GetBackground();
-    ASSERT_TRUE(background);
-    EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
-    EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
-
-    // Border.
-    EXPECT_FALSE(bubble->GetBorder());
-
-    // Corner radius.
-    EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
-    EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
-              gfx::RoundedCornersF(0.f));
-
-    // Header.
-    EXPECT_FALSE(bubble->GetViewByID(kHoldingSpaceHeaderLabelId));
-  }
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayAccessibilityText) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(
-      GetTray()->GetAccessibleNameForTray(),
-      IsHoldingSpaceRefreshEnabled()
-          ? u"Quick files: recent screen captures, downloads, and pinned files"
-          : u"Tote: recent screen captures, downloads, and pinned files");
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, TrayButtonWithRefreshIcon) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *test_api()->GetDefaultTrayIcon()->GetImage().bitmap(),
-      *gfx::CreateVectorIcon(
-           IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
-                                          : kHoldingSpaceIcon,
-           kHoldingSpaceTrayIconSize,
-           test_api()->GetDefaultTrayIcon()->GetColorProvider()->GetColor(
-               kColorAshIconColorPrimary))
-           .bitmap()));
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayTooltipText) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()),
-            IsHoldingSpaceRefreshEnabled() ? u"Quick files" : u"Tote");
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, PaintsSeparatorBetweenBubbles) {
-  StartSession();
-
-  // Add a pinned file and a download to holding space so that both the
-  // pinned files bubble and recent files bubble will be populated.
-  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
-
-  // Show holding space and verify that both the pinned files bubble and the
-  // recent files bubble are shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-
-  // Paint the holding space `bubble` to a `bitmap`.
-  views::View* bubble = test_api()->GetBubble();
-  ASSERT_TRUE(bubble);
-  SkBitmap bitmap;
-  bubble->Paint(views::PaintInfo::CreateRootPaintInfo(
-      ui::CanvasPainter(
-          &bitmap, bubble->size(),
-          views::ScaleFactorForDragFromWidget(bubble->GetWidget()),
-          /*clear_color=*/SK_ColorTRANSPARENT,
-          bubble->GetWidget()->GetCompositor()->is_pixel_canvas())
-          .context(),
-      bubble->size()));
-
-  // Determine the midpoint of where a separator would appear if painted.
-  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-  ASSERT_TRUE(pinned_files_bubble);
-  views::View* recent_files_bubble = test_api()->GetRecentFilesBubble();
-  ASSERT_TRUE(recent_files_bubble);
-  const int separator_midpoint_x = std::round(bubble->width() / 2.f);
-  const int separator_midpoint_y = gfx::Tween::LinearIntValueBetween(
-      0.5f,
-      views::View::ConvertRectToTarget(
-          /*source=*/pinned_files_bubble, /*target=*/bubble,
-          gfx::RectF(pinned_files_bubble->GetLocalBounds()))
-          .bottom(),
-      views::View::ConvertRectToTarget(
-          /*source=*/recent_files_bubble, /*target=*/bubble,
-          gfx::RectF(recent_files_bubble->GetLocalBounds()))
-          .y());
-
-  // Cache the `actual_color` of the pixel at the midpoint of where a separator
-  // would appear as well as the `expected_color` given feature flag state.
-  SkColor actual_color =
-      bitmap.getColor(separator_midpoint_x, separator_midpoint_y);
-  SkColor expected_color = color_utils::GetResultingPaintColor(
-      /*foreground=*/IsHoldingSpaceRefreshEnabled()
-          ? bubble->GetColorProvider()->GetColor(kColorAshSeparatorColor)
-          : SK_ColorTRANSPARENT,
-      /*background=*/bubble->GetBackground()
-          ? bubble->GetBackground()->get_color()
-          : SK_ColorTRANSPARENT);
-
-  // Verify that the RGBA components of the `actual_color` versus the
-  // `expected_color` are near enough to be considered equal.
-  EXPECT_NEAR(SkColorGetR(actual_color), SkColorGetR(expected_color), 1);
-  EXPECT_NEAR(SkColorGetG(actual_color), SkColorGetG(expected_color), 1);
-  EXPECT_NEAR(SkColorGetB(actual_color), SkColorGetB(expected_color), 1);
-  EXPECT_NEAR(SkColorGetA(actual_color), SkColorGetA(expected_color), 1);
 }
 
 // Base class for holding space tray tests which make assertions about primary
@@ -4116,15 +3822,11 @@ class HoldingSpaceTrayVisibilityTest
     : public HoldingSpaceAshTestBase,
       public testing::WithParamInterface<
           std::tuple<HoldingSpaceItem::Type,
-                     /*predictability_enabled=*/bool,
                      /*suggestions_enabled=*/bool>> {
  public:
   HoldingSpaceTrayVisibilityTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHoldingSpacePredictability,
-          IsHoldingSpacePredictabilityEnabled()},
-         {features::kHoldingSpaceSuggestions,
-          IsHoldingSpaceSuggestionsEnabled()}});
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceSuggestions, IsHoldingSpaceSuggestionsEnabled());
   }
 
   void SetUp() override {
@@ -4140,12 +3842,8 @@ class HoldingSpaceTrayVisibilityTest
   // Returns the parameterized holding space item type.
   HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
 
-  bool IsHoldingSpacePredictabilityEnabled() const {
-    return std::get<1>(GetParam());
-  }
-
   bool IsHoldingSpaceSuggestionsEnabled() const {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
@@ -4159,15 +3857,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceTrayVisibilityTest,
     testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
-                     /*predictability_enabled=*/testing::Bool(),
                      /*suggestions_enabled=*/testing::Bool()));
 
 TEST_P(HoldingSpaceTrayVisibilityTest, TrayShowsForCorrectItemTypes) {
   // Partially initialized items should not cause the tray to show.
   HoldingSpaceItem* item =
       AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake"));
-  EXPECT_EQ(test_api()->IsShowingInShelf(),
-            IsHoldingSpacePredictabilityEnabled());
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   // Once initialized, the item should show the tray if appropriate.
   model()->InitializeOrRemoveItem(
@@ -4177,14 +3873,9 @@ TEST_P(HoldingSpaceTrayVisibilityTest, TrayShowsForCorrectItemTypes) {
           GURL(base::StrCat(
               {"filesystem:", item->file().file_path.BaseName().value()}))));
 
-  if (IsHoldingSpacePredictabilityEnabled()) {
-    // In the predictability experiment, the tray should always be showing.
-    EXPECT_TRUE(test_api()->IsShowingInShelf());
-  } else {
     // A suggestion alone should not show the tray.
     EXPECT_NE(test_api()->IsShowingInShelf(),
               HoldingSpaceItem::IsSuggestionType(GetType()));
-  }
 }
 
 }  // namespace ash

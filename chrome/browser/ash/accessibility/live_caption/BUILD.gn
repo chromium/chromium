@@ -26,6 +26,7 @@ static_library("live_caption") {
   public_deps = [
     "//ash",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/audio",
     "//components/soda",

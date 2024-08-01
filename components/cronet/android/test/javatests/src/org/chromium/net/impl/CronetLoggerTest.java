@@ -15,7 +15,6 @@ import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ConditionVariable;
 
 import androidx.test.filters.SmallTest;
 
@@ -32,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
@@ -63,9 +63,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Test logging functionalities. */
 @DoNotBatch(reason = "Some logging is done from one-time static initialization")
@@ -717,6 +714,10 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
+        assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
+        assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(-300);
+        assertThat(trafficInfo.getFailureReason())
+                .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
     }
@@ -741,6 +742,10 @@ public final class CronetLoggerTest {
         final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
         assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(1);
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
+        assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
+        assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
+        assertThat(trafficInfo.getFailureReason())
+                .isEqualTo(CronetTrafficInfo.RequestFailureReason.OTHER);
     }
 
     @Test
@@ -802,7 +807,10 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
-
+        assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
+        assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
+        assertThat(trafficInfo.getFailureReason())
+                .isEqualTo(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
     }
@@ -875,7 +883,11 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getOnUploadReadCount()).isGreaterThan(0);
             assertThat(trafficInfo.getIsBidiStream()).isTrue();
             assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
-
+            assertThat(trafficInfo.getConnectionCloseSource())
+                    .isEqualTo(ConnectionCloseSource.UNKNOWN);
+            assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
+            assertThat(trafficInfo.getFailureReason())
+                    .isEqualTo(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
         } finally {
@@ -916,120 +928,5 @@ public final class CronetLoggerTest {
         headersList.add(new AbstractMap.SimpleImmutableEntry<>(null, "")); // 33 + 0 + 0 = 33
 
         assertThat(CronetRequestCommon.estimateHeadersSizeInBytes(headersList)).isEqualTo(33);
-    }
-
-    /** Records the last engine creation (and traffic info) call it has received. */
-    public static final class TestLogger extends CronetLogger {
-        private AtomicInteger mNextId = new AtomicInteger();
-        private final AtomicInteger mCallsToLogCronetEngineBuilderInitializedInfo =
-                new AtomicInteger();
-        private final AtomicInteger mCallsToCronetInitializedInfo = new AtomicInteger();
-        private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
-        private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
-        private AtomicLong mCronetEngineId = new AtomicLong();
-        private AtomicLong mCronetRequestId = new AtomicLong();
-        private final AtomicReference<CronetEngineBuilderInitializedInfo>
-                mCronetEngineBuilderInitializedInfo = new AtomicReference<>();
-        private final AtomicReference<CronetInitializedInfo> mCronetInitializedInfo =
-                new AtomicReference<>();
-        private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
-        private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
-        private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
-        private AtomicReference<CronetSource> mSource = new AtomicReference<>();
-        private final ConditionVariable mCronetInitializedInfoCalled = new ConditionVariable();
-        private final ConditionVariable mBlock = new ConditionVariable();
-
-        @Override
-        public long generateId() {
-            return mNextId.incrementAndGet();
-        }
-
-        @Override
-        public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
-            mCallsToLogCronetEngineBuilderInitializedInfo.incrementAndGet();
-            mCronetEngineBuilderInitializedInfo.set(info);
-        }
-
-        @Override
-        public void logCronetInitializedInfo(CronetInitializedInfo info) {
-            mCallsToCronetInitializedInfo.incrementAndGet();
-            mCronetInitializedInfo.set(info);
-            mCronetInitializedInfoCalled.open();
-        }
-
-        @Override
-        public void logCronetEngineCreation(
-                long cronetEngineId,
-                CronetEngineBuilderInfo engineBuilderInfo,
-                CronetVersion version,
-                CronetSource source) {
-            mCallsToLogCronetEngineCreation.incrementAndGet();
-            mCronetEngineId.set(cronetEngineId);
-            mBuilderInfo.set(engineBuilderInfo);
-            mVersion.set(version);
-            mSource.set(source);
-        }
-
-        @Override
-        public void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo) {
-            mCallsToLogCronetTrafficInfo.incrementAndGet();
-            mCronetRequestId.set(cronetEngineId);
-            mTrafficInfo.set(trafficInfo);
-            mBlock.open();
-        }
-
-        public int callsToLogCronetEngineBuilderInitializedInfo() {
-            return mCallsToLogCronetEngineBuilderInitializedInfo.get();
-        }
-
-        public int callsToLogCronetTrafficInfo() {
-            return mCallsToLogCronetTrafficInfo.get();
-        }
-
-        public int callsToLogCronetEngineCreation() {
-            return mCallsToLogCronetEngineCreation.get();
-        }
-
-        public void waitForCronetInitializedInfo() {
-            mCronetInitializedInfoCalled.block();
-            mCronetInitializedInfoCalled.close();
-        }
-
-        public void waitForLogCronetTrafficInfo() {
-            mBlock.block();
-            mBlock.close();
-        }
-
-        public long getLastCronetEngineId() {
-            return mCronetEngineId.get();
-        }
-
-        public long getLastCronetRequestId() {
-            return mCronetRequestId.get();
-        }
-
-        public CronetEngineBuilderInitializedInfo getLastCronetEngineBuilderInitializedInfo() {
-            return mCronetEngineBuilderInitializedInfo.get();
-        }
-
-        public CronetInitializedInfo getLastCronetInitializedInfo() {
-            return mCronetInitializedInfo.get();
-        }
-
-        public CronetTrafficInfo getLastCronetTrafficInfo() {
-            return mTrafficInfo.get();
-        }
-
-        public CronetEngineBuilderInfo getLastCronetEngineBuilderInfo() {
-            return mBuilderInfo.get();
-        }
-
-        public CronetVersion getLastCronetVersion() {
-            return mVersion.get();
-        }
-
-        public CronetSource getLastCronetSource() {
-            return mSource.get();
-        }
     }
 }

@@ -197,6 +197,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kFillEverythingFromAddressProfile:
@@ -549,6 +550,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
       break;
     case SuggestionType::kTitle:
@@ -587,7 +589,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:
       DidAcceptAddressSuggestion(suggestion, position);
       break;
@@ -628,8 +629,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.type, /*field_type_used=*/std::nullopt);
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kFillExistingPlusAddress:
@@ -713,6 +713,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPasswordAccountStorageOptIn:
     case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
@@ -796,6 +798,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
@@ -1358,8 +1361,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                              }
                            },
                            GetWeakPtr()));
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kMerchantPromoCodeEntry:
@@ -1369,8 +1371,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.type, MERCHANT_PROMO_CODE);
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kSeePromoCodeDetails:
@@ -1378,8 +1379,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       manager_->client()
           .GetPaymentsAutofillClient()
           ->OpenPromoCodeOfferDetailsURL(suggestion.GetPayload<GURL>());
-      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
-                                                suggestion.type, query_form_,
+      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
       break;
     case SuggestionType::kShowAccountCards:

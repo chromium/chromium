@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -62,9 +63,10 @@ class LoginPinInputViewTest
   void ExpectAttribute(const std::string& value,
                        ax::mojom::StringAttribute attribute) {
     LoginPinInputView::TestApi test_api(view_);
-    ui::AXNodeData ax_node_data;
-    test_api.code_input()->GetAccessibleNodeData(&ax_node_data);
-    EXPECT_EQ(value, ax_node_data.GetStringAttribute(attribute));
+    ui::AXNodeData node_data;
+    test_api.code_input()->GetViewAccessibility().GetAccessibleNodeData(
+        &node_data);
+    EXPECT_EQ(value, node_data.GetStringAttribute(attribute));
   }
 
   void ExpectDescription(const std::string& value) {

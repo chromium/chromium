@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -44,7 +43,7 @@ class BandwidthManagementTableViewControllerTest
     RegisterBrowserStatePrefs(registry.get());
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(std::move(prefs));
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
     CreateController();
   }
@@ -60,7 +59,7 @@ class BandwidthManagementTableViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 };

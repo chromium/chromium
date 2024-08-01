@@ -57,18 +57,6 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // To do email regex checks.
   Member<ScriptRegexp> email_regexp_;
 
-  // The total number of per-page ad frames that are eligible for the LazyAds
-  // interventions by AutomaticLazyFrameLoadingToAds. This is used to report
-  // UKM.
-  int64_t lazy_ads_frame_count_ = 0;
-  // The total number of per-page frames that are eligible for the LazyEmbeds
-  // interventions by AutomaticLazyFrameLoadingToEmbeds. This is used to report
-  // UKM.
-  int64_t lazy_embeds_frame_count_ = 0;
-  // |Document::Shutdown()| is called multiple times. The following flag
-  // prevents sending UKM multiple times.
-  bool already_sent_automatic_lazy_load_frame_ukm_ = false;
-
   // The number of immediate child frames created within this document so far.
   // This count doesn't include this document's frame nor descendant frames.
   int immediate_child_frame_creation_count_ = 0;

@@ -24,7 +24,7 @@ institutions shall not be used in advertising or otherwise to promote the
 sale, use or other dealings in this Software without prior written
 authorization from the authors.
 
-Copyright (c) 2006, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2006, Oracle and/or its affiliates.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -112,7 +112,7 @@ other requests using Composite.  Failure to do so will cause a BadRequest error.
     <field type="CARD8" name="update" enum="Redirect" />
     <pad bytes="3" />
     <doc>
-      <brief>Redirect the heirarchy starting at “window” to off-screen storage.</brief>
+      <brief>Redirect the hierarchy starting at "window" to off-screen storage.</brief>
       <description>
 	The hierarchy starting at 'window' is directed to off-screen
 	storage.  When all clients enabling redirection terminate,
@@ -121,7 +121,7 @@ other requests using Composite.  Failure to do so will cause a BadRequest error.
 	The root window may not be redirected. Doing so results in a Match
 	error.
       </description>
-      <field name="window">The root of the heirarchy to redirect to off-screen storage.</field>
+      <field name="window">The root of the hierarchy to redirect to off-screen storage.</field>
       <field name="update">
 	Whether contents are automatically mirrored to the parent window.  If one client
 	already specifies an update type of Manual, any attempt by another to specify a
@@ -142,7 +142,7 @@ other requests using Composite.  Failure to do so will cause a BadRequest error.
 	then painting of the window background during window manipulation
 	and ClearArea requests is inhibited.
       </description>
-      <field name="window">The root of the heirarchy to redirect to off-screen storage.</field>
+      <field name="window">The root of the hierarchy to redirect to off-screen storage.</field>
       <field name="update">
 	Whether contents are automatically mirrored to the parent window.  If one client
 	already specifies an update type of Manual, any attempt by another to specify a

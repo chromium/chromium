@@ -4,16 +4,23 @@
 
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
+#include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 
-class SystemPermissionSettingsImpl : public SystemPermissionSettings {
-  bool CanPrompt(ContentSettingsType type) const override { return false; }
+namespace system_permission_settings {
 
-  bool IsDeniedImpl(ContentSettingsType type) const override {
+namespace {
+
+class PlatformHandleImpl : public PlatformHandle {
+  bool CanPrompt(ContentSettingsType type) override { return false; }
+
+  bool IsDenied(ContentSettingsType type) override {
     if (base::FeatureList::IsEnabled(
             content_settings::features::
                 kCrosSystemLevelPermissionBlockedWarnings)) {
@@ -22,12 +29,10 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
     return false;
   }
 
-  bool IsAllowedImpl(ContentSettingsType type) const override {
-    return !IsDeniedImpl(type);
-  }
+  bool IsAllowed(ContentSettingsType type) override { return !IsDenied(type); }
 
   void OpenSystemSettings(content::WebContents*,
-                          ContentSettingsType type) const override {
+                          ContentSettingsType type) override {
     if (base::FeatureList::IsEnabled(
             content_settings::features::
                 kCrosSystemLevelPermissionBlockedWarnings)) {
@@ -43,7 +48,11 @@ class SystemPermissionSettingsImpl : public SystemPermissionSettings {
   }
 };
 
-std::unique_ptr<SystemPermissionSettings>
-SystemPermissionSettings::CreateImpl() {
-  return std::make_unique<SystemPermissionSettingsImpl>();
+}  // namespace
+
+// static
+std::unique_ptr<PlatformHandle> PlatformHandle::Create() {
+  return std::make_unique<PlatformHandleImpl>();
 }
+
+}  // namespace system_permission_settings

@@ -870,6 +870,7 @@ class Browser : public TabStripModelObserver,
 
   // BrowserWindowInterface overrides:
   views::WebView* GetWebView() override;
+  Profile* GetProfile() override;
   void OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) override;
   content::WebContents* OpenURL(
       const content::OpenURLParams& params,
@@ -882,6 +883,22 @@ class Browser : public TabStripModelObserver,
   BrowserWindowFeatures& GetFeatures() override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
+  bool IsActive() override;
+  base::CallbackListSubscription RegisterDidBecomeActive(
+      DidBecomeActiveCallback callback) override;
+  base::CallbackListSubscription RegisterDidBecomeInactive(
+      DidBecomeInactiveCallback callback) override;
+  ExclusiveAccessManager* GetExclusiveAccessManager() override;
+  BrowserActions* GetActions() override;
+
+  // Called by BrowserView when on active changes.
+  void DidBecomeActive();
+  void DidBecomeInactive();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsLockedForOnTask();
+  void SetLockedForOnTask(bool locked);
+#endif
 
  private:
   friend class BrowserTest;
@@ -1138,6 +1155,10 @@ class Browser : public TabStripModelObserver,
   // should restore any previous location bar state (such as user editing) as
   // well.
   void UpdateToolbar(bool should_restore_state);
+
+  // Asks the toolbar to layout and redraw to reflect the current security
+  // state.
+  void UpdateToolbarSecurityState();
 
   // Does one or both of the following for each bit in |changed_flags|:
   // . If the update should be processed immediately, it is.
@@ -1437,6 +1458,14 @@ class Browser : public TabStripModelObserver,
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // OnTask is a ChromeOS feature that is not related to web browsers, but
+  // happens to be implemented using code in //chrome/browser. The feature,
+  // when enabled, disables certain functionality that a web browser would
+  // never typically disable.
+  bool on_task_locked_ = false;
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
       extension_browser_window_helper_;
@@ -1459,6 +1488,14 @@ class Browser : public TabStripModelObserver,
 #endif
 
   int force_show_bookmark_bar_flags_ = ForceShowBookmarkBarFlag::kNone;
+
+  using DidBecomeActiveCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
+  DidBecomeActiveCallbackList did_become_active_callback_list_;
+
+  using DidBecomeInactiveCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
+  DidBecomeInactiveCallbackList did_become_inactive_callback_list_;
 
   std::unique_ptr<BrowserWindowFeatures> features_;
 

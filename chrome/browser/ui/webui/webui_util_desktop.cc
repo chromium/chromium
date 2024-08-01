@@ -24,9 +24,8 @@ const ui::ThemeProvider* g_theme_provider_for_testing = nullptr;
 // Keep in sync with the WebUIHostname variant in
 // histograms/metadata/others.xml.
 const std::string_view* GetWebUIMetricsHostname(const GURL& webui_url) {
-  static const base::NoDestructor<
-      base::flat_map<std::string_view, std::string_view>>
-      webui_hostnames({
+  static constexpr auto kWebUIHostnames =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
           {chrome::kChromeUIBookmarksHost, "Bookmarks"},
           {chrome::kChromeUIBookmarksSidePanelHost, "BookmarksSidePanel"},
           {chrome::kChromeUICustomizeChromeSidePanelHost,
@@ -46,7 +45,7 @@ const std::string_view* GetWebUIMetricsHostname(const GURL& webui_url) {
           {chrome::kChromeUIThemeHost, "Theme"},
           {chrome::kChromeUITopChromeDomain, "TopChrome"},
       });
-  return base::FindOrNull(*webui_hostnames, webui_url.host());
+  return base::FindOrNull(kWebUIHostnames, webui_url.host());
 }
 
 }  // namespace

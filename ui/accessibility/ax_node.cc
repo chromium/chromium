@@ -910,6 +910,22 @@ AXSelection AXNode::GetUnignoredSelection() const {
   return selection;
 }
 
+bool AXNode::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
+  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+}
+int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
+  // If missing, return the default value for AXNodeData::GetIntAttribute
+  return GetComputedNodeData().GetOrComputeAttribute(attribute).value_or(0);
+}
+bool AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute,
+                             int* value) const {
+  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
+    *value = GetComputedNodeData().GetOrComputeAttribute(attribute).value();
+    return true;
+  }
+  return false;
+}
+
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
   return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
 }

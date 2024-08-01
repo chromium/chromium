@@ -860,6 +860,7 @@ class WallpaperControllerTestBase : public AshTestBase {
   void SetSeaPenWallpaper(const AccountId& account_id,
                           SkColor color,
                           uint32_t id,
+                          bool preview_mode,
                           gfx::ImageSkia* image) {
     TestWallpaperControllerObserver observer(controller_);
     std::string jpg_bytes = CreateEncodedImageForTesting(
@@ -875,7 +876,7 @@ class WallpaperControllerTestBase : public AshTestBase {
     ASSERT_TRUE(save_sea_pen_image_future.Get());
 
     base::test::TestFuture<bool> set_wallpaper_future;
-    controller_->SetSeaPenWallpaper(account_id, id,
+    controller_->SetSeaPenWallpaper(account_id, id, preview_mode,
                                     set_wallpaper_future.GetCallback());
 
     EXPECT_TRUE(set_wallpaper_future.Take());
@@ -2150,7 +2151,8 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(kAccountId1, SK_ColorGREEN, /*id=*/777u, &expected_image);
+  SetSeaPenWallpaper(kAccountId1, SK_ColorGREEN, /*id=*/777u,
+                     /*preview_mode=*/false, &expected_image);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
@@ -2199,7 +2201,7 @@ TEST_P(WallpaperControllerTest,
     // Sets a sea pen wallpaper.
     gfx::ImageSkia expected_image;
     SetSeaPenWallpaper(kAccountId1, SK_ColorGREEN, /*id=*/848u,
-                       &expected_image);
+                       /*preview_mode=*/false, &expected_image);
     EXPECT_TRUE(
         pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
     EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
@@ -2248,7 +2250,8 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(kAccountId1, SK_ColorBLUE, 888u, &expected_image);
+  SetSeaPenWallpaper(kAccountId1, SK_ColorBLUE, 888u, /*preview_mode=*/false,
+                     &expected_image);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
@@ -2340,7 +2343,7 @@ TEST_P(WallpaperControllerTest, DISABLED_SetSeaPenWallpaperFromFile) {
   base::Time old_last_modified_time = GetLastModifiedTime(file_path);
 
   base::test::TestFuture<bool> set_wallpaper_future;
-  controller_->SetSeaPenWallpaper(kAccountId1, 111u,
+  controller_->SetSeaPenWallpaper(kAccountId1, 111u, /*preview_mode=*/false,
                                   set_wallpaper_future.GetCallback());
 
   EXPECT_TRUE(set_wallpaper_future.Take());
@@ -2358,6 +2361,78 @@ TEST_P(WallpaperControllerTest, DISABLED_SetSeaPenWallpaperFromFile) {
 
   // Last Modified Time should be updated to current time.
   EXPECT_TRUE(GetLastModifiedTime(file_path) > old_last_modified_time);
+}
+
+TEST_P(WallpaperControllerTest, CancelSetSeaPenWallpaperInTabletMode) {
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
+  gfx::ImageSkia expected_image;
+  TestWallpaperControllerObserver observer(controller_);
+  SetSeaPenWallpaper(kAccountId1, SK_ColorBLUE, /*id=*/777u,
+                     /*preview_mode=*/true, &expected_image);
+  RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(observer.is_in_wallpaper_preview());
+
+  controller_->CancelPreviewWallpaper();
+
+  EXPECT_FALSE(observer.is_in_wallpaper_preview());
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+}
+
+TEST_P(WallpaperControllerTest, ConfirmSetSeaPenWallpaperInTabletMode) {
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo wallpaper_info;
+  ASSERT_FALSE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
+  gfx::ImageSkia expected_image;
+  TestWallpaperControllerObserver observer(controller_);
+  SetSeaPenWallpaper(kAccountId1, SK_ColorGREEN, /*id=*/777u,
+                     /*preview_mode=*/true, &expected_image);
+  RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(observer.is_in_wallpaper_preview());
+
+  controller_->ConfirmPreviewWallpaper();
+
+  EXPECT_FALSE(observer.is_in_wallpaper_preview());
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+  EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+  EXPECT_EQ("777", wallpaper_info.location);
+  EXPECT_TRUE(wallpaper_info.user_file_path.empty());
+
+  // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
+  // channels +- 1.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      /*max_deviation=*/1));
+
+  base::FileEnumerator file_enumerator(online_wallpaper_dir_.GetPath(),
+                                       /*recursive=*/true,
+                                       base::FileEnumerator::FileType::FILES);
+
+  std::vector<base::FilePath> wallpaper_files;
+  for (auto path = file_enumerator.Next(); !path.empty();
+       path = file_enumerator.Next()) {
+    wallpaper_files.push_back(path);
+  }
+
+  // One SeaPen image file saved to global wallpaper directory for account.
+  EXPECT_EQ(std::vector<base::FilePath>(
+                {base::FilePath(online_wallpaper_dir_.GetPath())
+                     .Append(wallpaper_constants::kSeaPenWallpaperDirName)
+                     .Append(kAccountId1.GetAccountIdKey())
+                     .Append("777")
+                     .AddExtension(".jpg")}),
+            wallpaper_files);
 }
 
 TEST_P(WallpaperControllerTest, SeaPenMigrateFiles) {
@@ -2464,7 +2539,8 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaperForPublicAccount) {
   SimulateUserLogin(account_id, user_manager::UserType::kPublicAccount);
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(account_id, SK_ColorBLUE, 12345u, &expected_image);
+  SetSeaPenWallpaper(account_id, SK_ColorBLUE, 12345u, /*preview_mode=*/false,
+                     &expected_image);
 
   WallpaperInfo wallpaper_info;
   ASSERT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id, &wallpaper_info));

@@ -28,8 +28,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -77,6 +79,7 @@ public class AllPlusAddressesBottomSheetRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Mock private Profile mProfile;
     @Mock private AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;
 
     public AllPlusAddressesBottomSheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
@@ -112,7 +115,8 @@ public class AllPlusAddressesBottomSheetRenderTest {
                                     activity,
                                     activity.getRootUiCoordinatorForTesting()
                                             .getBottomSheetController(),
-                                    mDelegate);
+                                    mDelegate,
+                                    FaviconHelper.create(activity, mProfile));
 
                     coordinator.showPlusProfiles(uiInfo);
                 });

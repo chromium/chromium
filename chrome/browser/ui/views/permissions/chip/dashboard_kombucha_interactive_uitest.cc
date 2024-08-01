@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
                        CameraUsingTestWithSystemBlock) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
 
-  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
       ContentSettingsType::MEDIASTREAM_CAMERA, true);
 
   RunTestSequence(
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
                        MicrophoneUsingTestWithSystemBlock) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_ALLOW);
 
-  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
       ContentSettingsType::MEDIASTREAM_MIC, true);
 
   RunTestSequence(

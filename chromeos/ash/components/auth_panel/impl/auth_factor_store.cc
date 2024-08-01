@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 
-#include "ash/shell.h"
+#include "ash/public/cpp/ime_controller.h"
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -30,14 +30,13 @@ void AuthFactorStore::State::InitializePasswordViewState(bool is_capslock_on) {
 
 AuthFactorStore::State::PasswordViewState::~PasswordViewState() = default;
 
-AuthFactorStore::AuthFactorStore(Shell* shell,
+AuthFactorStore::AuthFactorStore(ImeController* ime_controller,
                                  AuthHubConnector* connector,
                                  std::optional<AshAuthFactor> password_type,
                                  AuthHub* auth_hub)
     : auth_hub_connector_(connector), auth_hub_(auth_hub) {
   password_type_ = password_type;
 
-  auto* ime_controller = shell->ime_controller();
   // For now, assume the password view state is always required to be present
   // because we always have a password. We default to `false` for the state of
   // capslock if `ime_controller` is not available.

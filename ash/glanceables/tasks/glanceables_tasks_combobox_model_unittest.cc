@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
+
 #include <memory>
 #include <string>
 
 #include "ash/api/tasks/tasks_types.h"
-#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"

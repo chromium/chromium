@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
 
+@class AccountMenuViewController;
+
 // Presentation delegate for the account menu.
 @protocol AccountMenuViewControllerPresentationDelegate <NSObject>
 
@@ -20,8 +22,10 @@
 // The user tapped on "Edit account list".
 - (void)didTapEditAccountList;
 
-// Sign out and display a toast.
-- (void)signOutFromTargetRect:(CGRect)targetRect;
+// Sign out, display a toast, and call `callback` with argument stating whether
+// it’s a success.
+- (void)signOutFromTargetRect:(CGRect)targetRect
+                     callback:(void (^)(BOOL))callback;
 
 // The user tapped on "Add account…".
 - (void)didTapAddAccount;

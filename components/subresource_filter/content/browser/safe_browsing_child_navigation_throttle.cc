@@ -23,19 +23,30 @@
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "url/gurl.h"
 
+namespace features {
+
+// Enables or disables performing SubresourceFilter checks from the Browser
+// against any aliases for the requested URL found from DNS CNAME records.
+BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser,
+             "SendCnameAliasesToSubresourceFilterFromBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
+
 namespace subresource_filter {
 
 SafeBrowsingChildNavigationThrottle::SafeBrowsingChildNavigationThrottle(
     content::NavigationHandle* handle,
     AsyncDocumentSubresourceFilter* parent_frame_filter,
-    bool bypass_alias_check,
     base::RepeatingCallback<std::string(const GURL& url)>
         disallow_message_callback,
     std::optional<blink::FrameAdEvidence> ad_evidence)
     : ChildFrameNavigationFilteringThrottle(
           handle,
           parent_frame_filter,
-          bypass_alias_check,
+          /*alias_check_enabled=*/
+          base::FeatureList::IsEnabled(
+              features::kSendCnameAliasesToSubresourceFilterFromBrowser),
           std::move(disallow_message_callback)),
       ad_evidence_(std::move(ad_evidence)) {
   if (ad_evidence_.has_value()) {

@@ -586,7 +586,7 @@ ProxyHostObserver* GetProxyHostObserver() {
 
 bool IsRequestCompatibleWithSpeculativeRFH(NavigationRequest* request) {
   return request->state() <=
-             NavigationRequest::NavigationState::WILL_START_REQUEST &&
+             NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE &&
          request->GetAssociatedRFHType() ==
              NavigationRequest::AssociatedRenderFrameHostType::NONE;
 }
@@ -1227,8 +1227,6 @@ void SimulateGestureScrollSequence(RenderWidgetHost* render_widget_host,
   scroll_update.SetPositionInWidget(gfx::PointF(point));
   scroll_update.data.scroll_update.delta_x = delta.x();
   scroll_update.data.scroll_update.delta_y = delta.y();
-  scroll_update.data.scroll_update.velocity_x = 0;
-  scroll_update.data.scroll_update.velocity_y = 0;
   render_widget_host->ForwardGestureEvent(scroll_update);
 
   blink::WebGestureEvent scroll_end(

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/accessibility/platform/ax_unique_id.h"
 
 #include <memory>
@@ -61,7 +66,7 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
 }
 
 TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
-  int kLargerThanMaxId = kMaxId * 2;
+  constexpr int kLargerThanMaxId = kMaxId * 2;
   std::unique_ptr<AXUniqueId> ids[kLargerThanMaxId];
   // Creates and releases to fill up the internal static counter.
   for (int i = 0; i < kLargerThanMaxId; i++) {

@@ -16,6 +16,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -44,13 +45,13 @@
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/personalize_google_services_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
@@ -79,6 +80,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   BulkUploadCoordinator* _bulkUploadCoordinator;
   // The coordinator for the Accounts view.
   AccountsCoordinator* _accountsCoordinator;
+  SyncEncryptionTableViewController* _syncEncryptionTableViewController;
+  SyncEncryptionPassphraseTableViewController*
+      _syncEncryptionPassphraseTableViewController;
 }
 
 // View controller.
@@ -218,6 +222,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.viewController = nil;
   // Unblock any sync data type changes.
   _syncSetupInProgressHandle.reset();
+  [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
+  _syncEncryptionPassphraseTableViewController = nil;
+  [_syncEncryptionTableViewController settingsWillBeDismissed];
+  _syncEncryptionTableViewController = nil;
 
   _syncObserver.reset();
   [self.signoutActionSheetCoordinator stop];
@@ -493,33 +501,34 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 #pragma mark - SyncErrorSettingsCommandHandler
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
-  DCHECK(self.mediator.shouldEncryptionItemBeEnabled);
   if (presentModally) {
-    CHECK(self.syncService->GetUserSettings()->IsPassphraseRequired());
-    SyncEncryptionPassphraseTableViewController* controllerToPresent =
+    _syncEncryptionPassphraseTableViewController =
         [[SyncEncryptionPassphraseTableViewController alloc]
             initWithBrowser:self.browser];
-    controllerToPresent.presentModally = YES;
+    _syncEncryptionPassphraseTableViewController.presentModally = YES;
     UINavigationController* navigationController =
         [[UINavigationController alloc]
-            initWithRootViewController:controllerToPresent];
+            initWithRootViewController:
+                _syncEncryptionPassphraseTableViewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self.viewController
-        configureHandlersForRootViewController:controllerToPresent];
+    [self.viewController configureHandlersForRootViewController:
+                             _syncEncryptionPassphraseTableViewController];
     [self.viewController presentViewController:navigationController
                                       animated:YES
                                     completion:nil];
     return;
   }
-  UIViewController<SettingsRootViewControlling>* controllerToPush;
   // If there was a sync error, prompt the user to enter the passphrase.
   // Otherwise, show the full encryption options.
+  UIViewController<SettingsRootViewControlling>* controllerToPush;
   if (self.syncService->GetUserSettings()->IsPassphraseRequired()) {
-    controllerToPush = [[SyncEncryptionPassphraseTableViewController alloc]
-        initWithBrowser:self.browser];
+    controllerToPush = _syncEncryptionPassphraseTableViewController =
+        [[SyncEncryptionPassphraseTableViewController alloc]
+            initWithBrowser:self.browser];
   } else {
-    controllerToPush = [[SyncEncryptionTableViewController alloc]
-        initWithBrowser:self.browser];
+    controllerToPush = _syncEncryptionTableViewController =
+        [[SyncEncryptionTableViewController alloc]
+            initWithBrowser:self.browser];
   }
 
   [self.viewController configureHandlersForRootViewController:controllerToPush];
@@ -531,31 +540,36 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId chromeSyncID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  syncer::TrustedVaultUserActionTriggerForUMA settingsTrigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  AccessPoint settingsAccessPoint = AccessPoint::ACCESS_POINT_SETTINGS;
   [applicationCommands
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
-                                                   trigger:
-                                                       syncer::
-                                                           TrustedVaultUserActionTriggerForUMA::
-                                                               kSettings
-                                               accessPoint:
-                                                   AccessPoint::
-                                                       ACCESS_POINT_SETTINGS];
+                                          securityDomainID:chromeSyncID
+                                                   trigger:settingsTrigger
+                                               accessPoint:settingsAccessPoint];
 }
 
 - (void)openTrustedVaultReauthForDegradedRecoverability {
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId chromeSyncID =
+      trusted_vault::SecurityDomainId::kChromeSync;
+  syncer::TrustedVaultUserActionTriggerForUMA settingsTrigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  AccessPoint settingsAccessPoint = AccessPoint::ACCESS_POINT_SETTINGS;
   [applicationCommands
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
+                                                       securityDomainID:
+                                                           chromeSyncID
                                                                 trigger:
-                                                                    syncer::
-                                                                        TrustedVaultUserActionTriggerForUMA::
-                                                                            kSettings
+                                                                    settingsTrigger
                                                             accessPoint:
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_SETTINGS];
+                                                                settingsAccessPoint];
 }
 
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {

@@ -21,11 +21,9 @@
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -54,7 +52,7 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
  protected:
   BreadcrumbManagerBrowserAgentTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     OverlayPresenter::FromBrowser(browser_.get(),

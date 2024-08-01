@@ -215,6 +215,15 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP" desc="Tooltip for the label that shows while scanning for Bluetooth devices.">
       Scanning for Bluetooth devices...
     </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_ADAPTER_OFF" desc="Text of a link the user can click to get help information when Bluetooth adapter is turned off.">
+      <ph name="TURN_ON_BLUETOOTH_LINK">$1<ex>Turn on Bluetooth</ex></ph> to allow pairing
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT" desc="Text of the link for turning on Bluetooth when Bluetooth adapter is turned off.">
+      Turn on Bluetooth
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT" desc="Text of the link for opening system settings when browser does not have Bluetooth permission.">
+      System Settings
+    </message>
   </if>
   <message name="IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID" desc="To distinguish devices with the same name, the device chooser shows the device name with id.">
     <ph name="DEVICE_NAME">$1<ex>device name</ex></ph> (<ph name="DEVICE_ID">$2<ex>device id</ex></ph>)

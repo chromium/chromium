@@ -11,7 +11,7 @@
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/ui/android/webid/jni_headers/DigitalIdentitySafetyInterstitialBridge_jni.h"
+#include "chrome/browser/ui/android/digital_credentials/jni_headers/DigitalIdentitySafetyInterstitialBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

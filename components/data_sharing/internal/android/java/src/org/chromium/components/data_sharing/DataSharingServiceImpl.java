@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.url.GURL;
 
 /**
  * Java side of the JNI bridge between DataSharingServiceImpl in Java and C++. All method calls are
@@ -73,6 +74,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
+    public void addMember(String groupId, String accessToken, Callback<Integer> callback) {
+        DataSharingServiceImplJni.get().addMember(mNativePtr, groupId, accessToken, callback);
+    }
+
+    @Override
     public void removeMember(String groupId, String memberEmail, Callback<Integer> callback) {
         DataSharingServiceImplJni.get().removeMember(mNativePtr, groupId, memberEmail, callback);
     }
@@ -90,6 +96,18 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Override
     public UserDataHost getUserDataHost() {
         return mUserDataHost;
+    }
+
+    @Override
+    public GURL getDataSharingURL(GroupData groupData) {
+        return DataSharingServiceImplJni.get()
+                .getDataSharingURL(
+                        mNativePtr, groupData.groupToken.groupId, groupData.groupToken.accessToken);
+    }
+
+    @Override
+    public DataSharingService.ParseURLResult parseDataSharingURL(GURL url) {
+        return DataSharingServiceImplJni.get().parseDataSharingURL(mNativePtr, url);
     }
 
     @CalledByNative
@@ -123,6 +141,12 @@ public class DataSharingServiceImpl implements DataSharingService {
                 String inviteeEmail,
                 Callback<Integer> callback);
 
+        void addMember(
+                long nativeDataSharingServiceAndroid,
+                String groupId,
+                String accessToken,
+                Callback<Integer> callback);
+
         void removeMember(
                 long nativeDataSharingServiceAndroid,
                 String groupId,
@@ -132,5 +156,11 @@ public class DataSharingServiceImpl implements DataSharingService {
         boolean isEmptyService(long nativeDataSharingServiceAndroid, DataSharingServiceImpl caller);
 
         DataSharingNetworkLoader getNetworkLoader(long nativeDataSharingServiceAndroid);
+
+        GURL getDataSharingURL(
+                long nativeDataSharingServiceAndroid, String groupId, String accessToken);
+
+        DataSharingService.ParseURLResult parseDataSharingURL(
+                long nativeDataSharingServiceAndroid, GURL url);
     }
 }

@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/overscroll_actions",
+  "+ios/chrome/browser/overscroll_actions/ui_bundled",
   "+ios/chrome/browser/web/model/sad_tab_tab_helper.h",
   "+ios/chrome/browser/web/model/sad_tab_tab_helper_delegate.h",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",

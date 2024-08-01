@@ -37,8 +37,6 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 @Config(manifest = Config.NONE)
 public class ChildAccountStatusSupplierTest {
     private static final String ADULT_ACCOUNT_EMAIL = "adult.account@gmail.com";
-    private static final String CHILD_ACCOUNT_EMAIL =
-            AccountManagerTestRule.generateChildEmail(/* baseName= */ "account@gmail.com");
 
     FakeAccountManagerFacade mAccountManagerFacade = new FakeAccountManagerFacade();
 
@@ -79,7 +77,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testOneChildAccount() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
 
         ChildAccountStatusSupplier supplier =
                 new ChildAccountStatusSupplier(
@@ -111,7 +109,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testOneChildAccountWithNonChildAccounts() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
 
         ChildAccountStatusSupplier supplier =
@@ -155,7 +153,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testWaitsForAccountManagerFacadeWhenAppRestrictionsFound() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
 
         ChildAccountStatusSupplier supplier;
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.

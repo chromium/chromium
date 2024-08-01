@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter+Testing.h"
 
 #import <UIKit/UIKit.h>
 
 #import <optional>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_unittest_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter+Testing.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -33,6 +34,7 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
                 feature_engagement::Tracker::SnoozeAction action) {
               dismissal_callback_count_++;
               dismissal_callback_action_ = action;
+              run_loop_.Quit();
             }]),
         window_([[UIWindow alloc]
             initWithFrame:CGRectMake(0.0, 0.0, 500.0, 500.0)]),
@@ -67,6 +69,9 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
   int dismissal_callback_count_;
   std::optional<feature_engagement::Tracker::SnoozeAction>
       dismissal_callback_action_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::RunLoop run_loop_;
 };
 
 // Tests that, after initialization, the internal BubbleViewController and
@@ -148,6 +153,35 @@ TEST_F(BubbleViewControllerPresenterTest, TimersInstantiatedOnPresent) {
                   anchorPoint:anchor_point_];
   EXPECT_NE(nil, bubble_view_controller_presenter_.bubbleDismissalTimer);
   EXPECT_NE(nil, bubble_view_controller_presenter_.engagementTimer);
+}
+
+// Tests that the bubble is dismissed automatically after the timer ends.
+TEST_F(BubbleViewControllerPresenterTest, BubbleDismissedAfterTimeout) {
+  [bubble_view_controller_presenter_
+      presentInViewController:parent_view_controller_
+                  anchorPoint:anchor_point_];
+
+  task_environment_.FastForwardBy(base::Seconds(kBubbleVisibilityDuration + 1));
+  run_loop_.Run();
+  EXPECT_EQ(1, dismissal_callback_count_);
+}
+
+// Tests that the bubble is not dismissed after the default timeout when a
+// custom visibility duration is set.
+TEST_F(BubbleViewControllerPresenterTest,
+       BubbleDismissedOnlyAfterCustomTimeout) {
+  bubble_view_controller_presenter_.customBubbleVisibilityDuration = 8.0;
+  [bubble_view_controller_presenter_
+      presentInViewController:parent_view_controller_
+                  anchorPoint:anchor_point_];
+
+  task_environment_.FastForwardBy(base::Seconds(kBubbleVisibilityDuration + 1));
+  run_loop_.RunUntilIdle();
+  EXPECT_EQ(0, dismissal_callback_count_);
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+  run_loop_.Run();
+  EXPECT_EQ(1, dismissal_callback_count_);
 }
 
 // Tests that the bubble timer is `nil` but the engagement timer is not `nil`

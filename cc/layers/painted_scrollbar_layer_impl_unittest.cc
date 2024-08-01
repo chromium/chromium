@@ -32,12 +32,13 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   UIResourceBitmap thumb_bitmap(thumb_sk_bitmap);
   impl.host_impl()->CreateUIResource(thumb_uid, thumb_bitmap);
 
-  SkBitmap track_sk_bitmap;
-  track_sk_bitmap.allocN32Pixels(10, 10);
-  track_sk_bitmap.setImmutable();
-  UIResourceId track_uid = 6;
-  UIResourceBitmap track_bitmap(track_sk_bitmap);
-  impl.host_impl()->CreateUIResource(track_uid, track_bitmap);
+  SkBitmap track_and_buttons_sk_bitmap;
+  track_and_buttons_sk_bitmap.allocN32Pixels(10, 10);
+  track_and_buttons_sk_bitmap.setImmutable();
+  UIResourceId track_and_buttons_uid = 6;
+  UIResourceBitmap track_and_buttons_bitmap(track_and_buttons_sk_bitmap);
+  impl.host_impl()->CreateUIResource(track_and_buttons_uid,
+                                     track_and_buttons_bitmap);
 
   ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
 
@@ -55,7 +56,8 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   scrollbar_layer_impl->SetCurrentPos(100.f / 4);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
   scrollbar_layer_impl->SetScrollLayerLength(200.f);
-  scrollbar_layer_impl->set_track_ui_resource_id(track_uid);
+  scrollbar_layer_impl->set_track_and_buttons_ui_resource_id(
+      track_and_buttons_uid);
   scrollbar_layer_impl->set_thumb_ui_resource_id(thumb_uid);
   scrollbar_layer_impl->SetScrollbarPaintedOpacity(painted_opacity_);
   CopyProperties(impl.root_layer(), scrollbar_layer_impl);
@@ -81,26 +83,27 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     // scaled by the internal contents scale.  It's not occlusion-related
     // but is easy to verify here.
     const viz::DrawQuad* thumb_draw_quad = impl.quad_list().ElementAt(0);
-    const viz::DrawQuad* track_draw_quad = impl.quad_list().ElementAt(1);
+    const viz::DrawQuad* track_and_buttons_draw_quad =
+        impl.quad_list().ElementAt(1);
 
     EXPECT_EQ(viz::DrawQuad::Material::kTextureContent,
               thumb_draw_quad->material);
     EXPECT_EQ(viz::DrawQuad::Material::kTextureContent,
-              track_draw_quad->material);
+              track_and_buttons_draw_quad->material);
 
     const viz::TextureDrawQuad* thumb_quad =
         viz::TextureDrawQuad::MaterialCast(thumb_draw_quad);
-    const viz::TextureDrawQuad* track_quad =
-        viz::TextureDrawQuad::MaterialCast(track_draw_quad);
+    const viz::TextureDrawQuad* track_and_buttons_quad =
+        viz::TextureDrawQuad::MaterialCast(track_and_buttons_draw_quad);
 
     gfx::Rect scaled_thumb_rect = gfx::ScaleToEnclosingRect(thumb_rect, scale);
-    EXPECT_EQ(track_quad->rect.ToString(),
+    EXPECT_EQ(track_and_buttons_quad->rect.ToString(),
               gfx::Rect(scaled_layer_size).ToString());
     EXPECT_EQ(scrollbar_layer_impl->contents_opaque(),
-              track_quad->shared_quad_state->are_contents_opaque);
-    EXPECT_EQ(track_quad->visible_rect.ToString(),
+              track_and_buttons_quad->shared_quad_state->are_contents_opaque);
+    EXPECT_EQ(track_and_buttons_quad->visible_rect.ToString(),
               gfx::Rect(scaled_layer_size).ToString());
-    EXPECT_FALSE(track_quad->needs_blending);
+    EXPECT_FALSE(track_and_buttons_quad->needs_blending);
     EXPECT_EQ(thumb_quad->rect.ToString(), scaled_thumb_rect.ToString());
     EXPECT_EQ(thumb_quad->visible_rect.ToString(),
               scaled_thumb_rect.ToString());
@@ -108,7 +111,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     EXPECT_FALSE(thumb_quad->shared_quad_state->are_contents_opaque);
 
     EXPECT_EQ(painted_opacity_, thumb_quad->shared_quad_state->opacity);
-    EXPECT_EQ(1.f, track_quad->shared_quad_state->opacity);
+    EXPECT_EQ(1.f, track_and_buttons_quad->shared_quad_state->opacity);
   }
 
   {
@@ -149,12 +152,13 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion_SolidColorThumbNinePatchTrack) {
   UIResourceBitmap thumb_bitmap(thumb_sk_bitmap);
   impl.host_impl()->CreateUIResource(thumb_uid, thumb_bitmap);
 
-  SkBitmap track_sk_bitmap;
-  track_sk_bitmap.allocN32Pixels(10, 10);
-  track_sk_bitmap.setImmutable();
-  UIResourceId track_uid = 6;
-  UIResourceBitmap track_bitmap(track_sk_bitmap);
-  impl.host_impl()->CreateUIResource(track_uid, track_bitmap);
+  SkBitmap track_and_buttons_sk_bitmap;
+  track_and_buttons_sk_bitmap.allocN32Pixels(10, 10);
+  track_and_buttons_sk_bitmap.setImmutable();
+  UIResourceId track_and_buttons_uid = 6;
+  UIResourceBitmap track_and_buttons_bitmap(track_and_buttons_sk_bitmap);
+  impl.host_impl()->CreateUIResource(track_and_buttons_uid,
+                                     track_and_buttons_bitmap);
 
   ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
 
@@ -172,7 +176,8 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion_SolidColorThumbNinePatchTrack) {
   scrollbar_layer_impl->SetCurrentPos(100.f / 4);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
   scrollbar_layer_impl->SetScrollLayerLength(200.f);
-  scrollbar_layer_impl->set_track_ui_resource_id(track_uid);
+  scrollbar_layer_impl->set_track_and_buttons_ui_resource_id(
+      track_and_buttons_uid);
   scrollbar_layer_impl->SetThumbColor(SkColors::kRed);
   CopyProperties(impl.root_layer(), scrollbar_layer_impl);
 
@@ -197,29 +202,31 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion_SolidColorThumbNinePatchTrack) {
     // scaled by the internal contents scale.  It's not occlusion-related
     // but is easy to verify here.
     const viz::DrawQuad* thumb_draw_quad = impl.quad_list().ElementAt(0);
-    const viz::DrawQuad* track_draw_quad = impl.quad_list().ElementAt(1);
+    const viz::DrawQuad* track_and_buttons_draw_quad =
+        impl.quad_list().ElementAt(1);
 
     EXPECT_EQ(viz::DrawQuad::Material::kSolidColor, thumb_draw_quad->material);
     EXPECT_EQ(viz::DrawQuad::Material::kTextureContent,
-              track_draw_quad->material);
+              track_and_buttons_draw_quad->material);
 
     const viz::SolidColorDrawQuad* thumb_quad =
         viz::SolidColorDrawQuad::MaterialCast(thumb_draw_quad);
-    const viz::TextureDrawQuad* track_quad =
-        viz::TextureDrawQuad::MaterialCast(track_draw_quad);
+    const viz::TextureDrawQuad* track_and_buttons_quad =
+        viz::TextureDrawQuad::MaterialCast(track_and_buttons_draw_quad);
 
-    EXPECT_EQ(track_quad->rect, gfx::Rect(scaled_layer_size));
+    EXPECT_EQ(track_and_buttons_quad->rect, gfx::Rect(scaled_layer_size));
     EXPECT_EQ(scrollbar_layer_impl->contents_opaque(),
-              track_quad->shared_quad_state->are_contents_opaque);
-    EXPECT_EQ(track_quad->visible_rect, gfx::Rect(scaled_layer_size));
-    EXPECT_FALSE(track_quad->needs_blending);
+              track_and_buttons_quad->shared_quad_state->are_contents_opaque);
+    EXPECT_EQ(track_and_buttons_quad->visible_rect,
+              gfx::Rect(scaled_layer_size));
+    EXPECT_FALSE(track_and_buttons_quad->needs_blending);
     EXPECT_EQ(thumb_quad->rect, thumb_rect);
     EXPECT_EQ(thumb_quad->visible_rect, thumb_rect);
     EXPECT_FALSE(thumb_quad->needs_blending);
     EXPECT_FALSE(thumb_quad->shared_quad_state->are_contents_opaque);
 
     EXPECT_EQ(1.f, thumb_quad->shared_quad_state->opacity);
-    EXPECT_EQ(1.f, track_quad->shared_quad_state->opacity);
+    EXPECT_EQ(1.f, track_and_buttons_quad->shared_quad_state->opacity);
   }
 
   {

@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -20,12 +21,12 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/message_box_view.h"
+#include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -45,8 +46,6 @@
 
 namespace {
 
-views::Widget* g_last_message_box_widget_ = nullptr;
-
 #if BUILDFLAG(IS_WIN)
 UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
   UINT flags = MB_SETFOREGROUND;
@@ -60,14 +59,13 @@ UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
 }
 #endif
 
-// static
 chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
-                                  const std::u16string& title,
-                                  const std::u16string& message,
+                                  std::u16string_view title,
+                                  std::u16string_view message,
                                   chrome::MessageBoxType type,
-                                  const std::u16string& yes_text,
-                                  const std::u16string& no_text,
-                                  const std::u16string& checkbox_text) {
+                                  std::u16string_view yes_text,
+                                  std::u16string_view no_text,
+                                  std::u16string_view checkbox_text) {
   static bool g_message_box_is_showing_sync = false;
   // To avoid showing another MessageBoxDialog when one is already pending.
   // Otherwise, this might lead to a stack overflow due to infinite runloops.
@@ -89,6 +87,67 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
   run_loop.Run();
   return result;
 }
+
+bool CanUseNativeMessageBox() {
+  // Only Windows and macOS have native message box.
+  return BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
+}
+
+bool CanUseViewsMessageBox() {
+  // The views toolkit could still be uninitialized during browser startup.
+  if (!views::ViewsDelegate::GetInstance()) {
+    return false;
+  }
+
+  // Views dialogs cannot be shown outside the UI thread.
+  if (!base::CurrentUIThread::IsSet()) {
+    return false;
+  }
+
+  // Views uses icon and text from the resource bundle and therefore can't
+  // be used if the bundle is not initialized.
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    return false;
+  }
+
+  // aura::WindowTreeHost observes display::Screen for device scale change.
+  if (!display::Screen::GetScreen()) {
+    return false;
+  }
+
+  return true;
+}
+
+void ShowNativeMessageBox(gfx::NativeWindow parent,
+                          std::u16string_view title,
+                          std::u16string_view message,
+                          chrome::MessageBoxType type,
+                          std::u16string_view yes_text,
+                          std::u16string_view no_text,
+                          std::u16string_view checkbox_text,
+                          MessageBoxDialog::MessageBoxResultCallback callback) {
+  CHECK(CanUseNativeMessageBox());
+#if BUILDFLAG(IS_WIN)
+  LOG_IF(ERROR, !checkbox_text.empty())
+      << "Dialog checkbox won't be shown, checkbox text: " << checkbox_text;
+
+  int result = ui::MessageBox(views::HWNDForNativeWindow(parent),
+                              base::AsWString(message), base::AsWString(title),
+                              GetMessageBoxFlagsFromType(type));
+  std::move(callback).Run((result == IDYES || result == IDOK)
+                              ? chrome::MESSAGE_BOX_RESULT_YES
+                              : chrome::MESSAGE_BOX_RESULT_NO);
+#elif BUILDFLAG(IS_MAC)
+  // Even though this function could return a value synchronously here in
+  // principle, in practice call sites do not expect any behavior other than a
+  // return of DEFERRED and an invocation of the callback.
+  std::move(callback).Run(
+      chrome::ShowMessageBoxCocoa(message, type, checkbox_text));
+#else
+  NOTREACHED();
+#endif
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,16 +156,17 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
 // static
 chrome::MessageBoxResult MessageBoxDialog::Show(
     gfx::NativeWindow parent,
-    const std::u16string& title,
-    const std::u16string& message,
+    std::u16string_view title,
+    std::u16string_view message,
     chrome::MessageBoxType type,
-    const std::u16string& yes_text,
-    const std::u16string& no_text,
-    const std::u16string& checkbox_text,
+    std::u16string_view yes_text,
+    std::u16string_view no_text,
+    std::u16string_view checkbox_text,
     MessageBoxDialog::MessageBoxResultCallback callback) {
-  if (!callback)
+  if (!callback) {
     return ShowSync(parent, title, message, type, yes_text, no_text,
                     checkbox_text);
+  }
 
   startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
   if (chrome::internal::g_should_skip_message_box_for_test) {
@@ -114,82 +174,52 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 
-// Views modal dialogs cannot be shown outside the UI thread, or without a
-// parent window (except on CrOS), or if the ResourceBundle is not initialized.
-// Fallback to a Win32 MessageBox or Cocoa NSAlert if possible, otherwise log an
-// error message to the console.
-#if BUILDFLAG(IS_WIN)
-  // Win32 MessageBox does not support showing a checkbox.
-  if (!checkbox_text.empty() &&
-      (!base::CurrentUIThread::IsSet() ||
-       !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
-       !parent || !ui::ResourceBundle::HasSharedInstance())) {
-    int result = ui::MessageBox(
-        views::HWNDForNativeWindow(parent), base::AsWString(message),
-        base::AsWString(title), GetMessageBoxFlagsFromType(type));
-    std::move(callback).Run((result == IDYES || result == IDOK)
-                                ? chrome::MESSAGE_BOX_RESULT_YES
-                                : chrome::MESSAGE_BOX_RESULT_NO);
+  if (!CanUseViewsMessageBox()) {
+    if (CanUseNativeMessageBox()) {
+      ShowNativeMessageBox(parent, title, message, type, yes_text, no_text,
+                           checkbox_text, std::move(callback));
+    } else {
+      LOG(ERROR) << "Unable to show message box: " << title << " - " << message;
+      std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_NO);
+    }
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
-#elif BUILDFLAG(IS_MAC)
-  if (!base::CurrentUIThread::IsSet() ||
-      !content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
-      !parent || !ui::ResourceBundle::HasSharedInstance()) {
-    // Even though this function could return a value synchronously here in
-    // principle, in practice call sites do not expect any behavior other than a
-    // return of DEFERRED and an invocation of the callback.
-    std::move(callback).Run(
-        chrome::ShowMessageBoxCocoa(title, message, type, checkbox_text));
-    return chrome::MESSAGE_BOX_RESULT_DEFERRED;
-  }
-#else
-  if (!base::CurrentUIThread::IsSet() ||
-      !ui::ResourceBundle::HasSharedInstance() ||
-      !display::Screen::GetScreen()) {
-    LOG(ERROR) << "Unable to show a dialog outside the UI thread message loop: "
-               << title << " - " << message;
-    std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_NO);
-    return chrome::MESSAGE_BOX_RESULT_DEFERRED;
-  }
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System modals are only supported on IS_CHROMEOS_ASH.
-  const bool is_modal = true;
   const bool is_system_modal = !parent;
 #else
-  // Modal dialogs must have a parent.
-  const bool is_modal = !!parent;
+  // TODO(pbos): Consider whether we should disallow parentless MessageBoxes
+  // here. This currently fails from ShowProfileErrorDialog() which calls
+  // chrome::ShowWarningMessageBox*() without a parent. See
+  // https://crbug.com/1431697 which discovered this through a DCHECK failure.
   const bool is_system_modal = false;
 #endif
 
   MessageBoxDialog* dialog = new MessageBoxDialog(
       title, message, type, yes_text, no_text, checkbox_text, is_system_modal);
   views::Widget* widget =
-      is_modal
-          ? constrained_window::CreateBrowserModalDialogViews(dialog, parent)
-          : views::DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr);
+      constrained_window::CreateBrowserModalDialogViews(dialog, parent);
 
-  g_last_message_box_widget_ = widget;
+#if BUILDFLAG(IS_MAC)
+  // Mac does not support system modal dialogs. If there is no parent window to
+  // attach to, move the dialog's widget on top so other windows do not obscure
+  // it.
+  if (!parent) {
+    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  }
+#endif
 
   widget->Show();
   dialog->Run(std::move(callback));
   return chrome::MESSAGE_BOX_RESULT_DEFERRED;
 }
 
-// static
-views::Widget* MessageBoxDialog::GetLastMessageBoxWidgetForTesting() {
-  return g_last_message_box_widget_;
-}
-
 void MessageBoxDialog::OnDialogAccepted() {
-  if (!message_box_view_->HasVisibleCheckBox() ||
-      message_box_view_->IsCheckBoxSelected()) {
-    Done(chrome::MESSAGE_BOX_RESULT_YES);
-  } else {
-    Done(chrome::MESSAGE_BOX_RESULT_NO);
-  }
+  return Done(!message_box_view_->HasVisibleCheckBox() ||
+                      message_box_view_->IsCheckBoxSelected()
+                  ? chrome::MESSAGE_BOX_RESULT_YES
+                  : chrome::MESSAGE_BOX_RESULT_NO);
 }
 
 std::u16string MessageBoxDialog::GetWindowTitle() const {
@@ -226,22 +256,21 @@ void MessageBoxDialog::OnWidgetDestroying(views::Widget* widget) {
   if (result_callback_) {
     Done(chrome::MESSAGE_BOX_RESULT_NO);
   }
-  g_last_message_box_widget_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // MessageBoxDialog, private:
 
-MessageBoxDialog::MessageBoxDialog(const std::u16string& title,
-                                   const std::u16string& message,
+MessageBoxDialog::MessageBoxDialog(std::u16string_view title,
+                                   std::u16string_view message,
                                    chrome::MessageBoxType type,
-                                   const std::u16string& yes_text,
-                                   const std::u16string& no_text,
-                                   const std::u16string& checkbox_text,
+                                   std::u16string_view yes_text,
+                                   std::u16string_view no_text,
+                                   std::u16string_view checkbox_text,
                                    bool is_system_modal)
     : window_title_(title),
       type_(type),
-      message_box_view_(new views::MessageBoxView(message)) {
+      message_box_view_(new views::MessageBoxView(std::u16string(message))) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   SetModalType(is_system_modal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_WINDOW);
 #else
@@ -262,7 +291,7 @@ MessageBoxDialog::MessageBoxDialog(const std::u16string& title,
                                   chrome::MESSAGE_BOX_RESULT_NO));
   SetOwnedByWidget(true);
 
-  std::u16string ok_text = yes_text;
+  std::u16string ok_text(yes_text);
   if (ok_text.empty()) {
     ok_text =
         type_ == chrome::MESSAGE_BOX_TYPE_QUESTION
@@ -273,14 +302,14 @@ MessageBoxDialog::MessageBoxDialog(const std::u16string& title,
 
   // Only MESSAGE_BOX_TYPE_QUESTION has a Cancel button.
   if (type_ == chrome::MESSAGE_BOX_TYPE_QUESTION) {
-    std::u16string cancel_text = no_text;
+    std::u16string cancel_text(no_text);
     if (cancel_text.empty())
       cancel_text = l10n_util::GetStringUTF16(IDS_CANCEL);
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_text);
   }
 
   if (!checkbox_text.empty())
-    message_box_view_->SetCheckBoxLabel(checkbox_text);
+    message_box_view_->SetCheckBoxLabel(std::u16string(checkbox_text));
 }
 
 MessageBoxDialog::~MessageBoxDialog() {

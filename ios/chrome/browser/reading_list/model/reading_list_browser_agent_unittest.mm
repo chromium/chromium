@@ -40,7 +40,7 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
 
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     mock_snackbar_commands_handler_ =

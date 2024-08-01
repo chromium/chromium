@@ -14,6 +14,8 @@
 
 namespace autofill {
 
+using autofill_metrics::IbanSuggestionsEvent;
+
 namespace {
 
 constexpr int kFieldLengthLimitOnServerIbanSuggestion = 6;
@@ -72,34 +74,40 @@ bool IbanManager::OnGetSingleFieldSuggestions(
   return true;
 }
 
-void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                                  SuggestionType type) {
-  uma_recorder_.OnIbanSuggestionSelected(value);
+void IbanManager::OnSingleFieldSuggestionSelected(
+    const Suggestion& suggestion) {
+  uma_recorder_.OnIbanSuggestionSelected(suggestion);
 }
 
 void IbanManager::UmaRecorder::OnIbanSuggestionsShown(
     FieldGlobalId field_global_id) {
   // Log metrics related to the IBAN-related suggestions in the popup.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
-      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShown);
+      IbanSuggestionsEvent::kIbanSuggestionsShown);
   if (most_recent_suggestions_shown_field_global_id_ != field_global_id) {
     autofill_metrics::LogIndividualIbanSuggestionsEvent(
-        autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce);
+        IbanSuggestionsEvent::kIbanSuggestionsShownOnce);
   }
 
   most_recent_suggestions_shown_field_global_id_ = field_global_id;
 }
 
 void IbanManager::UmaRecorder::OnIbanSuggestionSelected(
-    const std::u16string& value) {
-  autofill_metrics::LogIbanSelectedCountry(Iban::GetCountryCode(value));
+    const Suggestion& suggestion) {
+  autofill_metrics::LogIbanSelectedCountry(
+      Iban::GetCountryCode(suggestion.main_text.value));
+  bool is_local_iban = absl::holds_alternative<Suggestion::Guid>(
+      suggestion.GetPayload<Suggestion::BackendId>());
   // We log every time the IBAN suggestion is selected.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
-      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected);
+      is_local_iban ? IbanSuggestionsEvent::kLocalIbanSuggestionSelected
+                    : IbanSuggestionsEvent::kServerIbanSuggestionSelected);
   if (most_recent_suggestion_selected_field_global_id_ !=
       most_recent_suggestions_shown_field_global_id_) {
     autofill_metrics::LogIndividualIbanSuggestionsEvent(
-        autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce);
+        is_local_iban
+            ? IbanSuggestionsEvent::kLocalIbanSuggestionSelectedOnce
+            : IbanSuggestionsEvent::kServerIbanSuggestionSelectedOnce);
   }
 
   most_recent_suggestion_selected_field_global_id_ =

@@ -216,10 +216,6 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
 
   int RemainingCapacity();
 
-  // TODO(crbug.com/329476354): Remove this method, use everything() to access
-  // the full buffer.
-  char* StartOfBuffer();
-
   // Returns the entire buffer, including the bytes before the `offset()`.
   //
   // The `span()` method in the base class only gives the part of the buffer

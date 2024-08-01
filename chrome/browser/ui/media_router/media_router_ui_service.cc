@@ -21,7 +21,7 @@ MediaRouterUIService::MediaRouterUIService(Profile* profile)
 
 MediaRouterUIService::MediaRouterUIService(
     Profile* profile,
-    std::unique_ptr<MediaRouterActionController> action_controller)
+    std::unique_ptr<CastToolbarButtonController> action_controller)
     : profile_(profile),
       action_controller_(std::move(action_controller)),
       profile_pref_registrar_(std::make_unique<PrefChangeRegistrar>()) {
@@ -44,7 +44,7 @@ MediaRouterUIService* MediaRouterUIService::Get(Profile* profile) {
   return MediaRouterUIServiceFactory::GetForBrowserContext(profile);
 }
 
-MediaRouterActionController* MediaRouterUIService::action_controller() {
+CastToolbarButtonController* MediaRouterUIService::action_controller() {
   return action_controller_.get();
 }
 
@@ -60,7 +60,7 @@ void MediaRouterUIService::ConfigureService() {
   if (MediaRouterEnabled(profile_)) {
     if (!action_controller_) {
       action_controller_ =
-          std::make_unique<MediaRouterActionController>(profile_);
+          std::make_unique<CastToolbarButtonController>(profile_);
     }
 #if BUILDFLAG(IS_CHROMEOS)
     if (GlobalMediaControlsCastStartStopEnabled(profile_)) {

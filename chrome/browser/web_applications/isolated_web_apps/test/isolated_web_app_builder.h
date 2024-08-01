@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -106,9 +107,9 @@ class ManifestBuilder {
                                   const FileHandlerAccept& accept);
 
   // TODO: Other manifest fields like share_target as needed by tests.
-
   const std::string& start_url() const;
   const std::vector<IconMetadata>& icons() const;
+  base::Version version() const;
 
   std::string ToJson() const;
   blink::mojom::ManifestPtr ToBlinkManifest(
@@ -127,11 +128,10 @@ class ManifestBuilder {
 
 class BundledIsolatedWebApp {
  public:
-  BundledIsolatedWebApp(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<uint8_t> serialized_bundle,
-      const base::FilePath path,
-      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
+  BundledIsolatedWebApp(const web_package::SignedWebBundleId& web_bundle_id,
+                        const std::vector<uint8_t> serialized_bundle,
+                        const base::FilePath path,
+                        ManifestBuilder manifest_builder);
 
   ~BundledIsolatedWebApp();
 
@@ -140,6 +140,10 @@ class BundledIsolatedWebApp {
   const web_package::SignedWebBundleId& web_bundle_id() const {
     return web_bundle_id_;
   }
+
+  base::Version version() const { return manifest_builder_.version(); }
+
+  std::string GetBundleData() const;
 
   // Saves this app's signing key in Chrome's list of trusted keys, which will
   // allow the app to be installed with dev mode disabled.
@@ -154,7 +158,7 @@ class BundledIsolatedWebApp {
  private:
   web_package::SignedWebBundleId web_bundle_id_;
   base::FilePath path_;
-  std::optional<ManifestBuilder> manifest_builder_;
+  ManifestBuilder manifest_builder_;
 };
 
 class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
@@ -162,7 +166,7 @@ class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
   static std::unique_ptr<ScopedBundledIsolatedWebApp> Create(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::vector<uint8_t> serialized_bundle,
-      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
+      ManifestBuilder manifest_builder);
 
   ~ScopedBundledIsolatedWebApp();
 
@@ -171,7 +175,7 @@ class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::vector<uint8_t> serialized_bundle,
       base::ScopedTempFile bundle_file,
-      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
+      ManifestBuilder manifest_builder);
 
   base::ScopedTempFile bundle_file_;
 };
@@ -296,6 +300,11 @@ class IsolatedWebAppBuilder {
   [[nodiscard]] std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
       const web_package::WebBundleSigner::KeyPair& key_pair);
 
+  // Creates and signs a .swbn file on disk containing the app's contents.
+  [[nodiscard]] std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
+
   // Creates and signs a .swbn file on disk containing the app's contents. The
   // location of the bundle must be provided in `bundle_path`. A random signing
   // key will be created and used to sign the bundle.
@@ -307,6 +316,13 @@ class IsolatedWebAppBuilder {
   std::unique_ptr<BundledIsolatedWebApp> BuildBundle(
       const base::FilePath& bundle_path,
       const web_package::WebBundleSigner::KeyPair& key_pair);
+
+  // Creates and signs a .swbn file on disk containing the app's contents. The
+  // location of the bundle must be provided in `bundle_path`.
+  std::unique_ptr<BundledIsolatedWebApp> BuildBundle(
+      const base::FilePath& bundle_path,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
 
  private:
   using ResourceBody = absl::variant<base::FilePath, std::string>;
@@ -336,7 +352,8 @@ class IsolatedWebAppBuilder {
       const net::test_server::HttpRequest& request);
 
   std::vector<uint8_t> BuildInMemoryBundle(
-      const web_package::WebBundleSigner::KeyPair& key_pair);
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs);
 
   void Validate();
 

@@ -482,7 +482,7 @@ bool ShapeResult::IsStartSafeToBreak() const {
 }
 
 unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
-  for (auto* it = runs_.begin(); it != runs_.end(); ++it) {
+  for (auto it = runs_.begin(); it != runs_.end(); ++it) {
     const auto& run = *it;
     if (!run)
       continue;
@@ -1554,7 +1554,7 @@ void ShapeResult::InsertRun(ShapeResult::RunInfo* run) {
     return run->start_index_ > start_index;
   };
 
-  auto* it = std::lower_bound(
+  auto it = std::lower_bound(
       runs_.begin(), runs_.end(), run->start_index_,
       HB_DIRECTION_IS_FORWARD(run->direction_) ? ltr_comparer : rtl_comparer);
   if (it != runs_.end()) {

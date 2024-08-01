@@ -184,7 +184,7 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
 
   auto total_block_size = ascent + descent + BorderScrollbarPadding().block_end;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(), total_block_size,
+      GetConstraintSpace(), Node(), BorderPadding(), total_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(total_block_size);

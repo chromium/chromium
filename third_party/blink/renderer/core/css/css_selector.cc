@@ -60,6 +60,8 @@ namespace blink {
 
 namespace {
 
+constexpr bool kExpandPseudoParent = true;
+
 unsigned MaximumSpecificity(const CSSSelectorList* list) {
   if (!list) {
     return 0;
@@ -1030,18 +1032,29 @@ static void SerializeNamespacePrefixIfNeeded(const AtomicString& prefix,
   builder.Append('|');
 }
 
-static void SerializeSelectorList(const CSSSelectorList* selector_list,
-                                  StringBuilder& builder) {
+// static
+template <bool expand_pseudo_parent>
+void CSSSelector::SerializeSelectorList(const CSSSelectorList* selector_list,
+                                        StringBuilder& builder) {
   const CSSSelector* first_sub_selector = selector_list->First();
   for (const CSSSelector* sub_selector = first_sub_selector; sub_selector;
        sub_selector = CSSSelectorList::Next(*sub_selector)) {
     if (sub_selector != first_sub_selector) {
       builder.Append(", ");
     }
-    builder.Append(sub_selector->SelectorText());
+    builder.Append(sub_selector->SelectorTextInternal<expand_pseudo_parent>());
   }
 }
 
+String CSSSelector::SelectorText() const {
+  return SelectorTextInternal<!kExpandPseudoParent>();
+}
+
+String CSSSelector::SelectorTextExpandingPseudoParent() const {
+  return SelectorTextInternal<kExpandPseudoParent>();
+}
+
+template <bool expand_pseudo_parent>
 bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
   bool suppress_selector_list = false;
   if (Match() == kId) {
@@ -1091,7 +1104,8 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
         // Only relevant for :nth-child, not :nth-of-type.
         if (data_.rare_data_->selector_list_ != nullptr) {
           builder.Append(" of ");
-          SerializeSelectorList(data_.rare_data_->selector_list_, builder);
+          SerializeSelectorList<expand_pseudo_parent>(
+              data_.rare_data_->selector_list_, builder);
           suppress_selector_list = true;
         }
 
@@ -1120,7 +1134,17 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoWhere:
         break;
       case kPseudoParent:
-        builder.Append('&');
+        if constexpr (expand_pseudo_parent) {
+          // Replace parent pseudo with equivalent :is() pseudo.
+          builder.Append(":is");
+          if (auto* parent = SelectorListOrParent()) {
+            builder.Append('(');
+            builder.Append(parent->SelectorTextExpandingPseudoParent());
+            builder.Append(')');
+          }
+        } else {
+          builder.Append('&');
+        }
         break;
       case kPseudoRelativeAnchor:
         NOTREACHED_IN_MIGRATION();
@@ -1232,12 +1256,13 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
 
   if (SelectorList() && !suppress_selector_list) {
     builder.Append('(');
-    SerializeSelectorList(SelectorList(), builder);
+    SerializeSelectorList<expand_pseudo_parent>(SelectorList(), builder);
     builder.Append(')');
   }
   return true;
 }
 
+template <bool expand_pseudo_parent>
 const CSSSelector* CSSSelector::SerializeCompound(
     StringBuilder& builder) const {
   if (Match() == kTag && !IsImplicit()) {
@@ -1249,7 +1274,8 @@ const CSSSelector* CSSSelector::SerializeCompound(
 
   for (const CSSSelector* simple_selector = this; simple_selector;
        simple_selector = simple_selector->NextSimpleSelector()) {
-    if (!simple_selector->SerializeSimpleSelector(builder)) {
+    if (!simple_selector->SerializeSimpleSelector<expand_pseudo_parent>(
+            builder)) {
       return nullptr;
     }
     if (simple_selector->Relation() != kSubSelector &&
@@ -1260,12 +1286,13 @@ const CSSSelector* CSSSelector::SerializeCompound(
   return nullptr;
 }
 
-String CSSSelector::SelectorText() const {
+template <bool expand_pseudo_parent>
+String CSSSelector::SelectorTextInternal() const {
   String result;
   for (const CSSSelector* compound = this; compound;
        compound = compound->NextSimpleSelector()) {
     StringBuilder builder;
-    compound = compound->SerializeCompound(builder);
+    compound = compound->SerializeCompound<expand_pseudo_parent>(builder);
     if (!compound) {
       return builder.ReleaseString() + result;
     }
@@ -1335,7 +1362,7 @@ String CSSSelector::SimpleSelectorTextForDebug() const {
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
                              builder);
   } else {
-    SerializeSimpleSelector(builder);
+    SerializeSimpleSelector<!kExpandPseudoParent>(builder);
   }
   return builder.ToString();
 }

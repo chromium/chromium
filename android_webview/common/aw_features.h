@@ -16,6 +16,7 @@ namespace features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
+BASE_DECLARE_FEATURE(kWebViewAutoSAA);
 BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
 BASE_DECLARE_FEATURE(kWebViewBrotliSupport);
 BASE_DECLARE_FEATURE(kWebViewCheckPakFileDescriptors);
@@ -26,6 +27,7 @@ BASE_DECLARE_FEATURE(kWebViewEnumerateDevicesCache);
 BASE_DECLARE_FEATURE(kWebViewExitReasonMetric);
 BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);
 BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);
+BASE_DECLARE_FEATURE(kWebViewFrameRateHints);
 BASE_DECLARE_FEATURE(kWebViewHitTestInBlinkOnTouchStart);
 BASE_DECLARE_FEATURE(kWebViewImageDrag);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);

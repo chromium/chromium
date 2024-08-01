@@ -35,11 +35,11 @@ source_set("utils") {
     "//components/policy/core/common",
     "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/policy/ui_bundled:user_policy_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
   ]
 }
 
@@ -95,13 +95,13 @@ source_set("promos_manager") {
     "//ios/chrome/browser/default_promo/ui_bundled/post_restore:post_restore_default_browser",
     "//ios/chrome/browser/default_promo/ui_bundled/promo_handler",
     "//ios/chrome/browser/docking_promo/ui",
+    "//ios/chrome/browser/first_run/ui_bundled/omnibox_position/promo",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/ui/first_run/omnibox_position/promo",
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/ui/whats_new/promo",

@@ -6,9 +6,11 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,14 +30,14 @@ std::unique_ptr<Incident> MakeIncident(const char* file_basename) {
       incident->mutable_signature()->add_certificate_chain();
 
   // Fill the certificate chain with 2 elements.
-  const unsigned char certificates[][5] = {
-      {42, 255, 100, 53, 2},
-      {64, 33, 51, 91, 210},
+  const std::array<std::vector<unsigned char>, 2> certificates = {
+      std::vector<unsigned char>{42, 255, 100, 53, 2},
+      std::vector<unsigned char>{64, 33, 51, 91, 210},
   };
   for (size_t i = 0; i < std::size(certificates); ++i) {
     ClientDownloadRequest_CertificateChain_Element* element =
         certificate_chain->add_element();
-    element->set_certificate(certificates[i], std::size(certificates[i]));
+    element->set_certificate(certificates[i].data(), certificates[i].size());
   }
 
   return std::make_unique<BinaryIntegrityIncident>(std::move(incident));

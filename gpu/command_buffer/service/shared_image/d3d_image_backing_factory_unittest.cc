@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 
 #include <dawn/dawn_proc.h>
@@ -49,6 +54,7 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
@@ -1562,8 +1568,9 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
     shared_image_backing = D3DImageBacking::Create(
         mailbox, viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-        d3d11_texture, std::move(dxgi_shared_handle_state),
-        context_state_->GetGLFormatCaps(), GL_TEXTURE_EXTERNAL_OES,
+        d3d11_texture, /*dcomp_texture=*/nullptr,
+        std::move(dxgi_shared_handle_state), context_state_->GetGLFormatCaps(),
+        GL_TEXTURE_EXTERNAL_OES,
         /*array_slice=*/0, /*plane_index=*/0u);
     // Need to clear the backing created with shared handle.
     shared_image_backing->SetCleared();
@@ -2137,6 +2144,76 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
 TEST_F(D3DImageBackingFactoryTest,
        MultiplanarUploadAndReadbackWithUpdateSubresource) {
   RunMultiplanarUploadAndReadback(/*use_update_subresource=*/true);
+}
+
+TEST_F(D3DImageBackingFactoryTest, CanCreateScanoutBacking) {
+  const gfx::Size arbitrary_size = gfx::Size(4, 4);
+
+  // E.g. a hardware decoded video frame
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
+      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_SCANOUT,
+      viz::MultiPlaneFormat::kNV12, arbitrary_size, /*thread_safe=*/false,
+      gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE, GrContextType ::kGL, {}));
+
+  // E.g. getDisplayMedia content, like a shared window
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
+      gpu::SHARED_IMAGE_USAGE_SCANOUT, viz::MultiPlaneFormat::kNV12,
+      arbitrary_size, /*thread_safe=*/false,
+      gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE, GrContextType ::kGL, {}));
+
+  // E.g. delegated compositing draw quad resources
+  EXPECT_EQ(
+      gl::DirectCompositionTextureSupported(),
+      shared_image_factory_->CanCreateSharedImage(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT, viz::SinglePlaneFormat::kBGRA_8888,
+          arbitrary_size, /*thread_safe=*/false,
+          gfx::GpuMemoryBufferType::EMPTY_BUFFER, GrContextType ::kGL, {}));
+}
+
+TEST_F(D3DImageBackingFactoryTest, CanProduceDCompTextureOverlay) {
+  if (!gl::DirectCompositionTextureSupported()) {
+    GTEST_SKIP() << "IDCompositionTexture not supported";
+  }
+
+  constexpr gfx::Size size(32, 32);
+  constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
+  constexpr gfx::ColorSpace color_space;
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  constexpr auto format = viz::SinglePlaneFormat::kBGRA_8888;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox, format, kNullSurfaceHandle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, alpha_type, usage, "TestLabel",
+      /*is_thread_safe=*/false);
+  ASSERT_NE(owned_backing, nullptr);
+  SharedImageBacking* backing = owned_backing.get();
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(owned_backing),
+                                     memory_type_tracker_.get());
+  ASSERT_TRUE(shared_image_ref);
+
+  // Mark it as initialized-- we won't be reading the actual pixels.
+  backing->SetCleared();
+
+  auto overlay_representation =
+      shared_image_representation_factory_->ProduceOverlay(mailbox);
+
+  auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
+  ASSERT_TRUE(scoped_read_access) << "Can begin overlay read access";
+  auto overlay_image = scoped_read_access->GetDCLayerOverlayImage();
+  ASSERT_TRUE(overlay_image);
+  ASSERT_TRUE(overlay_image->dcomp_visual_content())
+      << "Overlay image is visual content";
+  Microsoft::WRL::ComPtr<IUnknown> visual_content =
+      overlay_image->dcomp_visual_content();
+  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+  ASSERT_HRESULT_SUCCEEDED(visual_content.As(&dcomp_texture))
+      << "Overlay image visual content is a DComp texture";
+  ASSERT_TRUE(dcomp_texture);
 }
 
 }  // namespace gpu

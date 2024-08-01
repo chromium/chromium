@@ -65,6 +65,10 @@ TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("instrument_id"),
             std::string::npos);
+  // iban_info must always be set, even if blank, so that the Payments server
+  // knows this is an UnmaskIbanRequest.
+  EXPECT_NE(GetRequest()->GetRequestContent().find("iban_info"),
+            std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find(
                 base::NumberToString(kInstrumentId)),
             std::string::npos);

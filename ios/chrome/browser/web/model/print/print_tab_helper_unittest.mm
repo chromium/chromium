@@ -41,7 +41,7 @@ class PrintTabHelperTest : public PlatformTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(factory.CreateSyncable(registry.get()));
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     web_state_.SetBrowserState(chrome_browser_state_.get());
 
     printer_ = [[PrintTabHelperTestPrinter alloc] init];

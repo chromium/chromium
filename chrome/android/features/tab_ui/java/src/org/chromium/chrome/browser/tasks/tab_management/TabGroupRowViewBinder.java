@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
@@ -51,8 +52,13 @@ public class TabGroupRowViewBinder
             view.setTitleData(model.get(TITLE_DATA));
         } else if (propertyKey == CREATION_MILLIS) {
             view.setCreationMillis(model.get(CREATION_MILLIS));
-        } else if (propertyKey == OPEN_RUNNABLE || propertyKey == DELETE_RUNNABLE) {
-            view.setMenuRunnables(model.get(OPEN_RUNNABLE), model.get(DELETE_RUNNABLE));
+        } else if (propertyKey == OPEN_RUNNABLE
+                || propertyKey == DELETE_RUNNABLE
+                || propertyKey == LEAVE_RUNNABLE) {
+            view.setMenuRunnables(
+                    model.get(OPEN_RUNNABLE),
+                    model.get(DELETE_RUNNABLE),
+                    model.get(LEAVE_RUNNABLE));
         }
     }
 

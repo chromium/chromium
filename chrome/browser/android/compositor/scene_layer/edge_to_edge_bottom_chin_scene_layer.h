@@ -34,6 +34,7 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
                                        jint container_width,
                                        jint container_height,
                                        jint color_argb,
+                                       jint divider_color,
                                        jfloat y_offset);
 
   void SetContentTree(
@@ -47,10 +48,16 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
 
  private:
   bool should_show_background_{false};
+  bool is_debugging_;
+
   SkColor background_color_{SK_ColorWHITE};
   // TODO(crbug.com/349876343) Add divider as a new layer in the container.
   scoped_refptr<cc::slim::Layer> view_container_;
   scoped_refptr<cc::slim::SolidColorLayer> view_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> divider_layer_;
+
+  // When adding new layers, add below to ensure debug layers stay on the top.
+  scoped_refptr<cc::slim::SolidColorLayer> debug_layer_;
 };
 
 }  // namespace android

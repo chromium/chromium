@@ -46,6 +46,7 @@
 <translation id="1163437384438183174">从任务栏中移除 Phone Hub</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">您的 USB-C 数据线可能没有正确连接到显示屏</translation>
+<translation id="1173268871892601910">ChromeOS 密码管理工具想确认您的身份</translation>
 <translation id="1175572348579024023">滚动</translation>
 <translation id="1175944128323889279">当前电池电量为 <ph name="BATTERY_PERCENTAGE" />%，还可使用 <ph name="TIME" /></translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -113,6 +114,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1350494136075914725">正在进行 · 切换到标签页</translation>
 <translation id="1351937230027495976">收起菜单</translation>
+<translation id="1352537790882153971">你可以通过有线耳机监控麦克风的声音。关闭面板即可停止。</translation>
 <translation id="1360220746312242196">搜索网页时，转到上一个相符的搜索结果</translation>
 <translation id="1360788414852622716">正在停用配置文件。这可能需要几分钟的时间。</translation>
 <translation id="1364382257761975320">若要解锁 Chromebook，请使用指纹</translation>
@@ -134,6 +136,7 @@
 <translation id="1420408895951708260">开启/关闭护眼模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1435537621343861112">无法启动语音输入。因为您的麦克风处于关闭状态。</translation>
+<translation id="1445031758921122223">已下载面部控制文件</translation>
 <translation id="1447907279406111651">进行中 · 结束时间：<ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">您的设备热点</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
@@ -199,6 +202,7 @@
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
 <translation id="1679841710523778799">调高亮度</translation>
+<translation id="1680659827022803830">视频通话控件</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 地址：<ph name="ADDRESS" /></translation>
@@ -246,7 +250,7 @@
 <translation id="1862077610023398675">隐藏控件</translation>
 <translation id="1862380676329487333">更新并退出</translation>
 <translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
-<translation id="1869497990620230175">快捷文件</translation>
+<translation id="1867566089293859645">更改将在您下次登录时应用。您可以随时前往“设置”&gt;“系统偏好设置”&gt;“启动”进行更新。</translation>
 <translation id="1871023081802165724">播放媒体</translation>
 <translation id="1871915835366697861">不适用于此游戏</translation>
 <translation id="1879018240766558464">目前不支持无痕式窗口。其他应用会被保存。</translation>
@@ -254,6 +258,7 @@
 <translation id="1882897271359938046">正在镜像到<ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">使用指纹解锁</translation>
 <translation id="1894024878080591367">设置以使用键盘玩游戏</translation>
+<translation id="1896383923047738322">自定义键盘</translation>
 <translation id="1904997243703671177">关闭蓝牙后，<ph name="DEVICE_COUNT" /> 个外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接，包括：</translation>
 <translation id="1908992311423394684">新安装</translation>
 <translation id="1915307458270490472">中止</translation>
@@ -289,6 +294,7 @@
 <translation id="2018630726571919839">给我讲个笑话</translation>
 <translation id="2021864487439853900">点击即可解锁</translation>
 <translation id="2034971124472263449">仍然保存</translation>
+<translation id="2041220428661959602">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键目前处于停用状态</translation>
 <translation id="2049240716062114887">桌面名称已更改为“<ph name="DESK_NAME" />”</translation>
 <translation id="2050339315714019657">纵向</translation>
@@ -388,6 +394,7 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2455994958736234930">在地址栏中添加 www. 和 .com，然后打开网站</translation>
 <translation id="2456008742792828469">日历，<ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="246052086404491029">展开细目</translation>
 <translation id="2465145153332031561">电池健康度为 <ph name="BATTERY_HEALTH_PERCENTAGE" />%，充电循环次数为 <ph name="CYCLE_COUNT" /> 次</translation>
 <translation id="2473177541599297363">确认分辨率</translation>
 <translation id="2475982808118771221">出现错误</translation>
@@ -484,6 +491,7 @@
 <translation id="2825619548187458965">任务栏</translation>
 <translation id="2831035692318564937">已开启，直到日出</translation>
 <translation id="2834813915651407382">最近打开过</translation>
+<translation id="2838589015763961627">退出全屏模式即可调整大小</translation>
 <translation id="2840766858109427815">前往下一页</translation>
 <translation id="2841907151129139818">已切换到平板电脑模式</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
@@ -625,11 +633,11 @@
 <translation id="3369111525500416043">即将到期</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3375634426936648815">已连接</translation>
-<translation id="3378438761594387761">您近期的下载内容和屏幕截图会显示在此处</translation>
 <translation id="3386978599540877378">全屏放大镜</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3389599499324569679">开启语音输入？</translation>
 <translation id="3394432020929931914">，已展开</translation>
+<translation id="3401474642070997151">如需自定义建议，请右键点击建议或按住建议</translation>
 <translation id="3405101454990027959">开启麦克风使用权限</translation>
 <translation id="3409584356742878290">显示或隐藏开发者工具检查器</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
@@ -692,6 +700,7 @@
 <translation id="3593646411856133110">向上滑动并按住屏幕可查看已打开的应用</translation>
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="3596012367874587041">应用设置</translation>
+<translation id="3597890697379254532">仅支持横向模式</translation>
 <translation id="3598452309062311481">搜索键 + h</translation>
 <translation id="3600061223661453002">关闭</translation>
 <translation id="3604801046548457007">已创建桌面“<ph name="DESK_TITILE" />”</translation>
@@ -749,6 +758,7 @@
 <translation id="3756485814916578707">正在投放屏幕</translation>
 <translation id="3765841382945324995">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键原为 <ph name="OLD_SHORTCUT" />，现已更新为 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天修改过</translation>
+<translation id="3772109172035555611">自定义 TrackPoint</translation>
 <translation id="3773700760453577392">管理员已禁止 <ph name="USER_EMAIL" /> 使用多账号登录功能。所有用户都必须先退出账号才能继续。</translation>
 <translation id="3779139509281456663">正在连接“<ph name="NAME" />”</translation>
 <translation id="3781910048497807059">将焦点移到上一个窗格</translation>
@@ -796,11 +806,13 @@
 <translation id="3953130726459169782">尚未完成任何作业。</translation>
 <translation id="3958714870339660776">全天</translation>
 <translation id="3962859241508114581">上一首</translation>
+<translation id="3963124517343721543">打开之前的窗口和标签页，轻松地从上次停下的地方继续。您还会看到待办事项的个性化建议。</translation>
 <translation id="3969043077941541451">已关闭</translation>
 <translation id="3970324493235864154">查看手机中的通知</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="397726367135689299">正在充电的电池可能会变得不稳定。</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
+<translation id="397808938113646171">时间到。太棒了！</translation>
 <translation id="3982013579989864579">要切换音频输出设备吗？</translation>
 <translation id="3984536049089846927">下一页</translation>
 <translation id="3986082989454912832">接听</translation>
@@ -825,10 +837,13 @@
 <translation id="404437169852192935">更新已结束</translation>
 <translation id="4049230407053723315">快捷设置</translation>
 <translation id="4057003836560082631">第 <ph name="INDEX" /> 个浏览器标签页，共 <ph name="TOTAL_COUNT" /> 个。<ph name="SITE_TITLE" />，<ph name="SITE_URL" /></translation>
+<translation id="4059696795118403455">如需查看待办事项的个性化建议，请按概览键</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{对 1 个应用关闭}other{对 # 个应用关闭}}</translation>
 <translation id="4066027111132117168">已开启，<ph name="REMAINING_TIME" /></translation>
+<translation id="4067635609339702874">ChromeOS 设置想确认您的身份</translation>
 <translation id="4069532248403319695">打开“下载内容”页</translation>
 <translation id="4072264167173457037">信号中等</translation>
+<translation id="4072805772816336153">请稍后重试</translation>
 <translation id="4086921558679520050">在设备上开启物理麦克风开关</translation>
 <translation id="4101772068965291327">打开主页</translation>
 <translation id="4112140312785995938">快退</translation>
@@ -954,6 +969,7 @@
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4518404433291145981">若要解锁 Chromebook，请先解锁您的手机</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
+<translation id="4531536770443562276">仅支持全屏模式</translation>
 <translation id="4533343294786968049">正在减缓电池老化，延长电池寿命。电池电量将在<ph name="FULLY_CHARGE_TIME" /> 之前充满。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
@@ -962,6 +978,7 @@
 <translation id="4544483149666270818">选择一个窗口即可录制</translation>
 <translation id="4545950850562423083">将当前网页保存为书签</translation>
 <translation id="4548482551627849548">将活动窗口移至左侧桌面</translation>
+<translation id="4552748006424994716">为避免回声，您只能使用有线耳机收听麦克风的声音。</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
@@ -989,6 +1006,7 @@
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>
 <translation id="4649019912155580914">您编辑过</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框已选中。</translation>
+<translation id="465686131535918331">您可以对 <ph name="PERIPHERAL_NAME" /> 进行个性化设置</translation>
 <translation id="4657775630156561295">以下建议将会从您账号的建议历史记录中永久移除：
 
 <ph name="QUERY" /></translation>
@@ -1030,6 +1048,7 @@
 <translation id="4778095205580009397">无法在演示会话中使用 Google 助理。</translation>
 <translation id="4789348252524569426">无法安装语音文件。您的设备需要更新。请重启设备，然后重试。</translation>
 <translation id="478959186716341421">正在投放</translation>
+<translation id="4798403412327076414">您下次登录时，会看到之前打开的窗口和应用</translation>
 <translation id="4798622944000246716">您的移动网络不支持热点</translation>
 <translation id="4798888871844665150">剪贴板中已有复制的内容。使用 <ph name="SHORTCUT_KEY_NAME" /> + V 键即可查看。</translation>
 <translation id="479989351350248267">搜索</translation>
@@ -1202,6 +1221,7 @@
 <translation id="5361524080961918551">已下载<ph name="LANGUAGE" />语音文件的部分内容</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
 <translation id="5364693579536176785">存储空间</translation>
+<translation id="5369573834963677938">设备上的其他用户将可以使用面部控制功能</translation>
 <translation id="5369717264580061086">在“文件”应用内预览文件</translation>
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
@@ -1378,6 +1398,7 @@
 <translation id="5982119059638483922">按 Fn+搜索键或按 Shift 键可停用。</translation>
 <translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
 <translation id="598407983968395253">使用模板</translation>
+<translation id="5986723678596105470">通过 Google Meet 加入</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="5998374579424866922">关闭游戏控件</translation>
 <translation id="6000279412553873020">按键、按钮等</translation>
@@ -1390,9 +1411,11 @@
 <translation id="6020147141355393792">设置查看手机中的通知和应用</translation>
 <translation id="6022924867608035986">清除搜索框文字</translation>
 <translation id="602472752137106327">显示所有桌面中的窗口，已选中单选按钮</translation>
+<translation id="6024768346262692989">无法下载面部控制文件</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />没有任何活动。按一下 Enter 键即可在浏览器中打开 Google 日历。</translation>
 <translation id="6030495522958826102">菜单已移至屏幕的左下角。</translation>
+<translation id="6030608926359652298">自定义触控板</translation>
 <translation id="6032620807120418574">点击任意位置即可录制整个屏幕</translation>
 <translation id="6040071906258664830">麦克风录音功能已<ph name="STATE" /></translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -1447,6 +1470,7 @@
 <translation id="6185696379715117369">向上翻页</translation>
 <translation id="619335566042889110">立即充满电</translation>
 <translation id="6193431488227440296">开发者</translation>
+<translation id="6196214354688969799">摄影棚视效</translation>
 <translation id="6199775032047436064">重新加载当前网页</translation>
 <translation id="6200515304866777730">应用不支持</translation>
 <translation id="6210042900243040400">关联已保存到 <ph name="EMAIL" /> 的“<ph name="NAME" />”</translation>
@@ -1509,6 +1533,7 @@
 <translation id="6450245544201845082">“右键点击”对应的快捷键目前处于停用状态</translation>
 <translation id="6452181791372256707">拒绝</translation>
 <translation id="6453179446719226835">语言已更改</translation>
+<translation id="6456096448804832585">仅支持纵向模式</translation>
 <translation id="6459472438155181876">正在将屏幕扩展到<ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">图片</translation>
 <translation id="6467290994038932560">已为“<ph name="GAME_APP_NAME" />”开启</translation>
@@ -2055,6 +2080,7 @@
 <translation id="8443879455002739353">“复制”</translation>
 <translation id="8444246603146515890">桌面 <ph name="DESK_TITILE" /> 已激活</translation>
 <translation id="8446884382197647889">了解详情</translation>
+<translation id="8452090802952003258">收听麦克风的声音</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">关闭“随选朗读”功能</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" />到期</translation>
@@ -2113,6 +2139,7 @@
 <translation id="8683506306463609433">正在跟踪性能</translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8704155109538237473">聚焦于画中画窗口</translation>
+<translation id="8708657523363087260">启用/停用侧音</translation>
 <translation id="870917907284186124">开启/关闭语音输入（使用语音输入内容）</translation>
 <translation id="8711169534266271368">游戏信息中心选项</translation>
 <translation id="8712637175834984815">知道了</translation>
@@ -2144,6 +2171,7 @@
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">文件夹“<ph name="FOLDER_NAME" />”</translation>
 <translation id="880709030178078220">“帮助”</translation>
+<translation id="8813531681893371930">连接有线耳机</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8815390544836110344">按下屏幕截图快捷键，具体方法为按住 Ctrl + Shift 组合键，然后按“概览模式”键</translation>
 <translation id="881757059229893486">输入法设置</translation>
@@ -2241,6 +2269,7 @@
 <translation id="9192133205265227850">使用“<ph name="DEVICE_NAME" />”</translation>
 <translation id="9193626018745640770">正在投放至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户账号…</translation>
+<translation id="9195857219954068558">Chromebook 已更新。是否打开之前的窗口和应用？</translation>
 <translation id="9195990613383871904">明天</translation>
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="9201044636667689546">将“<ph name="NAME" />”连接到此 Chromebook</translation>

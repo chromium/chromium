@@ -10,8 +10,8 @@ include_rules = [
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove these dependencies.
   "^tabs_search_service.h": [
-    "+ios/chrome/browser/ui/history/ios_browsing_history_driver.h",
-    "+ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h",
+    "+ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver.h",
+    "+ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver_delegate.h",
   ],
   "^tabs_search_service.mm": [
     "+ios/chrome/browser/ui/recent_tabs/synced_sessions.h",

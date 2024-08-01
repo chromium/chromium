@@ -206,6 +206,11 @@ bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
   return is_holding_indexeddb_lock_.value();
 }
 
+bool FrameNodeImpl::HadUserActivation() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_user_activation_.value();
+}
+
 bool FrameNodeImpl::HadFormInteraction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return document_.had_form_interaction.value();
@@ -226,12 +231,13 @@ bool FrameNodeImpl::IsCapturingMediaStream() const {
   return is_capturing_media_stream_.value();
 }
 
-std::optional<bool> FrameNodeImpl::IntersectsViewport() const {
+std::optional<ViewportIntersectionState>
+FrameNodeImpl::GetViewportIntersectionState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The intersection with the viewport of the outermost main frame or embedder
   // is not tracked.
   DCHECK(parent_or_outer_document_or_embedder());
-  return intersects_viewport_.value();
+  return viewport_intersection_state_.value();
 }
 
 FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
@@ -333,6 +339,11 @@ void FrameNodeImpl::SetIsCurrent(bool is_current) {
   // checking this invariant.)
 }
 
+void FrameNodeImpl::SetHadUserActivation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  had_user_activation_.SetAndMaybeNotify(this, true);
+}
+
 void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(is_holding_weblock, is_holding_weblock_.value());
@@ -357,12 +368,14 @@ void FrameNodeImpl::SetIsCapturingMediaStream(bool is_capturing_media_stream) {
   is_capturing_media_stream_.SetAndMaybeNotify(this, is_capturing_media_stream);
 }
 
-void FrameNodeImpl::SetIntersectsViewport(bool intersects_viewport) {
+void FrameNodeImpl::SetViewportIntersectionState(
+    ViewportIntersectionState viewport_intersection_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The intersection with the viewport of the outermost main frame or embedder
   // is not tracked.
   DCHECK(parent_or_outer_document_or_embedder());
-  intersects_viewport_.SetAndMaybeNotify(this, intersects_viewport);
+  viewport_intersection_state_.SetAndMaybeNotify(this,
+                                                 viewport_intersection_state);
 }
 
 void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {

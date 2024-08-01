@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
@@ -126,6 +127,32 @@ Account ConvertFieldsToAccount(JNIEnv* env,
   return Account(account_id, email, name, given_name, picture_url,
                  std::move(login_hints), std::move(domain_hints),
                  std::move(labels), login_state, browser_trusted_login_state);
+}
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmJavaObjectCreationOutcome {
+  kNewObjectCreated = 0,
+  kObjectReused = 1,
+  kObjectCreationFailed = 2,
+  kNoNativeView = 3,
+  kNoWindow = 4,
+
+  kMaxValue = kNoWindow
+};
+
+void RecordJavaObjectCreationOutcome(
+    std::optional<blink::mojom::RpMode> rp_mode,
+    FedCmJavaObjectCreationOutcome outcome) {
+  // Rp mode may be unavailable in cases that the request is invoked from CCT.
+  // There's no need to record metrics in such case.
+  if (!rp_mode) {
+    return;
+  }
+  const char* mode =
+      *rp_mode == blink::mojom::RpMode::kWidget ? "Widget" : "Button";
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("Blink.FedCm.JavaObjectCreationOutcome.%s", mode),
+      outcome);
 }
 
 }  // namespace
@@ -272,8 +299,9 @@ void AccountSelectionViewAndroid::ShowUrl(LinkType link_type, const GURL& url) {
 }
 
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
-    const GURL& url) {
-  if (!MaybeCreateJavaObject()) {
+    const GURL& url,
+    blink::mojom::RpMode rp_mode) {
+  if (!MaybeCreateJavaObject(rp_mode)) {
     // The Java object is tied to the bottomsheet availability, so if we hadn't
     // created one and the bottomsheet is not available then the CCT will not be
     // opened.
@@ -287,9 +315,9 @@ content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
 }
 
 void AccountSelectionViewAndroid::CloseModalDialog() {
-  // The Java object needs to be recreated, as this is invoked for the
-  // CCT that was closed.
-  if (!MaybeCreateJavaObject()) {
+  // Since this is triggered only after the CCT is opened, leaving it out of the metrics
+  // to focus on cases where a UI cannot be displayed.
+  if (!MaybeCreateJavaObject(/*rp_mode=*/std::nullopt)) {
     return;
   }
   JNIEnv* env = AttachCurrentThread();
@@ -298,8 +326,8 @@ void AccountSelectionViewAndroid::CloseModalDialog() {
 
 content::WebContents* AccountSelectionViewAndroid::GetRpWebContents() {
   // The Java object needs to be recreated, as this is invoked for the
-  // CCT.
-  if (!MaybeCreateJavaObject()) {
+  // CCT. Rp mode isn't meaningful in this case so we don't pass it for metrics.
+  if (!MaybeCreateJavaObject(/*rp_mode=*/std::nullopt)) {
     return nullptr;
   }
   JNIEnv* env = AttachCurrentThread();
@@ -340,12 +368,20 @@ void AccountSelectionViewAndroid::OnAccountsDisplayed(JNIEnv* env) {
 }
 
 bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
-    blink::mojom::RpMode rp_mode) {
-  if (delegate_->GetNativeView() == nullptr ||
-      delegate_->GetNativeView()->GetWindowAndroid() == nullptr) {
+    std::optional<blink::mojom::RpMode> rp_mode) {
+  if (!delegate_->GetNativeView()) {
+    RecordJavaObjectCreationOutcome(
+        rp_mode, FedCmJavaObjectCreationOutcome::kNoNativeView);
+    return false;
+  }
+  if (!delegate_->GetNativeView()->GetWindowAndroid()) {
+    RecordJavaObjectCreationOutcome(rp_mode,
+                                    FedCmJavaObjectCreationOutcome::kNoWindow);
     return false;  // No window attached (yet or anymore).
   }
   if (java_object_internal_) {
+    RecordJavaObjectCreationOutcome(
+        rp_mode, FedCmJavaObjectCreationOutcome::kObjectReused);
     return true;
   }
   JNIEnv* env = AttachCurrentThread();
@@ -353,7 +389,15 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
       env, reinterpret_cast<intptr_t>(this),
       delegate_->GetWebContents()->GetJavaWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      static_cast<jint>(rp_mode));
+      static_cast<jint>(rp_mode.value_or(blink::mojom::RpMode::kWidget)));
+
+  if (!!java_object_internal_) {
+    RecordJavaObjectCreationOutcome(
+        rp_mode, FedCmJavaObjectCreationOutcome::kNewObjectCreated);
+  } else {
+    RecordJavaObjectCreationOutcome(
+        rp_mode, FedCmJavaObjectCreationOutcome::kObjectCreationFailed);
+  }
   return !!java_object_internal_;
 }
 

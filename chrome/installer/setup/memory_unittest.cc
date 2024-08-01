@@ -8,8 +8,8 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)

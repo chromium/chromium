@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -88,7 +89,7 @@ void AudioRendererMixer::RemoveMixerInput(
     aggregate_converter_.RemoveInput(input);
   } else {
     auto converter = converters_.find(input_sample_rate);
-    DCHECK(converter != converters_.end());
+    CHECK(converter != converters_.end(), base::NotFatalUntil::M130);
     converter->second->RemoveInput(input);
     if (converter->second->empty()) {
       // Remove converter when it's empty.
@@ -126,7 +127,9 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
                                base::TimeTicks delay_timestamp,
                                const media::AudioGlitchInfo& glitch_info,
                                media::AudioBus* audio_bus) {
-  TRACE_EVENT0("audio", "AudioRendererMixer::Render");
+  TRACE_EVENT("audio", "AudioRendererMixer::Render", "playout_delay (ms)",
+              delay.InMillisecondsF(), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF());
   base::AutoLock auto_lock(lock_);
 
   // If there are no mixer inputs and we haven't seen one for a while, pause the

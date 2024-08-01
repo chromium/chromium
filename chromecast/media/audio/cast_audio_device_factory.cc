@@ -204,6 +204,14 @@ class NonSwitchableAudioRendererSink
           NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);
     }
 
+    // The media info manager is only needed to query whether this is an
+    // audio-only session and session id; after this, the binding can be reset.
+    //
+    // If this is not done on the thread on which the binding was created (in
+    // Initialize()), then the destructor can run on a different thread and
+    // violate a mojo sequence checker assertion.
+    app_media_info_manager_.reset();
+
     output_device_->Initialize(params, callback);
 
     if (pending_start_) {

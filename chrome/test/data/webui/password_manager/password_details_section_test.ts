@@ -412,7 +412,10 @@ suite('PasswordDetailsSectionTest', function() {
 
   // <if expr="_google_chrome">
   test('Register password sharing IPH for password card', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: true,
+    };
 
     const group = createCredentialGroup({
       name: 'test.com',
@@ -441,7 +444,10 @@ suite('PasswordDetailsSectionTest', function() {
   test(
       'Password sharing IPH is not registered with passkey card present',
       async function() {
-        passwordManager.data.isOptedInAccountStorage = true;
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: false,
+          isSyncingPasswords: true,
+        };
 
         const group = createCredentialGroup({
           name: 'test.com',

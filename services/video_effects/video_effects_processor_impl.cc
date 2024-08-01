@@ -111,6 +111,14 @@ bool VideoEffectsProcessorImpl::Initialize() {
   return initialized_;
 }
 
+void VideoEffectsProcessorImpl::SetBackgroundSegmentationModel(
+    base::span<const uint8_t> model_blob) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  background_segmentation_model_blob_.resize(model_blob.size());
+  base::span(background_segmentation_model_blob_).copy_from(model_blob);
+}
+
 bool VideoEffectsProcessorImpl::InitializeGpuState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!ContextLossesExceedThreshold(num_context_losses_));

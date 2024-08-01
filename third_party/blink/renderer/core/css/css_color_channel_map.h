@@ -12,7 +12,8 @@ namespace blink {
 
 // Used in channel keyword substitutions for relative color syntax.
 // https://www.w3.org/TR/css-color-5/#relative-colors
-using CSSColorChannelMap = HashMap<CSSValueID, double>;
+// Channel values may be unset if the base color is unknown at parse time.
+using CSSColorChannelMap = HashMap<CSSValueID, std::optional<double>>;
 
 }  // namespace blink
 

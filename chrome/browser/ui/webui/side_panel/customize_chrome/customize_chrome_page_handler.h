@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_PAGE_HANDLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,6 +36,7 @@ class WebContents;
 }  // namespace content
 
 class Profile;
+class TemplateURLService;
 
 /**
  * Places where the chrome web store can be opened from in Customize Chrome.
@@ -57,6 +60,7 @@ class CustomizeChromePageHandler
       public ui::NativeThemeObserver,
       public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
+      public TemplateURLServiceObserver,
       public ui::SelectFileDialog::Listener {
  public:
   CustomizeChromePageHandler(
@@ -65,7 +69,9 @@ class CustomizeChromePageHandler
       mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
       NtpCustomBackgroundService* ntp_custom_background_service,
       content::WebContents* web_contents,
-      const std::vector<std::pair<const std::string, int>> module_id_names);
+      const std::vector<std::pair<const std::string, int>> module_id_names,
+      std::optional<base::RepeatingCallback<void(const GURL&)>>
+          open_url_callback = std::nullopt);
 
   CustomizeChromePageHandler(const CustomizeChromePageHandler&) = delete;
   CustomizeChromePageHandler& operator=(const CustomizeChromePageHandler&) =
@@ -104,6 +110,7 @@ class CustomizeChromePageHandler
   void OpenChromeWebStoreCollectionPage(
       side_panel::mojom::ChromeWebStoreCollection collection) override;
   void OpenChromeWebStoreHomePage() override;
+  void OpenSettingsSearchEnginePage() override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void UpdateMostVisitedSettings() override;
   void SetModulesVisible(bool visible) override;
@@ -111,12 +118,15 @@ class CustomizeChromePageHandler
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
   void UpdateAttachedTabState() override;
+  void UpdateNtpManagedByName() override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
+
+  std::u16string GetManagingThirdPartyName() const;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -133,6 +143,10 @@ class CustomizeChromePageHandler
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
 
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
+
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
@@ -148,6 +162,7 @@ class CustomizeChromePageHandler
   std::string images_request_collection_id_;
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
+  raw_ptr<TemplateURLService> template_url_service_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
 
@@ -171,6 +186,9 @@ class CustomizeChromePageHandler
 
   mojo::Remote<side_panel::mojom::CustomizeChromePage> page_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandler> receiver_;
+
+  // Callback used to open a URL.
+  base::RepeatingCallback<void(const GURL&)> open_url_callback_;
 
   base::WeakPtrFactory<CustomizeChromePageHandler> weak_ptr_factory_{this};
 };

@@ -29,6 +29,9 @@ USER_MANAGER_EXPORT extern const char kGuestUserName[];
 // Domain that is used for all supervised users.
 USER_MANAGER_EXPORT extern const char kSupervisedUserDomain[];
 
+// Domain that is used for ARC kiosk users.
+USER_MANAGER_EXPORT extern const char kArcKioskDomain[];
+
 // Canonicalizes a GAIA user ID, accounting for the legacy guest mode user ID
 // which does trips up gaia::CanonicalizeEmail() because it does not contain an
 // @ symbol.

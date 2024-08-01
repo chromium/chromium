@@ -373,10 +373,8 @@ class AutofillProfile : public AutofillDataModel {
   PhoneNumber phone_number_;
   Address address_;
 
-  // The label is chosen by the user and can contain an arbitrary value.
-  // However, there are two labels that play a special role to indicate that an
-  // address is either a 'HOME' or a 'WORK' address. In this case, the value of
-  // the label is '$HOME$' or '$WORK$', respectively.
+  // A label intended to be chosen by the user. This was however never
+  // implemented and is currently unused.
   std::string profile_label_;
 
   // The BCP 47 language code that can be used to format |address_| for display.

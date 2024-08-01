@@ -12,5 +12,7 @@
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application android:hardwareAccelerated="false">
+      <!-- Digital Asset Links statement list for SAA tests -->
+      <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
     </application>
 </manifest>

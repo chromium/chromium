@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
@@ -403,7 +402,7 @@ public class FullscreenSigninMediator
                     mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
                             ? SigninAccessPoint.FORCED_SIGNIN
                             : mAccessPoint;
-            SigninUtils.checkAccountManagementAndSignIn(
+            FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                     selectedAccount,
                     signinManager,
                     accessPoint,

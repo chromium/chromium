@@ -185,6 +185,9 @@
       <message name="IDS_IPH_TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_ACCESSIBILITY_TEXT" desc="This in-product help accessibility text points to the strip of favicons at the bottom of the page. The favicons indicate all the open tabs within the tab group. The text informs the user that they can tap on any favicon to switch to that tab.">
         Switch between tabs in your tab group near bottom of screen
       </message>
+      <message name="IDS_IPH_TAB_SWITCHER_FLOATING_ACTION_BUTTON" desc="This in-product help points to the new location of the new tab button which floats atop the tabs rather than being located in the toolbar. The text informs users they can use the button to open new tabs.">
+        You can now open a new tab here
+      </message>
 
       <!-- Undo Bar -->
       <message name="IDS_UNDO_BAR_GROUP_TAB_MESSAGE" desc="Message shown or announced when a group has been created with a single tab.">
@@ -339,6 +342,21 @@
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_COLOR" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, a color picker popup window will appear and allow the user to update the color for this tab group.">
         Edit group color
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_DELETE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is deleted. All references to the group go away including those in sync.">
+        Delete group
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_CLOSE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is closed. It may still be possible to access the group from tab group sync if enabled.">
+        Close group
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_MANAGE_SHARING" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the manage sharing UI is shown.">
+        Manage sharing
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_RECENT_ACTIVITY" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the recent activity UI is shown.">
+        Recent activity
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_LEAVE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the user leaves a collaboration for a tab group. All references to the group go away including those in sync.">
+        Leave group
       </message>
 
       <!-- Tab Grid Dialog accessibility strings -->
@@ -623,6 +641,15 @@
           other {Close <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> group with <ph name="TABS_COUNT_MANY">%2$d<ex>2</ex></ph> tabs, color <ph name="COLOR_NAME">%3$s<ex>Blue</ex></ph>.}
         }
       </message>
+      <message name="IDS_TAB_GROUP_CREATION_DIALOG_DESCRIPTION_TEXT_SYNC_ON" desc="A subtitle on the dialog for new tab group creations. Explains the group automatically saves and updates across all devices.">
+        Your tab groups automatically save and update across all your signed-in devices
+      </message>
+      <message name="IDS_TAB_GROUP_CREATION_DIALOG_DESCRIPTION_TEXT_SYNC_OFF" desc="A subtitle on the dialog for new tab group creations. Explains the group automatically saves.">
+        Your tab groups automatically save
+      </message>
+      <message name="IDS_TAB_GROUP_CREATION_DIALOG_SHOW_SETTING_TEXT" desc="Content description for the switch in tabs settings to toggle showing the new tab group creation dialog. ">
+        Show dialog on new tab group creation
+      </message>
 
       <!-- Tab Group Pane and Sync Strings -->
       <message name="IDS_ACCESSIBILITY_TAB_GROUPS" desc="Content description for the button to show tab groups UI.">
@@ -687,6 +714,18 @@
       </message>
       <message name="IDS_DELETE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to delete a tab group.">
         Delete
+      </message>
+      <message name="IDS_DELETE_SHARED_TAB_GROUP_DESCRIPTION" desc="Menu item text which will prompt a confirmation dialog to delete a tab group that is shared with other users.">
+        Everyone will immediately lose access to the <ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group, and it will be deleted from all devices
+      </message>
+      <message name="IDS_LEAVE_TAB_GROUP_MENU_ITEM" desc="Menu item text for an item which will leave a group the user does not own.">
+        Leave
+      </message>
+      <message name="IDS_LEAVE_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to leave a shared tab group.">
+        Leave tab group?
+      </message>
+      <message name="IDS_LEAVE_TAB_GROUP_DESCRIPTION" desc="Description of the action of leaving a shared tab group, shown in a confirmation dialog.">
+        You’ll immediately lose access to the <ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group
       </message>
       <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
         Ungroup tab group?
@@ -833,7 +872,7 @@
         }
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
-        Inactive tabs will automatically be close. You can always find them in History.
+        Inactive tabs will automatically be closed. You can always find them in History.
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA" desc="The string to show how many days until a tab is considered inactive.">
         {DAY_COUNT, plural,
@@ -843,6 +882,24 @@
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_NEVER" desc="The string for the option to never archive tabs.">
         Never
+      </message>
+      <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION_TITLE" desc="The title to show in the action confirmation dialog.">
+        {TAB_COUNT, plural,
+          =1 {Close 1 inactive tab?}
+          other {Close <ph name="TAB_COUNT_MANY">%1$d<ex>12</ex></ph> inactive tabs?}
+        }
+      </message>
+      <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION_DESCRIPTION" desc="The description for the option to never archive tabs.">
+        You can always get them back in history
+      </message>
+      <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION" desc="The description for the option to never archive tabs.">
+        Close all
+      </message>
+      <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG_BACK_BUTTON" desc="Accessibility string for the back button in the archived tabs dialog. Tap this button to exit out of the multi-select mode">
+        Hide inactive tabs dialog
+      </message>
+      <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG" desc="Accessibility string for archived tabs dialog. This string is announced when the Tab Selection Editor is shown to screen.">
+        Inactive tabs dialog
       </message>
     </messages>
   </release>

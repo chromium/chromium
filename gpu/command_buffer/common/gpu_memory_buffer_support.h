@@ -32,27 +32,6 @@ GPU_EXPORT bool IsImageSizeValidForGpuMemoryBufferFormat(
     const gfx::Size& size,
     gfx::BufferFormat format);
 
-// Returns true if |plane| is a valid plane index for |format|.
-GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
-                                                     gfx::BufferFormat format);
-
-// Return the buffer format for |plane| of |format|. E.g, for the Y plane of
-// YUV_420_BIPLANAR, return R_8. Assumes IsPlaneValidForGpuMemoryBufferFormat
-// returns true for the provided arguments.
-GPU_EXPORT gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
-                                                  gfx::BufferFormat format);
-
-// Return the index for |plane| of |format|. E.g, for the Y plane of
-// YUV_420_BIPLANAR, return 0. for the A plane of YUVA_420_TRIPLANAR return 2.
-GPU_EXPORT int32_t GetPlaneIndex(gfx::BufferPlane plane,
-                                 gfx::BufferFormat format);
-
-// Return the size for |plane| with image |size|. E.g, for the Y plane of
-// YUV_420_BIPLANAR, return size subsampled by a factor of 2. Assumes
-// IsPlaneValidForGpuMemoryBufferFormat returns true for the provided arguments.
-GPU_EXPORT gfx::Size GetPlaneSize(gfx::BufferPlane plane,
-                                  const gfx::Size& size);
-
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_

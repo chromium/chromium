@@ -14,6 +14,7 @@ static_library("camera_mic") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/audio",
     "//components/keyed_service/core",
     "//media/capture:capture_lib",
@@ -31,6 +32,7 @@ static_library("camera_mic") {
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ui/webui/ash/settings/app_management",
     "//components/vector_icons",
     "//content/public/browser",
     "//media/capture/video/chromeos/mojom:cros_camera_shared",

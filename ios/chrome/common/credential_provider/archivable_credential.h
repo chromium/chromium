@@ -42,7 +42,8 @@
                            rpId:(NSString*)rpId
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
-                   creationTime:(int64_t)creationTime NS_DESIGNATED_INITIALIZER;
+                   creationTime:(int64_t)creationTime
+                   lastUsedTime:(int64_t)lastUsedTime NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

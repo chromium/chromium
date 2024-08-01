@@ -38,11 +38,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController.AutoDarkClickableSpan;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControllerUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -185,6 +187,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         mMessageDispatcher = new FakeMessageDispatcher();
         mModalDialogManager = new FakeModalDialogManager();
 
+        SettingsLauncherFactory.setInstanceForTesting(mMockSettingsLauncher);
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockFeedbackLauncher);
         TrackerFactory.setTrackerForTests(mMockTracker);
         ShadowWebContentsDarkModeController.sIsFeatureEnabled = true;
     }
@@ -216,11 +220,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Successfully send message.
         WebContentsDarkModeMessageController.attemptToSendMessage(
-                mMockActivity,
-                mMockProfile,
-                mMockWebContents,
-                mMockSettingsLauncher,
-                mMessageDispatcher);
+                mMockActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
         verify(mMockTracker, times(1)).shouldTriggerHelpUI(enabledFeature);
         Assert.assertNotNull("Message should be non-null.", mMessageDispatcher.mShownMessageModel);
         Assert.assertEquals(
@@ -250,11 +250,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Successfully send message.
         WebContentsDarkModeMessageController.attemptToSendMessage(
-                mMockActivity,
-                mMockProfile,
-                mMockWebContents,
-                mMockSettingsLauncher,
-                mMessageDispatcher);
+                mMockActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
         verify(mMockTracker, times(1)).shouldTriggerHelpUI(enabledFeature);
         Assert.assertNotNull("Message should be non-null.", mMessageDispatcher.mShownMessageModel);
         Assert.assertEquals(
@@ -299,11 +295,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Attempt to send message and fail.
         WebContentsDarkModeMessageController.attemptToSendMessage(
-                mMockActivity,
-                mMockProfile,
-                mMockWebContents,
-                mMockSettingsLauncher,
-                mMessageDispatcher);
+                mMockActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
         Assert.assertNull(
                 "Shown message should be null, since we don't show the message.",
                 mMessageDispatcher.mShownMessageModel);
@@ -392,12 +384,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Attempt to send message and fail because feature engagement conditions not met.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity,
-                mMockProfile,
-                TEST_URL,
-                mModalDialogManager,
-                mMockSettingsLauncher,
-                mMockFeedbackLauncher);
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         verify(mMockTracker, times(1)).notifyEvent(eq(DISABLED_EVENT));
         Assert.assertNull(
                 "Shown dialog model should be null, since we should not trigger the dialog.",
@@ -408,12 +395,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public void testShowDialog_ShouldTrigger() {
         // Attempt to send message and succeed because feature engagement conditions met.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity,
-                mMockProfile,
-                TEST_URL,
-                mModalDialogManager,
-                mMockSettingsLauncher,
-                mMockFeedbackLauncher);
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         verify(mMockTracker, times(1)).notifyEvent(eq(DISABLED_EVENT));
         Assert.assertNotNull(
                 "Shown dialog model should be non-null, since we trigger the dialog.",
@@ -432,12 +414,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity,
-                mMockProfile,
-                TEST_URL,
-                mModalDialogManager,
-                mMockSettingsLauncher,
-                mMockFeedbackLauncher);
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
         verify(mMockFeedbackLauncher, times(1))
                 .showFeedback(eq(mMockActivity), eq(TEST_URL), any(), anyInt(), any());
@@ -461,12 +438,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity,
-                mMockProfile,
-                TEST_URL,
-                mModalDialogManager,
-                mMockSettingsLauncher,
-                mMockFeedbackLauncher);
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
         verifyLaunchSettings(1);
 
@@ -481,12 +453,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public void testDialogController_ClickNegativeButton() {
         // Click on negative button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity,
-                mMockProfile,
-                TEST_URL,
-                mModalDialogManager,
-                mMockSettingsLauncher,
-                mMockFeedbackLauncher);
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.NEGATIVE);
 
         // Verify dismissal.
@@ -500,12 +467,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public void testShowDialog_ClickTitleIcon() {
         // Click on title icon.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity,
-                mMockProfile,
-                TEST_URL,
-                mModalDialogManager,
-                mMockSettingsLauncher,
-                mMockFeedbackLauncher);
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.TITLE_ICON);
 
         // Verify not dismissed.
@@ -517,8 +479,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     @Test
     public void testClickableSpan_SettingsLink() {
-        AutoDarkClickableSpan clickableSpan =
-                new AutoDarkClickableSpan(mMockActivity, mMockSettingsLauncher);
+        AutoDarkClickableSpan clickableSpan = new AutoDarkClickableSpan(mMockActivity);
         clickableSpan.onClick(null);
         verifyLaunchSettings(1);
     }

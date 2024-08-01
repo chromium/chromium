@@ -39,7 +39,7 @@ class Keyboard : public ui::EventHandler,
                  public SurfaceObserver,
                  public SeatObserver,
                  public ash::KeyboardControllerObserver,
-                 public ash::ImeControllerImpl::Observer {
+                 public ash::ImeController::Observer {
  public:
   Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat);
   Keyboard(const Keyboard&) = delete;
@@ -80,7 +80,7 @@ class Keyboard : public ui::EventHandler,
   void OnKeyRepeatSettingsChanged(
       const ash::KeyRepeatSettings& settings) override;
 
-  // Overridden from ash::ImeControllerImpl::Observer:
+  // Overridden from ash::ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 

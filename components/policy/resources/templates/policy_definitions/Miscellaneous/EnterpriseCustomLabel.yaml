@@ -16,8 +16,9 @@ example_value: Chromium
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
+  user_only: true
+supported_on:
+- chrome.*:128-
 owners:
 - file://components/enterprise/OWNERS
 - ydago@chromium.org

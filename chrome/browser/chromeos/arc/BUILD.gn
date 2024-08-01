@@ -37,6 +37,7 @@ static_library("arc") {
     "//chrome/browser/profiles:profile",
     "//components/arc/common:arc_intent_helper_constants",
     "//components/services/app_service",
+    "//components/sharing_message",
     "//components/sync_device_info",
   ]
 
@@ -68,6 +69,7 @@ source_set("unit_tests") {
     "//components/arc/common:arc_test_support",
     "//components/renderer_context_menu",
     "//components/sharing_message",
+    "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
     "//content/public/browser",
     "//content/test:test_support",

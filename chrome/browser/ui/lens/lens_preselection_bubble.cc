@@ -120,7 +120,8 @@ void LensPreselectionBubble::OnThemeChanged() {
       offline_ ? vector_icons::kErrorOutlineIcon
                : vector_icons::kGoogleLensMonochromeLogoIcon,
 #else
-      offline_ ? vector_icons::kErrorOutlineIcon : vector_icons::kSearchIcon,
+      offline_ ? vector_icons::kErrorOutlineIcon
+               : vector_icons::kSearchChromeRefreshIcon,
 #endif
       color_provider->GetColor(ui::kColorToastForeground), 24));
   label_->SetEnabledColor(color_provider->GetColor(ui::kColorToastForeground));

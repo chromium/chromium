@@ -70,7 +70,6 @@
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -98,6 +97,7 @@
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "components/privacy_sandbox/tpcd_pref_names.h"
+#include "components/sharing_message/sharing_sync_preference.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -178,7 +178,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -248,13 +248,6 @@
 #include "chrome/browser/screen_ai/pref_names.h"
 #endif
 
-#include "components/feed/buildflags.h"
-#if BUILDFLAG(ENABLE_FEED_V2)
-#include "components/feed/core/common/pref_names.h"        // nogncheck
-#include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
-#include "components/feed/core/v2/ios_shared_prefs.h"      // nogncheck
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
@@ -271,6 +264,9 @@
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
+#include "components/feed/core/common/pref_names.h"         // nogncheck
+#include "components/feed/core/shared_prefs/pref_names.h"   // nogncheck
+#include "components/feed/core/v2/ios_shared_prefs.h"       // nogncheck
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
@@ -417,6 +413,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/device_restriction_schedule_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
@@ -1648,6 +1645,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   policy::MinimumVersionPolicyHandler::RegisterPrefs(registry);
   policy::EuiccStatusUploader::RegisterLocalStatePrefs(registry);
   policy::TPMAutoUpdateModePolicyHandler::RegisterPrefs(registry);
+  policy::DeviceRestrictionSchedulePolicyHandler::RegisterLocalStatePrefs(
+      registry);
   quirks::QuirksManager::RegisterPrefs(registry);
   UpgradeDetectorChromeos::RegisterPrefs(registry);
   RegisterNearbySharingLocalPrefs(registry);
@@ -1772,6 +1771,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   commerce::RegisterPrefs(registry);
   DocumentProvider::RegisterProfilePrefs(registry);
   enterprise::RegisterIdentifiersProfilePrefs(registry);
+  enterprise_connectors::RegisterProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
@@ -1893,12 +1893,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ChromeRLZTrackerDelegate::RegisterProfilePrefs(registry);
 #endif
 
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
   feed::RegisterProfilePrefs(registry);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
   MediaDrmOriginIdManager::RegisterProfilePrefs(registry);
@@ -1926,7 +1923,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   DeviceServiceImpl::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
-  enterprise_connectors::RegisterProfilePrefs(registry);
   extensions::CommandService::RegisterProfilePrefs(registry);
   extensions::TabsCaptureVisibleTabFunction::RegisterProfilePrefs(registry);
   first_run::RegisterProfilePrefs(registry);
@@ -2189,6 +2185,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterIntegerPref(prefs::kLensOverlayStartCount, 0);
 
   registry->RegisterDictionaryPref(prefs::kReportingEndpoints);
+
+  registry->RegisterBooleanPref(prefs::kCompactModeEnabled, false);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

@@ -749,6 +749,7 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   auto account_scroll_view = std::make_unique<views::ScrollView>();
   account_scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
+  account_scroll_view->SetDrawOverflowIndicator(false);
   views::View* const accounts_content =
       account_scroll_view->SetContents(std::make_unique<views::View>());
   accounts_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -817,6 +818,7 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   auto mismatch_scroll_view = std::make_unique<views::ScrollView>();
   mismatch_scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
+  mismatch_scroll_view->SetDrawOverflowIndicator(false);
   views::View* const mismatch_content =
       mismatch_scroll_view->SetContents(std::make_unique<views::View>());
   mismatch_content->SetLayoutManager(std::make_unique<views::BoxLayout>(

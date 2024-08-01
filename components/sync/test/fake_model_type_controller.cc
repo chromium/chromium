@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/model_error.h"
+#include "components/sync/model/sync_error.h"
 
 namespace syncer {
 
@@ -35,6 +37,12 @@ FakeModelTypeControllerDelegate* FakeModelTypeController::model(
     SyncMode sync_mode) {
   return static_cast<FakeModelTypeControllerDelegate*>(
       GetDelegateForTesting(sync_mode));
+}
+
+void FakeModelTypeController::SimulateControllerError(
+    const base::Location& location) {
+  ReportModelError(SyncError::DATATYPE_POLICY_ERROR,
+                   ModelError(location, "Test error"));
 }
 
 ModelTypeController::PreconditionState

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +38,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -241,6 +243,7 @@ class TabListEditorCoordinator {
     private final boolean mDisplayGroups;
     private final TabContentManager mTabContentManager;
     private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
+    private final @NonNull ModalDialogManager mModalDialogManager;
 
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private TabListCoordinator mTabListCoordinator;
@@ -263,6 +266,7 @@ class TabListEditorCoordinator {
      * @param snackbarManager Used to display snackbar messages.
      * @param bottomSheetController Used to display bottom sheets.
      * @param initialTabActionState The initial TabActionState to use.
+     * @param modalDialogManager Used for managing the modal dialogs.
      */
     public TabListEditorCoordinator(
             Context context,
@@ -278,8 +282,8 @@ class TabListEditorCoordinator {
             BottomSheetController bottomSheetController,
             @TabActionState int initialTabActionState,
             @Nullable
-                    TabListMediator.GridCardOnClickListenerProvider
-                            gridCardOnClickListenerProvider) {
+                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
+            @NonNull ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mContext = context;
             mRootView = rootView;
@@ -294,6 +298,7 @@ class TabListEditorCoordinator {
             assert mode == TabListCoordinator.TabListMode.GRID
                     || mode == TabListCoordinator.TabListMode.LIST;
             mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
+            mModalDialogManager = modalDialogManager;
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
@@ -407,6 +412,19 @@ class TabListEditorCoordinator {
         mTabListCoordinator.removeSpecialListItem(uiType, itemIdentifier);
     }
 
+    /**
+     * Override the content descriptions of the top-level layout and back button.
+     *
+     * @param containerContentDescription The content description for the top-level layout.
+     * @param backButtonContentDescription The content description for the back button.
+     */
+    public void overrideContentDescriptions(
+            @StringRes int containerContentDescription,
+            @StringRes int backButtonContentDescription) {
+        mTabListEditorLayout.overrideContentDescriptions(
+                containerContentDescription, backButtonContentDescription);
+    }
+
     private void createTabListCoordinator() {
         Profile regularProfile =
                 mCurrentTabModelFilterSupplier
@@ -460,6 +478,7 @@ class TabListEditorCoordinator {
                         mTabListMode,
                         mContext,
                         mBrowserControlsStateProvider,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         thumbnailProvider,
                         mDisplayGroups,

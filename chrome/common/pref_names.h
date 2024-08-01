@@ -25,6 +25,9 @@ namespace prefs {
 // *************** PROFILE PREFS ***************
 // These are attached to the user profile
 
+// This preference determines if the browser will use the Compact Mode UI.
+inline constexpr char kCompactModeEnabled[] = "compact_mode";
+
 // A string property indicating whether default apps should be installed
 // in this profile.  Use the value "install" to enable defaults apps, or
 // "noinstall" to disable them.  This property is usually set in the
@@ -79,6 +82,10 @@ inline constexpr char kHomePage[] = "homepage";
 
 // A boolean specifying whether HTTPS-Only Mode is enabled by the user.
 inline constexpr char kHttpsOnlyModeEnabled[] = "https_only_mode_enabled";
+
+// A boolean specifying whether HTTPS-First Mode is enabled in Balanced Mode.
+inline constexpr char kHttpsFirstBalancedMode[] =
+    "https_first_balanced_mode_enabled";
 
 // A boolean specifying whether HTTPS-First Mode (aka "HTTPS-Only Mode") is
 // enabled in Incognito Mode.
@@ -2246,17 +2253,6 @@ inline constexpr char kGoogleWorkspaceCloudUpload[] =
     "filebrowser.office.google_workspace_cloud_upload";
 #endif
 
-// A flag to enable/disable the Shared Clipboard feature which enables users to
-// send text across devices.
-inline constexpr char kSharedClipboardEnabled[] =
-    "browser.shared_clipboard_enabled";
-
-#if BUILDFLAG(ENABLE_CLICK_TO_CALL)
-// A flag to enable/disable the Click to Call feature which enables users to
-// send phone numbers from desktop to Android phones.
-inline constexpr char kClickToCallEnabled[] = "browser.click_to_call_enabled";
-#endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
-
 // Extensions which should be opened upon completion.
 inline constexpr char kDownloadExtensionsToOpen[] =
     "download.extensions_to_open";
@@ -2382,6 +2378,11 @@ inline constexpr char kDevToolsAdbKey[] = "devtools.adb_key";
 
 // Defines administrator-set availability of developer tools.
 inline constexpr char kDevToolsAvailability[] = "devtools.availability";
+
+// This is a timestamp, milliseconds after epoch, of when devtools was last
+// opened.
+inline constexpr char kDevToolsLastOpenTimestamp[] =
+    "devtools.last_open_timestamp";
 
 // Defines administrator-set availability of developer tools remote debugging.
 inline constexpr char kDevToolsRemoteDebuggingAllowed[] =
@@ -3161,6 +3162,32 @@ inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
 inline constexpr char kDeviceWeeklyScheduledSuspend[] =
     "device_weekly_scheduled_suspend";
 
+// A list of weekly time intervals when login to the device is blocked.
+// Example content:
+// [
+//   {
+//     "start": {
+//         "day_of_week": "WEDNESDAY",
+//         "milliseconds_since_midnight": 43200000
+//     },
+//     "end": {
+//         "day_of_week": "WEDNESDAY",
+//         "milliseconds_since_midnight": 75600000
+//     }
+//   },
+//   {
+//     "start": {
+//         "day_of_week": "FRIDAY",
+//         "milliseconds_since_midnight": 64800000
+//     },
+//     "end": {
+//         "day_of_week": "MONDAY",
+//         "milliseconds_since_midnight": 21600000
+//     }
+//   }
+// ]
+inline constexpr char kDeviceRestrictionSchedule[] =
+    "device_restriction_schedule";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -3807,10 +3834,6 @@ inline constexpr char kClientCertificateManagementAllowed[] =
 inline constexpr char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
 #endif
-
-inline constexpr char kSharingVapidKey[] = "sharing.vapid_key";
-inline constexpr char kSharingFCMRegistration[] = "sharing.fcm_registration";
-inline constexpr char kSharingLocalSharingInfo[] = "sharing.local_sharing_info";
 
 // Dictionary that contains all of the Hats Survey Metadata for desktop surveys.
 inline constexpr char kHatsSurveyMetadata[] = "hats.survey_metadata";

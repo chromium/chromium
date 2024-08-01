@@ -6,7 +6,7 @@ import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mo
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsSet, UrlInfo, UserFeedback} from './shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsDisclosureVersion, ProductSpecificationsSet, UrlInfo, UserFeedback} from './shopping_service.mojom-webui.js';
 import {PageCallbackRouter, ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
@@ -50,6 +50,8 @@ export interface BrowserProxy {
   setUrlsForProductSpecificationsSet(uuid: Uuid, urls: Url[]):
       Promise<{updatedSet: ProductSpecificationsSet | null}>;
   setProductSpecificationsUserFeedback(feedback: UserFeedback): void;
+  setProductSpecificationDisclosureAcceptVersion(
+      version: ProductSpecificationsDisclosureVersion): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -133,6 +135,11 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   switchToOrOpenTab(url: Url) {
     this.handler.switchToOrOpenTab(url);
+  }
+
+  setProductSpecificationDisclosureAcceptVersion(
+      version: ProductSpecificationsDisclosureVersion) {
+    this.handler.setProductSpecificationAcceptedDisclosureVersion(version);
   }
 
   getParentBookmarkFolderNameForCurrentUrl() {

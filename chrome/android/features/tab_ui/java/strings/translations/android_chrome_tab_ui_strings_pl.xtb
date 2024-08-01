@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otwórz stronę</translation>
+<translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Utworzono <ph name="NUM_HOURS_ONE" /> godzinę temu}few{Utworzono <ph name="NUM_HOURS_MANY" /> godziny temu}many{Utworzono <ph name="NUM_HOURS_MANY" /> godzin temu}other{Utworzono <ph name="NUM_HOURS_MANY" /> godziny temu}}</translation>
 <translation id="2801787514987684416">Wyświetlić informacje o sklepie?</translation>
 <translation id="2928243913527329289">Google | Informacje o tym sklepie</translation>
 <translation id="2977480621796371840">Usuń z grupy</translation>
 <translation id="3008554597174452548">Przestań obserwować produkt</translation>
 <translation id="3026391124054406831">Twórz grupy, aby porządkować karty.</translation>
+<translation id="3051031624272448591">Zawsze możesz przywrócić je z historii</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona koloru grupy kart</translation>
 <translation id="3194464645767632461">ocena</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="427987768447457592">Nowa grupa kart</translation>
-<translation id="4338724047016295066">Nieaktywne karty zostaną automatycznie zamknięte. Zawsze możesz je znaleźć w historii.</translation>
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>
+<translation id="4590027107044272416">Tutaj możesz otworzyć nową kartę</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zamknąć 1 nieaktywną kartę?}few{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywne karty?}many{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnych kart?}other{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnej karty?}}</translation>
 <translation id="4648718555153979859">Tutaj są zgrupowane Twoje karty</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zamknij po 1 dniu}few{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}many{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}other{Zamknij po <ph name="DAY_COUNT_MANY" /> dnia}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinia)}few{(<ph name="REVIEWS_COUNT_MANY" /> opinie)}many{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}other{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}}</translation>
 <translation id="4850886885716139402">Widok</translation>
 <translation id="4870911314065352661">Zamknąć wszystkie karty?</translation>
+<translation id="4871719318659334896">Zamknij grupę</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="4908147833782857886">Zapisane grupy (<ph name="USER_EMAIL" />) (spowoduje to zamknięcie kart i usunięcie grup)</translation>
@@ -100,7 +104,9 @@
 <translation id="5972844218283131174">Odznacz wszystko</translation>
 <translation id="6017514345406065928">Zielony</translation>
 <translation id="6040143037577758943">Zamknij</translation>
+<translation id="6051432659151380973">Twoje grupy kart są automatycznie zapisywane</translation>
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Natychmiast utracisz dostęp do grupy kart <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6271513594716432922">Zamknij wszystkie nieaktywne karty</translation>
@@ -115,7 +121,6 @@
 <translation id="6562820390860419811">Przenieś kartę w lewo</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
 <translation id="6744956528665271406">Edytuj kolor grupy</translation>
-<translation id="6840760312327750441">Aby pogrupować karty, naciśnij i przytrzymaj jedną z nich. Następnie przeciągnij ją na inną kartę.</translation>
 <translation id="6856809498882026482">Ukryj tryb wielokrotnego wyboru</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Udostępnij kartę}few{Udostępnij karty}many{Udostępnij karty}other{Udostępnij karty}}</translation>
 <translation id="7129458170538955174">Informacje o tym sklepie zostały otwarte na połowę wysokości</translation>
@@ -125,6 +130,7 @@
 <translation id="731648547091221002">Wybrano <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Zasady zwrotów i inne informacje</translation>
 <translation id="7352298686197644113">Sprawdź, który produkt z otwartych kart ma niższą cenę</translation>
+<translation id="7421293530411019405">Opuścić grupę kart?</translation>
 <translation id="7452985128687107478">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="747459581954555080">Przywróć wszystkie</translation>
 <translation id="753732157349120914">Przełącznik kart</translation>
@@ -152,12 +158,15 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="8398929769197326728">Nowy folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ustawienia</translation>
+<translation id="8631711675211020168">Wszyscy natychmiast utracą dostęp do grupy kart <ph name="GROUP_NAME" />, a grupa zostanie usunięta ze wszystkich urządzeń</translation>
+<translation id="870736955561925754">Zamknąć kartę i usunąć grupę?</translation>
 <translation id="8714939927607906138">Niższa cena</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8730999928494395583">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_MONTHS_ONE" /> miesiąc temu}few{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiące temu}many{Utworzono <ph name="NUM_MONTHS_MANY" /> miesięcy temu}other{Utworzono <ph name="NUM_MONTHS_MANY" /> miesiąca temu}}</translation>
 <translation id="8820741577754260431">Pokazuj obniżki cen na kartach</translation>
 <translation id="8887921976452567404">Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart.</translation>
+<translation id="8915916167043355778">Zamknij wszystko</translation>
 <translation id="8926389886865778422">Nie pytaj ponownie</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart z <ph name="TABS_COUNT_ONE" /> kartą.}few{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="9090098097337832354">Informacje o tym sklepie zostały zamknięte</translation>
@@ -165,6 +174,5 @@
 <translation id="9169594135889675189">Dodaj nową kartę do grupy</translation>
 <translation id="9216898458513705996">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
-<translation id="959682366969460160">Większy porządek</translation>
 <translation id="992256792861109788">Różowy</translation>
 </translationbundle>

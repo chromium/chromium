@@ -150,13 +150,8 @@ DeskMiniView::DeskMiniView(
         switch (mini_view->owner_bar()->type()) {
           case DeskBarViewBase::Type::kOverview:
             // Show focus ring for the overview bar when:
-            //   1a) it's focused via the customized focus cycler;
-            if (desk_preview->is_focused()) {
-              return true;
-            }
-            //   1b) it's focused via focus manager;
-            if (desk_preview->HasFocus() &&
-                features::IsOverviewNewFocusEnabled()) {
+            //   1) it's focused via focus manager;
+            if (desk_preview->HasFocus()) {
               return true;
             }
             //   2) dragging an overview item over this mini view;
@@ -196,8 +191,8 @@ DeskMiniView::DeskMiniView(
   if (chromeos::features::IsDeskProfilesEnabled() &&
       ((desk_profile_delegate &&
         desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
-    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
-        desk, this, owner_bar_->type() == DeskBarViewBase::Type::kOverview));
+    desk_profile_button_ =
+        AddChildView(std::make_unique<DeskProfilesButton>(desk, this));
   }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
@@ -315,15 +310,6 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       return true;
     }
 
-    if (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
-        !features::IsOverviewNewFocusEnabled()) {
-      if (desk_preview_->is_focused() || desk_action_view_->ChildHasFocus()) {
-        return true;
-      }
-      return desk_profile_button_ && desk_profile_button_->is_focused();
-    }
-
-    // New overview focus uses the same mechanisms as the desk button desk bar.
     if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
       return true;
     }
@@ -386,10 +372,7 @@ std::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
           IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) {
         return focused_desk_color_id;
       }
-      if (desk_preview_->is_focused()) {
-        return focused_desk_color_id;
-      }
-      if (desk_preview_->HasFocus() && features::IsOverviewNewFocusEnabled()) {
+      if (desk_preview_->HasFocus()) {
         return focused_desk_color_id;
       }
       if (desk_->is_active() && owner_bar_->overview_grid() &&
@@ -577,11 +560,6 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
 }
 
 void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
-  if (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
-      !features::IsOverviewNewFocusEnabled()) {
-    return;
-  }
-
   if ((!desk_action_view_->ChildHasFocus() &&
        (desk_profile_button_ == nullptr ||
         !desk_profile_button_->HasFocus()))) {
@@ -692,7 +670,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   desk_name_view_->SetText(new_name);
   desk_preview_->UpdateAccessibleName();
 
-  DeprecatedLayoutImmediately();
+  InvalidateLayout();
 }
 
 void DeskMiniView::ContentsChanged(views::Textfield* sender,
@@ -711,7 +689,7 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
     desk_name_view_->SetText(trimmed_new_contents);
   }
 
-  DeprecatedLayoutImmediately();
+  InvalidateLayout();
 }
 
 bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
@@ -782,11 +760,6 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   // Assume we should commit the name change unless HandleKeyEvent detects the
   // user pressed the escape key.
   should_commit_name_changes_ = true;
-
-  // Set the overview focus ring on `desk_name_view_`.
-  if (owner_bar_->type() == DeskBarViewBase::Type::kOverview) {
-    MoveFocusToView(desk_name_view_);
-  }
 
   if (!defer_select_all_)
     desk_name_view_->SelectAll(false);

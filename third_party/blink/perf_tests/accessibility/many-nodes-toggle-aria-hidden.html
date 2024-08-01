@@ -21,10 +21,13 @@
 </body>
 
 <script>
-
 var isDone = false;
 var startTime;
+
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
 var container = document.getElementById('container');
+generateAllContent();
 
 function runTest() {
   if (startTime) {
@@ -35,11 +38,7 @@ function runTest() {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
-
-    if (container.innerHTML =='')
-      generateAllContent();
-
-    setTimeout(toggleDisplay, 250);
+    toggleDisplay();
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's

@@ -25,10 +25,11 @@
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/features.h"
@@ -37,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/display/screen.h"
 
 namespace ash::personalization_app {
 
@@ -70,7 +72,8 @@ PersonalizationAppSeaPenProviderBase::PersonalizationAppSeaPenProviderBase(
     manta::proto::FeatureName feature_name)
     : feature_name_(feature_name),
       profile_(Profile::FromWebUI(web_ui)),
-      wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)) {}
+      wallpaper_fetcher_delegate_(std::move(wallpaper_fetcher_delegate)),
+      web_ui_(web_ui) {}
 
 PersonalizationAppSeaPenProviderBase::~PersonalizationAppSeaPenProviderBase() =
     default;
@@ -141,21 +144,21 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   }
 
   // In case of CHROMEOS_WALLPAPER, we need to send a second query.
-    auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
-    CHECK(sea_pen_fetcher);
+  auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
+  CHECK(sea_pen_fetcher);
 
-    sea_pen_fetcher->FetchWallpaper(
-        feature_name_, query_and_thumbnail->second->second,
-        query_and_thumbnail->first,
-        base::BindOnce(
-            &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-            query_and_thumbnail->first->Clone()));
-    return;
+  sea_pen_fetcher->FetchWallpaper(
+      feature_name_, query_and_thumbnail->second->second,
+      query_and_thumbnail->first,
+      base::BindOnce(
+          &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          query_and_thumbnail->first->Clone()));
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
     const uint32_t id,
+    const bool preview_mode,
     SelectRecentSeaPenImageCallback callback) {
   if (recent_sea_pen_image_ids_.count(id) == 0) {
     sea_pen_receiver_.ReportBadMessage("Unknown recent sea pen image selected");
@@ -170,7 +173,7 @@ void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
   pending_select_recent_sea_pen_image_callback_ = std::move(callback);
 
   SelectRecentSeaPenImageInternal(
-      id,
+      id, preview_mode,
       base::BindOnce(
           &PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected,
           weak_ptr_factory_.GetWeakPtr()));
@@ -363,6 +366,16 @@ void PersonalizationAppSeaPenProviderBase::ShouldShowSeaPenIntroductionDialog(
 void PersonalizationAppSeaPenProviderBase::
     HandleSeaPenIntroductionDialogClosed() {
   HandleSeaPenIntroductionDialogClosedInternal();
+}
+
+void PersonalizationAppSeaPenProviderBase::IsInTabletMode(
+    IsInTabletModeCallback callback) {
+  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+}
+
+void PersonalizationAppSeaPenProviderBase::MakeTransparent() {
+  WallpaperControllerClientImpl::Get()->MakeTransparent(
+      web_ui_->GetWebContents());
 }
 
 }  // namespace ash::personalization_app

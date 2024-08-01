@@ -120,13 +120,10 @@ void OnResourceExhausted() {
 
 void InitializeResourceBundle(const base::CommandLine& command_line) {
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
-  ui::ResourceBundle::InitSharedInstanceWithBuffer(
-      {kHeadlessResourcePackStrings.contents,
-       kHeadlessResourcePackStrings.length},
-      ui::kScaleFactorNone);
+  ui::ResourceBundle::InitSharedInstanceWithBuffer(kHeadlessResourcePackStrings,
+                                                   ui::kScaleFactorNone);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromBuffer(
-      {kHeadlessResourcePackData.contents, kHeadlessResourcePackData.length},
-      ui::k100Percent);
+      kHeadlessResourcePackData, ui::k100Percent);
 #else
   base::FilePath resource_dir;
   bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);

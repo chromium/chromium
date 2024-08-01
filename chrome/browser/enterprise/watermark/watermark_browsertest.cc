@@ -34,21 +34,31 @@ It was not split
 This is another very long line that should be split up into multiple lines
 )";
 
-class WatermarkBrowserTestBase : public UiBrowserTest {
+class WatermarkBrowserTest : public UiBrowserTest,
+                             public testing::WithParamInterface<const char*> {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void ShowUi(const std::string& name) override {
+  void NavigateToTestPage() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
                        "/enterprise/watermark/watermark_test_page.html")));
+  }
+
+  // Returns true if a watermark view object was available to set the watermark.
+  bool SetWatermark(const std::string& watermark_message) {
     if (auto* watermark_view = BrowserView::GetBrowserViewForBrowser(browser())
                                    ->get_watermark_view_for_testing()) {
-      watermark_view->SetString(watermark_message_);
+      watermark_view->SetString(watermark_message);
+      return true;
     }
+    return false;
+  }
+
+  void ShowUi(const std::string& name) override {
     base::RunLoop().RunUntilIdle();
   }
 
@@ -65,33 +75,22 @@ class WatermarkBrowserTestBase : public UiBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_features_;
-  std::string watermark_message_ = kMultilingualWatermarkMessage;
-};
-
-class WatermarkBrowserTest : public WatermarkBrowserTestBase,
-                             public testing::WithParamInterface<const char*> {
- public:
-  WatermarkBrowserTest() {
-    scoped_features_.InitAndEnableFeature(features::kEnableWatermarkView);
-  }
-};
-
-class WatermarkDisabledBrowserTest : public WatermarkBrowserTestBase {
- public:
-  WatermarkDisabledBrowserTest() {
-    scoped_features_.InitAndDisableFeature(features::kEnableWatermarkView);
-  }
 };
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(WatermarkDisabledBrowserTest,
-                       NoWatermarkShownAfterNavigation) {
+IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
+  NavigateToTestPage();
+  ASSERT_TRUE(SetWatermark(GetParam()));
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
-  watermark_message_ = GetParam();
+IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkClearedAfterNavigation) {
+  ASSERT_TRUE(SetWatermark(GetParam()));
+
+  // Navigating away from a watermarked page should clear the watermark if no
+  // other verdict/policy is present to show a watermark.
+  NavigateToTestPage();
   ShowAndVerifyUi();
 }
 

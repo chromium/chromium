@@ -528,6 +528,15 @@ namespace declarativeNetRequest {
     // not need to correspond to a real tab ID. Default is -1, meaning that
     // the request isn't related to a tab.
     long? tabId;
+
+    // The headers provided by a hypothetical response if the request does not
+    // get blocked or redirected before it is sent. Represented as an object
+    // which maps a header name to a list of string values. If not specified,
+    // the hypothetical response would return empty response headers, which can
+    // match rules which match on the non-existence of headers.
+    // E.g. <code>{"content-type": ["text/html; charset=utf-8",
+    // "multipart/form-data"]}</code>
+    object? responseHeaders;
   };
 
   dictionary MatchedRuleInfoDebug {

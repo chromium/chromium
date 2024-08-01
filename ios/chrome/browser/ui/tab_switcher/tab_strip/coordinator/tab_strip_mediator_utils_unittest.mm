@@ -53,7 +53,7 @@ class TabStripMediatorUtilsTest : public PlatformTest {
     browser_state_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = browser_state_builder.Build();
+    browser_state_ = std::move(browser_state_builder).Build();
     mock_service_ = static_cast<tab_groups::MockTabGroupSyncService*>(
         tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
             browser_state_.get()));

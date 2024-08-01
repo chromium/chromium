@@ -22,8 +22,10 @@ static_library("enrollment") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/login/",
     "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/network",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
@@ -57,6 +59,7 @@ static_library("enrollment") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login/",
     "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 
@@ -113,7 +116,10 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/enrollment/psm:test_support",
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
     "//chromeos:test_utils",

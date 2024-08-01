@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -184,7 +183,6 @@ public class AddressEditorTest {
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
     @Mock private Delegate mDelegate;
-    @Mock private HelpAndFeedbackLauncher mHelpLauncher;
 
     @Captor private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
@@ -462,7 +460,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.setCustomDoneButtonText("Custom done");
         mAddressEditor.showEditorDialog();
@@ -479,7 +477,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
@@ -500,7 +498,7 @@ public class AddressEditorTest {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
@@ -526,7 +524,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -554,7 +551,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -581,7 +577,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -609,7 +604,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -636,7 +630,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -670,7 +663,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -702,7 +694,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
@@ -733,7 +724,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
@@ -765,7 +755,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -824,7 +813,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -853,7 +841,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
@@ -870,7 +858,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
@@ -888,7 +876,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -910,7 +897,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -932,7 +918,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -954,7 +939,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
@@ -976,7 +960,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
@@ -1013,7 +996,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
@@ -1078,7 +1060,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
@@ -1109,7 +1091,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(
@@ -1142,7 +1123,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(
@@ -1182,7 +1162,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(
@@ -1230,7 +1209,7 @@ public class AddressEditorTest {
         when(mPersonalDataManager.isCountryEligibleForAccountStorage(eq("CU"))).thenReturn(false);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
@@ -1265,7 +1244,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(
@@ -1297,7 +1275,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(
@@ -1329,7 +1306,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(
@@ -1360,7 +1336,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
@@ -1375,7 +1351,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
-                        mActivity, mHelpLauncher, mDelegate, mProfile, /* saveToDisk= */ false);
+                        mActivity, mDelegate, mProfile, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
@@ -1397,7 +1373,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, accountProfile, mPersonalDataManager),
@@ -1421,7 +1396,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, accountProfile, mPersonalDataManager),
@@ -1445,7 +1419,6 @@ public class AddressEditorTest {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         mActivity,
-                        mHelpLauncher,
                         mDelegate,
                         mProfile,
                         new AutofillAddress(mActivity, accountProfile, mPersonalDataManager),

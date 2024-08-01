@@ -177,7 +177,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     payments_data().SetPrefService(autofill_client_.GetPrefs());
     payments_data().SetSyncServiceForTest(&sync_service_);
-    autofill_client_.set_autofill_offer_manager(
+    autofill_client_.GetPaymentsAutofillClient()->set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             autofill_client_.GetPersonalDataManager()));
   }

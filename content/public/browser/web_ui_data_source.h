@@ -49,11 +49,10 @@ class WebUIDataSource {
                                     const base::Value::Dict& update);
 
   // Adds a string keyed to its name to our dictionary.
-  virtual void AddString(std::string_view name,
-                         const std::u16string& value) = 0;
+  virtual void AddString(std::string_view name, std::u16string_view value) = 0;
 
   // Adds a string keyed to its name to our dictionary.
-  virtual void AddString(std::string_view name, const std::string& value) = 0;
+  virtual void AddString(std::string_view name, std::string_view value) = 0;
 
   // Adds a localized string with resource |ids| keyed to its name to our
   // dictionary.

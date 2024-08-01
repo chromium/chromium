@@ -34,8 +34,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
-using base::test::ios::kWaitForActionTimeout;
-
 namespace {
 
 // URLs of the test pages.
@@ -87,16 +85,6 @@ id<GREYMatcher> ModalMigrationButtonMatcher() {
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL)),
       grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
-}
-
-// Waits for the keyboard to appear. Returns NO on timeout.
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 // Matcher for a country entry with the given accessibility label.
@@ -217,7 +205,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
   // Wait for the keyboard to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Tap on the suggestion.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -249,7 +237,7 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       performAction:chrome_test_util::TapWebElementWithId(kFormElementEmail)];
 
   // Wait for the keyboard to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Populate the email field.
   // TODO(crbug.com/40916974): This should use grey_typeText when fixed.

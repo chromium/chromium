@@ -17,6 +17,7 @@ export interface HealthdInternalsSettingsDialogElement {
     dialog: CrDialogElement,
     dataPollingCycleSlider: HealthdInternalsConfigSliderElement,
     dataRetentionDurationSlider: HealthdInternalsConfigSliderElement,
+    uiUpdateIntervalSlider: HealthdInternalsConfigSliderElement,
   };
 }
 
@@ -31,6 +32,10 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
 
   static get properties() {
     return {
+      uiUpdateInterval: {
+        type: Number,
+        observer: 'onUiUpdateIntervalChanged',
+      },
       dataPollingCycle: {
         type: Number,
         observer: 'onDataPollingCycleChanged',
@@ -45,26 +50,36 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.$.dataPollingCycleSlider.initSlider(1, 5, 1);
+    this.$.uiUpdateIntervalSlider.initSlider(1, 5, 1);
+    this.$.uiUpdateIntervalSlider.initTitle('UI update interval (second)');
+    this.$.dataPollingCycleSlider.initSlider(100, 5000, 100);
     this.$.dataPollingCycleSlider.initTitle(
-        'Healthd data polling cycle (second)');
+        'Healthd data polling cycle (millisecond)');
     this.$.dataRetentionDurationSlider.initSlider(1, 12, 1);
     this.$.dataRetentionDurationSlider.initTitle(
         'Data retention duration for line charts (hour)');
   }
 
-  // Healthd data polling cycle. Default: 3 seconds.
-  private dataPollingCycle: number = 3;
+  // UI update interval. Default: 3 seconds.
+  private uiUpdateInterval: number = 3;
+  // Healthd data polling cycle. Default: 1000 milliseconds.
+  private dataPollingCycle: number = 1000;
   // Data retention duration for line charts. Default: 6 hours.
   private dataRetentionDuration: number = 6;
 
   openSettingsDialog() {
+    this.$.uiUpdateIntervalSlider.setTickValue(this.uiUpdateInterval);
     this.$.dataPollingCycleSlider.setTickValue(this.dataPollingCycle);
     this.$.dataRetentionDurationSlider.setTickValue(this.dataRetentionDuration);
     this.$.dialog.showModal();
   }
 
-  // Get the Healthd data polling cycle in seconds.
+  // Get the UI update interval in seconds.
+  getUiUpdateInterval(): number {
+    return this.uiUpdateInterval;
+  }
+
+  // Get the Healthd data polling cycle in milliseconds.
   getHealthdDataPollingCycle(): number {
     return this.dataPollingCycle;
   }
@@ -79,10 +94,16 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
   }
 
   private onConfirmButtonClick() {
+    this.uiUpdateInterval = this.$.uiUpdateIntervalSlider.getTickValue();
     this.dataPollingCycle = this.$.dataPollingCycleSlider.getTickValue();
     this.dataRetentionDuration =
         this.$.dataRetentionDurationSlider.getTickValue();
     this.$.dialog.close();
+  }
+
+  private onUiUpdateIntervalChanged() {
+    this.dispatchEvent(new CustomEvent(
+        'ui-update-interval-updated', {bubbles: true, composed: true}));
   }
 
   private onDataPollingCycleChanged() {

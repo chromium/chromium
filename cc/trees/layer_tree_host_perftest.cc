@@ -93,7 +93,7 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
       return;
     }
     if (!begin_frame_driven_drawing_)
-      host_impl->SetNeedsRedraw();
+      host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
     if (full_damage_each_frame_)
       host_impl->SetFullViewportDamage();
   }

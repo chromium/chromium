@@ -10,6 +10,7 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/shell.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -40,7 +41,13 @@ std::string GetDeviceModeSuffix() {
 
 PostLoginMetricsRecorder::PostLoginMetricsRecorder(
     LoginUnlockThroughputRecorder* login_unlock_throughput_recorder) {
-  post_login_event_observation_.Observe(login_unlock_throughput_recorder);
+  if (login_unlock_throughput_recorder) {
+    post_login_event_observation_.Observe(login_unlock_throughput_recorder);
+  } else {
+    // Unit tests call this without providing a
+    // login_unlock_throughput_recorder.
+    CHECK_IS_TEST();
+  }
 }
 
 PostLoginMetricsRecorder::~PostLoginMetricsRecorder() = default;

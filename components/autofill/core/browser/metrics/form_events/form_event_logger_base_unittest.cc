@@ -695,6 +695,31 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
 }
 
+// Tests that when `kAutofillEnableEmailHeuristicOutsideForms` is enabled, email
+// fields are supported outside of form tags and email heuristics only metrics
+// are reported.
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, FormTagNotRequired) {
+  base::test::ScopedFeatureList features_{
+      features::kAutofillEnableEmailHeuristicOutsideForms};
+  base::HistogramTester histogram_tester;
+
+  // Set the form to appear outside a <form> tag, which means it is not eligible
+  // for the email heuristic only metric.
+  form_.set_renderer_id(FormRendererId());
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
+}
+
 TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, TooManyFields) {
   base::HistogramTester histogram_tester;
 

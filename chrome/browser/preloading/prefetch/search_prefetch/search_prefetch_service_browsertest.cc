@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -59,6 +60,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -437,7 +439,8 @@ class SearchPrefetchServiceEnabledBrowserTest
         {kSearchPrefetchServicePrefetching,
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},
-          {"device_memory_threshold_MB", "0"}}}};
+          {"device_memory_threshold_MB", "0"}}},
+        {kSuppressesSearchPrefetchOnSlowNetwork, {}}};
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
@@ -473,6 +476,10 @@ class SearchPrefetchServiceEnabledBrowserTest
   const content::test::PreloadingAttemptUkmEntryBuilder&
   attempt_entry_builder() {
     return *attempt_entry_builder_;
+  }
+
+  network::NetworkQualityTracker& GetNetworkQualityTracker() const {
+    return *g_browser_process->network_quality_tracker();
   }
 
  private:
@@ -740,6 +747,62 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, SlowNetwork) {
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  base::TimeDelta http_rtt = GetNetworkQualityTracker().GetHttpRTT();
+  int32_t downstream_throughput_kbps =
+      GetNetworkQualityTracker().GetDownstreamThroughputKbps();
+
+  // Emulate slow network.
+  GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
+      base::Seconds(1), downstream_throughput_kbps);
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                         GetWebContents()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
+      SearchPrefetchEligibilityReason::kSlowNetwork, 1);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that we set the eligibility reason to kSlowNetwork when
+    // the network is slow.
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingType::kPrefetch,
+            content::PreloadingEligibility::kSlowNetwork,
+            content::PreloadingHoldbackStatus::kUnspecified,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+  }
+
+  // Reset to the original values.
+  GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 }
 
 class HeaderObserverContentBrowserClient : public ChromeContentBrowserClient {

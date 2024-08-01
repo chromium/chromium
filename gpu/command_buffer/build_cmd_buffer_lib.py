@@ -29,6 +29,28 @@ _DO_NOT_EDIT_WARNING = """// This file is auto-generated from
 
 """
 
+# TODO(crbug.com/40285824): Remove this and generate code using safer
+# constructs.
+_ALLOW_UNSAFE_BUFFERS = """
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+"""
+_allow_unsafe_buffers_filenames = [
+    "gpu/command_buffer/client/gles2_implementation_impl_autogen.h",
+    "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h",
+    "gpu/command_buffer/client/raster_implementation_impl_autogen.h",
+    "gpu/command_buffer/client/raster_implementation_unittest_autogen.h",
+    "gpu/command_buffer/common/gles2_cmd_format_autogen.h",
+    "gpu/command_buffer/service/context_state_impl_autogen.h",
+    "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h",
+    "gpu/command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h",
+    "gpu/command_buffer/service/raster_decoder_autogen.h",
+]
+
 # This string is copied directly out of the gl2.h file from GLES2.0
 #
 # Edits:
@@ -794,8 +816,8 @@ class CWriter():
 
   To be used with the `with` statement. Returns a normal `file` type, open only
   for writing - any existing files with that name will be overwritten. It will
-  automatically write the contents of `_LICENSE` and `_DO_NOT_EDIT_WARNING`
-  at the beginning.
+  automatically write the contents of `_LICENSE`, `_DO_NOT_EDIT_WARNING` and
+  `_ALLOW_UNSAFE_BUFFERS` at the beginning.
 
   Example:
     with CWriter("file.cpp") as myfile:
@@ -805,6 +827,8 @@ class CWriter():
   def __init__(self, filename, year):
     self.filename = filename
     self._ENTER_MSG = _LICENSE % year + _DO_NOT_EDIT_WARNING % _lower_prefix
+    if (filename in _allow_unsafe_buffers_filenames):
+        self._ENTER_MSG += _ALLOW_UNSAFE_BUFFERS
     self._EXIT_MSG = ""
     try:
       os.makedirs(os.path.dirname(filename))

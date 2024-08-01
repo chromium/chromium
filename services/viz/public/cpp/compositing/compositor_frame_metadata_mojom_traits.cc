@@ -74,7 +74,8 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.ReadTransitionDirectives(&out->transition_directives) &&
         data.ReadCaptureBounds(&out->capture_bounds) &&
         data.ReadOffsetTagDefinitions(&out->offset_tag_definitions) &&
-        data.ReadOffsetTagValues(&out->offset_tag_values))) {
+        data.ReadOffsetTagValues(&out->offset_tag_values) &&
+        data.ReadFrameIntervalInputs(&out->frame_interval_inputs))) {
     return false;
   }
 

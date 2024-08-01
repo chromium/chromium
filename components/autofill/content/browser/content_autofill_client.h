@@ -25,9 +25,9 @@ class ContentAutofillClient
   ContentAutofillClient& operator=(const ContentAutofillClient&) = delete;
   ~ContentAutofillClient() override;
 
-  // Intentionally non-virtual to allow it to be called during construction (in
+  // Intentionally final to allow it to be called during construction (in
   // particular, transitively by members of subclasses).
-  ContentAutofillDriverFactory* GetAutofillDriverFactory();
+  ContentAutofillDriverFactory& GetAutofillDriverFactory() final;
 
   // Called by ContentAutofillDriver's constructor to inject embedder-specific
   // behaviour. Implementations should not call into `driver`.

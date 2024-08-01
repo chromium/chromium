@@ -20,6 +20,7 @@ enum class NotificationsOptInPromptActionType {
 extern const char kNotificationsOptInPromptContentEnabled[];
 extern const char kNotificationsOptInPromptTipsEnabled[];
 extern const char kNotificationsOptInPromptPriceTrackingEnabled[];
+extern const char kNotificationsOptInPromptSafetyCheckEnabled[];
 extern const char kNotificationsOptInAlertPermissionDenied[];
 extern const char kNotificationsOptInAlertPermissionGranted[];
 extern const char kNotificationsOptInAlertOpenedSettings[];

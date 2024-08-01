@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -54,16 +55,6 @@ const char kNotificationOriginUrl[] = "chrome://hats";
 
 const char kNotifierHats[] = "ash.hats";
 
-// Minimum amount of time before the notification is displayed again after a
-// user has interacted with it.
-constexpr base::TimeDelta kHatsThreshold = base::Days(60);
-
-// The threshold for a Googler is less.
-constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
-
-// Prioritized HaTS has much shorter threshold.
-constexpr base::TimeDelta kPrioritizedHatsThreshold = base::Days(10);
-
 // The state specific UMA enumerations
 const int kSurveyTriggeredEnumeration = 1;
 
@@ -101,11 +92,12 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
   }
 }
 
-// Returns true if the given |profile| interacted with HaTS by either
-// dismissing the notification or taking the survey within a given
-// |threshold_time|.
-bool DidShowHatsToProfileRecently(Profile* profile,
-                                  const base::TimeDelta& threshold_time) {
+// Returns true if the given `profile` interacted with non-prioritized HaTS
+// by either dismissing the notification or taking the survey within a given
+// `threshold_time`.
+bool DidShowNonPrioritizedHatsToProfileRecently(
+    const Profile* profile,
+    const base::TimeDelta& threshold_time) {
   int64_t serialized_timestamp =
       profile->GetPrefs()->GetInt64(prefs::kHatsLastInteractionTimestamp);
 
@@ -114,12 +106,16 @@ bool DidShowHatsToProfileRecently(Profile* profile,
   return previous_interaction_timestamp + threshold_time > base::Time::Now();
 }
 
-// Returns true if the given |profile| interacted with survey |hats_config|
+// Returns true if the given |profile| interacted with a prioritized HaTS
 // by either dismissing the notification or taking another prioritized survey
 // within |prioritized_threshold_time|.
-bool DidShowSurveyToProfileRecently(
-    Profile* profile,
-    const HatsConfig& hats_config,
+// If |hats_config| is given, then also check if the given |profile| interacted
+// with that specific prioritized HaTS |hats_config| based on the pref timestamp
+// |HatsConfig::survey_last_interaction_timestamp_pref_name| within the
+// |HatsConfig::threshold_time|.
+bool DidShowPrioritizedHatsToProfileRecently(
+    const Profile* profile,
+    std::optional<raw_ref<const HatsConfig>> hats_config,
     const base::TimeDelta& prioritized_threshold_time) {
   base::Time prev_prioritized_interaction = profile->GetPrefs()->GetTime(
       prefs::kHatsPrioritizedLastInteractionTimestamp);
@@ -128,11 +124,22 @@ bool DidShowSurveyToProfileRecently(
     return true;
   }
 
-  base::Time previous_interaction_timestamp = profile->GetPrefs()->GetTime(
-      hats_config.survey_last_interaction_timestamp_pref_name);
+  if (!hats_config.has_value()) {
+    return false;
+  }
 
-  return previous_interaction_timestamp + hats_config.threshold_time >
+  base::Time previous_interaction_timestamp = profile->GetPrefs()->GetTime(
+      hats_config.value()->survey_last_interaction_timestamp_pref_name);
+
+  return previous_interaction_timestamp + hats_config.value()->threshold_time >
          base::Time::Now();
+}
+
+bool DidShowAnyHatsToProfileRecently(const Profile* profile,
+                                     const base::TimeDelta& threshold_time) {
+  return DidShowNonPrioritizedHatsToProfileRecently(profile, threshold_time) ||
+         DidShowPrioritizedHatsToProfileRecently(
+             profile, /*hats_config=*/std::nullopt, threshold_time);
 }
 
 // Returns true if at least |new_device_threshold| time has passed since
@@ -289,10 +296,11 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
-  const base::TimeDelta threshold_time =
-      gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
-          ? kHatsGooglerThreshold
-          : kHatsThreshold;
+  // There are two types of HaTS: prioritized and the non prioritized,
+  // both are kept track separately. The following checks both track records.
+  if (DidShowAnyHatsToProfileRecently(profile, kMinimumHatsThreshold)) {
+    return false;
+  }
 
   if (hats_config.prioritized) {
     // Do not show survey to user if the survey is prioritized and:
@@ -300,16 +308,21 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
     //   the threshold set in the config, or
     // - User already interacted with other prioritized survey within
     //   the past |kPrioritizedHatsThreshold|.
-    if (DidShowSurveyToProfileRecently(profile, hats_config,
-                                       kPrioritizedHatsThreshold)) {
+    if (DidShowPrioritizedHatsToProfileRecently(
+            profile, raw_ref<const HatsConfig>(hats_config),
+            kPrioritizedHatsThreshold)) {
       return false;
     }
   } else {
+    const base::TimeDelta threshold_time =
+        gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
+            ? kHatsGooglerThreshold
+            : kHatsThreshold;
     // Do not show survey to user if user has interacted with HaTS within the
     // past |threshold_time| time delta. This is a global cap applied across
     // surveys that have not opted out of the global cap of 1 per kHatsThreshold
     // days.
-    if (DidShowHatsToProfileRecently(profile, threshold_time)) {
+    if (DidShowNonPrioritizedHatsToProfileRecently(profile, threshold_time)) {
       base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus",
                                     HatsState::kSurveyShownRecently);
       return false;

@@ -54,6 +54,11 @@ class AutoPipSettingOverlayView : public views::View,
     return background_;
   }
 
+  views::View* get_blur_view_for_testing() const {
+    CHECK_IS_TEST();
+    return blur_view_;
+  }
+
   // Returns true if the bubble wants events at this point.  In practice, this
   // means "is over a button".
   virtual bool WantsEvent(const gfx::Point& point_in_screen);
@@ -103,6 +108,7 @@ class AutoPipSettingOverlayView : public views::View,
   } init_;
 
   raw_ptr<views::View> background_ = nullptr;
+  raw_ptr<views::View> blur_view_ = nullptr;
   raw_ptr<AutoPipSettingView> auto_pip_setting_view_ = nullptr;
   raw_ptr<views::Widget> widget_ = nullptr;
   gfx::Size bubble_size_;

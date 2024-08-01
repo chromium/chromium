@@ -18,6 +18,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/frame_rate_decider.h"
+#include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/eviction_handler.h"
 #include "components/viz/service/viz_service_export.h"
@@ -139,6 +140,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   }
 
   void SetHwSupportForMultipleRefreshRates(bool support);
+
+  void StartOverdrawTracking(int interval_length_in_seconds);
+  OverdrawTracker::OverdrawTimeSeries StopOverdrawTracking();
 
  private:
   class StandaloneBeginFrameObserver;

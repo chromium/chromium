@@ -288,6 +288,7 @@ class ASH_EXPORT CaptureModeCameraController
   using RequestId = size_t;
   void OnCameraDevicesReceived(
       RequestId request_id,
+      video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   // Shows or hides a preview of the currently selected camera depending on

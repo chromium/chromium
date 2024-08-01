@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/assistant",
+  "+chrome/browser/ash/auth",
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/crosapi",

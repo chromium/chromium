@@ -132,6 +132,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
+#include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
@@ -235,7 +236,6 @@
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
-#include "components/feed/buildflags.h"
 #include "components/manta/features.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
@@ -292,7 +292,6 @@
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service_factory.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -855,9 +854,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   FederatedIdentityApiPermissionContextFactory::GetInstance();
   FederatedIdentityAutoReauthnPermissionContextFactory::GetInstance();
   FederatedIdentityPermissionContextFactory::GetInstance();
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
   feed::FeedServiceFactory::GetInstance();
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   feedback::FeedbackUploaderFactoryChrome::GetInstance();
 #endif
@@ -891,7 +890,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   HidChooserContextFactory::GetInstance();
   HidConnectionTrackerFactory::GetInstance();
   HidPolicyAllowedDevicesFactory::GetInstance();
-  HistoryClustersModuleServiceFactory::GetInstance();
 #endif
   HistoryClustersServiceFactory::EnsureFactoryBuilt();
   HistoryEmbeddingsServiceFactory::GetInstance();
@@ -1080,6 +1078,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::UserPolicyOidcSigninServiceFactory::GetInstance();
 #endif
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
+  policy::UserFmRegistrationTokenUploaderFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
 #endif

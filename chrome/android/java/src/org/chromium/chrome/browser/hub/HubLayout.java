@@ -83,6 +83,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private final @NonNull PaneManager mPaneManager;
     private final @NonNull HubLayoutScrimController mScrimController;
     private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
+    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
     private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     /**
@@ -140,6 +141,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mHubController.setHubLayoutController(this);
         mPaneManager = mHubManager.getPaneManager();
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
+        mHubShowPaneHelper = mHubManager.getHubShowPaneHelper();
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
         mTabModelSelector = tabModelSelectorSupplier.get();
@@ -254,15 +256,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 bitmapPromise.fulfill(null);
             }
 
-            // TODO(crbug.com/41489743): This is a stop gap solution that will work until we have
-            // more
-            // panes. While we only have tab switcher panes, selecting the pane based on the
-            // currently selected tab model is correct. However, if we have more panes we likely
-            // want to be able to "select" a pane to focus as part of the HubLayout show transition.
             mPaneManager.focusPane(
-                    mTabModelSelector.isIncognitoSelected()
-                            ? PaneId.INCOGNITO_TAB_SWITCHER
-                            : PaneId.TAB_SWITCHER);
+                    mHubShowPaneHelper.consumeNextPaneId(mTabModelSelector.isIncognitoSelected()));
 
             mHubController.onHubLayoutShow();
 

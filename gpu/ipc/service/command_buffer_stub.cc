@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"

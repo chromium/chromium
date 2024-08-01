@@ -670,7 +670,10 @@ export class Output extends OutputInterface {
                 node, prevNode, type, buff, formatLog,
                 {preferEnd: preferStartOrEndAncestry});
           }
-          if (node.location) {
+
+          if (node.activeDescendant?.location) {
+            this.locations_.push(node.activeDescendant.location);
+          } else if (node.location) {
             this.locations_.push(node.location);
           }
           return buff;

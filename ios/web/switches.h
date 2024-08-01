@@ -13,6 +13,9 @@ extern const char kDisableInjectedFeatureScripts[];
 extern const char kDisableListedScripts[];
 extern const char kEnableListedScripts[];
 
+extern const char kDisableListedJavascriptFeatures[];
+extern const char kEnableListedJavascriptFeatures[];
+
 }  // namespace switches
 }  // namespace web
 

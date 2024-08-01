@@ -48,14 +48,17 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // Creates the platform-specific BrowserAccessibilityManager.
   static BrowserAccessibilityManager* Create(
       const ui::AXTreeUpdate& initial_tree,
+      ui::AXNodeIdDelegate& node_id_delegate,
       ui::AXPlatformTreeManagerDelegate* delegate);
 
   static BrowserAccessibilityManager* Create(
+      ui::AXNodeIdDelegate& node_id_delegate,
       ui::AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAndroid(
       const ui::AXTreeUpdate& initial_tree,
       base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
+      ui::AXNodeIdDelegate& node_id_delegate,
       ui::AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAndroid(

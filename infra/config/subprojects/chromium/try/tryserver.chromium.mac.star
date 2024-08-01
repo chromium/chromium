@@ -5,11 +5,11 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify_builder")
 load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
@@ -317,24 +317,6 @@ try_.compilator_builder(
 # NOTE: the following trybots aren't sensitive to Mac version on which
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
-try_.builder(
-    name = "mac_chromium_10.15_rel_ng",
-    branch_selector = branches.selector.MAC_BRANCHES,
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.15 Tests",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "release_try_builder",
-            "remoteexec",
-            "mac",
-            "x64",
-        ],
-    ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
 try_.builder(
     name = "mac_chromium_11.0_rel_ng",
     branch_selector = branches.selector.MAC_BRANCHES,

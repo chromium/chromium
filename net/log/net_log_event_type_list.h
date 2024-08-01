@@ -957,7 +957,15 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 // StreamAttempt and subclasses
 // ------------------------------------------------------------------------
 
+// Emitted when a StreamAttempt is created by HttpStreamPool.
+EVENT_TYPE(STREAM_ATTEMPT_BOUND_TO_POOL)
+
 // Marks the creation/destruction of a TcpStreamAttempt.
+// For the BEGIN phase, the following parameter is attached:
+//   {
+//      "ip_endpoint": <The IPEndPoint to connect>,
+//   }
+//
 // For the END phase, if there was an error, the following parameters are
 // attached:
 //   {
@@ -966,12 +974,28 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 EVENT_TYPE(TCP_STREAM_ATTEMPT_ALIVE)
 
 // Marks the creation/destruction of a TlsStreamAttempt.
+// For the BEGIN phase, the following parameter is attached:
+//   {
+//      "host_port": <The host and port of the destination>,
+//   }
+//
 // For the END phase, if there was an error, the following parameters are
 // attached:
 //   {
 //      "net_error": <Net error code of the failure>,
 //   }
 EVENT_TYPE(TLS_STREAM_ATTEMPT_ALIVE)
+
+// Measures the time TlsStreamAttempt was waiting SSLConfig to be ready.
+EVENT_TYPE(TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG)
+
+// Measures the time TlsStreamAttempt took to connect (TLS handshake).
+// For the END phase, if there was an error, the following parameters are
+// attached:
+//   {
+//      "net_error": <Net error code of the failure>,
+//   }
+EVENT_TYPE(TLS_STREAM_ATTEMPT_CONNECT)
 
 // ------------------------------------------------------------------------
 // URLRequest
@@ -1342,6 +1366,34 @@ EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_PROXY_SERVER_RESOLVED)
 //      "broken": <boolean>
 //   }
 EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND)
+
+// ------------------------------------------------------------------------
+// HttpStreamPool
+// ------------------------------------------------------------------------
+
+// Marks the start/end of a HttpStreamPool::Group.
+// The following parameters are attached:
+//   {
+//      "stream_key": <The HttpStreamKey of the group>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
+
+// Emitted when a group is requested a stream. The event parameters are:
+//   {
+//     "priority": <The priority of the erquest>,
+//     "allowed_bad_certs": <The list of allowed bad certs>,
+//     "enable_ip_based_pooling": <True when the request enables IP based
+//                                 pooling>,
+//     "source_dependency": <The source identifier of the request>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_STREAM)
+
+// Records on the caller's NetLog to indicate that an HttpStreamPool::Group is
+// servicing the request.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_BOUND)
+
+// Emitted when an HttpStreamPool::Job created a StreamAttempt.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_START)
 
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction

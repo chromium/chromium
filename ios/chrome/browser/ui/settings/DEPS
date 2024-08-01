@@ -1,8 +1,8 @@
 include_rules = [
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view.h",
-  "+ios/chrome/browser/ui/keyboard/key_command_actions.h",
-  "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
   "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",

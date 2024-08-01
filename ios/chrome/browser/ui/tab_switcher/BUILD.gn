@@ -39,6 +39,28 @@ source_set("items") {
   ]
 }
 
+source_set("tab_group_confirmation") {
+  sources = [
+    "tab_group_action_type.h",
+    "tab_group_confirmation_coordinator.h",
+    "tab_group_confirmation_coordinator.mm",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ui/base",
+  ]
+}
+
 source_set("utils") {
   sources = [
     "item_utils.h",

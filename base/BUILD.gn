@@ -551,12 +551,14 @@ component("base") {
     "process/process_info.h",
     "process/set_process_title.cc",
     "process/set_process_title.h",
+    "profiler/call_stack_profile_params.h",
     "profiler/frame.cc",
     "profiler/frame.h",
     "profiler/metadata_recorder.cc",
     "profiler/metadata_recorder.h",
     "profiler/module_cache.cc",
     "profiler/module_cache.h",
+    "profiler/process_type.h",
     "profiler/profile_builder.h",
     "profiler/register_context.h",
     "profiler/sample_metadata.cc",
@@ -4125,6 +4127,10 @@ test("base_unittests") {
       ]
     }
 
+    if (is_win) {
+      sources += [ "trace_event/trace_logging_minimal_win_unittest.cc" ]
+    }
+
     deps += [
       "//third_party/perfetto/include/perfetto/trace_processor:storage",
       "//third_party/perfetto/protos/perfetto/trace:lite",
@@ -4438,7 +4444,6 @@ if (is_android) {
     proguard_configs = [ "android/proguard/shared_with_cronet.flags" ]
     public_deps = [
       ":activity_state_java",
-      ":api_helpers_java",
       ":base_switches_java",
       ":callback_java",
       ":command_line_java",
@@ -4850,29 +4855,6 @@ if (is_android) {
     ]
   }
 
-  # TODO(crbug.com/40825179): Delete these targets and inline their calls.
-  android_library("api_helpers_java") {
-    sources = [
-      "android/java/src/org/chromium/base/compat/ApiHelperForM.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForN.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForO.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForOMR1.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForP.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForQ.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForR.java",
-      "android/java/src/org/chromium/base/compat/ApiHelperForS.java",
-    ]
-    deps = [
-      ":callback_java",
-      ":log_java",
-      ":tasks_java",
-      "//build/android:build_java",
-      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/jni_zero:jni_zero_java",
-    ]
-  }
-
   android_library("base_shared_preferences_java") {
     deps = [
       ":base_java",
@@ -5039,6 +5021,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
+      "test/android/javatests/src/org/chromium/base/test/NativeCoverageInstrumentationRunListener.java",
       "test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
       "test/android/javatests/src/org/chromium/base/test/SharedPreferencesTestUtil.java",
       "test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
@@ -5104,6 +5087,11 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
+    if (use_clang_coverage) {
+      mergeable_android_manifests = [
+        "test/android/javatests/AndroidManifest_NativeCoverageListener.xml",
+      ]
+    }
   }
 
   generate_jni("base_java_test_support_uncommon_jni") {

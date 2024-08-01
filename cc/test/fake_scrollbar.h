@@ -34,14 +34,15 @@ class FakeScrollbar : public Scrollbar {
   bool SupportsDragSnapBack() const override;
   gfx::Rect TrackRect() const override;
   float Opacity() const override;
-  bool NeedsRepaintPart(ScrollbarPart part) const override;
+  bool ThumbNeedsRepaint() const override;
+  void ClearThumbNeedsRepaint() override;
+  bool TrackAndButtonsNeedRepaint() const override;
   bool NeedsUpdateDisplay() const override;
   void ClearNeedsUpdateDisplay() override;
   bool HasTickmarks() const override;
-  void PaintPart(PaintCanvas* canvas,
-                 ScrollbarPart part,
-                 const gfx::Rect& rect) override;
-  void ClearThumbNeedsRepaint() override;
+  void PaintThumb(PaintCanvas& canvas, const gfx::Rect& rect) override;
+  void PaintTrackAndButtons(PaintCanvas& canvas,
+                            const gfx::Rect& rect) override;
   SkColor4f ThumbColor() const override;
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
@@ -76,11 +77,11 @@ class FakeScrollbar : public Scrollbar {
   SkColor paint_fill_color() const { return SK_ColorBLACK | fill_color_; }
 
   void set_thumb_opacity(float opacity) { thumb_opacity_ = opacity; }
-  void set_needs_repaint_thumb(bool needs_repaint) {
-    needs_repaint_thumb_ = needs_repaint;
+  void set_thumb_needs_repaint(bool needs_repaint) {
+    thumb_needs_repaint_ = needs_repaint;
   }
-  void set_needs_repaint_track(bool needs_repaint) {
-    needs_repaint_track_ = needs_repaint;
+  void set_track_and_buttons_need_repaint(bool needs_repaint) {
+    track_and_buttons_need_repaint_ = needs_repaint;
   }
   void set_is_opaque(bool b) { is_opaque_ = b; }
   void set_thumb_color(SkColor4f color) { thumb_color_ = color; }
@@ -89,6 +90,8 @@ class FakeScrollbar : public Scrollbar {
   ~FakeScrollbar() override;
 
  private:
+  virtual void Paint(PaintCanvas& canvas, const gfx::Rect& rect);
+
   bool should_paint_ = false;
   bool has_thumb_ = false;
   bool has_tickmarks_ = false;
@@ -102,8 +105,8 @@ class FakeScrollbar : public Scrollbar {
   gfx::Size thumb_size_{5, 10};
   float thumb_opacity_ = 1;
   SkColor4f thumb_color_ = SkColors::kRed;
-  bool needs_repaint_thumb_ = true;
-  bool needs_repaint_track_ = true;
+  bool thumb_needs_repaint_ = true;
+  bool track_and_buttons_need_repaint_ = true;
   bool needs_update_display_ = true;
   gfx::Rect track_rect_{0, 0, 100, 10};
   gfx::Rect back_button_rect_;

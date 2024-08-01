@@ -107,6 +107,8 @@ component("cpp") {
     "assistant/controller/assistant_ui_controller.h",
     "audio_config_service.cc",
     "audio_config_service.h",
+    "auth/active_session_auth_controller.cc",
+    "auth/active_session_auth_controller.h",
     "back_gesture_contextual_nudge_controller.h",
     "back_gesture_contextual_nudge_delegate.h",
     "bluetooth_config_service.cc",
@@ -269,6 +271,8 @@ component("cpp") {
     "picker/picker_client.h",
     "picker/picker_search_result.cc",
     "picker/picker_search_result.h",
+    "picker/picker_web_paste_target.cc",
+    "picker/picker_web_paste_target.h",
     "power_utils.cc",
     "power_utils.h",
     "presentation_time_recorder.cc",
@@ -624,6 +628,8 @@ source_set("test_support") {
     "test/test_shelf_item_delegate.h",
     "test/test_system_tray_client.cc",
     "test/test_system_tray_client.h",
+    "test/test_tab_strip_delegate.cc",
+    "test/test_tab_strip_delegate.h",
   ]
 
   deps = [

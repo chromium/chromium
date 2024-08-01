@@ -55,7 +55,7 @@
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -173,11 +173,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         IOSChromeSafetyCheckManagerFactory::GetInstance(),
         IOSChromeSafetyCheckManagerFactory::GetDefaultFactory());
 
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),
@@ -192,9 +189,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
-  ChromeBrowserState* GetBrowserState() {
-    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
-  }
+  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
 
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
@@ -367,10 +362,12 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   raw_ptr<web::WebState> web_state_;
   id toolbar_delegate_;
   id delegate_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<Browser> browser_;
   UIViewController* fake_feed_view_controller_;
   NewTabPageCoordinator* coordinator_;

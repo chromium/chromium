@@ -17,6 +17,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
 #if PA_BUILDFLAG(IS_WIN)
@@ -132,6 +133,17 @@ void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
 
 const AllocatorDispatch* GetAllocatorDispatchChainHeadForTesting() {
   return internal::GetChainHead();
+}
+
+AutoResetAllocatorDispatchChainForTesting::
+    AutoResetAllocatorDispatchChainForTesting() {
+  original_dispatch_ = internal::g_chain_head.exchange(
+      &allocator_shim::AllocatorDispatch::default_dispatch);
+}
+
+AutoResetAllocatorDispatchChainForTesting::
+    ~AutoResetAllocatorDispatchChainForTesting() {
+  internal::g_chain_head = original_dispatch_;
 }
 
 }  // namespace allocator_shim

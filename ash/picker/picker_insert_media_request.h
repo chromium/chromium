@@ -5,6 +5,7 @@
 #ifndef ASH_PICKER_PICKER_INSERT_MEDIA_REQUEST_H_
 #define ASH_PICKER_PICKER_INSERT_MEDIA_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -24,6 +25,8 @@ class TextInputClient;
 }  // namespace ui
 
 namespace ash {
+
+struct PickerWebPasteTarget;
 
 // Inserts rich media such as text and images into an input field.
 class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
@@ -51,6 +54,8 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
       ui::InputMethod* input_method,
       const PickerRichMedia& media,
       base::TimeDelta insert_timeout,
+      base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+          get_web_paste_target = {},
       OnCompleteCallback on_complete_callback = {});
   ~PickerInsertMediaRequest() override;
 
@@ -67,6 +72,8 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   void CancelPendingInsert();
 
   std::optional<PickerRichMedia> media_to_insert_;
+  base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+      get_web_paste_target_;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};
   base::OneShotTimer insert_timeout_timer_;

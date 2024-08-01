@@ -72,6 +72,15 @@ AppsData& AppsData::operator=(AppsData&& other) = default;
 void AppsData::AddSearchableText(const std::string& new_searchable_text) {
   searchable_text.push_back(new_searchable_text);
 }
+FileData::FileData(const std::string& path,
+                   const std::string& name,
+                   const std::string& date_modified)
+    : path(path), name(name), date_modified(date_modified) {}
+
+FileData::~FileData() = default;
+
+FileData::FileData(const FileData&) = default;
+FileData& FileData::operator=(const FileData&) = default;
 
 SparkyDelegate::SparkyDelegate() = default;
 SparkyDelegate::~SparkyDelegate() = default;

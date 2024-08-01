@@ -204,6 +204,14 @@ class NET_EXPORT SpdySessionPool
       bool is_websocket,
       const NetLogWithSource& net_log);
 
+  // Returns an available session if there is active session for `key` and the
+  // session can be used for IP addresses in `service_endpoint`. Should be
+  // called only when IP-based pooling is enabled.
+  base::WeakPtr<SpdySession> FindMatchingIpSessionForServiceEndpoint(
+      const SpdySessionKey& key,
+      const ServiceEndpoint& service_endpoint,
+      const std::set<std::string>& dns_aliases);
+
   // Returns true if there is an available session for |key|.
   bool HasAvailableSession(const SpdySessionKey& key, bool is_websocket) const;
 
@@ -412,6 +420,15 @@ class NET_EXPORT SpdySessionPool
   void RemoveRequestInternal(
       SpdySessionRequestMap::iterator request_map_iterator,
       RequestSet::iterator request_set_iterator);
+
+  // Helper method of `FindMatchingIpSessionForServiceEndpoint()`. This is
+  // basically a subset of OnHostResolutionComplete(), i.e.,:
+  // * Doesn't support SocketTag.
+  // * Assumes there is only one host resolution for `key` at the same time.
+  base::WeakPtr<SpdySession> FindMatchingIpSession(
+      const SpdySessionKey& key,
+      const std::vector<IPEndPoint> ip_endpoints,
+      const std::set<std::string>& dns_aliases);
 
   raw_ptr<HttpServerProperties> http_server_properties_;
 

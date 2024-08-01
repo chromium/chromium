@@ -166,7 +166,7 @@ LayoutUnit LineTruncator::TruncateLine(LayoutUnit line_width,
     // In order to preserve layout information before truncated, hide the
     // original fragment and insert a truncated one.
     unsigned child_index_to_truncate =
-        base::checked_cast<unsigned>(ellipsized_child - line_box->begin());
+        base::checked_cast<unsigned>(ellipsized_child - &*line_box->begin());
     line_box->InsertChild(child_index_to_truncate + 1,
                           std::move(*truncated_child));
     box_states->ChildInserted(child_index_to_truncate + 1);

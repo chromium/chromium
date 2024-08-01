@@ -1128,7 +1128,7 @@ public class PageInfoViewTest {
                                     null) {
                                 @Override
                                 public @PdfPageType int getPdfPageType() {
-                                    return PdfPageType.TRANSIENT;
+                                    return PdfPageType.TRANSIENT_SECURE;
                                 }
                             };
                     PageInfoController.show(
@@ -1141,6 +1141,44 @@ public class PageInfoViewTest {
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_transient_pdf), isDisplayed()), true);
+    }
+
+    /** Tests that page info view is shown correctly for insecure transient pdf pages. */
+    @Test
+    @MediumTest
+    public void testInsecureTransientPdfPage() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ChromeActivity activity = sActivityTestRule.getActivity();
+                    final Tab tab = activity.getActivityTab();
+                    ChromePageInfoControllerDelegate pageInfoControllerDelegate =
+                            new ChromePageInfoControllerDelegate(
+                                    activity,
+                                    tab.getWebContents(),
+                                    activity::getModalDialogManager,
+                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
+                                    null,
+                                    null,
+                                    ChromePageInfoHighlight.noHighlight(),
+                                    null) {
+                                @Override
+                                public @PdfPageType int getPdfPageType() {
+                                    return PdfPageType.TRANSIENT_INSECURE;
+                                }
+                            };
+                    PageInfoController.show(
+                            sActivityTestRule.getActivity(),
+                            tab.getWebContents(),
+                            null,
+                            PageInfoController.OpenedFromSource.MENU,
+                            pageInfoControllerDelegate,
+                            ChromePageInfoHighlight.noHighlight());
+                });
+        onViewWaiting(
+                allOf(
+                        withText(R.string.page_info_connection_transient_pdf_insecure),
+                        isDisplayed()),
+                true);
     }
 
     /** Tests that page info view is shown correctly for local pdf pages. */

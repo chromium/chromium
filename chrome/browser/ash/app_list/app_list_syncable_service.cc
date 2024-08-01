@@ -1584,12 +1584,12 @@ ash::AppListSortOrder AppListSyncableService::GetPermanentSortingOrder() const {
 
 // AppListSyncableService private
 
-bool AppListSyncableService::ProcessSyncItemSpecifics(
+void AppListSyncableService::ProcessSyncItemSpecifics(
     const sync_pb::AppListSpecifics& specifics) {
   const std::string& item_id = specifics.item_id();
   if (item_id.empty()) {
     LOG(ERROR) << "AppList item with empty ID";
-    return false;
+    return;
   }
   SyncItem* sync_item = FindSyncItem(item_id);
   if (sync_item) {
@@ -1599,7 +1599,7 @@ bool AppListSyncableService::ProcessSyncItemSpecifics(
       ProcessExistingSyncItem(sync_item);
       UpdateSyncItemInLocalStorage(profile_, sync_item);
       VLOG(2) << this << " <- SYNC UPDATE: " << sync_item->ToString();
-      return false;
+      return;
     }
     // Otherwise, one of the entries should be TYPE_REMOVE_DEFAULT_APP.
     if (sync_item->item_type !=
@@ -1621,7 +1621,6 @@ bool AppListSyncableService::ProcessSyncItemSpecifics(
   ProcessNewSyncItem(sync_item);
   UpdateSyncItemInLocalStorage(profile_, sync_item);
   VLOG(2) << this << " <- SYNC ADD: " << sync_item->ToString();
-  return true;
 }
 
 void AppListSyncableService::ProcessNewSyncItem(SyncItem* sync_item) {

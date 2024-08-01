@@ -39,7 +39,7 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
   ContentAutofillClient& client =
       static_cast<ContentAutofillClient&>(manager.client());
   const AutofillDriverRouter& router =
-      client.GetAutofillDriverFactory()->router();
+      client.GetAutofillDriverFactory().router();
   std::vector<FormData> renderer_forms =
       router.GetRendererForms(form_and_predictions.form_data);
 

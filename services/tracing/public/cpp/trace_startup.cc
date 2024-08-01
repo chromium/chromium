@@ -136,15 +136,14 @@ base::ReadOnlySharedMemoryRegion CreateTracingConfigSharedMemory() {
     return base::ReadOnlySharedMemoryRegion();
   }
 
-  auto serialized_config = trace_config.SerializeAsArray();
+  std::vector<uint8_t> serialized_config = trace_config.SerializeAsArray();
 
   base::MappedReadOnlyRegion shm =
       base::ReadOnlySharedMemoryRegion::Create(serialized_config.size());
   if (!shm.IsValid()) {
     return base::ReadOnlySharedMemoryRegion();
   }
-  memcpy(shm.mapping.memory(), serialized_config.data(),
-         serialized_config.size());
+  base::span(shm.mapping).copy_from(serialized_config);
   return std::move(shm.region);
 }
 

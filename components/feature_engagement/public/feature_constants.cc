@@ -176,9 +176,6 @@ BASE_FEATURE(kIPHTabSearchFeature,
 BASE_FEATURE(kIPHTrackingProtectionOnboardingFeature,
              "IPH_TrackingProtectionOnboarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHTrackingProtectionFullOnboardingFeature,
-             "IPH_TrackingProtectionFullOnboarding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTrackingProtectionReminderFeature,
              "IPH_TrackingProtectionReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -384,6 +381,9 @@ BASE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature,
 BASE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature,
              "IPH_TabGroupsTapToSeeAnotherTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabGroupCreationDialogSyncTextFeature,
+             "IPH_TabGroupCreationDialogSyncText",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabGroupSyncOnStripFeature,
              "IPH_TabGroupSyncOnStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -405,6 +405,9 @@ BASE_FEATURE(kIPHTabGroupsSurfaceOnHideFeature,
 BASE_FEATURE(kIPHTabSwitcherButtonFeature,
              "IPH_TabSwitcherButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabSwitcherFloatingActionButtonFeature,
+             "IPH_TabSwitcherFloatingActionButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTranslateMenuButtonFeature,
              "IPH_TranslateMenuButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -624,7 +627,7 @@ BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
 constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
     &kDefaultBrowserEligibilitySlidingWindow,
     /*name=*/"sliding-window-days",
-    /*default_value=*/365};
+    /*default_value=*/180};
 
 const char kGestureInProductHelpMaxOccurrence[] = "gesture-iph-max-occurrence";
 const char kGestureInProductHelpDaysBetweenOccurrences[] =

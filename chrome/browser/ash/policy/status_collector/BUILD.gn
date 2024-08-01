@@ -51,6 +51,7 @@ static_library("status_collector") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/uploading",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/profiles:profile",
@@ -107,6 +108,7 @@ static_library("status_collector") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/uploading",
   ]
 }
 

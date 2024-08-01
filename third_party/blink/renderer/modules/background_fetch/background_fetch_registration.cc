@@ -94,7 +94,7 @@ void BackgroundFetchRegistration::OnRecordsUnavailable() {
 void BackgroundFetchRegistration::OnRequestCompleted(
     mojom::blink::FetchAPIRequestPtr request,
     mojom::blink::FetchAPIResponsePtr response) {
-  for (auto* it = observers_.begin(); it != observers_.end();) {
+  for (auto it = observers_.begin(); it != observers_.end();) {
     BackgroundFetchRecord* observer = it->Get();
     if (observer->ObservedUrl() == request->url) {
       observer->OnRequestCompleted(response->Clone());

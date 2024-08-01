@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_TWO_SCREENS_SIGNIN_TWO_SCREENS_SIGNIN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_TWO_SCREENS_SIGNIN_TWO_SCREENS_SIGNIN_COORDINATOR_H_
 
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 
 namespace signin_metrics {
 enum class AccessPoint : int;

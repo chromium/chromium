@@ -25,7 +25,7 @@ class DocumentDownloadTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
 
     download_manager_delegate_ =
         [[FakeDownloadManagerTabHelperDelegate alloc] init];

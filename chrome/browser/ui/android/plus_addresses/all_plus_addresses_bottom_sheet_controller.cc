@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_view.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
@@ -43,6 +44,10 @@ void AllPlusAddressesBottomSheetController::OnBottomSheetDismissed() {
 
 gfx::NativeView AllPlusAddressesBottomSheetController::GetNativeView() {
   return web_contents_->GetNativeView();
+}
+
+Profile* AllPlusAddressesBottomSheetController::GetProfile() {
+  return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
 
 }  // namespace plus_addresses

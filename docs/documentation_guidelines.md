@@ -1,7 +1,7 @@
 # **Chromium Documentation Guidelines**
 
 Chromium's code base is large. Very large. Like most large places, it can be hard to find your way around if you don't already know the way. It also changes a lot. Lots of people work on Chromium and refactoring, componentization, addition
-or removal of layers, etc. means that knowledge one does have can quickly get out of date.
+or removal of layers, etc. means that knowledge one has can quickly get out of date.
 
 As a result, it can be hard to figure out how things are supposed to fit together. Documentation on [dev.chromium.org](http://dev.chromium.org/developers) can be hard to navigate and harder to keep up to date. The [starter guide](https://sites.google.com/a/chromium.org/dev/developers/how-tos/getting-around-the-chrome-source-code) is helpful, but stops at a very high-level overview. Ultimately [codesearch.chromium.org](http://codesearch.chromium.org) is the way most people explore.
 
@@ -39,7 +39,7 @@ A great example of a README.md file is [src/native_client/README.md](https://cod
 
 Class and function declarations in header files describe to the world how a piece of code should be used. The public interface of a class or a header file containing function declarations describe the API to the code but don't necessarily say much about how it is expected to be used. As such:
 
-***Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.  ***
+***Non-trivial classes or sets of function declarations in header files should include comments with a brief description of the purpose of the class or set of functions as well as examples of expected usage.***
 
 (Good) examples:
 

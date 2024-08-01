@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FEATURE_CONFIG_BUILDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FEATURE_CONFIG_BUILDER_H_
 
+#include <initializer_list>
+#include <optional>
+#include <string>
+
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/redaction.pb.h"
@@ -19,6 +23,9 @@ proto::SafetyCategoryThreshold ForbidUnsafe();
 // Sets a threshold that will reject text without "reasonable" when used with
 // FakeOnDeviceModel::ClassifyTextSafety.
 proto::SafetyCategoryThreshold RequireReasonable();
+
+// Construct a ProtoField with the given tags.
+proto::ProtoField ProtoField(std::initializer_list<int32_t> tags);
 
 // Reference ComposeRequest::page_metadata.page_url
 proto::ProtoField PageUrlField();
@@ -75,6 +82,18 @@ inline proto::OnDeviceModelValidationConfig WillFailValidationConfig() {
   prompt->set_prompt("hello");
   prompt->set_expected_output("goodbye");
   return validation_config;
+}
+
+inline auto Int32Proto(int32_t value) {
+  proto::Value v;
+  v.set_int32_value(value);
+  return v;
+}
+
+inline auto Int64Proto(int64_t value) {
+  proto::Value v;
+  v.set_int64_value(value);
+  return v;
 }
 
 }  // namespace optimization_guide

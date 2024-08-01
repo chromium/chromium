@@ -381,6 +381,35 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "mac13-skia-alt-arm64-rel-tests",
+    description_html = "Runs web tests with Skia Graphite on Mac ARM machines",
+    triggered_by = ["ci/mac-arm64-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|arm64",
+        short_name = "skia-alt",
+    ),
+    contact_team_email = "chrome-skia-graphite@google.com",
+)
+
+ci.thin_tester(
     name = "mac14-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs MacOS 14 tests on ARM machines",
@@ -406,34 +435,6 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "14",
     ),
-    contact_team_email = "bling-engprod@google.com",
-)
-
-ci.thin_tester(
-    name = "Mac10.15 Tests",
-    branch_selector = branches.selector.MAC_BRANCHES,
-    triggered_by = ["ci/Mac Builder"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        build_gs_bucket = "chromium-mac-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "15",
-    ),
-    cq_mirrors_console_view = "mirrors",
     contact_team_email = "bling-engprod@google.com",
 )
 
@@ -605,6 +606,7 @@ ios_builder(
             "libfuzzer",
             "no_dsyms",
             "no_remoting",
+            "lld",
         ],
     ),
     tree_closing = False,

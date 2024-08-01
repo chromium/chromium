@@ -38,6 +38,7 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
@@ -124,6 +125,7 @@ class UserCloudPolicyManagerAshNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "UserRemoteCommandsInvalidator") {
     DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
+    DependsOn(policy::UserFmRegistrationTokenUploaderFactory::GetInstance());
   }
 
   ~UserCloudPolicyManagerAshNotifierFactory() override = default;
@@ -846,6 +848,10 @@ UserCloudPolicyManagerAsh::GetReportSchedulerForTesting() {
 // static
 void UserCloudPolicyManagerAsh::EnsureFactoryBuilt() {
   UserCloudPolicyManagerAshNotifierFactory::GetInstance();
+}
+
+std::string_view UserCloudPolicyManagerAsh::name() const {
+  return "UserCloudPolicyManagerAsh";
 }
 
 }  // namespace policy

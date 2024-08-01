@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
@@ -57,6 +58,9 @@ GURL GetFormattedURL(const std::string* url_string);
 bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
                            omnibox::RichAnswerTemplate* answer_template);
 
+// Logs which answer type was used (if any) at the time a user used the
+// omnibox to go somewhere.
+void LogAnswerUsed(omnibox::AnswerType answer_type);
 }  // namespace omnibox::answer_data_parser
 
 // Structured representation of the JSON payload of a suggestion with an answer.
@@ -237,10 +241,6 @@ class SuggestionAnswer {
   // Some types of matches (answers for dictionary definitions, e.g.) do not
   // follow the common rules for reversing lines.
   bool IsExceptedFromLineReversal() const;
-
-  // Logs which answer type was used (if any) at the time a user used the
-  // omnibox to go somewhere.
-  static void LogAnswerUsed(const std::optional<SuggestionAnswer>& answer);
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;

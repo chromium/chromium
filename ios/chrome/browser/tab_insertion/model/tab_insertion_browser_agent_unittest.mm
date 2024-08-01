@@ -75,6 +75,19 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingle) {
   EXPECT_TRUE(web_state->IsRealized());
 }
 
+// Checks that inserting a tab in the background when the WebStateList is empty
+// is activating it.
+TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingleBackground) {
+  TabInsertion::Params insertion_params;
+  insertion_params.in_background = true;
+  web::WebState* web_state =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  ASSERT_EQ(1, browser_->GetWebStateList()->count());
+  EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_EQ(web_state, browser_->GetWebStateList()->GetActiveWebState());
+  EXPECT_TRUE(web_state->IsRealized());
+}
+
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
   TabInsertion::Params insertion_params;
   insertion_params.index = 0;

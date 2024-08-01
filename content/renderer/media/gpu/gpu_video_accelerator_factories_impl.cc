@@ -23,7 +23,6 @@
 #include "content/renderer/media/codec_factory.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/decoder.h"

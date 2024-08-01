@@ -679,6 +679,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Username match"/>
 </enum>
 
+<enum name="PasswordFormPredictionWaitResult">
+  <int value="0" label="Predictions received before timeout"/>
+  <int value="1" label="Timed out with one closure outstanding"/>
+  <int value="2" label="Timed out with two or more closures outstanding"/>
+</enum>
+
 <enum name="PasswordFormType2">
   <int value="0" label="Undefined"/>
   <int value="1" label="Login form"/>
@@ -1091,9 +1097,17 @@ chromium-metrics-reviews@google.com.
     origin. This is provided as a credential sharing affiliation by
     AffiliationService.
   </int>
-  <int value="4" label="Grouped">
+  <int value="4" label="Grouped (Deprecated in M129)">
     A credential exists for another entity, which is grouped with the current
     domain by the AffiliationService through a grouping affiliation.
+  </int>
+  <int value="5" label="Grouped android app">
+    A credential exists for an android application, which is grouped with the
+    current domain by the AffiliationService through a grouping affiliation.
+  </int>
+  <int value="6" label="Grouped website">
+    A credential exists for a website, which is grouped with the current domain
+    by the AffiliationService through a grouping affiliation.
   </int>
 </enum>
 
@@ -1499,6 +1513,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Other Gaia password"/>
   <int value="3" label="Enterprise password"/>
   <int value="4" label="Unknown password"/>
+</enum>
+
+<enum name="SaveFlowStep">
+  <int value="0" label="Form submitted"/>
+  <int value="1" label="Save prompt shown"/>
 </enum>
 
 <enum name="SavingOnUsernameFirstFlow">

@@ -361,8 +361,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                  const StyleRequest&,
                                  const MatchResult&);
   void MaybeAddToMatchedPropertiesCache(StyleResolverState&,
-                                        const CacheSuccess&,
-                                        const MatchResult&);
+                                        const CacheSuccess&);
 
   void ApplyPropertiesFromCascade(StyleResolverState&,
                                   StyleCascade& cascade,

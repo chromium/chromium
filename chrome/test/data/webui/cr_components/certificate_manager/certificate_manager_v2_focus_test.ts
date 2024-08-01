@@ -82,17 +82,24 @@ suite('CertificateManagerV2FocusTest', () => {
       return {certs: []};
     });
     initializeElement();
+    certManager.$.clientMenuItem.click();
+    certManager.$.viewOsImportedClientCerts.click();
 
     await getCertificatesResolver.promise;
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
-    const entries = certManager.$.platformClientCerts.$.certs.querySelectorAll(
-        'certificate-entry-v2');
-    assertEquals(1, entries.length, 'no certs displayed');
+    const certLists =
+        certManager.$.platformClientCertsSection.shadowRoot!.querySelectorAll(
+            'certificate-list-v2');
+    assertEquals(1, certLists.length, 'no cert lists displayed');
+
+    const certEntries =
+        certLists[0]!.$.certs.querySelectorAll('certificate-entry-v2');
+    assertEquals(1, certEntries.length, 'no certs displayed');
 
     assertEquals('', await navigator.clipboard.readText());
-    entries[0]!.$.copy.click();
+    certEntries[0]!.$.copy.click();
     assertTrue(certManager.$.toast.open);
     assertEquals('deadbeef2', await navigator.clipboard.readText());
   });

@@ -74,11 +74,16 @@ float FakeScrollbar::Opacity() const {
   return thumb_opacity_;
 }
 
-bool FakeScrollbar::NeedsRepaintPart(ScrollbarPart part) const {
-  if (part == ScrollbarPart::kThumb) {
-    return needs_repaint_thumb_;
-  }
-  return needs_repaint_track_;
+bool FakeScrollbar::ThumbNeedsRepaint() const {
+  return thumb_needs_repaint_;
+}
+
+void FakeScrollbar::ClearThumbNeedsRepaint() {
+  set_thumb_needs_repaint(false);
+}
+
+bool FakeScrollbar::TrackAndButtonsNeedRepaint() const {
+  return track_and_buttons_need_repaint_;
 }
 
 bool FakeScrollbar::NeedsUpdateDisplay() const {
@@ -93,9 +98,16 @@ bool FakeScrollbar::HasTickmarks() const {
   return has_tickmarks_;
 }
 
-void FakeScrollbar::PaintPart(PaintCanvas* canvas,
-                              ScrollbarPart part,
-                              const gfx::Rect& rect) {
+void FakeScrollbar::PaintThumb(PaintCanvas& canvas, const gfx::Rect& rect) {
+  Paint(canvas, rect);
+}
+
+void FakeScrollbar::PaintTrackAndButtons(PaintCanvas& canvas,
+                                         const gfx::Rect& rect) {
+  Paint(canvas, rect);
+}
+
+void FakeScrollbar::Paint(PaintCanvas& canvas, const gfx::Rect& rect) {
   if (!should_paint_)
     return;
 
@@ -105,11 +117,7 @@ void FakeScrollbar::PaintPart(PaintCanvas* canvas,
   flags.setAntiAlias(false);
   flags.setColor(paint_fill_color());
   flags.setStyle(PaintFlags::kFill_Style);
-  canvas->drawRect(RectToSkRect(rect), flags);
-}
-
-void FakeScrollbar::ClearThumbNeedsRepaint() {
-  set_needs_repaint_thumb(false);
+  canvas.drawRect(RectToSkRect(rect), flags);
 }
 
 SkColor4f FakeScrollbar::ThumbColor() const {

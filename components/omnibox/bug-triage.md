@@ -63,10 +63,13 @@ Hotlist IDs:
   *status:new* and are NOT Hotlisted as *Available* or
   *Needs-(Bisect|Feedback|TestConfirmation)*.
     * Note: The Search component often receives reports from users about issues
-      with the search box on google.com or just Google search generally
+      with the search box on google.com, Google Lens, or Google search generally
       ([example](https://crbug.com/40777343)). In these cases, you can just
       close the issue as Won't fix (Infeasible), though you should consider
-      filing an internal bug first, especially if you can reproduce it.
+      filing an internal bug first, especially if you can reproduce it. For
+      Google Lens features in Chrome (e.g., image search in NTP realbox or
+      Lens Overlay), reassign to Chromium > UI > Browser > Google Lens component
+      to be triaged by the Lens team.
     * Note: The Search component has a significant number of untriaged issues,
       due to the fact that this component was not properly triaged for a period
       of time. As part of the triage process, you must triage all issues in this

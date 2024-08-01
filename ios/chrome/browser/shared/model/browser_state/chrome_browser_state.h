@@ -19,8 +19,6 @@ class BrowserStatePolicyConnector;
 class ChromeBrowserStateIOData;
 class PrefProxyConfigTracker;
 class PrefService;
-class TestChromeBrowserState;
-class TestChromeBrowserStateManager;
 
 namespace base {
 class SequencedTaskRunner;
@@ -49,6 +47,7 @@ class ChromeBrowserState : public web::BrowserState {
  public:
   enum class CreationMode {
     kSynchronous,
+    kAsynchronous,
   };
 
   // Delegate notified of ChromeBrowserState creation events.
@@ -179,9 +178,6 @@ class ChromeBrowserState : public web::BrowserState {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
  private:
-  friend class ::TestChromeBrowserState;
-  friend class ::TestChromeBrowserStateManager;
-
   base::FilePath const state_path_;
   std::string const browser_state_name_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;

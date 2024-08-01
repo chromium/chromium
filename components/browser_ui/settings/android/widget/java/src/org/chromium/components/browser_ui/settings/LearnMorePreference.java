@@ -11,12 +11,10 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.base.ApiCompatibilityUtils;
-
 /**
  * A preference with a clickable "Learn more" link.
  *
- * During {@link androidx.preference.PreferenceFragmentCompat#onCreatePreferences}, call {@link
+ * <p>During {@link androidx.preference.PreferenceFragmentCompat#onCreatePreferences}, call {@link
  * #setOnPreferenceClickListener} to configure the link click behavior.
  */
 public class LearnMorePreference extends Preference {
@@ -32,7 +30,7 @@ public class LearnMorePreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
-        ApiCompatibilityUtils.setTextAppearance(titleView, R.style.TextAppearance_TextLarge_Link);
+        titleView.setTextAppearance(R.style.TextAppearance_TextLarge_Link);
         titleView.setClickable(true);
         titleView.setOnClickListener(v -> getOnPreferenceClickListener().onPreferenceClick(this));
     }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 
 #include <drm_fourcc.h>
@@ -136,9 +141,9 @@ void NonIntegerDisplayRectTestHelper(WaylandBufferManagerGpu* manager_gpu,
 }  // namespace
 
 TEST_P(WaylandOverlayManagerTest, DoesNotSupportNonIntegerDisplayRect) {
-  // WaylandBufferManagerGpu manager_gpu;
-  constexpr bool test_data[2][2] = {{false, false}, {true, false}};
-  for (auto* data : test_data) {
+  constexpr std::array<std::array<bool, 2>, 2> test_data = {
+      {{false, false}, {true, false}}};
+  for (const auto& data : test_data) {
     NonIntegerDisplayRectTestHelper(buffer_manager_gpu_.get(),
                                     data[0] /* is_delegated_context */,
                                     data[1] /* expect_candidates_handled */);
@@ -149,8 +154,9 @@ TEST_P(WaylandOverlayManagerTest, SupportsNonIntegerDisplayRect) {
   // WaylandBufferManagerGpu manager_gpu;
   buffer_manager_gpu_->supports_subpixel_accurate_position_ = true;
 
-  constexpr bool test_data[2][2] = {{false, false}, {true, true}};
-  for (auto* data : test_data) {
+  constexpr std::array<std::array<bool, 2>, 2> test_data = {
+      {{false, false}, {true, false}}};
+  for (const auto& data : test_data) {
     NonIntegerDisplayRectTestHelper(buffer_manager_gpu_.get(),
                                     data[0] /* is_delegated_context */,
                                     data[1] /* expect_candidates_handled */);

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -174,17 +175,18 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
 
   // Set up HitNodeCb helper, and the HitNodeCb expectations.
   Node* stop_node = GetElementById("occluder_2");
-  HitNodeCallbackStopper hit_node_callback_stopper(stop_node);
+  HitNodeCallbackStopper* hit_node_callback_stopper =
+      MakeGarbageCollected<HitNodeCallbackStopper>(stop_node);
   EXPECT_CALL(hit_node_cb, Run(_))
-      .WillRepeatedly(testing::Invoke(&hit_node_callback_stopper,
+      .WillRepeatedly(testing::Invoke(hit_node_callback_stopper,
                                       &HitNodeCallbackStopper::StopAtNode));
-  EXPECT_FALSE(hit_node_callback_stopper.DidStopHitTesting());
+  EXPECT_FALSE(hit_node_callback_stopper->DidStopHitTesting());
 
   // Perform hit test and verify that hit testing stops at the given node.
   result = frame->GetEventHandler().HitTestResultAtLocation(
       location, hit_type, target->GetLayoutObject(), true, hit_node_cb.Get());
   EXPECT_TRUE(result.ListBasedTestResult().Contains(stop_node));
-  EXPECT_TRUE(hit_node_callback_stopper.DidStopHitTesting());
+  EXPECT_TRUE(hit_node_callback_stopper->DidStopHitTesting());
 }
 
 TEST_F(HitTestingTest, OcclusionHitTestWithClipPath) {

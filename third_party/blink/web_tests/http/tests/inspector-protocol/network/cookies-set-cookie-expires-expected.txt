@@ -1,0 +1,19 @@
+Tests that cookies with the expires attribute can be set
+Result of Network.setCookie with expires=0: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Num of cookies 0
+Result of Network.setCookie with expires=now+1000000: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Num of cookies 1
+name: baz, value: bar2, domain: 127.0.0.1, path: /, expires
+

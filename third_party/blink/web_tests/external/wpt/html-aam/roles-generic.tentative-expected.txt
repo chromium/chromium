@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] el-li-orphaned
+  assert_false: Computed Role: "listitem" does not match any of the acceptable role strings in ["generic", "", "none"]: <li data-testname="el-li-orphaned" class="ex-generic">x</li> expected false got true
+Harness: the test ran to completion.
+

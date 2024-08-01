@@ -361,21 +361,6 @@ Page* ChromeClientImpl::CreateWindowDelegate(
   return new_view->GetPage();
 }
 
-void ChromeClientImpl::DidOverscroll(
-    const gfx::Vector2dF& overscroll_delta,
-    const gfx::Vector2dF& accumulated_overscroll,
-    const gfx::PointF& position_in_viewport,
-    const gfx::Vector2dF& velocity_in_viewport) {
-  DCHECK(web_view_);
-  if (!web_view_->does_composite())
-    return;
-  // TODO(darin): Change caller to pass LocalFrame.
-  DCHECK(web_view_->MainFrameImpl());
-  web_view_->MainFrameImpl()->FrameWidgetImpl()->DidOverscroll(
-      overscroll_delta, accumulated_overscroll, position_in_viewport,
-      velocity_in_viewport);
-}
-
 void ChromeClientImpl::InjectScrollbarGestureScroll(
     LocalFrame& local_frame,
     const gfx::Vector2dF& delta,

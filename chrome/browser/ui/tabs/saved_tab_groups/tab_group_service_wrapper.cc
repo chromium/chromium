@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
@@ -22,6 +23,22 @@
 class Profile;
 
 namespace tab_groups {
+
+// static
+std::unique_ptr<TabGroupServiceWrapper> TabGroupServiceWrapper::GetForProfile(
+    Profile* profile) {
+  DCHECK(profile);
+
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return std::make_unique<TabGroupServiceWrapper>(
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile),
+        /*saved_tab_group_keyed_service=*/nullptr);
+  }
+
+  return std::make_unique<TabGroupServiceWrapper>(
+      /*tab_group_sync_service=*/nullptr,
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile));
+}
 
 TabGroupServiceWrapper::TabGroupServiceWrapper(
     TabGroupSyncService* tab_group_sync_service,
@@ -69,6 +86,28 @@ void TabGroupServiceWrapper::UpdateVisualData(
   std::optional<SavedTabGroup> group = GetGroup(local_group_id);
   CHECK(group.has_value());
   OnTabGroupVisualsChanged(group->saved_guid());
+}
+
+void TabGroupServiceWrapper::UpdateGroupPosition(const base::Uuid& sync_id,
+                                                 std::optional<bool> is_pinned,
+                                                 std::optional<int> new_index) {
+  if (ShouldUseSyncService()) {
+    sync_service_->UpdateGroupPosition(sync_id, is_pinned, new_index);
+  } else {
+    std::optional<SavedTabGroup> group = GetGroup(sync_id);
+    if (!group.has_value()) {
+      return;
+    }
+
+    if (is_pinned.has_value() && group->is_pinned() != is_pinned) {
+      saved_keyed_service_->model()->TogglePinState(sync_id);
+    }
+
+    if (new_index.has_value()) {
+      saved_keyed_service_->model()->ReorderGroupLocally(sync_id,
+                                                         new_index.value());
+    }
+  }
 }
 
 void TabGroupServiceWrapper::AddTab(const LocalTabGroupID& group_id,
@@ -299,7 +338,7 @@ TabGroupServiceWrapper::CreateScopedLocalObserverPauser() {
   if (ShouldUseSyncService()) {
     return sync_service_->CreateScopedLocalObserverPauser();
   } else {
-    return nullptr;
+    return saved_keyed_service_->CreateScopedLocalObserverPauser();
   }
 }
 

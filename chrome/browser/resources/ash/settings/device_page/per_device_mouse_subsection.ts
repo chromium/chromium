@@ -18,6 +18,8 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_slider.js';
 import '../controls/settings_toggle_button.js';
 import './input_device_settings_shared.css.js';
+import './per_device_app_installed_row.js';
+import './per_device_install_row.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
@@ -219,11 +221,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       bluetoothDevice: {
         type: Object,
       },
-
-      openAppLabel: {
-        type: String,
-        computed: 'computeOpenAppLabel(mouse.*)',
-      },
     };
   }
 
@@ -271,7 +268,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   }
 
   isWelcomeExperienceEnabled: boolean;
-  openAppLabel: string;
   private mouse: Mouse;
   protected mousePolicies: MousePolicies;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
@@ -436,20 +432,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     assert(this.mouse.appInfo);
     this.inputDeviceSettingsProvider.launchCompanionApp(
         this.mouse.appInfo.packageId || '');
-  }
-
-  private computeOpenAppLabel(): string {
-    if (!this.mouse?.appInfo) {
-      return '';
-    }
-    return this.i18n('openAppLabel', this.mouse.appInfo?.appName);
-  }
-
-  private computeInstallAppLabel(): string {
-    if (!this.mouse?.appInfo) {
-      return '';
-    }
-    return this.i18n('installAppLabel', this.mouse.appInfo?.appName);
   }
 }
 

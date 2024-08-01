@@ -32,16 +32,16 @@ void ClipList::ClipPath(const SkPath& path,
 }
 
 void ClipList::Playback(cc::PaintCanvas* canvas) const {
-  for (const ClipOp* it = clip_list_.begin(); it < clip_list_.end(); it++) {
-    canvas->clipPath(it->path_, SkClipOp::kIntersect,
-                     it->anti_aliasing_mode_ == kAntiAliased);
+  for (const auto& clip : clip_list_) {
+    canvas->clipPath(clip.path_, SkClipOp::kIntersect,
+                     clip.anti_aliasing_mode_ == kAntiAliased);
   }
 }
 
 SkPath ClipList::IntersectPathWithClip(const SkPath& path) const {
   SkPath total = path;
-  for (const ClipOp* it = clip_list_.begin(); it < clip_list_.end(); it++) {
-    Op(total, it->path_, SkPathOp::kIntersect_SkPathOp, &total);
+  for (const auto& clip : clip_list_) {
+    Op(total, clip.path_, SkPathOp::kIntersect_SkPathOp, &total);
   }
   return total;
 }

@@ -63,10 +63,6 @@ inline constexpr char kTrackingProtectionSilentEligibleSince[] =
 inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
     "tracking_protection.tracking_protection_silent_onboarded_since";
 
-// Unsynced pref that indicates when the profile was onboarded onto full 3PCD.
-inline constexpr char kTrackingProtectionFull3PCDOnboarded[] =
-    "tracking_protection.tracking_protection_full_3pcd_onboarded";
-
 // Tracking Protection Reminder Prefs.
 
 // Unsynced pref that indicates the reminder status for a profile.
@@ -101,11 +97,6 @@ inline constexpr char kTrackingProtectionLevel[] =
 // are enabled on the current device.
 inline constexpr char kTrackingProtection3pcdEnabled[] =
     "tracking_protection.tracking_protection_3pcd_enabled";
-
-// Synced boolean that indicates whether the user has had their IP protection
-// pref initialized. Used ONLY for Google dogfood.
-inline constexpr char kIpProtectionInitializedByDogfood[] =
-    "tracking_protection.ip_protection_initialized_by_dogfood";
 
 // Synced boolean that indicates whether the user has enabled IP protection
 // using either the UI setting or enterprise policy.

@@ -1292,4 +1292,49 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MISCONFIGURED_POLICY_MESSAGE" desc="The message informing the user that SkyVault policies aren't configured propely. It can be shown as an error inside the Files App or as a system notification.">
     The file system has been disabled by your administrator
   </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_TITLE" desc="The title of the notificaton which shows after a screenshot is taken.">
+    Saving screenshot
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_ONEDRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that screenshot is being saved to OneDrive.">
+    Saving file to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_CANCEL_BUTTON" desc="The for the cancel button on the notification that shows up informing the user that screenshot is being saved to OneDrive.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_GOOGLE_DRIVE" desc="The title for the notification showing that local files are being moved to the cloud due to SkyVault policies.">
+    Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_ONEDRIVE" desc="The title for the notification showing that local files are being moved to the cloud due to SkyVault policies.">
+    Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_PROGRESS_TITLE" desc="The title for the notification showing that local files are being moved to the cloud due to SkyVault policies.">
+    Your files are being uploaded to <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph>
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_PROGRESS_MESSAGE" desc="The message for the notification showing that local files are being moved to the cloud due to SkyVault policies.">
+    If you can’t find a file on your device, look for it on <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph>.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_COMPLETED_TITLE" desc="The title for the notification showing that SkyVault migration completed successfully and all local files have been moved to the cloud.">
+    Files were successfully uploaded to <ph name="FOLDER_NAME">$1<ex>ChromeOS Device 123456</ex></ph> on <ph name="CLOUD_PROVIDER">$2<ex>Google Drive</ex></ph>
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_COMPLETED_MESSAGE" desc="The message for the notification showing that SkyVault migration completed successfully and all local files have been moved to the cloud.">
+    From now on, save your files to <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph>.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_COMPLETED_BUTTON" desc="The button for the notification showing that SkyVault migration completed successfully - clicking the button opens the location to which all local files have been moved.">
+    View files in <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph>
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_CONFIG_ERROR_TITLE" desc="The title for the notification showing that local files SkyVault migration is paused due to misconfigured policies, e.g. disabled cloud storage.">
+    File upload to <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph> has been paused
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_CONFIG_ERROR_MESSAGE" desc="The message for the notification showing that local files SkyVault migration is paused due to misconfigured policies, e.g. disabled cloud storage.">
+    Ask your administrator to verify their <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph> configuration settings.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_ERROR_TITLE" desc="The title for the notification showing that SkyVault migration completed with errors, i.e. some files couldn't be moved to the cloud.">
+    File upload to <ph name="CLOUD_PROVIDER">$1<ex>Google Drive</ex></ph> completed with errors
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_ERROR_MESSAGE" desc="The message for the notification showing that SkyVault migration completed with errors, i.e. some files couldn't be moved to the cloud.">
+    One or more files were not uploaded to <ph name="FOLDER_NAME">$1<ex>ChromeOS Device 123456</ex></ph> on <ph name="CLOUD_PROVIDER">$2<ex>Google Drive</ex></ph>
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON" desc="The button for the notification showing that SkyVault migration completed with errors - clicking the button opens a file with the error summary.">
+    Review error log
+  </message>
 </grit-part>

@@ -4,8 +4,11 @@
 
 #include "ui/views/controls/throbber.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -20,14 +23,18 @@
 
 namespace views {
 
-// The default diameter of a Throbber. If you change this, also change
-// kCheckmarkDipSize.
-constexpr int kDefaultDiameter = 16;
-// The size of the checkmark, in DIP. This magic number matches the default
-// diameter plus padding inherent in the checkmark SVG.
-constexpr int kCheckmarkDipSize = kDefaultDiameter + 2;
+namespace {
 
-Throbber::Throbber() = default;
+// The larger the diameter, the smaller the delay returned. This is intended
+// because large diameters need less delay to look smooth and not jarring.
+int GetFrameDelay(int diameter) {
+  int frames_per_second = std::clamp(diameter * 2, 30, 120);
+  return base::Seconds(1).InMilliseconds() / frames_per_second;
+}
+
+}  // namespace
+
+Throbber::Throbber(int diameter) : diameter_(diameter) {}
 
 Throbber::~Throbber() {
   Stop();
@@ -39,7 +46,7 @@ void Throbber::Start() {
 
   start_time_ = base::TimeTicks::Now();
   timer_.Start(
-      FROM_HERE, base::Milliseconds(30),
+      FROM_HERE, base::Milliseconds(GetFrameDelay(diameter_)),
       base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
   SchedulePaint();  // paint right away
 }
@@ -66,7 +73,7 @@ void Throbber::SetChecked(bool checked) {
 
 gfx::Size Throbber::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  return gfx::Size(kDefaultDiameter, kDefaultDiameter);
+  return gfx::Size(diameter_, diameter_);
 }
 
 void Throbber::OnPaint(gfx::Canvas* canvas) {
@@ -74,6 +81,9 @@ void Throbber::OnPaint(gfx::Canvas* canvas) {
 
   if (!IsRunning()) {
     if (checked_) {
+      // The size of the checkmark, in DIP. This magic number matches the
+      // diameter plus padding inherent in the checkmark SVG.
+      const int kCheckmarkDipSize = diameter_ + 2;
       canvas->Translate(gfx::Vector2d((width() - kCheckmarkDipSize) / 2,
                                       (height() - kCheckmarkDipSize) / 2));
       gfx::PaintVectorIcon(canvas, vector_icons::kCheckCircleIcon,
@@ -96,8 +106,9 @@ END_METADATA
 
 // Smoothed throbber ---------------------------------------------------------
 
-SmoothedThrobber::SmoothedThrobber()
-    : start_delay_(base::Milliseconds(200)),
+SmoothedThrobber::SmoothedThrobber(int diameter)
+    : Throbber(diameter),
+      start_delay_(base::Milliseconds(200)),
       stop_delay_(base::Milliseconds(50)) {}
 
 SmoothedThrobber::~SmoothedThrobber() = default;

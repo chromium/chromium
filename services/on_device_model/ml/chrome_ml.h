@@ -15,15 +15,39 @@
 
 namespace ml {
 
-// A ChromeML object encapsulates a reference to the ChromeML library, exposing
-// the library's API functions to callers and ensuring that the library remains
-// loaded and usable throughout the object's lifetime.
+// A ChromeMLHolder object encapsulates a reference to the ChromeML shared
+// library, exposing the library's API functions to callers and ensuring that
+// the library remains loaded and usable throughout the object's lifetime.
+class ChromeMLHolder {
+ public:
+  ChromeMLHolder(base::PassKey<ChromeMLHolder>,
+                 base::ScopedNativeLibrary library,
+                 const ChromeMLAPI* api);
+  ~ChromeMLHolder();
+
+  ChromeMLHolder(const ChromeMLHolder& other) = delete;
+  ChromeMLHolder& operator=(const ChromeMLHolder& other) = delete;
+
+  ChromeMLHolder(ChromeMLHolder&& other) = default;
+  ChromeMLHolder& operator=(ChromeMLHolder&& other) = default;
+
+  // Creates an instance of ChromeMLHolder. May return nullopt if the underlying
+  // library could not be loaded.
+  static std::optional<ChromeMLHolder> Create(
+      const std::optional<std::string>& library_name = std::nullopt);
+
+  // Exposes the raw ChromeMLAPI functions defined by the library.
+  const ChromeMLAPI& api() const { return *api_; }
+
+ private:
+  base::ScopedNativeLibrary library_;
+  raw_ptr<const ChromeMLAPI> api_;
+};
+
 class ChromeML {
  public:
   // Use Get() to acquire a global instance.
-  ChromeML(base::PassKey<ChromeML>,
-           base::ScopedNativeLibrary library,
-           const ChromeMLAPI* api);
+  ChromeML(base::PassKey<ChromeML>, ChromeMLHolder holder);
   ~ChromeML();
 
   // Gets a lazily initialized global instance of ChromeML. May return null
@@ -32,7 +56,7 @@ class ChromeML {
       const std::optional<std::string>& library_name = std::nullopt);
 
   // Exposes the raw ChromeMLAPI functions defined by the library.
-  const ChromeMLAPI& api() const { return *api_; }
+  const ChromeMLAPI& api() const { return holder_.api(); }
 
   // Whether or not the GPU is blocklisted.
   bool IsGpuBlocked() const;
@@ -45,8 +69,7 @@ class ChromeML {
   static std::unique_ptr<ChromeML> Create(
       const std::optional<std::string>& library_name);
 
-  const base::ScopedNativeLibrary library_;
-  const raw_ptr<const ChromeMLAPI> api_;
+  ChromeMLHolder holder_;
   bool allow_gpu_for_testing_ = false;
 };
 

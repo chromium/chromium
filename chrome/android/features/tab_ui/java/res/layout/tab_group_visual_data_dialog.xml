@@ -6,8 +6,6 @@ found in the LICENSE file.
 -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="false">
@@ -25,26 +23,22 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
+                android:paddingLeft="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:paddingRight="@dimen/tab_group_visual_data_dialog_margin_padding"
                 android:accessibilityHeading="true"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-            <org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout
-                        android:id="@+id/tab_group_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="16dp"
-                        android:hint="@string/title"
-                        app:emptyErrorMessage="@string/tab_group_visual_data_missing_title">
+            <TextView
+                android:id="@+id/visual_data_dialog_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingLeft="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:paddingRight="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/title_input_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:imeOptions="flagNoExtractUi"
-                            android:inputType="textCapSentences|textAutoCorrect"
-                            android:selectAllOnFocus="true" />
-            </org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout>
+            <include
+              layout="@layout/tab_group_visual_data_text_input_layout" />
         </LinearLayout>
 </ScrollView>

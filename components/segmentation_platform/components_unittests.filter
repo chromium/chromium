@@ -30,6 +30,7 @@
 *IosModuleRankerTest.*
 *LowUserEngagementModelTest.*
 *MetadataUtilsTest.*
+*MetricsClusteringTest.*
 *ModelExecutionSchedulerTest.*
 *ModelExecutorTest.*
 *ModelManagerTest.*

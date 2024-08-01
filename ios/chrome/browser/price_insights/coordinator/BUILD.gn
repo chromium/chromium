@@ -11,6 +11,7 @@ source_set("coordinator") {
   deps = [
     ":delegates",
     "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:shopping_service",
     "//components/image_fetcher/core",
     "//components/payments/core",
     "//components/strings",
@@ -51,4 +52,30 @@ source_set("test_support") {
   ]
 
   deps = [ ":delegates" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "price_insights_modulator_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/price_insights/model",
+    "//ios/chrome/browser/price_insights/model:feature",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }

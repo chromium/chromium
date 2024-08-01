@@ -393,7 +393,7 @@ void SvgTextLayoutAlgorithm::ResolveTextLength(
 
   // Remove resolved_descendant_node_starts entries for descendant nodes,
   // and register an entry for this node.
-  auto* new_end =
+  auto new_end =
       std::remove_if(resolved_descendant_node_starts.begin(),
                      resolved_descendant_node_starts.end(),
                      [i, j_plus_1](const auto& start_index) {
@@ -497,7 +497,7 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
                           std::distance(result_range.begin(), next_anchor) - 1);
 
     const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
-    const auto* text_path_iter =
+    const auto text_path_iter =
         base::ranges::find_if(text_path_ranges, [i](const auto& range) {
           return range.start_index <= i && i <= range.end_index;
         });

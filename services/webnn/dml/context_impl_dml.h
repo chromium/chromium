@@ -11,6 +11,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
 
 namespace webnn::dml {
@@ -30,13 +31,15 @@ class ContextImplDml final : public WebNNContextImpl {
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
                  std::unique_ptr<CommandRecorder> command_recorder,
-                 const gpu::GpuFeatureInfo& gpu_feature_info,
-                 base::UnguessableToken context_handle);
+                 const gpu::GpuFeatureInfo& gpu_feature_info);
 
   ContextImplDml(const WebNNContextImpl&) = delete;
   ContextImplDml& operator=(const ContextImplDml&) = delete;
 
   ~ContextImplDml() override;
+
+  // static
+  static ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level);
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
@@ -60,10 +63,10 @@ class ContextImplDml final : public WebNNContextImpl {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+  void CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override;
+      CreateBufferImplCallback callback) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to

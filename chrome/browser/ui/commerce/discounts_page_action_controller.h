@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COMMERCE_DISCOUNTS_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_COMMERCE_DISCOUNTS_PAGE_ACTION_CONTROLLER_H_
 
+#include "base/containers/flat_set.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "components/commerce/core/commerce_types.h"
 
@@ -16,6 +18,18 @@ class ShoppingService;
 
 class DiscountsPageActionController : public CommercePageActionController {
  public:
+  static constexpr char kDiscountsShownDataKey[] =
+      "commerce.discounts_shown_data";
+  struct DiscountsShownData : public base::SupportsUserData::Data {
+    base::flat_set<uint64_t> shown_discount_ids;
+    base::flat_set<std::string> discount_shown_on_domains;
+
+    DiscountsShownData();
+    ~DiscountsShownData() override;
+  };
+
+  static DiscountsShownData* GetOrCreate(ShoppingService* shopping_service);
+
   DiscountsPageActionController(base::RepeatingCallback<void()> notify_callback,
                                 ShoppingService* shopping_service);
   DiscountsPageActionController(const DiscountsPageActionController&) = delete;
@@ -32,6 +46,7 @@ class DiscountsPageActionController : public CommercePageActionController {
   void CouponCodeCopied();
   bool IsCouponCodeCopied();
   bool ShouldAutoShowBubble(uint64_t discount_id, bool is_merchant_wide);
+  void DiscountsBubbleShown(uint64_t discount_id);
 
  private:
   void HandleDiscountInfoResponse(const DiscountsMap& discounts_map);

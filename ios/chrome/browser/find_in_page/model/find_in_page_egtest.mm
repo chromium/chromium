@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/find_in_page/model/find_in_page_egtest_util.h"
-
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_app_interface.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_egtest_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -54,8 +53,7 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 #pragma mark - FindInPageTestCaseHelperDelegate
 
 - (void)openFindInPageWithOverflowMenu {
-  GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
-                  @"Keyboard Should be Hidden");
+  [ChromeEarlGrey waitForKeyboardToDisappear];
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =

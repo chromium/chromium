@@ -94,9 +94,9 @@ int TrackAudioRenderer::Render(base::TimeDelta delay,
                                base::TimeTicks delay_timestamp,
                                const media::AudioGlitchInfo& glitch_info,
                                media::AudioBus* audio_bus) {
-  TRACE_EVENT2("audio", "TrackAudioRenderer::Render", "delay (ms)",
-               delay.InMillisecondsF(), "delay_timestamp (ms)",
-               (delay_timestamp - base::TimeTicks()).InMillisecondsF());
+  TRACE_EVENT("audio", "TrackAudioRenderer::Render", "playout_delay (ms)",
+              delay.InMillisecondsF(), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF());
   base::AutoLock auto_lock(thread_lock_);
 
   if (!audio_shifter_) {
@@ -130,8 +130,10 @@ void TrackAudioRenderer::OnRenderError() {
 // WebMediaStreamAudioSink implementation
 void TrackAudioRenderer::OnData(const media::AudioBus& audio_bus,
                                 base::TimeTicks reference_time) {
-  TRACE_EVENT1("audio", "TrackAudioRenderer::OnData", "reference time (ms)",
-               (reference_time - base::TimeTicks()).InMillisecondsF());
+  TRACE_EVENT("audio", "TrackAudioRenderer::OnData", "capture_time (ms)",
+              (reference_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - reference_time).InMillisecondsF());
 
   base::AutoLock auto_lock(thread_lock_);
 

@@ -372,6 +372,7 @@ build_webui("build") {
 
   icons_html_files = [
     "icons.html",
+    "privacy_icons.html",
     "privacy_page/fingerprint_icons.html",
     "privacy_sandbox/privacy_sandbox_icons.html",
     "site_settings/all_sites_icons.html",

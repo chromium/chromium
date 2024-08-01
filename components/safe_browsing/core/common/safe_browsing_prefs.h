@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_member.h"
+#include "components/safe_browsing/core/common/features.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -36,17 +37,6 @@ inline constexpr char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
 
 // Boolean that is true when Safe Browsing Enhanced Protection is enabled.
 inline constexpr char kSafeBrowsingEnhanced[] = "safebrowsing.enhanced";
-
-// Integer indicating the state of real time URL check. This is managed
-// by enterprise policy and has no effect on users who are not managed by
-// enterprise policy.
-inline constexpr char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
-    "safebrowsing.enterprise_real_time_url_check_mode";
-
-// Integer indicating the scope at which the
-// kSafeBrowsingEnterpriseRealTimeUrlCheckMode pref is set.
-inline constexpr char kSafeBrowsingEnterpriseRealTimeUrlCheckScope[] =
-    "safebrowsing.enterprise_real_time_url_check_scope";
 
 // Timestamp indicating the last time a protego ping with a token was sent.
 // This is only set if the user has enhanced protection enabled and is signed
@@ -263,7 +253,7 @@ namespace safe_browsing {
 
 // Enumerates the level of Safe Browsing Extended Reporting that is currently
 // available.
-enum ExtendedReportingLevel {
+enum class ExtendedReportingLevel {
   // Extended reporting is off.
   SBER_LEVEL_OFF = 0,
   // The Legacy level of extended reporting is available, reporting happens in
@@ -272,6 +262,9 @@ enum ExtendedReportingLevel {
   // The Scout level of extended reporting is available, some data can be
   // collected to actively detect dangerous apps and sites.
   SBER_LEVEL_SCOUT = 2,
+  // The Scout level of extended reporting is deprecated, however, the user has
+  // the ESB setting on.
+  SBER_LEVEL_ENHANCED_PROTECTION = 3,
 };
 
 // Enumerates the states used for determining whether the Tailored Security flow
@@ -337,11 +330,6 @@ enum class SafeBrowsingState {
   ENHANCED_PROTECTION = 2,
 
   kMaxValue = ENHANCED_PROTECTION,
-};
-
-enum EnterpriseRealTimeUrlCheckMode {
-  REAL_TIME_CHECK_DISABLED = 0,
-  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
 };
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);

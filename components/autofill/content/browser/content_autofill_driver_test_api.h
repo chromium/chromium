@@ -5,31 +5,27 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 
-#include "base/memory/raw_ref.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "components/autofill/core/browser/autofill_driver_test_api.h"
 
 namespace autofill {
 
 // Exposes some testing operations for ContentAutofillDriver.
-class ContentAutofillDriverTestApi {
+class ContentAutofillDriverTestApi : public AutofillDriverTestApi {
  public:
   explicit ContentAutofillDriverTestApi(ContentAutofillDriver* driver)
-      : driver_(*driver) {}
-
-  void SetLifecycleState(
-      ContentAutofillDriver::LifecycleState lifecycle_state) {
-    driver_->SetLifecycleState(lifecycle_state, {});
-  }
+      : AutofillDriverTestApi(driver) {}
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
-    driver_->autofill_manager_ = std::move(autofill_manager);
+    driver().autofill_manager_ = std::move(autofill_manager);
   }
 
-  void LiftForTest(FormData& form) const { driver_->LiftForTest(form); }
+  void LiftForTest(FormData& form) { driver().LiftForTest(form); }
 
  private:
-  const raw_ref<ContentAutofillDriver> driver_;
+  ContentAutofillDriver& driver() {
+    return static_cast<ContentAutofillDriver&>(*driver_);
+  }
 };
 
 inline ContentAutofillDriverTestApi test_api(ContentAutofillDriver& driver) {

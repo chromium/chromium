@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,7 +59,6 @@ class PasswordCheckMediator
     private PasswordCheckComponentUi.Delegate mDelegate;
     private Runnable mLaunchCheckupInAccount;
     private HashSet<CompromisedCredential> mPreCheckSet;
-    private final SettingsLauncher mSettingsLauncher;
     private final PasswordCheckIconHelper mIconHelper;
     private long mLastStatusUpdate;
     private boolean mCctIsOpened;
@@ -68,11 +66,9 @@ class PasswordCheckMediator
     PasswordCheckMediator(
             PasswordCheckChangePasswordHelper changePasswordDelegate,
             PasswordAccessReauthenticationHelper reauthenticationHelper,
-            SettingsLauncher settingsLauncher,
             PasswordCheckIconHelper passwordCheckIconHelper) {
         mChangePasswordDelegate = changePasswordDelegate;
         mReauthenticationHelper = reauthenticationHelper;
-        mSettingsLauncher = settingsLauncher;
         mIconHelper = passwordCheckIconHelper;
     }
 
@@ -347,7 +343,7 @@ class PasswordCheckMediator
     }
 
     private PasswordCheck getPasswordCheck() {
-        PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate(mSettingsLauncher);
+        PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate();
         assert passwordCheck != null : "Password Check UI component needs native counterpart!";
         return passwordCheck;
     }

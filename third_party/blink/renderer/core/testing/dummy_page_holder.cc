@@ -99,7 +99,7 @@ DummyPageHolder::DummyPageHolder(
                                  ->ToMainThreadScheduler()
                                  ->CreateAgentGroupScheduler()) {
   if (!chrome_client)
-    chrome_client = &GetStaticEmptyChromeClientInstance();
+    chrome_client = MakeGarbageCollected<EmptyChromeClient>();
   page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_,
                                   /*color_provider_colors=*/nullptr);
   Settings& settings = page_->GetSettings();

@@ -10,8 +10,12 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/bind_internal.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -58,6 +62,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -69,6 +75,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
@@ -126,6 +133,45 @@ Suggestion CreateSuggestionWithChildren(
   return CreateSuggestionWithChildren(SuggestionType::kAddressEntry,
                                       std::move(children), name);
 }
+
+class TestPopupViewViews : public PopupViewViews {
+ public:
+  using GetOptionalPositionAndPlaceArrowOnPopupOverride =
+      base::RepeatingCallback<gfx::Rect(
+          const gfx::Rect&,
+          const gfx::Rect&,
+          const gfx::Size&,
+          base::span<const views::BubbleArrowSide>)>;
+
+  using PopupViewViews::PopupViewViews;
+  ~TestPopupViewViews() override = default;
+
+  void set_get_optional_position_and_place_arrow_on_popup_override(
+      GetOptionalPositionAndPlaceArrowOnPopupOverride callback) {
+    get_optional_position_and_place_arrow_on_popup_override_ =
+        std::move(callback);
+  }
+
+ protected:
+  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+      const gfx::Rect& element_bounds,
+      const gfx::Rect& max_bounds_for_popup,
+      const gfx::Size& preferred_size,
+      base::span<const views::BubbleArrowSide> preferred_popup_sides) override {
+    if (get_optional_position_and_place_arrow_on_popup_override_) {
+      return get_optional_position_and_place_arrow_on_popup_override_.Run(
+          element_bounds, max_bounds_for_popup, preferred_size,
+          preferred_popup_sides);
+    }
+    return PopupViewViews::GetOptionalPositionAndPlaceArrowOnPopup(
+        element_bounds, max_bounds_for_popup, preferred_size,
+        preferred_popup_sides);
+  }
+
+ private:
+  GetOptionalPositionAndPlaceArrowOnPopupOverride
+      get_optional_position_and_place_arrow_on_popup_override_;
+};
 
 }  // namespace
 
@@ -185,8 +231,8 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
                   views::Widget::InitParams::Type::TYPE_POPUP));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    view_ = new PopupViewViews(controller().GetWeakPtr(),
-                               std::move(search_bar_config));
+    view_ = new TestPopupViewViews(controller().GetWeakPtr(),
+                                   std::move(search_bar_config));
     ShowView(view_, *widget_);
   }
 
@@ -199,9 +245,11 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     CreateAndShowView(std::move(widget_params), std::move(search_bar_config));
   }
 
-  void UpdateSuggestions(const std::vector<SuggestionType>& ids) {
+  void UpdateSuggestions(const std::vector<SuggestionType>& ids,
+                         bool prefer_prev_arrow_side = false) {
     controller().set_suggestions(ids);
-    static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged();
+    static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(
+        prefer_prev_arrow_side);
   }
 
   void Paint() {
@@ -279,7 +327,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     return autofill_popup_controller_;
   }
   ui::test::EventGenerator& generator() { return *generator_; }
-  PopupViewViews& view() { return *view_; }
+  TestPopupViewViews& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
   content::WebContents& web_contents() { return *web_contents_; }
 
@@ -306,7 +354,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  raw_ptr<PopupViewViews> view_;
+  raw_ptr<TestPopupViewViews> view_;
   NiceMock<MockAutofillPopupController> autofill_popup_controller_;
   NiceMock<MockAutofillPopupController> autofill_popup_sub_controller_;
 };
@@ -1112,6 +1160,35 @@ TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
   CreateAndShowView({SuggestionType::kAddressEntry, SuggestionType::kSeparator,
                      SuggestionType::kManageAddress});
   UpdateSuggestions({SuggestionType::kAddressEntry});
+}
+
+TEST_F(PopupViewViewsTest,
+       OnSuggestionsUpdatePositionIsCalculatedPreferringPrevArrow) {
+  CreateAndShowView(
+      {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry});
+
+  MockFunction<TestPopupViewViews::
+                   GetOptionalPositionAndPlaceArrowOnPopupOverride::RunType>
+      mock_position_calculator;
+  view().set_get_optional_position_and_place_arrow_on_popup_override(
+      base::BindLambdaForTesting(mock_position_calculator.AsStdFunction()));
+
+  views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
+      view().GetWidget()->GetRootView()->GetBorder());
+
+  border->set_arrow(views::BubbleBorder::Arrow::TOP_CENTER);
+  EXPECT_CALL(
+      mock_position_calculator,
+      Call(_, _, _, ElementsAre(views::BubbleArrowSide::kTop, _, _, _, _)));
+  UpdateSuggestions({SuggestionType::kAddressEntry},
+                    /*prefer_prev_arrow_side=*/true);
+
+  border->set_arrow(views::BubbleBorder::Arrow::LEFT_BOTTOM);
+  EXPECT_CALL(
+      mock_position_calculator,
+      Call(_, _, _, ElementsAre(views::BubbleArrowSide::kLeft, _, _, _, _)));
+  UpdateSuggestions({SuggestionType::kAddressEntry},
+                    /*prefer_prev_arrow_side=*/true);
 }
 
 TEST_F(PopupViewViewsTest, SubViewIsShownInChildWidget) {

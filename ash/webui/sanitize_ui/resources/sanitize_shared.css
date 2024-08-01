@@ -153,3 +153,39 @@ h2.first {
     --data-point-container-padding: 64px;
   }
 }
+
+:host {
+  padding: 12px;
+  position: absolute;
+  background-color: var(--cros-sys-base_elevated);
+  height: 640px;
+  width: 680px;
+}
+div[slot="body"] {
+  border-radius: 20px;
+  padding: 32px;
+}
+.title {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  font-family: var(--cros-display-5-font-family);
+  font-size: var(--cros-display-5-font-size);
+  font: var(--cros-display-5-font);
+  font-weight: var(--cros-display-5-font-weight);
+  line-height: var(--cros-display-5-line-height);
+  color: var(--cros-sys-on_surface);
+}
+
+.sanitize-description {
+  margin-bottom: 24px;
+  font-family: var(--cros-body-2-font-family);
+  font-size: var(--cros-body-2-font-size);
+  font: var(--cros-body-2-font);
+  font-weight: var(--cros-body-2-font-weight);
+  line-height: var(--cros-body-2-line-height);
+  color: var(--cros-sys-on_surface_variant);
+}
+.done-button-container {
+  text-align: right;
+  margin-top: 24px;
+}

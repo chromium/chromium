@@ -114,10 +114,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
             LocalFrame& opener_frame,
             NavigationPolicy navigation_policy,
             bool consumed_user_gesture) override {}
-  void DidOverscroll(const gfx::Vector2dF&,
-                     const gfx::Vector2dF&,
-                     const gfx::PointF&,
-                     const gfx::Vector2dF&) override {}
   void SetOverscrollBehavior(LocalFrame& frame,
                              const cc::OverscrollBehavior&) override {}
   void BeginLifecycleUpdates(LocalFrame& main_frame) override {}

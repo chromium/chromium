@@ -13,7 +13,8 @@ namespace {
 const CGFloat kCornerRadius = 13;
 const CGFloat kInnerSquircleCornerRadius = 10;
 const CGFloat kSpacing = 4;
-const CGFloat kImageSize = 26;
+const CGFloat kImageSize = 16;
+const CGFloat kImageContainerSize = 26;
 const CGFloat kFaviconCornerRadius = 4;
 const CGFloat kLabelFontSize = 11;
 
@@ -47,16 +48,20 @@ using LayoutSides::kTrailing;
     [self addSubview:_innerSquircle];
 
     _imageView1 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView1];
+    UIView* imageViewContainer1 = [self wrappedImageView:_imageView1];
+    [_innerSquircle addSubview:imageViewContainer1];
 
     _imageView2 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView2];
+    UIView* imageViewContainer2 = [self wrappedImageView:_imageView2];
+    [_innerSquircle addSubview:imageViewContainer2];
 
     _imageView3 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView3];
+    UIView* imageViewContainer3 = [self wrappedImageView:_imageView3];
+    [_innerSquircle addSubview:imageViewContainer3];
 
     _imageView4 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView4];
+    UIView* imageViewContainer4 = [self wrappedImageView:_imageView4];
+    [_innerSquircle addSubview:imageViewContainer4];
 
     _label = [[UILabel alloc] init];
     _label.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -66,38 +71,76 @@ using LayoutSides::kTrailing;
     [_innerSquircle addSubview:_label];
 
     AddSameConstraintsWithInset(_innerSquircle, self, kSpacing);
-    AddSquareConstraints(_imageView1, kImageSize);
-    AddSquareConstraints(_imageView2, kImageSize);
-    AddSquareConstraints(_imageView3, kImageSize);
-    AddSquareConstraints(_imageView4, kImageSize);
-    AddSameConstraintsToSides(_imageView1, _innerSquircle, kTop | kLeading);
-    AddSameConstraintsToSides(_imageView2, _innerSquircle, kTop | kTrailing);
-    AddSameConstraintsToSides(_imageView3, _innerSquircle, kBottom | kLeading);
-    AddSameConstraintsToSides(_imageView4, _innerSquircle, kBottom | kTrailing);
+    AddSameConstraintsToSides(imageViewContainer1, _innerSquircle,
+                              kTop | kLeading);
+    AddSameConstraintsToSides(imageViewContainer2, _innerSquircle,
+                              kTop | kTrailing);
+    AddSameConstraintsToSides(imageViewContainer3, _innerSquircle,
+                              kBottom | kLeading);
+    AddSameConstraintsToSides(imageViewContainer4, _innerSquircle,
+                              kBottom | kTrailing);
     [NSLayoutConstraint activateConstraints:@[
-      // Add the constraints between image views.
-      [_imageView2.leadingAnchor
-          constraintEqualToAnchor:_imageView1.trailingAnchor
+      // Add the constraints between image view containers.
+      [imageViewContainer2.leadingAnchor
+          constraintEqualToAnchor:imageViewContainer1.trailingAnchor
                          constant:kSpacing],
-      [_imageView3.topAnchor constraintEqualToAnchor:_imageView1.bottomAnchor
-                                            constant:kSpacing],
-      [_imageView4.leadingAnchor
-          constraintEqualToAnchor:_imageView3.trailingAnchor
+      [imageViewContainer3.topAnchor
+          constraintEqualToAnchor:imageViewContainer1.bottomAnchor
+                         constant:kSpacing],
+      [imageViewContainer4.leadingAnchor
+          constraintEqualToAnchor:imageViewContainer3.trailingAnchor
                          constant:kSpacing],
     ]];
-    AddSameConstraints(_label, _imageView4);
+    AddSameConstraints(_label, imageViewContainer4);
   }
   return self;
 }
 
 - (void)setNumberOfTabs:(NSUInteger)numberOfTabs {
   _numberOfTabs = numberOfTabs;
-  [self updateElements];
+
+  if (numberOfTabs > 4) {
+    _label.hidden = NO;
+    const NSInteger overFlowCount = numberOfTabs - 3;
+    _label.text = overFlowCount > 99
+                      ? @"99+"
+                      : [NSString stringWithFormat:@"+%@", @(overFlowCount)];
+  } else {
+    _label.hidden = YES;
+    _label.text = nil;
+  }
 }
 
-- (void)setFavicons:(NSArray<UIImage*>*)favicons {
-  _favicons = [favicons copy];
-  [self updateElements];
+- (UIImage*)favicon1 {
+  return _imageView1.image;
+}
+
+- (void)setFavicon1:(UIImage*)favicon1 {
+  _imageView1.image = favicon1;
+}
+
+- (UIImage*)favicon2 {
+  return _imageView2.image;
+}
+
+- (void)setFavicon2:(UIImage*)favicon2 {
+  _imageView2.image = favicon2;
+}
+
+- (UIImage*)favicon3 {
+  return _imageView3.image;
+}
+
+- (void)setFavicon3:(UIImage*)favicon3 {
+  _imageView3.image = favicon3;
+}
+
+- (UIImage*)favicon4 {
+  return _imageView4.image;
+}
+
+- (void)setFavicon4:(UIImage*)favicon4 {
+  _imageView4.image = favicon4;
 }
 
 #pragma mark Private
@@ -105,43 +148,22 @@ using LayoutSides::kTrailing;
 // Makes a new rounded rectangle image view to display as part of the 2×2 grid.
 - (UIImageView*)makeFaviconImageView {
   UIImageView* imageView = [[UIImageView alloc] init];
-  imageView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  imageView.layer.cornerRadius = kFaviconCornerRadius;
+  imageView.tintColor = UIColor.whiteColor;
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSquareConstraints(imageView, kImageSize);
   return imageView;
 }
 
-// Reconfigures the 4 elements of the grid.
-- (void)updateElements {
-  // Reset subviews.
-  _imageView1.image = nil;
-  _imageView2.image = nil;
-  _imageView3.image = nil;
-  _imageView4.image = nil;
-  _label.text = nil;
-  _label.hidden = YES;
-
-  const NSUInteger numberOfTabs = self.numberOfTabs;
-  NSArray<UIImage*>* favicons = self.favicons;
-  const NSUInteger numberOfFavicons = favicons.count;
-  if (numberOfTabs > 0 && numberOfFavicons > 0) {
-    _imageView1.image = favicons[0];
-  }
-  if (numberOfTabs > 1 && numberOfFavicons > 1) {
-    _imageView2.image = favicons[1];
-  }
-  if (numberOfTabs > 2 && numberOfFavicons > 2) {
-    _imageView3.image = favicons[2];
-  }
-  if (numberOfTabs == 4 && numberOfFavicons > 3) {
-    _imageView4.image = favicons[3];
-  } else if (numberOfTabs > 4) {
-    _label.hidden = NO;
-    const NSInteger overFlowCount = numberOfTabs - 3;
-    _label.text = overFlowCount > 99
-                      ? @"99+"
-                      : [NSString stringWithFormat:@"+%@", @(overFlowCount)];
-  }
+// Wraps the image view in a colored rounded rect.
+- (UIView*)wrappedImageView:(UIImageView*)imageView {
+  UIView* container = [[UIView alloc] init];
+  container.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  container.layer.cornerRadius = kFaviconCornerRadius;
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:imageView];
+  AddSquareConstraints(container, kImageContainerSize);
+  AddSameCenterConstraints(imageView, container);
+  return container;
 }
 
 @end

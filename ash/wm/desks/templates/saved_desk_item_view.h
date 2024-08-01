@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -64,7 +63,6 @@ class SystemShadow;
 // The whole view is also a button which does the same thing as `launch_button_`
 // when clicked.
 class ASH_EXPORT SavedDeskItemView : public views::Button,
-                                     public OverviewFocusableView,
                                      public views::ViewTargeterDelegate,
                                      public views::TextfieldController {
   METADATA_HEADER(SavedDeskItemView, views::Button)
@@ -117,8 +115,6 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void Layout(PassKey) override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
-  void OnFocus() override;
-  void OnBlur() override;
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
@@ -156,14 +152,6 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void UpdateSavedDeskName();
 
   std::u16string ComputeAccessibleName() const;
-
-  // OverviewFocusableView:
-  views::View* GetView() override;
-  void MaybeActivateFocusedView() override;
-  void MaybeCloseFocusedView(bool primary_action) override;
-  void MaybeSwapFocusedView(bool right) override;
-  void OnFocusableViewFocused() override;
-  void OnFocusableViewBlurred() override;
 
   // A copy of the associated saved desk.
   std::unique_ptr<DeskTemplate> saved_desk_;

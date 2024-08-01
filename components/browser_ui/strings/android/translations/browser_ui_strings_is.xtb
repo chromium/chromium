@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1044891598689252897">Vefsvæði virka sem skyldi</translation>
 <translation id="1073417869336441572">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Fela verðlækkunarspjald</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1192844206376121885">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> hefur vistað.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Hjálp og ábendingar</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
-<translation id="2550801787432930915">Verðlækkunarspjald</translation>
 <translation id="2570922361219980984">Einnig er slökkt á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3859306556332390985">Leita áfram</translation>
 <translation id="3895926599014793903">Þvinga fram aðdrátt</translation>
+<translation id="3905475044299942653">Stöðva mikið magn tilkynninga</translation>
 <translation id="3908288065506437185">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sumir eiginleikar virka ef til vill ekki. Tengd vefsvæði geta áfram notað fótspor þriðju aðila.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Varið efni</translation>
 <translation id="662080504995468778">Vera áfram</translation>
 <translation id="6653342741369270081">Ýttu á bakkhnappinn til að hætta að nota allan skjáinn.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Fela „Halda áfram á þessum flipa“}one{Fela „Halda áfram á þessum flipum“}other{Fela „Halda áfram á þessum flipum“}}</translation>
 <translation id="6689172468748959065">Prófílmyndir</translation>
 <translation id="6697925417670533197">Niðurhal í gangi</translation>
 <translation id="6722828510648505498">Útiloka innskráningartilkynningar frá auðkenningarþjónustum.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Veldu valkost fyrir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>
+<translation id="6840760312327750441">Haltu fingri á flipa til að flokka hann. Dragðu hann svo ofan á annan flipa.</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="930525582205581608">Gleyma þessu vefsvæði?</translation>
 <translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
+<translation id="959682366969460160">Skipulag</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 </translationbundle>

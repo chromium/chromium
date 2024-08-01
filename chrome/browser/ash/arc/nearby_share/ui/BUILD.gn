@@ -20,6 +20,8 @@ static_library("ui") {
     "progress_bar_dialog_view.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",

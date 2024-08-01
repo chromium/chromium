@@ -36,6 +36,7 @@
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
+<translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_HOURS_MANY" /> ଘଣ୍ଟା ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="2801787514987684416">ଷ୍ଟୋରର ସୂଚନା ଦେଖିବେ କି?</translation>
 <translation id="2928243913527329289">Google | ଏହି ଷ୍ଟୋର୍ ବିଷୟରେ</translation>
@@ -65,9 +66,9 @@
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
 <translation id="427987768447457592">ନୂଆ ଟାବ ଗ୍ରୁପ</translation>
-<translation id="4338724047016295066">ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକ ସ୍ୱତଃ ବନ୍ଦ ହୋଇଯିବ। ଆପଣ ସର୍ବଦା ଇତିହାସରେ ସେଗୁଡ଼ିକୁ ପାଇପାରିବେ।</translation>
 <translation id="4371591986692297148">ନିଷ୍କ୍ରିୟ</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
+<translation id="4590027107044272416">ଏଠାରେ ଆପଣ ବର୍ତ୍ତମାନ ଏକ ନୂଆ ଟାବ ଖୋଲିପାରିବେ</translation>
 <translation id="4648718555153979859">ଆପଣଙ୍କର ଟାବ୍‌ଗୁଡ଼ିକ, ଏଠାରେ ଏକାଠି କରାଯାଇଛି</translation>
 <translation id="4686942373615810936">ଏବେ ତିଆରି ହୋଇଛି</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 ଦିନ ପରେ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="DAY_COUNT_MANY" /> ଦିନ ପରେ ବନ୍ଦ କରନ୍ତୁ}}</translation>
@@ -75,6 +76,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା)}other{(<ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା)}}</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4870911314065352661">ସମସ୍ତ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
+<translation id="4871719318659334896">ଗୋଷ୍ଠୀ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ଟାବକୁ ବନ୍ଦ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" />ଙ୍କ ଗ୍ରୁପକୁ ସେଭ କରାଯାଇଛି (ଟାବକୁ ବନ୍ଦ କରି ଗ୍ରୁପକୁ ଡିଲିଟ କରିବ)</translation>
@@ -100,6 +102,7 @@
 <translation id="5972844218283131174">ସମସ୍ତ ଅଚୟନ କରନ୍ତୁ</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
+<translation id="6051432659151380973">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ସ୍ୱତଃ ସେଭ ହୁଏ</translation>
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
@@ -115,7 +118,6 @@
 <translation id="6562820390860419811">ଟାବ୍‍କୁ ବାମକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="6615455863669487791">ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="6744956528665271406">ଗୋଷ୍ଠୀର ରଙ୍ଗ ଏଡିଟ କରନ୍ତୁ</translation>
-<translation id="6840760312327750441">ଟାବ୍‌ଗୁଡ଼ିକର ଗୋଷ୍ଠୀ କରିବାକୁ, ଗୋଟିଏ ଟାବ୍ ଦାବି ଧରନ୍ତୁ। ଏହା ପରେ, ଏହାକୁ ଅନ୍ୟ ଏକ ଟାବ୍‍କୁ ଟାଣନ୍ତୁ</translation>
 <translation id="6856809498882026482">ଏକାଧିକ-ଚୟନ ମୋଡକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ଟାବକୁ ସେୟାର କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="7129458170538955174">ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
@@ -152,6 +154,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="8398929769197326728">ନୂଆ ଫୋଲ୍ଡର - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
+<translation id="870736955561925754">ଟାବକୁ ବନ୍ଦ କରି ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8730999928494395583">ଏହି ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ</translation>
@@ -165,6 +168,5 @@
 <translation id="9169594135889675189">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9216898458513705996">ଏହି ଡିଭାଇସରେ ଥିବା ଟାବ ଖୋଲା ରହିବ, କିନ୍ତୁ <ph name="USER_EMAIL" />ରେ ସାଇନ ଇନ କରାଯାଇଥିବା ସମସ୍ତ ଡିଭାଇସରୁ ଗ୍ରୁପକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
-<translation id="959682366969460160">ସଂଗଠିତ କରନ୍ତୁ</translation>
 <translation id="992256792861109788">ଗୋଲାପି</translation>
 </translationbundle>

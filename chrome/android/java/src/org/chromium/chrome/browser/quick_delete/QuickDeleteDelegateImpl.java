@@ -13,21 +13,16 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.List;
 
 /**
- * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations
- * for Chrome.
+ * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations for
+ * Chrome.
  */
 public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
-    /** {@link SettingsLauncher} used to launch the Clear browsing data settings fragment. */
-    private final SettingsLauncher mSettingsLauncher = new SettingsLauncherImpl();
-
     private final @NonNull Supplier<Profile> mProfileSupplier;
     private final @NonNull Supplier<TabSwitcher> mTabSwitcherSupplier;
 
@@ -55,14 +50,6 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
                             BrowsingDataType.CACHE
                         },
                         timePeriod);
-    }
-
-    /**
-     * @return {@link SettingsLauncher} used to launch the Clear browsing data settings fragment.
-     */
-    @Override
-    SettingsLauncher getSettingsLauncher() {
-        return mSettingsLauncher;
     }
 
     @Override

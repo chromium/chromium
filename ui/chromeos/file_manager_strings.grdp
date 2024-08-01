@@ -1635,12 +1635,6 @@
   </message>
 
 <!-- Holding space -->
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space.">
-    Pin to quick files
-  </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL" desc="Label for the command which unpins one or more files from the holding space.">
-    Unpin from quick files
-  </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space in the shelf.">
     Pin to shelf
   </message>

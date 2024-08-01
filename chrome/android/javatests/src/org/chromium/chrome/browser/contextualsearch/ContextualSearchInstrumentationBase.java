@@ -140,9 +140,7 @@ public class ContextualSearchInstrumentationBase {
             setSelectionController(new MockCSSelectionController(activity, this));
             Profile profile = ProfileManager.getLastUsedRegularProfile();
             WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
-            ContentView cv =
-                    ContentView.createContentView(
-                            activity, /* eventOffsetHandler= */ null, webContents);
+            ContentView cv = ContentView.createContentView(activity, webContents);
             webContents.setDelegates(
                     null,
                     ViewAndroidDelegate.createBasicDelegate(cv),

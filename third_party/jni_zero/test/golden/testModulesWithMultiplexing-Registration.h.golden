@@ -10,7 +10,8 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
+extern const int64_t kJniZeroHashmoduleWhole = -7714383706413312501LL;
+extern const int64_t kJniZeroHashmodulePriority = -7714383706413312501LL;
 
 // Forward declarations (methods).
 

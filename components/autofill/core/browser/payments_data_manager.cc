@@ -238,7 +238,7 @@ PaymentsDataManager::PaymentsDataManager(
       this, profile_database, account_database);
   SetPrefService(pref_service);
   if (pref_service_) {
-    autofill_metrics::LogIsAutofillCreditCardEnabledAtStartup(
+    autofill_metrics::LogIsAutofillPaymentMethodsEnabledAtStartup(
         IsAutofillPaymentMethodsEnabled());
     if (IsAutofillPaymentMethodsEnabled()) {
       autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
@@ -247,6 +247,9 @@ PaymentsDataManager::PaymentsDataManager(
         autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
             prefs::IsPaymentCardBenefitsEnabled(pref_service_));
       }
+    } else {
+      autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtStartup(
+          *pref_service_);
     }
   }
   if (sync_service_) {

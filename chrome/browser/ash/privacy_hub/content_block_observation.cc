@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "components/prefs/pref_service.h"

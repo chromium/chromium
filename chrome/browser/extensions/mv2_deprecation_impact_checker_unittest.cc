@@ -132,6 +132,10 @@ class MV2DeprecationImpactCheckerUnitTest
     ExtensionServiceTestBase::TearDown();
   }
 
+  // Since this is testing the MV2 deprecation experiments, we don't want to
+  // bypass their disabling for testing.
+  bool ShouldAllowMV2Extensions() override { return false; }
+
   // Adds a new force-installed extension with the given `name`,
   // `manifest_location`, and `manifest_version`.
   scoped_refptr<const Extension> AddForceInstalledExtension(

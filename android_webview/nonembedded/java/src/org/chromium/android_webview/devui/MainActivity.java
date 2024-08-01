@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -287,8 +286,7 @@ public class MainActivity extends FragmentActivity {
             TextView textView = (TextView) view;
 
             boolean isSelectedFragment = chosenFragmentId == fragmentId;
-            ApiCompatibilityUtils.setTextAppearance(
-                    textView,
+            textView.setTextAppearance(
                     isSelectedFragment
                             ? R.style.SelectedNavigationButton
                             : R.style.UnselectedNavigationButton);

@@ -14,6 +14,8 @@ static_library("sharesheet") {
     "drive_share_action.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//base",

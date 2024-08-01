@@ -936,6 +936,9 @@ void ServiceWorkerVersion::AddControllee(
   // crash.
   CHECK(!base::Contains(controllee_map_, uuid));
 
+  if (!context_) {
+    return;
+  }
   controllee_map_[uuid] = service_worker_client->AsWeakPtr();
   embedded_worker_->UpdateForegroundPriority();
   ClearTick(&no_controllees_time_);
@@ -2683,6 +2686,10 @@ ServiceWorkerVersion::DeduceStartWorkerFailureReason(
   }
 
   return default_code;
+}
+
+net::Error ServiceWorkerVersion::GetMainScriptNetError() {
+  return net::Error(script_cache_map()->main_script_net_error());
 }
 
 void ServiceWorkerVersion::MarkIfStale() {

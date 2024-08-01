@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
+#import "ios/chrome/browser/tabs/ui_bundled/switch_to_tab_animation_view.h"
 
 class NewTabPageTabHelper;
 class SnapshotTabHelper;

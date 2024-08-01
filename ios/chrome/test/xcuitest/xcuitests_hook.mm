@@ -71,6 +71,10 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   return nullptr;
 }
 
+std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
+  return nullptr;
+}
+
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
   return nullptr;

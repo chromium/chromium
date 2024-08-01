@@ -17,21 +17,24 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_filter/core/common/ruleset_config.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_proxy.h"
+
 namespace subresource_filter {
 
 RulesetPublisher::RulesetPublisher(
     RulesetService* ruleset_service,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    const RulesetConfig& ruleset_config)
     : ruleset_service_(ruleset_service),
       ruleset_dealer_(std::make_unique<VerifiedRulesetDealer::Handle>(
-          std::move(blocking_task_runner))) {
+          std::move(blocking_task_runner),
+          ruleset_config)) {
   best_effort_task_runner_ =
       content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
   CHECK(best_effort_task_runner_->BelongsToCurrentThread(),

@@ -43,13 +43,13 @@ constexpr base::FeatureParam<int> kMaxLogSizeBytes{
 
 constexpr base::FeatureParam<int> kUploadTimeInSeconds{
     &kEnabledStructuredMetricsService, "upload_time_in_seconds",
-    40 * 60  // 40 minutes
+    10 * 60  // 40 minutes
 };
 
 constexpr base::FeatureParam<int> kExternalMetricsCollectionIntervalInSeconds{
     &features::kStructuredMetrics,
     "external_metrics_collection_interval_in_seconds",
-    10 * 60  // 10 minutes
+    3 * 60  // 10 minutes
 };
 
 constexpr base::FeatureParam<int> kStructuredMetricsUploadCadenceMinutes{

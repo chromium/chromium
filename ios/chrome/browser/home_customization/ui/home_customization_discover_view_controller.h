@@ -7,9 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
+
+@protocol HomeCustomizationMutator;
+
 // The view controller representing the Discover feed page within the Home
 // Customization menu.
-@interface HomeCustomizationDiscoverViewController : UIViewController
+@interface HomeCustomizationDiscoverViewController
+    : UIViewController <HomeCustomizationDiscoverConsumer>
+
+// Mutator for communicating with the HomeCustomizationMediator.
+@property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
 
 @end
 

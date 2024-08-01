@@ -89,7 +89,9 @@ export class EmojiPickerApiProxy {
   }
 
   searchEmoji(query: string) {
-    return this.searchProxy().searchEmoji(query);
+    // TODO(b/346457889): Add multilingual search for emoji picker.
+    // For now assume English.
+    return this.searchProxy().searchEmoji(query, ['en']);
   }
 
   /** @override */

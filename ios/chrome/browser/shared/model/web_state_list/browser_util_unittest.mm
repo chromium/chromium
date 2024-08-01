@@ -46,7 +46,7 @@ class BrowserUtilTest : public PlatformTest {
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         FakeTabRestoreService::GetTestingFactory());
 
-    chrome_browser_state_ = test_browser_state_builder.Build();
+    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());

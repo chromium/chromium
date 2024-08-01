@@ -96,12 +96,13 @@ class ProcessManager : public KeyedService,
                                const Extension* extension);
   void UnregisterRenderFrameHost(content::RenderFrameHost* render_frame_host);
 
-  // Registers or unregisters (if it exists) a running worker state to this
-  // process manager. Note: This does not create any Service Workers.
-  void RegisterServiceWorker(const WorkerId& worker_id);
-  void UnregisterServiceWorker(const WorkerId& worker_id);
-  void UnregisterServiceWorker(const ExtensionId& extension_id,
-                               int64_t worker_version_id);
+  // Starts tracking or stops tracking (if it's already being tracked) a running
+  // worker to this process manager. Note: This does not create any Service
+  // Workers.
+  void StartTrackingServiceWorkerRunningInstance(const WorkerId& worker_id);
+  void StopTrackingServiceWorkerRunningInstance(const WorkerId& worker_id);
+  void StopTrackingServiceWorkerRunningInstance(const ExtensionId& extension_id,
+                                                int64_t worker_version_id);
 
   // Returns the SiteInstance that the given URL belongs to.
   // NOTE: Usage of this method is potentially error-prone. An extension can
@@ -396,9 +397,9 @@ class ProcessManager : public KeyedService,
   // information is not accessible at registration/deregistration time.
   ExtensionRenderFrames all_extension_frames_;
 
-  // Contains all active extension Service Worker information for all
+  // Contains all active running extension Service Worker information for all
   // extensions.
-  WorkerIdSet all_extension_workers_;
+  WorkerIdSet all_running_extension_workers_;
   // Maps worker IDs to extension context IDs (as used in the runtime API) for
   // running workers.
   std::map<WorkerId, base::Uuid> worker_context_ids_;

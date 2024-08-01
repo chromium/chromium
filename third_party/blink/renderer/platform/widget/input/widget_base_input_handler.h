@@ -23,7 +23,6 @@
 namespace cc {
 struct ElementId;
 class EventMetrics;
-struct OverscrollBehavior;
 }  // namespace cc
 
 namespace ui {
@@ -62,15 +61,6 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
   void HandleInputEvent(const blink::WebCoalescedInputEvent& coalesced_event,
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback callback);
-
-  // Handle overscroll from Blink. Returns whether the should be sent to the
-  // browser. This will return false if an event is currently being processed
-  // and will be returned part of the input ack.
-  bool DidOverscrollFromBlink(const gfx::Vector2dF& overscrollDelta,
-                              const gfx::Vector2dF& accumulatedOverscroll,
-                              const gfx::PointF& position,
-                              const gfx::Vector2dF& velocity,
-                              const cc::OverscrollBehavior& behavior);
 
   void InjectScrollbarGestureScroll(const gfx::Vector2dF& delta,
                                     ui::ScrollGranularity granularity,

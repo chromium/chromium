@@ -15,14 +15,10 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/feed_internals_resources.h"
 #include "chrome/grit/feed_internals_resources_map.h"
-#include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-
-#if BUILDFLAG(ENABLE_FEED_V2)
 #include "chrome/browser/ui/webui/feed_internals/feedv2_internals_page_handler.h"
-#endif
 
 FeedInternalsUI::FeedInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
@@ -41,10 +37,8 @@ FeedInternalsUI::~FeedInternalsUI() = default;
 
 void FeedInternalsUI::BindInterface(
     mojo::PendingReceiver<feed_internals::mojom::PageHandler> receiver) {
-#if BUILDFLAG(ENABLE_FEED_V2)
   v2_page_handler_ = std::make_unique<FeedV2InternalsPageHandler>(
       std::move(receiver),
       feed::FeedServiceFactory::GetForBrowserContext(profile_),
       profile_->GetPrefs());
-#endif
 }

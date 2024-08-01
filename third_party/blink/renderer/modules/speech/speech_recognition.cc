@@ -117,7 +117,7 @@ void SpeechRecognition::abort() {
 
 void SpeechRecognition::ResultRetrieved(
     WTF::Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results) {
-  auto* it = std::stable_partition(
+  auto it = std::stable_partition(
       results.begin(), results.end(),
       [](const auto& result) { return !result->is_provisional; });
   wtf_size_t provisional_count = static_cast<wtf_size_t>(results.end() - it);

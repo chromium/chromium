@@ -74,6 +74,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   void GetDeviceInfosAsyncForRetry();
   void OnDeviceInfosReceived(
       scoped_refptr<RefCountedVideoSourceProvider> service_connection,
+      video_capture::mojom::VideoSourceProvider::GetSourceInfosResult result,
       const std::vector<media::VideoCaptureDeviceInfo>& infos);
   void OnDeviceInfosRequestDropped(
       scoped_refptr<RefCountedVideoSourceProvider> service_connection);

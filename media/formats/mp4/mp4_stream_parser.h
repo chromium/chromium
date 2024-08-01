@@ -96,16 +96,6 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   void ChangeState(State new_state);
 
   bool EmitConfigs();
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  bool PrepareAACBuffer(const AAC& aac_config,
-                        std::vector<uint8_t>* frame_buf,
-                        std::vector<SubsampleEntry>* subsamples) const;
-#endif
-#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-  bool PrependIADescriptors(const IamfSpecificBox& iacb,
-                            std::vector<uint8_t>* frame_buf,
-                            std::vector<SubsampleEntry>* subsamples) const;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
   ParseResult EnqueueSample(BufferQueueMap* buffers);
   bool SendAndFlushSamples(BufferQueueMap* buffers);
 

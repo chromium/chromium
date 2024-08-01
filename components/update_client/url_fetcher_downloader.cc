@@ -113,6 +113,7 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
 
   Result result;
   result.error = error;
+  result.extra_code1 = extra_code1;
   if (!error) {
     result.response = file_path_;
   }

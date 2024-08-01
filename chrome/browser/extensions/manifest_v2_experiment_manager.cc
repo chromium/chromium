@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
@@ -344,6 +345,21 @@ void ManifestV2ExperimentManager::OnExtensionSystemReady() {
   DisableAffectedExtensions();
 
   EmitMetricsForProfileReady();
+
+  is_manager_ready_ = true;
+  on_manager_ready_callback_list_.Notify();
+}
+
+base::CallbackListSubscription
+ManifestV2ExperimentManager::RegisterOnManagerReadyCallback(
+    base::RepeatingClosure callback) {
+  CHECK(!is_manager_ready_);
+  return on_manager_ready_callback_list_.Add(std::move(callback));
+}
+
+void ManifestV2ExperimentManager::SetHasTriggeredDisabledDialog(
+    bool has_triggered) {
+  has_triggered_disabled_dialog_ = has_triggered;
 }
 
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {

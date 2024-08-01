@@ -152,16 +152,12 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
         if (is_lost || !context_provider) {
           return;
         }
-        auto* sii = context_provider->ContextProvider()->SharedImageInterface();
-        if (!sii) {
-          return;
-        }
-        sii->DestroySharedImage(sync_token, std::move(shared_image));
+        shared_image->UpdateDestructionSyncToken(sync_token);
       },
-      shared_gpu_context, std::move(shared_image));
+      shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      mailbox_holder.mailbox, release_token, 0u, sk_image_info,
+      std::move(shared_image), release_token, 0u, sk_image_info,
       mailbox_holder.texture_target, is_origin_top_left,
       supports_display_compositing, is_overlay_candidate,
       ImageOrientationEnum::kDefault, shared_gpu_context,

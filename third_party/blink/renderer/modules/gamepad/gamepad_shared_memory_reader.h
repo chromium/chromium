@@ -18,7 +18,9 @@ class ReadOnlySharedMemoryRegion;
 }
 
 namespace device {
-class Gamepad;
+template <class T>
+class GamepadImpl;
+using Gamepad = GamepadImpl<void>;
 class Gamepads;
 }  // namespace device
 

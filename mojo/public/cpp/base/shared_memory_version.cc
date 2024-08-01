@@ -18,7 +18,6 @@ SharedMemoryVersionController::SharedMemoryVersionController()
           base::ReadOnlySharedMemoryRegion::Create(sizeof(SharedVersionType))) {
   // Create a shared memory region and immediately populate it.
   CHECK(mapped_region_.IsValid());
-  new (mapped_region_.mapping.memory()) SharedVersionType;
 
   // Clients may use `kInvalidVersion` as special value to indicate the version
   // in the absence of shared memory communication. Make sure the version starts

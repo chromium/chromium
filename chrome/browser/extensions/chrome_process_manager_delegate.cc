@@ -165,8 +165,9 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   auto close_background_hosts = [](Profile* profile) {
     ProcessManager* manager =
         ProcessManagerFactory::GetForBrowserContextIfExists(profile);
-    if (manager)
+    if (manager) {
       manager->CloseBackgroundHosts();
+    }
   };
 
   close_background_hosts(profile);
@@ -177,8 +178,9 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
     Profile* otr = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     close_background_hosts(otr);
-    if (observed_profiles_.IsObservingSource(otr))
+    if (observed_profiles_.IsObservingSource(otr)) {
       observed_profiles_.RemoveObservation(otr);
+    }
   }
 }
 

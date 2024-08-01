@@ -14,6 +14,8 @@ static_library("os_feedback") {
     "os_feedback_screenshot_manager.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",
@@ -26,8 +28,10 @@ static_library("os_feedback") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
     "//components/feedback",
@@ -46,6 +50,7 @@ static_library("os_feedback") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ui/webui/ash",
   ]
 }
 
@@ -78,6 +83,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/test:test_support",
     "//components/feedback",
     "//components/feedback/content",

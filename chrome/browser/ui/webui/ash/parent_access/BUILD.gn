@@ -20,3 +20,109 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
 }
+
+static_library("parent_access") {
+  sources = [
+    "parent_access_dialog.cc",
+    "parent_access_dialog.h",
+    "parent_access_metrics_utils.cc",
+    "parent_access_metrics_utils.h",
+    "parent_access_state_tracker.cc",
+    "parent_access_state_tracker.h",
+    "parent_access_ui.cc",
+    "parent_access_ui.h",
+    "parent_access_ui_handler_delegate.h",
+    "parent_access_ui_handler_impl.cc",
+    "parent_access_ui_handler_impl.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    ":proto",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/web_dialogs",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/parent_access:resources",
+    "//chrome/browser/resources/chromeos/supervision:resources",
+    "//chrome/browser/ui/webui",
+    "//components/google/core/common",
+    "//components/signin/public/base",
+    "//google_apis",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "parent_access_browsertest_base.cc",
+    "parent_access_browsertest_base.h",
+    "parent_access_dialog_browsertest.cc",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    ":parent_access",
+    "//ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base:types",
+    "//ui/events:event_constants",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "parent_access_ui_handler_impl_unittest.cc" ]
+
+  deps = [
+    ":mojo_bindings",
+    ":parent_access",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//components/google/core/common",
+    "//components/signin/public/identity_manager:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

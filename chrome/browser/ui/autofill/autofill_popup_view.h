@@ -49,8 +49,10 @@ class AutofillPopupView {
 
   // Refreshes the position and redraws popup when suggestions change. Returns
   // whether the resulting popup was shown (or had to hide, e.g. due to
-  // insufficient size).
-  virtual void OnSuggestionsChanged() = 0;
+  // insufficient size). If `prefer_prev_arrow_side` is `true`, the view takes
+  // prev arrow side as the first preferred when recalculating the popup
+  // position (potentially changed due to the change of the content).
+  virtual void OnSuggestionsChanged(bool prefer_prev_arrow_side) = 0;
 
   // Returns true if the autofill popup overlaps with the
   // picture-in-picture window.

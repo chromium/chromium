@@ -87,6 +87,7 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
         /*locked=*/true,
+        /*accelerator_locked=*/false,
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(

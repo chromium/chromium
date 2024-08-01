@@ -55,6 +55,7 @@ class VcBackgroundUISeaPenProviderImpl
 
   void SelectRecentSeaPenImageInternal(
       uint32_t id,
+      bool preview_mode,
       SelectRecentSeaPenImageCallback callback) override;
 
   void GetRecentSeaPenImageIdsInternal(

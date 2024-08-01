@@ -59,7 +59,6 @@ using OptimizationGuideModelExecutionResultCallback =
     base::OnceCallback<void(OptimizationGuideModelExecutionResult,
                             std::unique_ptr<ModelQualityLogEntry>)>;
 
-
 // A callback for receiving a score from the model, or nullopt if the model
 // is not running.
 using OptimizationGuideModelScoreCallback =
@@ -175,9 +174,8 @@ class OptimizationGuideModelExecutor {
     // Gets the probability score of the first token in `text` on top of the
     // current context. Returns nullopt if there is no on-device session (such
     // as due to a disconnect).
-    virtual void Score(
-        const std::string& text,
-        OptimizationGuideModelScoreCallback callback) = 0;
+    virtual void Score(const std::string& text,
+                       OptimizationGuideModelScoreCallback callback) = 0;
 
     // Execute the model with `request_metadata` and streams the result to
     // `callback`. The execute call will include context from the last

@@ -43,8 +43,6 @@ class FakeScrollbarLayer : public BaseLayer {
   size_t push_properties_count() const { return push_properties_count_; }
   void reset_push_properties_count() { push_properties_count_ = 0; }
 
-  UIResourceId track_resource_id() { return BaseLayer::track_resource_id(); }
-  UIResourceId thumb_resource_id() { return BaseLayer::thumb_resource_id(); }
   FakeScrollbar* fake_scrollbar() { return fake_scrollbar_.get(); }
 
  protected:
@@ -82,6 +80,9 @@ class FakePaintedScrollbarLayer
     scrollbar->set_uses_nine_patch_track_and_buttons_resource(true);
     return scrollbar;
   }
+
+  using PaintedScrollbarLayer::thumb_resource_id;
+  using PaintedScrollbarLayer::track_and_buttons_resource_id;
 
  private:
   ~FakePaintedScrollbarLayer() override = default;

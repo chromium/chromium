@@ -42,9 +42,10 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 128 changes the primary key of 'plus_addresses', and thus is no
-// longer compatible with version 127.
-const int kCompatibleVersionNumber = 128;
+// Version 131 drops the 'payment_instrument_type' column of
+// 'generic_payment_instruments', and thus is no longer compatible with version
+// 130.
+const int kCompatibleVersionNumber = 131;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
@@ -127,9 +128,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kCurrentVersionNumber)) {
+          kCurrentVersionNumber) == sql::RazeIfIncompatibleResult::kFailed) {
     LogInitResult(WebDatabaseInitResult::kCouldNotRazeIncompatibleVersion);
     return sql::INIT_FAILURE;
   }

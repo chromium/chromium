@@ -561,8 +561,7 @@ id<GREYMatcher> PasteButton() {
 
     // Tap Done button and test the keyboard is dismissed as a result.
     [self.delegate closeFindInPageWithDoneButton];
-    GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
-                    @"Keyboard Should be Hidden");
+    [ChromeEarlGrey waitForKeyboardToDisappear];
 
     // Open FIP and type short query again.
     [self.delegate openFindInPageWithOverflowMenu];
@@ -573,8 +572,7 @@ id<GREYMatcher> PasteButton() {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
         performAction:chrome_test_util::TapWebElementWithId(
                           kFindInPageTestShortTextID)];
-    GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
-                    @"Keyboard Should be Hidden");
+    [ChromeEarlGrey waitForKeyboardToDisappear];
   }
 }
 

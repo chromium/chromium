@@ -279,7 +279,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                      /*bucket=*/123, /*value=*/456,
                      /*filtering_id=*/std::nullopt)},
                  aggregation_mode, std::move(aggregation_coordinator_origin),
-                 /*max_contributions_allowed=*/20,
+                 /*max_contributions_allowed=*/20u,
                  /*filtering_id_max_bytes=*/std::nullopt),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/report_time,

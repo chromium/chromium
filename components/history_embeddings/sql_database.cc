@@ -118,8 +118,9 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
   }
 
   // Raze old incompatible databases.
-  if (!sql::MetaTable::RazeIfIncompatible(&db_, kLowestSupportedDatabaseVersion,
-                                          kCurrentDatabaseVersion)) {
+  if (sql::MetaTable::RazeIfIncompatible(&db_, kLowestSupportedDatabaseVersion,
+                                         kCurrentDatabaseVersion) ==
+      sql::RazeIfIncompatibleResult::kFailed) {
     return sql::InitStatus::INIT_FAILURE;
   }
 

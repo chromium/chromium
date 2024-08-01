@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
@@ -29,6 +28,7 @@
 #include "gin/per_isolate_data.h"
 #include "gin/thread_isolation.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"
+#include "partition_alloc/buildflags.h"
 #include "v8_platform_page_allocator.h"
 
 namespace gin {

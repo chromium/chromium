@@ -4,12 +4,12 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
@@ -285,7 +285,7 @@ void UngroupGroupAtIndex(int group_cell_index) {
   DisplayContextMenuForGroupCellAtIndex(group_cell_index);
   [[EarlGrey selectElementWithMatcher:UngroupButton()]
       performAction:grey_tap()];
-  // Tap a delete button again to confirm the deletion.
+  // Tap a ungroup button again to confirm the deletion.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::AlertAction(
                                           l10n_util::GetNSString(
                                               IDS_IOS_CONTENT_CONTEXT_UNGROUP))]

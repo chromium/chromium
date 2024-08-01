@@ -10,3 +10,57 @@ mojom("mojo_bindings") {
   sources = [ "enterprise_reporting.mojom" ]
   webui_module_path = "/"
 }
+
+static_library("enterprise_reporting") {
+  sources = [
+    "enterprise_reporting_page_handler.cc",
+    "enterprise_reporting_page_handler.h",
+    "enterprise_reporting_ui.cc",
+    "enterprise_reporting_ui.h",
+    "history_converter.cc",
+    "history_converter.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//ash/webui/common:chrome_os_webui_config",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/common",
+    "//chromeos/dbus/missive:history_tracker",
+    "//components/reporting/proto:health_proto",
+    "//components/reporting/proto:status_proto",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/enterprise_reporting:resources",
+    "//chrome/browser/ui/webui",
+    "//components/reporting/util:status",
+    "//components/version_info",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "history_converter_unittest.cc" ]
+
+  deps = [
+    ":enterprise_reporting",
+    ":mojo_bindings",
+    "//components/reporting/proto:health_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:status_proto",
+    "//components/reporting/util:status",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

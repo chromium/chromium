@@ -7,6 +7,43 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
+static_library("crostini_installer") {
+  sources = [
+    "crostini_installer_dialog.cc",
+    "crostini_installer_dialog.h",
+    "crostini_installer_page_handler.cc",
+    "crostini_installer_page_handler.h",
+    "crostini_installer_ui.cc",
+    "crostini_installer_ui.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/spaced",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/chromeos",
+    "//ui/resources:webui_resources_grd",
+    "//ui/strings:ui_strings",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "crostini_installer.mojom" ]
   webui_module_path = "/"

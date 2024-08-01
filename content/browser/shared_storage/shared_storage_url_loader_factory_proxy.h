@@ -21,6 +21,9 @@
 
 namespace content {
 
+const char kSecSharedStorageDataOriginHeader[] =
+    "Sec-Shared-Storage-Data-Origin";
+
 // Proxy URLLoaderFactoryFactory, to limit the requests that a shared storage
 // worklet can make.
 class CONTENT_EXPORT SharedStorageURLLoaderFactoryProxy
@@ -31,6 +34,7 @@ class CONTENT_EXPORT SharedStorageURLLoaderFactoryProxy
           frame_url_loader_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       const url::Origin& frame_origin,
+      const url::Origin& data_origin,
       const GURL& script_url,
       network::mojom::CredentialsMode credentials_mode,
       const net::SiteForCookies& site_for_cookies);
@@ -58,6 +62,8 @@ class CONTENT_EXPORT SharedStorageURLLoaderFactoryProxy
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 
   const url::Origin frame_origin_;
+
+  const url::Origin data_origin_;
 
   const GURL script_url_;
 

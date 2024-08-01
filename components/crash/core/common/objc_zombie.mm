@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #import "components/crash/core/common/objc_zombie.h"
 
 #include <AvailabilityMacros.h>
-#include <string.h>
-
 #include <execinfo.h>
 #import <objc/runtime.h>
+#include <string.h>
 
 #include <algorithm>
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -193,11 +198,11 @@ BOOL GetZombieRecord(id object, ZombieRecord* record) {
 
 // Dump the symbols.  This is pulled out into a function to make it
 // easy to use DCHECK to dump only in debug builds.
-BOOL DumpDeallocTrace(const void* const* array, int size) {
+BOOL DumpDeallocTrace(base::span<const void* const> frames) {
   // Async-signal safe version of fputs, consistent with StackTrace::Print().
   const char message[] = "Backtrace from -dealloc:\n";
   std::ignore = HANDLE_EINTR(write(STDERR_FILENO, message, strlen(message)));
-  base::debug::StackTrace(array, size).Print();
+  base::debug::StackTrace(frames).Print();
 
   return YES;
 }
@@ -238,13 +243,13 @@ void ZombieObjectCrash(id object, SEL aSelector, SEL viaSelector) {
   if (found) {
     crash_reporter::SetCrashKeyStringToStackTrace(
         &zombie_trace_key,
-        base::debug::StackTrace(record.trace, record.traceDepth));
+        base::debug::StackTrace(base::span(record.trace, record.traceDepth)));
   }
 
   // Log -dealloc backtrace in debug builds then crash with a useful
   // stack trace.
   if (found && record.traceDepth) {
-    DCHECK(DumpDeallocTrace(record.trace, record.traceDepth));
+    DCHECK(DumpDeallocTrace(base::span(record.trace, record.traceDepth)));
   } else {
     DLOG(WARNING) << "Unable to generate backtrace from -dealloc.";
   }

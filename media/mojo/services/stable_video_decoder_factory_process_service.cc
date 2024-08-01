@@ -22,15 +22,14 @@ StableVideoDecoderFactoryProcessService::
 void StableVideoDecoderFactoryProcessService::
     InitializeStableVideoDecoderFactory(
         const gpu::GpuFeatureInfo& gpu_feature_info,
-        bool enable_direct_video_decoder,
         mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory>
             receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The browser process ensures this is called only once.
   DCHECK(!factory_);
-  factory_ = std::make_unique<StableVideoDecoderFactoryService>(
-      gpu_feature_info, enable_direct_video_decoder);
+  factory_ =
+      std::make_unique<StableVideoDecoderFactoryService>(gpu_feature_info);
 
   // base::Unretained(this) is safe here because the disconnection callback
   // won't run beyond the lifetime of |factory_| which is fully owned by

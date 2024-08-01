@@ -265,6 +265,8 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
     return ManifestDemuxer::SeekState::kIsReady;
   }
 
+  decryptor_ = nullptr;
+
   if (IsLive()) {
     return ManifestDemuxer::SeekState::kNeedsData;
   }
@@ -352,17 +354,24 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("media", "HLS::FetchSegment", this, "start",
                                     segment_start, "include init",
                                     include_init);
+
+  bool is_fetching_new_key = false;
+  if (auto enc = segment->GetEncryptionData()) {
+    is_fetching_new_key = enc->NeedsKeyFetch();
+  }
   rendition_host_->ReadMediaSegment(
       *segment, /*read_chunked=*/false, include_init,
       base::BindOnce(&HlsRenditionImpl::OnSegmentData,
-                     weak_factory_.GetWeakPtr(), std::move(cb), time,
-                     segment_end, base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), segment, std::move(cb), time,
+                     segment_end, base::TimeTicks::Now(), is_fetching_new_key));
 }
 
-void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
+void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
+                                     base::OnceClosure cb,
                                      base::TimeDelta required_time,
                                      base::TimeDelta parse_end,
                                      base::TimeTicks net_req_start,
+                                     bool fetched_new_key,
                                      HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchSegment", this);
@@ -382,10 +391,60 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
   std::unique_ptr<HlsDataSourceStream> stream = std::move(result).value();
   DCHECK(!stream->CanReadMore());
 
-  if (!engine_host_->AppendAndParseData(
-          role_, base::TimeDelta(), parse_end + base::Seconds(1),
-          &parse_offset_,
-          base::span(stream->raw_data(), stream->buffer_size()))) {
+  // This plaintext vector needs to be declared in the same scope as the
+  // `AppendAndParseData` call, as it will be the memory backing for the span
+  // which that function consumes. Declaring it elsewhere would lead to a
+  // potential use-after-free or stack smash.
+  std::vector<uint8_t> plaintext;
+  base::span<const uint8_t> stream_data =
+      base::span(stream->raw_data(), stream->buffer_size());
+
+  if (auto enc_data = segment->GetEncryptionData()) {
+    switch (enc_data->GetMethod()) {
+      case hls::XKeyTagMethod::kAES128:
+      case hls::XKeyTagMethod::kAES256: {
+        if (!decryptor_ || segment->HasNewEncryptionData() || fetched_new_key) {
+          // Create a new decryptor any time we get a new uri.
+          decryptor_ = std::make_unique<crypto::Encryptor>();
+
+          // Hold on to the segment - this is likely the last reference to it,
+          // and it contains our aes key.
+          segment_with_key_ = segment;
+
+          auto mode = crypto::Encryptor::Mode::CBC;
+
+          auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
+          if (!maybe_iv.has_value()) {
+            engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+            return;
+          }
+          auto iv = std::move(maybe_iv).value();
+          if (!decryptor_->Init(enc_data->GetKey(), mode, iv)) {
+            engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+            return;
+          }
+        }
+
+        // Decrypt the ciphertext, and re-assign the data span to point to the
+        // cleartext memory in `plaintext`.
+        if (!decryptor_->Decrypt(stream_data, &plaintext)) {
+          return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+        }
+        stream_data = base::span(plaintext.data(), plaintext.size());
+        if (plaintext.size() == 0) {
+          FetchNext(std::move(cb), required_time);
+          return;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  if (!engine_host_->AppendAndParseData(role_, base::TimeDelta(),
+                                        parse_end + base::Seconds(1),
+                                        &parse_offset_, stream_data)) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
 

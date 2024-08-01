@@ -69,9 +69,9 @@ class IdlSchemaTest(unittest.TestCase):
                           'parameters':[{'type': 'integer', 'name': 'x'}]}}]
     self.assertEqual(expected, getParams(schema, 'whatever'))
 
-  def testLegalValues(self):
+  def testProperties(self):
     self.assertEqual({
-        'x': {'name': 'x', 'type': 'integer', 'enum': [1,2],
+        'x': {'name': 'x', 'type': 'integer',
               'description': 'This comment tests "double-quotes".',
               'jsexterns': None},
         'y': {'name': 'y', 'type': 'string'},

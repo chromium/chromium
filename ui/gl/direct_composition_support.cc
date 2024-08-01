@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gl/direct_composition_support.h"
 
+#include <dcomp.h>
 #include <dxgi1_6.h>
+
 #include <set>
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -952,6 +960,58 @@ void SetDirectCompositionMonitorInfoForTesting(
     const gfx::Size& primary_monitor_size) {
   g_num_monitors = num_monitors;
   g_primary_monitor_size = primary_monitor_size;
+}
+
+std::optional<bool> g_direct_composition_texture_supported;
+
+bool DirectCompositionTextureSupported() {
+  if (g_direct_composition_texture_supported.has_value()) {
+    return g_direct_composition_texture_supported.value();
+  }
+
+  if (!g_dcomp_device || !g_d3d11_device) {
+    // We don't support DComp textures if we haven't initialized Direct
+    // Composition. This can happen if Direct Composition is disabled, e.g.
+    // during software rendering mode.
+    return false;
+  }
+
+  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device = g_dcomp_device;
+  CHECK(dcomp_device);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
+  CHECK(d3d11_device);
+
+  // Set the result to false early in case any of the following conditions fail.
+  // We don't set this earlier in case this function is called before
+  // |InitializeDirectComposition|.
+  g_direct_composition_texture_supported = false;
+
+  Microsoft::WRL::ComPtr<IDCompositionDevice4> dcomp_device4;
+  HRESULT hr = dcomp_device.As(&dcomp_device4);
+  if (FAILED(hr)) {
+    // Not a recent enough Windows system
+    DLOG(ERROR) << "QueryInterface to IDCompositionDevice4 failed: "
+                << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  BOOL supports_composition_textures = FALSE;
+  hr = dcomp_device4->CheckCompositionTextureSupport(
+      d3d11_device.Get(), &supports_composition_textures);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "CheckCompositionTextureSupport failed: "
+                << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  if (supports_composition_textures == FALSE) {
+    DLOG(ERROR) << "CheckCompositionTextureSupport reported unsupported";
+    return false;
+  }
+
+  g_direct_composition_texture_supported = true;
+  return true;
 }
 
 // For DirectComposition Display Monitor.

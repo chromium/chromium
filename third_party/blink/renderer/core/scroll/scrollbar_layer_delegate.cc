@@ -129,11 +129,16 @@ float ScrollbarLayerDelegate::Opacity() const {
   return scrollbar_->GetTheme().Opacity(*scrollbar_);
 }
 
-bool ScrollbarLayerDelegate::NeedsRepaintPart(cc::ScrollbarPart part) const {
-  if (part == cc::ScrollbarPart::kThumb) {
-    return scrollbar_->ThumbNeedsRepaint();
-  }
-  return scrollbar_->TrackNeedsRepaint();
+bool ScrollbarLayerDelegate::ThumbNeedsRepaint() const {
+  return scrollbar_->ThumbNeedsRepaint();
+}
+
+void ScrollbarLayerDelegate::ClearThumbNeedsRepaint() {
+  scrollbar_->ClearThumbNeedsRepaint();
+}
+
+bool ScrollbarLayerDelegate::TrackAndButtonsNeedRepaint() const {
+  return scrollbar_->TrackAndButtonsNeedRepaint();
 }
 
 bool ScrollbarLayerDelegate::NeedsUpdateDisplay() const {
@@ -199,32 +204,26 @@ bool ScrollbarLayerDelegate::HasTickmarks() const {
   return ShouldPaint() && scrollbar_->HasTickmarks();
 }
 
-void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
-                                       cc::ScrollbarPart part,
-                                       const gfx::Rect& rect) {
-  if (!ShouldPaint())
+void ScrollbarLayerDelegate::PaintThumb(cc::PaintCanvas& canvas,
+                                        const gfx::Rect& rect) {
+  if (!ShouldPaint()) {
     return;
-
-  auto& theme = scrollbar_->GetTheme();
-  ScopedScrollbarPainter painter(*canvas);
-  // The canvas coordinate space is relative to the part's origin.
-  switch (part) {
-    case cc::ScrollbarPart::kThumb:
-      theme.PaintThumb(painter.Context(), *scrollbar_, gfx::Rect(rect));
-      scrollbar_->ClearThumbNeedsRepaint();
-      break;
-    case cc::ScrollbarPart::kTrackButtonsTickmarks: {
-      theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, rect);
-      scrollbar_->ClearTrackNeedsRepaint();
-      break;
-    }
-    default:
-      NOTREACHED_IN_MIGRATION();
   }
+  auto& theme = scrollbar_->GetTheme();
+  ScopedScrollbarPainter painter(canvas);
+  theme.PaintThumb(painter.Context(), *scrollbar_, rect);
+  scrollbar_->ClearThumbNeedsRepaint();
 }
 
-void ScrollbarLayerDelegate::ClearThumbNeedsRepaint() {
-  scrollbar_->ClearThumbNeedsRepaint();
+void ScrollbarLayerDelegate::PaintTrackAndButtons(cc::PaintCanvas& canvas,
+                                                  const gfx::Rect& rect) {
+  if (!ShouldPaint()) {
+    return;
+  }
+  auto& theme = scrollbar_->GetTheme();
+  ScopedScrollbarPainter painter(canvas);
+  theme.PaintTrackAndButtons(painter.Context(), *scrollbar_, rect);
+  scrollbar_->ClearTrackAndButtonsNeedRepaint();
 }
 
 SkColor4f ScrollbarLayerDelegate::ThumbColor() const {

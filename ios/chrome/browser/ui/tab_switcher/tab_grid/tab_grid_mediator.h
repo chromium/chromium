@@ -48,8 +48,9 @@ class PrefService;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-// Set the current displayed page (incognito, regular or remote).
-- (void)setPage:(TabGridPage)page;
+
+// Set the active page (incognito, regular or remote).
+- (void)setActivePage:(TabGridPage)page;
 // Set the current mode (normal/selection/search/inactive) on the currently
 // displayed page.
 - (void)setModeOnCurrentPage:(TabGridMode)mode;

@@ -267,11 +267,6 @@ class SearchBoxTextfield : public views::Textfield {
     }
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Textfield::GetAccessibleNodeData(node_data);
-    search_box_view_->UpdateSearchTextfieldAccessibleNodeData(node_data);
-  }
-
  private:
   const raw_ptr<SearchBoxViewBase> search_box_view_;
 };
@@ -453,6 +448,8 @@ SearchBoxViewBase::SearchBoxViewBase()
       std::make_unique<views::FillLayout>());
   content_container_->SetFlexForView(search_box_button_container_, 0,
                                      /*use_min_size=*/true);
+
+  UpdateSearchTextfieldAccessibleActiveDescendantId();
 }
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
@@ -707,8 +704,7 @@ bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {
   return trimmed_query.empty();
 }
 
-void SearchBoxViewBase::UpdateSearchTextfieldAccessibleNodeData(
-    ui::AXNodeData* node_data) {}
+void SearchBoxViewBase::UpdateSearchTextfieldAccessibleActiveDescendantId() {}
 
 void SearchBoxViewBase::ClearSearch() {
   search_box_->SetText(std::u16string());

@@ -86,7 +86,7 @@ export class SettingsAutofillSectionElement extends
 
       isPlusAddressAddressLevelSettingEnabled_: {
         type: Boolean,
-        value: () => !!loadTimeData.getString('plusAddressManagementUrl') &&
+        value: () => loadTimeData.getBoolean('plusAddressEnabled') &&
             loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
       },
     };

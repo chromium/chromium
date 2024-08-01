@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/omnibox/browser/omnibox_edit_model.h"
 
 #include <stddef.h>
@@ -37,6 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -1367,3 +1373,16 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   EXPECT_EQ(disposition, WindowOpenDisposition::CURRENT_TAB);
 }
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
+
+TEST_F(OmniboxEditModelTest, LogAnswerUsed) {
+  base::HistogramTester histogram_tester;
+  AutocompleteMatch match(
+      controller()->autocomplete_controller()->search_provider(), 0, false,
+      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
+  match.destination_url = GURL("https://foo");
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               GURL(), std::u16string(), 0);
+  histogram_tester.ExpectUniqueSample("Omnibox.SuggestionUsed.AnswerInSuggest",
+                                      8, 1);
+}

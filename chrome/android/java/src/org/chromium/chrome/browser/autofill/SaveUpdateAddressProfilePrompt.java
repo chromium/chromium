@@ -28,7 +28,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
@@ -102,7 +101,6 @@ public class SaveUpdateAddressProfilePrompt {
         mAddressEditor =
                 new AddressEditorCoordinator(
                         activity,
-                        HelpAndFeedbackLauncherImpl.getForProfile(browserProfile),
                         delegate,
                         browserProfile,
                         new AutofillAddress(

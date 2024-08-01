@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
@@ -27,6 +26,7 @@ namespace ash {
 
 class ConsumerUpdateScreenView;
 class ErrorScreensHistogramHelper;
+struct AccessibilityStatusEventDetails;
 
 // Controller for the Consumer update screen.
 class ConsumerUpdateScreen

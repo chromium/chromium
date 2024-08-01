@@ -13,6 +13,7 @@
 
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
+#include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/types.h"
@@ -94,6 +95,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void UpdateVisualData(
       const LocalTabGroupID local_group_id,
       const tab_groups::TabGroupVisualData* visual_data) = 0;
+  // Updates the pinned state of the group when `is_pinned` is provided.
+  // Updates the index of the group when `new_index` is provided.
+  virtual void UpdateGroupPosition(const base::Uuid& sync_id,
+                                   std::optional<bool> is_pinned,
+                                   std::optional<int> new_index) = 0;
 
   // Mutator methods that result in tab metadata mutation.
   virtual void AddTab(const LocalTabGroupID& group_id,

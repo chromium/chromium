@@ -10,7 +10,11 @@
 
 namespace device {
 
-typedef SharedMemorySeqLockBuffer<Gamepads> GamepadHardwareBuffer;
+using GamepadHardwareBuffer = SharedMemorySeqLockBuffer<Gamepads>;
+
+// GamepadHardwareBuffer is used in shared memory, so it must be trivially
+// copyable.
+static_assert(std::is_trivially_copyable_v<GamepadHardwareBuffer>);
 
 }  // namespace device
 

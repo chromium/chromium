@@ -91,13 +91,6 @@ gfx::Size FooterRow<T>::GetMinimumSize() const {
 }
 
 template <typename T>
-int FooterRow<T>::GetHeightForWidth(int width) const {
-  return footer_label_->GetText().empty()
-             ? 0
-             : views::View::GetHeightForWidth(width);
-}
-
-template <typename T>
 void FooterRow<T>::SetFade(double percent) {
   CHECK(is_fade_out_view_);
   percent = std::min(1.0, percent);

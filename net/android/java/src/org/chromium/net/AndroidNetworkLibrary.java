@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
+import android.security.NetworkSecurityPolicy;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -34,10 +35,6 @@ import org.jni_zero.CalledByNativeUnchecked;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.base.compat.ApiHelperForN;
-import org.chromium.base.compat.ApiHelperForP;
-import org.chromium.base.compat.ApiHelperForQ;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -205,7 +202,7 @@ class AndroidNetworkLibrary {
                                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager == null) return false;
 
-        Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
+        Network network = connectivityManager.getActiveNetwork();
         if (network == null) return false;
 
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
@@ -237,8 +234,7 @@ class AndroidNetworkLibrary {
                     if (networkCapabilities != null
                             && networkCapabilities.hasTransport(
                                     NetworkCapabilities.TRANSPORT_WIFI)) {
-                        TransportInfo transportInfo =
-                                ApiHelperForQ.getTransportInfo(networkCapabilities);
+                        TransportInfo transportInfo = networkCapabilities.getTransportInfo();
                         if (transportInfo != null && transportInfo instanceof WifiInfo) {
                             return (WifiInfo) transportInfo;
                         }
@@ -377,7 +373,7 @@ class AndroidNetworkLibrary {
                 // No per-host configuration before N.
                 return isCleartextTrafficPermitted();
             }
-            return ApiHelperForN.isCleartextTrafficPermitted(host);
+            return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted(host);
         }
 
         @RequiresApi(Build.VERSION_CODES.M)
@@ -386,12 +382,13 @@ class AndroidNetworkLibrary {
                 // Always true before M.
                 return true;
             }
-            return ApiHelperForM.isCleartextTrafficPermitted();
+            return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted();
         }
     }
 
     /** Returns true if cleartext traffic to |host| is allowed by the current app. */
     @CalledByNative
+    @RequiresApi(Build.VERSION_CODES.N)
     private static boolean isCleartextPermitted(String host) {
         try {
             return NetworkSecurityPolicyProxy.getInstance().isCleartextTrafficPermitted(host);
@@ -476,7 +473,7 @@ class AndroidNetworkLibrary {
             return null;
         }
         if (network == null) {
-            network = ApiHelperForM.getActiveNetwork(connectivityManager);
+            network = connectivityManager.getActiveNetwork();
         }
         if (network == null) {
             return null;
@@ -495,8 +492,8 @@ class AndroidNetworkLibrary {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return new DnsStatus(
                     dnsServersList,
-                    ApiHelperForP.isPrivateDnsActive(linkProperties),
-                    ApiHelperForP.getPrivateDnsServerName(linkProperties),
+                    linkProperties.isPrivateDnsActive(),
+                    linkProperties.getPrivateDnsServerName(),
                     searchDomains);
         } else {
             return new DnsStatus(dnsServersList, false, "", searchDomains);
@@ -514,7 +511,7 @@ class AndroidNetworkLibrary {
                                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager == null) return false;
 
-        ApiHelperForM.reportNetworkConnectivity(connectivityManager, null, false);
+        connectivityManager.reportNetworkConnectivity(null, false);
         return true;
     }
 

@@ -31,8 +31,8 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   WebUIDataSourceImpl& operator=(const WebUIDataSourceImpl&) = delete;
 
   // WebUIDataSource:
-  void AddString(std::string_view name, const std::u16string& value) override;
-  void AddString(std::string_view name, const std::string& value) override;
+  void AddString(std::string_view name, std::u16string_view value) override;
+  void AddString(std::string_view name, std::string_view value) override;
   void AddLocalizedString(std::string_view name, int ids) override;
   void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) override;

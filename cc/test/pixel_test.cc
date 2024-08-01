@@ -255,7 +255,10 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
       AllocateSharedBitmapMemory(shared_bitmap_id, size);
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
-  source.readPixels(info, mapping.memory(), info.minRowBytes(), 0, 0);
+  const size_t row_bytes = info.minRowBytes();
+  base::span<uint8_t> mem(mapping);
+  CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
+  source.readPixels(info, mem.data(), row_bytes, 0, 0);
 
   return child_resource_provider_->ImportResource(
       viz::TransferableResource::MakeSoftwareSharedBitmap(

@@ -1026,7 +1026,8 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
     // content. Thus, the content has to be manually set by the view inside a
     // scroll view. Modal dialogs handle their own size via constrained windows,
     // so we can add a scroll view to the DialogModel directly.
-    constexpr int kMaxDialogHeight = 448;
+    const int kMaxDialogHeight = LayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_MODAL_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT);
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->ClipHeightTo(0, kMaxDialogHeight);
     scroll_view->SetHorizontalScrollBarMode(

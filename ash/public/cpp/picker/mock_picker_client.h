@@ -17,6 +17,8 @@ class PrefService;
 
 namespace ash {
 
+struct PickerWebPasteTarget;
+
 class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
  public:
   MockPickerClient();
@@ -54,6 +56,10 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
                FetchFileThumbnailCallback callback),
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (override));
+  MOCK_METHOD(std::optional<PickerWebPasteTarget>,
+              GetWebPasteTarget,
+              (),
+              (override));
 };
 
 }  // namespace ash

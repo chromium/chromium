@@ -13,8 +13,10 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
+#include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn {
@@ -23,11 +25,8 @@ WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
-    mojom::CreateContextOptionsPtr options,
-    base::UnguessableToken context_handle)
-    // TODO(crbug.com/345352987): pass token by value to WebNNObjectImpl.
-    : WebNNObjectImpl(std::move(context_handle)),
-      receiver_(this, std::move(receiver)),
+    mojom::CreateContextOptionsPtr options)
+    : receiver_(this, std::move(receiver)),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)) {
@@ -50,48 +49,66 @@ void WebNNContextImpl::AssertCalledOnValidSequence() const {
 }
 #endif
 
-void WebNNContextImpl::CreateGraph(
-    mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void WebNNContextImpl::ReportBadGraphBuilderMessage(
+    const std::string& message,
+    base::PassKey<WebNNGraphBuilderImpl> pass_key) {
+  graph_builder_impls_.ReportBadMessage(message);
+}
 
-  auto compute_resource_info =
-      WebNNGraphImpl::ValidateGraph(properties_, *graph_info);
-  if (!compute_resource_info.has_value()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidGraph);
-    return;
-  }
+void WebNNContextImpl::TakeGraph(
+    std::unique_ptr<WebNNGraphImpl> graph_impl,
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> graph_pending_receiver,
+    base::PassKey<WebNNGraphBuilderImpl> pass_key) {
+  graph_impls_.Add(std::move(graph_impl), std::move(graph_pending_receiver));
+}
 
-  CreateGraphImpl(std::move(graph_info), *std::move(compute_resource_info),
-                  base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
-                                 AsWeakPtr(), std::move(callback)));
+void WebNNContextImpl::RemoveGraphBuilder(
+    mojo::ReceiverId graph_builder_id,
+    base::PassKey<WebNNGraphBuilderImpl> /*pass_key*/) {
+  graph_builder_impls_.Remove(graph_builder_id);
+}
+
+void WebNNContextImpl::CreateGraphBuilder(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver) {
+  auto graph_builder = std::make_unique<WebNNGraphBuilderImpl>(*this);
+  WebNNGraphBuilderImpl* graph_builder_ptr = graph_builder.get();
+
+  mojo::ReceiverId id =
+      graph_builder_impls_.Add(std::move(graph_builder), std::move(receiver));
+
+  graph_builder_ptr->SetId(id, base::PassKey<WebNNContextImpl>());
 }
 
 void WebNNContextImpl::CreateBuffer(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
-  // The token is validated in mojo traits to be non-empty.
-  CHECK(!buffer_handle.is_empty());
+    mojom::WebNNContext::CreateBufferCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+  CreateBufferImpl(
+      std::move(receiver), std::move(buffer_info),
+      base::BindOnce(&WebNNContextImpl::DidCreateWebNNBufferImpl, AsWeakPtr(),
+                     std::move(callback), std::move(remote)));
+}
 
-  // It is illegal to create the same buffer twice, a buffer is uniquely
-  // identified by its UnguessableToken.
-  if (buffer_impls_.contains(buffer_handle)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+void WebNNContextImpl::DidCreateWebNNBufferImpl(
+    mojom::WebNNContext::CreateBufferCallback callback,
+    mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote,
+    base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        mojom::CreateBufferResult::NewError(std::move(result.error())));
     return;
   }
 
-  // TODO(crbug.com/40278771): handle error using MLContext.
-  std::unique_ptr<WebNNBufferImpl> buffer_impl = CreateBufferImpl(
-      std::move(receiver), std::move(buffer_info), buffer_handle);
-  if (!buffer_impl) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
-    return;
-  }
+  auto success = mojom::CreateBufferSuccess::New(std::move(remote),
+                                                 result.value()->handle());
+  std::move(callback).Run(
+      mojom::CreateBufferResult::NewSuccess(std::move(success)));
 
   // Associates a `WebNNBuffer` instance with this context so the WebNN service
   // can access the implementation.
-  buffer_impls_.emplace(std::move(buffer_impl));
+  buffer_impls_.emplace(*std::move(result));
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
@@ -101,24 +118,6 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNBufferImpl`.
   buffer_impls_.erase(it);
-}
-
-void WebNNContextImpl::DidCreateWebNNGraphImpl(
-    mojom::WebNNContext::CreateGraphCallback callback,
-    base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.has_value()) {
-    std::move(callback).Run(
-        mojom::CreateGraphResult::NewError(std::move(result.error())));
-    return;
-  }
-
-  mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver;
-  std::move(callback).Run(mojom::CreateGraphResult::NewGraphRemote(
-      receiver.InitWithNewEndpointAndPassRemote()));
-
-  graph_impls_.Add(*std::move(result), std::move(receiver));
 }
 
 void WebNNContextImpl::OnLost(std::string_view message) {
@@ -138,13 +137,33 @@ base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
 
 ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
     ContextProperties backend_context_properties) {
+  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes = {
+      OperandDataType::kInt32, OperandDataType::kUint32,
+      OperandDataType::kInt64};
+
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
+  backend_context_properties.data_type_limits.elu_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
-      DataTypeConstraint::kGatherOperatorIndexDataTypes);
+      kGatherIndicesSupportedDataTypes);
+  backend_context_properties.data_type_limits.gelu_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.leaky_relu_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.relu_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.sigmoid_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softmax_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softplus_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softsign_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.where_condition.RetainAll(
-      {OperandDataType::kUint8});
+      DataTypeConstraint::kUint8);
   return backend_context_properties;
 }
 

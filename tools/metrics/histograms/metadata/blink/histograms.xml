@@ -253,33 +253,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.AutomaticLazyFrameLoad.Reason"
-    enum="AutomaticLazyFrameLoadReason" expires_after="2023-06-25">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chikamune@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Records if the frame is eligible for automatic lazy-load mechanisms. This is
-    recorded when each frame having a url in the page is created.
-  </summary>
-</histogram>
-
-<histogram name="Blink.AutomaticLazyLoadFrame"
-    enum="AutomaticLazyLoadFrameState" expires_after="2023-08-27">
-  <owner>sisidovski@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Records if the automatic lazy-load for selected performance problematic
-    iframes is applied or not. This is recorded when each frame having a url in
-    the page is created. See HTMLFrameOwnerElement::LazyLoadIfPossible() for
-    more details.
-
-    Note: There are two groups that lazy-load isn't applied. One group is simply
-    the feature itself is disabled, another groupd is that feature is enabled,
-    but there are no targeted frames on the page.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.DecompressionTime"
     units="ms" expires_after="2025-01-05">
   <owner>lizeb@chromium.org</owner>
@@ -657,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.WebGLANGLEImplementation"
-    enum="WebGLANGLEImplementation" expires_after="2024-11-03">
+    enum="WebGLANGLEImplementation" expires_after="2025-01-26">
   <owner>zmo@chromium.org</owner>
   <owner>webgl-team@google.com</owner>
   <summary>
@@ -1600,6 +1573,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.JavaObjectCreationOutcome.Button"
+    enum="FedCmJavaObjectCreationOutcome" expires_after="2025-02-12">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The Java object is tied to the bottomsheet availability so it may not be
+    creatable when we need it. Records one sample each time we request creating
+    the object in button mode. Recorded whenever native is talking with the
+    Android side which could be multiple times per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.JavaObjectCreationOutcome.Widget"
+    enum="FedCmJavaObjectCreationOutcome" expires_after="2025-02-12">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The Java object is tied to the bottomsheet availability so it may not be
+    creatable when we need it. Records one sample each time we request creating
+    the object in widget mode. Recorded whenever native is talking with the
+    Android side which could be multiple times per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.LifecycleStateFailureReason"
     enum="FedCmLifecycleStateFailureReason" expires_after="2025-02-12">
   <owner>cbiesinger@chromium.org</owner>
@@ -1660,6 +1657,17 @@ chromium-metrics-reviews@google.com.
     where at least one navigator.credentials.get() request is made. No samples
     are recorded if the count is 0. The bucketing method used is
     base::UmaHistogramCounts100.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Popup.DialogType" enum="FedCmDialogType"
+    expires_after="2025-02-12">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the dialog type whenever we open a popup/custom tab. Recorded once
+    per popup/custom tab opened. Values 0-4 of the enum will not be recorded for
+    this histogram.
   </summary>
 </histogram>
 
@@ -2379,7 +2387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLFastPathParser.ParseResult"
-    enum="InnerHTMLFastPathParserParseResult" expires_after="2024-11-17">
+    enum="InnerHTMLFastPathParserParseResult" expires_after="2025-01-26">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
   <owner>dom-dev@google.com</owner>
@@ -2869,7 +2877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Layout.RebuildFragmentTreeSpine" units="microseconds"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -2895,7 +2903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Layout.SVGImage.TotalTime.InOutermostMainFrame"
-    units="microseconds" expires_after="2024-09-25">
+    units="microseconds" expires_after="2025-01-26">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3304,7 +3312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontCount" units="count"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3449,7 +3457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.RecordedFontUrlsMaxLength" units="bytes"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3779,7 +3787,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
     enum="PermissionElementUserInteractionDeniedReason"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -3834,7 +3842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PreloadRequestStartDuration" units="microseconds"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -4578,7 +4586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.File.Features" enum="FeatureObserver"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>yhirano@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <summary>
@@ -4642,7 +4650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Violation.Enforce"
-    enum="FeaturePolicyFeature" expires_after="2024-11-17">
+    enum="FeaturePolicyFeature" expires_after="2025-01-26">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

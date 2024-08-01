@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/speech/audio_encoder.h"
 
 #include <stddef.h>
@@ -9,6 +14,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/speech/audio_buffer.h"
 
@@ -60,11 +66,11 @@ void AudioEncoder::Encode(const AudioChunk& raw_audio) {
 
   // FLAC encoder wants samples as int32s.
   const int num_samples = raw_audio.NumSamples();
-  std::unique_ptr<FLAC__int32[]> flac_samples(new FLAC__int32[num_samples]);
-  FLAC__int32* flac_samples_ptr = flac_samples.get();
+  base::HeapArray<FLAC__int32> flac_samples =
+      base::HeapArray<FLAC__int32>::Uninit(num_samples);
   for (int i = 0; i < num_samples; ++i)
-    flac_samples_ptr[i] = static_cast<FLAC__int32>(raw_audio.GetSample16(i));
-
+    flac_samples[i] = static_cast<FLAC__int32>(raw_audio.GetSample16(i));
+  FLAC__int32* flac_samples_ptr = flac_samples.data();
   FLAC__stream_encoder_process(encoder_.get(), &flac_samples_ptr, num_samples);
 }
 

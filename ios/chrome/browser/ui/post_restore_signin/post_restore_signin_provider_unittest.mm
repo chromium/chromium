@@ -10,6 +10,7 @@
 #import "components/sync/test/sync_user_settings_mock.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -40,7 +41,7 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                        SyncServiceFactory::GetDefaultFactory());
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     provider_ =
         [[PostRestoreSignInProvider alloc] initForBrowser:browser_.get()];
@@ -51,14 +52,14 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
     accountInfo.given_name = std::string(kFakePreRestoreAccountGivenName);
     accountInfo.full_name = std::string(kFakePreRestoreAccountFullName);
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+    StorePreRestoreIdentity(local_state(), accountInfo,
                             /*history_sync_enabled=*/false);
   }
 
   void ClearUserName() {
     AccountInfo accountInfo;
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+    StorePreRestoreIdentity(local_state(), accountInfo,
                             /*history_sync_enabled=*/false);
     // Reinstantiate a provider so that it picks up the changes.
     provider_ =
@@ -70,8 +71,12 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     provider_.handler = mock_handler_;
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mock_handler_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -161,14 +166,14 @@ TEST_F(PostRestoreSignInProviderTest, recordsDisplayed) {
 TEST_F(PostRestoreSignInProviderTest, clearsPreRestoreIdentity) {
   // Test cancel.
   SetFakePreRestoreAccountInfo();
-  EXPECT_TRUE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  EXPECT_TRUE(GetPreRestoreIdentity(local_state()).has_value());
   [provider_ standardPromoAlertCancelAction];
-  EXPECT_FALSE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  EXPECT_FALSE(GetPreRestoreIdentity(local_state()).has_value());
 
   // Test that it is cleared when the user chooses to sign in.
   SetFakePreRestoreAccountInfo();
-  EXPECT_TRUE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  EXPECT_TRUE(GetPreRestoreIdentity(local_state()).has_value());
   SetupMockHandler();
   [provider_ standardPromoAlertDefaultAction];
-  EXPECT_FALSE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  EXPECT_FALSE(GetPreRestoreIdentity(local_state()).has_value());
 }

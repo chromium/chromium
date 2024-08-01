@@ -26,13 +26,7 @@
     UIWindowScene* windowScene =
         base::apple::ObjCCastStrict<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
-      if (@available(iOS 18, *)) {
-        // Setting a speed of 100 seems to break some EG2 synchronization
-        // on iOS18. Lower this to 15 instead.
-        [[window layer] setSpeed:15];
-      } else {
-        [[window layer] setSpeed:100];
-      }
+      [[window layer] setSpeed:100];
     }
   }
 }

@@ -24,8 +24,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -48,14 +47,12 @@ public class HomepageManager
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomepageStateListener> mHomepageStateListeners;
-    private SettingsLauncher mSettingsLauncher;
 
     private HomepageManager() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mHomepageStateListeners = new ObserverList<>();
         HomepagePolicyManager.getInstance().addListener(this);
         PartnerBrowserCustomizations.getInstance().setPartnerHomepageListener(this);
-        mSettingsLauncher = new SettingsLauncherImpl();
     }
 
     /** Returns the singleton instance of HomepageManager, creating it if needed. */
@@ -87,10 +84,12 @@ public class HomepageManager
 
     /**
      * Menu click handler on home button.
+     *
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, HomepageSettings.class);
     }
 
     /** Notify any listeners about a homepage state change. */
@@ -385,16 +384,11 @@ public class HomepageManager
         notifyHomepageUpdated();
     }
 
-    public void setSettingsLauncherForTesting(SettingsLauncher launcher) {
-        var oldValue = mSettingsLauncher;
-        mSettingsLauncher = launcher;
-        ResettersForTesting.register(() -> mSettingsLauncher = oldValue);
-    }
-
     /**
      * Provides a helper for UMA reporting of partner customization and Homepage outcomes.
+     *
      * @return A {@link HomepageCharacterizationHelper} that provides access to a few helpful
-     *         methods.
+     *     methods.
      */
     public static HomepageCharacterizationHelper getHomepageCharacterizationHelper() {
         return new HomepageCharacterizationHelper() {

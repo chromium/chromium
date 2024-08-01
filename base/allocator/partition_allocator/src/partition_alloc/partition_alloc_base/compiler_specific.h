@@ -66,6 +66,16 @@
 #define PA_NOT_TAIL_CALLED
 #endif
 
+// Annotate a function indicating it must be tail called.
+// Can be used only on return statements, even for functions returning void.
+// Caller and callee must have the same number of arguments and its types must
+// be "similar".
+#if defined(__clang__) && PA_HAS_ATTRIBUTE(musttail)
+#define PA_MUSTTAIL [[clang::musttail]]
+#else
+#define PA_MUSTTAIL
+#endif
+
 // Specify memory alignment for structs, classes, etc.
 // Use like:
 //   class PA_ALIGNAS(16) MyClass { ... }

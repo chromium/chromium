@@ -209,26 +209,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   static ParsedPermissionsPolicy GetLegacyFramePolicies();
 
  private:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // This enum represents which auto lazy-load mechanism is used.
-  enum class AutomaticLazyLoadReason {
-    // If the frame is neither embeds nor ads, or the flags are not enabled,
-    // mark it as not eligible.
-    kNotEligible = 0,
-    // For LazyEmbeds
-    kEmbeds = 1,
-    // For LazyAds
-    kAds = 2,
-    // It's possible that the frame is eligible for both LazyEmbeds and LazyAds.
-    // TOOD(crbug.com/1341892) Remove kBothEmbedsAndAds once we confirm that we
-    // can ignore
-    // this case because the impact on the analysis is minimal.
-    kBothEmbedsAndAds = 3,
-
-    kMaxValue = kBothEmbedsAndAds,
-  };
-
   // Intentionally private to prevent redundant checks when the type is
   // already HTMLFrameOwnerElement.
   bool IsLocal() const final { return true; }
@@ -237,15 +217,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void SetIsSwappingFrames(bool is_swapping) override {
     is_swapping_frames_ = is_swapping;
   }
-
-  // Checks if the passed `url` is eligible for automatic lazy-loading.
-  // Also this method checks the url is cross-origin or not.
-  bool IsEligibleForLazyEmbeds(const KURL& url) const;
-  bool IsEligibleForLazyAds(const KURL& url);
-  void MaybeSetTimeoutToStartFrameLoading(
-      const KURL& url,
-      bool is_loading_attr_lazy,
-      AutomaticLazyLoadReason auto_lazy_load_reason);
 
   // Check if the frame should be lazy-loaded and apply when conditions are
   // passed. Return true when lazy-load is applied.

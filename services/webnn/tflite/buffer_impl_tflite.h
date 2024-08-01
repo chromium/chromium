@@ -23,16 +23,14 @@ class BufferState;
 // since TFLite is currently only configured to use CPU delegates.
 class BufferImplTflite final : public WebNNBufferImpl {
  public:
-  static std::unique_ptr<WebNNBufferImpl> Create(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
-      WebNNContextImpl* context,
-      mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle);
+  static base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>
+  Create(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
+         WebNNContextImpl* context,
+         mojom::BufferInfoPtr buffer_info);
 
   BufferImplTflite(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
                    WebNNContextImpl* context,
                    mojom::BufferInfoPtr buffer_info,
-                   const base::UnguessableToken& buffer_handle,
                    scoped_refptr<BufferState> state,
                    base::PassKey<BufferImplTflite>);
 

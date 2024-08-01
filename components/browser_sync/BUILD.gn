@@ -14,10 +14,8 @@ static_library("browser_sync") {
     "common_controller_builder.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
-    "sync_api_component_factory_impl.cc",
-    "sync_api_component_factory_impl.h",
-    "sync_client_utils.cc",
-    "sync_client_utils.h",
+    "sync_engine_factory_impl.cc",
+    "sync_engine_factory_impl.h",
     "sync_to_signin_migration.cc",
     "sync_to_signin_migration.h",
   ]
@@ -41,8 +39,8 @@ static_library("browser_sync") {
     "//components/history/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
-    "//components/plus_addresses:features",
     "//components/plus_addresses/settings",
+    "//components/plus_addresses/sync_utils",
     "//components/plus_addresses/webdata",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:features",
@@ -91,7 +89,6 @@ source_set("unit_tests") {
 
   sources = [
     "active_devices_provider_impl_unittest.cc",
-    "sync_client_utils_unittest.cc",
     "sync_to_signin_migration_unittest.cc",
   ]
 

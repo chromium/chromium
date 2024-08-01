@@ -1,0 +1,12 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_location_bar_steady_view_consumer.h",
+    "fake_location_bar_steady_view_consumer.mm",
+  ]
+  deps = [ "//ios/chrome/browser/location_bar/ui_bundled" ]
+}

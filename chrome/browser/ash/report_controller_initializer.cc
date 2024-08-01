@@ -143,8 +143,7 @@ report::MarketSegment GetMarketSegment(
 
   // Policy device modes that should be classified as consumer devices.
   const std::unordered_set<policy::DeviceMode> kDeviceModeConsumer{
-      policy::DeviceMode::DEVICE_MODE_CONSUMER,
-      policy::DeviceMode::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH};
+      policy::DeviceMode::DEVICE_MODE_CONSUMER};
 
   // Policy device modes that should be classified as enterprise devices.
   const std::unordered_set<policy::DeviceMode> kDeviceModeEnterprise{

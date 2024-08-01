@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.SampleForTests
 
-#ifndef org_jni_zero_SampleForTests_JNI
-#define org_jni_zero_SampleForTests_JNI
+#ifndef org_jni_1zero_SampleForTests_JNI
+#define org_jni_1zero_SampleForTests_JNI
 
 #include <jni.h>
 
@@ -836,4 +836,4 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
 
 }  // namespace tests
 }  // namespace jni_zero
-#endif  // org_jni_zero_SampleForTests_JNI
+#endif  // org_jni_1zero_SampleForTests_JNI

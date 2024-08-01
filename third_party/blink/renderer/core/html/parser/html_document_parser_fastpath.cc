@@ -321,7 +321,7 @@ struct ScanTextResult {
     if (is_newline_then_whitespace_string &&
         text.size() < WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
       DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
-          String(text.data(), static_cast<unsigned>(text.size()))));
+          String(text)));
       return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
           text.size());
     }
@@ -335,7 +335,7 @@ struct ScanTextResult {
 
 template <>
 String ScanTextResult<LChar>::TextToString() const {
-  return String(text.data(), static_cast<unsigned>(text.size()));
+  return String(text);
 }
 
 template <>

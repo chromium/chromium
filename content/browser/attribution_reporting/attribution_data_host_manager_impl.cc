@@ -115,7 +115,7 @@ enum class NavigationDataHostStatus {
 
   kMaxValue = kProcessed,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionNavigationDataHostStatus)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionNavigationDataHostStatus)
 
 void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
   base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus3", event);
@@ -139,7 +139,7 @@ enum class RegistrationMethod {
   kForegroundOrBackgroundBrowser = 10,
   kMaxValue = kForegroundOrBackgroundBrowser,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionsRegistrationMethod)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionsRegistrationMethod)
 
 void RecordRegistrationMethod(RegistrationMethod method) {
   base::UmaHistogramEnumeration("Conversions.RegistrationMethod2", method);
@@ -155,7 +155,7 @@ enum class RegisterDataHostOutcome {
   kDropped = 2,
   kMaxValue = kDropped,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRegisterDataHostOutcome)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionRegisterDataHostOutcome)
 
 void RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome status) {
   base::UmaHistogramEnumeration("Conversions.RegisterDataHostOutcome", status);
@@ -170,7 +170,7 @@ enum class NavigationUnexpectedRegistration {
   kRegistrationMissingUponReceivingData = 1,
   kMaxValue = kRegistrationMissingUponReceivingData,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionNavigationUnexpectedRegistration)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionNavigationUnexpectedRegistration)
 
 // See https://crbug.com/1500667 for details. There are assumptions that a
 // navigation registration can only be registered once and that it must be
@@ -193,7 +193,7 @@ enum class BackgroundNavigationOutcome {
   kNeverTiedIneligible = 3,
   kMaxValue = kNeverTiedIneligible,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionBackgroundNavigationOutcome)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionBackgroundNavigationOutcome)
 
 void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
   base::UmaHistogramEnumeration("Conversions.BackgroundNavigation.Outcome",

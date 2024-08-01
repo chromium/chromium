@@ -14,13 +14,19 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -29,7 +35,19 @@
 namespace ash {
 namespace {
 
+int32_t GetActiveDescendantId(const views::View& view) {
+  ui::AXNodeData node_data;
+  view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  return node_data.GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId);
+}
+
 class PickerSearchFieldViewTest : public views::ViewsTestBase {
+ public:
+  PickerSearchFieldViewTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  private:
   AshColorProvider ash_color_provider_;
 };
@@ -214,6 +232,127 @@ TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
   LeftClickOn(view->back_button_for_testing());
 
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(PickerSearchFieldViewTest,
+       SetTextfieldActiveDescendantNotifiesAfterDelayWhenFocused) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"placeholder");
+  view->RequestFocus();
+  views::View descendant;
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->SetTextfieldActiveDescendant(&descendant);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
+            descendant.GetViewAccessibility().GetUniqueId());
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
+}
+
+TEST_F(PickerSearchFieldViewTest,
+       SetTextfieldActiveDescendantDoesNotNotifyWhenUnfocused) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  views::View descendant;
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->SetTextfieldActiveDescendant(&descendant);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+}
+
+TEST_F(PickerSearchFieldViewTest,
+       RequestFocusNotifiesInitialActiveDescendantAfterDelay) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"placeholder");
+  views::View descendant;
+  view->SetTextfieldActiveDescendant(&descendant);
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->RequestFocus();
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
+            descendant.GetViewAccessibility().GetUniqueId());
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
+}
+
+TEST_F(PickerSearchFieldViewTest,
+       RequestFocusDoesNotNotifyEmptyActiveDescendant) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"placeholder");
+  views::View descendant;
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->RequestFocus();
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+}
+
+TEST_F(PickerSearchFieldViewTest,
+       SetTextfieldActiveDescendantOnlyNotifiesNewestDescendant) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+  view->SetPlaceholderText(u"placeholder");
+  views::View descendant1, descendant2;
+  view->SetTextfieldActiveDescendant(&descendant1);
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->RequestFocus();
+  view->SetTextfieldActiveDescendant(&descendant2);
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
+            descendant2.GetViewAccessibility().GetUniqueId());
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
 }
 
 }  // namespace

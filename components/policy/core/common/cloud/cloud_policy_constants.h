@@ -182,9 +182,13 @@ enum DeviceMode {
   DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE = 5,  // The device is enrolled as a
                                                   // retail kiosk device. This
                                                   // is deprecated.
-  DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH = 6,  // The device is locally owned as
-                                              // consumer kiosk with ability to
-                                              // auto launch a kiosk webapp.
+  DEPRECATED_DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH = 6,  // The device is
+                                                         // locally owned as
+                                                         // consumer kiosk with
+                                                         // ability to auto
+                                                         // launch a kiosk
+                                                         // webapp. This is
+                                                         // deprecated.
   DEVICE_MODE_DEMO = 7,  // The device is in demo mode. It was
                          // either enrolled online or setup
                          // offline into demo mode domain -

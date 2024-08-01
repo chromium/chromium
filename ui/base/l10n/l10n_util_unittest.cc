@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/l10n/l10n_util.h"
 
 #include <stddef.h>
@@ -664,26 +669,6 @@ TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
 
   // Check adjacent pairs and ensure they are in sorted order without
   // duplicates.
-
-  // All 0-length and 1-length lists are sorted.
-  if (locales_size <= 1) {
-    return;
-  }
-
-  const char* last_locale = locales[0];
-  for (size_t i = 1; i < locales_size; i++) {
-    const char* cur_locale = locales[i];
-    EXPECT_LT(strcmp(last_locale, cur_locale), 0)
-        << "Incorrect ordering in kPlatformLocales: " << last_locale
-        << " >= " << cur_locale;
-    last_locale = cur_locale;
-  }
-}
-
-TEST_F(L10nUtilTest, AcceptLocalesIsSorted) {
-  // Accept-Language List should be sorted and have no duplicates.
-  const char* const* locales = l10n_util::GetAcceptLanguageListForTesting();
-  const size_t locales_size = l10n_util::GetAcceptLanguageListSizeForTesting();
 
   // All 0-length and 1-length lists are sorted.
   if (locales_size <= 1) {

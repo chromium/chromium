@@ -35,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -850,8 +851,8 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
             entry.source.secondary_pattern, entry.type,
             permissions::PermissionSourceUI::SAFETY_HUB_AUTO_REVOCATION);
         // Record the number of permissions auto-revoked per permission type.
-        base::UmaHistogramEnumeration(
-            "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked",
+        content_settings_uma_util::RecordContentSettingsHistogram(
+            "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2",
             entry.type);
         revoked_permissions.insert(entry.type);
         if (IsContentSetting(entry.type)) {

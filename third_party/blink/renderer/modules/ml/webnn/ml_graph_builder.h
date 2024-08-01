@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_H_
 
 #include "base/types/expected.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
@@ -19,11 +19,11 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
 class ExceptionState;
-class MLActivation;
 class MLArgMinMaxOptions;
 class MLBatchNormalizationOptions;
 class MLContext;
@@ -61,9 +61,15 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MLGraphBuilder* Create(MLContext* context);
+  static MLGraphBuilder* Create(ScriptState* script_state,
+                                MLContext* context,
+                                ExceptionState& exception_state);
 
-  explicit MLGraphBuilder(MLContext* context);
+  explicit MLGraphBuilder(
+      ExecutionContext* execution_context,
+      MLContext* context,
+      mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+          pending_remote);
 
   MLGraphBuilder(const MLGraphBuilder&) = delete;
   MLGraphBuilder& operator=(const MLGraphBuilder&) = delete;
@@ -109,6 +115,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* concat(const HeapVector<Member<MLOperand>>& inputs,
                     const uint32_t axis,
+                    const MLOperatorOptions* options,
                     ExceptionState& exception_state);
 
   MLOperand* conv2d(const MLOperand* input,
@@ -172,35 +179,61 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                            ExceptionState& exception_state);
 
   // Element-wise unary operations
-  MLOperand* abs(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* ceil(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* cos(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* exp(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* floor(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* log(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* neg(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* sin(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* tan(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* erf(const MLOperand* input, ExceptionState& exception_state);
-  MLOperand* identity(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* abs(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* ceil(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
+  MLOperand* cos(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* exp(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* floor(const MLOperand* input,
+                   const MLOperatorOptions* options,
+                   ExceptionState& exception_state);
+  MLOperand* log(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* neg(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* sin(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* tan(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* erf(const MLOperand* input,
+                 const MLOperatorOptions* options,
+                 ExceptionState& exception_state);
+  MLOperand* identity(const MLOperand* input,
+                      const MLOperatorOptions* options,
+                      ExceptionState& exception_state);
   MLOperand* logicalNot(const MLOperand* input,
+                        const MLOperatorOptions* options,
                         ExceptionState& exception_state);
   MLOperand* reciprocal(const MLOperand* input,
+                        const MLOperatorOptions* options,
                         ExceptionState& exception_state);
-  MLOperand* sqrt(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* sqrt(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
 
   MLOperand* cast(const MLOperand* input,
                   const V8MLOperandDataType output_data_type,
+                  const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,
                  ExceptionState& exception_state);
-  MLActivation* elu(const MLEluOptions* options,
-                    ExceptionState& exception_state);
 
   MLOperand* expand(const MLOperand* input,
                     const Vector<uint32_t>& new_shape,
+                    const MLOperatorOptions* options,
                     ExceptionState& exception_state);
 
   MLOperand* gather(const MLOperand* input,
@@ -208,8 +241,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLGatherOptions* options,
                     ExceptionState& exception_state);
 
-  MLOperand* gelu(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* gelu(ExceptionState& exception_state);
+  MLOperand* gelu(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
 
   MLOperand* gemm(const MLOperand* a,
                   const MLOperand* b,
@@ -235,11 +269,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* hardSigmoid(const MLOperand* input,
                          const MLHardSigmoidOptions* options,
                          ExceptionState& exception_state);
-  MLActivation* hardSigmoid(const MLHardSigmoidOptions* options,
-                            ExceptionState& exception_state);
 
-  MLOperand* hardSwish(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* hardSwish(ExceptionState& exception_state);
+  MLOperand* hardSwish(const MLOperand* input,
+                       const MLOperatorOptions* options,
+                       ExceptionState& exception_state);
 
   MLOperand* instanceNormalization(
       const MLOperand* input,
@@ -253,14 +286,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* leakyRelu(const MLOperand* input,
                        const MLLeakyReluOptions* options,
                        ExceptionState& exception_state);
-  MLActivation* leakyRelu(const MLLeakyReluOptions* options,
-                          ExceptionState& exception_state);
 
   MLOperand* linear(const MLOperand* input,
                     const MLLinearOptions* options,
                     ExceptionState& exception_state);
-  MLActivation* linear(const MLLinearOptions* options,
-                       ExceptionState& exception_state);
 
   HeapVector<Member<const MLOperand>> lstm(const MLOperand* input,
                                            const MLOperand* weight,
@@ -282,6 +311,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* matmul(const MLOperand* a,
                     const MLOperand* b,
+                    const MLOperatorOptions* options,
                     ExceptionState& exception_state);
 
   MLOperand* pad(ScriptState* script_state,
@@ -339,11 +369,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                              const MLReduceOptions* options,
                              ExceptionState& exception_state);
 
-  MLOperand* relu(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* relu(ExceptionState& exception_state);
+  MLOperand* relu(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
 
   MLOperand* reshape(const MLOperand* input,
                      const Vector<uint32_t>& new_shape,
+                     const MLOperatorOptions* options,
                      ExceptionState& exception_state);
 
   MLOperand* resample2d(ScriptState* script_state,
@@ -351,25 +383,31 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                         const MLResample2dOptions* options,
                         ExceptionState& exception_state);
 
-  MLOperand* sigmoid(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* sigmoid(ExceptionState& exception_state);
+  MLOperand* sigmoid(const MLOperand* input,
+                     const MLOperatorOptions* options,
+                     ExceptionState& exception_state);
 
   MLOperand* slice(const MLOperand* input,
                    const Vector<uint32_t>& starts,
                    const Vector<uint32_t>& sizes,
+                   const MLOperatorOptions* options,
                    ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input,
                      uint32_t axis,
+                     const MLOperatorOptions* options,
                      ExceptionState& exception_state);
-  MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* softmax(const MLOperand* input,
+                     const MLOperatorOptions* options,
+                     ExceptionState& exception_state);
 
   MLOperand* softplus(const MLOperand* input,
+                      const MLOperatorOptions* options,
                       ExceptionState& exception_state);
-  MLActivation* softplus(ExceptionState& exception_state);
 
-  MLOperand* softsign(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* softsign(ExceptionState& exception_state);
+  MLOperand* softsign(const MLOperand* input,
+                      const MLOperatorOptions* options,
+                      ExceptionState& exception_state);
 
   HeapVector<Member<const MLOperand>> split(const MLOperand* input,
                                             const uint32_t splits,
@@ -380,8 +418,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                             const MLSplitOptions* options,
                                             ExceptionState& exception_state);
 
-  MLOperand* tanh(const MLOperand* input, ExceptionState& exception_state);
-  MLActivation* tanh(ExceptionState& exception_state);
+  MLOperand* tanh(const MLOperand* input,
+                  const MLOperatorOptions* options,
+                  ExceptionState& exception_state);
 
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,
@@ -394,6 +433,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* where(const MLOperand* condition,
                    const MLOperand* true_value,
                    const MLOperand* false_value,
+                   const MLOperatorOptions* options,
                    ExceptionState& exception_state);
 
   ScriptPromise<MLGraph> build(ScriptState* script_state,
@@ -416,17 +456,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   [[nodiscard]] base::expected<void, String> ValidateInputs(
       const HeapVector<Member<const MLOperand>>& inputs);
 
-  // Performs platform-agnostic and operand-agnostic validation checks which
-  // must be run for each MLActivation passed as an option to a builder method.
-  // Returns an error message which may be used to throw a TypeError if
-  // `activation` is not valid to use with this builder.
-  [[nodiscard]] base::expected<void, String> ValidateActivation(
-      const MLActivation* activation);
-  // Convenience method to validate several activations at once.
-  [[nodiscard]] base::expected<void, String> ValidateActivations(
-      const HeapVector<Member<MLActivation>>& activations);
-
   Member<MLContext> ml_context_;
+
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
+
+  // Tracks whether `build()` has been called (with valid inputs). If so, `this`
+  // is effectively invalid and all methods should reject.
+  bool has_built_ = false;
 };
 
 }  // namespace blink

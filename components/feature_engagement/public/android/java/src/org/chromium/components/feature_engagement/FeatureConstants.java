@@ -61,6 +61,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
     FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+    FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
@@ -103,7 +104,8 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
     FeatureConstants.PRICE_DROP_NTP_FEATURE,
-    FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE
+    FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
+    FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
@@ -206,6 +208,12 @@ public @interface FeatureConstants {
     /** An IPH feature to show when the tabstrip shows to explain what each button does. */
     String TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE = "IPH_TabGroupsTapToSeeAnotherTab";
 
+    /**
+     * An IPH feature to show description text on the tab group creation dialog teaching the user
+     * about tab group sync and save functionality.
+     */
+    String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE = "IPH_TabGroupCreationDialogSyncText";
+
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
 
@@ -214,6 +222,9 @@ public @interface FeatureConstants {
 
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
+
+    /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
+    String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";
 
     /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";

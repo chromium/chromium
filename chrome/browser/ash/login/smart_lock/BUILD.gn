@@ -26,6 +26,7 @@ static_library("smart_lock") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/multidevice",
@@ -48,6 +49,7 @@ static_library("smart_lock") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
+    "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -88,6 +90,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",

@@ -96,7 +96,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                     "Incorrect title",
                     mResources.getString(rpContext.mTitleId, "idp.org"),
                     title.getText().toString());
-            assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
+            assertEquals("Incorrect subtitle", "example.org", subtitle.getText().toString());
         }
     }
 
@@ -120,7 +120,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                     "Incorrect title",
                     mResources.getString(rpContext.mTitleId, "idp.org"),
                     title.getText().toString());
-            assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
+            assertEquals("Incorrect subtitle", "example.org", subtitle.getText().toString());
         }
     }
 
@@ -143,7 +143,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
             assertEquals(
                     "Incorrect subtitle",
                     "Choose an account to continue on example.org",
-                    subtitle.getText());
+                    subtitle.getText().toString());
         }
     }
 

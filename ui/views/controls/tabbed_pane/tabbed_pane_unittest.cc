@@ -451,4 +451,22 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleNameTest) {
   EXPECT_EQ(ax::mojom::NameFrom::kAttributeExplicitlyEmpty, data.GetNameFrom());
 }
 
+TEST_F(TabbedPaneWithWidgetTest, AccessibleSelected) {
+  tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
+  ui::AXNodeData data;
+
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  data = ui::AXNodeData();
+  GetTabAt(0)->SetSelected(false);
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  data = ui::AXNodeData();
+  GetTabAt(0)->SetSelected(true);
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
 }  // namespace views::test

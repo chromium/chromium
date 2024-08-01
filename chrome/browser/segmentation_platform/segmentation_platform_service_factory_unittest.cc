@@ -20,6 +20,7 @@
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
+#include "components/segmentation_platform/embedder/default_model/metrics_clustering.h"
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
@@ -115,7 +116,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
           {{"SamplingRate", "1"}}},
          {features::kSegmentationPlatformTabResumptionRanker, {}},
          {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
-         {features::kSegmentationPlatformURLVisitResumptionRanker, {}}},
+         {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
+         {features::kSegmentationPlatformMetricsClustering, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -470,6 +472,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
 }
 #endif  //! BUILDFLAG(IS_CHROMEOS)
 
+TEST_F(SegmentationPlatformServiceFactoryTest, MetricsClustering) {
+  InitServiceAndCacheResults(
+      segmentation_platform::MetricsClustering::kMetricsClusteringKey);
+
+  segmentation_platform::PredictionOptions prediction_options =
+      PredictionOptions::ForCached();
+
+  ExpectGetAnnotatedNumericResult(
+      segmentation_platform::MetricsClustering::kMetricsClusteringKey,
+      prediction_options, nullptr, PredictionStatus::kSucceeded);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Tests for models in android platform.
 TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceTierSegment) {
@@ -504,13 +518,13 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
 
   auto input_context = base::MakeRefCounted<InputContext>();
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceTracking,
+      segmentation_platform::kContextualPageActionModelInputPriceInsights,
       segmentation_platform::processing::ProcessedValue::FromFloat(1));
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputReaderMode,
+      segmentation_platform::kContextualPageActionModelInputPriceTracking,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceInsights,
+      segmentation_platform::kContextualPageActionModelInputReaderMode,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
 
   ExpectGetClassificationResult(
@@ -518,7 +532,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1,
-                               kContextualPageActionModelLabelPriceTracking));
+                               kContextualPageActionModelLabelPriceInsights));
   clock()->Advance(base::Seconds(
       ContextualPageActionsModel::kShareOutputCollectionDelayInSec));
 

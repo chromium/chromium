@@ -228,8 +228,6 @@ class ProfileImpl : public Profile {
 
   policy::ConfigurationPolicyProvider* configuration_policy_provider();
 
-  PrefChangeRegistrar pref_change_registrar_;
-
   base::FilePath path_;
 
   base::Time path_creation_time_;
@@ -274,12 +272,13 @@ class ProfileImpl : public Profile {
 
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
-  // Keep |prefs_| on top for destruction order because |extension_prefs_|,
-  // |io_data_| and others store pointers to |prefs_| and shall be destructed
-  // first.
+  // Keep `prefs_` on top for destruction order because `dummy_otr_prefs_`,
+  // `pref_change_registrar_` and others store pointers to `prefs_` and shall be
+  // destructed first.
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   std::unique_ptr<sync_preferences::PrefServiceSyncable> dummy_otr_prefs_;
+  PrefChangeRegistrar pref_change_registrar_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;

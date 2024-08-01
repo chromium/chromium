@@ -719,15 +719,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_FALSE(footer_view->GetVisible());
 }
 
-#if BUILDFLAG(IS_WIN)
-// https://crbug.com/327245883
-#define MAYBE_BackgroundTabHoverCardContentsHaveCorrectDimensions DISABLED_BackgroundTabHoverCardContentsHaveCorrectDimensions
-#else
-#define MAYBE_BackgroundTabHoverCardContentsHaveCorrectDimensions BackgroundTabHoverCardContentsHaveCorrectDimensions
-#endif
 IN_PROC_BROWSER_TEST_F(
     TabHoverCardFadeFooterInteractiveUiTest,
-    MAYBE_BackgroundTabHoverCardContentsHaveCorrectDimensions) {
+    BackgroundTabHoverCardContentsHaveCorrectDimensions) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));

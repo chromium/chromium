@@ -14,11 +14,14 @@
 // TabGroupsPanelItem.
 @protocol TabGroupsPanelItemDataSource
 
-// Returns the data associated with the item and fetches up to 4 favicons.
-// It will fetch up to 4 favicons if the tab group has at most 4 tabs, and only
-// 3 favicons if the tab group has strictly more than 4 tabs.
-- (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item
-           withFaviconsFetchCompletion:(void (^)(NSArray<UIImage*>*))completion;
+// Returns the data associated with the item.
+- (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item;
+
+// Fetches the favicon related to the tab at `index` in the group represented
+// by `item`.
+- (void)fetchFaviconForItem:(TabGroupsPanelItem*)item
+                      index:(int)index
+                 completion:(void (^)(UIImage*))completion;
 
 @end
 

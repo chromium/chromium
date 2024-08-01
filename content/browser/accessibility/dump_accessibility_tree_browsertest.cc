@@ -3793,6 +3793,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayContentsSelectCrash) {
   RunRegressionTest(FILE_PATH_LITERAL("display-contents-select-crash.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, LanguageChangedOnHtml) {
+  RunRegressionTest(FILE_PATH_LITERAL("language-changed-on-html.html"));
+}
+
 // TODO(crbug.com/341125461) Times out on macOS as showing the select popup
 // involves a nested runloop, but nothing in the test closes the popup/leaves
 // that nested runloop.

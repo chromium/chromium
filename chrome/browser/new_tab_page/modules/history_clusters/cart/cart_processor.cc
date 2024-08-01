@@ -41,22 +41,6 @@ ntp::history_clusters::cart::mojom::CartPtr CartToMojom(
   return cart_mojom;
 }
 
-ntp::history_clusters::cart::mojom::CartPtr GenerateSampleCart(int imageCount) {
-  auto cart_mojom = ntp::history_clusters::cart::mojom::Cart::New();
-  cart_mojom->domain = "google.com";
-  cart_mojom->merchant = "Google Store";
-  cart_mojom->cart_url = GURL("https://store.google.com/cart");
-  cart_mojom->relative_date = "2 days ago";
-  cart_mojom->discount_text = "15% off";
-  const std::string image_url =
-      "https://lh3.googleusercontent.com/"
-      "uGKKV2OSGGGu51DDu5qByS-EmYzTpH2sqoRzY7vG4sco_"
-      "5bRjS8lHpn0NaMbe7EhVIBv2bfVQpUlb50lfRzKiXM7Y_yybph9-qE=s0";
-  for (int i = 0; i < imageCount; i++) {
-    cart_mojom->product_image_urls.emplace_back(image_url);
-  }
-  return cart_mojom;
-}
 }  // namespace
 
 CartProcessor::CartProcessor(CartService* cart_service)
@@ -80,17 +64,7 @@ void CartProcessor::GetCartForCluster(
     std::move(callback).Run(nullptr);
     return;
   }
-  const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
-      ntp_features::kNtpChromeCartInHistoryClusterModule,
-      ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam);
-  if (!fake_data_param.empty()) {
-    int image_count;
-    if (!base::StringToInt(fake_data_param, &image_count)) {
-      return;
-    }
-    std::move(callback).Run(GenerateSampleCart(image_count));
-    return;
-  }
+
   cart_service_->LoadAllActiveCarts(
       base::BindOnce(&CartProcessor::OnLoadCart, weak_ptr_factory_.GetWeakPtr(),
                      std::move(cluster), std::move(callback)));

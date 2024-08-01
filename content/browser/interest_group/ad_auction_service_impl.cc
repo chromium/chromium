@@ -487,6 +487,7 @@ void AdAuctionServiceImpl::RunAdAuction(
 
   base::trace_event::EmitNamedTrigger("fledge-top-level-auction-start");
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
+      auction_metrics_recorder_manager_.CreateAuctionMetricsRecorder(),
       &auction_worklet_manager_, auction_nonce_manager_.get(),
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
       private_aggregation_manager_, std::move(ad_auction_page_data_callback),
@@ -495,8 +496,7 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindRepeating(
           &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures,
           weak_ptr_factory_.GetWeakPtr()),
-      config, main_frame_origin_, origin(),
-      render_frame_host().GetPageUkmSourceId(), GetClientSecurityState(),
+      config, main_frame_origin_, origin(), GetClientSecurityState(),
       GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
@@ -774,6 +774,7 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
       main_frame_origin_(
           render_frame_host.GetMainFrame()->GetLastCommittedOrigin()),
       main_frame_url_(render_frame_host.GetMainFrame()->GetLastCommittedURL()),
+      auction_metrics_recorder_manager_(render_frame_host.GetPageUkmSourceId()),
       auction_worklet_manager_(
           &GetInterestGroupManager().auction_process_manager(),
           GetTopWindowOrigin(),

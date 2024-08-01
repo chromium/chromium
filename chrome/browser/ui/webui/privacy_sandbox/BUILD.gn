@@ -7,10 +7,7 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
   ]
 
-  deps = [
-    "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
-    "//components/content_settings/core/common:content_settings_types",
-  ]
+  deps = [ "//components/content_settings/core/common:content_settings_types" ]
 
   sources = [ "privacy_sandbox_internals.mojom" ]
   webui_module_path = "/"

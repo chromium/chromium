@@ -74,6 +74,10 @@ class MutableProfileOAuth2TokenServiceDelegate
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::vector<uint8_t> GetWrappedBindingKey(
+      const CoreAccountId& account_id) const override;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
@@ -214,11 +218,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   void CancelWebTokenFetch();
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  std::vector<uint8_t> GetWrappedBindingKey(
-      const CoreAccountId& account_id) const;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // Creates a new AccountStatus and adds it to the AccountStatusMap.
   // The account must not be already in the map.

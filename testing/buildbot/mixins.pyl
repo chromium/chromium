@@ -882,6 +882,22 @@
       },
     },
   },
+  'mac_15_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-15',
+      },
+    },
+  },
+  'mac_15_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-15',
+      },
+    },
+  },
   'mac_arm64_apple_m1_gpu_experimental': {
     'swarming': {
       'dimensions': {
@@ -969,7 +985,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-14.5',
+        'os': 'Mac-14.6-23G5075b',
         'display_attached': '1',
       },
     },
@@ -1450,6 +1466,16 @@
       },
     },
   },
+  'win10_nvidia_rtx_4070_super_stable': {
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '10de:2783',
+        'os': 'Windows-10',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'win11': {
     'swarming': {
       'dimensions': {
@@ -1514,12 +1540,26 @@
   'xcode_16_beta': {
     'args': [
       '--xcode-build-version',
-      '16a5202i',
+      '16a5211f',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16a5202i',
+          'name': 'xcode_ios_16a5211f',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  'xcode_16_main': {
+    'args': [
+      '--xcode-build-version',
+      '16a5211f',
+    ],
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_16a5211f',
           'path': 'Xcode.app',
         },
       ],

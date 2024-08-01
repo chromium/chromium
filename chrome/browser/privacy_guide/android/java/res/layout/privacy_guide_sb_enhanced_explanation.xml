@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-Copyright 2022 The Chromium Authors
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -32,29 +32,37 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_security_grey"
+            app:iconImage="@drawable/ic_data_viz_grey_24"
             app:iconTint="@macro/default_icon_color"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_one" />
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_one" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_google_24dp"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_two" />
+            app:iconImage="@drawable/ic_download"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_two" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_globe_24dp"
+            app:iconImage="@drawable/ic_gshield_24"
             app:iconTint="@macro/default_icon_color"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_three" />
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_three" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_vpn_key_grey"
+            app:iconImage="@drawable/ic_language_24"
             app:iconTint="@macro/default_icon_color"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_four" />
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_four" />
+
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_password_manager_key"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_five" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
             android:layout_width="match_parent"
@@ -64,20 +72,23 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_bar_chart_24dp"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_five" />
+            app:iconImage="@drawable/ic_link"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_six" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_web_asset_24dp"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_six" />
+            app:iconImage="@drawable/ic_account_circle"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_seven" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_account_circle_24dp"
-            app:summaryText="@string/privacy_guide_sb_enhanced_item_seven" />
+            app:iconImage="@drawable/ic_speed_24"
+            app:iconTint="@macro/default_icon_color"
+            app:summaryText="@string/safe_browsing_enhanced_protection_bullet_eight" />
 
     </LinearLayout>
 </ScrollView>

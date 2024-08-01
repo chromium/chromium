@@ -7,10 +7,13 @@
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "url/gurl.h"
 
 @implementation HomeCustomizationMediator {
   // Pref service to handle preference changes.
@@ -37,6 +40,23 @@
        [self isModuleEnabledForType:CustomizationToggleType::kDiscover]},
   };
   [self.mainPageConsumer populateToggles:toggleMap];
+}
+
+- (void)configureDiscoverPageData {
+  std::vector<CustomizationLinkType> linksVector = {
+      CustomizationLinkType::kFollowing,
+      CustomizationLinkType::kHidden,
+      CustomizationLinkType::kActivity,
+      CustomizationLinkType::kLearnMore,
+  };
+  [self.discoverPageConsumer populateDiscoverLinks:linksVector];
+}
+
+- (void)configureMagicStackPageData {
+  std::map<CustomizationToggleType, BOOL> toggleMap = {
+      // TODO(crbug.com/350990359): Populate data.
+  };
+  [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
 #pragma mark - Private
@@ -78,6 +98,24 @@
 - (void)navigateToSubmenuForType:(CustomizationToggleType)type {
   [self.navigationDelegate
       navigateToPage:[HomeCustomizationHelper menuPageForToggleType:type]];
+}
+
+- (void)navigateToLinkForType:(CustomizationLinkType)type {
+  GURL URL;
+  switch (type) {
+    case CustomizationLinkType::kFollowing:
+      URL = GURL(kDiscoverFollowingURL);
+      break;
+    case CustomizationLinkType::kHidden:
+      URL = GURL(kDiscoverHiddenURL);
+      break;
+    case CustomizationLinkType::kActivity:
+      URL = GURL(kDiscoverActivityURL);
+      break;
+    case CustomizationLinkType::kLearnMore:
+      URL = GURL(kDiscoverLearnMoreURL);
+  }
+  [self.navigationDelegate navigateToURL:URL];
 }
 
 @end

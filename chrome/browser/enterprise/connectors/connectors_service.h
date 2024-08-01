@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/connectors_service_base.h"
+#include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -123,6 +123,9 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
+
+  // Returns ClientMetadata populated with minimum required information
+  std::unique_ptr<ClientMetadata> GetBasicClientMetadata(Profile* profile);
 
   // Obtain a ClientMetadata instance corresponding to the current
   // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-

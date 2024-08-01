@@ -694,6 +694,67 @@ TEST_F(ComboboxTest, ExpandedCollapsedAccessibleState) {
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
+TEST_F(ComboboxTest, AccessibleDefaultActionVerb) {
+  InitCombobox(nullptr);
+  ui::AXNodeData node_data;
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kOpen,
+            node_data.GetDefaultActionVerb());
+
+  node_data = ui::AXNodeData();
+  combobox()->SetEnabled(false);
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  node_data = ui::AXNodeData();
+  combobox()->SetEnabled(true);
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kOpen,
+            node_data.GetDefaultActionVerb());
+}
+
+TEST_F(ComboboxTest, SetSizePosInSetAccessibleProperties) {
+  InitCombobox(nullptr);
+
+  // Test an empty model.
+  model_->set_item_count(0);
+  EXPECT_EQ(0u, combobox()->GetRowCount());
+  EXPECT_EQ(0u, combobox()->GetSelectedRow());
+  ui::AXNodeData node_data;
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(0, node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  EXPECT_EQ(0, node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+
+  // Update item count and selected index.
+  model_->set_item_count(5);
+  combobox()->SetSelectedIndex(4);
+  EXPECT_EQ(5u, combobox()->GetRowCount());
+  EXPECT_EQ(4u, combobox()->GetSelectedRow());
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(5, node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  EXPECT_EQ(4, node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+
+  // Update item count.
+  model_->set_item_count(6);
+  EXPECT_EQ(6u, combobox()->GetRowCount());
+  EXPECT_EQ(4u, combobox()->GetSelectedRow());
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(6, node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  EXPECT_EQ(4, node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+
+  // Update selected index.
+  combobox()->SetSelectedIndex(2);
+  EXPECT_EQ(6u, combobox()->GetRowCount());
+  EXPECT_EQ(2u, combobox()->GetSelectedRow());
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(6, node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  EXPECT_EQ(2, node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+}
+
 TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 

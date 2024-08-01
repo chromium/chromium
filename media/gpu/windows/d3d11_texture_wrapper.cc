@@ -220,6 +220,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     return;
   }
 
+  auto* shared_image_manager = helper_->GetSharedImageManager();
+
   // Usage flags to allow the display compositor to draw from it, video to
   // decode from it, and webgl/canvas to read from it.
   gpu::SharedImageUsageSet usage =
@@ -257,8 +259,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     }
 
     dxgi_shared_handle_state =
-        helper_->GetDXGISharedHandleManager()->CreateAnonymousSharedHandleState(
-            base::win::ScopedHandle(shared_handle), texture);
+        shared_image_manager->dxgi_shared_handle_manager()
+            ->CreateAnonymousSharedHandleState(
+                base::win::ScopedHandle(shared_handle), texture);
   }
   const bool is_thread_safe =
       IsDedicatedMediaServiceThreadEnabled(gl::ANGLEImplementation::kD3D11);
@@ -284,7 +287,6 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       return;
     }
 
-    auto* shared_image_manager = helper_->GetSharedImageManager();
     auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
     std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep =
         shared_image_manager->ProduceVideoDecode(
@@ -312,9 +314,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         gpu::D3DImageBacking::Create(
             mailbox, DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
             size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            usage, "VideoTexture", texture, std::move(dxgi_shared_handle_state),
-            caps, GL_TEXTURE_EXTERNAL_OES, array_slice,
-            /*use_update_subresource1=*/false, is_thread_safe);
+            usage, "VideoTexture", texture, /*dcomp_texture=*/nullptr,
+            std::move(dxgi_shared_handle_state), caps, GL_TEXTURE_EXTERNAL_OES,
+            array_slice, /*use_update_subresource1=*/false, is_thread_safe);
 
     if (!backing) {
       std::move(on_error_cb)
@@ -325,7 +327,6 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     // the textures.
     backing->SetCleared();
 
-    auto* shared_image_manager = helper_->GetSharedImageManager();
     auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
     shared_image_ =
         shared_image_manager->Register(std::move(backing), memory_type_tracker);

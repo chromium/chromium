@@ -481,6 +481,9 @@
 // passphrase to start.
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
 
+// Add a sync passphrase requirement to start the sync server.
++ (void)addSyncPassphrase:(NSString*)syncPassphrase;
+
 // Returns whether UserSelectableType::kHistory is among the selected types.
 + (BOOL)isSyncHistoryDataTypeSelected;
 

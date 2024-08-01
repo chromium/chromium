@@ -96,7 +96,7 @@ const int kNumberOfWebStates = 3;
 
 class PopupMenuMediatorTest : public PlatformTest {
  public:
-  PopupMenuMediatorTest() {}
+  PopupMenuMediatorTest() : model_(nullptr) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -116,7 +116,7 @@ class PopupMenuMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     web::test::OverrideJavaScriptFeatures(
         browser_state_.get(),

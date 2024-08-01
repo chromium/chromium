@@ -206,7 +206,8 @@ std::string BrowserLiveTabContext::GetWorkspace() const {
 sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
-    bool select) {
+    bool select,
+    sessions::tab_restore::Type original_session_type) {
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser_->profile());
@@ -275,7 +276,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
     std::unordered_set<std::string> saved_urls =
         tab_groups::SavedTabGroupUtils::GetURLsInSavedTabGroup(
-            *saved_tab_group_service, saved_group_id.value());
+            browser_->profile(), saved_group_id.value());
     const sessions::SerializedNavigationEntry& entry =
         tab.navigations.at(tab.normalized_navigation_index());
     if (!saved_urls.contains(entry.virtual_url().spec())) {

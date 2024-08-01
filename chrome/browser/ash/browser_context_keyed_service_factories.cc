@@ -23,8 +23,10 @@
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
+#include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
@@ -120,7 +122,6 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
@@ -154,6 +155,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ax::AccessibilityServiceRouterFactory::EnsureFactoryBuilt();
   BirchKeyedServiceFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
+  BocaManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
   BrowserProcessPlatformPart::EnsureFactoryBuilt();
   bruschetta::BruschettaServiceFactory::GetInstance();

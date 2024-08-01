@@ -48,6 +48,8 @@ struct FieldDescription {
   bool is_visible = true;
   std::optional<std::u16string> label;
   std::optional<std::u16string> name;
+  std::optional<std::u16string> name_attribute;
+  std::optional<std::u16string> id_attribute;
   std::optional<std::u16string> value;
   std::optional<std::u16string> placeholder;
   std::optional<uint64_t> max_length;

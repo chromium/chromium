@@ -95,7 +95,13 @@ void VcBackgroundUISeaPenProviderImpl::SetSeaPenObserverInternal() {
 
 void VcBackgroundUISeaPenProviderImpl::SelectRecentSeaPenImageInternal(
     const uint32_t id,
+    const bool preview_mode,
     SelectRecentSeaPenImageCallback callback) {
+  if (preview_mode) {
+    sea_pen_receiver_.ReportBadMessage(
+        "Preview mode is only used for wallpaper");
+    return;
+  }
   GetCameraEffectsController()->SetBackgroundImage(
       CameraEffectsController::SeaPenIdToRelativePath(id), std::move(callback));
 }

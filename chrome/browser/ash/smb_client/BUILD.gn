@@ -12,6 +12,7 @@ static_library("constants") {
     ":*",
     "//chrome/browser/ash/smb_client/discovery",
   ]
+
   sources = [
     "smb_constants.cc",
     "smb_constants.h",
@@ -48,10 +49,13 @@ static_library("smb_client") {
     "smbfs_share.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":constants",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client/discovery",

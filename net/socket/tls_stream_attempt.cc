@@ -52,6 +52,12 @@ int TlsStreamAttempt::StartInternal() {
   return DoLoop(OK);
 }
 
+base::Value::Dict TlsStreamAttempt::GetNetLogStartParams() {
+  base::Value::Dict dict;
+  dict.Set("host_port", host_port_pair_.ToString());
+  return dict;
+}
+
 void TlsStreamAttempt::OnIOComplete(int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
   rv = DoLoop(rv);
@@ -105,6 +111,8 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
     return rv;
   }
 
+  net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG);
+
   next_state_ = State::kTlsAttempt;
   return ssl_config_provider_->WaitForSSLConfigReady(
       base::BindOnce(&TlsStreamAttempt::OnIOComplete, base::Unretained(this)));
@@ -112,12 +120,17 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
 
 int TlsStreamAttempt::DoTlsAttempt(int rv) {
   CHECK_EQ(rv, OK);
+  CHECK(ssl_config_provider_);
+
+  net_log().EndEvent(NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG);
 
   next_state_ = State::kTlsAttemptComplete;
 
   std::unique_ptr<StreamSocket> nested_socket =
       nested_attempt_->ReleaseStreamSocket();
   SSLConfig ssl_config = ssl_config_provider_->GetSSLConfig();
+  // Clear `ssl_config_provider_` to avoid dangling pointer.
+  ssl_config_provider_ = nullptr;
 
   nested_attempt_.reset();
 
@@ -132,12 +145,17 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
       params().ssl_client_context, std::move(nested_socket), host_port_pair_,
       ssl_config);
 
+  net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT);
+
   return ssl_socket_->Connect(
       base::BindOnce(&TlsStreamAttempt::OnIOComplete, base::Unretained(this)));
 }
 
 int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   CHECK(ssl_socket_);
+
+  net_log().EndEventWithNetErrorCode(
+      NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, rv);
 
   mutable_connect_timing().ssl_end = base::TimeTicks::Now();
   tls_handshake_timeout_timer_.Stop();

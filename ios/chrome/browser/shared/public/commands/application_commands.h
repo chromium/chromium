@@ -12,18 +12,21 @@
 
 class GURL;
 @class OpenNewTabCommand;
+@class ShowSigninCommand;
+@class UIViewController;
 namespace password_manager {
 enum class PasswordCheckReferrer;
 enum class WarningType;
 }  // namespace password_manager
-@class ShowSigninCommand;
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
-@class UIViewController;
+namespace trusted_vault {
+enum class SecurityDomainId;
+}  // namespace trusted_vault
 
 // The mode in which the TabGrid should be opened.
 enum class TabGridOpeningMode {
@@ -67,10 +70,15 @@ enum class TabGridOpeningMode {
 
 // Presents the Trusted Vault reauth dialog.
 // `baseViewController` presents the sign-in.
+// `securityDomainID` Identifies a particular security domain.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
+// `accessPoint` Identifies where the dialog is initiated from.
 - (void)
     showTrustedVaultReauthForFetchKeysFromViewController:
         (UIViewController*)baseViewController
+                                        securityDomainID:
+                                            (trusted_vault::SecurityDomainId)
+                                                securityDomainID
                                                  trigger:
                                                      (syncer::
                                                           TrustedVaultUserActionTriggerForUMA)
@@ -82,10 +90,16 @@ enum class TabGridOpeningMode {
 // Presents the Trusted Vault degraded recoverability (to enroll additional
 // recovery factors).
 // `baseViewController` presents the sign-in.
+// `securityDomainID` Identifies a particular security domain.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
+// `accessPoint` Identifies where the dialog is initiated from.
 - (void)
     showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
         (UIViewController*)baseViewController
+                                                     securityDomainID:
+                                                         (trusted_vault::
+                                                              SecurityDomainId)
+                                                             securityDomainID
                                                               trigger:
                                                                   (syncer::
                                                                        TrustedVaultUserActionTriggerForUMA)

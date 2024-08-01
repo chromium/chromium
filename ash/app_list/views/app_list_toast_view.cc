@@ -201,11 +201,7 @@ AppListToastView::AppListToastView(const std::u16string title,
   title_label_ =
       label_container_->AddChildView(std::make_unique<views::Label>(title));
 
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-  const ui::ColorId title_color_id =
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary;
+  const ui::ColorId title_color_id = cros_tokens::kCrosSysOnSurface;
   bubble_utils::ApplyStyle(title_label_,
                            style_for_tablet_mode ? TypographyToken::kCrosBody1
                                                  : TypographyToken::kCrosBody2,
@@ -224,21 +220,13 @@ AppListToastView::AppListToastView(const std::u16string title,
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
 
     const ui::ColorId background_color_id =
-        is_jelly_enabled
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-            : kColorAshShieldAndBase80;
+        cros_tokens::kCrosSysSystemBaseElevated;
     SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
                                                            kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius,
-        is_jelly_enabled
-            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-            : views::HighlightBorder::Type::kHighlightBorder1));
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
   } else {
-    const ui::ColorId background_color_id =
-        is_jelly_enabled
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-            : kColorAshControlBackgroundColorInactive;
+    const ui::ColorId background_color_id = cros_tokens::kCrosSysSystemOnBase;
     SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
                                                            kCornerRadius));
   }
@@ -282,10 +270,7 @@ void AppListToastView::SetSubtitle(const std::u16string subtitle) {
 
   subtitle_label_ =
       label_container_->AddChildView(std::make_unique<views::Label>(subtitle));
-  const ui::ColorId label_color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
-          : kColorAshTextColorSecondary;
+  const ui::ColorId label_color_id = cros_tokens::kCrosSysOnSurfaceVariant;
   bubble_utils::ApplyStyle(subtitle_label_, TypographyToken::kCrosAnnotation1,
                            label_color_id);
   subtitle_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);

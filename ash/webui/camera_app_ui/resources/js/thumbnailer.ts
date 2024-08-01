@@ -78,9 +78,9 @@ async function loadVideoBlob(blob: Blob): Promise<HTMLVideoElement> {
     }
 
     try {
-      // `gotFrame` may not resolve when playing malformed video. Set 1 second
-      // timeout here to prevent UI from being blocked forever.
-      await gotFrame.timedWait(1000);
+      // `gotFrame` may not resolve when playing malformed video. Set 2 seconds
+      // timeout here to prevent UI from being blocked forever.(b/348314182)
+      await gotFrame.timedWait(2000);
     } catch (e) {
       throw new PlayMalformedError(assertInstanceof(e, Error).message);
     } finally {

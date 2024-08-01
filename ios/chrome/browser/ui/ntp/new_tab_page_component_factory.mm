@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
@@ -99,6 +100,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   PrefService* prefService =
       ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
           ->GetPrefs();
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browser->GetBrowserState());
   BOOL isSafeMode = [browser->GetSceneState().appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
       initWithTemplateURLService:templateURLService
@@ -112,6 +115,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                      isIncognito:browserState->IsOffTheRecord()
              discoverFeedService:discoverFeedService
                      prefService:prefService
+                     syncService:syncService
                       isSafeMode:isSafeMode];
 }
 

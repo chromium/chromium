@@ -81,8 +81,6 @@ class DrmDevice : public DrmWrapper,
  protected:
   friend class base::RefCountedThreadSafe<DrmDevice>;
 
-  friend class DrmDisplayTest;
-
   ~DrmDevice() override;
 
   std::unique_ptr<HardwareDisplayPlaneManager> plane_manager_;

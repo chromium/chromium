@@ -98,6 +98,8 @@ message OriginInfo {
 
 // The platform for the user's Chrome on which the request was made.
 enum Platform {
+  reserved 7;
+
   // Undefined is used when the user's platform cannot be resolved.
   PLATFORM_UNDEFINED = 0;
   // Android based platforms.

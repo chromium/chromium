@@ -11,3 +11,48 @@ mojom("mojo_bindings") {
   sources = [ "extended_updates.mojom" ]
   webui_module_path = "/"
 }
+
+static_library("extended_updates") {
+  sources = [
+    "extended_updates_dialog.cc",
+    "extended_updates_dialog.h",
+    "extended_updates_page_handler.cc",
+    "extended_updates_page_handler.h",
+    "extended_updates_ui.cc",
+    "extended_updates_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/web_dialogs",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/extended_updates",
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/ash/extended_updates:resources",
+    "//chrome/browser/ui/webui",
+    "//chrome/common",
+    "//components/services/app_service",
+    "//content/public/common",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/chromeos",
+    "//ui/webui",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/extended_updates" ]
+}

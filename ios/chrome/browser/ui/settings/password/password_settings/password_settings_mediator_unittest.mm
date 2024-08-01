@@ -62,7 +62,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(

@@ -10,6 +10,7 @@ load("//lib/builders.star", "builders", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify", "linkify_builder")
 load("//lib/structs.star", "structs")
 load("//lib/xcode.star", "xcode")
 
@@ -777,10 +778,9 @@ fyi_mac_builder(
 
 fyi_mac_builder(
     name = "mac13-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
+    description_html = "Runs {} against Chrome.".format(
+        linkify("https://web-platform-tests.org", "web platform tests"),
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -815,10 +815,9 @@ Chrome.\
 
 ci.builder(
     name = "linux-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
+    description_html = "Runs {} against Chrome.".format(
+        linkify("https://web-platform-tests.org", "web platform tests"),
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -1146,8 +1145,8 @@ fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Deterministic%20Android%20(dbg)">Deterministic Android (dbg)</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("ci", "Deterministic Android (dbg)")),
     gn_args = {
         "build1": gn_args.config(
             configs = [
@@ -1186,8 +1185,8 @@ fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient) (reproxy cache)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test using reproxy's deps cache.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Comparison%20Android%20(reclient)">Comparison Android (reclient)</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("ci", "Comparison Android (reclient)")),
     cores = 16,
     os = os.LINUX_DEFAULT,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -1483,8 +1482,8 @@ fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient)(CQ)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel-compilator">android-arm64-rel-compilator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "android-arm64-rel-compilator")),
     cores = 32,
     os = os.LINUX_DEFAULT,
     ssd = True,
@@ -1504,8 +1503,8 @@ fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac (reclient)(CQ)",
     description_html = """\
 This builder measures Mac build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "mac-rel-compilator")),
     schedule = "0 */4 * * *",
     builderless = True,
     cores = None,
@@ -1529,8 +1528,8 @@ fyi_reclient_comparison_builder(
     name = "Comparison Windows (reclient)(CQ)",
     description_html = """\
 This builder measures Windows build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win-rel-compilator">win-rel-compilator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "win-rel-compilator")),
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1551,8 +1550,8 @@ fyi_reclient_comparison_builder(
     name = "Comparison Simple Chrome (reclient)(CQ)",
     description_html = """\
 This builder measures Simple Chrome build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "linux-chromeos-rel-compilator")),
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -1573,8 +1572,8 @@ fyi_mac_reclient_comparison_builder(
     name = "Comparison ios (reclient)(CQ)",
     description_html = """\
 This builder measures iOS build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator">ios-simulator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "ios-simulator")),
     schedule = "0 */4 * * *",
     builderless = True,
     cores = None,
@@ -2221,7 +2220,7 @@ ci.builder(
         "versions of Windows. However, flashing such images on the bots " +
         "is not supported at this time.<br/>So this builder remains paused " +
         "until a solution can be determined. For more info, see " +
-        "<a href=\"http://shortn/_B7cJcHq55P\">http://shortn/_B7cJcHq55P</a>."
+        "{}.".format(linkify("http://shortn/_B7cJcHq55P", "http://shortn/_B7cJcHq55P"))
     ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -2254,10 +2253,9 @@ ci.builder(
 
 ci.builder(
     name = "win10-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
+    description_html = "Runs {} against Chrome.".format(
+        linkify("https://web-platform-tests.org", "web platform tests"),
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

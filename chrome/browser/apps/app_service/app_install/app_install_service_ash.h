@@ -103,14 +103,12 @@ class AppInstallServiceAsh : public AppInstallService {
       base::expected<AppInstallData, QueryError> data);
   void InstallIfDialogAccepted(
       AppInstallSurface surface,
-      PackageId expected_package_id,
       AppInstallData data,
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
       base::OnceCallback<void(AppInstallResult)> callback,
       bool dialog_accepted);
   void ProcessInstallResult(
       AppInstallSurface surface,
-      PackageId expected_package_id,
       AppInstallData data,
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
       base::OnceCallback<void(AppInstallResult)> callback,

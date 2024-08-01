@@ -58,9 +58,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -332,21 +329,11 @@ public class RecentTabsPageTest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testEmptyStateView_replaceSyncWithSignInDisabled() {
         // Sign in and enable sync.
-        // TODO(b/343378391) Update accountInfo to use
-        // AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL.
-        AccountInfo accountInfo =
-                new AccountInfo.Builder(EMAIL, FakeAccountManagerFacade.toGaiaId(EMAIL))
-                        .fullName(NAME)
-                        .givenName(NAME)
-                        .accountCapabilities(
-                                new AccountCapabilitiesBuilder()
-                                        .setCanHaveEmailAddressDisplayed(false)
-                                        .setIsSubjectToParentalControls(true)
-                                        .build())
-                        .build();
-        mSigninTestRule.addAccount(accountInfo);
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         SigninTestUtil.signinAndEnableSync(
-                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
+                SyncTestUtil.getSyncServiceForLastUsedProfile());
 
         // Open an empty recent tabs page and confirm empty view shows.
         mPage = loadRecentTabsPage();

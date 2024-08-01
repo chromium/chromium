@@ -485,8 +485,6 @@ void LayoutTheme::AdjustSliderContainerStyle(
 
   if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
     builder.SetTouchAction(TouchAction::kPanX);
-    // If FormControlsVerticalWritingModeDirectionSupport disabled, then it is
-    // always RTL because the slider value increases up even in LTR.
   } else if (RuntimeEnabledFeatures::
                  NonStandardAppearanceValueSliderVerticalEnabled() &&
              builder.EffectiveAppearance() == kSliderVerticalPart) {
@@ -494,10 +492,6 @@ void LayoutTheme::AdjustSliderContainerStyle(
     builder.SetWritingMode(WritingMode::kVerticalRl);
     // It's always in RTL because the slider value increases up even in LTR.
     builder.SetDirection(TextDirection::kRtl);
-    if (!RuntimeEnabledFeatures::
-            FormControlsVerticalWritingModeDirectionSupportEnabled()) {
-      builder.SetDirection(TextDirection::kRtl);
-    }
   } else {
     builder.SetTouchAction(TouchAction::kPanY);
     builder.SetWritingMode(WritingMode::kHorizontalTb);

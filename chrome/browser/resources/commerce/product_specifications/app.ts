@@ -10,6 +10,7 @@ import './product_selector.js';
 import './table.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
@@ -17,7 +18,9 @@ import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browse
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,10 +30,11 @@ import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecifications, ProductSpecificationsDescriptionText, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import {UserFeedback} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import type {UrlListEntry} from './utils.js';
+import {WindowProxy} from './window_proxy.js';
 
 interface AggregatedProductData {
   info: ProductInfo|null;
@@ -45,7 +49,7 @@ interface LoadingState {
 interface ProductDetail {
   title: string;
   description: string;
-  summary: string;
+  summary: ProductSpecificationsDescriptionText[];
 }
 
 export interface TableColumn {
@@ -56,10 +60,13 @@ export interface TableColumn {
 export interface ProductSpecificationsElement {
   $: {
     feedbackButtons: CrFeedbackButtonsElement,
+    empty: HTMLElement,
     header: HeaderElement,
     loading: HTMLElement,
     newColumnSelector: NewColumnSelectorElement,
+    offlineToast: CrToastElement,
     productSelector: ProductSelectorElement,
+    specs: HTMLElement,
     summaryTable: TableElement,
   };
 }
@@ -75,14 +82,14 @@ function getProductDetails(
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
     description: (productInfo?.currentPrice || ''),
-    summary: '',
+    summary: [],
   });
 
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
     if (!product) {
       // Fill missing product details with strings to ensure uniform table row
       // count.
-      productDetails.push({title, description: '', summary: ''});
+      productDetails.push({title, description: '', summary: []});
     } else {
       const value = product.productDimensionValues.get(key);
       const description = (value?.specificationDescriptions || [])
@@ -91,10 +98,7 @@ function getProductDetails(
                               .map(descText => descText.text)
                               .join(', ') ||
           '';
-      const summary = (value?.summary || [])
-                          .map(summary => summary?.text || '')
-                          .join(' ') ||
-          '';
+      const summary = value?.summary || [];
       productDetails.push({title, description, summary});
     }
   });
@@ -144,6 +148,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   private tableColumns_: TableColumn[] = [];
 
   private callbackRouter_: PageCallbackRouter;
+  private eventTracker_: EventTracker = new EventTracker();
   private id_: Uuid|null = null;
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
@@ -163,6 +168,22 @@ export class ProductSpecificationsElement extends PolymerElement {
             (uuid: Uuid) => this.onSetRemoved_(uuid)),
         this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
             (set: ProductSpecificationsSet) => this.onSetUpdated_(set)));
+
+    this.eventTracker_.add(
+        this, 'click',
+        () => {
+          this.$.offlineToast.hide();
+        },
+        /*useCapture=*/ true);
+    this.eventTracker_.add(window, 'online', () => {
+      this.$.offlineToast.hide();
+    });
+
+    if (this.isOffline_) {
+      this.showEmptyState_ = true;
+      this.showOfflineToast_();
+      return;
+    }
 
     const router = Router.getInstance();
     const params = new URLSearchParams(router.getCurrentQuery());
@@ -197,6 +218,10 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   resetMinLoadingAnimationMsForTesting(newValue = 0) {
     this.minLoadingAnimationMs_ = newValue;
+  }
+
+  private showOfflineToast_() {
+    this.$.offlineToast.show();
   }
 
   private async populateTable_(urls: string[]) {
@@ -244,6 +269,11 @@ export class ProductSpecificationsElement extends PolymerElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
+    this.eventTracker_.removeAll();
+  }
+
+  private get isOffline_(): boolean {
+    return !WindowProxy.getInstance().onLine;
   }
 
   private async getInfoForUrls_(urls: string[]):
@@ -288,16 +318,30 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private addToNewGroup_() {
-    // TODO(b/330345730): Plumb through mojom
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+    // TODO(b/330345730): Plumb through mojom.
   }
 
   private deleteSet_() {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     if (this.id_) {
       this.shoppingApi_.deleteProductSpecificationsSet(this.id_);
     }
   }
 
   private updateSetName_(e: CustomEvent<{name: string}>) {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     if (this.id_) {
       this.shoppingApi_.setNameForProductSpecificationsSet(
           this.id_, e.detail.name);
@@ -305,27 +349,51 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private seeAllSets_() {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
     // TODO(b/330345730): Plumb through mojom
   }
 
   private onUrlAdd_(e: CustomEvent<{url: string}>) {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     const urls = this.getTableUrls_();
     urls.push(e.detail.url);
     this.modifyUrls_(urls);
   }
 
   private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     const urls = this.getTableUrls_();
     urls[e.detail.index] = e.detail.url;
     this.modifyUrls_(urls);
   }
 
   private onUrlOrderUpdate_() {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     const urls = this.getTableUrls_();
     this.modifyUrls_(urls);
   }
 
   private onUrlRemove_(e: CustomEvent<{index: number}>) {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     const urls = this.getTableUrls_();
     urls.splice(e.detail.index, 1);
     this.modifyUrls_(urls);
@@ -341,6 +409,11 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private async createNewSet_(urls: string[]) {
+    if (this.isOffline_) {
+      this.showOfflineToast_();
+      return;
+    }
+
     assert(!this.id_ && !this.setName_);
     // TODO(b/346381503): Use a more targeted set name.
     this.setName_ = 'Product specs';

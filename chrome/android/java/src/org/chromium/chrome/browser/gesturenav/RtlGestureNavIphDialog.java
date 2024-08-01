@@ -35,7 +35,8 @@ public class RtlGestureNavIphDialog {
     private @Nullable ViewGroup mParentView;
     private boolean mGlobalLayoutListenerAttached;
 
-    public RtlGestureNavIphDialog(Context context, ModalDialogManager modalDialogManager) {
+    public RtlGestureNavIphDialog(
+            Context context, ModalDialogManager modalDialogManager, Runnable dismissed) {
         mIphDialogView =
                 (IphDialogView)
                         LayoutInflater.from(context)
@@ -63,6 +64,7 @@ public class RtlGestureNavIphDialog {
 
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
+                        dismissed.run();
                         mIphDialogView.stopIPHAnimation();
                         detachParentGlobalLayoutListener();
                     }

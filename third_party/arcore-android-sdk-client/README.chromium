@@ -1,7 +1,7 @@
 Name: ARCore SDK client library for Chrome
 Short Name: com.google.ar:core-partner_chrome
 URL: https://developers.google.com/ar/develop/java/enable-arcore#dependencies
-Version: 1.39
+Version: 1.44
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -29,6 +29,7 @@ The LICENSE file is taken from
  * https://www.apache.org/licenses/LICENSE-2.0.txt
 
 Changes:
+2024-07-30 - Upgraded SDK binaries to v1.44.
 2023-09-29 - Upgraded SDK binaries to v1.39.
 2023-04-18 - Split AndroidManifest.xml into two separate files.
 2022-07-18 - Upgraded SDK binaries to v1.32.

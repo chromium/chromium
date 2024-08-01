@@ -36,8 +36,7 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
   auto ui_info = AutofillSaveIbanUiInfo::CreateForLocalSave(
       localIban.GetIdentifierStringForAutofillDisplay());
 
-  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label),
-            u"CH** **** **** **** *800 9");
+  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"CH **8009");
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.accept_text,

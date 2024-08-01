@@ -13,11 +13,11 @@ class GURL;
 
 namespace content {
 class NavigationHandle;
-}
+}  // namespace content
 
 namespace subresource_filter {
 class AsyncDocumentSubresourceFilter;
-}
+}  // namespace subresource_filter
 
 namespace fingerprinting_protection_filter {
 

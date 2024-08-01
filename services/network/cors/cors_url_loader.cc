@@ -602,7 +602,7 @@ void CorsURLLoader::OnReceiveResponse(
     CHECK(request_.request_initiator);
 
     if (!request_.request_initiator->IsSameOriginWith(request_.url) &&
-        !CheckSharedStorageCrossOriginWorkletAllowedResponseHeader(
+        !CheckSharedStorageCrossOriginWorkletAllowedResponseHeaderIfNeeded(
             *response_head)) {
       HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
       return;
@@ -1409,17 +1409,41 @@ std::optional<std::string> CorsURLLoader::GetHeaderString(
   return header_value;
 }
 
-// static
-bool CorsURLLoader::CheckSharedStorageCrossOriginWorkletAllowedResponseHeader(
-    const mojom::URLResponseHead& response) {
-  std::optional<std::string> header =
+bool CorsURLLoader::
+    CheckSharedStorageCrossOriginWorkletAllowedResponseHeaderIfNeeded(
+        const mojom::URLResponseHead& response) {
+  // We currently only set the "Sec-Shared-Storage-Data-Origin" request header
+  // for requests of cross-origin shared storage worklet module script where the
+  // script origin is used as the data origin. Moreover, the request header is a
+  // forbidden request header (non-modifiable by regular JavaScript), and it is
+  // set in the browser process, using the serialized script origin (which is
+  // not allowed to be opaque) as the value.
+  //
+  // Extensions could have modified or removed the
+  // "Sec-Shared-Storage-Data-Origin" request header before the request was sent
+  // to the server, but the `CorsURLLoader` still sees the original header, if
+  // any, set by `SharedStorageURLLoaderFactoryProxy`.
+  std::string request_header;
+  if (!request_.headers.GetHeader("Sec-Shared-Storage-Data-Origin",
+                                  &request_header)) {
+    // The data partition origin used is the invoking context's origin, so we
+    // don't require the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
+    // header.
+    return true;
+  }
+
+  GURL data_origin_url(request_header);
+  CHECK(data_origin_url.is_valid());
+  CHECK(url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url));
+
+  std::optional<std::string> response_header =
       GetHeaderString(response, "Shared-Storage-Cross-Origin-Worklet-Allowed");
-  if (!header) {
+  if (!response_header) {
     return false;
   }
 
   std::optional<net::structured_headers::Item> item =
-      net::structured_headers::ParseBareItem(*header);
+      net::structured_headers::ParseBareItem(*response_header);
 
   return item && item->is_boolean() && item->GetBoolean();
 }

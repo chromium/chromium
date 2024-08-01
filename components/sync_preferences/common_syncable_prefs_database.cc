@@ -24,9 +24,10 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/sharing_message/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#include "components/variations/service/google_groups_manager.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
 
 namespace sync_preferences {
 
@@ -117,6 +118,7 @@ enum {
   kSyncableTabGroups = 73,
   kAutoPinNewTabGroups = 74,
   kShowGoogleLensShortcut = 75,
+  kSharingVapidKey = 76,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -297,6 +299,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           sync_preferences::MergeBehavior::kNone}},
         {autofill::prefs::kAutofillPaymentCardBenefits,
          {syncable_prefs_ids::kAutofillPaymentCardBenefits, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {prefs::kSharingVapidKey,
+         {syncable_prefs_ids::kSharingVapidKey, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
 #if BUILDFLAG(IS_ANDROID)
         {autofill::prefs::kFacilitatedPaymentsPix,

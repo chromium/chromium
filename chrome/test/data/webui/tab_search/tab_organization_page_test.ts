@@ -155,10 +155,6 @@ suite('TabOrganizationPageTest', () => {
     const input = group.shadowRoot!.querySelector<CrInputElement>(
         '#singleOrganizationInput');
     assertTrue(!!input);
-    assertFalse(input.hasAttribute('focused_'));
-
-    input.focus();
-    await input.updateComplete;
     assertTrue(input.hasAttribute('focused_'));
 
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));

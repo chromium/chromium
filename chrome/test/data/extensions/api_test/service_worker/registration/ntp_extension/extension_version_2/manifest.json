@@ -1,0 +1,12 @@
+{
+  "name": "Version 2 extension",
+  "version": "2",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "chrome_url_overrides" : {
+    "newtab": "ntp.html"
+  },
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294jkDuI7caxEGUucpP7GJRRHnm8Sx+y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB"
+}

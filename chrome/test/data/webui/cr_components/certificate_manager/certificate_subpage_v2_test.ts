@@ -30,11 +30,13 @@ suite('CertificateSubpageV2Test', () => {
       {
         headerText: 'CRS',
         hideExport: false,
+        showImport: false,
         certSource: CertificateSource.kChromeRootStore,
       },
       {
         headerText: 'EnterpriseTrusted',
         hideExport: true,
+        showImport: true,
         certSource: CertificateSource.kEnterpriseTrustedCerts,
       },
     ];
@@ -75,6 +77,8 @@ suite('CertificateSubpageV2Test', () => {
         CertificateSource.kChromeRootStore, lists[0]!.certSource,
         'crs list certsource wrong');
     assertFalse(lists[0]!.hideExport, 'crs hideexport value incorrect');
+    assertFalse(lists[0]!.showImport, 'crs showimport value incorrect');
+
     assertEquals(
         'EnterpriseTrusted', lists[1]!.headerText,
         'enterprisetrusted list header wrong');
@@ -83,5 +87,7 @@ suite('CertificateSubpageV2Test', () => {
         'enterprisetrusted list certsource wrong');
     assertTrue(
         lists[1]!.hideExport, 'enterprisetrusted hideexport value incorrect');
+    assertTrue(
+        lists[1]!.showImport, 'enterprisetrusted showimport value incorrect');
   });
 });

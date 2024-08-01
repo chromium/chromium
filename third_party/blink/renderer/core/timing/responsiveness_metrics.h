@@ -202,6 +202,13 @@ class CORE_EXPORT ResponsivenessMetrics
   void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
   base::TimeTicks CurrentInteractionEventQueuedTimestamp() const;
 
+  // TODO: Revisit if this is redandunt.
+  struct KeycodeInfo {
+    int keycode;
+    uint32_t interactionId;
+    uint32_t interactionOffset;
+  };
+
  private:
   // Record UKM for user interaction latencies.
   void RecordUserInteractionUKM(
@@ -252,6 +259,10 @@ class CORE_EXPORT ResponsivenessMetrics
   // Indicates if a key is being held for a sustained period of time
   bool IsHoldingKey(std::optional<int> key_code);
 
+  bool TryHandleKeyboardEventSimulatedClick(
+      PerformanceEventTiming* entry,
+      const std::optional<PointerId>& last_pointer_id);
+
   Member<WindowPerformance> window_performance_;
 
   // Map from keyCodes to interaction info (ID, offset, and timestamps).
@@ -279,8 +290,7 @@ class CORE_EXPORT ResponsivenessMetrics
 
   CompositionState composition_state_ = kNonComposition;
 
-  std::optional<int> last_keydown_keycode_;
-
+  std::optional<KeycodeInfo> last_keydown_keycode_info_;
   // InteractionInfo storing interactionId, interaction offset, and timestamps
   // of entries for reporting them to UKM in 3 main cases:
   //  1) Pressing a key under composition.

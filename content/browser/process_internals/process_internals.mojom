@@ -100,6 +100,9 @@ interface ProcessInternalsHandler {
   // Returns a string containing the currently active isolation modes.
   GetIsolationMode() => (string mode);
 
+  // Returns a string containing the currently active process per site mode.
+  GetProcessPerSiteMode() => (string mode);
+
   // Returns a list of user-triggered isolated origins, which are typically
   // saved when the user types a password into a corresponding site.  These
   // origins apply within the current profile only, they are preserved across

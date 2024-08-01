@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/network_context_client_base.h"
@@ -54,9 +55,9 @@ void CreateFile(const base::FilePath& path, const char* content) {
 void ValidateFileContents(base::File& file, std::string_view expected_content) {
   int expected_length = expected_content.size();
   ASSERT_EQ(file.GetLength(), expected_length);
-  char content[expected_length];
-  file.Read(0, content, expected_length);
-  EXPECT_EQ(0, strncmp(content, expected_content.data(), expected_length));
+  base::FixedArray<unsigned char> content(expected_length);
+  file.ReadAtCurrentPosAndCheck(content);
+  EXPECT_EQ(base::as_string_view(content), expected_content);
 }
 
 const int kBrowserProcessId = 0;

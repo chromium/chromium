@@ -46,10 +46,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-class SyncServiceAndroidBridge;
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
@@ -61,6 +57,10 @@ class BackendMigrator;
 class SyncAuthManager;
 class SyncFeatureStatusForMigrationsRecorder;
 class SyncPrefsPolicyHandler;
+
+#if BUILDFLAG(IS_ANDROID)
+class SyncServiceAndroidBridge;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Look at the SyncService interface for information on how to use this class.
 // You should not need to know about SyncServiceImpl directly.
@@ -101,9 +101,10 @@ class SyncServiceImpl : public SyncService,
 
   ~SyncServiceImpl() override;
 
-  // Initializes the object. This must be called at most once, and
-  // immediately after an object of this class is constructed.
-  void Initialize();
+  // Initializes the object. This must be called at most once, and immediately
+  // after an object of this class is constructed. `controllers` determines all
+  // supported types and their controllers.
+  void Initialize(ModelTypeController::TypeVector controllers);
 
   // SyncService implementation
 #if BUILDFLAG(IS_ANDROID)
@@ -309,14 +310,6 @@ class SyncServiceImpl : public SyncService,
 
   bool UseTransportOnlyMode() const;
 
-  // Returns the set of data types that are supported in principle, possibly
-  // influenced by command-line options.
-  ModelTypeSet GetRegisteredDataTypes() const;
-
-  // Returns the ModelTypes allowed in transport-only mode (i.e. those that are
-  // not tied to sync-the-feature).
-  ModelTypeSet GetModelTypesForTransportOnlyMode() const;
-
   void UpdateDataTypesForInvalidations();
 
   // Shuts down and destroys the engine. |reset_reason| specifies the reason for
@@ -383,8 +376,7 @@ class SyncServiceImpl : public SyncService,
   // Returns the types that have a non-null ModelTypeLocalDataBatchUploader.
   ModelTypeSet GetModelTypesWithLocalDataBatchUploader() const;
 
-  // This profile's SyncClient, which abstracts away non-Sync dependencies and
-  // the Sync API component factory.
+  // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 
   // The class that handles getting, setting, and persisting sync preferences.
@@ -474,9 +466,6 @@ class SyncServiceImpl : public SyncService,
   // Tracks the set of failed data types (those that encounter an error
   // or must delay loading for some reason).
   DataTypeStatusTable::TypeErrorMap data_type_error_map_;
-
-  // List of available data type controllers.
-  ModelTypeController::TypeMap model_type_controllers_;
 
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 

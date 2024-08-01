@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -61,6 +62,24 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
   auto [_, inserted] = processors_.insert(
       std::make_pair(device_id, std::move(effects_processor)));
   CHECK(inserted);
+}
+
+void VideoEffectsServiceImpl::SetBackgroundSegmentationModel(
+    base::File model_file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(bialpio): make a copy of the model blob to serve it every time new
+  // processor gets created.
+  base::MemoryMappedFile memory_mapped_model_file;
+  if (!memory_mapped_model_file.Initialize(std::move(model_file))) {
+    return;
+  }
+
+  // Propagate the model to all already existing processors:
+  for (auto& device_id_and_processor : processors_) {
+    device_id_and_processor.second->SetBackgroundSegmentationModel(
+        memory_mapped_model_file.bytes());
+  }
 }
 
 void VideoEffectsServiceImpl::RemoveProcessor(const std::string& id) {

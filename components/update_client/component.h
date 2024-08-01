@@ -269,6 +269,7 @@ class Component {
     virtual std::string component_hash_sha256() const = 0;
     virtual void set_component_error_category(ErrorCategory error_category) = 0;
     virtual void set_component_error_code(int error_code) = 0;
+    virtual void set_component_extra_code1(int error_code) = 0;
     virtual std::unique_ptr<State> next_state_on_error() = 0;
     virtual std::unique_ptr<State> next_state() = 0;
 
@@ -303,6 +304,7 @@ class Component {
     std::string component_hash_sha256() const override;
     void set_component_error_category(ErrorCategory error_category) override;
     void set_component_error_code(int error_code) override;
+    void set_component_extra_code1(int error_code) override;
     std::unique_ptr<State> next_state_on_error() override;
     std::unique_ptr<State> next_state() override;
   };
@@ -319,6 +321,7 @@ class Component {
     std::string component_hash_sha256() const override;
     void set_component_error_category(ErrorCategory error_category) override;
     void set_component_error_code(int error_code) override;
+    void set_component_extra_code1(int error_code) override;
     std::unique_ptr<State> next_state_on_error() override;
     std::unique_ptr<State> next_state() override;
   };

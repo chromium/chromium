@@ -402,9 +402,11 @@ int OutputController::OnMoreData(base::TimeDelta delay,
                                  const media::AudioGlitchInfo& glitch_info,
                                  media::AudioBus* dest,
                                  bool is_mixing) {
-  TRACE_EVENT_BEGIN2("audio", "OutputController::OnMoreData", "glitches",
-                     glitch_info.count, "glitch_duration (ms)",
-                     glitch_info.duration.InMillisecondsF());
+  TRACE_EVENT("audio", "OutputController::OnMoreData", "this",
+              static_cast<void*>(this), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
+              "playout_delay (ms)", delay.InMillisecondsF());
+  glitch_info.MaybeAddTraceEvent();
 
   stats_tracker_->OnMoreDataCalled();
 
@@ -453,9 +455,6 @@ int OutputController::OnMoreData(base::TimeDelta delay,
     }
   }
 
-  TRACE_EVENT_END2("audio", "OutputController::OnMoreData", "timestamp (ms)",
-                   (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
-                   "delay (ms)", delay.InMillisecondsF());
   return frames;
 }
 

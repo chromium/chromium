@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
-CustomizationSection* const kCustomizationSectionToggles =
-    @"CustomizationSectionToggles";
+CustomizationSection* const kCustomizationSectionMainToggles =
+    @"CustomizationSectionMainToggles";
 
-NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
+CustomizationSection* const kCustomizationSectionDiscoverLinks =
+    @"CustomizationSectionDiscoverLinks";
+
+CustomizationSection* const kCustomizationSectionMagicStackToggles =
+    @"CustomizationSectionMagicStackToggles";
 
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"NavigationBarDismissButtonIdentifier";
@@ -28,5 +32,23 @@ NSString* const kCustomizationToggleMagicStackNavigableIdentifier =
     @"CustomizationToggleMagicStackNavigableIdentifier";
 NSString* const kCustomizationToggleDiscoverNavigableIdentifier =
     @"CustomizationToggleDiscoverNavigableIdentifier";
+
+NSString* const kCustomizationLinkFollowingIdentifier =
+    @"CustomizationLinkFollowingIdentifier";
+NSString* const kCustomizationLinkHiddenIdentifier =
+    @"CustomizationLinkHiddenIdentifier";
+NSString* const kCustomizationLinkActivityIdentifier =
+    @"CustomizationLinkActivityIdentifier";
+NSString* const kCustomizationLinkLearnMoreIdentifier =
+    @"CustomizationLinkLearnMoreIdentifier";
+
+const char kDiscoverFollowingURL[] =
+    "https://google.com/preferences/interests/yourinterests";
+const char kDiscoverHiddenURL[] =
+    "https://google.com/preferences/interests/hidden";
+const char kDiscoverActivityURL[] =
+    "https://myactivity.google.com/myactivity?product=50";
+const char kDiscoverLearnMoreURL[] = "https://support.google.com/chrome/"
+                                     "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
 
 const CGFloat kToggleIconPointSize = 18;

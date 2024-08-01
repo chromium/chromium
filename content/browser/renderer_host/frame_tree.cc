@@ -697,8 +697,7 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
           renderer_initiated_creation, std::move(main_browsing_context_state),
           create_case, frame_sink_id));
 
-  if (ShouldCreateNewHostForAllFrames() &&
-      create_case == CreateRenderViewHostCase::kSpeculative) {
+  if (create_case == CreateRenderViewHostCase::kSpeculative) {
     set_speculative_render_view_host(rvh->GetWeakPtr());
   } else {
     // Register non-speculative RenderViewHosts. If they are speculative, they

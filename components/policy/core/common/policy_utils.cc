@@ -4,7 +4,6 @@
 
 #include "components/policy/core/common/policy_utils.h"
 
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_service.h"
@@ -13,11 +12,6 @@ namespace policy::utils {
 
 bool IsPolicyTestingEnabled(PrefService* pref_service,
                             version_info::Channel channel) {
-  if (base::FeatureList::GetInstance() &&
-      !base::FeatureList::IsEnabled(policy::features::kEnablePolicyTestPage)) {
-    return false;
-  }
-
   if (pref_service &&
       !pref_service->GetBoolean(policy_prefs::kPolicyTestPageEnabled)) {
     return false;

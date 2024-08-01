@@ -87,6 +87,12 @@ class CC_EXPORT PictureLayerTilingSet {
                                 scoped_refptr<RasterSource> raster_source,
                                 bool can_use_lcd_text = false);
   size_t num_tilings() const { return tilings_.size(); }
+  // all_tiles_done() can return false negatives because:
+  //   1) PictureLayerTiling::all_tiles_done() could return false negatives;
+  //   2) it's not re-computed when a PictureLayerTiling is removed from
+  //      the set.
+  bool all_tiles_done() const { return all_tiles_done_; }
+  void set_all_tiles_done(bool done) { all_tiles_done_ = done; }
   int NumHighResTilings() const;
   PictureLayerTiling* tiling_at(size_t idx) { return tilings_[idx].get(); }
   const PictureLayerTiling* tiling_at(size_t idx) const {
@@ -257,6 +263,8 @@ class CC_EXPORT PictureLayerTilingSet {
                            float ideal_contents_scale);
 
   std::vector<std::unique_ptr<PictureLayerTiling>> tilings_;
+
+  bool all_tiles_done_ : 1 = true;
 
   const int tiling_interest_area_padding_;
   const float skewport_target_time_in_seconds_;

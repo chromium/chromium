@@ -452,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>jdiggs@chromium.org</owner>
   <owner>jkim@igalia.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.UsedOnDeviceSpeech"
-    enum="BooleanUsage" expires_after="2024-11-17">
+    enum="BooleanUsage" expires_after="2025-01-26">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1970,7 +1970,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
-    units="bytes" expires_after="2024-11-17">
+    units="bytes" expires_after="2025-01-26">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2823,6 +2823,35 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.{Feature}.Idle.Connected"
+    enum="BooleanConnected" expires_after="2025-02-28">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether the {Feature} has been connected to a client or not while
+    being idle (initialized but not used for more than 10min). This metric is
+    collected only once during the life time of ScreenAI service.
+  </summary>
+  <token key="Feature">
+    <variant name="MainContentExtraction" summary="Main Content Extraction"/>
+    <variant name="OCR" summary="Optical Character Recognition"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
+    units="ms" expires_after="2025-02-28">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long it takes to initialize {feature} in Screen AI service.
+  </summary>
+  <token key="feature">
+    <variant name="MainContentExtraction"
+        summary="Main Content Extraction functionality"/>
+    <variant name="OCR" summary="OCR functionality"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.{Feature}.Successful"
     enum="BooleanSuccess" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>
@@ -2992,7 +3021,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.

@@ -1111,6 +1111,17 @@ BASE_FEATURE(kAVDColorSpaceChanges,
              "AVDColorSpaceChanges",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether FFmpeg supports decoding H.264 video in software. Has no effect if
+// BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) is false.
+BASE_FEATURE(kBuiltInH264Decoder,
+             "BuiltInH264Decoder",
+#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 #if BUILDFLAG(IS_ANDROID)
 // Should we allow video playback to use an overlay if it's not needed for
 // security?  Normally, we'd always want to allow this, except as part of the
@@ -1162,11 +1173,6 @@ BASE_FEATURE(kMediaDrmPreprovisioningAtStartup,
 BASE_FEATURE(kMediaDrmGetStatusForPolicy,
              "MediaDrmGetStatusForPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables CanPlayType() (and other queries) for HLS MIME types. Note that
-// disabling this also causes navigation to .m3u8 files to trigger downloading
-// instead of playback.
-BASE_FEATURE(kCanPlayHls, "CanPlayHls", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of MediaPlayerRenderer for HLS playback. When disabled,
 // HLS manifests will fail to load (triggering source fallback or load error).
@@ -1233,17 +1239,6 @@ BASE_FEATURE(kChromeOSHWVBREncoding,
 #endif
 );
 
-#if !BUILDFLAG(USE_VAAPI)
-// Enable the hardware-accelerated direct video decoder instead of the one
-// needing the VdaVideoDecoder adapter. This flag is used mainly as a
-// chrome:flag for developers debugging issues as well as to be able to
-// experiment with direct VideoDecoder path on Linux Desktop.
-// TODO(b/159825227): remove when the direct video decoder is fully launched.
-BASE_FEATURE(kUseChromeOSDirectVideoDecoder,
-             "UseChromeOSDirectVideoDecoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(USE_VAAPI)
-
 // Limit the number of concurrent hardware decoder instances on ChromeOS.
 BASE_FEATURE(kLimitConcurrentDecoderInstances,
              "LimitConcurrentDecoderInstances",
@@ -1302,15 +1297,6 @@ BASE_FEATURE(kEnableArmHwdrm,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
-// ChromeOS has one of two VideoDecoder implementations active based on
-// SoC/board specific configurations that are sent via command line flags. This
-// switch allows using the non default implementation for testing.
-// TODO(b/159825227): remove when the "old" video decoder is fully launched.
-BASE_FEATURE(kUseAlternateVideoDecoderImplementation,
-             "UseAlternateVideoDecoderImplementation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)

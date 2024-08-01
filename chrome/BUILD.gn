@@ -57,6 +57,10 @@ if (is_android) {
   import("//third_party/icu/config.gni")
 }
 
+if (is_chromeos_ash) {
+  import("//build/chromeos/embed_sections.gni")
+}
+
 declare_args() {
   # On macOS, `is_chrome_branded` builds that have been signed locally will not
   # launch because certain entitlements are tied to the official Google code
@@ -1837,6 +1841,14 @@ if (is_linux || is_chromeos) {
           [ "//chrome/app/theme/$branding_path_component/product_logo_48.png" ]
     }
     outputs = [ "$root_out_dir/{{source_file_part}}" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  embed_sections("section_embedded_chrome_binary") {
+    binary_input = "$root_out_dir/chrome"
+    sections_embedded_binary_output = "$root_out_dir/chrome.sections_embedded"
+    deps = [ ":chrome" ]
   }
 }
 

@@ -82,6 +82,12 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                                  base::TimeDelta bucket_size) override {}
   void StopFrameCountingForTest(
       StopFrameCountingForTestCallback callback) override {}
+  void StartOverdrawTrackingForTest(const FrameSinkId& root_frame_sink_id,
+                                    base::TimeDelta bucket_size) override {}
+  void StopOverdrawTrackingForTest(
+      const FrameSinkId& root_frame_sink_id,
+      mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback)
+      override {}
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token) override {}
   void HasUnclaimedViewTransitionResourcesForTest(

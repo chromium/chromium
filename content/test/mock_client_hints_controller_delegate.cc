@@ -48,7 +48,7 @@ MockClientHintsControllerDelegate::~MockClientHintsControllerDelegate() =
 
 network::NetworkQualityTracker*
 MockClientHintsControllerDelegate::GetNetworkQualityTracker() {
-  return nullptr;
+  return &network_quality_tracker_;
 }
 
 bool MockClientHintsControllerDelegate::IsJavaScriptAllowed(

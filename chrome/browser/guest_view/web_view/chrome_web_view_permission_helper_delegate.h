@@ -44,6 +44,14 @@ class ChromeWebViewPermissionHelperDelegate
   ~ChromeWebViewPermissionHelperDelegate() override;
 
   // WebViewPermissionHelperDelegate implementation.
+  void RequestMediaAccessPermissionForControlledFrame(
+      content::WebContents* source,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermissionForControlledFrame(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) override;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback) override;
@@ -75,6 +83,13 @@ class ChromeWebViewPermissionHelperDelegate
                             bool allow,
                             const std::string& user_input);
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+  void OnMediaPermissionResponseForControlledFrame(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback,
+      bool allow,
+      const std::string& user_input);
 
   void OnGeolocationPermissionResponse(
       bool user_gesture,

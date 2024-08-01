@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ViewerPdfSidenavElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 function createSidenav(): ViewerPdfSidenavElement {
@@ -130,31 +130,31 @@ const tests = [
 
     // Arrow keys toggle through thumbnail, outline and attachment view.
     // Thumbnail -> Outline
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertOutlineView();
 
     // Outline -> Attachment
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertAttachmentView();
 
     // Attachment -> Thumbnail
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertThumbnailView();
 
     // Thumbnail -> Attachment
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertAttachmentView();
 
     // Attachment -> Outline
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertOutlineView();
 
     // Outline -> Thumbnail
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertThumbnailView();
 
     // Pressing arrow keys outside of icons shouldn't do anything.
-    keyDownOn(content, 0, '', 'ArrowDown');
+    keyDownOn(content, 0, [], 'ArrowDown');
     assertThumbnailView();
 
     chrome.test.succeed();
@@ -233,19 +233,19 @@ const tests = [
     // Arrow keys toggle through thumbnail and outline view.
 
     // Thumbnail -> Outline
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertOutlineView();
 
     // Outline -> Thumbnail
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertThumbnailView();
 
     // Thumbnail -> Outline
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertOutlineView();
 
     // Outline -> Thumbnail
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertThumbnailView();
 
     chrome.test.succeed();
@@ -324,19 +324,19 @@ const tests = [
     // Arrow keys toggle through thumbnail and attachment view.
 
     // Thumbnail -> Attachment
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertAttachmentView();
 
     // Attachment -> Thumbnail
-    keyDownOn(icons, 0, '', 'ArrowDown');
+    keyDownOn(icons, 0, [], 'ArrowDown');
     assertThumbnailView();
 
     // Thumbnail -> Attachment
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertAttachmentView();
 
     // Attachment -> Thumbnail
-    keyDownOn(icons, 0, '', 'ArrowUp');
+    keyDownOn(icons, 0, [], 'ArrowUp');
     assertThumbnailView();
 
     chrome.test.succeed();

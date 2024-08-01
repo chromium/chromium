@@ -62,6 +62,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateVisualData(
       const LocalTabGroupID local_group_id,
       const tab_groups::TabGroupVisualData* visual_data) override;
+  void UpdateGroupPosition(const base::Uuid& sync_id,
+                           std::optional<bool> is_pinned,
+                           std::optional<int> new_index) override;
 
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,

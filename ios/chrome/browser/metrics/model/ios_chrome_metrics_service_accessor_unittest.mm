@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
-#import "build/branding_buildflags.h"
 
+#import "build/branding_buildflags.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -22,10 +22,12 @@ class IOSChromeMetricsServiceAccessorTest : public PlatformTest {
   IOSChromeMetricsServiceAccessorTest& operator=(
       const IOSChromeMetricsServiceAccessorTest&) = delete;
 
-  PrefService* GetLocalState() { return local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
  private:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 TEST_F(IOSChromeMetricsServiceAccessorTest, MetricsReportingEnabled) {

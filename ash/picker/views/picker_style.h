@@ -12,7 +12,7 @@
 
 namespace ash {
 
-inline constexpr auto kPickerViewMaxSize = gfx::Size(320, 340);
+inline constexpr int kPickerViewWidth = 320;
 
 inline constexpr int kPickerContainerBorderRadius = 12;
 inline constexpr ui::ColorId kPickerContainerBackgroundColor =

@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * Implementation of {@link HubManager} and {@link HubController}.
@@ -46,12 +47,12 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
+    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
-
     private HubCoordinator mHubCoordinator;
-
+    private int mSnackbarOverrideToken;
     private int mStatusIndicatorHeight;
     private int mAppHeaderHeight;
 
@@ -64,7 +65,8 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
+            @NonNull MenuButtonCoordinator menuButtonCoordinator,
+            @NonNull HubShowPaneHelper hubShowPaneHelper) {
         mContext = context;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
@@ -73,6 +75,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mSnackbarManager = snackbarManager;
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mHubShowPaneHelper = hubShowPaneHelper;
 
         // TODO(crbug.com/40283238): Consider making this a xml file so the entire core UI is
         // inflated.
@@ -104,6 +107,11 @@ public class HubManagerImpl implements HubManager, HubController {
     @Override
     public @NonNull ObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
+    }
+
+    @Override
+    public @NonNull HubShowPaneHelper getHubShowPaneHelper() {
+        return mHubShowPaneHelper;
     }
 
     @Override
@@ -229,7 +237,10 @@ public class HubManagerImpl implements HubManager, HubController {
             mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
                     menuOrKeyboardActionHandler);
         }
-        mSnackbarManager.setParentView(null);
+        if (mSnackbarOverrideToken != TokenHolder.INVALID_TOKEN) {
+            mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
+            mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
+        }
     }
 
     private void attachPaneDependencies(@Nullable Pane pane) {
@@ -242,6 +253,8 @@ public class HubManagerImpl implements HubManager, HubController {
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     menuOrKeyboardActionHandler);
         }
-        mSnackbarManager.setParentView(mHubContainerView);
+        mSnackbarOverrideToken =
+                mSnackbarManager.pushParentViewToOverrideStack(
+                        mHubCoordinator.getSnackbarContainer());
     }
 }

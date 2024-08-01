@@ -53,7 +53,7 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromDotHostname) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          GetDohProviderEntry("CleanBrowsingFamily").feature});
+          GetDohProviderEntry("CleanBrowsingFamily").feature.get()});
   doh_servers = GetDohUpgradeServersFromDotHostname(
       "family-filter-dns.cleanbrowsing.org");
   EXPECT_EQ(0u, doh_servers.size());
@@ -93,8 +93,9 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{GetDohProviderEntry("CleanBrowsingSecure").feature,
-                             GetDohProviderEntry("Cloudflare").feature});
+      /*disabled_features=*/{
+          GetDohProviderEntry("CleanBrowsingSecure").feature.get(),
+          GetDohProviderEntry("Cloudflare").feature.get()});
 
   doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
   EXPECT_THAT(doh_servers,

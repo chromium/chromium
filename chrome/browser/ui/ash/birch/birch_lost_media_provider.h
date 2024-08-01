@@ -91,12 +91,18 @@ class ASH_EXPORT BirchLostMediaProvider
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       media_observer_receiver_{this};
 
+  // Whether the media is playing (it might be paused or stopped).
+  bool is_playing_ = false;
+
   // The title of the media item.
   std::u16string media_title_;
 
   // The origin source of the media item. This will assist in the creation of a
   // complete GURL source on birch item creation.
   std::u16string source_url_;
+
+  // The type of the secondary icon. Default to kUnknown type.
+  SecondaryIconType secondary_icon_type_ = SecondaryIconType::kUnknown;
 
   // `VideoConferenceTrayController` used to get active video conference
   // session.

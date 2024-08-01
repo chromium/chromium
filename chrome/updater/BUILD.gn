@@ -367,9 +367,10 @@ if (is_win || is_mac || is_linux) {
         "update_service_internal_impl_qualifying_linux.cc",
         "update_usage_stats_task_linux.cc",
       ]
-      public_configs = [
-        "linux:libcurl",
-        "linux:libsystemd",
+
+      libs = [
+        "curl",
+        "systemd",
       ]
     }
   }
@@ -897,6 +898,13 @@ if (is_win || is_mac || is_linux) {
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",
       ]
 
+      if (target_cpu == "arm64") {
+        data += [
+          "//third_party/updater/chrome_win_arm64/cipd/UpdaterSetup_test.exe",
+          "//third_party/updater/chromium_win_arm64/cipd/UpdaterSetup_test.exe",
+        ]
+      }
+
       if (target_cpu == "x64") {
         data += [
           "//third_party/updater/chrome_win_x86_64/cipd/UpdaterSetup_test.exe",
@@ -1040,7 +1048,7 @@ if (is_win || is_mac || is_linux) {
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
       data_deps += [ "//chrome/updater/linux:updater_test" ]
-      public_configs = [ "linux:libsystemd" ]
+      libs = [ "systemd" ]
     }
 
     if (is_posix) {

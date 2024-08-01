@@ -83,15 +83,12 @@ class V8IdleTask : public IdleTask {
 int WindowIdleTasks::requestIdleCallback(LocalDOMWindow& window,
                                          V8IdleRequestCallback* callback,
                                          const IdleRequestOptions* options) {
-  if (!window.GetFrame()) {
-    return 0;
-  }
-  return window.document()->RequestIdleCallback(V8IdleTask::Create(callback),
-                                                options);
+  return ScriptedIdleTaskController::From(window).RegisterCallback(
+      V8IdleTask::Create(callback), options);
 }
 
 void WindowIdleTasks::cancelIdleCallback(LocalDOMWindow& window, int id) {
-  window.document()->CancelIdleCallback(id);
+  ScriptedIdleTaskController::From(window).CancelCallback(id);
 }
 
 }  // namespace blink

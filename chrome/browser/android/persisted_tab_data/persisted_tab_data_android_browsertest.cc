@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
+
 #include <deque>
 
-#include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/test/bar_persisted_tab_data.h"
 #include "chrome/browser/android/persisted_tab_data/test/foo_persisted_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,11 +36,13 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
     // Create a second Tab.
     TabModel* tab_model =
         TabModelList::GetTabModelForWebContents(web_contents());
+    ASSERT_EQ(1, tab_model->GetTabCount());
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
     content::WebContents* second_web_contents = contents.release();
-    tab_model->CreateTab(tab_android(), second_web_contents);
+    tab_model->CreateTab(tab_android(), second_web_contents, /*select=*/true);
+    ASSERT_EQ(2, tab_model->GetTabCount());
   }
 
   TabAndroid* tab_android() {
@@ -49,7 +52,8 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
   TabAndroid* another_tab() {
     TabModel* tab_model =
         TabModelList::GetTabModelForWebContents(web_contents());
-    return tab_model->GetTabAt(1);
+    int another_tab_index = tab_model->GetTabAt(0) == tab_android() ? 1 : 0;
+    return tab_model->GetTabAt(another_tab_index);
   }
 
   void FooExistsForTesting(TabAndroid* tab_android,

@@ -29,6 +29,11 @@ BASE_FEATURE(kHistorySearchSettingsVisibility,
              "HistorySearchSettingsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kPerformanceClassListForHistorySearch(
+    &kHistorySearchSettingsVisibility,
+    "PerformanceClassListForHistorySearch",
+    "*");
+
 // Graduation features.
 
 // Note: ComposeGraduated is enabled by default because the feature is
@@ -57,10 +62,6 @@ BASE_FEATURE(kModelAdaptationCompose,
 
 BASE_FEATURE(kOnDeviceModelTestFeature,
              "OnDeviceModelTestFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOnDeviceModelPromptApiFeature,
-             "OnDeviceModelPromptApiFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kModelAdaptationHistorySearch,
@@ -165,8 +166,7 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
       return base::GetFieldTrialParamByFeatureAsBool(
           kOnDeviceModelTestFeature, "enable_adaptation", false);
     case ModelBasedCapabilityKey::kPromptApi:
-      return base::GetFieldTrialParamByFeatureAsBool(
-          kOnDeviceModelPromptApiFeature, "enable_adaptation", false);
+      return true;
     case ModelBasedCapabilityKey::kHistorySearch:
       return true;
     case ModelBasedCapabilityKey::kTabOrganization:

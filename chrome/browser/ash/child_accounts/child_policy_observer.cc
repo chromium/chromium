@@ -81,4 +81,8 @@ ChildPolicyObserver::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager;
 }
 
+std::string_view ChildPolicyObserver::name() const {
+  return "ChildPolicyObserver";
+}
+
 }  // namespace ash

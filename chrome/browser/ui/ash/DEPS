@@ -67,6 +67,7 @@ include_rules = [
   "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/favicon/favicon_service_factory.h",
   "+chrome/browser/feature_engagement/tracker_factory.h",
+  "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/file_system_access/chrome_file_system_access_permission_context.h",
   "+chrome/browser/file_system_access/file_system_access_permission_context_factory.h",
   "+chrome/browser/history/history_service_factory.h",
@@ -173,7 +174,6 @@ include_rules = [
   "+chrome/browser/ui/ui_features.h",
   "+chrome/browser/ui/views/accelerator_table.h",
   "+chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h",
-  "+chrome/browser/ui/views/apps/app_dialog/shortcut_removal_dialog_view.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   "+chrome/browser/ui/views/chrome_constrained_window_views_client.h",
   "+chrome/browser/ui/views/chrome_layout_provider.h",
@@ -301,11 +301,22 @@ specific_include_rules = {
   "shelf_context_menu_unittest\.cc": [
     "+components/viz/test/test_gpu_service_holder.h",
   ],
+  "birch_lost_media_provider\.cc": [
+    "+chrome/grit/preinstalled_web_apps_resources.h",
+  ],
   "birch_self_share_provider\.cc": [
     "+chrome/browser/favicon/favicon_utils.h",
     "+chrome/browser/sync/send_tab_to_self_sync_service_factory.h",
   ],
   "birch_keyed_service_unittest\.cc": [
     "+chrome/browser/sync/send_tab_to_self_sync_service_factory.h",
+  ],
+  "chrome_tab_strip_delegate\.cc":[
+    "+chrome/browser/favicon/favicon_utils.h",
+    "+chrome/browser/ui/tabs/tab_renderer_data.h",
+  ],
+    "snap_group_browsertest\.cc":[
+    "+chrome/browser/ui/views/tabs/tab_strip.h",
+    "+chrome/browser/ui/views/tabs/tab_strip_observer.h",
   ]
 }

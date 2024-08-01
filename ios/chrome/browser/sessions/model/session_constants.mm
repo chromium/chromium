@@ -25,9 +25,6 @@ const base::FilePath::CharType kWebStateStorageFilename[] =
 const base::FilePath::CharType kWebStateSessionFilename[] =
     FILE_PATH_LITERAL("state.pb");
 
-const base::FilePath::CharType kWebStateMetadataStorageFilename[] =
-    FILE_PATH_LITERAL("metadata.pb");
-
 NSString* const kLegacyWebStateListPinnedStateKey = @"PinnedState";
 
 NSString* const kLegacyWebStateListOpenerIndexKey = @"OpenerIndex";

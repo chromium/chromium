@@ -195,7 +195,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
             return std::make_unique<syncer::FakeUserEventService>();
           }));
-  browser_state_ = builder.Build();
+  browser_state_ = std::move(builder).Build();
 
   web::WebState::CreateParams params(browser_state_.get());
   web_state_ = web::WebState::Create(params);

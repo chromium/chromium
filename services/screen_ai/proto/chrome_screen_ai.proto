@@ -118,6 +118,9 @@ message WordBox {
 
   // Confidence as computed by the OCR engine.
   float confidence = 15;
+
+  // If true, foreground and background gray values are valid.
+  bool estimate_gray_success = 16;
 }
 
 // Symbol with associated bounding box.

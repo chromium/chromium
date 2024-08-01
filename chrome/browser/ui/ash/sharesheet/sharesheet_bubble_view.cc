@@ -230,9 +230,7 @@ void SharesheetBubbleView::ShowBubble(
   CHECK_GT(targets.size(), 0u);
   header_body_separator_ =
       body_view_->AddChildView(std::make_unique<views::Separator>());
-  if (chromeos::features::IsJellyEnabled()) {
-    header_body_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-  }
+  header_body_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
 
   const size_t targets_size = targets.size();
   auto scroll_view = std::make_unique<views::ScrollView>();
@@ -243,9 +241,7 @@ void SharesheetBubbleView::ShowBubble(
   if (expanded_view_) {
     body_footer_separator_ =
         body_view_->AddChildView(std::make_unique<views::Separator>());
-    if (chromeos::features::IsJellyEnabled()) {
-      body_footer_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-    }
+    body_footer_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
     expand_button_ =
         footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
             base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
@@ -317,19 +313,10 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
         views::BoxLayout::Orientation::kVertical);
 
     expanded_view_container
-        ->AddChildView(
-            chromeos::features::IsJellyEnabled()
-                ? CreateShareLabel(
-                      l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
-                      TypographyToken::kCrosHeadline1,
-                      cros_tokens::kCrosSysOnSurface, gfx::ALIGN_CENTER)
-                : CreateShareLabel(
-                      l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
-                      CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
-                      AshColorProvider::Get()->GetContentLayerColor(
-                          AshColorProvider::ContentLayerType::
-                              kTextColorPrimary),
-                      gfx::ALIGN_CENTER))
+        ->AddChildView(CreateShareLabel(
+            l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
+            TypographyToken::kCrosHeadline1, cros_tokens::kCrosSysOnSurface,
+            gfx::ALIGN_CENTER))
         ->SetProperty(views::kMarginsKey,
                       gfx::Insets::TLBR(kExpandViewPaddingTop, 0,
                                         kExpandViewPaddingBottom, 0));
@@ -353,9 +340,7 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
   if (expanded_view_container) {
     expanded_view_separator_ =
         scrollable_view->AddChildView(std::make_unique<views::Separator>());
-    if (chromeos::features::IsJellyEnabled()) {
-      expanded_view_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-    }
+    expanded_view_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
     expanded_view_separator_->SetProperty(views::kMarginsKey,
                                           gfx::Insets::VH(0, kSpacing));
     expanded_view_ =

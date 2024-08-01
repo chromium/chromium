@@ -59,6 +59,9 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   // Sets the results from `section` as the emoji bar's search results.
   void SetSearchResults(std::vector<PickerSearchResult> results);
 
+  // Returns the number of items displayed in the emoji bar.
+  size_t GetNumItems() const;
+
   views::View::Views GetItemsForTesting() const;
 
   views::Button* gifs_button_for_testing() { return gifs_button_; }

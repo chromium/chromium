@@ -30,6 +30,7 @@ static_library("multidevice_setup") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/services/multidevice_setup",
@@ -46,5 +47,6 @@ static_library("multidevice_setup") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/android_sms",
     "//chrome/browser/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
   ]
 }

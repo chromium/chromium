@@ -17,6 +17,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
+import org.chromium.base.UserData;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
@@ -29,12 +32,12 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class that controls Smart Text selection. Smart Text selection automatically augments the
- * selected boundaries and classifies the selected text based on the context.
- * This class requests the selection together with its surrounding text from the focused frame and
- * sends it to SmartSelectionProvider which does the classification itself.
+ * selected boundaries and classifies the selected text based on the context. This class requests
+ * the selection together with its surrounding text from the focused frame and sends it to
+ * SmartSelectionProvider which does the classification itself.
  */
 @JNINamespace("content")
-public class SmartSelectionClient implements SelectionClient {
+public class SmartSelectionClient implements SelectionClient, UserData {
     @IntDef({RequestType.CLASSIFY, RequestType.SUGGEST_AND_CLASSIFY})
     @Retention(RetentionPolicy.SOURCE)
     private @interface RequestType {
@@ -56,11 +59,16 @@ public class SmartSelectionClient implements SelectionClient {
     private ResultCallback mCallback;
     private SmartSelectionEventProcessor mSmartSelectionEventProcessor;
 
+    /** Observer list for surrounding text received. */
+    private final ObserverList<SurroundingTextCallback> mSurroundingTextReceivedListeners =
+            new ObserverList<>();
+
     /**
-     * Creates the SmartSelectionClient. Returns null in case SmartSelectionProvider does not exist
-     * in the system.
+     * Creates the SmartSelectionClient if not present. Returns null in case SmartSelectionProvider
+     * does not exist in the system.
      */
-    public static SmartSelectionClient create(ResultCallback callback, WebContents webContents) {
+    public static SmartSelectionClient fromWebContents(
+            ResultCallback callback, WebContents webContents) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || windowAndroid == null) return null;
 
@@ -69,19 +77,26 @@ public class SmartSelectionClient implements SelectionClient {
             return null;
         }
 
-        return new SmartSelectionClient(callback, webContents);
+        SmartSelectionClient client =
+                ((WebContentsImpl) webContents)
+                        .getOrSetUserData(SmartSelectionClient.class, SmartSelectionClient::new);
+        client.setCallback(callback, webContents);
+        return client;
     }
 
-    private SmartSelectionClient(ResultCallback callback, WebContents webContents) {
+    private SmartSelectionClient(WebContents webContents) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        mCallback = callback;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mSmartSelectionEventProcessor = SmartSelectionEventProcessor.create(webContents);
         }
-        mProvider =
-                new SmartSelectionProvider(callback, webContents, mSmartSelectionEventProcessor);
         mNativeSmartSelectionClient =
                 SmartSelectionClientJni.get().init(SmartSelectionClient.this, webContents);
+    }
+
+    private void setCallback(ResultCallback callback, WebContents webContents) {
+        mCallback = callback;
+        mProvider =
+                new SmartSelectionProvider(callback, webContents, mSmartSelectionEventProcessor);
     }
 
     @CalledByNative
@@ -152,9 +167,23 @@ public class SmartSelectionClient implements SelectionClient {
                         callbackData);
     }
 
+    @Override
+    public void addSurroundingTextReceivedListeners(SurroundingTextCallback observer) {
+        mSurroundingTextReceivedListeners.addObserver(observer);
+    }
+
+    @Override
+    public void removeSurroundingTextReceivedListeners(SurroundingTextCallback observer) {
+        mSurroundingTextReceivedListeners.removeObserver(observer);
+    }
+
     @CalledByNative
     private void onSurroundingTextReceived(
             @RequestType int callbackData, String text, int start, int end) {
+        for (SurroundingTextCallback observer : mSurroundingTextReceivedListeners) {
+            observer.onSurroundingTextReceived(text, start, end);
+        }
+
         if (!textHasValidSelection(text, start, end)) {
             mCallback.onClassified(new Result());
             return;

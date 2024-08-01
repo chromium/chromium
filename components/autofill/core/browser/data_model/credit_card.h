@@ -26,7 +26,7 @@ namespace autofill {
 inline constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
 inline constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
 
-struct AutofillMetadata;
+struct PaymentsMetadata;
 
 namespace internal {
 
@@ -172,8 +172,8 @@ class CreditCard : public AutofillDataModel {
   // AutofillDataModel:
   double GetRankingScore(base::Time current_time) const override;
 
-  AutofillMetadata GetMetadata() const;
-  bool SetMetadata(const AutofillMetadata& metadata);
+  PaymentsMetadata GetMetadata() const;
+  bool SetMetadata(const PaymentsMetadata& metadata);
 
   // Returns whether the card is deletable: if it is expired and has not been
   // used for longer than `kDisusedDataModelDeletionTimeDelta`.

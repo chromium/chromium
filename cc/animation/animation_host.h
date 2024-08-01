@@ -63,6 +63,10 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+
+  // Lazy removal of an unused timeline.
+  void DetachAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+
   const AnimationTimeline* GetTimelineById(int timeline_id) const;
   AnimationTimeline* GetTimelineById(int timeline_id);
 
@@ -111,6 +115,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void PushPropertiesTo(MutatorHost* host_impl,
                         const PropertyTrees& property_trees) override;
+
+  void RemoveStaleTimelines() override;
 
   void SetScrollAnimationDurationForTesting(base::TimeDelta duration) override;
   bool NeedsTickAnimations() const override;
@@ -262,6 +268,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   using IdToTimelineMap =
       std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
+
+  // A list of IDs for detached timelines. A timeline may be detached on the
+  // owner thread even during a protected sequence. These timelines are no
+  // longer used and should be cleaned up at the next opportune moment.
+  ProtectedSequenceForbidden<IdToTimelineMap> detached_timeline_map_;
 
   // AnimationHosts's ProtectedSequenceSynchronizer implementation is
   // implemented using this member. As such the various helpers can not be used

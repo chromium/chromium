@@ -282,7 +282,8 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
     const HeapVector<InlineItem>& items,
     wtf_size_t item_index) {
   LayoutUnit inline_end_size;
-  for (const InlineItem *cur = items.begin() + item_index, *end = items.end();
+  for (const InlineItem *cur = items.data() + item_index,
+                        *end = items.data() + items.size();
        cur != end; ++cur) {
     const InlineItem& item = *cur;
 
@@ -685,8 +686,7 @@ LayoutUnit LineBreaker::AddHyphen(InlineItemResults* item_results,
                                   wtf_size_t index,
                                   InlineItemResult* item_result) {
   DCHECK(!HasHyphen());
-  DCHECK_EQ(index,
-            static_cast<wtf_size_t>(item_result - item_results->begin()));
+  DCHECK_EQ(index, static_cast<wtf_size_t>(item_result - item_results->data()));
   DCHECK_LT(index, item_results->size());
   hyphen_index_ = index;
 
@@ -713,7 +713,7 @@ LayoutUnit LineBreaker::AddHyphen(InlineItemResults* item_results,
                                   InlineItemResult* item_result) {
   return AddHyphen(
       item_results,
-      base::checked_cast<wtf_size_t>(item_result - item_results->begin()),
+      base::checked_cast<wtf_size_t>(item_result - item_results->data()),
       item_result);
 }
 
@@ -1363,7 +1363,7 @@ void LineBreaker::HandleText(const InlineItem& item,
       if (item_result->item->Style()->ShouldPreserveWhiteSpaces() &&
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
         unsigned end_index = base::checked_cast<unsigned>(
-            item_result - line_info->Results().begin());
+            item_result - line_info->Results().data());
         Rewind(end_index, line_info);
       }
       return;
@@ -2073,7 +2073,7 @@ const ShapeResult* LineBreaker::ShapeText(const InlineItem& item,
   } else {
     shape_result = items_data_->segments->ShapeText(
         &shaper_, &item.Style()->GetFont(), item.Direction(), start, end,
-        base::checked_cast<unsigned>(&item - items_data_->items.begin()),
+        base::checked_cast<unsigned>(&item - items_data_->items.data()),
         options);
   }
   if (UNLIKELY(spacing_.HasSpacing()))
@@ -2549,7 +2549,7 @@ void LineBreaker::RewindTrailingOpenTags(LineInfo* line_info) {
     DCHECK(item_result.item);
     if (item_result.item->Type() != InlineItem::kOpenTag) {
       unsigned end_index =
-          base::checked_cast<unsigned>(&item_result - item_results.begin() + 1);
+          base::checked_cast<unsigned>(&item_result - item_results.data() + 1);
       if (end_index < item_results.size()) {
         const InlineItemResult& end_item_result = item_results[end_index];
         const InlineItemTextIndex end = end_item_result.Start();
@@ -2978,7 +2978,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
   if (state_ == LineBreakState::kContinue && remaining_width < 0 &&
       (!parent_breaker_ || auto_wrap_)) {
     const unsigned item_index = current_.item_index;
-    DCHECK_EQ(item_index, static_cast<unsigned>(&item - Items().begin()));
+    DCHECK_EQ(item_index, static_cast<unsigned>(&item - Items().data()));
     HandleOverflow(line_info);
     if (!line_info->HasOverflow() || item_index != current_.item_index) {
       return;
@@ -3102,7 +3102,7 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
          mode_ == LineBreakerMode::kMinContent);
   if (mode_ == LineBreakerMode::kMaxContent && max_size_cache_) {
     const unsigned item_index =
-        base::checked_cast<unsigned>(&item - Items().begin());
+        base::checked_cast<unsigned>(&item - Items().data());
     item_result->inline_size = (*max_size_cache_)[item_index];
     return;
   }
@@ -3134,7 +3134,7 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
         size_cache->resize(Items().size());
       }
       const unsigned item_index =
-          base::checked_cast<unsigned>(&item - Items().begin());
+          base::checked_cast<unsigned>(&item - Items().data());
       (*size_cache)[item_index] = result.sizes.max_size + inline_margins;
     }
     return;
@@ -3409,6 +3409,11 @@ bool LineBreaker::IsMonolithicRuby(
   }
 
   if (!auto_wrap_) {
+    return true;
+  }
+
+  // The base line is not breakable.
+  if (base_line.Width() <= LayoutUnit()) {
     return true;
   }
 

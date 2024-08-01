@@ -52,11 +52,15 @@ class DisabledAuthMessageView : public views::View {
   // views::View:
   void RequestFocus() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   raw_ptr<views::Label> message_title_;
   raw_ptr<views::Label> message_contents_;
   raw_ptr<views::ImageView> message_icon_;
+  // The preferred width of the view, this is set in `SetAuthDisabledMessage`.
+  int preferred_width_;
 };
 
 }  // namespace ash

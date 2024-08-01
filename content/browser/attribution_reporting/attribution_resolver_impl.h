@@ -12,26 +12,31 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/enum_set.h"
-#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/event_level_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
 
 class AttributionResolverDelegate;
+class AttributionTrigger;
 class StorableSource;
+
 struct AttributionInfo;
 
 // This class may be constructed on any sequence but must be accessed and
@@ -74,14 +79,15 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       std::optional<StoredSource::Id>) override;
   void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) override;
 
-  AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
+  attribution_reporting::mojom::EventLevelResult MaybeCreateEventLevelReport(
       const AttributionInfo& attribution_info,
       const StoredSource& source,
       const AttributionTrigger& trigger,
       std::optional<AttributionReport>& report,
-      std::optional<uint64_t>& dedup_key);
+      std::optional<uint64_t>& dedup_key)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  AttributionTrigger::AggregatableResult
+  attribution_reporting::mojom::AggregatableResult
   MaybeCreateAggregatableAttributionReport(
       const AttributionInfo& attribution_info,
       const StoredSource& source,
@@ -89,7 +95,22 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       std::optional<AttributionReport>& report,
       std::optional<uint64_t>& dedup_key,
       std::optional<int>& max_aggregatable_reports_per_destination,
-      std::optional<int64_t>& rate_limits_max_attributions);
+      std::optional<int64_t>& rate_limits_max_attributions)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Generates null aggregatable reports for the given trigger and stores all
+  // those reports.
+  [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
+      const AttributionTrigger&,
+      const AttributionInfo&,
+      const StoredSource* source,
+      std::optional<AttributionReport>& new_aggregatable_report,
+      std::optional<base::Time>& min_null_aggregatable_report_time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  base::Time GetAggregatableReportTime(const AttributionTrigger& trigger,
+                                       base::Time trigger_time) const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::unique_ptr<AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);

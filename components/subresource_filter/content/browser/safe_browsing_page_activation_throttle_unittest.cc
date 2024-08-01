@@ -39,6 +39,7 @@
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/activation_list.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -174,7 +175,8 @@ class SafeBrowsingPageActivationThrottleTest
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
     ruleset_dealer_ = std::make_unique<VerifiedRulesetDealer::Handle>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        kSafeBrowsingRulesetConfig);
     ruleset_dealer_->TryOpenAndSetRulesetFile(test_ruleset_pair_.indexed.path,
                                               /*expected_checksum=*/0,
                                               base::DoNothing());
@@ -662,9 +664,6 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, ActivationList) {
        safe_browsing::ThreatPatternType::MALWARE_DISTRIBUTION},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
        SB_THREAT_TYPE_API_ABUSE,
-       safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
-      {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       SB_THREAT_TYPE_BLOCKLISTED_RESOURCE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
        SB_THREAT_TYPE_URL_BINARY_MALWARE,

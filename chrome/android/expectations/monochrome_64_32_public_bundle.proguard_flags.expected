@@ -267,17 +267,6 @@
   public <init>();
 }
 
-# These classes aren't themselves referenced, but __ProcessService[0,1,2...] are
-# referenced, and we look up these services by appending a number onto the name
-# of the base class. Thus, we need to keep the base class name around so that
-# the child classes can be looked up.
--keep class org.chromium.content.app.SandboxedProcessService {
-  public <init>();
-}
--keep class org.chromium.content.app.PrivilegedProcessService {
-  public <init>();
-}
-
 # Let proguard know CastMediaOptions in CastOptions is always null, so it can
 # trim unused MediaNotificationService methods. This saves about 170 methods in
 # the dex file. https://crbug.com/855081
@@ -459,6 +448,11 @@
 # TODO(crbug.com/315973491): Restrict the broad scope of this rule.
 -keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
   native <methods>;
+}
+
+# Used when multiplexing. We don't package our own @UsedByReflection, so using this instead.
+-keepclasseswithmembers class !cr_allowunused,**J.N {
+  public long *_HASH;
 }
 
 # File: obj/third_party/androidx/androidx_appcompat_appcompat_java/proguard.txt

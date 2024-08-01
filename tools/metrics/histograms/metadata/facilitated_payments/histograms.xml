@@ -22,7 +22,7 @@ reviewer.
 <!-- Note: Update the histogram summaries when adding a new variant.-->
 
 <variants name="FacilitatedPaymentsTypes">
-  <variant name=".Pix"
+  <variant name="Pix"
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
 
@@ -258,9 +258,9 @@ reviewer.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
   <token key="TransactionResult">
-    <variant name=".Abandoned" summary="Abandoned transaction"/>
-    <variant name=".Failed" summary="Failed transaction"/>
-    <variant name=".Success" summary="Successful transaction"/>
+    <variant name="Abandoned" summary="Abandoned transaction"/>
+    <variant name="Failed" summary="Failed transaction"/>
+    <variant name="Success" summary="Successful transaction"/>
   </token>
 </histogram>
 

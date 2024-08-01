@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1073417869336441572">‏רוצה לעזור לנו לשפר את Chrome? אפשר לשתף אותנו בסיבה לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">הסתרת הכרטיס לגבי ירידה במחיר</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1192844206376121885">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">עזרה ומשוב</translation>
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
-<translation id="2550801787432930915">כרטיס לגבי ירידה במחיר</translation>
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3859306556332390985">הרצה קדימה</translation>
 <translation id="3895926599014793903">שינוי הזום בכל מקרה</translation>
+<translation id="3905475044299942653">עצירה של התראות מרובות</translation>
 <translation id="3908288065506437185">‏חסימת קובצי cookie של צד שלישי במצב פרטי</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">‏יכול להיות שחלק מהתכונות לא יפעלו. אתרים קשורים עדיין יכולים להשתמש בקובצי cookie של צד שלישי.</translation>
@@ -350,7 +349,6 @@
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
 <translation id="6653342741369270081">כדי לצאת ממסך מלא, צריך ללחוץ על לחצן 'הקודם'.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{הסתרת האפשרות 'המשך הגלישה בכרטיסייה הזו‘}one{הסתרת האפשרות 'המשך הגלישה בכרטיסיות האלה‘}two{הסתרת האפשרות 'המשך הגלישה בכרטיסיות האלה‘}other{הסתרת האפשרות 'המשך הגלישה בכרטיסיות האלה‘}}</translation>
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
 <translation id="6722828510648505498">חסימה של בקשות כניסה משירותי זיהוי.</translation>
@@ -360,6 +358,7 @@
 <translation id="6787751205395685251">יש לבחור אפשרות עבור <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
+<translation id="6840760312327750441">כדי לקבץ כרטיסיות, יש ללחוץ לחיצה ארוכה על כרטיסייה. בזמן הלחיצה, יש לגרור אותה אל כרטיסייה אחרת.</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
@@ -516,5 +515,6 @@
 <translation id="9162462602695099906">הדף הזה מסוכן</translation>
 <translation id="930525582205581608">לשכוח את האתר הזה?</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
+<translation id="959682366969460160">ארגון הפריטים</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>
 </translationbundle>

@@ -46,8 +46,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
                                             SuggestionType type) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       SuggestionType type) override;
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
 
   // Initializes the instance with the given parameters. |personal_data_manager|
   // is a profile-scope data manager used to retrieve promo code offers from the

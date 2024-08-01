@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Sugerencia: <ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
 <translation id="2662028055331606429">Puntuación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar sitio</translation>
+<translation id="2677748264148917807">Salir</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creado hace <ph name="NUM_HOURS_ONE" /> hora}other{Creado hace <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">¿Ver información de la tienda?</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="3008554597174452548">Dejar de seguir el producto</translation>
 <translation id="3026391124054406831">Crea grupos para organizar tus pestañas.</translation>
+<translation id="3051031624272448591">Siempre puedes recuperarlas desde el historial</translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icono de color <ph name="COLOR_NAME" /> del grupo de pestañas</translation>
 <translation id="3194464645767632461">puntuación</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Morado</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Desplegar el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Desplegar el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="427987768447457592">Nuevo grupo de pestañas</translation>
-<translation id="4338724047016295066">Las pestañas inactivas se cerrarán automáticamente. Podrás encontrarlas en el historial siempre que quieras.</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4460014764210899310">Sin agrupar</translation>
+<translation id="4590027107044272416">Ahora puedes abrir una nueva pestaña aquí</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{¿Cerrar 1 pestaña inactiva?}other{¿Cerrar <ph name="TAB_COUNT_MANY" /> pestañas inactivas?}}</translation>
 <translation id="4648718555153979859">Tus pestañas se agrupan aquí</translation>
 <translation id="4686942373615810936">Creado ahora mismo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Cerrar después de 1 día}other{Cerrar después de <ph name="DAY_COUNT_MANY" /> días}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> reseña)}other{(<ph name="REVIEWS_COUNT_MANY" /> reseñas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4870911314065352661">¿Cerrar todas las pestañas?</translation>
+<translation id="4871719318659334896">Cerrar grupo</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Cerrar pestaña}other{Cerrar pestañas}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupos guardados (se cerrarán las pestañas y se eliminarán los grupos)</translation>
@@ -100,7 +104,9 @@
 <translation id="5972844218283131174">Desmarcar todo</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6040143037577758943">Cerrar</translation>
+<translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este elemento ha bajado recientemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Selecciona pestañas</translation>
 <translation id="6228793724645064692">(valoración de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>
@@ -115,7 +121,6 @@
 <translation id="6562820390860419811">Mover pestaña a la izquierda</translation>
 <translation id="6615455863669487791">Ver</translation>
 <translation id="6744956528665271406">Editar color del grupo</translation>
-<translation id="6840760312327750441">Para agrupar pestañas, mantén pulsada una pestaña. A continuación, arrástrala sobre otra pestaña.</translation>
 <translation id="6856809498882026482">Ocultar el modo de selección múltiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestaña}other{Compartir pestañas}}</translation>
 <translation id="7129458170538955174">Información sobre esta tienda abierta a media altura</translation>
@@ -125,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> seleccionado</translation>
 <translation id="7326879924029668159">Ver política de devoluciones y más</translation>
 <translation id="7352298686197644113">Consulta qué artículo de las pestañas abiertas tiene un precio más bajo</translation>
+<translation id="7421293530411019405">¿Salir del grupo de pestañas?</translation>
 <translation id="7452985128687107478">Los grupos de pestañas se guardan y se actualizan automáticamente en todos tus dispositivos</translation>
 <translation id="747459581954555080">Restaurar todo</translation>
 <translation id="753732157349120914">Función de cambio de pestaña</translation>
@@ -152,12 +158,15 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cerrar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8631711675211020168">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos los dispositivos</translation>
+<translation id="870736955561925754">¿Cerrar pestaña y eliminar grupo?</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8730999928494395583">Tu actividad en estas pestañas de Incógnito se eliminará de este dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creado hace <ph name="NUM_MONTHS_ONE" /> mes}other{Creado hace <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8820741577754260431">Consulta las bajadas de precio en las pestañas</translation>
 <translation id="8887921976452567404">Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas.</translation>
+<translation id="8915916167043355778">Cerrar todo</translation>
 <translation id="8926389886865778422">No preguntar de nuevo</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Desplegar grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Desplegar grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="9090098097337832354">Información sobre esta tienda cerrada</translation>
@@ -165,6 +174,5 @@
 <translation id="9169594135889675189">Añadir una pestaña al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se eliminará de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña de color <ph name="COLOR_NAME" />.}other{Desplegar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas de color <ph name="COLOR_NAME" />.}}</translation>
-<translation id="959682366969460160">Mantenlo todo organizado</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

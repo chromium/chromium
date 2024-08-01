@@ -34,12 +34,14 @@ SharedStorageURLLoaderFactoryProxy::SharedStorageURLLoaderFactoryProxy(
         frame_url_loader_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     const url::Origin& frame_origin,
+    const url::Origin& data_origin,
     const GURL& script_url,
     network::mojom::CredentialsMode credentials_mode,
     const net::SiteForCookies& site_for_cookies)
     : frame_url_loader_factory_(std::move(frame_url_loader_factory)),
       receiver_(this, std::move(pending_receiver)),
       frame_origin_(frame_origin),
+      data_origin_(data_origin),
       script_url_(script_url),
       credentials_mode_(credentials_mode),
       site_for_cookies_(site_for_cookies) {}
@@ -63,6 +65,12 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.url = script_url_;
   new_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                 "application/javascript");
+  if (!frame_origin_.IsSameOriginWith(data_origin_)) {
+    // The data origin can't be opaque.
+    DCHECK(!data_origin_.opaque());
+    new_request.headers.SetHeader(kSecSharedStorageDataOriginHeader,
+                                  data_origin_.Serialize());
+  }
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
   new_request.credentials_mode = credentials_mode_;
   new_request.site_for_cookies = site_for_cookies_;

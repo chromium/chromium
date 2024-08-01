@@ -98,6 +98,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SetLastCommittedURL(const GURL& url) override;
   void SetTitle(const std::u16string& new_title) override;
   void SetMainFrameMimeType(const std::string& mime_type) override;
+  void SetMainFrameSize(const gfx::Size& frame_size) override;
   const std::string& GetContentsMimeType() override;
   void SetIsCurrentlyAudible(bool audible) override;
   void TestDidReceiveMouseDownEvent() override;

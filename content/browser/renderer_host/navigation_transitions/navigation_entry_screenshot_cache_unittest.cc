@@ -81,7 +81,8 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
     const auto& bitmap = GetBitmapOfColor(color);
     auto* cache = GetCacheForTab(tab);
     cache->SetScreenshot(
-        nullptr, std::make_unique<NavigationEntryScreenshot>(bitmap, entry_id),
+        nullptr,
+        std::make_unique<NavigationEntryScreenshot>(bitmap, entry_id, true),
         false);
   }
 

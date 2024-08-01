@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberitahu kami sebab anda membenarkan kuki pihak ketiga. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Sembunyikan kad penurunan harga</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1192844206376121885">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> laman}other{<ph name="SITE_COUNT" /> laman}}</translation>
+<translation id="1500473259453106018">Sembunyikan kad penurunan harga pada tab</translation>
 <translation id="1510341833810331442">Laman tidak dibenarkan menyimpan data pada peranti anda</translation>
 <translation id="1547123415014299762">Kuki pihak ketiga dibenarkan</translation>
 <translation id="1568470248891039841">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Laman lain boleh meminta kebenaran anda untuk menggunakan maklumat yang disimpan tentang anda ketika anda menyemak imbas laman tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang kandungan terbenam<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Bantuan &amp; maklum balas</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
-<translation id="2550801787432930915">Kad penurunan harga</translation>
 <translation id="2570922361219980984">Akses lokasi turut dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Padamkan data semakan imbas…</translation>
 <translation id="3242646949159196181">Apabila dihidupkan, laman dapat memainkan bunyi. Apabila dimatikan, laman tidak dapat memainkan bunyi.</translation>
+<translation id="3273479183583863618">Penurunan harga pada tab</translation>
 <translation id="3277252321222022663">Benarkan tapak mengakses penderia (disyorkan)</translation>
 <translation id="3285500645985761267">Benarkan laman berkaitan melihat aktiviti anda dalam kumpulan</translation>
 <translation id="3295019059349372795">Bab 11: Oz, Kota Zamrud yang Menakjubkan</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari ke hadapan</translation>
 <translation id="3895926599014793903">Zum didaya paksa</translation>
+<translation id="3905475044299942653">Hentikan banyak pemberitahuan</translation>
 <translation id="3908288065506437185">Sekat kuki pihak ketiga dalam mod Inkognito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sesetengah ciri mungkin tidak berfungsi. Laman yang berkaitan masih boleh menggunakan kuki pihak ketiga.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
 <translation id="662080504995468778">Kekal di sini</translation>
 <translation id="6653342741369270081">Tekan butang kembali untuk keluar daripada skrin penuh.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sembunyikan teruskan dengan tab ini}other{Sembunyikan teruskan dengan tab ini}}</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Muat turun aktif</translation>
 <translation id="6722828510648505498">Sekat gesaan log masuk daripada perkhidmatan identiti.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Pilih pilihan untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
 <translation id="6864395892908308021">Peranti ini tidak dapat membaca NFC</translation>
+<translation id="6870169401250095575">Sembunyikan kad Pemeriksaan Keselamatan</translation>
 <translation id="6912998170423641340">Sekat tapak daripada membaca teks dan imej daripada papan keratan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Laman yang anda lawati boleh menyimpan maklumat tentang perkara yang anda lakukan agar laman tersebut berfungsi seperti yang dijangkakan — contohnya, untuk memastikan anda terus dilog masuk ke laman atau untuk menyimpan item dalam troli beli-belah anda. Selalunya laman menyimpan maklumat ini pada peranti anda buat sementara waktu.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sembunyikan kad teruskan dengan tab ini}other{Sembunyikan kad teruskan dengan tab ini}}</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="930525582205581608">Lupakan laman ini?</translation>
 <translation id="947156494302904893">Laman yang anda lawati boleh mengesahkan bahawa anda orang sebenar dan bukan bot</translation>
+<translation id="959682366969460160">Jadi teratur</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 </translationbundle>

@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
@@ -27,7 +26,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -67,12 +65,7 @@ class PolicyTestPageVisibilityTest
     : public PlatformBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  PolicyTestPageVisibilityTest() {
-    // Enable or disable feature as needed
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kEnablePolicyTestPage,
-        IsPolicyTestPageEnabledByFeature());
-  }
+  PolicyTestPageVisibilityTest() = default;
   PolicyTestPageVisibilityTest(const PolicyTestPageVisibilityTest&) = delete;
   PolicyTestPageVisibilityTest& operator=(const PolicyTestPageVisibilityTest&) =
       delete;
@@ -116,12 +109,11 @@ class PolicyTestPageVisibilityTest
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
-  bool IsPolicyTestPageEnabledByFeature() { return std::get<0>(GetParam()); }
-  bool IsPolicyTestPageEnabledByPolicy() { return std::get<1>(GetParam()); }
+  bool IsPolicyTestPageEnabledByPolicy() { return std::get<0>(GetParam()); }
 
   // Returns true if this profile is not managed.
   bool IsPolicyTestPageEnabledByManagedProfile() {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   int GetProfileManagement() {
@@ -133,8 +125,7 @@ class PolicyTestPageVisibilityTest
   }
 
   bool GetExpectedValue() {
-    return IsPolicyTestPageEnabledByFeature() &&
-           IsPolicyTestPageEnabledByPolicy() &&
+    return IsPolicyTestPageEnabledByPolicy() &&
            IsPolicyTestPageEnabledByManagedProfile();
   }
 
@@ -158,9 +149,6 @@ class PolicyTestPageVisibilityTest
       EXPECT_TRUE(content::ExecJs(web_contents(), kJavaScript));
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that the chrome://policy/test page is visible only when both the flag
@@ -198,9 +186,6 @@ INSTANTIATE_TEST_SUITE_P(PolicyTestPageUITestInstance,
 class PolicyTestHandlerTest : public PlatformBrowserTest {
  public:
   PolicyTestHandlerTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kEnablePolicyTestPage, true);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     if (policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                               chrome::GetChannel())) {
@@ -261,7 +246,6 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
   content::TestWebUI* web_ui() { return &web_ui_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::TestWebUI web_ui_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -709,11 +693,7 @@ const char kExtensionSchemaJson[] = R"({
 
 class PolicyTestUITest : public PlatformBrowserTest {
  public:
-  PolicyTestUITest() {
-    // Enable kEnablePolicyTestPage feature.
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kEnablePolicyTestPage, true);
-  }
+  PolicyTestUITest() = default;
   PolicyTestUITest(const PolicyTestUITest&) = delete;
   PolicyTestUITest& operator=(const PolicyTestUITest&) = delete;
 
@@ -798,7 +778,6 @@ class PolicyTestUITest : public PlatformBrowserTest {
 
  private:
   policy::Schema extension_schema_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 }  // namespace

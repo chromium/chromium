@@ -36,7 +36,8 @@ ArchivableCredential* TestPasskeyCredential() {
                   rpId:@"rpId1"
             privateKey:StringToData("privateKey1")
              encrypted:StringToData("encrypted1")
-          creationTime:kJan1st2024];
+          creationTime:kJan1st2024
+          lastUsedTime:kJan1st2024];
 }
 
 ArchivableCredential* TestPasskeyCredential2() {
@@ -51,7 +52,8 @@ ArchivableCredential* TestPasskeyCredential2() {
                   rpId:@"rpId2"
             privateKey:StringToData("privateKey2")
              encrypted:StringToData("encrypted2")
-          creationTime:kJan1st2024 + 1];
+          creationTime:kJan1st2024 + 1
+          lastUsedTime:kJan1st2024 + 1];
 }
 
 ArchivableCredential* TestPasswordCredential() {

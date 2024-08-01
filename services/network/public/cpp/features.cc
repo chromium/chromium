@@ -474,4 +474,11 @@ const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders{
     &kNetworkContextPrefetch,
     /*name=*/"max_loaders", /*default_value=*/10};
 
+// This feature enables treating 0.0.0.0/8 as the public address space instead
+// of private or local. This is a killswitch for a tightening of a loophole in
+// Private Network Access. See https://crbug.com/40058874.
+BASE_FEATURE(kTreatNullIPAsPublicAddressSpace,
+             "TreatNullIPAsPublicAddressSpace",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

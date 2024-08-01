@@ -12,6 +12,7 @@
 #import "components/variations/service/variations_service_client.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -126,11 +126,15 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
   ~AppStoreRatingSceneAgentTest() override {
     ClearDefaultBrowserPromoData();
-    local_state_.Get()->ClearPref(prefs::kAppStoreRatingPolicyEnabled);
+    local_state()->ClearPref(prefs::kAppStoreRatingPolicyEnabled);
+  }
+
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
   }
 
  protected:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::WebTaskEnvironment task_environment_;
   AppStoreRatingSceneAgent* test_scene_agent_;
@@ -146,7 +150,7 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
   void CreateFakeSceneState() {
     id mockAppState = OCMClassMock([AppState class]);
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     fake_scene_state_ =
         [[FakeSceneState alloc] initWithAppState:mockAppState
                                     browserState:browser_state_.get()];
@@ -195,7 +199,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestDisabledByPolicy) {
   SetTrueChromeLikelyDefaultBrowser();
 
   // Disabling the policy.
-  local_state_.Get()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
+  local_state()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
@@ -218,7 +222,7 @@ TEST_F(AppStoreRatingSceneAgentTest, TestDisabledByPolicyDBExclusionEnabled) {
   SetTrueChromeLikelyDefaultBrowser();
 
   // Disabling the policy.
-  local_state_.Get()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
+  local_state()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_

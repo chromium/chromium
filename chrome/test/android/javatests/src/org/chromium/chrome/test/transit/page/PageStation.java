@@ -25,13 +25,11 @@ import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.transit.hub.HubBaseStation;
-import org.chromium.chrome.test.transit.hub.HubStationUtils;
+import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -323,21 +321,20 @@ public class PageStation extends Station {
                 new PageAppMenuFacility<PageStation>(), () -> MENU_BUTTON.perform(click()));
     }
 
-    /** Opens the hub by pressing the toolbar tab switcher button. */
-    public <T extends HubBaseStation> T openHub(Class<T> expectedDestination) {
-        recheckActiveConditions();
-        TabModelSelector tabModelSelector = getActivity().getTabModelSelector();
-        boolean incognitoTabsExist =
-                tabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
-        boolean regularTabsExist = tabModelSelector.getModel(/* incognito= */ false).getCount() > 0;
-        T destination =
-                expectedDestination.cast(
-                        HubStationUtils.createHubStation(
-                                isIncognito() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER,
-                                regularTabsExist,
-                                incognitoTabsExist));
+    /** Opens the tab switcher by pressing the toolbar tab switcher button. */
+    public RegularTabSwitcherStation openRegularTabSwitcher() {
+        assert !mIncognito;
+        return travelToSync(
+                RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
+                () -> TAB_SWITCHER_BUTTON.perform(click()));
+    }
 
-        return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
+    /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
+    public IncognitoTabSwitcherStation openIncognitoTabSwitcher() {
+        assert mIncognito;
+        return travelToSync(
+                IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
+                () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
     /** Loads a |url| in the same tab and waits to transition. */

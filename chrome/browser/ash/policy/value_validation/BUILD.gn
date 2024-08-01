@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("value_validation") {
+  sources = [
+    "onc_device_policy_value_validator.cc",
+    "onc_device_policy_value_validator.h",
+    "onc_policy_value_validator_base.h",
+    "onc_user_policy_value_validator.cc",
+    "onc_user_policy_value_validator.h",
+  ]
+
+  deps = [
+    "//chromeos/components/onc",
+    "//components/onc",
+    "//components/policy:cloud_policy_proto_generated_compile",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+  ]
+}

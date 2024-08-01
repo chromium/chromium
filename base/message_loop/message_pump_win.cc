@@ -861,15 +861,25 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
 bool MessagePumpForIO::GetIOItem(DWORD timeout, IOItem* item) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  memset(item, 0, sizeof(*item));
   ULONG_PTR key = reinterpret_cast<ULONG_PTR>(nullptr);
   OVERLAPPED* overlapped = nullptr;
+
+  // Clear the value for the number of bytes transferred in case extracting the
+  // packet doesn't populate it.
+  item->bytes_transfered = 0;
   if (!::GetQueuedCompletionStatus(port_.get(), &item->bytes_transfered, &key,
                                    &overlapped, timeout)) {
     if (!overlapped)
       return false;  // Nothing in the queue.
-    item->error = GetLastError();
-    item->bytes_transfered = 0;
+    // A completion packet for a failed operation was processed. The Windows
+    // last error code pertains to the operation that failed.
+    item->error = ::GetLastError();
+    // The packet may have contained a value for the number of bytes
+    // transferred, so pass along whatever value was populated from it.
+  } else {
+    // The packet corresponded to an operation that succeeded, so clear out
+    // the error value so that the handler sees the operation as a success.
+    item->error = ERROR_SUCCESS;
   }
 
   item->handler = reinterpret_cast<IOHandler*>(key);

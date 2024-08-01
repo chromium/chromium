@@ -26,6 +26,8 @@ static_library("file_suggest") {
     "local_file_suggestion_provider.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
+#include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -37,6 +38,7 @@ UserCloudPolicyInvalidatorFactory::UserCloudPolicyInvalidatorFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
+  DependsOn(UserFmRegistrationTokenUploaderFactory::GetInstance());
 }
 
 UserCloudPolicyInvalidatorFactory::~UserCloudPolicyInvalidatorFactory() =

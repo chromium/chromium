@@ -61,7 +61,7 @@ bool SevenZipAnalyzer::OnEntry(const seven_zip::EntryInfo& entry,
     return false;
   }
 
-  output = base::span<uint8_t>(mapped_file_->data(), mapped_file_->length());
+  output = mapped_file_->mutable_bytes();
   return true;
 }
 

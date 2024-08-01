@@ -15,6 +15,7 @@ from blinkpy.w3c.buganizer import (
     Severity,
     Status,
 )
+from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.web_tests.port.base import VirtualTestSuite
 from blinkpy.web_tests.vts_notifier import (BLINK_INFRA_COMPONENT_ID,
                                             VTSNotifier)
@@ -24,9 +25,11 @@ class VTSNotifierTest(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
-        host = MockHost()
+        self.host = MockHost()
+        self.host.filesystem.maybe_make_directory(
+            '/mock-checkout/third_party/blink/web_tests/wpt_internal')
         mock_buganizer_client = mock.create_autospec(BuganizerClient)
-        self.notifier = VTSNotifier(host,
+        self.notifier = VTSNotifier(self.host,
                                     buganizer_client=mock_buganizer_client)
         fake_datetime = mock.Mock(wraps=datetime.datetime)
         fake_datetime.now.return_value = datetime.datetime(2024, 1, 1)
@@ -37,10 +40,14 @@ class VTSNotifierTest(unittest.TestCase):
     def tearDown(self):
         self.patcher.stop()
 
-    def create_mock_vts(self, prefix='test-vts', expires=None, owners=[]):
+    def create_mock_vts(self,
+                        prefix='test-vts',
+                        expires=None,
+                        owners=[],
+                        bases=['wpt_internal']):
         return VirtualTestSuite(prefix=prefix,
                                 platforms=['Linux'],
-                                bases=['wpt_internal'],
+                                bases=bases,
                                 args=['--enable-features=FakeFeature'],
                                 expires=expires,
                                 owners=owners)
@@ -160,3 +167,76 @@ class VTSNotifierTest(unittest.TestCase):
     def test_check_expired_vts_invalid_dateformat(self):
         vts = self.create_mock_vts(expires='3000/01/01')
         self.assertFalse(self.notifier.check_expired_vts(vts))
+
+    def test_resolve_component_id_no_dir_metadata(self):
+        mock_vts = self.create_mock_vts()
+        with mock.patch.object(
+                self.notifier.owners_extractor,
+                'find_dir_metadata_file',
+                return_value=None) as mock_find_dir_metadata_file:
+            self.assertEqual(self.notifier.resolve_component_id(mock_vts),
+                             BLINK_INFRA_COMPONENT_ID)
+            mock_find_dir_metadata_file.assert_called_once_with(
+                '/mock-checkout/third_party/blink/web_tests/wpt_internal')
+
+    def test_resolve_component_id_with_different_base_type(self):
+        self.notifier.host.filesystem.maybe_make_directory(
+            self.notifier.path_finder.path_from_web_tests('wpt_internal/a'))
+        mock_vts = self.create_mock_vts(bases=[
+            'wpt_internal/a', 'wpt_internal/b/test_name',
+            'wpt_internal/c/test_name?query'
+        ])
+        with mock.patch.object(
+                self.notifier.owners_extractor,
+                'find_dir_metadata_file',
+                return_value=None) as mock_find_dir_metadata_file:
+            self.assertEqual(self.notifier.resolve_component_id(mock_vts),
+                             BLINK_INFRA_COMPONENT_ID)
+            # Different wpt id should all be resolved to their directory path
+            mock_find_dir_metadata_file.assert_has_calls([
+                mock.call(
+                    self.notifier.path_finder.path_from_web_tests(
+                        'wpt_internal/a')),
+                mock.call(
+                    self.notifier.path_finder.path_from_web_tests(
+                        'wpt_internal/b')),
+                mock.call(
+                    self.notifier.path_finder.path_from_web_tests(
+                        'wpt_internal/c')),
+            ])
+
+    def test_resolve_component_id_with_dir_metadata(self):
+        mock_vts = self.create_mock_vts()
+        dir_metadata = WPTDirMetadata(buganizer_public_component='123',
+                                      should_notify=True)
+        self.notifier.host.filesystem.write_text_file(
+            self.notifier.path_finder.path_from_web_tests(
+                'wpt_internal', 'DIR_METADATA'), '')
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            self.assertEqual(self.notifier.resolve_component_id(mock_vts),
+                             '123')
+
+    def test_resolve_component_id_with_dir_metadata_from_second_base(self):
+        mock_vts = self.create_mock_vts(
+            bases=['wpt_internal', 'wpt_internal/nested'])
+        dir_metadata = {
+            self.notifier.path_finder.path_from_web_tests('wpt_internal'):
+            WPTDirMetadata(buganizer_public_component='123'),
+            self.notifier.path_finder.path_from_web_tests(
+                'wpt_internal', 'nested'):
+            WPTDirMetadata(buganizer_public_component='456'),
+        }
+        self.notifier.host.filesystem.write_text_file(
+            self.notifier.path_finder.path_from_web_tests(
+                'wpt_internal', 'DIR_METADATA'), '')
+        self.notifier.host.filesystem.write_text_file(
+            self.notifier.path_finder.path_from_web_tests(
+                'wpt_internal/nested', 'DIR_METADATA'), '')
+        # wpt_internal/nested/DIR_METADATA will be used since it has longer
+        # path components
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata', dir_metadata.get):
+            self.assertEqual(self.notifier.resolve_component_id(mock_vts),
+                             '456')

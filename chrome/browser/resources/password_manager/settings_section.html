@@ -137,6 +137,7 @@
           if="[[!isDisconnectCloudAuthenticatorInProgress_]]" restamp>
         <cr-button id="disconnectCloudAuthenticatorButton"
             class="cr-row-action-button"
+            aria-label="[[getAriaLabelForCloudAuthenticatorButton_()]]"
             on-click="onDisconnectCloudAuthenticatorClick_">
           $i18n{disconnectCloudAuthenticatorButton}
         </cr-button>
@@ -165,7 +166,8 @@
   </if>
   <template is="dom-if"
       if="[[isDeleteAllPasswordManagerDataRowAvailable_]]" restamp>
-    <full-data-reset is-syncing-passwords="[[isSyncingPasswords]]">
+    <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
+        is-syncing-passwords="[[isSyncingPasswords]]">
     </full-data-reset>
   </template>
 </div>

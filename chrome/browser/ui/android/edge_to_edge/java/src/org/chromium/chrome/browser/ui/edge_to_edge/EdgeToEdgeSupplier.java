@@ -20,9 +20,13 @@ public interface EdgeToEdgeSupplier {
          * that this inset may differ from the bottom inset passed to {@link EdgeToEdgePadAdjuster}s
          * (e.g. when browser controls are present but scrolled off).
          *
-         * @param bottomInset The new bottom inset.
+         * @param bottomInset The new bottom inset. This represents the height of the bottom
+         *     navigation bar, regardless of whether the page is drawing edge-to-edge.
+         * @param isDrawingToEdge Whether the Chrome is drawing edge-to-edge.
+         * @param isPageOptInToEdge Whether the current web page is opted in edge-to-edge.
          */
-        void onToEdgeChange(@Px int bottomInset);
+        void onToEdgeChange(
+                @Px int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge);
     }
 
     /** Registers an automatic adjuster of padding for a view. See {@link EdgeToEdgePadAdjuster}. */

@@ -127,7 +127,7 @@ class MultiEtwPayloadHandler;
 
 template <typename T>
 concept EtwFieldBaseType = requires(T t) {
-  { t.Name() } -> std::same_as<const char*>;
+  { t.Name() } -> std::same_as<std::string_view>;
   {
     t.FillEventDescriptor(std::declval<EVENT_DATA_DESCRIPTOR*>())
   } -> std::same_as<void>;
@@ -246,6 +246,7 @@ class BASE_EXPORT TlmProvider {
 
  private:
   friend class base::trace_event::MultiEtwPayloadHandler;
+  friend class TlmProviderTest;
 
   // Size of the buffer used for provider metadata (field within the
   // TlmProvider object). Provider metadata consists of the nul-terminated
@@ -300,7 +301,7 @@ class BASE_EXPORT TlmProvider {
                      uint16_t* metadata_index,
                      uint8_t in_type,
                      uint8_t out_type,
-                     const char* field_name) const noexcept;
+                     std::string_view field_name) const noexcept;
 
   // Returns Win32 error code, or 0 for success.
   ULONG EventEnd(char* metadata,
@@ -329,7 +330,7 @@ class BASE_EXPORT TlmProvider {
 // It's expected that data (name, value) will outlive the TlmFieldBase object.
 class BASE_EXPORT TlmFieldBase {
  public:
-  constexpr const char* Name() const noexcept { return name_.data(); }
+  constexpr std::string_view Name() const noexcept { return name_; }
 
  protected:
   explicit TlmFieldBase(const char* name) noexcept;

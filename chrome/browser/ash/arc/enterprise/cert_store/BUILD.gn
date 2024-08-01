@@ -16,6 +16,8 @@ static_library("cert_store") {
     "cert_store_service.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//base",
@@ -24,6 +26,7 @@ static_library("cert_store") {
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/remote_commands",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/services/keymanagement/public/mojom",
@@ -81,7 +84,9 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/affiliation:test_support",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common",

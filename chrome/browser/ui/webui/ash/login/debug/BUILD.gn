@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("debug") {
+  sources = [
+    "debug_overlay_handler.cc",
+    "debug_overlay_handler.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base:i18n",
+    "//chrome/common:constants",
+    "//ui/display",
+    "//ui/snapshot",
+  ]
+}

@@ -371,7 +371,7 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
     // Construct a list containing the names of the disabled DoH providers.
     base::Value::List disabled_doh_providers_list;
     for (const DohProviderEntry* provider : DohProviderEntry::GetList()) {
-      if (!base::FeatureList::IsEnabled(provider->feature)) {
+      if (!base::FeatureList::IsEnabled(provider->feature.get())) {
         disabled_doh_providers_list.Append(
             NetLogStringValue(provider->provider));
       }

@@ -17,16 +17,14 @@ TsSectionCetsPssh::TsSectionCetsPssh(RegisterPsshBoxesCB register_pssh_boxes_cb)
 TsSectionCetsPssh::~TsSectionCetsPssh() {}
 
 bool TsSectionCetsPssh::Parse(bool payload_unit_start_indicator,
-                              const uint8_t* buf,
-                              int size) {
-  DCHECK(buf);
+                              base::span<const uint8_t> buf) {
   // Ignore if doesn't contain PUSI.
   if (!payload_unit_start_indicator)
     return false;
   // TODO(dougsteed). This initial implementation requires the entire CETS-PSSH
   // to fit in one TS packet, so we know that the box length will fit in one
   // byte.
-  BitReader bit_reader(buf, size);
+  BitReader bit_reader(buf.data(), buf.size());
   bool md5_flag;
   RCHECK(bit_reader.ReadFlag(&md5_flag) && !md5_flag);
   RCHECK(bit_reader.SkipBits(31));

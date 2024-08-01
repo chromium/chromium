@@ -242,41 +242,13 @@
       "--disable-extensions",
     ],
   },
-  "cast_audio_backend_unittests": {
-    "label": "//chromecast/media/cma/backend:cast_audio_backend_unittests",
-    "type": "console_test_launcher",
-  },
   "cast_base_junit_tests": {
     "label": "//chromecast/base:cast_base_junit_tests",
     "type": "generated_script",
   },
-  "cast_base_unittests": {
-    "label": "//chromecast/base:cast_base_unittests",
-    "type": "console_test_launcher",
-  },
-  "cast_cast_core_unittests": {
-    "label": "//chromecast/cast_core:cast_cast_core_unittests",
-    "type": "console_test_launcher",
-  },
-  "cast_crash_unittests": {
-    "label": "//chromecast/crash:cast_crash_unittests",
-    "type": "console_test_launcher",
-  },
-  "cast_display_settings_unittests": {
-    "label": "//chromecast/ui/display_settings:cast_display_settings_unittests",
-    "type": "console_test_launcher",
-  },
-  "cast_graphics_unittests": {
-    "label": "//chromecast/graphics:cast_graphics_unittests",
-    "type": "console_test_launcher",
-  },
   "cast_junit_test_lists": {
     "label": "//chromecast:cast_junit_test_lists",
     "type": "additional_compile_target",
-  },
-  "cast_media_unittests": {
-    "label": "//chromecast/media:cast_media_unittests",
-    "type": "console_test_launcher",
   },
   "cast_runner_browsertests": {
     "label": "//fuchsia_web/runners:cast_runner_browsertests",
@@ -302,17 +274,9 @@
     "label": "//chromecast:cast_shell_apk",
     "type": "additional_compile_target",
   },
-  "cast_shell_browsertests": {
-    "label": "//chromecast:cast_shell_browsertests",
-    "type": "console_test_launcher",
-  },
   "cast_shell_junit_tests": {
     "label": "//chromecast/browser/android:cast_shell_junit_tests",
     "type": "generated_script",
-  },
-  "cast_shell_unittests": {
-    "label": "//chromecast:cast_shell_unittests",
-    "type": "console_test_launcher",
   },
   "cast_test_lists": {
     "label": "//chromecast:cast_test_lists",
@@ -640,10 +604,6 @@
   "content_unittests": {
     "label": "//content/test:content_unittests",
     "type": "windowed_test_launcher",
-  },
-  "core_runtime_simple": {
-    "label": "//chromecast/cast_core:core_runtime_simple",
-    "type": "additional_compile_target",
   },
   "courgette_unittests": {
     "label": "//courgette:courgette_unittests",

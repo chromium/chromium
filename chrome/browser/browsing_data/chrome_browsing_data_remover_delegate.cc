@@ -104,7 +104,6 @@
 #include "components/crash/core/app/crashpad.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/feed/buildflags.h"
 #include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -167,23 +166,22 @@
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
+#include "components/feed/core/v2/public/feed_service.h"    // nogncheck
+#include "components/feed/feed_feature_list.h"
 #include "components/installedapp/android/jni_headers/PackageHash_jni.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_FEED_V2)
-#include "chrome/browser/feed/feed_service_factory.h"
-#include "components/feed/core/v2/public/feed_service.h"  // nogncheck
-#include "components/feed/feed_feature_list.h"
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -208,6 +206,8 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"  // nogncheck
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "device/fido/cros/credential_store.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -621,6 +621,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (bookmark_model && bookmark_model->loaded()) {
       bookmark_model->ClearLastUsedTimeInRange(delete_begin, delete_end);
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    // Clear any stored User Education session data. Note that we can't clear a
+    // specific date range, as this is used for longitudinal metrics reporting,
+    // so selectively deleting entries would make the telemetry invalid.
+    BrowserFeaturePromoStorageService::ClearUsageHistory(profile_);
+#endif
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
@@ -1125,7 +1132,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
 #if BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_FEED_V2)
     if (filter_builder->MatchesMostOriginsAndDomains()) {
       // Don't bridge through if the service isn't present, which means
       // we're probably running in a native unit test.
@@ -1135,8 +1141,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         service->ClearCachedData();
       }
     }
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1179,6 +1183,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             &history_task_tracker_);
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // If the cache from the browser is cleared. Mahi should clear its cache.
+    if (chromeos::features::IsMahiEnabled() && chromeos::MahiManager::Get()) {
+      chromeos::MahiManager::Get()->ClearCache();
+    }
+#endif
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1446,6 +1457,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       }
 
       tab_model->CloseTabsNavigatedInTimeWindow(delete_begin, delete_end);
+    }
+
+    TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
+    if (archived_tab_model) {
+      archived_tab_model->CloseTabsNavigatedInTimeWindow(delete_begin,
+                                                         delete_end);
     }
 #else   // BUILDFLAG(IS_ANDROID)
     NOTIMPLEMENTED();

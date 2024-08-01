@@ -6,8 +6,10 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
@@ -19,6 +21,8 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -51,7 +55,9 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       password_reuse_detection_manager_client_(
           password_reuse_detection_manager_client),
       show_migration_warning_callback_(
-          std::move(show_migration_warning_callback)) {}
+          std::move(show_migration_warning_callback)),
+      plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
+          web_contents_->GetBrowserContext())) {}
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
@@ -66,7 +72,9 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       dismissal_callback_(std::move(dismissal_callback)),
       focused_field_type_(focused_field_type),
       show_migration_warning_callback_(
-          base::BindRepeating(&local_password_migration::ShowWarning)) {
+          base::BindRepeating(&local_password_migration::ShowWarning)),
+      plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
+          web_contents_->GetBrowserContext())) {
   CHECK(web_contents_);
   CHECK(profile_store);
   CHECK(dismissal_callback_);
@@ -177,6 +185,16 @@ void AllPasswordsBottomSheetController::OnDismiss() {
 
 const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
   return driver_->GetLastCommittedURL();
+}
+
+bool AllPasswordsBottomSheetController::IsPlusAddress(
+    const std::string& potential_plus_address) const {
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
+    return false;
+  }
+  return plus_address_service_ &&
+         plus_address_service_->IsPlusAddress(potential_plus_address);
 }
 
 void AllPasswordsBottomSheetController::OnReauthCompleted(

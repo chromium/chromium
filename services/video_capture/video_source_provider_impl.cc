@@ -36,8 +36,14 @@ void VideoSourceProviderImpl::GetSourceInfos(GetSourceInfosCallback callback) {
   // executed. This triggers the CHECK in mojo code, which assumes that
   // callbacks are either executed or the underlying channel is closed. Wrap
   // the callback to ensure it will be executed on destruction.
-  device_factory_->GetDeviceInfos(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), std::vector<media::VideoCaptureDeviceInfo>()));
+  GetSourceInfosCallback callback_with_default =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback),
+          VideoSourceProvider::GetSourceInfosResult::kErrorDroppedRequest,
+          std::vector<media::VideoCaptureDeviceInfo>());
+  device_factory_->GetDeviceInfos(
+      base::BindOnce(std::move(callback_with_default),
+                     VideoSourceProvider::GetSourceInfosResult::kSuccess));
 }
 
 void VideoSourceProviderImpl::GetVideoSource(

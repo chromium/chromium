@@ -6,11 +6,9 @@ package org.chromium.components.stylus_handwriting;
 
 import static android.view.MotionEvent.TOOL_TYPE_STYLUS;
 
-import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
@@ -49,14 +47,8 @@ class StylusHandwritingInitiator {
 
     StylusHandwritingInitiator(InputMethodManager inputMethodManager) {
         mInputMethodManager = inputMethodManager;
-        if (VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            mHandwritingSlopPx =
-                    ViewConfiguration.get(ContextUtils.getApplicationContext())
-                            .getScaledHandwritingSlop();
-        } else {
-            // Handwriting slop for Stylus is 2dps
-            mHandwritingSlopPx = ViewUtils.dpToPx(ContextUtils.getApplicationContext(), 2);
-        }
+        // Handwriting slop for Stylus is 2dps
+        mHandwritingSlopPx = ViewUtils.dpToPx(ContextUtils.getApplicationContext(), 2);
     }
 
     boolean onTouchEvent(@NonNull MotionEvent motionEvent, View view) {

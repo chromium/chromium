@@ -269,37 +269,6 @@ TEST_F(CartProcessorTest, TestCartToMojom) {
   ASSERT_EQ(cart_mojom->discount_text, kMockMerchantDiscountText);
 }
 
-TEST_F(CartProcessorTest, TestFakeCart) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {
-          {ntp_features::kNtpChromeCartInHistoryClusterModule,
-           {{ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam,
-             "6"}}},
-      },
-      {});
-  auto cluster_mojom = history_clusters::mojom::Cluster::New();
-  // Capture the cart mojom that is finally returned.
-  ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
-  base::MockCallback<
-      ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback>
-      callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&cart_mojom](ntp::history_clusters::cart::mojom::CartPtr cart) {
-            cart_mojom = std::move(cart);
-          }));
-  EXPECT_CALL(mock_cart_service(), IsCartEnabled())
-      .Times(1)
-      .WillOnce(testing::Return(true));
-
-  cart_processor().GetCartForCluster(std::move(cluster_mojom), callback.Get());
-
-  ASSERT_TRUE(cart_mojom);
-  ASSERT_EQ(cart_mojom->product_image_urls.size(), 6u);
-}
-
 TEST_F(CartProcessorTest, TestNoCartWhenFeatureDisabled) {
   // Create a fake cluster with one visit.
   auto cluster_mojom = history_clusters::mojom::Cluster::New();

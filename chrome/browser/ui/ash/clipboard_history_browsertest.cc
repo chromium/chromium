@@ -689,6 +689,31 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, ReorderOnCopy) {
             clipboard_data_a.sequence_number_token());
 }
 
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
+                       ItemViewAccessibleSelectionState) {
+  SetClipboardText("A");
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  const ash::ClipboardHistoryItemView* const history_item_view =
+      GetHistoryItemViewForIndex(/*index=*/0u);
+
+  // Verify initial selection state
+  ui::AXNodeData node_data;
+  history_item_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Move Pseudo focus away Main Button.
+  PressAndRelease(ui::VKEY_TAB);
+  node_data = ui::AXNodeData();
+  history_item_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Move Pseudo focus back to Main Button.
+  PressAndRelease(ui::VKEY_TAB);
+  node_data = ui::AXNodeData();
+  history_item_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
 class ClipboardHistoryPasteTypeBrowserTest
     : public ClipboardHistoryBrowserTest {
  protected:

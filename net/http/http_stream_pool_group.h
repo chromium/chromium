@@ -11,14 +11,18 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_request.h"
+#include "net/spdy/spdy_session_key.h"
 
 namespace net {
 
+class HttpNetworkSession;
 class HttpStream;
+class HttpStreamPoolHandle;
 class StreamSocket;
 
 // Maintains active/idle text-based HTTP streams.
@@ -33,7 +37,9 @@ class HttpStreamPool::Group {
   static constexpr base::TimeDelta kUnusedIdleStreamSocketTimeout =
       base::Seconds(60);
 
-  Group(HttpStreamPool* pool, HttpStreamKey stream_key);
+  Group(HttpStreamPool* pool,
+        HttpStreamKey stream_key,
+        SpdySessionKey spdy_session_key);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;
@@ -42,6 +48,8 @@ class HttpStreamPool::Group {
 
   const HttpStreamKey& stream_key() const { return stream_key_; }
 
+  const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
+
   HttpStreamPool* pool() { return pool_; }
   const HttpStreamPool* pool() const { return pool_; }
 
@@ -49,20 +57,37 @@ class HttpStreamPool::Group {
     return pool_->http_network_session();
   }
 
+  const NetLogWithSource& net_log() { return net_log_; }
+
   // Creates an HttpStreamRequest. Will call delegate's methods. See the
   // comments of HttpStreamRequest::Delegate methods for details.
-  // TODO(crbug.com/346835898): Support TLS, HTTP/2 and QUIC.
+  // TODO(crbug.com/346835898): Support QUIC.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      bool enable_ip_based_pooling,
       const NetLogWithSource& net_log);
+
+  // Creates idle streams or sessions for `num_streams` be opened.
+  // Note that this method finishes synchronously, or `callback` is called, once
+  // `this` has enough streams/sessions for `num_streams` be opened. This means
+  // that when there are two preconnect requests with `num_streams = 1`, all
+  // callbacks are invoked when one stream/session is established (not two).
+  int Preconnect(size_t num_streams, CompletionOnceCallback callback);
+
+  // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that
+  // the number of active streams do not exceed the global/per-group limits.
+  std::unique_ptr<HttpStreamPoolHandle> CreateHandle(
+      std::unique_ptr<StreamSocket> socket,
+      LoadTimingInfo::ConnectTiming connect_timing);
 
   // Creates a text-based HttpStream from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
   // `socket` must not be negotiated to use HTTP/2.
   std::unique_ptr<HttpStream> CreateTextBasedStream(
-      std::unique_ptr<StreamSocket> socket);
+      std::unique_ptr<StreamSocket> socket,
+      LoadTimingInfo::ConnectTiming connect_timing);
 
   // Releases a StreamSocket that was used to create a text-based HttpStream.
   void ReleaseStreamSocket(std::unique_ptr<StreamSocket> socket,
@@ -104,6 +129,9 @@ class HttpStreamPool::Group {
   // Cancels all on-going requests.
   void CancelRequests(int error);
 
+  // Called when the in-flight job has completed.
+  void OnJobComplete();
+
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
   Job* GetJobForTesting() const { return in_flight_job_.get(); }
@@ -127,10 +155,17 @@ class HttpStreamPool::Group {
     // Clean up all idle streams.
     kForce,
   };
+
   void CleanupIdleStreamSockets(CleanupMode mode);
+
+  void EnsureInFlightJob();
+
+  void MaybeComplete();
 
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
+  const SpdySessionKey spdy_session_key_;
+  const NetLogWithSource net_log_;
 
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;

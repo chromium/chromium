@@ -96,7 +96,7 @@ TEST_F(InfobarBadgeTabHelperTest, TestInfobarBadgeState) {
 }
 
 // Test the badge state after changes to the state of an Infobar. Infobar badges
-// should always be tappable.  Uses depreated API.
+// should always be tappable.  Uses deprecated API.
 TEST_F(InfobarBadgeTabHelperTest, TestInfobarBadgeStateDeprecated) {
   // Add a badge-supporting infobar to the InfobarManager to create the badge
   // item.

@@ -4025,6 +4025,47 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   base::RunLoop().RunUntilIdle();
 }
 
+// Test that the PDF.LoadStatus metric is incremented only after the PDF fully
+// loads.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
+  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus";
+  base::HistogramTester histograms;
+
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
+
+  auto* web_contents = GetActiveWebContents();
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
+  const GURL main_url(embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+
+  // Delay the PDF extension navigation.
+  CreateTestPdfViewerStreamManager(web_contents);
+  auto* test_pdf_viewer_stream_manager =
+      GetTestPdfViewerStreamManager(web_contents);
+  test_pdf_viewer_stream_manager->DelayNextPdfExtensionNavigation();
+
+  // Navigate to the PDF URL and wait for the PDF extension navigation to start.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), main_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  test_pdf_viewer_stream_manager->WaitUntilPdfExtensionNavigationStarted(
+      primary_main_frame);
+
+  // The PDF.LoadStatus metric should not be incremented yet.
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
+
+  // Finish loading the PDF.
+  test_pdf_viewer_stream_manager->ResumePdfExtensionNavigation(
+      primary_main_frame);
+  EXPECT_TRUE(
+      test_pdf_viewer_stream_manager->WaitUntilPdfLoaded(primary_main_frame));
+
+  // The PDF.LoadStatus metric should be incremented.
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 1);
+}
+
 class PDFExtensionOopifBlockPdfFrameNavigationTest
     : public PDFExtensionOopifTest {
  public:

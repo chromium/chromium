@@ -234,6 +234,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7395825497086981028">Din adgangskode gemmes i Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Brug Chromium, uanset hvor du er</translation>
 <translation id="7523464085759699266">Aktivér "Lås inkognitofaner, når du lukker Chromium".</translation>
+<translation id="7531461704633548377">Fra Chromium</translation>
 <translation id="7674213385180944843">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Chromium, og slå kameraet til.</translation>
 <translation id="7710137812207066069">Åbner en ny fane i Chromium.</translation>
 <translation id="7747820849741499258">Søg i Chromium</translation>
@@ -264,6 +265,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="8458950033462118672">Du kan åbne links i Chromium automatisk ved at angive Chromium som din standardapp til browsing.</translation>
+<translation id="8502918057530111907">Brug som standard Chromium til nemt at få prisinfo</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}}</translation>
 <translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangs­kode­admin­istrator, i andre apps på din iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>

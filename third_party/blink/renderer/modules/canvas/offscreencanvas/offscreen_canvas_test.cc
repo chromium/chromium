@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -125,7 +126,7 @@ void OffscreenCanvasTest::SetUp() {
 }
 
 void OffscreenCanvasTest::TearDown() {
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
   // destruction order matters due to nested TestPlatformSupport instance.
   accelerated_compositing_scope_ = nullptr;
   web_view_helper_ = nullptr;
@@ -169,7 +170,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
                                  offscreen_canvas().Size().height()),
-      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, /*shared_image_interface_provider=*/nullptr,
+      cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
@@ -195,7 +197,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
                                  offscreen_canvas().Size().height()),
-      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, /*shared_image_interface_provider=*/nullptr,
+      cc::PaintFlags::FilterQuality::kLow);
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrameSync_(_))
       .WillOnce(::testing::WithArg<0>(

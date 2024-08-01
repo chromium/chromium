@@ -81,8 +81,8 @@ BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseServiceEndpointRequest,
-             "UseServiceEndpointRequest",
+BASE_FEATURE(kEnableHappyEyeballsV3,
+             "EnableHappyEyeballsV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
@@ -240,9 +240,6 @@ BASE_FEATURE(kThirdPartyStoragePartitioning,
              "ThirdPartyStoragePartitioning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether to use the new code paths needed to support partitioning Blob URLs.
-// This exists as a kill-switch in case an issue is identified with the Blob
-// URL implementation that causes breakage.
 BASE_FEATURE(kTopLevelTpcdOriginTrial,
              "TopLevelTpcdOriginTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -430,6 +427,11 @@ const base::FeatureParam<int> kIpPrivacyDebugExperimentArm{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyDebugExperimentArm",
     /*default_value=*/0};
+
+const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyCacheTokensByGeo",
+    /*default_value=*/false};
 
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see

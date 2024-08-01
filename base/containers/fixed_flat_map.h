@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_CONTAINERS_FIXED_FLAT_MAP_H_
 #define BASE_CONTAINERS_FIXED_FLAT_MAP_H_
 
@@ -114,7 +109,7 @@ consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
   using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
   typename FixedFlatMap::value_compare value_comp{comp};
   if (!internal::is_sorted_and_unique(data, value_comp)) {
-    std::sort(data, data + N, value_comp);
+    std::ranges::sort(data, value_comp);
     if (!internal::is_sorted_and_unique(data, value_comp)) {
       internal::FixedFlatMapInputNotSortedOrNotUnique();
     }

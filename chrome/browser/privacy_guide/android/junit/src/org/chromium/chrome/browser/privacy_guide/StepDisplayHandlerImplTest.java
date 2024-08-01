@@ -22,6 +22,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
@@ -59,6 +60,7 @@ public class StepDisplayHandlerImplTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private UserPrefs.Natives mUserPrefsNativesMock;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
+    @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
 
     private StepDisplayHandler mStepDisplayHandler;
 
@@ -74,6 +76,8 @@ public class StepDisplayHandlerImplTest {
 
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         mMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSBNativesMock);
+        mMocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridgeJni);
+
         mStepDisplayHandler = new StepDisplayHandlerImpl(mProfile);
     }
 
@@ -202,5 +206,33 @@ public class StepDisplayHandlerImplTest {
     public void testDontDisplayCookiesWhenCookiesAllBlocked() {
         setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, false);
         assertFalse(mStepDisplayHandler.shouldDisplayCookies());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
+    public void testDisplayAdTopicsWhenCountryIsAllowedAndFlagIsOn() {
+        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(true);
+        assertTrue(mStepDisplayHandler.shouldDisplayAdTopics());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
+    public void testDontDisplayAdTopicsWhenCountryIsBlockedAndFlagIsOn() {
+        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(false);
+        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
+    public void testDontDisplayAdTopicsWhenCountryIsAllowedAndFlagIsOff() {
+        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(true);
+        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
+    public void testDontDisplayAdTopicsWhenCountryIsBlockedAndFlagIsOff() {
+        when(mPrivacySandboxBridgeJni.isConsentCountry()).thenReturn(false);
+        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
     }
 }

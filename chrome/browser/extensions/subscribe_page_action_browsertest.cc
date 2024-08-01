@@ -97,8 +97,9 @@ class NamedFrameCreatedObserver : public content::WebContentsObserver {
  private:
   void RenderFrameCreated(
       content::RenderFrameHost* render_frame_host) override {
-    if (render_frame_host->GetFrameName() != frame_name_)
+    if (render_frame_host->GetFrameName() != frame_name_) {
       return;
+    }
 
     frame_ = render_frame_host;
     run_loop_.Quit();

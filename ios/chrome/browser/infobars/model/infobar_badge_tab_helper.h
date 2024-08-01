@@ -8,6 +8,7 @@
 #include <map>
 
 #import "base/memory/raw_ptr.h"
+#import "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -15,6 +16,8 @@
 #include "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
+
+class InfobarBadgeTabHelperObserver;
 
 namespace web {
 class WebState;
@@ -32,6 +35,13 @@ class InfobarBadgeTabHelper
   InfobarBadgeTabHelper& operator=(const InfobarBadgeTabHelper&) = delete;
 
   ~InfobarBadgeTabHelper() override;
+
+  // Adds and removes observers for infobar badge updates. The order in which
+  // notifications are sent to observers is undefined. Clients must be sure to
+  // remove the observer before they go away. Used by UI elements to be made
+  // aware of the presence of infobar badges for the current tab.
+  void AddObserver(InfobarBadgeTabHelperObserver* observer);
+  void RemoveObserver(InfobarBadgeTabHelperObserver* observer);
 
   // Sets the InfobarBadgeTabHelperDelegate to `delegate`.
   void SetDelegate(id<InfobarBadgeTabHelperDelegate> delegate);
@@ -52,6 +62,9 @@ class InfobarBadgeTabHelper
 
   // Returns all BadgesStates for infobars.
   std::map<InfobarType, BadgeState> GetInfobarBadgeStates() const;
+
+  // Returns the amount of Infobar/BadgeStates there currently are.
+  size_t GetInfobarBadgesCount();
 
  private:
   friend class web::LazyWebStateUserData<InfobarBadgeTabHelper>;
@@ -131,6 +144,10 @@ class InfobarBadgeTabHelper
   std::map<InfobarType, BadgeState> infobar_badge_states_;
   // Vector storing infobars that are added when prerendering.
   std::vector<infobars::InfoBar*> infobars_added_when_prerendering_;
+
+  // List of observers to be notified when the infobar badges are updated.
+  base::ObserverList<InfobarBadgeTabHelperObserver, true>
+      badge_updates_observers_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

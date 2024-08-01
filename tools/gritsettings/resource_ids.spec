@@ -260,7 +260,7 @@
     "includes": [3100],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commerce/product_specifications/resources.grd": {
-    "META": {"sizes": {"includes": [30]}},
+    "META": {"sizes": {"includes": [40]}},
     "includes": [3120],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/compose/resources.grd": {
@@ -780,6 +780,7 @@
   },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5780],
+    "structures": [5790],
   },
   "chromeos/ash/resources/internal/ash_internal_scaled_resources.grd": {
     "structures": [5800],
@@ -791,11 +792,11 @@
   # start with the same id because only one of them is built depending on if
   # actual app is available.
   "ash/webui/boca_ui/resources/prod/boca_app_bundle_resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"sizes": {"includes": [120],}},
     "includes": [5840],
   },
   "ash/webui/boca_ui/resources/mock/boca_app_bundle_mock_resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"sizes": {"includes": [120],}},
     "includes": [5840],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/boca_ui/resources/resources.grd": {

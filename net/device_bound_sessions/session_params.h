@@ -17,9 +17,9 @@ namespace net::device_bound_sessions {
 // This is sent on session creation and session refresh
 struct NET_EXPORT SessionParams final {
   // Scope section of session instructions.
-  struct Scope {
+  struct NET_EXPORT Scope {
     // Specification section of the session scope instructions.
-    struct Specification {
+    struct NET_EXPORT Specification {
       enum class Type { kExclude, kInclude };
       bool operator==(const Specification&) const = default;
       Type type;
@@ -38,7 +38,7 @@ struct NET_EXPORT SessionParams final {
   };
 
   // Credential section of the session instruction.
-  struct Credential {
+  struct NET_EXPORT Credential {
     bool operator==(const Credential&) const = default;
     std::string name;
     std::string attributes;

@@ -251,6 +251,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
 
+  // A layer ID packing that includes the namespace.
+  // See |SharedQuadState::layer_id| and |SharedQuadState::layer_namespace_id|.
+  uint64_t aggregated_layer_id = 0;
+
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
   // does not affect |display_rect|.

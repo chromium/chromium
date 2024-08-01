@@ -27,7 +27,7 @@ hb_codepoint_t GetGlyphForVariationSequenceFromFont(
     Font font,
     UChar32 character,
     UChar32 variation_selector) {
-  const FontPlatformData font_without_char_platform_data =
+  const FontPlatformData& font_without_char_platform_data =
       font.PrimaryFont()->PlatformData();
   HarfBuzzFace* face_without_char =
       font_without_char_platform_data.GetHarfBuzzFace();

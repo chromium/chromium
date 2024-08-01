@@ -28,6 +28,7 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/browser/ui/views/enterprise/management_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -68,7 +70,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
-#include "chrome/browser/ui/views/profiles/management_toolbar_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -251,7 +252,9 @@ ToolbarView::~ToolbarView() {
     return;
   }
 
-  overflow_button_->set_toolbar_controller(nullptr);
+  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+    overflow_button_->set_toolbar_controller(nullptr);
+  }
 
   for (const auto& view_and_command : GetViewCommandMap())
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
@@ -573,6 +576,15 @@ void ToolbarView::Update(WebContents* tab) {
 
   if (reload_)
     reload_->SetMenuEnabled(chrome::IsDebuggerAttachedToCurrentTab(browser_));
+}
+
+bool ToolbarView::UpdateSecurityState() {
+  if (location_bar_ && location_bar_->HasSecurityStateChanged()) {
+    Update(nullptr);
+    return true;
+  }
+
+  return false;
 }
 
 void ToolbarView::SetToolbarVisibility(bool visible) {
@@ -1045,7 +1057,19 @@ void ToolbarView::LayoutCommon() {
     }
   }
 
-  layout_manager_->SetInteriorMargin(interior_margin);
+  if (browser_ && chrome::ShouldUseCompactMode(browser_->profile())) {
+    if (toolbar_divider_) {
+      toolbar_divider_->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 2));
+    }
+    layout_manager_->SetInteriorMargin(gfx::Insets::VH(3, 0));
+  } else {
+    if (toolbar_divider_) {
+      toolbar_divider_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+    }
+    layout_manager_->SetInteriorMargin(interior_margin);
+  }
 
   // Extend buttons to the window edge if we're either in a maximized or
   // fullscreen window. This makes the buttons easier to hit, see Fitts' law.
@@ -1105,8 +1129,9 @@ gfx::Size ToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* ToolbarView::GetDefaultExtensionDialogAnchorView() {
-  if (extensions_container_)
+  if (extensions_container_ && extensions_container_->GetVisible()) {
     return extensions_container_->GetExtensionsButton();
+  }
   return GetAppMenuButton();
 }
 

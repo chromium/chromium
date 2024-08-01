@@ -18,7 +18,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
@@ -47,11 +46,9 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         mButton = rootView.findViewById(R.id.button_primary);
         mButton.setEnabled(false);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_PROMO_DIALOG_REWRITE)) {
-            ((TextView) rootView.findViewById(R.id.footer))
-                    .setText(R.string.search_engine_dialog_footer);
-            mButton.setText(R.string.search_engine_dialog_confirm_button_title);
-        }
+        ((TextView) rootView.findViewById(R.id.footer))
+                .setText(R.string.search_engine_dialog_footer);
+        mButton.setText(R.string.search_engine_dialog_confirm_button_title);
 
         assert getPageDelegate().getProfileProviderSupplier().get() != null;
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();

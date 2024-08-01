@@ -271,6 +271,13 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  // If this JavaScript feature was not registered due to a JavaScript debug
+  // flag, do not attempt to call `function_name`.
+  if (!content_world) {
+    return false;
+  }
+#endif
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
@@ -291,6 +298,13 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  // If this JavaScript feature was not registered due to a JavaScript debug
+  // flag, do not attempt to call `function_name`.
+  if (!content_world) {
+    return false;
+  }
+#endif
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
@@ -309,6 +323,13 @@ bool JavaScriptFeature::ExecuteJavaScript(
 
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  // If this JavaScript feature was not registered due to a JavaScript debug
+  // flag, do not attempt to call `function_name`.
+  if (!content_world) {
+    return false;
+  }
+#endif
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->ExecuteJavaScriptInContentWorld(

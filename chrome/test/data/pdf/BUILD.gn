@@ -29,6 +29,7 @@ build_webui_tests("build") {
     "navigator_test.ts",
     "nobeep_test.ts",
     "page_change_test.ts",
+    "page_selector_test.ts",
     "params_parser_test.ts",
     "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
@@ -60,7 +61,6 @@ build_webui_tests("build") {
 
   if (enable_pdf_ink2) {
     files += [
-      "ink2_annotation_bar_test.ts",
       "ink2_save_test.ts",
       "ink2_side_panel_test.ts",
       "ink2_test.ts",

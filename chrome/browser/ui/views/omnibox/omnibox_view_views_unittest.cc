@@ -268,7 +268,6 @@ class TestLocationBar : public LocationBar {
   void UpdateContentSettingsIcons() override {}
   void SaveStateToContents(content::WebContents* contents) override {}
   void Revert() override {}
-  const OmniboxView* GetOmniboxView() const override { return nullptr; }
   OmniboxView* GetOmniboxView() override { return nullptr; }
   LocationBarTesting* GetLocationBarForTesting() override { return nullptr; }
   LocationBarModel* GetLocationBarModel() override {

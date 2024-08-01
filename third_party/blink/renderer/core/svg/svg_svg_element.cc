@@ -384,8 +384,8 @@ HeapVector<Member<Element>> ComputeIntersectionList(
                ? common_subtree_root->contains(item)
                : item->IsDescendantOf(common_subtree_root);
   };
-  auto* to_remove = std::stable_partition(elements.begin(), elements.end(),
-                                          partition_condition);
+  auto to_remove = std::stable_partition(elements.begin(), elements.end(),
+                                         partition_condition);
   elements.erase(to_remove, elements.end());
   // Hit-testing traverses the tree from last to first child for each
   // container, so the result needs to be reversed.

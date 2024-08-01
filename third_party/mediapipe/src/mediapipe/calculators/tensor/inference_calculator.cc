@@ -14,7 +14,6 @@
 
 #include "mediapipe/calculators/tensor/inference_calculator.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,12 +21,14 @@
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/calculators/tensor/inference_calculator.pb.h"
 #include "mediapipe/framework/api2/node.h"
 #include "mediapipe/framework/api2/packet.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/formats/tensor.h"
+#include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/tool/subgraph_expansion.h"
@@ -43,7 +44,7 @@ class InferenceCalculatorSelectorImpl
                           InferenceCalculatorSelectorImpl> {
  public:
   absl::StatusOr<CalculatorGraphConfig> GetConfig(
-      const CalculatorGraphConfig::Node& subgraph_node) {
+      const CalculatorGraphConfig::Node& subgraph_node) override {
     const auto& options =
         Subgraph::GetOptions<mediapipe::InferenceCalculatorOptions>(
             subgraph_node);
@@ -55,7 +56,10 @@ class InferenceCalculatorSelectorImpl
     if (should_use_gpu) {
       const auto& api = options.delegate().gpu().api();
       using Gpu = ::mediapipe::InferenceCalculatorOptions::Delegate::Gpu;
+#if MEDIAPIPE_METAL_ENABLED
       impls.emplace_back("Metal");
+#endif
+
       const bool prefer_gl_advanced =
           options.delegate().gpu().use_advanced_gpu_api() &&
           (api == Gpu::ANY || api == Gpu::OPENGL || api == Gpu::OPENCL);
@@ -71,11 +75,21 @@ class InferenceCalculatorSelectorImpl
     impls.emplace_back("Xnnpack");
     for (const auto& suffix : impls) {
       const auto impl = absl::StrCat("InferenceCalculator", suffix);
-      if (!mediapipe::CalculatorBaseRegistry::IsRegistered(impl)) continue;
+      if (!CalculatorBaseRegistry::IsRegistered(impl)) {
+        ABSL_LOG(WARNING) << absl::StrFormat(
+            "Missing InferenceCalculator registration for %s. Check if the "
+            "build dependency is present.",
+            impl);
+        continue;
+      };
+
       VLOG(1) << "Using " << suffix << " for InferenceCalculator with "
               << (options.has_model_path()
                       ? "model " + options.model_path()
-                      : "output_stream " + subgraph_node.output_stream(0));
+                      : "output_stream " +
+                            (subgraph_node.output_stream_size() > 0
+                                 ? subgraph_node.output_stream(0)
+                                 : "<none>"));
       CalculatorGraphConfig::Node impl_node = subgraph_node;
       impl_node.set_calculator(impl);
       return tool::MakeSingleNodeGraph(std::move(impl_node));
@@ -100,7 +114,7 @@ absl::StatusOr<Packet<TfLiteModelPtr>> InferenceCalculator::GetModelAsPacket(
                                            options.try_mmap_model());
   }
   if (!kSideInModel(cc).IsEmpty()) return kSideInModel(cc);
-  return absl::Status(mediapipe::StatusCode::kNotFound,
+  return absl::Status(absl::StatusCode::kNotFound,
                       "Must specify TFLite model as path or loaded model.");
 }
 
@@ -114,6 +128,18 @@ InferenceCalculator::GetOpResolverAsPacket(CalculatorContext* cc) {
   return PacketAdopting<tflite::OpResolver>(
       std::make_unique<
           tflite::ops::builtin::BuiltinOpResolverWithoutDefaultDelegates>());
+}
+
+void InferenceCalculator::WarnFeedbackTensorsUnsupported(
+    CalculatorContract* cc) {
+  const auto& options = cc->Options<mediapipe::InferenceCalculatorOptions>();
+  if (options.has_input_output_config() &&
+      !options.input_output_config().feedback_tensor_links().empty()) {
+    ABSL_LOG(WARNING)
+        << "Feedback tensor support is only available for CPU and "
+        << "XNNPACK inference. Ignoring "
+           "input_output_config.feedback_tensor_links option.";
+  }
 }
 
 }  // namespace api2

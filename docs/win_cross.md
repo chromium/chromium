@@ -48,7 +48,7 @@ fails with an error:
     Please follow the instructions at
     https://chromium.googlesource.com/chromium/src/+/HEAD/docs/win_cross.md
 
-then you may need to re-authenticate via:
+then you may need to re-authenticate via (with your google.com account):
 
     cd path/to/chrome/src
     # Follow instructions, enter 0 as project id.

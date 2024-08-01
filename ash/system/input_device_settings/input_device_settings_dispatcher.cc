@@ -24,6 +24,7 @@ bool ShouldModifiersBeBlockedForKeyEventsWithRestriction(
     case mojom::CustomizationRestriction::
         kAllowAlphabetOrNumberKeyEventRewrites:
     case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
+    case mojom::CustomizationRestriction::kAllowFKeyRewrites:
       return false;
     case mojom::CustomizationRestriction::kAllowTabEventRewrites:
       return true;

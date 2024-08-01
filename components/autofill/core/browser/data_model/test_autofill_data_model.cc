@@ -6,7 +6,8 @@
 
 namespace autofill {
 
-TestAutofillDataModel::TestAutofillDataModel() = default;
+TestAutofillDataModel::TestAutofillDataModel(size_t usage_history_size)
+    : AutofillDataModel(usage_history_size) {}
 
 TestAutofillDataModel::TestAutofillDataModel(size_t use_count,
                                              base::Time use_date) {

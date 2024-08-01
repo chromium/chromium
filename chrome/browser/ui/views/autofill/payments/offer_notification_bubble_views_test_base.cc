@@ -18,6 +18,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -264,6 +265,7 @@ OfferNotificationBubbleViewsTestBase::GetDefaultTestDetailsUrlString() const {
 
 AutofillOfferManager* OfferNotificationBubbleViewsTestBase::GetOfferManager() {
   return ContentAutofillClient::FromWebContents(GetActiveWebContents())
+      ->GetPaymentsAutofillClient()
       ->GetAutofillOfferManager();
 }
 

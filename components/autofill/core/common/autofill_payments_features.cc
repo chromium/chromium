@@ -46,11 +46,15 @@ BASE_FEATURE(kAutofillEnableCardBenefitsForCapitalOne,
              "AutofillEnableCardBenefitsForCapitalOne",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, card benefits offered by issuers will be synced from the
-// Payments server.
+// When enabled, Chrome will show metadata along with other card information
+// when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableCardBenefitsSync,
              "AutofillEnableCardBenefitsSync",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // When enabled, card product name (instead of issuer network) will be shown in
 // Payments Autofill UI.
@@ -70,13 +74,6 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFilling,
 BASE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages,
              "AutofillEnableNewCardArtAndNetworkImages",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, a progress dialog will display while authenticating with FIDO.
-// TODO(crbug.com/40229268): Clean up kAutofillEnableFIDOProgressDialog when
-// it's fully rolled out.
-BASE_FEATURE(kAutofillEnableFIDOProgressDialog,
-             "AutofillEnableFIDOProgressDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, server card retrieval will begin with a risk-based check
 // instead of jumping straight to CVC or biometric auth.
@@ -116,8 +113,8 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              "AutofillEnableOffersInClankKeyboardAccessory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, risk data is prefetched during payments autofill flows to reduce
-// user-perceived latency.
+// When enabled, risk data is prefetched during payments autofill flows to
+// reduce user-perceived latency.
 BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
              "AutofillEnablePrefetchingRiskDataForRetrieval",
              base::FEATURE_DISABLED_BY_DEFAULT);

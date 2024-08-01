@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -73,8 +74,8 @@ public class SafetyHubMagicStackMediatorTest {
                         mMagicStackBridge,
                         mTabModelSelector,
                         mModuleDelegate,
-                        mSettingsLauncher,
                         mPrefChangeRegistrar);
+        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
 
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
     }

@@ -94,6 +94,11 @@ void LogErrorWithDictAndCallCallback(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
+void OnResetDnsPropertiesFailure(const std::string& error_name) {
+  NET_LOG(ERROR) << "Failed to clear DNS Configurations, error name: "
+                 << error_name;
+}
+
 std::string GetStringFromDictionary(const base::Value::Dict& dict,
                                     const char* key) {
   const std::string* v = dict.FindString(key);
@@ -926,6 +931,57 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
   }
 
   return nullptr;
+}
+
+void ManagedNetworkConfigurationHandlerImpl::ResetDNSPropertiesCallback(
+    const std::string& service_path,
+    std::optional<base::Value::Dict> network_properties,
+    std::optional<std::string> error) {
+  if (!network_properties) {
+    return;
+  }
+
+  // Create a dictionary of the relevant properties to set.
+  base::Value::Dict reset_dns_properties;
+
+  // NameServersConfigType - to be deterined by DHCP.
+  reset_dns_properties.Set(::onc::network_config::kNameServersConfigType,
+                           ::onc::network_config::kIPConfigTypeDHCP);
+
+  // IPAddressConfigType - set to whatever previously existed.
+  base::Value* ip_address_config_type =
+      network_properties->Find(::onc::network_config::kIPAddressConfigType);
+  reset_dns_properties.Set(::onc::network_config::kIPAddressConfigType,
+                           std::move(*ip_address_config_type));
+
+  // StaticIPConfig - set to what previously existed if either
+  // kNameServersConfigType or kIPAddressConfigType was previously set to
+  // "Static" - the NameServers field is cleared later through the ONC
+  // Validator in SetProperties.
+  base::Value* static_ip_config =
+      network_properties->Find(::onc::network_config::kStaticIPConfig);
+  if (static_ip_config) {
+    reset_dns_properties.Set(::onc::network_config::kStaticIPConfig,
+                             std::move(*static_ip_config));
+  }
+
+  // Type - set to the existing network type, (wifi, ethernet, etc).
+  base::Value* type = network_properties->Find(::onc::network_config::kType);
+  reset_dns_properties.Set(::onc::network_config::kType, std::move(*type));
+
+  // The policy is then translated and applied to the shill service.
+  SetProperties(service_path, std::move(reset_dns_properties),
+                base::DoNothing(),
+                base::BindOnce(&OnResetDnsPropertiesFailure));
+}
+
+void ManagedNetworkConfigurationHandlerImpl::ResetDNSProperties(
+    const std::string& service_path) {
+  GetProperties(
+      /*userhash*/ std::string(), service_path,
+      base::BindOnce(
+          &ManagedNetworkConfigurationHandlerImpl::ResetDNSPropertiesCallback,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::HasAnyPolicyNetwork(

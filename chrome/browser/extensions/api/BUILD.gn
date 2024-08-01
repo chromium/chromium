@@ -26,6 +26,7 @@ group("api_implementations") {
   # TODO(crbug.com/40245282): Add more API implementations here.
   public_deps = [
     "//chrome/browser/extensions/api/command_line_private",
+    "//chrome/browser/extensions/api/context_menus",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/scripting",
@@ -38,6 +39,10 @@ group("api_implementations") {
   if (is_chromeos) {
     public_deps +=
         [ "//chrome/browser/chromeos/extensions/smart_card_provider_private" ]
+  }
+
+  if (is_chromeos_ash) {
+    public_deps += [ "//chrome/browser/extensions/api/crash_report_private" ]
   }
 }
 
@@ -82,6 +87,13 @@ function_registration("api_registration") {
   ]
   if (is_chromeos) {
     deps += [ "//chrome/browser/chromeos/extensions:constants" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/extensions/autotest_private",
+      "//chrome/browser/ash/extensions/file_manager",
+    ]
   }
 }
 

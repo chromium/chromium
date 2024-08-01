@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -27,35 +28,38 @@ constexpr char kUsernameFragment[] = "u";
 constexpr int kSdpMLineIndex = 0;
 
 TEST(RTCIceCandidatePlatformTest, Url) {
-  RTCIceCandidatePlatform candidate(kSrflxCandidateStr, kMid, kSdpMLineIndex,
-                                    kUsernameFragment, kUrl);
-  EXPECT_EQ(candidate.Url(), String(kUrl));
+  RTCIceCandidatePlatform* candidate =
+      MakeGarbageCollected<RTCIceCandidatePlatform>(
+          kSrflxCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment, kUrl);
+  EXPECT_EQ(candidate->Url(), String(kUrl));
 }
 
 TEST(RTCIceCandidatePlatformTest, LocalSrflxCandidateRelayProtocolUnset) {
-  RTCIceCandidatePlatform candidate(kSrflxCandidateStr, kMid, kSdpMLineIndex,
-                                    kUsernameFragment, kUrl);
-  EXPECT_EQ(candidate.RelayProtocol(), std::nullopt);
+  RTCIceCandidatePlatform* candidate =
+      MakeGarbageCollected<RTCIceCandidatePlatform>(
+          kSrflxCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment, kUrl);
+  EXPECT_EQ(candidate->RelayProtocol(), std::nullopt);
 }
 
 TEST(RTCIceCandidatePlatformTest, LocalRelayCandidateRelayProtocolSet) {
-  RTCIceCandidatePlatform udp(kUdpRelayCandidateStr, kMid, kSdpMLineIndex,
-                              kUsernameFragment, kUrl);
-  EXPECT_EQ(udp.RelayProtocol(), "udp");
+  RTCIceCandidatePlatform* udp = MakeGarbageCollected<RTCIceCandidatePlatform>(
+      kUdpRelayCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment, kUrl);
+  EXPECT_EQ(udp->RelayProtocol(), "udp");
 
-  RTCIceCandidatePlatform tcp(kTcpRelayCandidateStr, kMid, kSdpMLineIndex,
-                              kUsernameFragment, kUrl);
-  EXPECT_EQ(tcp.RelayProtocol(), "tcp");
+  RTCIceCandidatePlatform* tcp = MakeGarbageCollected<RTCIceCandidatePlatform>(
+      kTcpRelayCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment, kUrl);
+  EXPECT_EQ(tcp->RelayProtocol(), "tcp");
 
-  RTCIceCandidatePlatform tls(kTlsRelayCandidateStr, kMid, kSdpMLineIndex,
-                              kUsernameFragment, kUrl);
-  EXPECT_EQ(tls.RelayProtocol(), "tls");
+  RTCIceCandidatePlatform* tls = MakeGarbageCollected<RTCIceCandidatePlatform>(
+      kTlsRelayCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment, kUrl);
+  EXPECT_EQ(tls->RelayProtocol(), "tls");
 }
 
 TEST(RTCIceCandidatePlatformTest, RemoteRelayCandidateRelayProtocolUnset) {
-  RTCIceCandidatePlatform candidate(kUdpRelayCandidateStr, kMid, 1,
-                                    kUsernameFragment, std::nullopt);
-  EXPECT_EQ(candidate.RelayProtocol(), std::nullopt);
+  RTCIceCandidatePlatform* candidate =
+      MakeGarbageCollected<RTCIceCandidatePlatform>(
+          kUdpRelayCandidateStr, kMid, 1, kUsernameFragment, std::nullopt);
+  EXPECT_EQ(candidate->RelayProtocol(), std::nullopt);
 }
 
 }  // namespace blink

@@ -20,6 +20,8 @@ static_library("policy") {
     "managed_configuration_variables.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/components/arc:prefs",
@@ -38,6 +40,7 @@ static_library("policy") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/remote_commands",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/system",

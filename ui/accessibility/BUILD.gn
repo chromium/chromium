@@ -260,6 +260,8 @@ static_library("test_support") {
     "platform/inspect/ax_inspect_test_helper.h",
     "platform/provide_ax_platform_for_tests.cc",
     "platform/provide_ax_platform_for_tests.h",
+    "platform/test_ax_node_id_delegate.cc",
+    "platform/test_ax_node_id_delegate.h",
     "platform/test_ax_platform_tree_manager_delegate.cc",
     "platform/test_ax_platform_tree_manager_delegate.h",
     "test_ax_node_helper.cc",

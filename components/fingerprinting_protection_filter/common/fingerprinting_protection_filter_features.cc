@@ -31,4 +31,7 @@ const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
 const base::FeatureParam<bool> kEnableOn3pcBlocked{
     &kEnableFingerprintingProtectionFilter, "enable_on_3pc_blocked", false};
 
+BASE_FEATURE(kUseCnameAliasesForFingerprintingProtectionFilter,
+             "UseCnameAliasesForFingerprintingProtectionFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace fingerprinting_protection_filter::features

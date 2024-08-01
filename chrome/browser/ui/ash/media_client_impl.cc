@@ -617,6 +617,7 @@ MediaClientImpl::RemoveCameraOffNotificationForDevice(
 void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
     const std::string& device_id,
     cros::mojom::CameraPrivacySwitchState state,
+    GetSourceInfosResult result,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string device_name = GetDeviceName(device_id, devices);
@@ -704,6 +705,7 @@ void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
 
 void MediaClientImpl::OnGetSourceInfosByActiveClientChanged(
     const base::flat_set<std::string>& active_device_ids,
+    GetSourceInfosResult,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& device : devices) {
@@ -742,6 +744,7 @@ bool MediaClientImpl::IsDeviceActive(const std::string& device_id) {
 }
 
 void MediaClientImpl::OnGetSourceInfosByCameraSWPrivacySwitchStateChanged(
+    GetSourceInfosResult,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& device : devices) {

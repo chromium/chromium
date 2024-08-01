@@ -154,6 +154,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
     std::string access_token;
     std::set<std::string> granted_scopes;
     base::TimeDelta time_to_live;
+    bool is_token_encrypted = false;
   };
 
   class COMPONENT_EXPORT(GOOGLE_APIS) Delegate {
@@ -179,6 +180,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
  protected:
   // Implementation of template methods in OAuth2ApiCallFlow.
   GURL CreateApiCallUrl() override;
+  net::HttpRequestHeaders CreateApiCallHeaders() override;
   std::string CreateApiCallBody() override;
   std::string CreateAuthorizationHeaderValue(
       const std::string& access_token) override;
@@ -193,33 +195,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
 
  private:
   friend class OAuth2MintTokenFlowTest;
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest, ParseIssueAdviceResponse);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_EmptyCookies);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_NoResolutionData);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_NoUrl);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_BadUrl);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_NoApproach);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_BadApproach);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_NoCookies);
-  FRIEND_TEST_ALL_PREFIXES(
-      OAuth2MintTokenFlowTest,
-      ParseRemoteConsentResponse_BadCookie_MissingRequiredField);
-  FRIEND_TEST_ALL_PREFIXES(
-      OAuth2MintTokenFlowTest,
-      ParseRemoteConsentResponse_MissingCookieOptionalField);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_BadCookie_BadMaxAge);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
-                           ParseRemoteConsentResponse_BadCookieList);
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest, ParseMintTokenResponse);
 
   void ReportSuccess(const MintTokenResult& result);
   void ReportRemoteConsentSuccess(

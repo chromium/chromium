@@ -31,7 +31,6 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "components/enterprise/common/files_scan_data.h"
 #endif
 

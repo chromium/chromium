@@ -224,7 +224,12 @@ public class ConditionWaiter {
         mConditionsGuardingFactories = createFactories();
 
         if (mWaits.isEmpty()) {
-            Log.i(TAG, "No conditions to fulfill.");
+            if (failOnAlreadyFulfilled) {
+                throw new IllegalArgumentException(
+                        "No conditions to fulfill. If this is expected, use a null Trigger.");
+            } else {
+                Log.i(TAG, "No conditions to fulfill.");
+            }
         }
 
         for (ConditionWait wait : mWaits) {

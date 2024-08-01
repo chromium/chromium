@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -38,6 +39,14 @@ HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
 bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
+}
+
+bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
+  return true;
+}
+
+std::optional<int> HistoryClustersSidePanelUIConfig::GetCommandIdForTesting() {
+  return IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL;
 }
 
 HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)

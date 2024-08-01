@@ -664,12 +664,22 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     FormFieldParser::ParseSingleFieldForms(context, fields_, field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
-    // For standalone email fields inside a form tag, allow heuristics even
-    // when the minimum number of fields is not met. See similar comments
-    // in `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    if (is_form_element() &&
+    // For standalone email fields, allow heuristics even when the minimum
+    // number of fields is not met. See similar comments in
+    // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
+    // Note that `kAutofillEnableEmailHeuristicOnlyAddressForms` only supports
+    // email fields inside a form tag. Once
+    // `kAutofillEnableEmailHeuristicOnlyAddressForms` launches, dropping this
+    // requirement will be launched via
+    // `kAutofillEnableEmailHeuristicOutsideForms`.
+    const bool parse_standalone_email_fields =
+        (is_form_element() ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableEmailHeuristicOutsideForms)) &&
         base::FeatureList::IsEnabled(
-            features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
+            features::kAutofillEnableEmailHeuristicOnlyAddressForms);
+
+    if (parse_standalone_email_fields) {
       FormFieldParser::ParseStandaloneEmailFields(context, fields_,
                                                   field_type_map);
     }

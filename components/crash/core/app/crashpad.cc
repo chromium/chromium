@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -91,7 +92,10 @@ bool InitializeCrashpadImpl(bool initial_client,
     // as processed by the backend.
     DCHECK(browser_process || process_type == "Chrome Installer" ||
            process_type == "notification-helper" ||
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+           process_type == "os-update-handler" ||
            process_type == "platform-experience-helper" ||
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
            process_type == "GCPW Installer" || process_type == "GCPW DLL");
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     DCHECK(browser_process);

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+
 #include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
+#include "base/files/file.h"
 
 namespace ash {
 
@@ -312,14 +314,6 @@ void SystemInfoAnswerCardData::UpdateBarChartPercentage(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FileMetadata:
-
-FileMetadata::FileMetadata() = default;
-FileMetadata::FileMetadata(const FileMetadata&) = default;
-FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
-FileMetadata::~FileMetadata() = default;
-
-////////////////////////////////////////////////////////////////////////////////
 // FileMetadataLoader:
 
 FileMetadataLoader::FileMetadataLoader() = default;
@@ -330,9 +324,9 @@ FileMetadataLoader::~FileMetadataLoader() = default;
 
 void FileMetadataLoader::RequestFileInfo(
     OnMetadataLoadedCallback on_loaded_callback) {
-  // Return an empty FileMetadata if the loader callback is not set.
+  // Return an empty base::File::Info if the loader callback is not set.
   if (loader_callback_.is_null()) {
-    on_loaded_callback.Run(FileMetadata());
+    on_loaded_callback.Run(base::File::Info());
     return;
   }
 

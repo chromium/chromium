@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -374,9 +376,10 @@ TEST_F(BrowserTabsModelProviderImplTest, OnForeignSyncedPhoneSessionsUpdated) {
   // sets the logged-in user and the Lacros availability policy.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
-                            ash::standalone_browser::features::kLacrosOnly},
+      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing},
       /*disabled_features=*/{});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   ScopedLacrosOnlyHandle lacros_only_handle;
 
   CreateProvider();
@@ -424,9 +427,10 @@ TEST_F(BrowserTabsModelProviderImplTest, OnSessionSyncEnabledChanged) {
   // sets the logged-in user and the Lacros availability policy.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
-                            ash::standalone_browser::features::kLacrosOnly},
+      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing},
       /*disabled_features=*/{});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   ScopedLacrosOnlyHandle lacros_only_handle;
 
   CreateProvider();

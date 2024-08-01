@@ -152,11 +152,9 @@ void PasswordCheckBridge::UpdateCredential(
 void PasswordCheckBridge::OnEditCredential(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential,
-    const base::android::JavaParamRef<jobject>& context,
-    const base::android::JavaParamRef<jobject>& settings_launcher) {
+    const base::android::JavaParamRef<jobject>& context) {
   check_manager_.OnEditCredential(
-      ConvertJavaObjectToCredential(env, credential), context,
-      settings_launcher);
+      ConvertJavaObjectToCredential(env, credential), context);
 }
 
 void PasswordCheckBridge::RemoveCredential(

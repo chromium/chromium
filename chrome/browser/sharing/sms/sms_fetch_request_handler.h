@@ -13,8 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/sharing/sharing_message_handler.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_message_handler.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "url/origin.h"
 

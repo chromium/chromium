@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/ruleset_config.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 
@@ -78,7 +79,8 @@ class RulesetPublisher : public content::RenderProcessHostCreationObserver {
   // Protected to force instantiation through a `RulesetPublisher::Factory`.
   RulesetPublisher(
       RulesetService* ruleset_service,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      const RulesetConfig& ruleset_config);
 
   virtual void SendRulesetToRenderProcess(base::File* file,
                                           content::RenderProcessHost* rph) = 0;

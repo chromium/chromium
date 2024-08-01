@@ -172,9 +172,8 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (!features::IsHoldingSpacePredictabilityEnabled()) {
-      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-        requirements.must_be_newer_than = kMaxFileAge;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
+      requirements.must_be_newer_than = kMaxFileAge;
     }
     ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
@@ -331,9 +330,8 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (!features::IsHoldingSpacePredictabilityEnabled()) {
-      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-        requirements.must_be_newer_than = kMaxFileAge;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
+      requirements.must_be_newer_than = kMaxFileAge;
     }
     ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
@@ -377,9 +375,8 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
       continue;
     }
     holding_space_util::ValidityRequirement requirements;
-    if (!features::IsHoldingSpacePredictabilityEnabled()) {
-      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-        requirements.must_be_newer_than = kMaxFileAge;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
+      requirements.must_be_newer_than = kMaxFileAge;
     }
     ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }

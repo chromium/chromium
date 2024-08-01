@@ -894,8 +894,8 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 UserVerifyingKeyProviderConfigChromeos MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
-  UserVerifyingKeyProviderConfigChromeos config{.dialog_controller =
-                                                    options.dialog_controller};
+  UserVerifyingKeyProviderConfigChromeos config{
+      .dialog_controller = options.dialog_controller, .rp_id = options.rp_id};
   if (options.render_frame_host_id) {
     auto* rfh = content::RenderFrameHost::FromID(options.render_frame_host_id);
     // This is ultimately invoked from GpmEnclaveController, which can't outlive

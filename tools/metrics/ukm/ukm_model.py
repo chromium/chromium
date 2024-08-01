@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 # """Model objects for ukm.xml contents."""
@@ -8,17 +8,8 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import models
+import model_shared
 
-# Model definitions for ukm.xml content
-_OBSOLETE_TYPE = models.TextNodeType('obsolete')
-_OWNER_TYPE = models.TextNodeType('owner', single_line=True)
-_SUMMARY_TYPE = models.TextNodeType('summary')
-
-# A key for sorting XML nodes by the value of |attribute|.
-_LOWERCASE_FN = lambda attribute: (lambda node: node.get(attribute).lower())
-# A constant function as the sorting key for nodes whose orderings should be
-# kept as given in the XML file within their parent node.
-_KEEP_ORDER = lambda node: 1
 
 _ENUMERATION_TYPE = models.ObjectNodeType(
     'enumeration',
@@ -55,8 +46,8 @@ _HISTORY_TYPE =  models.ObjectNodeType(
     'history',
     attributes=[],
     alphabetization=[
-        (_INDEX_TYPE.tag, _LOWERCASE_FN('fields')),
-        (_STATISTICS_TYPE.tag, _KEEP_ORDER),
+        (_INDEX_TYPE.tag, model_shared._LOWERCASE_FN('fields')),
+        (_STATISTICS_TYPE.tag, model_shared._KEEP_ORDER),
     ],
     children=[
         models.ChildType(_INDEX_TYPE.tag, _INDEX_TYPE, multiple=True),
@@ -78,17 +69,24 @@ _METRIC_TYPE =  models.ObjectNodeType(
       ('enum', str, None),
     ],
     alphabetization=[
-        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
-        (_OWNER_TYPE.tag, _KEEP_ORDER),
-        (_SUMMARY_TYPE.tag, _KEEP_ORDER),
-        (_AGGREGATION_TYPE.tag, _KEEP_ORDER),
+        (model_shared._OBSOLETE_TYPE.tag, model_shared._KEEP_ORDER),
+        (model_shared._OWNER_TYPE.tag, model_shared._KEEP_ORDER),
+        (model_shared._SUMMARY_TYPE.tag, model_shared._KEEP_ORDER),
+        (_AGGREGATION_TYPE.tag, model_shared._KEEP_ORDER),
     ],
     children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
         models.ChildType(
-            _AGGREGATION_TYPE.tag, _AGGREGATION_TYPE, multiple=True),
+          model_shared._OBSOLETE_TYPE.tag, model_shared._OBSOLETE_TYPE, \
+            multiple=False),
+        models.ChildType(
+          model_shared._OWNER_TYPE.tag, model_shared._OWNER_TYPE, \
+            multiple=True),
+        models.ChildType(
+          model_shared._SUMMARY_TYPE.tag, model_shared._SUMMARY_TYPE, \
+            multiple=False),
+        models.ChildType(
+          _AGGREGATION_TYPE.tag, _AGGREGATION_TYPE, \
+            multiple=True),
     ])
 
 _EVENT_TYPE = models.ObjectNodeType(
@@ -101,22 +99,30 @@ _EVENT_TYPE = models.ObjectNodeType(
         ('skip_proto_reason', str, None),
     ],
     alphabetization=[
-        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
-        (_OWNER_TYPE.tag, _KEEP_ORDER),
-        (_SUMMARY_TYPE.tag, _KEEP_ORDER),
-        (_METRIC_TYPE.tag, _LOWERCASE_FN('name')),
+        (model_shared._OBSOLETE_TYPE.tag, model_shared._KEEP_ORDER),
+        (model_shared._OWNER_TYPE.tag, model_shared._KEEP_ORDER),
+        (model_shared._SUMMARY_TYPE.tag, model_shared._KEEP_ORDER),
+        (_METRIC_TYPE.tag, model_shared._LOWERCASE_FN('name')),
     ],
     extra_newlines=(1, 1, 1),
     children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
-        models.ChildType(_METRIC_TYPE.tag, _METRIC_TYPE, multiple=True),
+        models.ChildType(
+          model_shared._OBSOLETE_TYPE.tag, model_shared._OBSOLETE_TYPE, \
+            multiple=False),
+        models.ChildType(
+          model_shared._OWNER_TYPE.tag, model_shared._OWNER_TYPE, \
+            multiple=True),
+        models.ChildType(
+          model_shared._SUMMARY_TYPE.tag, model_shared._SUMMARY_TYPE, \
+            multiple=False),
+        models.ChildType(
+          _METRIC_TYPE.tag, _METRIC_TYPE, \
+            multiple=True),
     ])
 
 _UKM_CONFIGURATION_TYPE = models.ObjectNodeType(
     'ukm-configuration',
-    alphabetization=[(_EVENT_TYPE.tag, _LOWERCASE_FN('name'))],
+    alphabetization=[(_EVENT_TYPE.tag, model_shared._LOWERCASE_FN('name'))],
     extra_newlines=(2, 1, 1),
     indent=False,
     children=[
@@ -167,4 +173,4 @@ def PrettifyXmlAndTrimObsolete(original_xml: str) -> str:
 
 def IsNotObsolete(node):
   """Checks if the given node contains a child <obsolete> node."""
-  return _OBSOLETE_TYPE.tag not in node
+  return model_shared._OBSOLETE_TYPE.tag not in node

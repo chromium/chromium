@@ -25,7 +25,7 @@ class AccountPickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     base_view_controller_ = [[FakeUIViewController alloc] init];
   }

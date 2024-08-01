@@ -8,6 +8,13 @@
 #include "chrome/browser/lens/core/mojom/search_bubble.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "content/public/browser/webui_config.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace lens {
 
@@ -25,6 +32,16 @@ class SearchBubbleUI : public TopChromeWebUIController,
       mojo::PendingReceiver<lens::mojom::SearchBubblePageHandlerFactory>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver);
+
+  // Instantiates the implementor of the
+  // color_change_listener::mojom::PageHandler mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   static constexpr std::string GetWebUIName() { return "LensSearchBubble"; }
 
  private:
@@ -35,6 +52,7 @@ class SearchBubbleUI : public TopChromeWebUIController,
       override;
 
   std::unique_ptr<SearchBubblePageHandler> page_handler_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<content::WebUI> web_ui_;
 
   mojo::Receiver<lens::mojom::SearchBubblePageHandlerFactory>

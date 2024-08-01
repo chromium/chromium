@@ -51,7 +51,7 @@ void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
     return;
   }
 
-  if (require_unlocked && pin_factor->GetPinStatus().auth_locked) {
+  if (require_unlocked && pin_factor->GetPinStatus().IsLockedFactor()) {
     std::move(callback).Run(false);
     return;
   }

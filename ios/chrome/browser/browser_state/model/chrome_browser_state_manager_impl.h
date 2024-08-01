@@ -12,15 +12,24 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
+
+class PrefService;
 
 // ChromeBrowserStateManager implementation.
-class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
+class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
                                       public ChromeBrowserState::Delegate {
  public:
-  ChromeBrowserStateManagerImpl();
+  // Constructs the ChromeBrowserStateManagerImpl with a pointer to the local
+  // state's PrefService and with the path to the directory containing the
+  // ChromeBrowserStates' data.
+  ChromeBrowserStateManagerImpl(PrefService* local_state,
+                                const base::FilePath& data_dir);
 
   ChromeBrowserStateManagerImpl(const ChromeBrowserStateManagerImpl&) = delete;
   ChromeBrowserStateManagerImpl& operator=(
@@ -29,10 +38,10 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
   ~ChromeBrowserStateManagerImpl() override;
 
   // ChromeBrowserStateManager:
+  void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
+  void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
-  ChromeBrowserState* GetBrowserStateByPath(
-      const base::FilePath& path) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
   void LoadBrowserStates() override;
@@ -74,9 +83,20 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
   // added yet.
   void AddBrowserStateToCache(ChromeBrowserState* browser_state);
 
+  // The PrefService storing the local state.
+  raw_ptr<PrefService> local_state_;
+
+  // The path to the directory where the ChromeBrowserStates are stored.
+  const base::FilePath data_dir_;
+
   // Holds the ChromeBrowserState instances that this instance has created.
   ChromeBrowserMap browser_states_;
+
+  // The owned BrowserStateInfoCache instance. Lazily created.
   std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
+
+  // The list of registered observers.
+  base::ObserverList<ChromeBrowserStateManagerObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_MANAGER_IMPL_H_

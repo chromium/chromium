@@ -25,7 +25,7 @@ bool ValidateDeviceLists() {
       return false;
     }
   }
-  for (auto mouse_metadata : GetMouseMetadataList()) {
+  for (const auto& mouse_metadata : GetMouseMetadataList()) {
     if (GetKeyboardMetadataList().contains(mouse_metadata.first)) {
       return false;
     }

@@ -18,6 +18,7 @@ using testing::SizeIs;
 
 constexpr char kGroupId[] = "group-id";
 constexpr char kGroupDisplayName[] = "group-display-name";
+constexpr char kGroupAccessToken[] = "group-access-token";
 
 constexpr char kGaiaId1[] = "gaia-id1";
 constexpr char kUser1DisplayName[] = "user1-display-name";
@@ -60,15 +61,17 @@ data_sharing_pb::GroupMember MakeGroupMemberProto(
 
 TEST(GroupDataProtoUtilsTest, ShouldConvertGroupDataToProto) {
   GroupData group_data;
-  group_data.group_id = GroupId(kGroupId);
+  group_data.group_token.group_id = GroupId(kGroupId);
   group_data.display_name = kGroupDisplayName;
   group_data.members.push_back(MakeGroupMember(
       kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
+  group_data.group_token.access_token = kGroupAccessToken;
 
   data_sharing_pb::GroupData group_data_proto = GroupDataToProto(group_data);
 
   EXPECT_EQ(group_data_proto.group_id(), kGroupId);
   EXPECT_EQ(group_data_proto.display_name(), kGroupDisplayName);
+  EXPECT_EQ(group_data_proto.access_token(), kGroupAccessToken);
 
   ASSERT_EQ(group_data_proto.members_size(), 1);
 
@@ -88,11 +91,13 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
   *group_data_proto.add_members() = MakeGroupMemberProto(
       kGaiaId1, kUser1DisplayName, kEmail1,
       data_sharing_pb::MemberRole::MEMBER_ROLE_OWNER, kAvatarUrl1);
+  group_data_proto.set_access_token(kGroupAccessToken);
 
   GroupData group_data = GroupDataFromProto(group_data_proto);
 
-  EXPECT_EQ(group_data.group_id, GroupId(kGroupId));
+  EXPECT_EQ(group_data.group_token.group_id, GroupId(kGroupId));
   EXPECT_EQ(group_data.display_name, kGroupDisplayName);
+  EXPECT_EQ(group_data.group_token.access_token, kGroupAccessToken);
 
   ASSERT_THAT(group_data.members, SizeIs(1));
   const GroupMember& member = group_data.members[0];
@@ -106,18 +111,21 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
 TEST(GroupDataProtoUtilsTest,
      ShouldConvertGroupDataToProtoAndBackWithMultipleMembers) {
   GroupData original_group_data;
-  original_group_data.group_id = GroupId(kGroupId);
+  original_group_data.group_token.group_id = GroupId(kGroupId);
   original_group_data.display_name = kGroupDisplayName;
   original_group_data.members.push_back(MakeGroupMember(
       kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
   original_group_data.members.push_back(MakeGroupMember(
       kGaiaId2, kUser2DisplayName, kEmail2, MemberRole::kMember, kAvatarUrl2));
+  original_group_data.group_token.access_token = kGroupAccessToken;
 
   GroupData group_data_from_proto =
       GroupDataFromProto(GroupDataToProto(original_group_data));
 
-  EXPECT_EQ(group_data_from_proto.group_id, original_group_data.group_id);
+  EXPECT_EQ(group_data_from_proto.group_token.group_id,
+            original_group_data.group_token.group_id);
   EXPECT_EQ(group_data_from_proto.display_name, kGroupDisplayName);
+  EXPECT_EQ(group_data_from_proto.group_token.access_token, kGroupAccessToken);
 
   ASSERT_THAT(group_data_from_proto.members, SizeIs(2));
 

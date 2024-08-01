@@ -15,7 +15,7 @@
     font-weight: 400;
   }
 
-  .push-left {
+  #importOsCerts {
     margin-inline-start: auto;
   }
 
@@ -23,9 +23,12 @@
     padding-inline-start: 5px;
   }
 
+  .menu-icon {
+    padding-inline-end: 8px;
+  }
+
   #main {
     flex: 1;
-    overflow: auto;
   }
 
   cr-menu-selector {
@@ -39,16 +42,40 @@
 
   #container {
     display: flex;
-    overflow: auto;
     align-items: flex-start;
+    overflow: auto;
+    z-index: 1;
+  }
+
+  .toolbar-shadow {
+    box-shadow: 0 5px 6px -3px rgba(0, 0, 0, .4);
+    /* Needs to be higher than #container's z-index to appear above
+     * scrollbars. */
+    z-index: 2;
+  }
+
+  #adminCertsSection,
+  #platformCertsSection,
+  #platformClientCertsSection {
+    box-shadow: var(--cr-card-shadow);
+    padding: 0 40px;
+  }
+
+  .cr-centered-card-container {
+    padding-bottom: 20px;
+  }
+
+  #sidebar {
+    position: sticky;
+    top: 0;
   }
 
 </style>
 
-<cr-toolbar page-name="[[i18n('certificateManagerV2Title')]]"
+<cr-toolbar id="toolbar"
+    page-name="[[i18n('certificateManagerV2Title')]]"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
-
 <div id="container">
   <div id="sidebar" role="navigation">
     <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
@@ -57,22 +84,23 @@
         on-iron-select="onMenuItemSelect_">
       <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
+        <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2LocalCerts')]]
       </a>
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="clientcerts" href="/clientcerts" on-click="onMenuItemClick_">
+        <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2ClientCerts')]]
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="crscerts" href="/crscerts" on-click="onMenuItemClick_">
+        <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2CRSCerts')]]
       </a>
     </cr-menu-selector>
   </div>
 
-  <!-- TODO(crbug.com/40928765): migrate off of iron-pages. See:
-    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md#polymer-iron_paper-elements-alternatives -->
-  <iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
+  <cr-page-selector id="main" attr-for-selected="path"
       selected="[[selectedPage_]]">
 
     <div id="clientCertSection" class="cr-centered-card-container" path="clientcerts">
@@ -99,23 +127,19 @@
       </if>
 
       <h3>[[i18n("certificateManagerV2Platform")]]</h3>
-      <!-- TODO(crbug.com/40928765): platform client certs list should be on a
-        sub-page -->
-      <certificate-list-v2
-          id="platformClientCerts"
-          cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
-          header-text="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
-          show-import="[[showClientCertImport_]]"
-          hide-export
-          on-import-result="onImportResult_"
-          on-hash-copied="onHashCopied_">
-      </certificate-list-v2>
-      <if expr="is_win or is_macosx">
-        <cr-link-row external id="manageOsImportedClientCerts"
-            label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
-            on-click="onManageCertsExternal_">
+
+      <div class="card">
+        <cr-link-row id="viewOsImportedClientCerts"
+            label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
-      </if>
+        <if expr="is_win or is_macosx">
+          <cr-link-row external id="manageOsImportedClientCerts"
+              label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
+              on-click="onManageCertsExternal_">
+          </cr-link-row>
+        </if>
+      </div>
     </div>
 
     <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
@@ -136,7 +160,7 @@
               [[numSystemCertsString_]]
             </div>
           </div>
-          <cr-toggle id="importOsCerts" class="push-left"
+          <cr-toggle id="importOsCerts"
               aria-label="Toggle operating system certificate imports"
               checked="[[importOsCertsEnabled_]]" disabled>
           </cr-toggle>
@@ -164,6 +188,7 @@
         <div id="customCertsSection">
           <h3>[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
           <cr-link-row id="adminCertsInstalledLinkRow"
+              start-icon="cr:domain"
               class="card"
               label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
               sub-label="[[numPolicyCertsString_]]"
@@ -190,17 +215,31 @@
     </div>
 
     <certificate-subpage-v2 id="adminCertsSection" path="admincerts"
+        class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
 
     <certificate-subpage-v2 id="platformCertsSection" path="platformcerts"
+        class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
     </certificate-subpage-v2>
-  </iron-pages>
+
+    <certificate-subpage-v2 id="platformClientCertsSection"
+        path="platformclientcerts"
+        class="cr-centered-card-container"
+        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
+        on-import-result="onImportResult_"
+        subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
+        subpage-cert-lists="[[clientPlatformSubpageLists_]]">
+    </certificate-subpage-v2>
+  </cr-page-selector>
 </div>
 
 <cr-toast id="toast" duration="5000">

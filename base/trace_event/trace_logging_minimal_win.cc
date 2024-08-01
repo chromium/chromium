@@ -163,7 +163,7 @@ char TlmProvider::EventAddField(char* metadata,
                                 uint16_t* metadata_index,
                                 uint8_t in_type,
                                 uint8_t out_type,
-                                const char* field_name) const noexcept {
+                                std::string_view field_name) const noexcept {
   DCHECK_LT(in_type, 0x80);
   DCHECK_LT(out_type, 0x80);
 
@@ -238,7 +238,7 @@ bool TlmProvider::KeywordEnabled(uint64_t keyword) const noexcept {
 
 TlmInt64Field::TlmInt64Field(const char* name, const int64_t value) noexcept
     : TlmFieldWithConstants(name), value_(value) {
-  DCHECK_NE(Name(), nullptr);
+  DCHECK_NE(Name().data(), nullptr);
 }
 int64_t TlmInt64Field::Value() const noexcept {
   return value_;
@@ -250,7 +250,7 @@ void TlmInt64Field::FillEventDescriptor(
 
 TlmUInt64Field::TlmUInt64Field(const char* name, const uint64_t value) noexcept
     : TlmFieldWithConstants(name), value_(value) {
-  DCHECK_NE(Name(), nullptr);
+  DCHECK_NE(Name().data(), nullptr);
 }
 uint64_t TlmUInt64Field::Value() const noexcept {
   return value_;
@@ -263,7 +263,7 @@ void TlmUInt64Field::FillEventDescriptor(
 TlmMbcsStringField::TlmMbcsStringField(const char* name,
                                        const char* value) noexcept
     : TlmFieldWithConstants(name), value_(value) {
-  DCHECK_NE(Name(), nullptr);
+  DCHECK_NE(Name().data(), nullptr);
   DCHECK_NE(value_, nullptr);
 }
 
@@ -280,7 +280,7 @@ void TlmMbcsStringField::FillEventDescriptor(
 TlmUtf8StringField::TlmUtf8StringField(const char* name,
                                        const char* value) noexcept
     : TlmFieldWithConstants(name), value_(value) {
-  DCHECK_NE(Name(), nullptr);
+  DCHECK_NE(Name().data(), nullptr);
   DCHECK_NE(value_, nullptr);
 }
 

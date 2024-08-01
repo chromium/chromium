@@ -174,13 +174,11 @@ std::string PlaybackQueuePrepareRequestPayload::ToJson() const {
   return json.value();
 }
 
-ReportPlaybackRequestPayload::ReportPlaybackRequestPayload(
-    const Params& params,
-    const std::optional<WatchTimeSegment>& watch_time_segment)
-    : params(params), watch_time_segment(watch_time_segment) {
-  if (watch_time_segment) {
-    CHECK_LT(watch_time_segment->media_time_start,
-             watch_time_segment->media_time_end);
+ReportPlaybackRequestPayload::ReportPlaybackRequestPayload(const Params& params)
+    : params(params) {
+  if (params.watch_time_segment) {
+    CHECK_LT(params.watch_time_segment->media_time_start,
+             params.watch_time_segment->media_time_end);
   }
 }
 ReportPlaybackRequestPayload::ReportPlaybackRequestPayload(
@@ -201,20 +199,21 @@ std::string ReportPlaybackRequestPayload::ToJson() const {
   root.Set(kMediaTimeCurrentKey, GetTimeDeltaString(params.media_time_current));
   root.Set(kPlaybackStateKey, GetPlaybackStateValue(params.playback_state));
 
-  if (watch_time_segment) {
-    root.Set(
-        kWatchTimeSegmentsKey,
-        base::Value::List().Append(
-            base::Value::Dict()
-                .Set(kMediaTimeStartKey,
-                     GetTimeDeltaString(watch_time_segment->media_time_start))
-                .Set(kMediaTimeEndKey,
-                     GetTimeDeltaString(watch_time_segment->media_time_end))
-                .Set(kClientStartTimeKey,
-                     base::TimeFormatAsIso8601(
-                         watch_time_segment->client_start_time))
-                .Set(kConnectionTypeKey,
-                     GetConnectionTypeValue(params.connection_type))));
+  if (params.watch_time_segment) {
+    root.Set(kWatchTimeSegmentsKey,
+             base::Value::List().Append(
+                 base::Value::Dict()
+                     .Set(kMediaTimeStartKey,
+                          GetTimeDeltaString(
+                              params.watch_time_segment->media_time_start))
+                     .Set(kMediaTimeEndKey,
+                          GetTimeDeltaString(
+                              params.watch_time_segment->media_time_end))
+                     .Set(kClientStartTimeKey,
+                          base::TimeFormatAsIso8601(
+                              params.watch_time_segment->client_start_time))
+                     .Set(kConnectionTypeKey,
+                          GetConnectionTypeValue(params.connection_type))));
   } else {
     root.Set(kPlaybackStartDataKey,
              base::Value::Dict().Set(

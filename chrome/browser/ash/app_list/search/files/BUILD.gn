@@ -26,12 +26,15 @@ static_library("files") {
     "zero_state_file_provider.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/strings",
     "//base",
     "//base:i18n",
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/local_image_search",

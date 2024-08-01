@@ -962,6 +962,14 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetZIndexChanged();
   }
 
+  // If the (current)color changes and a filter uses it, the filter needs to be
+  // updated. This reads `diff.TextDecorationOrColorChanged()` and so needs to
+  // be after the setters, above.
+  if (diff.TextDecorationOrColorChanged() && HasFilter() &&
+      Filter().UsesCurrentColor()) {
+    diff.SetFilterChanged();
+  }
+
   // The following condition needs to be at last, because it may depend on
   // conditions in diff computed above.
   if ((field_diff & kScrollAnchor) || diff.TransformChanged()) {

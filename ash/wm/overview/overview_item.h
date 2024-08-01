@@ -118,7 +118,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
-  std::vector<OverviewFocusableView*> GetFocusableViews() const override;
   std::vector<views::Widget*> GetFocusableWidgets() override;
   views::View* GetBackDropView() const override;
   bool ShouldHaveShadow() const override;
@@ -141,7 +140,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void StopWidgetAnimation() override;
   OverviewItemFillMode GetOverviewItemFillMode() const override;
   void UpdateOverviewItemFillMode() override;
-  gfx::Point GetMagnifierFocusPointInScreen() const override;
   const gfx::RoundedCornersF GetRoundedCorners() const override;
 
   // aura::WindowObserver:

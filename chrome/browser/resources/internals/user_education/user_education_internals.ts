@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../strings.m.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
@@ -15,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './user_education_internals_card.js';
+import './user_education_whats_new_internals_card.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -24,11 +26,12 @@ import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_containe
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_education_internals.html.js';
-import type {FeaturePromoDemoPageData, FeaturePromoDemoPageInfo, UserEducationInternalsPageHandlerInterface} from './user_education_internals.mojom-webui.js';
+import type {FeaturePromoDemoPageData, FeaturePromoDemoPageInfo, UserEducationInternalsPageHandlerInterface, WhatsNewEditionDemoPageInfo, WhatsNewModuleDemoPageInfo} from './user_education_internals.mojom-webui.js';
 import {UserEducationInternalsPageHandler} from './user_education_internals.mojom-webui.js';
 
 const UserEducationInternalsElementBase =
@@ -85,9 +88,12 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
   }
 
   filter: string = '';
+  private isWhatsNewV2_: boolean = loadTimeData.getBoolean('isWhatsNewV2');
   private tutorials_: FeaturePromoDemoPageInfo[];
   private featurePromos_: FeaturePromoDemoPageInfo[];
   private newBadges_: FeaturePromoDemoPageInfo[];
+  private whatsNewModules_: WhatsNewModuleDemoPageInfo[];
+  private whatsNewEditions_: WhatsNewEditionDemoPageInfo[];
   private featurePromoErrorMessage_: string;
   private narrow_: boolean = false;
   private sessionData_: FeaturePromoDemoPageData[];
@@ -134,6 +140,15 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     this.handler_.getNewBadges().then(({newBadges}) => {
       this.newBadges_ = newBadges;
     });
+
+    if (this.isWhatsNewV2_) {
+      this.handler_.getWhatsNewModules().then(({whatsNewModules}) => {
+        this.whatsNewModules_ = whatsNewModules;
+      });
+      this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
+        this.whatsNewEditions_ = whatsNewEditions;
+      });
+    }
   }
 
   private onSearchChanged_(e: CustomEvent) {
@@ -209,6 +224,27 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
     });
   }
 
+  private clearWhatsNewData_() {
+    if (!this.isWhatsNewV2_) {
+      return;
+    }
+    this.featurePromoErrorMessage_ = '';
+
+    this.handler_.clearWhatsNewData().then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getWhatsNewModules().then(({whatsNewModules}) => {
+          this.whatsNewModules_ = whatsNewModules;
+        });
+        this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
+          this.whatsNewEditions_ = whatsNewEditions;
+        });
+      }
+    });
+  }
+
   private promoFilter_(promo: FeaturePromoDemoPageInfo, filter: string) {
     return filter === '' || promo.displayTitle.toLowerCase().includes(filter) ||
         promo.displayDescription.toLowerCase().includes(filter) ||
@@ -217,6 +253,12 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
                 instruction.toLowerCase().includes(filter)) ||
         promo.supportedPlatforms.find(
             (platform: string) => platform.toLowerCase().includes(filter));
+  }
+
+  private whatsNewFilter_(
+      item: WhatsNewModuleDemoPageInfo|WhatsNewEditionDemoPageInfo,
+      filter: string) {
+    return filter === '' || item.displayTitle.toLowerCase().includes(filter);
   }
 
   /**

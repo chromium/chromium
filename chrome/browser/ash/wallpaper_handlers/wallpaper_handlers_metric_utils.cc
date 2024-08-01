@@ -126,12 +126,22 @@ void RecordSeaPenTimeout(
 void RecordSeaPenThumbnailsCount(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
     const size_t thumbnails_count) {
-  base::UmaHistogramExactLinear(
-      query_tag == ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
-          ? "Ash.SeaPen.Freeform.Api.Thumbnails.Count"
-          : "Ash.SeaPen.Api.Thumbnails.Count",
-      std::min(thumbnails_count, SeaPenFetcher::kNumThumbnailsRequested),
-      SeaPenFetcher::kNumThumbnailsRequested + 1);
+  switch (query_tag) {
+    case ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery:
+      base::UmaHistogramExactLinear(
+          "Ash.SeaPen.Freeform.Api.Thumbnails.Count",
+          std::min(thumbnails_count,
+                   SeaPenFetcher::kNumTextThumbnailsRequested),
+          SeaPenFetcher::kNumTextThumbnailsRequested + 1);
+      break;
+    case ash::personalization_app::mojom::SeaPenQuery::Tag::kTemplateQuery:
+      base::UmaHistogramExactLinear(
+          "Ash.SeaPen.Api.Thumbnails.Count",
+          std::min(thumbnails_count,
+                   SeaPenFetcher::kNumTemplateThumbnailsRequested),
+          SeaPenFetcher::kNumTemplateThumbnailsRequested + 1);
+      break;
+  }
 }
 
 void RecordSeaPenWallpaperHasImage(

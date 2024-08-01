@@ -17,7 +17,7 @@ class VIEWS_EXPORT Throbber : public View {
   METADATA_HEADER(Throbber, View)
 
  public:
-  Throbber();
+  explicit Throbber(int diameter = kDefaultDiameter);
 
   Throbber(const Throbber&) = delete;
   Throbber& operator=(const Throbber&) = delete;
@@ -38,9 +38,14 @@ class VIEWS_EXPORT Throbber : public View {
       const SizeBounds& /*available_size*/) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
+  int GetDiameter() const { return diameter_; }
+
  protected:
   // Specifies whether the throbber is currently animating or not
   bool IsRunning() const;
+
+  // The default diameter of a Throbber.
+  static constexpr int kDefaultDiameter = 16;
 
  private:
   base::TimeTicks start_time_;  // Time when Start was called.
@@ -48,6 +53,8 @@ class VIEWS_EXPORT Throbber : public View {
 
   // Whether or not we should display a checkmark.
   bool checked_ = false;
+
+  const int diameter_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Throbber, View)
@@ -62,7 +69,7 @@ class VIEWS_EXPORT SmoothedThrobber : public Throbber {
   METADATA_HEADER(SmoothedThrobber, Throbber)
 
  public:
-  SmoothedThrobber();
+  explicit SmoothedThrobber(int diameter = kDefaultDiameter);
 
   SmoothedThrobber(const SmoothedThrobber&) = delete;
   SmoothedThrobber& operator=(const SmoothedThrobber&) = delete;

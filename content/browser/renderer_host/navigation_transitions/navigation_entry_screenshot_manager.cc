@@ -94,6 +94,20 @@ void NavigationEntryScreenshotManager::OnScreenshotRemoved(
   }
 }
 
+void NavigationEntryScreenshotManager::OnScreenshotCompressed(
+    NavigationEntryScreenshotCacheEvictor* cache,
+    size_t old_size,
+    size_t new_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(!IsEmpty());
+  CHECK(managed_caches_.Peek(cache) != managed_caches_.end());
+  CHECK_GE(current_cache_size_in_bytes_, old_size);
+
+  current_cache_size_in_bytes_ -= old_size;
+  current_cache_size_in_bytes_ += new_size;
+}
+
 void NavigationEntryScreenshotManager::OnCacheBecameVisible(
     NavigationEntryScreenshotCacheEvictor* cache) {
   // Access the cache in the set to mark it as recently used.

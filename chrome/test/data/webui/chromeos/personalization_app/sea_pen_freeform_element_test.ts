@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 
 import {SeaPenFreeformElement, SeaPenImagesElement, SeaPenRecentWallpapersElement, SeaPenSamplesElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -231,5 +232,27 @@ suite('SeaPenFreeformElementTest', function() {
         originalSamples, getSamples(), 'the order should be different');
     chai.assert.sameMembers(
         originalSamples, getSamples(), 'the samples should be the same');
+  });
+
+  test('shows results page for errors', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kGenericError;
+    freeformElement = initElement(SeaPenFreeformElement);
+    await waitAfterNextRender(freeformElement);
+
+    // Results tab should be present and pressed.
+    const tabContainer =
+        freeformElement.shadowRoot!.querySelector('#tabContainer');
+    assertTrue(!!tabContainer, 'tab container should exist');
+    const resultsTabButton =
+        tabContainer!.querySelector<CrButtonElement>('#resultsTab');
+    assertTrue(!!resultsTabButton, 'results tab displays');
+    assertEquals(
+        'true', resultsTabButton.getAttribute('aria-pressed'),
+        'results tab is pressed');
+    assertTrue(
+        !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenImagesElement.is),
+        'sea-pen-images is shown');
   });
 });

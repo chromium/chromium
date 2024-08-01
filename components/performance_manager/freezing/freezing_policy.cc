@@ -201,6 +201,11 @@ void FreezingPolicy::UpdateFrozenState(
         eligible_for_freezing_on_battery_saver = true;
       }
 
+      if (base::FeatureList::IsEnabled(
+              features::kFreezingOnBatterySaverForTesting)) {
+        eligible_for_freezing_on_battery_saver = true;
+      }
+
       for (auto* browsing_instance_page : it->second.pages) {
         if (!base::Contains(connected_pages, browsing_instance_page)) {
           pages_to_visit.insert(browsing_instance_page);

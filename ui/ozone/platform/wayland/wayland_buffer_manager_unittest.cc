@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <drm_fourcc.h>
 #include <overlay-prioritizer-client-protocol.h>
 
@@ -3288,9 +3293,9 @@ TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
   if (!connection_->ShouldUseOverlayDelegation()) {
     GTEST_SKIP();
   }
-  constexpr gfx::RectF test_data[2][2] = {
-      {gfx::RectF({21, 18}, {7, 11}), gfx::RectF({21, 18}, {7, 11})},
-      {gfx::RectF({7, 8}, {43, 63}), gfx::RectF({7, 8}, {43, 63})}};
+  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
+      {{gfx::RectF({21, 18}, {7, 11}), gfx::RectF({21, 18}, {7, 11})},
+       {gfx::RectF({7, 8}, {43, 63}), gfx::RectF({7, 8}, {43, 63})}}};
 
   for (const auto& data : test_data) {
     ViewportDestinationTestHelper(data[0] /* display_rect */,
@@ -3310,10 +3315,10 @@ TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
     GTEST_SKIP();
   }
 
-  constexpr gfx::RectF test_data[2][2] = {
-      {gfx::RectF({21, 18}, {7.423, 11.854}), gfx::RectF({21, 18}, {7, 12})},
-      {gfx::RectF({7, 8}, {43.562, 63.76}),
-       gfx::RectF({7, 8}, {43.562, 63.76})}};
+  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
+      {{gfx::RectF({21, 18}, {7.423, 11.854}), gfx::RectF({21, 18}, {7, 12})},
+       {gfx::RectF({7, 8}, {43.562, 63.76}),
+        gfx::RectF({7, 8}, {43.562, 63.76})}}};
 
   for (const auto& data : test_data) {
     ViewportDestinationTestHelper(data[0] /* display_rect */,

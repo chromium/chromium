@@ -61,6 +61,9 @@ GL_EXPORT const GlWorkarounds& GetGlWorkarounds();
 GL_EXPORT void SetGlWorkarounds(const GlWorkarounds& workarounds);
 
 #if BUILDFLAG(IS_WIN)
+// Calculates present during in 100 ns from number of frames per second.
+GL_EXPORT unsigned int FrameRateToPresentDuration(float frame_rate);
+
 // BufferCount for the root surface swap chain.
 GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();
 

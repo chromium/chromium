@@ -744,9 +744,9 @@ TEST_P(HintsFetcherTest, HintsLanguageOverrideHeader) {
   auto headers = last_request_headers();
   EXPECT_TRUE(headers.HasHeader(kOptimizationGuideLanguageOverrideHeaderKey));
 
-  std::string header_value;
-  headers.GetHeader(kOptimizationGuideLanguageOverrideHeaderKey, &header_value);
-  EXPECT_EQ(header_value, "en-CA");
+  EXPECT_EQ(headers.GetHeader(kOptimizationGuideLanguageOverrideHeaderKey)
+                .value_or(std::string()),
+            "en-CA");
 }
 
 TEST_P(HintsFetcherTest, HintsLanguageOverrideDisabledByDefault) {

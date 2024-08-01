@@ -501,7 +501,8 @@ const char* ProtoEnumToString(
         ReportingPopulation safe_browsing_reporting_population) {
   ASSERT_ENUM_BOUNDS(
       sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus,
-      ReportingPopulation, REPORTING_POPULATION_UNSPECIFIED, SCOUT);
+      ReportingPopulation, REPORTING_POPULATION_UNSPECIFIED,
+      ENHANCED_PROTECTION);
   switch (safe_browsing_reporting_population) {
     ENUM_CASE(
         sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus,
@@ -515,6 +516,9 @@ const char* ProtoEnumToString(
     ENUM_CASE(
         sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus,
         SCOUT);
+    ENUM_CASE(
+        sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus,
+        ENHANCED_PROTECTION);
   }
   NOTREACHED_IN_MIGRATION();
   return "";

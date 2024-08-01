@@ -275,9 +275,17 @@ class OSSettingsMochaTestLacrosEnabledRevampDisabled
 
 class OSSettingsMochaTestLacrosAndRevampEnabled
     : public OSSettingsMochaTestLacrosOnlyEnabled {
+ protected:
+  OSSettingsMochaTestLacrosAndRevampEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {ash::features::kOsSettingsRevampWayfinding},
+        /*disabled=*/
+        {ash::features::kSecondaryAccountAllowedInArcPolicy});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kOsSettingsRevampWayfinding};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class OSSettingsRevampMochaTestAppParentalControlsEnabled
@@ -896,6 +904,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralEnabledSplitDisabled,
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestSplitEnabled,
                        DevicePageKeyboardSixPackKeyRow) {
   RunSettingsTest("device_page/keyboard_six_pack_key_row_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
+                       DevicePagePerDeviceAppInstalledRow) {
+  RunSettingsTest("device_page/per_device_app_installed_row_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
@@ -1974,8 +1987,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
       "os_settings_ui/os_settings_ui_page_visibility_revamp_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
-                       OsSettingsUiPrefSync) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsSettingsUiPrefSync) {
   RunSettingsTest("os_settings_ui/os_settings_ui_pref_sync_test.js");
 }
 

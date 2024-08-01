@@ -32,8 +32,7 @@ class NonClientFrameView;
 class View;
 
 // Handles events on Widgets in context-specific ways.
-class VIEWS_EXPORT WidgetDelegate
-    : public base::SupportsWeakPtr<WidgetDelegate> {
+class VIEWS_EXPORT WidgetDelegate {
  public:
   using ClientViewFactory =
       base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
@@ -392,13 +391,6 @@ class VIEWS_EXPORT WidgetDelegate
   void SetClientViewFactory(ClientViewFactory factory);
   void SetOverlayViewFactory(OverlayViewFactory factory);
 
-  // Called to notify the WidgetDelegate of changes to the state of its Widget.
-  // It is not usually necessary to call these from client code.
-  void WidgetInitializing(Widget* widget);
-  void WidgetInitialized();
-  void WidgetDestroying();
-  void WindowWillClose();
-
   // Returns true if the title text should be centered.
   bool ShouldCenterWindowTitleText() const;
 
@@ -438,6 +430,19 @@ class VIEWS_EXPORT WidgetDelegate
 
   friend class Widget;
 
+  // Assign the widget associated with this delegate and return a `WeakPtr`
+  // to this object. Since the delegate is not necessarily owned by
+  // `Widget` it can be destroyed and the `Widget` needs to have a `WeakPtr`
+  // to this object. This `WeakPtr` is valid until `DeleteDelegate` is called
+  // which must be called in order to destroy this delegate.
+  base::WeakPtr<WidgetDelegate> AttachWidgetAndGetHandle(Widget* widget);
+
+  // Called to notify the WidgetDelegate of changes to the state of its Widget.
+  // It is not usually necessary to call these from client code.
+  void WidgetInitialized();
+  void WidgetDestroying();
+  void WindowWillClose();
+
   void SetContentsViewImpl(std::unique_ptr<View> contents);
 
   // The Widget that was initialized with this instance as its WidgetDelegate,
@@ -470,6 +475,8 @@ class VIEWS_EXPORT WidgetDelegate
 
   ClientViewFactory client_view_factory_;
   OverlayViewFactory overlay_view_factory_;
+
+  base::WeakPtrFactory<WidgetDelegate> weak_ptr_factory_{this};
 };
 
 // A WidgetDelegate implementation that is-a View. Used to override GetWidget()

@@ -94,11 +94,11 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.os_firewall = ToInfoSettingValue(signals.os_firewall);
   info.system_dns_servers = std::move(signals.system_dns_servers);
   switch (signals.realtime_url_check_mode) {
-    case safe_browsing::REAL_TIME_CHECK_DISABLED:
+    case enterprise_connectors::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::
           enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled;
       break;
-    case safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
+    case enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
       info.realtime_url_check_mode = extensions::api::
           enterprise_reporting_private::RealtimeUrlCheckMode::kEnabledMainFrame;
       break;
@@ -201,8 +201,9 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceIdFunction::Run() {
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-  if (client_id.empty())
+  if (client_id.empty()) {
     return RespondNow(Error(enterprise_reporting::kDeviceIdNotFound));
+  }
   return RespondNow(WithArguments(client_id));
 }
 

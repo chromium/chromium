@@ -576,6 +576,11 @@ CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsOne() const {
                         : To<CSSNumericLiteralValue>(this)->IsOne();
 }
 
+CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsHundred() const {
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsHundred()
+                        : To<CSSNumericLiteralValue>(this)->IsHundred();
+}
+
 CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsNegative() const {
   return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsNegative()
                         : To<CSSNumericLiteralValue>(this)->IsNegative();

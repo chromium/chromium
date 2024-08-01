@@ -136,9 +136,8 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
   if (const auto& web_account_id = web_app_manager_.GetAutoLaunchAccountId();
       web_account_id.is_valid()) {
     return WebAppById(web_app_manager_, web_account_id);
-  } else if (chrome_app_manager_.IsAutoLaunchEnabled()) {
-    std::string chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
-    CHECK(!chrome_app_id.empty());
+  } else if (std::string chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
+             !chrome_app_id.empty()) {
     return ChromeAppById(chrome_app_manager_, chrome_app_id);
   }
   return std::nullopt;

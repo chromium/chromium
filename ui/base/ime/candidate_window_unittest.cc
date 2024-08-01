@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 // TODO(nona): Add more tests.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/ime/candidate_window.h"
 
 #include <stddef.h>

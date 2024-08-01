@@ -10,6 +10,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_constants.h"
+#import "components/commerce/core/price_tracking_utils.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
 #import "components/strings/grit/components_strings.h"
@@ -56,6 +58,9 @@ NSDate* getNSDateFromString(std::string date) {
 @property(nonatomic, strong) PriceNotificationsPriceTrackingMediator* mediator;
 // A weak reference to a PriceInsightsCell.
 @property(nonatomic, weak) PriceInsightsCell* priceInsightsCell;
+// The service responsible for interacting with commerce's price data
+// infrastructure.
+@property(nonatomic, assign) commerce::ShoppingService* shoppingService;
 
 @end
 
@@ -69,9 +74,8 @@ NSDate* getNSDateFromString(std::string date) {
 - (void)start {
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
-  commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+  self.shoppingService = commerce::ShoppingServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -81,7 +85,7 @@ NSDate* getNSDateFromString(std::string date) {
       std::make_unique<image_fetcher::ImageDataFetcher>(
           self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
-      initWithShoppingService:shoppingService
+      initWithShoppingService:self.shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
                      webState:webState
@@ -91,6 +95,7 @@ NSDate* getNSDateFromString(std::string date) {
 
 - (void)stop {
   self.mediator = nil;
+  self.shoppingService = nil;
   [self dismissAlertCoordinator];
 }
 
@@ -259,27 +264,19 @@ NSDate* getNSDateFromString(std::string date) {
   item.currency = config->product_info->currency_code;
   item.country = config->product_info->country_code;
   item.canPriceTrack = config->can_price_track;
-  item.isPriceTracked = config->is_subscribed;
   item.productURL =
       self.browser->GetWebStateList()->GetActiveWebState()->GetVisibleURL();
 
-  if (config->product_info->product_cluster_id.has_value()) {
+  if (item.canPriceTrack &&
+      config->product_info->product_cluster_id.has_value()) {
     item.clusterId = config->product_info->product_cluster_id.value();
+    // TODO: b/355423868 - Use the async version of IsSubscribed.
+    item.isPriceTracked = self.shoppingService->IsSubscribedFromCache(
+        commerce::BuildUserSubscriptionForClusterId(item.clusterId));
   }
 
   if (!config->price_insights_info.has_value()) {
     return item;
-  }
-
-  item.currentPrice = config->product_info->amount_micros;
-  if (config->price_insights_info->typical_low_price_micros.has_value()) {
-    item.lowPrice =
-        config->price_insights_info->typical_low_price_micros.value();
-  }
-
-  if (config->price_insights_info->typical_high_price_micros.has_value()) {
-    item.highPrice =
-        config->price_insights_info->typical_high_price_micros.value();
   }
 
   NSMutableDictionary* priceHistory = [[NSMutableDictionary alloc] init];

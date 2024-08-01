@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/scanner",
-  "+ios/chrome/browser/ui/location_bar",
+  "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
 ]

@@ -33,10 +33,10 @@
 
 #include <cstring>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/bits.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"
+#include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 

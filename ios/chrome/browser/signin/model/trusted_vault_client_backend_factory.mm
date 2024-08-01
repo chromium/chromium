@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -36,12 +37,16 @@ TrustedVaultClientBackendFactory::~TrustedVaultClientBackendFactory() = default;
 std::unique_ptr<KeyedService>
 TrustedVaultClientBackendFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  // Give the opportunity for the test hook to override the factory from
+  // the provider (allowing EG tests to use a fake TrustedVaultClientBackend).
+  if (auto backend = tests_hook::CreateTrustedVaultClientBackend()) {
+    return backend;
+  }
+
   TrustedVaultConfiguration* configuration =
       [[TrustedVaultConfiguration alloc] init];
-
   ApplicationContext* application_context = GetApplicationContext();
   configuration.singleSignOnService =
       application_context->GetSingleSignOnService();
-
   return ios::provider::CreateTrustedVaultClientBackend(configuration);
 }

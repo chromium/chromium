@@ -34,7 +34,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/unindexed_ruleset_stream_generator.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -99,9 +99,12 @@ std::vector<uint8_t> ReadFileContentsToVector(base::File* file) {
 class MockRulesetPublisher : public RulesetPublisher {
  public:
   explicit MockRulesetPublisher(
+      RulesetService* ruleset_service,
       scoped_refptr<base::TestSimpleTaskRunner> blocking_task_runner,
       scoped_refptr<base::TestSimpleTaskRunner> best_effort_task_runner)
-      : RulesetPublisher(/*ruleset_service=*/nullptr, blocking_task_runner),
+      : RulesetPublisher(ruleset_service,
+                         blocking_task_runner,
+                         ruleset_service->config()),
         blocking_task_runner_(std::move(blocking_task_runner)),
         best_effort_task_runner_(std::move(best_effort_task_runner)) {}
 
@@ -119,9 +122,9 @@ class MockRulesetPublisher : public RulesetPublisher {
         RulesetService* ruleset_service,
         scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
         const override {
-      // Intentionally ignore the arguments.
-      return std::make_unique<MockRulesetPublisher>(blocking_task_runner_,
-                                                    best_effort_task_runner_);
+      // Intentionally ignore the task runner argument.
+      return std::make_unique<MockRulesetPublisher>(
+          ruleset_service, blocking_task_runner_, best_effort_task_runner_);
     }
 
    private:

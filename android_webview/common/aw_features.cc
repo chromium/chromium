@@ -12,6 +12,12 @@ namespace features {
 
 // Alphabetical:
 
+// Enable auto granting storage access API requests. This will be done
+// if a relationship is detected between the app and the website.
+BASE_FEATURE(kWebViewAutoSAA,
+             "WebViewAutoSAA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable back/forward cache support in WebView. Note that this will only take
 // effect iff both this feature flag and the content/public kBackForwardCache
 // flag is enabled.
@@ -41,7 +47,7 @@ BASE_FEATURE(kWebViewCheckPakFileDescriptors,
 // Allows JS DataTransfer Files from content URIs in drag-drop.
 BASE_FEATURE(kWebViewDragDropFiles,
              "WebViewDragDropFiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Cache origins which have camera/mic permissions approved to allow subsequent
 // calls to enumerate devices to return device labels.
@@ -57,6 +63,11 @@ BASE_FEATURE(kWebViewExitReasonMetric,
 // the app's theme is dark.
 BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
              "WebViewForceDarkModeMatchTheme",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable WebView providing frame rate hints to View system.
+BASE_FEATURE(kWebViewFrameRateHints,
+             "WebViewFrameRateHints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebViewHitTestInBlinkOnTouchStart,

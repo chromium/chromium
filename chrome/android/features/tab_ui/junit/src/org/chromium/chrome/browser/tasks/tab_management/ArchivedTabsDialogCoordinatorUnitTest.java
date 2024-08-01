@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -16,6 +17,7 @@ import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -30,8 +32,12 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -50,10 +56,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Tests for {@link TabListMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 public class ArchivedTabsDialogCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -75,6 +83,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabArchiveSettings mTabArchiveSettings;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private RecyclerView mRecyclerView;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -99,11 +109,26 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mSnackbarManager,
                         mRegularTabCreator,
                         mBackPressManager,
-                        mTabArchiveSettings);
+                        mTabArchiveSettings,
+                        mModalDialogManager);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
+        RecyclerView recyclerView = new RecyclerView(mContext);
+        recyclerView.setId(R.id.tab_list_recycler_view);
+        ((ViewGroup) mCoordinator.getViewForTesting().findViewById(R.id.tab_list_editor_container))
+                .addView(recyclerView);
     }
 
     private void setUpMocks() {
+        // Run posted tasks immediately.
+        ShadowPostTask.setTestImpl(
+                new TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
+
         doReturn(mArchivedTabModelSelector)
                 .when(mArchivedTabModelOrchestrator)
                 .getTabModelSelector();
@@ -111,6 +136,14 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
 
         doReturn(mTabListEditorController).when(mTabListEditorCoordinator).getController();
+        doAnswer(
+                        invocationOnMock -> {
+                            mCoordinator.getTabListEditorLifecycleObserver().willHide();
+                            mCoordinator.getTabListEditorLifecycleObserver().didHide();
+                            return null;
+                        })
+                .when(mTabListEditorController)
+                .hide();
     }
 
     @Test
@@ -151,7 +184,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
         doReturn(0).when(mArchivedTabModel).getCount();
         mTabCountSupplier.set(0);
-        verify(mRootView).removeView(any());
+        verify(mTabListEditorController).hide();
     }
 
     @Test
@@ -161,6 +194,16 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mRootView).removeView(any());
 
         mCoordinator.getTabListEditorLifecycleObserver().didHide();
+        verify(mTabListEditorController).setLifecycleObserver(null);
+        verify(mBackPressManager).removeHandler(any());
+    }
+
+    @Test
+    public void testDestroyHidesDialog() {
+        doReturn(true).when(mTabListEditorController).isVisible();
+        mCoordinator.show(mOnTabSelectingListener);
+        mCoordinator.destroy();
+        verify(mRootView).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());
     }

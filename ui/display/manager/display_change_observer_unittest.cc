@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -25,7 +26,6 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
-#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -53,12 +53,14 @@ float ComputeDeviceScaleFactor(float dpi, const gfx::Size& resolution) {
   return DisplayChangeObserver::FindDeviceScaleFactor(dpi, resolution);
 }
 
-std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
-                                             int height,
-                                             bool is_interlaced,
-                                             float refresh_rate) {
-  return CreateDisplayModePtrForTest({width, height}, is_interlaced,
-                                     refresh_rate);
+std::unique_ptr<DisplayMode> MakeDisplayMode(
+    int width,
+    int height,
+    bool is_interlaced,
+    float refresh_rate,
+    const std::optional<float>& vsync_rate_min = std::nullopt) {
+  return std::make_unique<DisplayMode>(gfx::Size{width, height}, is_interlaced,
+                                       refresh_rate, vsync_rate_min);
 }
 
 }  // namespace
@@ -304,7 +306,7 @@ TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
       /*base_connector_id=*/1u, /*path_topology=*/{}, false, false,
       PrivacyScreenState::kNotSupported, false, std::string(), base::FilePath(),
       {}, nullptr, nullptr, 0, gfx::Size(), color_info, kVrrNotCapable,
-      std::nullopt, DrmFormatsAndModifiers());
+      DrmFormatsAndModifiers());
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
       DisplayChangeObserver::GetExternalManagedDisplayModeList(
@@ -599,7 +601,7 @@ TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
   DisplayChangeObserver observer(&manager);
 
   // Verify that vsync_rate_min is absent from DisplayInfo when it is not
-  // present from the DisplaySnapshot.
+  // present from the DisplayMode.
   {
     const std::unique_ptr<DisplaySnapshot> display_snapshot =
         FakeDisplaySnapshot::Builder()
@@ -607,43 +609,25 @@ TEST_P(DisplayChangeObserverTest, VSyncRateMin) {
             .SetName("AmazingFakeDisplay")
             .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
             .Build();
-    const auto display_mode = std::make_unique<DisplayMode>(
-        gfx::Size{1920, 1080}, true, 60, 2720, 1696, 553580);
+    const std::unique_ptr<DisplayMode> display_mode =
+        MakeDisplayMode(1920, 1080, true, 60);
     const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
         &observer, display_snapshot.get(), display_mode.get());
 
     EXPECT_EQ(display_info.vsync_rate_min(), std::nullopt);
   }
 
-  // Verify that the value of vsync_rate_min falls back to the value from the
-  // EDID when it cannot be calculated from the mode.
+  // Verify that the value of vsync_rate_min is correctly taken from the display
+  // mode.
   {
     const std::unique_ptr<DisplaySnapshot> display_snapshot =
         FakeDisplaySnapshot::Builder()
             .SetId(123)
             .SetName("AmazingFakeDisplay")
             .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
-            .SetVsyncRateMin(48)
             .Build();
-    const auto display_mode =
-        std::make_unique<DisplayMode>(gfx::Size{1920, 1080}, true, 60, 0, 0, 0);
-    const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
-        &observer, display_snapshot.get(), display_mode.get());
-
-    EXPECT_EQ(display_info.vsync_rate_min(), 48.0f);
-  }
-
-  // Verify that the value of vsync_rate_min is correctly calculated.
-  {
-    const std::unique_ptr<DisplaySnapshot> display_snapshot =
-        FakeDisplaySnapshot::Builder()
-            .SetId(123)
-            .SetName("AmazingFakeDisplay")
-            .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
-            .SetVsyncRateMin(48)
-            .Build();
-    const auto display_mode = std::make_unique<DisplayMode>(
-        gfx::Size{1920, 1080}, true, 60, 2720, 1696, 553580);
+    const std::unique_ptr<DisplayMode> display_mode =
+        MakeDisplayMode(1920, 1080, true, 60, 48.000488f);
     const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
         &observer, display_snapshot.get(), display_mode.get());
 

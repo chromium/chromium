@@ -428,6 +428,8 @@ const struct DomCodeToKeyboardCodeEntry {
 #if BUILDFLAG(IS_POSIX)
     {DomCode::MICROPHONE_MUTE_TOGGLE,
      VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x0100A9 MicrophoneMuteToggle
+    {DomCode::ACCESSIBILITY,
+     VKEY_ACCESSIBILITY},  // 0x0100AA System Accessibility Binding
 #endif
     {DomCode::US_A, VKEY_A},                    // 0x070004 KeyA
     {DomCode::US_B, VKEY_B},                    // 0x070005 KeyB

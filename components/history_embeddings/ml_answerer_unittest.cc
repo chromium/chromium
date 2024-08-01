@@ -154,7 +154,7 @@ TEST_F(MlAnswererTest, ComputeAnswerNoSession) {
     return nullptr;
   });
 
-  Answerer::Context context;
+  Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
   ComputeAnswerCallback callback =
       base::BindOnce([](AnswererResult answer_result) {
@@ -192,7 +192,7 @@ TEST_F(MlAnswererTest, ComputeAnswerExecutionFailure) {
                         /*provided_by_on_device=*/true, nullptr)));
           })));
 
-  Answerer::Context context;
+  Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
   ComputeAnswerCallback callback =
       base::BindOnce([](AnswererResult answer_result) {
@@ -225,11 +225,12 @@ TEST_F(MlAnswererTest, ComputeAnswerSingleUrl) {
                                    /*provided_by_on_device=*/true, nullptr)));
           })));
 
-  Answerer::Context context;
+  Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
   ComputeAnswerCallback callback =
       base::BindOnce([](AnswererResult answer_result) {
         EXPECT_EQ("Answer_1", answer_result.answer.text());
+        EXPECT_EQ("url_1", answer_result.url);
       });
 
   ml_answerer_->ComputeAnswer("query", context, std::move(callback));
@@ -272,12 +273,13 @@ TEST_F(MlAnswererTest, ComputeAnswerMultipleUrls) {
                                    /*provided_by_on_device=*/true, nullptr)));
           })));
 
-  Answerer::Context context;
+  Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
   context.url_passages_map.insert({"url_2", {"passage_21", "passage_22"}});
   ComputeAnswerCallback callback =
       base::BindOnce([](AnswererResult answer_result) {
         EXPECT_EQ("Answer_2", answer_result.answer.text());
+        EXPECT_EQ("url_2", answer_result.url);
       });
 
   ml_answerer_->ComputeAnswer("query", context, std::move(callback));

@@ -37,7 +37,7 @@ class CORE_EXPORT MultipartParser final
     // The method is called whenever some data of a part is parsed which
     // can happen zero or more times per each part. It always holds that
     // |size| > 0.
-    virtual void PartDataInMultipartReceived(const char* bytes, size_t) = 0;
+    virtual void PartDataInMultipartReceived(base::span<const char> bytes) = 0;
     // The method is called whenever all data of a complete part is parsed.
     virtual void PartDataInMultipartFullyReceived() = 0;
     void Trace(Visitor* visitor) const override {}
@@ -46,7 +46,7 @@ class CORE_EXPORT MultipartParser final
   MultipartParser(Vector<char> boundary, Client*);
   MultipartParser(const MultipartParser&) = delete;
   MultipartParser& operator=(const MultipartParser&) = delete;
-  bool AppendData(const char* bytes, size_t);
+  bool AppendData(base::span<const char> bytes);
   void Cancel();
   bool Finish();
 
@@ -89,13 +89,11 @@ class CORE_EXPORT MultipartParser final
   Matcher DelimiterMatcher(size_t num_already_matched_bytes = 0u) const;
   Matcher DelimiterSuffixMatcher() const;
 
-  void ParseDataAndDelimiter(const char** bytes_pointer, const char* bytes_end);
-  void ParseDelimiter(const char** bytes_pointer, const char* bytes_end);
-  bool ParseHeaderFields(const char** bytes_pointer,
-                         const char* bytes_end,
+  void ParseDataAndDelimiter(base::span<const char>& bytes);
+  void ParseDelimiter(base::span<const char>& bytes);
+  bool ParseHeaderFields(base::span<const char>& bytes,
                          HTTPHeaderMap* header_fields);
-  void ParseTransportPadding(const char** bytes_pointer,
-                             const char* bytes_end) const;
+  void ParseTransportPadding(base::span<const char>& bytes) const;
 
   Matcher matcher_;
   Vector<char> buffered_header_bytes_;

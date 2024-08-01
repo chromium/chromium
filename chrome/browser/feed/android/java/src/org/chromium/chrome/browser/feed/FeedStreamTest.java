@@ -193,13 +193,13 @@ public class FeedStreamTest {
         mFeedStream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         /* isInterestFeed= */ StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         mFeedContentFirstLoadWatcher,
                         mStreamsMediator,
                         /* SingleWebFeedHelper= */ null,
@@ -1185,13 +1185,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         /* isInterestFeed= */ StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1208,13 +1208,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         /* isInterestFeed= */ StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1232,13 +1232,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1256,13 +1256,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1279,13 +1279,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1302,13 +1302,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1325,13 +1325,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,

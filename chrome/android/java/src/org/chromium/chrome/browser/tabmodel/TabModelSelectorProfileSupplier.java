@@ -22,20 +22,13 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
     private final TabModelSelectorObserver mSelectorObserver;
     private final ObservableSupplier<TabModelSelector> mSelectorSupplier;
     private final Callback<TabModelSelector> mSelectorSupplierCallback;
+    private final Callback<TabModel> mCurrentTabModelObserver;
 
     private TabModelSelector mSelector;
 
     public TabModelSelectorProfileSupplier(ObservableSupplier<TabModelSelector> selectorSupplier) {
         mSelectorObserver =
                 new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        Profile newProfile = newModel.getProfile();
-                        // Postpone setting the profile until tab state is initialized.
-                        if (newProfile == null) return;
-                        set(newProfile);
-                    }
-
                     @Override
                     public void onChange() {
                         if (mSelector.getCurrentModel() == null) return;
@@ -55,6 +48,13 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
                         set(mSelector.getCurrentModel().getProfile());
                     }
                 };
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    Profile newProfile = tabModel.getProfile();
+                    // Postpone setting the profile until tab state is initialized.
+                    if (newProfile == null) return;
+                    set(newProfile);
+                };
 
         mSelectorSupplier = selectorSupplier;
         mSelectorSupplierCallback = this::setSelector;
@@ -67,13 +67,17 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
 
     private void setSelector(TabModelSelector selector) {
         if (mSelector == selector) return;
-        if (mSelector != null) mSelector.removeObserver(mSelectorObserver);
+        if (mSelector != null) {
+            mSelector.removeObserver(mSelectorObserver);
+            mSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+        }
 
         mSelector = selector;
         mSelector.addObserver(mSelectorObserver);
+        mSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
         if (selector.getCurrentModel() != null) {
-            mSelectorObserver.onTabModelSelected(selector.getCurrentModel(), null);
+            mCurrentTabModelObserver.onResult(selector.getCurrentModel());
         }
     }
 
@@ -81,6 +85,7 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
     public void destroy() {
         if (mSelector != null) {
             mSelector.removeObserver(mSelectorObserver);
+            mSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mSelector = null;
         }
         mSelectorSupplier.removeObserver(mSelectorSupplierCallback);

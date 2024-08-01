@@ -9,18 +9,21 @@
 
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
 class Browser;
+@protocol SystemIdentity;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
+namespace trusted_vault {
+enum class SecurityDomainId;
+}  // namespace trusted_vault
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-@protocol SystemIdentity;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
@@ -124,7 +127,9 @@ class PrefRegistrySyncable;
 // Related to IOSTrustedVaultClient.
 // `viewController` presents the sign-in.
 // `intent` Dialog to present.
+// `securityDomainID` Identifies a particular security domain.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
+// `accessPoint` Identifies where the dialog is initiated from.
 + (instancetype)
     trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -133,6 +138,10 @@ class PrefRegistrySyncable;
                                                            intent:
                                                                (SigninTrustedVaultDialogIntent)
                                                                    intent
+                                                 securityDomainID:
+                                                     (trusted_vault::
+                                                          SecurityDomainId)
+                                                         securityDomainID
                                                           trigger:
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)

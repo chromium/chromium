@@ -12,7 +12,7 @@
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #include "ios/web/public/browser_state.h"
 
-bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
+bool CountBrowserStateInformation(ChromeBrowserStateManager* manager,
                                   profile_metrics::Counts* counts) {
   BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
   size_t number_of_browser_states = info_cache->GetNumberOfBrowserStates();
@@ -31,7 +31,7 @@ bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
   return true;
 }
 
-void LogNumberOfBrowserStates(ios::ChromeBrowserStateManager* manager) {
+void LogNumberOfBrowserStates(ChromeBrowserStateManager* manager) {
   profile_metrics::Counts counts;
   CountBrowserStateInformation(manager, &counts);
   profile_metrics::LogProfileMetricsCounts(counts);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_DEBUG_STACK_TRACE_H_
 #define BASE_DEBUG_STACK_TRACE_H_
 
@@ -34,8 +29,7 @@ struct _EXCEPTION_POINTERS;
 struct _CONTEXT;
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 // Enables stack dump to console output on exception and signals.
 // When enabled, the process will quit immediately. This is meant to be used in
@@ -90,10 +84,10 @@ class BASE_EXPORT StackTrace {
   // |count| will be limited to at most |kMaxTraces|.
   explicit StackTrace(size_t count);
 
-  // Creates a stacktrace from an existing array of instruction
-  // pointers (such as returned by Addresses()).  |count| will be
-  // limited to at most |kMaxTraces|.
-  StackTrace(const void* const* trace, size_t count);
+  // Creates a stacktrace from an existing array of instruction pointers (such
+  // as returned by Addresses()). Only the first `kMaxTraces` of the span will
+  // be used.
+  explicit StackTrace(span<const void* const> trace);
 
 #if BUILDFLAG(IS_WIN)
   // Creates a stacktrace for an exception.
@@ -114,7 +108,7 @@ class BASE_EXPORT StackTrace {
   // address from the leaf function, and Addresses()[count-1] will contain an
   // address from the root function (i.e.; the thread's entry point).
   span<const void* const> addresses() const {
-    return make_span(trace_, count_);
+    return span(trace_).first(count_);
   }
 
   // Prints the stack trace to stderr.
@@ -163,7 +157,7 @@ class BASE_EXPORT StackTrace {
   void InitTrace(const _CONTEXT* context_record);
 #endif
 
-  const void* trace_[kMaxTraces];
+  std::array<const void*, kMaxTraces> trace_;
 
   // The number of valid frames in |trace_|, or 0 if collection was suppressed.
   size_t count_ = 0;
@@ -174,7 +168,7 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, const StackTrace& s);
 
 // Record a stack trace with up to |count| frames into |trace|. Returns the
 // number of frames read.
-BASE_EXPORT size_t CollectStackTrace(const void** trace, size_t count);
+BASE_EXPORT size_t CollectStackTrace(span<const void*> trace);
 
 // A helper for tests that must either override the default suppression of
 // symbolized stack traces in death tests, or the default generation of them in
@@ -219,22 +213,9 @@ constexpr bool kEnableScanningByDefault = false;
 // Returns number of frames written. |enable_scanning| enables scanning on
 // platforms that do not enable scanning by default.
 BASE_EXPORT size_t
-TraceStackFramePointers(const void** out_trace,
-                        size_t max_depth,
+TraceStackFramePointers(span<const void*> out_trace,
                         size_t skip_initial,
                         bool enable_scanning = kEnableScanningByDefault);
-
-// Same as above function, but allows to pass in frame pointer and stack end
-// address for unwinding. This is useful when unwinding based on a copied stack
-// segment. Note that the client has to take care of rewriting all the pointers
-// in the stack pointing within the stack to point to the copied addresses.
-BASE_EXPORT size_t TraceStackFramePointersFromBuffer(
-    uintptr_t fp,
-    uintptr_t stack_end,
-    const void** out_trace,
-    size_t max_depth,
-    size_t skip_initial,
-    bool enable_scanning = kEnableScanningByDefault);
 
 // Links stack frame |fp| to |parent_fp|, so that during stack unwinding
 // TraceStackFramePointers() visits |parent_fp| after visiting |fp|.
@@ -308,7 +289,6 @@ BASE_EXPORT char *itoa_r(intptr_t i,
 
 }  // namespace internal
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug
 
 #endif  // BASE_DEBUG_STACK_TRACE_H_

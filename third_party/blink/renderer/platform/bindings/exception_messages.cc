@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -53,6 +56,49 @@ String optionalIndexProperty(const String& property) {
 }
 
 }  //  namespace
+
+String ExceptionMessages::AddContextToMessage(const ExceptionContext& context,
+                                              const String& message) {
+  const char* c = context.GetClassName();
+  const String& p = context.GetPropertyName();
+  const String& m = message;
+
+  switch (context.GetType()) {
+    case ExceptionContextType::kConstructorOperationInvoke:
+      return ExceptionMessages::FailedToConstruct(c, m);
+    case ExceptionContextType::kOperationInvoke:
+      return ExceptionMessages::FailedToExecute(p, c, m);
+    case ExceptionContextType::kAttributeGet:
+      return ExceptionMessages::FailedToGet(p, c, m);
+    case ExceptionContextType::kAttributeSet:
+      return ExceptionMessages::FailedToSet(p, c, m);
+    case ExceptionContextType::kNamedPropertyEnumerator:
+      return ExceptionMessages::FailedToEnumerate(c, m);
+    case ExceptionContextType::kNamedPropertyQuery:
+      break;
+    case ExceptionContextType::kIndexedPropertyGetter:
+    case ExceptionContextType::kIndexedPropertyDescriptor:
+      return ExceptionMessages::FailedToGetIndexed(p, c, m);
+    case ExceptionContextType::kIndexedPropertySetter:
+    case ExceptionContextType::kIndexedPropertyDefiner:
+      return ExceptionMessages::FailedToSetIndexed(p, c, m);
+    case ExceptionContextType::kIndexedPropertyDeleter:
+      return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
+    case ExceptionContextType::kNamedPropertyGetter:
+    case ExceptionContextType::kNamedPropertyDescriptor:
+      return ExceptionMessages::FailedToGetNamed(p, c, m);
+    case ExceptionContextType::kNamedPropertySetter:
+    case ExceptionContextType::kNamedPropertyDefiner:
+      return ExceptionMessages::FailedToSetNamed(p, c, m);
+    case ExceptionContextType::kNamedPropertyDeleter:
+      return ExceptionMessages::FailedToDeleteNamed(p, c, m);
+    case ExceptionContextType::kDictionaryMemberGet:
+      return ExceptionMessages::FailedToGet(p, c, m);
+    case ExceptionContextType::kUnknown:
+      return m;
+  }
+  NOTREACHED_NORETURN();
+}
 
 String ExceptionMessages::FailedToConvertJSValue(const char* type) {
   return String::Format("Failed to convert value to '%s'.", type);

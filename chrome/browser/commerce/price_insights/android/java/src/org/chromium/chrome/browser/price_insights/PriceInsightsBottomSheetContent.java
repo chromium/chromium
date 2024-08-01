@@ -85,4 +85,10 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     public int getSheetClosedAccessibilityStringId() {
         return R.string.price_insights_bottom_sheet_content_closed;
     }
+
+    @Override
+    public boolean hasCustomScrimLifecycle() {
+        // Don't show a scrim (gray overlay on page) when open the bottom sheet.
+        return true;
+    }
 }

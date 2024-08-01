@@ -221,6 +221,11 @@ void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
                          base::Unretained(&completion)))) {
     completion.Wait();
   }
+
+  // We don't have any tasks to run here, but we need to mark order number as
+  // complete.
+  sync_point_order_data_->BeginProcessingOrderNumber(order_num);
+  sync_point_order_data_->FinishProcessingOrderNumber(order_num);
 }
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::

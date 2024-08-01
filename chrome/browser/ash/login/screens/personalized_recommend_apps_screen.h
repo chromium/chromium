@@ -13,13 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
-#include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_types.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash {
+class OOBEAppDefinition;
+class OOBEDeviceUseCase;
 class PersonalizedRecommendAppsScreenView;
+enum class AppsFetchingResult;
 
 // Controller for the new recommended apps screen.
 class PersonalizedRecommendAppsScreen : public BaseScreen {

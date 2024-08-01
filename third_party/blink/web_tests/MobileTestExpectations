@@ -9,7 +9,7 @@
 # pointerevents tests
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?mouse [ Pass Timeout ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?pen [ Pass Timeout ]
-crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Pass Timeout Failure ]
+crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Failure Pass Timeout ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/compat/pointerevent_touch-action_two-finger_interaction.html [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_after_target_appended.html?pen [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_attributes.html?mouse-right-nonstandard [ Failure Pass ]

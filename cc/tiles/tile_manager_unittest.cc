@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -1188,7 +1193,8 @@ TEST_F(TileManagerTilePriorityQueueTest,
       pending_child_layer->element_id(), 0.0f);
 
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
-  host_impl()->pending_tree()->UpdateDrawProperties();
+  host_impl()->pending_tree()->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
   // Renew all of the tile priorities.
   gfx::Rect viewport(layer_bounds);
@@ -1656,8 +1662,26 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue(
         new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+    EXPECT_TRUE(queue->IsEmpty());
+  }
+
+  // This is the behavior difference between FakePictureLayerTilingClient
+  // and the real PictureLayerTilingClient a.k.a. PictureLayerImpl.
+  // The FakePictureLayerTilingClient doesn't clear PictureLayerTilingSet's
+  // |all_tiles_done_| when AddTile() is called whereas PictureLayerImpl does.
+  tiling_set->set_all_tiles_done(false);
+
+  {
+    tiling->SetTilePriorityRectsForTesting(
+        non_intersecting_rect,  // Visible rect.
+        intersecting_rect,      // Skewport rect.
+        intersecting_rect,      // Soon rect.
+        intersecting_rect);     // Eventually rect.
+    std::unique_ptr<TilingSetRasterQueueAll> queue(
+        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
     EXPECT_FALSE(queue->IsEmpty());
   }
+
   {
     tiling->SetTilePriorityRectsForTesting(
         non_intersecting_rect,  // Visible rect.

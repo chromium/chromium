@@ -19,11 +19,20 @@
 
 namespace media_router {
 
+DualMediaSinkService* g_dual_media_sink_service = nullptr;
+
 // static
 DualMediaSinkService* DualMediaSinkService::GetInstance() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  static DualMediaSinkService* instance = new DualMediaSinkService();
-  return instance;
+  if (!g_dual_media_sink_service) {
+    g_dual_media_sink_service = new DualMediaSinkService();
+  }
+  return g_dual_media_sink_service;
+}
+
+// static
+bool DualMediaSinkService::HasInstance() {
+  return g_dual_media_sink_service;
 }
 
 // static
@@ -142,6 +151,10 @@ void DualMediaSinkService::AddLogger(LoggerImpl* logger_impl) {
 
 void DualMediaSinkService::RemoveLogger(LoggerImpl* logger_impl) {
   LoggerList::GetInstance()->RemoveLogger(logger_impl);
+}
+
+void DualMediaSinkService::StopObservingPrefChanges() {
+  cast_media_sink_service_->StopObservingPrefChanges();
 }
 
 }  // namespace media_router

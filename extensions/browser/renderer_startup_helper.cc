@@ -513,9 +513,9 @@ void RendererStartupHelper::GetMessageBundle(
   const std::string& default_locale = LocaleInfo::GetDefaultLocale(extension);
   if (default_locale.empty()) {
     // A little optimization: send the answer here to avoid an extra thread hop.
-    std::unique_ptr<MessageBundle::SubstitutionMap> dictionary_map(
+    std::unique_ptr<MessageBundle::SubstitutionMap> dictionary_map =
         l10n_file_util::LoadNonLocalizedMessageBundleSubstitutionMap(
-            extension_id));
+            extension_id);
     std::move(callback).Run(ToFlatMap(*dictionary_map));
     return;
   }
@@ -546,10 +546,9 @@ void RendererStartupHelper::GetMessageBundle(
              const ExtensionId& main_extension_id,
              const std::string& default_locale,
              extension_l10n_util::GzippedMessagesPermission gzip_permission) {
-            return base::WrapUnique<MessageBundle::SubstitutionMap>(
-                l10n_file_util::LoadMessageBundleSubstitutionMapFromPaths(
-                    extension_paths, main_extension_id, default_locale,
-                    gzip_permission));
+            return l10n_file_util::LoadMessageBundleSubstitutionMapFromPaths(
+                extension_paths, main_extension_id, default_locale,
+                gzip_permission);
           },
           paths_to_load, extension_id, default_locale,
           extension_l10n_util::GetGzippedMessagesPermissionForExtension(

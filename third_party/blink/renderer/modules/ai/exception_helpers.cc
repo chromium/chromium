@@ -7,7 +7,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
@@ -34,6 +33,8 @@ const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "or neither of them.";
 const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
+const char kExceptionMessageUnableToCloneSession[] =
+    "The session cannot be cloned.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -41,9 +42,13 @@ void ThrowInvalidContextException(ExceptionState& exception_state) {
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
-  resolver->Reject(DOMException::Create(
+  resolver->Reject(CreateInternalErrorException());
+}
+
+DOMException* CreateInternalErrorException() {
+  return DOMException::Create(
       kExceptionMessageServiceUnavailable,
-      DOMException::GetErrorName(DOMExceptionCode::kOperationError)));
+      DOMException::GetErrorName(DOMExceptionCode::kOperationError));
 }
 
 namespace {
@@ -145,19 +150,18 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::
         kNoFeatureExecutionNotEnabled:
       return "Model execution for this feature was not enabled.";
-    case mojom::blink::ModelAvailabilityCheckResult::
-        kNoModelAdaptationNotAvailable:
-      return "Model adaptation was required but not available.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoValidationPending:
       return "Model validation is still pending.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoValidationFailed:
       return "Model validation failed.";
     case mojom::blink::ModelAvailabilityCheckResult::kReadily:
     case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoModelAdaptationNotAvailable:
       NOTREACHED_IN_MIGRATION();
   }
   NOTREACHED_NORETURN();
 }
-// LINT.ThenChange(//third_party/blink/public/mojom/ai.mojom:ModelAvailabilityCheckResult)
+// LINT.ThenChange(//third_party/blink/public/mojom/ai_manager.mojom:ModelAvailabilityCheckResult)
 
 }  // namespace blink

@@ -146,9 +146,12 @@ union LayoutStyleProperties {
 struct AcceleratorInfo {
   AcceleratorType type;
   AcceleratorState state;
+  // True if the accelerator action can not be customized by the user.
+  // False if the accelerator action can be customized by the user.
+  bool locked;
   // True if the accelerator can not be customized by the user.
   // False if the accelerator can be customized by the user.
-  bool locked;
+  bool accelerator_locked;
   LayoutStyleProperties layout_properties;
 };
 

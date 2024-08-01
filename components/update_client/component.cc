@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -26,11 +25,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_downloader_factory.h"
-#include "components/update_client/features.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/persisted_data.h"
@@ -113,6 +114,11 @@
 namespace update_client {
 namespace {
 
+#if BUILDFLAG(IS_MAC)
+// The minimum size of a download to attempt it at background priority.
+constexpr int64_t kBackgroundDownloadSizeThreshold = 10000000; /*10 MB*/
+#endif
+
 using InstallOnBlockingTaskRunnerCompleteCallback = base::OnceCallback<void(
     ErrorCategory error_category,
     int error_code,
@@ -130,16 +136,22 @@ void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              InstallOnBlockingTaskRunnerCompleteCallback callback,
              const base::FilePath& unpack_path,
              const CrxInstaller::Result& installer_result) {
-            base::DeletePathRecursively(unpack_path);
-            const ErrorCategory error_category = installer_result.error
-                                                     ? ErrorCategory::kInstaller
-                                                     : ErrorCategory::kNone;
+            {
+              base::ScopedBlockingCall scoped_blocking_call(
+                  FROM_HERE, base::BlockingType::WILL_BLOCK);
+              for (size_t i = 0;
+                   i < 5 && !base::DeletePathRecursively(unpack_path); ++i) {
+                base::PlatformThread::Sleep(base::Seconds(1));
+              }
+            }
             main_task_runner->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback), error_category,
-                               static_cast<int>(installer_result.error),
-                               installer_result.extended_error,
-                               installer_result));
+                base::BindOnce(
+                    std::move(callback),
+                    installer_result.error ? ErrorCategory::kInstaller
+                                           : ErrorCategory::kNone,
+                    static_cast<int>(installer_result.error),
+                    installer_result.extended_error, installer_result));
           },
           main_task_runner, std::move(callback), unpack_path,
           installer_result));
@@ -632,13 +644,10 @@ void Component::NotifyWait() {
 
 bool Component::CanDoBackgroundDownload(int64_t size) const {
   // Foreground component updates are always downloaded in foreground.
-  bool enabled =
-      !is_foreground() &&
-      update_context_->config->EnabledBackgroundDownloader();
+  bool enabled = !is_foreground() &&
+                 update_context_->config->EnabledBackgroundDownloader();
 #if BUILDFLAG(IS_MAC)
-  enabled &=
-      base::FeatureList::IsEnabled(features::kDynamicCrxDownloaderPriority) &&
-      size > features::kDynamicCrxDownloaderPrioritySizeThreshold.Get();
+  enabled &= size > kBackgroundDownloadSizeThreshold;
 #endif
   return enabled;
 }
@@ -1148,6 +1157,7 @@ void Component::StateDownloadingBase::DownloadComplete(
     CHECK(download_result.response.empty());
     set_component_error_category(ErrorCategory::kDownload);
     set_component_error_code(download_result.error);
+    set_component_extra_code1(download_result.extra_code1);
 
     TransitionState(next_state_on_error());
     return;
@@ -1180,6 +1190,9 @@ void Component::StateDownloading::set_component_error_category(
 void Component::StateDownloading::set_component_error_code(int error_code) {
   Component::State::component().error_code_ = error_code;
 }
+void Component::StateDownloading::set_component_extra_code1(int error_code) {
+  Component::State::component().extra_code1_ = error_code;
+}
 std::unique_ptr<Component::State>
 Component::StateDownloading::next_state_on_error() {
   auto& component = Component::State::component();
@@ -1211,6 +1224,10 @@ void Component::StateDownloadingDiff::set_component_error_category(
 }
 void Component::StateDownloadingDiff::set_component_error_code(int error_code) {
   Component::State::component().diff_error_code_ = error_code;
+}
+void Component::StateDownloadingDiff::set_component_extra_code1(
+    int error_code) {
+  Component::State::component().diff_extra_code1_ = error_code;
 }
 std::unique_ptr<Component::State>
 Component::StateDownloadingDiff::next_state_on_error() {

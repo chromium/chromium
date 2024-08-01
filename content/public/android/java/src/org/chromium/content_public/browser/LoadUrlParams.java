@@ -44,7 +44,7 @@ public class LoadUrlParams {
     private int mUaOverrideOption;
     private ResourceRequestBody mPostData;
     private String mBaseUrlForDataUrl;
-    private String mVirtualUrlForDataUrl;
+    private String mVirtualUrlForSpecialCases;
     private String mDataUrlAsString;
     private boolean mCanLoadLocalResources;
     private boolean mIsRendererInitiated;
@@ -97,7 +97,7 @@ public class LoadUrlParams {
         mUaOverrideOption = UserAgentOverrideOption.INHERIT;
         mPostData = null;
         mBaseUrlForDataUrl = null;
-        mVirtualUrlForDataUrl = null;
+        mVirtualUrlForSpecialCases = null;
         mDataUrlAsString = null;
     }
 
@@ -122,7 +122,7 @@ public class LoadUrlParams {
         copy.mUaOverrideOption = other.mUaOverrideOption;
         copy.mPostData = other.mPostData;
         copy.mBaseUrlForDataUrl = other.mBaseUrlForDataUrl;
-        copy.mVirtualUrlForDataUrl = other.mVirtualUrlForDataUrl;
+        copy.mVirtualUrlForSpecialCases = other.mVirtualUrlForSpecialCases;
         copy.mDataUrlAsString = other.mDataUrlAsString;
         copy.mCanLoadLocalResources = other.mCanLoadLocalResources;
         copy.mIsRendererInitiated = other.mIsRendererInitiated;
@@ -232,7 +232,7 @@ public class LoadUrlParams {
         if (baseUrl == null || !baseUrl.toLowerCase(Locale.US).startsWith("data:")) {
             params = createLoadDataParams("", mimeType, isBase64Encoded, charset);
             params.setBaseUrlForDataUrl(baseUrl != null ? baseUrl : "about:blank");
-            params.setVirtualUrlForDataUrl(historyUrl != null ? historyUrl : "about:blank");
+            params.setVirtualUrlForSpecialCases(historyUrl != null ? historyUrl : "about:blank");
             params.setDataUrlAsString(buildDataUri(data, mimeType, isBase64Encoded, charset));
         } else {
             params = createLoadDataParams(data, mimeType, isBase64Encoded, charset);
@@ -454,26 +454,29 @@ public class LoadUrlParams {
     }
 
     /**
-     * Get the virtual url for data load. It is the url displayed to the user.
-     * It is ignored unless load type is LoadURLType.DATA.
-     * @return The virtual url for this data load.
+     * Get the virtual url for data or pdf load. It is the url displayed to the user. It is ignored
+     * unless load type is LoadURLType.DATA or LoadURLType.PDF_ANDROID.
+     *
+     * @return The virtual url for this data or pdf load.
      */
-    public String getVirtualUrlForDataUrl() {
-        return mVirtualUrlForDataUrl;
+    public String getVirtualUrlForSpecialCases() {
+        return mVirtualUrlForSpecialCases;
     }
 
     /**
-     * Set the virtual url for data load. It is the url displayed to the user.
-     * It is ignored unless load type is LoadURLType.DATA.
-     * @param virtualUrl The virtual url for this data load.
+     * Set the virtual url for data or pdf load. It is the url displayed to the user. It is ignored
+     * unless load type is LoadURLType.DATA or LoadURLType.PDF_ANDROID.
+     *
+     * @param virtualUrl The virtual url for this data or pdf load.
      */
-    public void setVirtualUrlForDataUrl(String virtualUrl) {
-        mVirtualUrlForDataUrl = virtualUrl;
+    public void setVirtualUrlForSpecialCases(String virtualUrl) {
+        mVirtualUrlForSpecialCases = virtualUrl;
     }
 
     /**
-     * Get the data for data load. This is then passed to the renderer as
-     * a string, not as a GURL object to circumvent GURL size restriction.
+     * Get the data for data load. This is then passed to the renderer as a string, not as a GURL
+     * object to circumvent GURL size restriction.
+     *
      * @return The data url.
      */
     public String getDataUrlAsString() {

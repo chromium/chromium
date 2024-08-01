@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "text-input-unstable-v1-server-protocol.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
@@ -39,6 +40,30 @@ class ZWPTextInputWrapperV1Test : public WaylandTestSimple {
   MockZWPTextInputWrapperClient test_client_;
   std::unique_ptr<ZWPTextInputWrapperV1> wrapper_;
 };
+
+TEST_F(ZWPTextInputWrapperV1Test, OnPreeditString) {
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr int32_t kPreeditCursor = kPreeditString.size();
+  EXPECT_CALL(test_client_,
+              OnPreeditString(kPreeditString,
+                              std::vector<ZWPTextInputWrapperClient::SpanStyle>{
+                                  {0,
+                                   static_cast<uint32_t>(kPreeditString.size()),
+                                   {{ImeTextSpan::Type::kComposition,
+                                     ImeTextSpan::Thickness::kThin}}}},
+                              gfx::Range(kPreeditCursor)));
+  PostToServerAndWait([kPreeditString](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    zwp_text_input_v1_send_preedit_cursor(text_input->resource(),
+                                          kPreeditCursor);
+    zwp_text_input_v1_send_preedit_styling(
+        text_input->resource(), 0, kPreeditString.size(),
+        ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE);
+    zwp_text_input_v1_send_preedit_string(text_input->resource(),
+                                          server->GetNextSerial(),
+                                          kPreeditString.data(), "");
+  });
+}
 
 TEST_F(ZWPTextInputWrapperV1Test,
        FinalizeVirtualKeyboardChangesShowInputPanel) {

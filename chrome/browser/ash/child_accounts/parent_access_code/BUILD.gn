@@ -18,6 +18,7 @@ static_library("parent_access_code") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//components/account_id",
     "//crypto",
   ]

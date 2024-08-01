@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 
 namespace ash::settings {
 

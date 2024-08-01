@@ -13,10 +13,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/prefs/pref_service.h"
@@ -37,16 +37,6 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
-
-namespace {
-// TODO(crbug.com/40216037): Once `google_apis::GetAPIKey()` handles this
-// logic we can remove this helper.
-std::string GetAPIKey() {
-  return chrome::GetChannel() == version_info::Channel::STABLE
-             ? google_apis::GetAPIKey()
-             : google_apis::GetNonStableAPIKey();
-}
-}  // namespace
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -72,14 +62,15 @@ void IpProtectionConfigProvider::SetUp() {
                                 ->GetURLLoaderFactoryForBrowserProcess();
     }
     ip_protection_config_http_ =
-        std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
+        std::make_unique<ip_protection::IpProtectionConfigHttp>(
+            url_loader_factory_.get());
   }
   if (!ip_protection_proxy_config_fetcher_) {
     ip_protection_proxy_config_fetcher_ =
         std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
             url_loader_factory_.get(),
             ip_protection::IpProtectionConfigProviderHelper::kChromeIpBlinding,
-            GetAPIKey());
+            google_apis::GetAPIKey(chrome::GetChannel()));
   }
   if (!bsa_) {
     if (!blind_sign_auth_) {
@@ -96,7 +87,8 @@ void IpProtectionConfigProvider::SetUp() {
 void IpProtectionConfigProvider::SetUpForTesting(
     std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
-    std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
+    std::unique_ptr<ip_protection::IpProtectionConfigHttp>
+        ip_protection_config_http,
     quiche::BlindSignAuthInterface* bsa) {
   // Carefully destroy any existing values in the correct order.
   ip_protection_proxy_config_fetcher_ = nullptr;
@@ -182,14 +174,14 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   // plan changes, though, we should implement a way for these requests to stop
   // being made.
   if (!IsIpProtectionEnabled()) {
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
   // If we are not able to call `GetProxyConfig` yet, return early.
   if (ip_protection_proxy_config_fetcher_->GetNoGetProxyConfigUntilTime() >
       base::Time::Now()) {
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -201,7 +193,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   }
 
   if (!CanRequestOAuthToken()) {
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   auto request_token_callback =
@@ -291,7 +283,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
   if (error.state() != GoogleServiceAuthError::NONE) {
     VLOG(2) << "IPATP::OnRequestOAuthTokenCompletedForGetProxyConfig failed: "
             << static_cast<int>(error.state());
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
   ip_protection_proxy_config_fetcher_->CallGetProxyConfig(
@@ -360,17 +352,19 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
+  std::vector<network::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    network::mojom::BlindSignedAuthTokenPtr converted_token = ip_protection::
-        IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
-    if (converted_token.is_null() || converted_token->token.empty()) {
+    std::optional<network::BlindSignedAuthToken> converted_token =
+        ip_protection::IpProtectionConfigProviderHelper::
+            CreateBlindSignedAuthToken(token);
+    if (!converted_token.has_value() || converted_token->token.empty()) {
       TryGetAuthTokensComplete(
           std::nullopt, std::move(callback),
           IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
       return;
+    } else {
+      bsa_tokens.push_back(std::move(converted_token).value());
     }
-    bsa_tokens.push_back(std::move(converted_token));
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
@@ -383,8 +377,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 }
 
 void IpProtectionConfigProvider::TryGetAuthTokensComplete(
-    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-        bsa_tokens,
+    std::optional<std::vector<network::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     IpProtectionTryGetAuthTokensResult result) {
   base::UmaHistogramEnumeration(

@@ -35,10 +35,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace memory_instrumentation {
-class GlobalMemoryDump;
-}
-
 namespace net {
 class HttpResponseHeaders;
 }
@@ -304,8 +300,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       std::optional<blink::mojom::SpeculationEagerness> eagerness);
 
   // Returns the number of hosts that prerender_host_by_frame_tree_node_id_
-  // holds by trigger type / limit group.
-  int GetHostCountByTriggerType(PreloadingTriggerType trigger_type);
+  // holds by limit group.
   int GetHostCountByLimitGroup(PrerenderLimitGroup limit_group);
 
   // Returns whether a certain type of PreloadingTriggerType is allowed to be
@@ -317,14 +312,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   bool IsAllowedToStartPrerenderingForTrigger(
       PreloadingTriggerType trigger_type,
       std::optional<blink::mojom::SpeculationEagerness> eagerness);
-
-  // Destroys a host when the current memory usage is higher than a certain
-  // threshold.
-  void DestroyWhenUsingExcessiveMemory(int frame_tree_node_id);
-  void DidReceiveMemoryDump(
-      int frame_tree_node_id,
-      bool success,
-      std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
 
   // Called when we have the HTTP cache result of the main resource of the back
   // navigation queried by `BackNavigationLikely`.

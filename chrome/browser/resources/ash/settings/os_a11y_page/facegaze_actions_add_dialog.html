@@ -1,4 +1,4 @@
-<style include="settings-shared iron-flex">
+<style include="os-settings-icons settings-shared iron-flex">
   :host {
     --dialog-horizontal-padding: 24px;
   }
@@ -75,9 +75,25 @@
     display: flex;
     justify-content: space-between;
   }
+
+  #sliderContainer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  #sliderContainer .slider-button {
+    margin-inline-start: -8px;
+    margin-inline-end: -8px;
+  }
+
+  #faceGazeGestureThresholdSlider {
+    flex: 1;
+    max-width: 200px;
+  }
+
 </style>
 
-<!-- TODO(b:341770753): Localize strings. -->
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <template is="dom-if" if="[[showSelectAction_]]" restamp>
     <div slot="title">$i18n{faceGazeActionsDialogTitle}</div>
@@ -92,7 +108,7 @@
               tabindex$="[[tabIndex]]">
             <paper-ripple></paper-ripple>
             <div class="flex padded" aria-hidden="true">
-                [[getActionDisplayText_(item)]]
+              [[getActionDisplayText_(item)]]
             </div>
             <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
             </iron-icon>
@@ -102,20 +118,21 @@
     </div>
     <div slot="button-container">
       <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-      $i18n{cancel}
+        $i18n{cancel}
       </cr-button>
       <cr-button id="faceGazeAddActionNextButton"
           class="next-button" on-click="onActionNextButtonClick_"
           disabled="[[disableActionNextButton_]]">
-      $i18n{next}
+        $i18n{next}
       </cr-button>
     </div>
   </template>
+
   <template is="dom-if" if="[[showSelectGesture_]]" restamp>
     <div slot="title">[[localizedSelectGestureTitle_]]</div>
     <div id="dialogBody" slot="body" scrollable>
         <div slot="subtitle" class="padded">
-            $i18n{faceGazeActionsDialogSelectGestureSubtitle}
+          $i18n{faceGazeActionsDialogSelectGestureSubtitle}
         </div>
         <iron-list id="faceGazeAvailableGesturesList"
             scroll-target="[[$$('[slot=body]')]]"
@@ -127,7 +144,7 @@
                 tabindex$="[[tabIndex]]">
               <paper-ripple></paper-ripple>
               <div class="flex padded" aria-hidden="true">
-                  [[getGestureDisplayText_(item)]]
+                [[getGestureDisplayText_(item)]]
               </div>
               <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
               </iron-icon>
@@ -137,57 +154,79 @@
     </div>
     <div slot="button-container" class="justify-space-between">
       <div id="leftBtnGroup">
-        <cr-button id="faceGazeGesturePreviousButton"
-            class="button" on-click="onGesturePreviousButtonClick_">
+        <template is="dom-if" if="[[displayGesturePreviousButton_]]" restamp>
+          <cr-button
+              id="faceGazeGesturePreviousButton"
+              class="button" on-click="onGesturePreviousButtonClick_">
             $i18n{faceGazePrevious}
-        </cr-button>
+          </cr-button>
+        </template>
       </div>
       <div id="rightBtnGroup">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-            $i18n{cancel}
+          $i18n{cancel}
         </cr-button>
         <cr-button id="faceGazeGestureNextButton"
             class="next-button" on-click="onGestureNextButtonClick_"
             disabled="[[disableGestureNextButton_]]">
-            $i18n{next}
+          $i18n{next}
         </cr-button>
       </div>
     </div>
   </template>
-  <!-- TODO(b:341770753): Build components for setting the gesture threshold. -->
+
+  <!-- TODO(b:341770753): Build custom webcam, dynamic slider value and knob label components for setting the gesture threshold. -->
   <template is="dom-if" if="[[showGestureThreshold_]]" restamp>
-    <div slot="title">Gesture setting: [[selectedGesture_.displayText]]</div>
+    <div slot="title">[[localizedGestureThresholdTitle_]]</div>
     <div slot="body">
-      <div slot="subtitle">
-          Adjust the detection threshold so that you can comfortably trigger the gesture
-      </div>
-      <cr-icon-button class="icon-clear"
-          on-click="onDecreaseThresholdButtonClick_">
-      </cr-icon-button>
-      <settings-slider
-          id="faceGazeGestureThresholdSlider"
-          min="1" max="100">
-      </settings-slider>
-      <cr-icon-button class="icon-clear"
-          on-click="onIncreaseThresholdButtonClick_">
-      </cr-icon-button>
-      <div class="start settings-box-text">
-          [[selectedGesture_.displayText]] detected
-      </div>
+        <div slot="subtitle">
+          $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
+        </div>
+        <div id="sliderContainer">
+          <cr-icon-button
+              id="faceGazeGestureThresholdDecrementButton"
+              iron-icon="os-settings:chevron-left"
+              class="slider-button"
+              on-click="onDecreaseThresholdButtonClick_">
+          </cr-icon-button>
+          <cr-slider
+              id="faceGazeGestureThresholdSlider"
+              label_="$i18n{faceGazeActionsDialogGestureThresholdKnobLabel}"
+              value="[[gestureThresholdValue_]]"
+              on-cr-slider-value-changed="onThresholdSliderChanged_"
+              key-press-slider-increment="5"
+              min="1" max="100">
+          </cr-slider>
+          <cr-icon-button
+              id="faceGazeGestureThresholdIncrementButton"
+              iron-icon="os-settings:chevron-right"
+              class="slider-button"
+              on-click="onIncreaseThresholdButtonClick_">
+          </cr-icon-button>
+        </div>
+        <!-- TODO(b:341770753): Reflect count of gesture detection in this string. -->
+        <!-- TODO(b:341770655): Localize this string. -->
+        <div class="start settings-box-text">
+          [[getGestureDisplayText_(selectedGesture_)]] detected (0)
+        </div>
     </div>
     <div slot="button-container" class="justify-space-between">
       <div id="leftBtnGroup">
-        <cr-button id="faceGazeThresholdPreviousButton"
-            class="button" on-click="onGestureThresholdPreviousButtonClick_">
+        <template is="dom-if" if="[[displayGesturePreviousButton_]]" restamp>
+          <cr-button id="faceGazeThresholdPreviousButton"
+              class="button" on-click="onGestureThresholdPreviousButtonClick_">
             $i18n{faceGazePrevious}
-        </cr-button>
+          </cr-button>
+        </template>
       </div>
       <div id="rightBtnGroup">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-            $i18n{cancel}
+          $i18n{cancel}
         </cr-button>
-        <cr-button class="next-button" on-click="onSaveButtonClick_">
-            $i18n{save}
+        <cr-button id="faceGazeActionDialogSaveButton"
+            class="next-button"
+            on-click="onSaveButtonClick_">
+          $i18n{save}
         </cr-button>
       </div>
     </div>

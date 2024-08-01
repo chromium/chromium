@@ -54,7 +54,6 @@ class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
 class SplitViewController;
 class SplitViewSetupView;
-class SplitViewSetupViewOld;
 class WindowOcclusionCalculator;
 
 // An instance of this class is created during the initialization of an overview
@@ -422,8 +421,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
   const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
-  // TODO(http://b/325335020): Remove this.
-  SplitViewSetupViewOld* GetSplitViewSetupViewOld();
   const SplitViewSetupView* GetSplitViewSetupView() const;
 
   // Gets the cropping area of the wallpaper in screen coordinates.
@@ -520,8 +517,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const views::Widget* informed_restore_widget() const {
     return informed_restore_widget_.get();
   }
-
-  views::Widget* feedback_widget() { return feedback_widget_.get(); }
 
   views::Widget* save_desk_button_container_widget() {
     return save_desk_button_container_widget_.get();
@@ -672,14 +667,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // only be shown if split view overview is in session.
   void UpdateSplitViewSetupViewWidget();
 
-  // Updates the visibility of `feedback_widget_`. The widget is located in the
-  // bottom left corner of the grid, and contains a `PillButton` that opens up a
-  // feedback page when clicked. The widget will not show in partial overview.
-  void UpdateFeedbackButton();
-
-  // Shows the feedback page with preset information for overview.
-  void ShowFeedbackPage();
-
   // Whether the `desks_widget_` should be initialized.
   bool ShouldInitDesksWidget() const;
 
@@ -730,9 +717,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // The widget that contains the `InformedRestoreContentsView`.
   std::unique_ptr<views::Widget> informed_restore_widget_;
-
-  // The widget that contains a `PillButton` to open a feedback page.
-  std::unique_ptr<views::Widget> feedback_widget_;
 
   // A widget that contains save desk buttons which save desk as template or for
   // later when pressed.

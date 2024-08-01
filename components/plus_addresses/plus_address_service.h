@@ -34,6 +34,10 @@ namespace affiliations {
 class AffiliationService;
 }
 
+namespace autofill {
+class FormFieldData;
+}  // namespace autofill
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -96,8 +100,9 @@ class PlusAddressService : public KeyedService,
   void GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
-      autofill::AutofillClient::PasswordFormType focused_form_type,
-      std::u16string_view focused_field_value,
+      const autofill::AutofillClient::PasswordFormClassification&
+          focused_form_classification,
+      const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       GetSuggestionsCallback callback) override;
   autofill::Suggestion GetManagePlusAddressSuggestion() const override;
@@ -108,7 +113,7 @@ class PlusAddressService : public KeyedService,
       autofill::FormGlobalId form,
       autofill::FieldGlobalId field,
       SuggestionContext suggestion_context,
-      autofill::AutofillClient::PasswordFormType form_type,
+      autofill::AutofillClient::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
 
   // PlusAddressWebDataService::Observer:
@@ -226,8 +231,9 @@ class PlusAddressService : public KeyedService,
   // returns it via the `callback`.
   // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGetAffiliatedPlusProfiles(
-      autofill::AutofillClient::PasswordFormType focused_form_type,
-      std::u16string_view focused_field_value,
+      const autofill::AutofillClient::PasswordFormClassification&
+          focused_form_classification,
+      const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       bool is_off_the_record,
       GetSuggestionsCallback callback,

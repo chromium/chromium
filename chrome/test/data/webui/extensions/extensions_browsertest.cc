@@ -38,12 +38,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogStreamItem) {
   RunTest("extensions/activity_log_stream_item_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(CrExtensionsTest, KioskModeManagerUnit) {
-  RunTest("extensions/kiosk_mode_manager_unit_test.js", "mocha.run()");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ToggleRow) {
   RunTest("extensions/toggle_row_test.js", "mocha.run()");
 }
@@ -167,12 +161,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsToolbarTest, NarrowModeShowsMenu) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsToolbarTest, MAYBE_ClickHandlers) {
   RunTestCase("ClickHandlers");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(CrExtensionsToolbarTest, KioskMode) {
-  RunTestCase("KioskMode");
-}
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item Tests
@@ -744,6 +732,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, InvalidUrl) {
   RunTestCase("InvalidUrl");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, ReloadItem) {
+  RunTestCase("ReloadItem");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Code Section Tests
 
@@ -764,45 +756,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsCodeSectionTest, Layout) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsCodeSectionTest, LongSource) {
   RunTestCase("LongSource");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-////////////////////////////////////////////////////////////////////////////////
-// kiosk mode tests.
-
-class CrExtensionsKioskModeTest : public ExtensionsBrowserTest {
- protected:
-  void RunTestCase(const std::string& testCase) {
-    ExtensionsBrowserTest::RunTest(
-        "extensions/kiosk_mode_test.js",
-        base::StringPrintf("runMochaTest('KioskModeTests', '%s');",
-                           testCase.c_str()));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, AddButton) {
-  RunTestCase("AddButton");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, Layout) {
-  RunTestCase("Layout");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, AutoLaunch) {
-  RunTestCase("AutoLaunch");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, Bailout) {
-  RunTestCase("Bailout");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, Updated) {
-  RunTestCase("Updated");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, AddError) {
-  RunTestCase("AddError");
-}
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Navigation Helper Tests

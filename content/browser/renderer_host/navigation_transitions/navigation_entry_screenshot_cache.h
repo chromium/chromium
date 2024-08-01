@@ -48,6 +48,9 @@ class NavigationEntryScreenshotCacheEvictor {
 class CONTENT_EXPORT NavigationEntryScreenshotCache
     : public NavigationEntryScreenshotCacheEvictor {
  public:
+  using CompressedCallback = base::OnceCallback<void(int nav_entry_index)>;
+  static void SetCompressedCallbackForTesting(CompressedCallback callback);
+
   explicit NavigationEntryScreenshotCache(
       base::SafeRef<NavigationEntryScreenshotManager> manager,
       NavigationControllerImpl* nav_controller);
@@ -76,7 +79,11 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
 
   // Called by the `NavigationScreenshot` when the hosting navigation entry is
   // deleted.
-  void OnNavigationEntryGone(int navigation_entry_id, size_t size);
+  void OnNavigationEntryGone(int navigation_entry_id);
+
+  // Called by `NavigationScreenshot` when the cached screenshot has been
+  // compressed.
+  void OnScreenshotCompressed(int navigation_entry_id, size_t new_size);
 
   // Called when a navigation request has finished.
   void OnNavigationFinished(const NavigationRequest& navigation_request);
@@ -109,8 +116,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   void PurgeInternal(bool for_memory_pressure);
 
   // Tracks the unique IDs of the navigation entries, for which we have captured
-  // screenshots.
-  base::flat_set<int> cached_screenshots_;
+  // screenshots, and the screenshot size in bytes.
+  base::flat_map<int, size_t> cached_screenshots_;
 
   // Tracks the set of screenshots for ongoing navigations. These screenshots
   // are either added to `cached_screenshots_` or discarded when the navigation

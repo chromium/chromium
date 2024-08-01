@@ -42,6 +42,11 @@ AuthenticatorTouchIdView::AuthenticatorTouchIdView(
 
 AuthenticatorTouchIdView::~AuthenticatorTouchIdView() = default;
 
+std::unique_ptr<views::View>
+AuthenticatorTouchIdView::BuildStepSpecificHeader() {
+  return CreateGpmIconWithLabel();
+}
+
 std::pair<std::unique_ptr<views::View>, AuthenticatorTouchIdView::AutoFocus>
 AuthenticatorTouchIdView::BuildStepSpecificContent() {
   auto container = std::make_unique<views::BoxLayoutView>();

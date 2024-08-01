@@ -6,6 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -90,12 +91,10 @@ CGFloat const kCreditCardCellHeight = 64;
 }
 
 - (void)showLoadingState {
+  self.primaryActionButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME);
   self.isLoading = YES;
   self.isConfirmed = NO;
-  UIAccessibilityPostNotification(
-      UIAccessibilityAnnouncementNotification,
-      l10n_util::GetNSString(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME));
 }
 
 - (void)showConfirmationState {
@@ -185,6 +184,14 @@ CGFloat const kCreditCardCellHeight = 64;
   UIImageView* logoImageTitleView =
       [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
   logoImageTitleView.contentMode = UIViewContentModeCenter;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    logoImageTitleView.isAccessibilityElement = YES;
+    logoImageTitleView.accessibilityLabel =
+        l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
+  }
+#endif
   return logoImageTitleView;
 }
 

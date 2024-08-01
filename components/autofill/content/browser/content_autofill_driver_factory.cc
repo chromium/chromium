@@ -14,6 +14,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,6 +27,30 @@ namespace autofill {
 
 class ScopedAutofillManagersObservation;
 
+void ContentAutofillDriverFactory::Observer::OnAutofillDriverFactoryDestroyed(
+    AutofillDriverFactory& factory) {
+  OnContentAutofillDriverFactoryDestroyed(
+      static_cast<ContentAutofillDriverFactory&>(factory));
+}
+
+void ContentAutofillDriverFactory::Observer::OnAutofillDriverCreated(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver) {
+  OnContentAutofillDriverCreated(
+      static_cast<ContentAutofillDriverFactory&>(factory),
+      static_cast<ContentAutofillDriver&>(driver));
+}
+
+void ContentAutofillDriverFactory::Observer::OnAutofillDriverStateChanged(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver,
+    LifecycleState old_state,
+    LifecycleState new_state) {
+  OnContentAutofillDriverStateChanged(
+      static_cast<ContentAutofillDriverFactory&>(factory),
+      static_cast<ContentAutofillDriver&>(driver), old_state, new_state);
+}
+
 // static
 ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
     content::WebContents* contents) {
@@ -34,7 +59,7 @@ ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
   if (!client) {
     return nullptr;
   }
-  return client->GetAutofillDriverFactory();
+  return &client->GetAutofillDriverFactory();
 }
 
 // static
@@ -64,8 +89,8 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     : content::WebContentsObserver(web_contents), client_(*client) {}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
-  for (Observer& observer : observers_) {
-    observer.OnContentAutofillDriverFactoryDestroyed(*this);
+  for (auto& observer : observers()) {
+    observer.OnAutofillDriverFactoryDestroyed(*this);
   }
   base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
                                max_drivers_);
@@ -98,15 +123,15 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
     if (render_frame_host->IsRenderFrameLive()) {
       driver = std::make_unique<ContentAutofillDriver>(render_frame_host, this);
-      for (Observer& observer : observers_) {
-        observer.OnContentAutofillDriverCreated(*this, *driver);
+      DCHECK_EQ(driver->GetLifecycleState(), LifecycleState::kInactive);
+      for (auto& observer : observers()) {
+        observer.OnAutofillDriverCreated(*this, *driver);
       }
       // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
       // prerendered CADs are deferred.
-      driver->SetLifecycleState(
-          driver->IsActive() ? AutofillManager::LifecycleState::kActive
-                             : AutofillManager::LifecycleState::kInactive,
-          {});
+      SetLifecycleStateAndNotifyObservers(
+          *driver, driver->IsActive() ? LifecycleState::kActive
+                                      : LifecycleState::kInactive);
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
@@ -136,12 +161,8 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
         render_frame_host->DocumentUsedWebOTP());
   }
 
-  for (Observer& observer : observers_) {
-    observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
-  }
-
-  driver->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
-                            {});
+  SetLifecycleStateAndNotifyObservers(*driver,
+                                      LifecycleState::kPendingDeletion);
   driver_map_.erase(it);
 }
 
@@ -176,7 +197,7 @@ void ContentAutofillDriverFactory::RenderFrameHostStateChanged(
     NOTREACHED_NORETURN();
   }();
   if (state) {
-    driver->SetLifecycleState(*state, {});
+    SetLifecycleStateAndNotifyObservers(*driver, *state);
   }
 }
 
@@ -192,13 +213,17 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   }
 
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      client().GetAutofillOfferManager()) {
+      client().GetPaymentsAutofillClient() &&
+      client().GetPaymentsAutofillClient()->GetAutofillOfferManager()) {
     // If the navigation happened in the main frame and the AutofillOfferManager
     // exists (not in Incognito windows, not in WebView), notify it about the
     // navigation event.
     // TODO: crbug.com/40178290 - Move out of CADF. Perhaps use the
     // LifecycleState changes to recognize navigations.
-    client().GetAutofillOfferManager()->OnDidNavigateFrame(client());
+    client()
+        .GetPaymentsAutofillClient()
+        ->GetAutofillOfferManager()
+        ->OnDidNavigateFrame(client());
   }
 
   // If the navigation is served from BFCache, then the pre-navigation RFH is
@@ -210,14 +235,13 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
     return;
   }
 
-  driver->SetLifecycleState(AutofillManager::LifecycleState::kPendingReset, {});
-  driver->Reset({});
+  SetLifecycleStateAndNotifyObservers(*driver, LifecycleState::kPendingReset);
+  driver->Reset(/*pass_key=*/{});
   // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
   // prerendered CADs are deferred.
-  driver->SetLifecycleState(driver->IsActive()
-                                ? AutofillManager::LifecycleState::kActive
-                                : AutofillManager::LifecycleState::kInactive,
-                            {});
+  SetLifecycleStateAndNotifyObservers(
+      *driver, driver->IsActive() ? AutofillDriver::LifecycleState::kActive
+                                  : AutofillDriver::LifecycleState::kInactive);
 }
 
 std::vector<ContentAutofillDriver*>

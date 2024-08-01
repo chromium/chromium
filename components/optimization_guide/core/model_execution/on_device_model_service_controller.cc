@@ -138,11 +138,6 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     }
   }
 
-  if (features::internal::IsOnDeviceModelAdaptationEnabled(feature) &&
-      !base::Contains(model_adaptation_metadata_, feature)) {
-    return OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable;
-  }
-
   return access_controller_->ShouldStartNewSession();
 }
 
@@ -192,11 +187,12 @@ OnDeviceModelServiceController::CreateSession(
 
   std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
   std::optional<int64_t> adaptation_version;
-  if (features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
-    auto it = model_adaptation_metadata_.find(feature);
-    CHECK(it != model_adaptation_metadata_.end());
-    adaptation_assets = base::OptionalFromPtr(it->second.asset_paths());
-    adaptation_version = it->second.version();
+  auto adaptation_metadata_it = model_adaptation_metadata_.find(feature);
+  if (adaptation_metadata_it != model_adaptation_metadata_.end()) {
+    CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature));
+    adaptation_assets =
+        base::OptionalFromPtr(adaptation_metadata_it->second.asset_paths());
+    adaptation_version = adaptation_metadata_it->second.version();
   }
 
   SessionImpl::OnDeviceOptions opts;

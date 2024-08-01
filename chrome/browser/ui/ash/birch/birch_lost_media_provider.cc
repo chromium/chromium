@@ -15,13 +15,19 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "components/favicon/core/favicon_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
+#include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/grit/preinstalled_web_apps_resources.h"
+#endif
 
 namespace ash {
 
@@ -62,6 +68,36 @@ void BirchLostMediaProvider::MediaSessionMetadataChanged(
   }
 }
 
+void BirchLostMediaProvider::MediaSessionInfoChanged(
+    media_session::mojom::MediaSessionInfoPtr session_info) {
+  media_session::mojom::MediaSessionInfoPtr media_session_info =
+      std::move(session_info);
+
+  if (!media_session_info) {
+    secondary_icon_type_ = SecondaryIconType::kUnknown;
+    return;
+  }
+
+  is_playing_ = media_session_info->playback_state ==
+                media_session::mojom::MediaPlaybackState::kPlaying;
+
+  if (media_session_info->audio_video_states.has_value() &&
+      !media_session_info->audio_video_states->empty()) {
+    auto& first_state = media_session_info->audio_video_states->at(0);
+    switch (first_state) {
+      case media_session::mojom::MediaAudioVideoState::kAudioOnly:
+        secondary_icon_type_ = SecondaryIconType::kLostMediaAudio;
+        return;
+      case media_session::mojom::MediaAudioVideoState::kAudioVideo:
+      case media_session::mojom::MediaAudioVideoState::kVideoOnly:
+        secondary_icon_type_ = SecondaryIconType::kLostMediaVideo;
+        return;
+      default:
+        secondary_icon_type_ = SecondaryIconType::kUnknown;
+    }
+  }
+}
+
 void BirchLostMediaProvider::RequestBirchDataFetch() {
   if (video_conference_controller_) {
     video_conference_controller_->GetMediaApps(base::BindOnce(
@@ -91,6 +127,7 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
         /*media_title=*/apps[0]->title,
         /*is_video_conference_tab=*/true,
         /*backup_icon=*/backup_icon,
+        /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
         /*activation_callback=*/
         base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
                             weak_factory_.GetWeakPtr(), apps[0]->id));
@@ -105,15 +142,23 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
 void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
   // Returns early if no media controller is bound or if pertinent media app
   // details are missing.
-  if (!media_controller_remote_.is_bound() || media_title_.empty() ||
-      source_url_.empty()) {
+  if (!media_controller_remote_.is_bound() || !is_playing_ ||
+      media_title_.empty() || source_url_.empty()) {
     Shell::Get()->birch_model()->SetLostMediaItems({});
     return;
   }
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
+  // The YouTube icon is only available in branded builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  int backup_icon_id = source_url_.starts_with(u"youtube.com")
+                           ? IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG
+                           : IDR_CHROME_APP_ICON_192;
+#else
+  int backup_icon_id = IDR_CHROME_APP_ICON_192;
+#endif
+  ui::ImageModel backup_icon =
+      ui::ImageModel::FromImageSkia(*rb.GetImageSkiaNamed(backup_icon_id));
 
   std::vector<BirchLostMediaItem> items;
   // `source_url_` doesn't contain necessary prefix to make it a valid GURL so
@@ -123,6 +168,7 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
       /*media_title=*/media_title_,
       /*is_video_conference_tab=*/false,
       /*backup_icon=*/backup_icon,
+      /*secondary_icon_type=*/secondary_icon_type_,
       /*activation_callback=*/
       base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
                           weak_factory_.GetWeakPtr(), std::nullopt));
@@ -142,9 +188,6 @@ void BirchLostMediaProvider::OnItemPressed(
 
 void BirchLostMediaProvider::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {}
-
-void BirchLostMediaProvider::MediaSessionInfoChanged(
-    media_session::mojom::MediaSessionInfoPtr session_info) {}
 
 void BirchLostMediaProvider::MediaSessionChanged(
     const std::optional<base::UnguessableToken>& request_id) {}

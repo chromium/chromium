@@ -147,6 +147,7 @@ BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kReaderModeInCCT);
 BASE_DECLARE_FEATURE(kRecordSuppressionMetrics);
 BASE_DECLARE_FEATURE(kRelatedSearchesAllLanguage);
+BASE_DECLARE_FEATURE(kRelatedSearchesSwitch);
 BASE_DECLARE_FEATURE(kReportParentalControlSitesChild);
 BASE_DECLARE_FEATURE(kSearchInCCT);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
@@ -197,6 +198,11 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_tab",
     100);
+
+constexpr base::FeatureParam<bool> kEdgeToEdgeBottomChinDebugParam(
+    &kEdgeToEdgeBottomChin,
+    "debug_bottom_chin",
+    /*default_value=*/false);
 
 constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     &kQuickDeleteAndroidSurvey,

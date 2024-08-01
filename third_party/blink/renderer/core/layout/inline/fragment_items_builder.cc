@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
@@ -411,7 +412,7 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
   WritingModeConverter line_converter(
       {ToLineWritingMode(GetWritingMode()), TextDirection::kLtr});
 
-  for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {
+  for (auto iter = items_.begin(); iter != items_.end(); ++iter) {
     FragmentItem* item = &iter->item;
     item->SetOffset(converter.ToPhysical(iter->offset, item->Size()));
 
@@ -426,7 +427,7 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
         line_converter.SetOuterSize(line_box_bounds.size);
         while (--descendants_count) {
           ++iter;
-          DCHECK_NE(iter, items_.end());
+          CHECK_NE(iter, items_.end(), base::NotFatalUntil::M130);
           item = &iter->item;
           item->SetOffset(
               line_converter.ToPhysical(iter->offset, item->Size()) +
@@ -441,7 +442,7 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
 
 void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(!is_converted_to_physical_);
-  for (ItemWithOffset* iter = items_.begin(); iter != items_.end(); ++iter) {
+  for (auto iter = items_.begin(); iter != items_.end(); ++iter) {
     if (iter->item->Type() == FragmentItem::kLine) {
       iter->offset.block_offset += delta;
       std::advance(iter, iter->item->DescendantsCount() - 1);

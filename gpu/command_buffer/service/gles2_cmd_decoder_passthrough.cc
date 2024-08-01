@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
 #include <memory>
@@ -1962,6 +1967,7 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   attribs.global_semaphore_share_group = true;
   attribs.robust_resource_initialization = true;
   attribs.robust_buffer_access = true;
+  attribs.allow_client_arrays = false;
   auto gl_context = gl::init::CreateGLContext(impl_->context_->share_group(),
                                               gl_surface.get(), attribs);
   if (!gl_context) {

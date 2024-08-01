@@ -26,10 +26,11 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -83,6 +84,15 @@ bool DefaultBrowserPromoCanceled() {
     case IOSDefaultBrowserPromoAction::kDismiss:
       return false;
   }
+}
+
+// Returns true if the Feature Engagement Tracker has ever triggered for the
+// given `feature`.
+bool FETHasEverTriggered(Browser* browser, const base::Feature& feature) {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+  return tracker->HasEverTriggered(feature, true);
 }
 
 }  // namespace
@@ -243,10 +253,11 @@ void TipsNotificationClient::MaybeRequestNotification(
   // The types of notifications that could be sent will be evaluated in the
   // order they appear in this array.
   static const TipsNotificationType kTypes[] = {
-      TipsNotificationType::kDefaultBrowser,
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kSignin,
       TipsNotificationType::kSetUpListContinuation,
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kDocking,
+      TipsNotificationType::kSignin,
   };
 
   for (TipsNotificationType type : kTypes) {
@@ -305,6 +316,9 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendSignin();
     case TipsNotificationType::kSetUpListContinuation:
       return ShouldSendSetUpListContinuation();
+    case TipsNotificationType::kDocking:
+      return ShouldSendDocking();
+    case TipsNotificationType::kOmniboxPosition:
     case TipsNotificationType::kError:
       NOTREACHED_NORETURN();
   }
@@ -321,11 +335,8 @@ bool TipsNotificationClient::ShouldSendWhatsNew() {
   if (!browser) {
     return false;
   }
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          browser->GetBrowserState());
-  return !tracker->HasEverTriggered(
-      feature_engagement::kIPHWhatsNewUpdatedFeature, true);
+  return !FETHasEverTriggered(browser,
+                              feature_engagement::kIPHWhatsNewUpdatedFeature);
 }
 
 bool TipsNotificationClient::ShouldSendSignin() {
@@ -357,6 +368,19 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   return !set_up_list_prefs::AllItemsComplete(local_state);
 }
 
+bool TipsNotificationClient::ShouldSendDocking() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
+    return false;
+  }
+  return !FETHasEverTriggered(browser,
+                              feature_engagement::kIPHiOSDockingPromoFeature) &&
+         !FETHasEverTriggered(
+             browser,
+             feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
+}
+
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSceneLevelForegroundActiveBrowser() != nullptr;
@@ -383,6 +407,10 @@ void TipsNotificationClient::ShowUIForNotificationType(
     case TipsNotificationType::kSetUpListContinuation:
       ShowSetUpListContinuation();
       break;
+    case TipsNotificationType::kDocking:
+      ShowDocking();
+      break;
+    case TipsNotificationType::kOmniboxPosition:
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -401,7 +429,7 @@ void TipsNotificationClient::ShowDefaultBrowserPromo() {
 
 void TipsNotificationClient::ShowWhatsNew() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands) showWhatsNew];
+  [HandlerForProtocol(Dispatcher(), WhatsNewCommands) showWhatsNew];
 }
 
 void TipsNotificationClient::ShowSignin() {
@@ -430,6 +458,11 @@ void TipsNotificationClient::ShowSetUpListContinuation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(Dispatcher(), ContentSuggestionsCommands)
       showSetUpListSeeMoreMenu];
+}
+
+void TipsNotificationClient::ShowDocking() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(Dispatcher(), DockingPromoCommands) showDockingPromo:YES];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(

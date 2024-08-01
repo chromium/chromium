@@ -258,6 +258,7 @@ NSString* const kTurnUpRightDiamondFillSymbol =
 NSString* const kPencilSymbol = @"pencil";
 NSString* const kMagicStackSymbol = @"wand.and.stars.inverse";
 NSString* const kDiscoverFeedSymbol = @"newspaper";
+NSString* const kFilterSymbol = @"line.3.horizontal.decrease.circle";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

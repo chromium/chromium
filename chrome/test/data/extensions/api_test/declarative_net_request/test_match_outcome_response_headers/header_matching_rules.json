@@ -1,0 +1,23 @@
+[{
+  "id": 1,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["header-matching.example-1"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "responseHeaders": [{"header": "example-header"}]
+  },
+  "action": {
+    "type": "block"
+  }
+}, {
+  "id": 2,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["excluded-header-matching.example"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "excludedResponseHeaders": [{"header": "nonsense-header"}]
+  },
+  "action": {
+    "type": "block"
+  }
+}]

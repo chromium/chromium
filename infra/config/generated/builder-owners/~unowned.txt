@@ -122,8 +122,6 @@ ci/mac-updater-builder-asan-dbg
 ci/mac-updater-builder-dbg
 ci/mac-updater-builder-rel
 ci/mac-upload-perfetto
-ci/mac10.15-updater-tester-dbg
-ci/mac10.15-updater-tester-rel
 ci/mac11-arm64-updater-tester-dbg
 ci/mac11-arm64-updater-tester-rel
 ci/mac11-x64-updater-tester-dbg
@@ -342,7 +340,6 @@ try/linux-lacros-rel
 try/linux-lacros-rel-compilator
 try/linux-layout-tests-edit-ng
 try/linux-libfuzzer-asan-rel
-try/linux-mbi-mode-per-render-process-host-rel
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
 try/linux-official
@@ -420,8 +417,6 @@ try/mac13-arm64-rel
 try/mac13-blink-rel
 try/mac13-tests
 try/mac13.arm64-blink-rel
-try/mac13.arm64-skia-alt-blink-rel
-try/mac_chromium_10.15_rel_ng
 try/mac_chromium_11.0_rel_ng
 try/mac_chromium_asan_rel_ng
 try/mac_chromium_compile_dbg_ng

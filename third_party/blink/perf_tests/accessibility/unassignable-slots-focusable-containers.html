@@ -19,7 +19,7 @@
     }
   </style>
   <script src="../resources/runner.js"></script>
-</head>S
+</head>
 <body tabindex="-1">
   <div tabindex=-1>
     <div id="container" tabindex="-1"></div>
@@ -27,10 +27,13 @@
 </body>
 
 <script>
-
 var isDone = false;
 var startTime;
+
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
 var container = document.getElementById('container');
+generateAllContent();
 
 function runTest() {
   if (startTime) {
@@ -41,11 +44,7 @@ function runTest() {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
-    container.innerHTML = '';
-
-    generateAllContent();
-
-    setTimeout(toggleDisplay, 250);
+    toggleDisplay();
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's

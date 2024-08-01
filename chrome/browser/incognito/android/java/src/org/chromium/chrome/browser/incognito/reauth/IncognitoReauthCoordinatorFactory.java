@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A factory to create an {@link IncognitoReauthCoordinator} instance. */
@@ -41,9 +40,6 @@ public class IncognitoReauthCoordinatorFactory {
 
     /** The manager responsible for invoking the underlying native re-authentication. */
     private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
-
-    /** The launcher to show the SettingsActivity. */
-    private final @NonNull SettingsLauncher mSettingsLauncher;
 
     /**
      * A boolean to distinguish between tabbedActivity or CCT, during coordinator creation.
@@ -83,8 +79,6 @@ public class IncognitoReauthCoordinatorFactory {
      *     containing the Incognito re-auth view.
      * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be used
      *     to initiate re-authentication.
-     * @param settingsLauncher A {@link SettingsLauncher} to use for launching {@link
-     *     SettingsActivity} from 3 dots menu inside full-screen re-auth.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
      * @param hubManagerSupplier The supplier of the {@link HubManager}.
      * @param showRegularOverviewIntent An {@link Intent} to show the regular overview mode.
@@ -95,7 +89,6 @@ public class IncognitoReauthCoordinatorFactory {
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager incognitoReauthManager,
-            @NonNull SettingsLauncher settingsLauncher,
             @Nullable LayoutManager layoutManager,
             @Nullable OneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable Intent showRegularOverviewIntent,
@@ -104,7 +97,6 @@ public class IncognitoReauthCoordinatorFactory {
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
         mIncognitoReauthManager = incognitoReauthManager;
-        mSettingsLauncher = settingsLauncher;
         mLayoutManager = layoutManager;
         mHubManagerSupplier = hubManagerSupplier;
         mShowRegularOverviewIntent = showRegularOverviewIntent;
@@ -145,8 +137,7 @@ public class IncognitoReauthCoordinatorFactory {
             return mIncognitoReauthMenuDelegateForTesting;
         }
 
-        return new IncognitoReauthMenuDelegate(
-                mContext, getCloseAllIncognitoTabsRunnable(), mSettingsLauncher);
+        return new IncognitoReauthMenuDelegate(mContext, getCloseAllIncognitoTabsRunnable());
     }
 
     /**

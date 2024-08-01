@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/feature_engagement/public/feature_list.h"
 
 #include "build/build_config.h"
@@ -77,6 +82,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
+    &kIPHTabGroupCreationDialogSyncTextFeature,
     &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
@@ -84,6 +90,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,
     &kIPHTabSwitcherButtonFeature,
+    &kIPHTabSwitcherFloatingActionButtonFeature,
     &kIPHTranslateMenuButtonFeature,
     &kIPHVideoTutorialNTPChromeIntroFeature,
     &kIPHVideoTutorialNTPDownloadFeature,
@@ -210,7 +217,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
     &kIPHTrackingProtectionOnboardingFeature,
-    &kIPHTrackingProtectionFullOnboardingFeature,
     &kIPHTrackingProtectionReminderFeature,
     &kIPHWebUITabStripFeature,
     &kIPHDesktopPwaInstallFeature,

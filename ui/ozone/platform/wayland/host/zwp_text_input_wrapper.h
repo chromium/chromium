@@ -31,9 +31,14 @@ class ZWPTextInputWrapperClient {
  public:
   struct SpanStyle {
     struct Style {
+      bool operator==(const Style& other) const = default;
+
       ImeTextSpan::Type type;
       ImeTextSpan::Thickness thickness;
     };
+
+    bool operator==(const SpanStyle& other) const = default;
+
     // Byte offset.
     uint32_t index;
     // Length in bytes.
@@ -125,9 +130,6 @@ class ZWPTextInputWrapperClient {
   // Called when some image is being inserted.
   virtual void OnInsertImage(const GURL& src) = 0;
 };
-
-// Text input protocol type.
-enum class ZWPTextInputWrapperType { kV1, kV3 };
 
 // A wrapper around different versions of wayland text input protocols.
 // Wayland compositors support various different text input protocols which

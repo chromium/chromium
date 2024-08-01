@@ -303,7 +303,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
                               BorderScrollbarPadding(), intrinsic_block_size_);
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(),
+      GetConstraintSpace(), Node(), BorderPadding(),
       previously_consumed_block_size + intrinsic_block_size_,
       border_box_size.inline_size);
 
@@ -1297,13 +1297,13 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
    private:
     ContentRun* TallestRun() const {
       DCHECK(!runs_.empty());
-      auto* const it = std::max_element(
+      auto const it = std::max_element(
           runs_.begin(), runs_.end(),
           [](const ContentRun& run1, const ContentRun& run2) {
             return run1.ColumnBlockSize() < run2.ColumnBlockSize();
           });
       CHECK(it != runs_.end(), base::NotFatalUntil::M130);
-      return const_cast<ContentRun*>(it);
+      return const_cast<ContentRun*>(&*it);
     }
 
     Vector<ContentRun, 1> runs_;
@@ -1453,8 +1453,8 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   LayoutUnit extra = BorderScrollbarPadding().BlockSum();
   size += extra;
 
-  LayoutUnit max = ResolveMaxBlockLength(space, style, BorderPadding(),
-                                         style.LogicalMaxHeight());
+  LayoutUnit max = ResolveInitialMaxBlockLength(space, style, BorderPadding(),
+                                                style.LogicalMaxHeight());
   LayoutUnit extent = kIndefiniteSize;
 
   const Length& block_length = style.LogicalHeight();
@@ -1470,8 +1470,8 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   }
 
   // A specified min-block-size may increase the maximum length.
-  LayoutUnit min = ResolveMinBlockLength(space, style, BorderPadding(),
-                                         style.LogicalMinHeight());
+  LayoutUnit min = ResolveInitialMinBlockLength(space, style, BorderPadding(),
+                                                style.LogicalMinHeight());
   max = std::max(max, min);
 
   if (max != LayoutUnit::Max()) {

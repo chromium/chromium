@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -152,8 +152,9 @@ public class TabListEditorMenuAdapter
         if (propertyKey == TabListEditorActionProperties.TITLE) {
             textView.setText(model.get(TabListEditorActionProperties.TITLE));
         } else if (propertyKey == TabListEditorActionProperties.ICON) {
-            startIcon.setImageDrawable(model.get(TabListEditorActionProperties.ICON));
-            startIcon.setVisibility(View.VISIBLE);
+            Drawable icon = model.get(TabListEditorActionProperties.ICON);
+            startIcon.setImageDrawable(icon);
+            startIcon.setVisibility(icon == null ? View.GONE : View.VISIBLE);
             endIcon.setVisibility(View.GONE);
         } else if (propertyKey == TabListEditorActionProperties.ENABLED
                 || propertyKey == TabListEditorActionProperties.CONTENT_DESCRIPTION) {
@@ -174,8 +175,7 @@ public class TabListEditorMenuAdapter
                 textView.setContentDescription(null);
             }
         } else if (propertyKey == TabListEditorActionProperties.TEXT_APPEARANCE_ID) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    textView, model.get(TabListEditorActionProperties.TEXT_APPEARANCE_ID));
+            textView.setTextAppearance(model.get(TabListEditorActionProperties.TEXT_APPEARANCE_ID));
         } else if (propertyKey == TabListEditorActionProperties.ICON_TINT) {
             ColorStateList colorStateList = model.get(TabListEditorActionProperties.ICON_TINT);
             if (colorStateList != null) {

@@ -113,6 +113,8 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
 
         verify(mTabModelSelectorMock, times(1))
                 .addObserver(mTabModelSelectorObserverArgumentCaptor.capture());
+        // This is called by TabModelUtils.runOnTabStateInitialized.
+        verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
         mTabModelSelectorObserver = mTabModelSelectorObserverArgumentCaptor.getValue();
         assertNotNull("Didn't add any observer.", mTabModelSelectorObserver);
     }
@@ -248,7 +250,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         // This is called again when we call mNativeInitObserver.onFinishNativeInitialization();
-        verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
+        verify(mTabModelSelectorMock, times(3)).isTabStateInitialized();
         // This is called when we call mNativeInitObserver.onFinishNativeInitialization() and since
         // tab state is initialized as well, we will invoke the unblock runnable.
         verify(mUnblockDrawRunnableMock, times(1)).run();
@@ -285,7 +287,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         // This is called again when we call mNativeInitObserver.onFinishNativeInitialization();
-        verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
+        verify(mTabModelSelectorMock, times(3)).isTabStateInitialized();
     }
 
     @Test
@@ -319,7 +321,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
-        verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
+        verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
     }
 
     @Test
@@ -328,7 +330,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         doReturn(false).when(mTabModelSelectorMock).isTabStateInitialized();
         mNativeInitObserver.onFinishNativeInitialization();
 
-        verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
+        verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
         verifyNoMoreInteractions(mUnblockDrawRunnableMock);
     }
 
@@ -338,7 +340,8 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         doReturn(true).when(mTabModelSelectorMock).isTabStateInitialized();
         mTabModelSelectorObserver.onTabStateInitialized();
 
-        verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
+        verify(mTabModelSelectorMock, times(1)).removeObserver(mTabModelSelectorObserver);
+        verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
         verifyNoMoreInteractions(mUnblockDrawRunnableMock);
     }
 
@@ -350,7 +353,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         doReturn(true).when(mTabModelSelectorMock).isTabStateInitialized();
         mNativeInitObserver.onFinishNativeInitialization();
 
-        verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
+        verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
         verify(mUnblockDrawRunnableMock, times(1)).run();
     }
 }

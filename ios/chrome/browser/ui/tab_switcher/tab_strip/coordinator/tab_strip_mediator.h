@@ -10,13 +10,24 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_mutator.h"
 
-@protocol TabStripCommands;
-@protocol TabStripConsumer;
-
 class Browser;
 class BrowserList;
 class ChromeBrowserState;
+@protocol TabStripCommands;
+@protocol TabStripConsumer;
 class WebStateList;
+
+namespace base {
+class Uuid;
+}
+namespace tab_groups {
+class TabGroupId;
+class TabGroupSyncService;
+class TabGroupVisualData;
+}
+namespace web {
+class WebStateID;
+}
 
 // This mediator used to manage model interaction for its consumer.
 @interface TabStripMediator
@@ -35,8 +46,11 @@ class WebStateList;
 // Commands handler for the Tab Strip.
 @property(nonatomic, weak) id<TabStripCommands> tabStripHandler;
 
-// Designated initializer. Initializer with a TabStripConsumer.
+// Designated initializer. Initializer with a TabStripConsumer, a
+// `tabGroupSyncService` and the `browserList`.
 - (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer
+             tabGroupSyncService:
+                 (tab_groups::TabGroupSyncService*)tabGroupSyncService
                      browserList:(BrowserList*)browserList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -45,6 +59,24 @@ class WebStateList;
 // It is an error for the receiver to dealloc without this having been called
 // first.
 - (void)disconnect;
+
+// Cancels the move the `tabID` by moving it back to its `originBrowser` and
+// `originIndex` and creates a new group based on `visualData`.
+- (void)cancelMoveForTab:(web::WebStateID)tabID
+           originBrowser:(Browser*)originBrowser
+             originIndex:(int)originIndex
+              visualData:(const tab_groups::TabGroupVisualData&)visualData
+            localGroupID:(const tab_groups::TabGroupId&)localGroupID
+                 savedID:(const base::Uuid&)savedID;
+
+// Deletes the saved group with `savedID`.
+- (void)deleteSavedGroupWithID:(const base::Uuid&)savedID;
+
+// Ungroups all tabs in `tabGroupItem`. The tabs in the group remain open.
+- (void)ungroupGroup:(TabGroupItem*)tabGroupItem;
+
+// Closes and deletes all tabs in `tabGroupItem`.
+- (void)deleteGroup:(TabGroupItem*)tabGroupItem;
 
 @end
 

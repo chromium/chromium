@@ -17,10 +17,8 @@ namespace {
 class CommonSwitches {
  public:
   CommonSwitches()
-      : force_dev_mode_highlighting(switches::kForceDevModeHighlighting,
-                                    FeatureSwitch::DEFAULT_DISABLED),
-        // Intentionally no flag since turning this off outside of tests
-        // is a security risk.
+      :  // Intentionally no flag since turning this off outside of tests
+         // is a security risk.
         prompt_for_external_extensions(nullptr,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
                                        FeatureSwitch::DEFAULT_ENABLED),
@@ -32,8 +30,6 @@ class CommonSwitches {
         trace_app_source(switches::kTraceAppSource,
                          FeatureSwitch::DEFAULT_ENABLED) {
   }
-
-  FeatureSwitch force_dev_mode_highlighting;
 
   // Should we prompt the user before allowing external extensions to install?
   // Default is yes.
@@ -48,9 +44,6 @@ base::LazyInstance<CommonSwitches>::DestructorAtExit g_common_switches =
 
 }  // namespace
 
-FeatureSwitch* FeatureSwitch::force_dev_mode_highlighting() {
-  return &g_common_switches.Get().force_dev_mode_highlighting;
-}
 FeatureSwitch* FeatureSwitch::prompt_for_external_extensions() {
   return &g_common_switches.Get().prompt_for_external_extensions;
 }

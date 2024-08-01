@@ -611,9 +611,8 @@ std::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
   }
   int32_t picture_buffer_id = it->second;
   int32_t bitstream_id = FakeTimestampToBitstreamId(frame.timestamp());
-  return std::make_optional(Picture(picture_buffer_id, bitstream_id,
-                                    frame.visible_rect(), frame.ColorSpace(),
-                                    frame.metadata().allow_overlay));
+  return std::make_optional(
+      Picture(picture_buffer_id, bitstream_id, frame.visible_rect()));
 }
 
 // static

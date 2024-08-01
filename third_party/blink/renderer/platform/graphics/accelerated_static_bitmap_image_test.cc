@@ -55,11 +55,12 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
 }
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
-  auto mailbox = gpu::Mailbox::Generate();
+  auto client_si = gpu::ClientSharedImage::CreateForTesting();
 
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
-      GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      std::move(client_si), GenTestSyncToken(100), 0,
+      SkImageInfo::MakeN32Premul(100, 100), GL_TEXTURE_2D, true,
+      SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
       base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
       /*supports_display_compositing=*/true, /*is_overlay_candidate=*/true);
@@ -75,7 +76,7 @@ class AcceleratedStaticBitmapImageTest : public Test {
   }
   void TearDown() override {
     gl_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
  protected:

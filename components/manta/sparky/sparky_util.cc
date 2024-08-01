@@ -238,6 +238,13 @@ void COMPONENT_EXPORT(MANTA)
       battery_proto->set_battery_time(
           diagnostics_data->battery_data->power_time);
     }
+    if (diagnostics_data->storage_data) {
+      auto* storage_proto = diagnostics_proto->mutable_storage();
+      storage_proto->set_free_storage(
+          diagnostics_data->storage_data->free_bytes);
+      storage_proto->set_total_storage(
+          diagnostics_data->storage_data->total_bytes);
+    }
   }
 }
 
@@ -249,6 +256,26 @@ void AddAppsData(base::span<const AppsData> apps_data,
     app_proto->set_name(app.name);
     app_proto->mutable_searchable_term()->Add(app.searchable_text.begin(),
                                               app.searchable_text.end());
+  }
+}
+
+void AddFilesData(base::span<const FileData> files_data,
+                  proto::FilesData* files_proto) {
+  for (const manta::FileData& file : files_data) {
+    proto::File* file_proto = files_proto->add_files();
+    file_proto->set_name(file.name);
+    file_proto->set_path(file.path);
+    file_proto->set_date_modified(file.date_modified);
+    if (file.bytes.has_value()) {
+      file_proto->set_serialized_bytes(
+          std::string(file.bytes->begin(), file.bytes->end()));
+    }
+    if (file.size_in_bytes) {
+      file_proto->set_size_in_bytes(file.size_in_bytes);
+    }
+    if (!file.summary.empty()) {
+      file_proto->set_summary(file.summary);
+    }
   }
 }
 
@@ -325,6 +352,16 @@ void AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
       }
     }
   }
+}
+
+std::set<std::string> COMPONENT_EXPORT(MANTA)
+    GetSelectedFilePaths(const proto::FileRequest& file_request) {
+  std::set<std::string> set_file_paths;
+  int file_size = file_request.paths_size();
+  for (int index = 0; index < file_size; index++) {
+    set_file_paths.emplace(file_request.paths(index));
+  }
+  return set_file_paths;
 }
 
 }  // namespace manta

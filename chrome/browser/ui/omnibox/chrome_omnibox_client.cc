@@ -22,6 +22,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -73,6 +75,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -91,7 +94,8 @@ ChromeOmniboxClient::ChromeOmniboxClient(LocationBar* location_bar,
     : location_bar_(location_bar),
       browser_(browser),
       profile_(profile),
-      scheme_classifier_(profile),
+      scheme_classifier_(
+          std::make_unique<ChromeAutocompleteSchemeClassifier>(profile)),
       favicon_cache_(FaviconServiceFactory::GetForProfile(
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS),
@@ -178,7 +182,7 @@ TemplateURLService* ChromeOmniboxClient::GetTemplateURLService() {
 
 const AutocompleteSchemeClassifier& ChromeOmniboxClient::GetSchemeClassifier()
     const {
-  return scheme_classifier_;
+  return *scheme_classifier_;
 }
 
 AutocompleteClassifier* ChromeOmniboxClient::GetAutocompleteClassifier() {
@@ -529,6 +533,14 @@ void ChromeOmniboxClient::OnInputInProgress(bool in_progress) {
 
 void ChromeOmniboxClient::OnPopupVisibilityChanged() {
   location_bar_->OnPopupVisibilityChanged();
+}
+
+void ChromeOmniboxClient::OpenIphLink(GURL gurl) {
+  ui::PageTransition transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  NavigateParams params(profile_, gurl, transition);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClient::AsWeakPtr() {

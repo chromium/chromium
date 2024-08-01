@@ -75,6 +75,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "pdf/buildflags.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -95,12 +96,6 @@ using content::SiteInstance;
 using content::WebContents;
 
 namespace extensions {
-
-// This feature is a kill switch for the Direct Sockets API in Chrome Apps.
-// See crbug.com/329445684 for details.
-BASE_FEATURE(kDirectSocketsInChromeApps,
-             "DirectSocketsInChromeApps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -904,7 +899,7 @@ void ChromeContentBrowserClientExtensionsPart::
     }
 
     // Direct Sockets API is enabled for Chrome Apps with "sockets" permission.
-    if (base::FeatureList::IsEnabled(kDirectSocketsInChromeApps) &&
+    if (base::FeatureList::IsEnabled(blink::features::kDirectSockets) &&
         extension->is_platform_app() && SocketsManifestData::Get(extension)) {
       command_line->AppendSwitchASCII(::switches::kEnableBlinkFeatures,
                                       "DirectSockets");

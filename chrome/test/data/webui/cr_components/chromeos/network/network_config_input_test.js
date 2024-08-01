@@ -4,8 +4,8 @@
 
 import 'chrome://resources/ash/common/network/network_config_input.js';
 
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
 suite('NetworkConfigInputTest', function() {
   /** @type {!NetworkConfigInput|undefined} */

@@ -81,7 +81,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -171,7 +171,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TableViewModel* model_;
   std::unique_ptr<BrowsingDataRemover> remover_;

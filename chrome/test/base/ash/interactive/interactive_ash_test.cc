@@ -241,6 +241,33 @@ InteractiveAshTest::OpenAddCustomApnDetailsDialog(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenApnSelectionDialog(
+    const ui::ElementIdentifier& element_id) {
+  return Steps(
+      WaitForElementEnabled(
+          element_id, ash::settings::cellular::ApnSubpageActionMenuButton()),
+      ClickElement(element_id,
+                   ash::settings::cellular::ApnSubpageActionMenuButton()),
+      WaitForElementEnabled(
+          element_id, ash::settings::cellular::ApnSubpageShowKnownApnsButton()),
+      ClickElement(element_id,
+                   ash::settings::cellular::ApnSubpageShowKnownApnsButton()),
+      WaitForElementExists(element_id,
+                           ash::settings::cellular::ApnSelectionDialog()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenAddBuiltInVpnDialog(
+    const ui::ElementIdentifier& element_id) {
+  return Steps(
+      WaitForElementEnabled(element_id,
+                            ash::settings::AddConnectionsExpandButton()),
+      ClickElement(element_id, ash::settings::AddConnectionsExpandButton()),
+      WaitForElementEnabled(element_id, ash::settings::AddBuiltInVpnRow()),
+      ClickElement(element_id, ash::settings::AddBuiltInVpnRow()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateQuickSettingsToHotspotPage() {
   return NavigateQuickSettingsToPage(
       ash::kHotspotFeatureTileDrillInArrowElementId);
@@ -265,6 +292,13 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
         "network-list-item",
         "div#divText",
     }});
+  } else if (network_pattern.MatchesPattern(ash::NetworkTypePattern::VPN())) {
+    internet_summary_row = ash::settings::vpn::VpnSummaryItem();
+    network_list = ash::settings::vpn::VpnNetworksList();
+    network_list_item_title = WebContentsInteractionTestUtil::DeepQuery({
+        "network-list-item",
+        "div#divText",
+    });
   } else {
     // Unsupported Network pattern.
     NOTREACHED_NORETURN();
@@ -280,8 +314,27 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
       ClickAnyElementTextContains(element_id, network_list,
                                   network_list_item_title, network_name),
       WaitForElementTextContains(element_id,
-                                 ash::settings::SettingsSubpageTitle(),
+                                 ash::settings::InternetSettingsSubpageTitle(),
                                  /*text=*/network_name.c_str()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateToBluetoothDeviceDetailsPage(
+    const ui::ElementIdentifier& element_id,
+    const std::string& device_name) {
+  const WebContentsInteractionTestUtil::DeepQuery bluetooth_device_item_title(
+      {"os-settings-paired-bluetooth-list-item", "div#deviceName"});
+
+  return Steps(NavigateSettingsToBluetoothPage(element_id),
+               WaitForAnyElementTextContains(
+                   element_id, ash::settings::bluetooth::BluetoothDeviceList(),
+                   bluetooth_device_item_title, device_name),
+               ClickAnyElementTextContains(
+                   element_id, ash::settings::bluetooth::BluetoothDeviceList(),
+                   bluetooth_device_item_title, device_name),
+               WaitForElementTextContains(
+                   element_id, ash::settings::bluetooth::BluetoothDeviceName(),
+                   device_name));
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {
@@ -386,6 +439,34 @@ InteractiveAshTest::WaitForElementChecked(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementUnchecked(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementUnchecked);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementUnchecked;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return !el.checked; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementOpened(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementOpened);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementOpened;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return el.opened; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementFocused(
     const ui::ElementIdentifier& element_id,
     const DeepQuery& query) {
@@ -441,6 +522,21 @@ InteractiveAshTest::WaitForElementHasAttribute(
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
   state_change.test_function = base::StringPrintf(
       "(el) => { return el.hasAttribute('%s'); }", attribute.c_str());
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementDisplayNone(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasAttribute);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementHasAttribute;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function =
+      base::StringPrintf("(el) => { return el.style.display === 'none'; }");
   return WaitForStateChange(element_id, state_change);
 }
 

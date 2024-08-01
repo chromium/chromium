@@ -145,10 +145,9 @@ static void BrotliTestTransactionHandler(const HttpRequestInfo* request,
                                          std::string* response_status,
                                          std::string* response_headers,
                                          std::string* response_data) {
-  std::string header_value;
-  EXPECT_TRUE(request->extra_headers.GetHeader(
-      shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
-  EXPECT_EQ(kTestDictionarySha256Base64, header_value);
+  EXPECT_THAT(request->extra_headers.GetHeader(
+                  shared_dictionary::kAvailableDictionaryHeaderName),
+              testing::Optional(kTestDictionarySha256Base64));
   *response_data = kBrotliEncodedDataString;
 }
 
@@ -156,10 +155,9 @@ static void ZstdTestTransactionHandler(const HttpRequestInfo* request,
                                        std::string* response_status,
                                        std::string* response_headers,
                                        std::string* response_data) {
-  std::string header_value;
-  EXPECT_TRUE(request->extra_headers.GetHeader(
-      shared_dictionary::kAvailableDictionaryHeaderName, &header_value));
-  EXPECT_EQ(kTestDictionarySha256Base64, header_value);
+  EXPECT_THAT(request->extra_headers.GetHeader(
+                  shared_dictionary::kAvailableDictionaryHeaderName),
+              testing::Optional(kTestDictionarySha256Base64));
   *response_data = kZstdEncodedDataString;
 }
 
@@ -323,10 +321,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
-        std::string dictionary_id;
-        EXPECT_TRUE(
-            request->extra_headers.GetHeader("dictionary-id", &dictionary_id));
-        EXPECT_EQ("\"test-id\"", dictionary_id);
+        EXPECT_THAT(request->extra_headers.GetHeader("dictionary-id"),
+                    testing::Optional(std::string("\"test-id\"")));
         *response_data = kBrotliEncodedDataString;
       });
 
@@ -365,10 +361,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
-        std::string dictionary_id;
-        EXPECT_TRUE(
-            request->extra_headers.GetHeader("dictionary-id", &dictionary_id));
-        EXPECT_EQ("\"test\\\\dictionary\\\"id\"", dictionary_id);
+        EXPECT_THAT(
+            request->extra_headers.GetHeader("dictionary-id"),
+            testing::Optional(std::string("\"test\\\\dictionary\\\"id\"")));
         *response_data = kBrotliEncodedDataString;
       });
 

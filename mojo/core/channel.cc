@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <cstdint>
 #include <limits>
 #include <utility>
 
@@ -27,6 +28,7 @@
 #include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "mojo/core/configuration.h"
@@ -110,6 +112,8 @@ struct IpczMessage : public Channel::Message {
     DCHECK_LE(size_, std::numeric_limits<uint32_t>::max());
     header.num_handles = static_cast<uint16_t>(handles.size());
     header.num_bytes = static_cast<uint32_t>(size_);
+    header.v2.creation_timeticks_us =
+        (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
     memcpy(&header + 1, data.data(), data.size());
 
     handles_.reserve(handles.size());
@@ -980,14 +984,14 @@ Channel::DispatchResult Channel::TryDispatchMessage(
               "Mojo dispatch message");
   if (is_for_ipcz_) {
     // This has already been validated.
-    DCHECK_GE(buffer.size(), sizeof(Message::IpczHeader));
+    DCHECK_GE(buffer.size(), Message::kMinIpczHeaderSize);
 
     const auto& header =
         *reinterpret_cast<const Message::IpczHeader*>(buffer.data());
     const size_t header_size = header.size;
     const size_t num_bytes = header.num_bytes;
     const size_t num_handles = header.num_handles;
-    if (header_size < sizeof(header) || num_bytes < header_size) {
+    if (header_size < Message::kMinIpczHeaderSize || num_bytes < header_size) {
       return DispatchResult::kError;
     }
 
@@ -1011,6 +1015,16 @@ Channel::DispatchResult Channel::TryDispatchMessage(
       if (handles.size() < num_handles) {
         return DispatchResult::kMissingHandles;
       }
+    }
+
+    if (ShouldRecordSubsampledHistograms() && Message::IsAtLeastV2(header)) {
+      base::TimeTicks creation_time =
+          base::TimeTicks() +
+          base::Microseconds(header.v2.creation_timeticks_us);
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Mojo.Channel.WriteToReadLatencyUs",
+          base::TimeTicks::Now() - creation_time, base::Microseconds(1),
+          base::Seconds(1), 100);
     }
 
     auto data = buffer.first(num_bytes).subspan(header_size);

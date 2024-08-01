@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/browser_thread.h"
 
 // Enable VLOG level 1.

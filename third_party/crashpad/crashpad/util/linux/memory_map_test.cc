@@ -20,11 +20,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
+#include "partition_alloc/buildflags.h"
 #include "test/errors.h"
 #include "test/file.h"
 #include "test/linux/fake_ptrace_connection.h"

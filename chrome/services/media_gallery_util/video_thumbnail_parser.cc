@@ -52,14 +52,12 @@ void OnEncodedVideoFrameExtracted(
     return;
   }
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && \
-    !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  // H264 currently needs to be decoded in GPU process when no software decoder
-  // is provided.
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // H264 decoding must be handled in the GPU process.
+  // TODO(crbug.com/348538294): See about using FFmpegVideoDecoder for this.
   if (config.codec() == media::VideoCodec::kH264) {
     std::move(video_frame_callback)
         .Run(chrome::mojom::ExtractVideoFrameResult::New(
-
             chrome::mojom::VideoFrameData::NewEncodedData(std::move(data)),
             config));
     return;

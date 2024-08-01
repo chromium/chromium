@@ -75,10 +75,13 @@
 
   #selectionElements {
     background-color: rgba(var(--color-scrim-rgb), .05);
+  }
+
+  #selectionOverlay :not(#backgroundImage) {
     transition: opacity 150ms linear;
   }
 
-  :host([is-closing]) #selectionElements{
+  :host([is-closing]) #selectionOverlay :not(#backgroundImage) {
     opacity: 0;
   }
 
@@ -103,7 +106,7 @@
   }
 
   :host([darken-extra-scrim]) #extraScrim {
-    opacity: 25%;
+    opacity: 10%;
   }
 
   #selectionElements > * {
@@ -140,6 +143,12 @@
   }
 
   #cursor.hidden {
+    visibility: hidden;
+  }
+
+  :host([is-closing]) #cursor {
+    /* Immediately hide the cursor so that it doesn't reappear if the
+     * mouse hovers over the selection overlay as the side panel closes. */
     visibility: hidden;
   }
 
@@ -336,6 +345,11 @@
           on-pointerup="handleSelectText">
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>
+      </div>
+      <div class="context-menu-item" role="menuitem"
+          on-pointerup="handleTranslateDetectedText">
+        <span class="menu-item-icon translate"></span>
+        <span class="menu-item-label">$i18n{translate}</span>
       </div>
     </div>
   </div>

@@ -149,6 +149,61 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
   }
 }
 
+// Verifies that the extended_scope matches the specified domain but not
+// unrelated domains.
+TEST_F(WebAppPublisherHelperTest, CreateWebApp_ScopeExtension) {
+  const std::string name = "some app name";
+  const GURL start_url("https://example.com/start_url");
+  const GURL extended_scope_url("https://example.org/foo");
+  const GURL outside_extended_scope_url("https://nonexample.org/foo");
+
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = base::UTF8ToUTF16(name);
+  info->validated_scope_extensions = {
+      ScopeExtensionInfo{.origin = url::Origin::Create(extended_scope_url)}};
+
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  apps::AppPtr app = publisher_->CreateWebApp(web_app);
+
+  EXPECT_TRUE(HandlesIntent(
+      app, std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                          extended_scope_url)));
+  EXPECT_FALSE(HandlesIntent(
+      app, std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                          outside_extended_scope_url)));
+}
+
+// Verifies that the extended_scope with a registrable_domain wildcard matches
+// the domain and its subdomains but not unrelated domains.
+TEST_F(WebAppPublisherHelperTest, CreateWebApp_WildcardScopeExtension) {
+  const std::string name = "some app name";
+  const GURL start_url("https://example.com/start_url");
+  const GURL extended_scope_url("https://example.org/foo");
+  const GURL subdomain_extended_scope_url("https://sub.example.org/foo");
+  const GURL outside_extended_scope_url("https://nonexample.org/foo");
+
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = base::UTF8ToUTF16(name);
+  info->validated_scope_extensions = {
+      ScopeExtensionInfo{.origin = url::Origin::Create(extended_scope_url),
+                         .has_origin_wildcard = true}};
+
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  apps::AppPtr app = publisher_->CreateWebApp(web_app);
+
+  EXPECT_TRUE(HandlesIntent(
+      app, std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                          extended_scope_url)));
+  EXPECT_TRUE(HandlesIntent(
+      app, std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                          subdomain_extended_scope_url)));
+  EXPECT_FALSE(HandlesIntent(
+      app, std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                          outside_extended_scope_url)));
+}
+
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_NoteTaking) {
   const std::string name = "some app name";
   const GURL start_url("https://example.com/start_url");

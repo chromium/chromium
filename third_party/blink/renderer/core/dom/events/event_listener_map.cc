@@ -115,9 +115,8 @@ static bool AddListenerToVector(EventListenerVector* listener_vector,
                                 EventListener* listener,
                                 const AddEventListenerOptionsResolved* options,
                                 RegisteredEventListener** registered_listener) {
-  auto* end = listener_vector->end();
-  for (auto* iter = listener_vector->begin(); iter != end; ++iter) {
-    if ((*iter)->Matches(listener, options)) {
+  for (auto& item : *listener_vector) {
+    if (item->Matches(listener, options)) {
       // Duplicate listener.
       return false;
     }

@@ -15,8 +15,15 @@ namespace chromecast {
 namespace media {
 
 MediaPipelineBackendStarboard::MediaPipelineBackendStarboard(
+    const MediaPipelineDeviceParams& params,
     StarboardVideoPlane* video_plane)
-    : starboard_(GetStarboardApiWrapper()), video_plane_(video_plane) {
+    : starboard_(GetStarboardApiWrapper()),
+      video_plane_(video_plane),
+      is_streaming_(
+          params.sync_type ==
+              MediaPipelineDeviceParams::MediaSyncType::kModeIgnorePts ||
+          params.sync_type == MediaPipelineDeviceParams::MediaSyncType::
+                                  kModeIgnorePtsAndVSync) {
   DCHECK(video_plane_);
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   media_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
@@ -25,6 +32,9 @@ MediaPipelineBackendStarboard::MediaPipelineBackendStarboard(
           media_task_runner_,
           base::BindRepeating(&MediaPipelineBackendStarboard::OnGeometryChanged,
                               weak_factory_.GetWeakPtr())));
+
+  LOG(INFO) << "Constructed a MediaPipelineBackendStarboard"
+            << (is_streaming_ ? " for streaming" : "");
 }
 
 MediaPipelineBackendStarboard::~MediaPipelineBackendStarboard() {
@@ -222,6 +232,12 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
         video_decoder_->GetVideoSampleInfo();
     CHECK(video_info);
     params.video_sample_info = *video_info;
+    if (is_streaming_) {
+      // Note: this is not part of the official starboard API. We are using this
+      // arbitrary string value to inform the starboard impl that they should
+      // prioritize minimizing latency (render the frames as soon as possible).
+      params.video_sample_info.max_video_capabilities = "streaming=1";
+    }
   }
   params.output_mode = kStarboardPlayerOutputModePunchOut;
   player_ =

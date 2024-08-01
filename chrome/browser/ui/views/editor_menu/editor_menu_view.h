@@ -13,12 +13,12 @@
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class ImageButton;
 class FlexLayoutView;
 class View;
+class Widget;
 }  // namespace views
 
 namespace chromeos::editor_menu {
@@ -43,7 +43,7 @@ class EditorMenuView : public PreTargetHandlerView {
 
   ~EditorMenuView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
+  static std::unique_ptr<views::Widget> CreateWidget(
       EditorMenuMode editor_menu_mode,
       const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,

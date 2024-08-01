@@ -6,11 +6,31 @@
 
 namespace history_embeddings {
 
-Answerer::Context::Context() = default;
+AnswererResult::AnswererResult() = default;
+AnswererResult::AnswererResult(ComputeAnswerStatus status,
+                               std::string query,
+                               optimization_guide::proto::Answer answer,
+                               std::string url,
+                               std::vector<std::string> text_directives)
+    : status(status),
+      query(std::move(query)),
+      answer(std::move(answer)),
+      url(std::move(url)),
+      text_directives(std::move(text_directives)) {}
+AnswererResult::AnswererResult(ComputeAnswerStatus status,
+                               std::string query,
+                               optimization_guide::proto::Answer answer)
+    : status(status), query(std::move(query)), answer(std::move(answer)) {}
+AnswererResult::AnswererResult(const AnswererResult&) = default;
+AnswererResult::~AnswererResult() = default;
 
-Answerer::Context::Context(const Context& other)
-    : url_passages_map(other.url_passages_map) {}
+////////////////////////////////////////////////////////////////////////////////
 
+Answerer::Context::Context(std::string session_id)
+    : session_id(std::move(session_id)) {}
+
+Answerer::Context::Context(const Context& other) = default;
+Answerer::Context::Context(Context&& other) = default;
 Answerer::Context::~Context() = default;
 
 }  // namespace history_embeddings

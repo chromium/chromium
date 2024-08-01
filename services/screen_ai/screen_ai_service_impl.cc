@@ -5,6 +5,7 @@
 #include "services/screen_ai/screen_ai_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -38,6 +39,9 @@
 namespace screen_ai {
 
 namespace {
+
+// How often it would be checked that the service is idle and can be shutdown.
+constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -93,77 +97,66 @@ ui::AXNodeID ComputeMainNode(
 
 // The library accepts simple pointers to model data retrieval functions, hence
 // callback functions with linked object are not safe to pass.
-// Since library initialization functions are called in a single thread process,
-// we choose the active model data instance before calling the library
-// initializer and release it when initialization is completed.
-PreloadedModelData* g_active_model_data_instance = nullptr;
+// This global variable keeps the pointer the only instance of this class.
+ModelDataHolder* g_model_data_holder_instance = nullptr;
 
-// Keeps the content of model files, and replies to calls for copying them.
-class PreloadedModelData {
+// Keeps the handles of model files, and replies to calls for copying their
+// content.
+class ModelDataHolder {
  public:
-  PreloadedModelData(const PreloadedModelData&) = delete;
-  PreloadedModelData& operator=(const PreloadedModelData&) = delete;
-  ~PreloadedModelData() { CHECK_NE(g_active_model_data_instance, this); }
+  ModelDataHolder() {
+    CHECK(!g_model_data_holder_instance);
+    g_model_data_holder_instance = this;
+  }
 
-  static std::unique_ptr<PreloadedModelData> Create(
-      base::flat_map<base::FilePath, base::File> model_files) {
-    return base::WrapUnique<PreloadedModelData>(
-        new PreloadedModelData(std::move(model_files)));
+  ModelDataHolder(const ModelDataHolder&) = delete;
+  ModelDataHolder& operator=(const ModelDataHolder&) = delete;
+
+  ~ModelDataHolder() {
+    CHECK_EQ(g_model_data_holder_instance, this);
+    g_model_data_holder_instance = nullptr;
   }
 
   // Returns 0 if file is not found.
   static uint32_t GetDataSize(const char* relative_file_path) {
-    CHECK(g_active_model_data_instance);
-    return base::Contains(g_active_model_data_instance->data_,
-                          relative_file_path)
-               ? g_active_model_data_instance->data_[relative_file_path].size()
-               : 0;
+    CHECK(g_model_data_holder_instance);
+    base::File* model_file =
+        g_model_data_holder_instance->GetModelFile(relative_file_path);
+    return model_file ? model_file->GetLength() : 0;
   }
 
-  // Assumes that `buffer` has enough size.
+  // Copies content of the file in `relative_file_path` to `buffer`. Expects
+  // that `buffer_size` would be enough for the entire file content.
   static void CopyData(const char* relative_file_path,
                        uint32_t buffer_size,
                        char* buffer) {
-    CHECK(g_active_model_data_instance);
-    CHECK(base::Contains(g_active_model_data_instance->data_,
-                         relative_file_path));
-    const std::vector<char>& data =
-        g_active_model_data_instance->data_[relative_file_path];
-    CHECK_GE(buffer_size, data.size());
-    memcpy(buffer, data.data(), data.size());
+    CHECK(g_model_data_holder_instance);
+    base::File* model_file =
+        g_model_data_holder_instance->GetModelFile(relative_file_path);
+    CHECK(model_file);
+
+    int64_t length = model_file->GetLength();
+    CHECK_GE(buffer_size, length);
+    CHECK_EQ(model_file->Read(0, buffer, length), length);
   }
 
-  void SetAsActive(bool assign) {
-    if (assign) {
-      g_active_model_data_instance = this;
-    } else {
-      g_active_model_data_instance = nullptr;
+  void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
+    for (auto& model_file : model_files) {
+      model_files_[model_file.first.MaybeAsASCII()] =
+          std::move(model_file.second);
     }
+  }
+
+  // Returns the file handle for `relative_file_path` if it exists.
+  base::File* GetModelFile(const char* relative_file_path) {
+    if (!base::Contains(model_files_, relative_file_path)) {
+      return nullptr;
+    }
+    return &model_files_[relative_file_path];
   }
 
  private:
-  explicit PreloadedModelData(
-      base::flat_map<base::FilePath, base::File> model_files) {
-    for (auto& model_file : model_files) {
-      std::vector<char> buffer;
-      int64_t length = model_file.second.GetLength();
-      if (length < 0) {
-        VLOG(0) << "Could not query Screen AI model file's length: "
-                << model_file.first;
-        continue;
-      }
-
-      buffer.resize(length);
-      if (model_file.second.Read(0, buffer.data(), length) != length) {
-        VLOG(0) << "Could not read Screen AI model file's content: "
-                << model_file.first;
-        continue;
-      }
-      data_[model_file.first.MaybeAsASCII()] = std::move(buffer);
-    }
-  }
-
-  std::map<std::string, std::vector<char>> data_;
+  std::map<std::string, base::File> model_files_;
 };
 
 ScreenAIService::ScreenAIService(
@@ -171,8 +164,17 @@ ScreenAIService::ScreenAIService(
     : factory_receiver_(this, std::move(receiver)),
       ocr_receiver_(this),
       main_content_extraction_receiver_(this) {
+  // Monitor client disconnections for shutdown.
+  screen_2x_main_content_extractors_.set_disconnect_handler(base::BindRepeating(
+      &ScreenAIService::ShutDownIfNoClients, weak_ptr_factory_.GetWeakPtr()));
+  // `ReceiverDisconnected` will also call `ShutDownIfNoClients`.
   screen_ai_annotators_.set_disconnect_handler(base::BindRepeating(
       &ScreenAIService::ReceiverDisconnected, weak_ptr_factory_.GetWeakPtr()));
+
+  model_data_holder_ = std::make_unique<ModelDataHolder>();
+  idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
+  idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
+                              &ScreenAIService::ShutDownIfNoClients);
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -209,8 +211,8 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
     library_->EnableDebugMode();
   }
 
-  library_->SetFileContentFunctions(&PreloadedModelData::GetDataSize,
-                                    &PreloadedModelData::CopyData);
+  library_->SetFileContentFunctions(&ModelDataHolder::GetDataSize,
+                                    &ModelDataHolder::CopyData);
 }
 
 void ScreenAIService::InitializeMainContentExtraction(
@@ -228,27 +230,9 @@ void ScreenAIService::InitializeMainContentExtraction(
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
-      base::BindOnce(&ScreenAIService::InitializeMainContentExtractionInternal,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(main_content_extractor_service_receiver),
-                     std::move(callback)));
-}
+  model_data_holder_->AddModelFiles(std::move(model_files));
 
-void ScreenAIService::InitializeMainContentExtractionInternal(
-    mojo::PendingReceiver<mojom::MainContentExtractionService>
-        main_content_extractor_service_receiver,
-    InitializeMainContentExtractionCallback callback,
-    std::unique_ptr<PreloadedModelData> model_data) {
-  // `model_data` contains the content of the model files and its accessors are
-  // passed to the library. It should be kept in memory until after library
-  // initialization.
-  model_data->SetAsActive(true);
   bool init_successful = library_->InitMainContentExtraction();
-  model_data->SetAsActive(false);
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Initialized",
       init_successful);
@@ -264,6 +248,7 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
       std::move(main_content_extractor_service_receiver));
 
   std::move(callback).Run(true);
+  main_content_extraction_last_used_ = base::TimeTicks::Now();
 }
 
 void ScreenAIService::InitializeOCR(
@@ -279,26 +264,10 @@ void ScreenAIService::InitializeOCR(
     std::move(callback).Run(false);
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
-      base::BindOnce(&ScreenAIService::InitializeOCRInternal,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(ocr_service_receiver), std::move(callback)));
-}
 
-void ScreenAIService::InitializeOCRInternal(
-    mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
-    InitializeOCRCallback callback,
-    std::unique_ptr<PreloadedModelData> model_data) {
-  // `model_data` contains the content of the model files and its accessors are
-  // passed to the library. It should be kept in memory until after library
-  // initialization.
-  model_data->SetAsActive(true);
+  model_data_holder_->AddModelFiles(std::move(model_files));
+
   bool init_successful = library_->InitOCR();
-  model_data->SetAsActive(false);
-
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
 
@@ -313,6 +282,7 @@ void ScreenAIService::InitializeOCRInternal(
   ocr_receiver_.Bind(std::move(ocr_service_receiver));
 
   std::move(callback).Run(true);
+  ocr_last_used_ = base::TimeTicks::Now();
 }
 
 void ScreenAIService::BindAnnotator(
@@ -335,9 +305,9 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
                                 GetClientType(entry->second));
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  ocr_last_used_ = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
   int lines_count = result ? result->lines_size() : 0;
   unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
@@ -410,11 +380,12 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ukm::SourceId ukm_source_id,
                                          ExtractMainContentCallback callback) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  main_content_extraction_last_used_ = base::TimeTicks::Now();
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
   bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() - main_content_extraction_last_used_;
   RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time, success);
 
   if (success) {
@@ -499,6 +470,40 @@ void ScreenAIService::ReceiverDisconnected() {
   auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
   if (entry != ocr_client_types_.end()) {
     ocr_client_types_.erase(entry);
+  }
+
+  ShutDownIfNoClients();
+}
+
+void ScreenAIService::ShutDownIfNoClients() {
+  bool ocr_has_clients = screen_ai_annotators_.size();
+  bool main_content_extraction_has_clients =
+      screen_2x_main_content_extractors_.size();
+  if (!ocr_has_clients && !main_content_extraction_has_clients) {
+    VLOG(2) << "Shutting down since no client.";
+    base::Process::TerminateCurrentProcessImmediately(0);
+  }
+
+  // Collect data on whether each functionality of the service is idle.
+  // This will be used to plan further to shut down the service when idle, or
+  // track features which keep the service in idle state.
+  // TODO(b/353718857): Shut down when both features are idle, after ensuring
+  // all clients support reconnecting.
+  const base::TimeTicks kIdlenessThreshold =
+      base::TimeTicks::Now() - kIdleCheckingDelay;
+  if (!ocr_idle_reported_ && !ocr_last_used_.is_null() &&
+      ocr_last_used_ < kIdlenessThreshold) {
+    ocr_idle_reported_ = true;
+    base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Idle.Connected",
+                              ocr_has_clients);
+  }
+  if (!main_content_extraction_idle_reported_ &&
+      !main_content_extraction_last_used_.is_null() &&
+      main_content_extraction_last_used_ < kIdlenessThreshold) {
+    main_content_extraction_idle_reported_ = true;
+    base::UmaHistogramBoolean(
+        "Accessibility.ScreenAI.MainContentExtraction.Idle.Connected",
+        main_content_extraction_has_clients);
   }
 }
 

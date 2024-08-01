@@ -383,12 +383,12 @@ std::string EncodeFrame(std::string message,
   frame_header.resize(header_size);
   if (mask) {
     net::WebSocketMaskingKey masking_key = net::GenerateWebSocketMaskingKey();
-    WriteWebSocketFrameHeader(header, &masking_key, &frame_header[0],
-                              base::checked_cast<int>(header_size));
+    WriteWebSocketFrameHeader(header, &masking_key,
+                              base::as_writable_byte_span(frame_header));
     MaskWebSocketFramePayload(masking_key, 0, &message[0], message.size());
   } else {
-    WriteWebSocketFrameHeader(header, nullptr, &frame_header[0],
-                              base::checked_cast<int>(header_size));
+    WriteWebSocketFrameHeader(header, nullptr,
+                              base::as_writable_byte_span(frame_header));
   }
   return frame_header + message;
 }

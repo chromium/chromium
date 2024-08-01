@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/service/display/skia_renderer.h"
 
 #include <limits>
@@ -2047,7 +2052,8 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
 }
 
 const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
-    const AggregatedRenderPass* pass) {
+    const AggregatedRenderPass* pass,
+    const RenderPassRequirements& requirements) {
   // If render pass bypassing is disabled for testing
   if (settings_->disable_render_pass_bypassing)
     return nullptr;
@@ -2061,6 +2067,19 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // If it there are supposed to be mipmaps, the renderpass must exist
   if (pass->generate_mipmap)
     return nullptr;
+
+    // Force passes whose backings can be directly scanned out from being a
+    // bypass quad. This logic should mirror
+    // |GetRenderPassBackingForDirectScanout|.
+#if BUILDFLAG(IS_WIN)
+  if (requirements.is_scanout) {
+    return nullptr;
+  }
+#else
+  // This platform doesn't support direct scanout, so we don't expect any
+  // scanout render pass backings.
+  CHECK(!requirements.is_scanout);
+#endif
 
   const DrawQuad* quad = *pass->quad_list.BackToFrontBegin();
   // For simplicity in debug border and picture quad draw implementations, don't
@@ -3398,20 +3417,20 @@ void SkiaRenderer::DrawRenderPassQuad(
                  << " in the render pass overlay backings";
 
       SCOPED_CRASH_KEY_STRING32(
-          "missing rp backing", "seen before?",
+          "missing rp backing", "0-seen before?",
           base::NumberToString(
               seen_render_pass_ids_.contains(quad->render_pass_id)));
 
       // This is derived from |DirectRenderer::ShouldSkipQuad|.
       gfx::Rect target_rect = quad->visible_rect;
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "visible rect",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "1-visible rect",
                                 target_rect.ToString());
       auto filter_it = render_pass_filters_.find(quad->render_pass_id);
       if (filter_it != render_pass_filters_.end()) {
         target_rect =
             filter_it->second->ExpandRectForPixelMovement(target_rect);
       }
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "filter expansion",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "2-filter expansion",
                                 filter_it != render_pass_filters_.end()
                                     ? target_rect.ToString()
                                     : "no filter expansion");
@@ -3419,13 +3438,13 @@ void SkiaRenderer::DrawRenderPassQuad(
       const gfx::QuadF target_quad =
           quad->shared_quad_state->quad_to_target_transform.MapQuad(
               gfx::QuadF(gfx::RectF(target_rect)));
-      SCOPED_CRASH_KEY_STRING256("missing rp backing", "rpdq in draw space",
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "3-rpdq in draw",
                                  target_quad.IsRectilinear()
                                      ? target_quad.BoundingBox().ToString()
                                      : target_quad.ToString());
 
       gfx::Rect draw_rect_in_draw_space = OutputSurfaceRectInDrawSpace();
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "output surface",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "4-output surface",
                                 draw_rect_in_draw_space.ToString());
       if (scissor_rect_) {
         draw_rect_in_draw_space = scissor_rect_.value();
@@ -3434,21 +3453,52 @@ void SkiaRenderer::DrawRenderPassQuad(
                 ->current_render_pass->output_rect.OffsetFromOrigin());
       }
       SCOPED_CRASH_KEY_STRING32(
-          "missing rp backing", "with scissor?",
+          "missing rp backing", "5-with scissor?",
           scissor_rect_ ? draw_rect_in_draw_space.ToString() : "no scissor");
 
       if (quad->shared_quad_state->clip_rect) {
         draw_rect_in_draw_space.Intersect(*quad->shared_quad_state->clip_rect);
       }
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "with quad clip?",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "6-with quad clip?",
                                 quad->shared_quad_state->clip_rect
                                     ? draw_rect_in_draw_space.ToString()
                                     : "no quad clip");
 
       const bool intersects =
           target_quad.IntersectsRect(gfx::RectF(draw_rect_in_draw_space));
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "intersects?",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "7-intersects?",
                                 base::NumberToString(intersects));
+
+      SCOPED_CRASH_KEY_STRING32(
+          "missing rp backing", "8-quad-pass-id",
+          base::NumberToString(quad->render_pass_id.value()));
+
+      std::vector<std::string> pass_ids;
+      for (const auto& pass : *current_frame()->render_passes_in_draw_order) {
+        pass_ids.push_back(base::NumberToString(pass->id.value()));
+      }
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "9-frame-pass-ids",
+                                 base::JoinString(pass_ids, ","));
+
+      pass_ids.clear();
+      for (const auto& [id, pass] : render_pass_backings_) {
+        pass_ids.push_back(base::NumberToString(id.value()));
+      }
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "10-backing-pass-ids",
+                                 base::JoinString(pass_ids, ","));
+
+      auto it =
+          base::ranges::find(*current_frame()->render_passes_in_draw_order,
+                             quad->render_pass_id, &AggregatedRenderPass::id);
+      SCOPED_CRASH_KEY_STRING256(
+          "missing rp backing", "11-rp transform",
+          it != current_frame()->render_passes_in_draw_order->end()
+              ? it->get()->transform_to_root_target.ToString()
+              : "missing pass in frame");
+
+      SCOPED_CRASH_KEY_STRING256(
+          "missing rp backing", "12-rpdq transform",
+          quad->shared_quad_state->quad_to_target_transform.ToString());
 
       // Collect a dump so we can investigate the root cause, but fallback to a
       // solid color to avoid disrupting the user.
@@ -3862,7 +3912,9 @@ SkiaRenderer::GetRenderPassBackingForDirectScanout(
     }
   }
 #else
-  // Non-Win backends need BufferQueue support on render pass backings.
+  // Non-Win backends need BufferQueue support on render pass backings. Any new
+  // implementation should also modify |CanPassBeDrawnDirectly| to avoid the
+  // bypass quad case for direct scanout backings.
 #endif
 
   return std::nullopt;
@@ -3891,15 +3943,6 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
-#if BUILDFLAG(IS_WIN)
-    // We must use DComp surfaces in this case since they have no special
-    // synchronization requirements. We can use DComp textures if we return them
-    // from |SkiaOutputDeviceDComp| when they become available or with buffer
-    // queue once render pass backings support it.
-    kOverlayUsage = gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                    gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                    gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
-#endif
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
@@ -3912,8 +3955,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
         mailbox,
         /*is_root=*/false,
         /*is_scanout=*/true,
-        /*scanout_dcomp_surface=*/
-        kOverlayUsage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE),
+        /*scanout_dcomp_surface=*/false,
     };
   } else {
     overlay_params = *it;

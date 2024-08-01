@@ -24,6 +24,7 @@ import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
+import org.chromium.android_webview.common.BackgroundThreadExecutor;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -36,14 +37,15 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
+import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for blocking mature sites for supervised users.
  *
- * These tests only check the url loading part of the integration, not
- * the call to GMS core which would check if the current user can load
- * a particular url.
+ * <p>These tests only check the url loading part of the integration, not the call to GMS core which
+ * would check if the current user can load a particular url.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -57,7 +59,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String MATURE_SITE_PATH = "/mature.html";
     private static final String MATURE_SITE_IFRAME_TITLE = "IFrame mature site";
     private static final String MATURE_SITE_IFRAME_PATH = "/mature-inner.html";
-    private static final String BLOCKED_SITE_TITLE = "This website is blocked by your parent.";
+    private static final String BLOCKED_SITE_TITLE = "This content is blocked.";
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         StringBuilder sb = new StringBuilder();
@@ -254,18 +256,27 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static class TestPlatformServiceBridge extends PlatformServiceBridge {
         private class TestAwSupervisedUserUrlClassifierDelegate
                 implements AwSupervisedUserUrlClassifierDelegate {
+            // Post callback responses to a background thread to emulate how the production code
+            // works.
+            private final Executor mExecutor =
+                    new BackgroundThreadExecutor("TEST_BACKGROUND_THREAD");
+            private static final Set RESTRICTED_CONTENT_BLOCKLIST =
+                    Set.of(MATURE_SITE_PATH, MATURE_SITE_IFRAME_PATH);
+
             @Override
             public void shouldBlockUrl(GURL requestUrl, @NonNull final Callback<Boolean> callback) {
                 String path = requestUrl.getPath();
+                boolean isRestrictedContent = RESTRICTED_CONTENT_BLOCKLIST.contains(path);
+                mExecutor.execute(
+                        () -> {
+                            callback.onResult(isRestrictedContent);
+                        });
+            }
 
-                if (path.equals(SAFE_SITE_PATH) || path.equals(SAFE_SITE_IFRAME_PATH)) {
-                    callback.onResult(false);
-                    return;
-                } else if (path.equals(MATURE_SITE_PATH) || path.equals(MATURE_SITE_IFRAME_PATH)) {
-                    callback.onResult(true);
-                    return;
-                }
-                assert false;
+            @Override
+            public void needsRestrictedContentBlocking(@NonNull final Callback<Boolean> callback) {
+                // TODO(https://crbug.com/355528479): invoke the callback once the business logic is
+                // updated to use the callback response value.
             }
         }
 

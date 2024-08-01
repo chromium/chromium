@@ -63,6 +63,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   // blended behind |overlay_image|.
   std::optional<SkColor4f> background_color;
 
+  // Used to detect when multiple overlays are part of the same tile layer.
+  uint64_t aggregated_layer_id = 0;
+
   // Parameters for video overlays, only used by |SwapChainPresenter|.
   struct VideoParams {
     VideoParams();

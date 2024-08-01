@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 
 #include "base/functional/bind.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/sync/service/sync_service.h"
@@ -34,7 +36,7 @@
 class FilterDelegateImpl
     : public supervised_user::SupervisedUserURLFilter::Delegate {
  public:
-  std::string GetCountryCode() override {
+  std::string GetCountryCode() const override {
     std::string country;
     variations::VariationsService* variations_service =
         g_browser_process->variations_service();
@@ -45,6 +47,10 @@ class FilterDelegateImpl
       }
     }
     return country;
+  }
+
+  version_info::Channel GetChannel() const override {
+    return chrome::GetChannel();
   }
 };
 

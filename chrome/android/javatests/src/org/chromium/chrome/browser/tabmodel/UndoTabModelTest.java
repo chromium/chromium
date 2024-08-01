@@ -267,7 +267,7 @@ public class UndoTabModelTest {
         Tab tab1 = model.getTabAt(1);
         tabs = new Tab[] {tab0, tab1};
         Assert.assertEquals(TEST_URL_0, ChromeTabUtils.getUrlStringOnUiThread(tab1));
-        checkState(model, tabs, tab0, EMPTY, tabs, tab0);
+        checkState(model, tabs, tab1, EMPTY, tabs, tab1);
     }
 
     /**
@@ -338,14 +338,19 @@ public class UndoTabModelTest {
         Tab[] firstWindowTabs = new Tab[] {firstModelTab, firstModel.getTabAt(1)};
         Tab[] secondWindowTabs = new Tab[] {secondModelTab, secondModel.getTabAt(1)};
         checkState(
-                firstModel, firstWindowTabs, firstModelTab, EMPTY, firstWindowTabs, firstModelTab);
+                firstModel,
+                firstWindowTabs,
+                firstModel.getTabAt(1),
+                EMPTY,
+                firstWindowTabs,
+                firstModel.getTabAt(1));
         checkState(
                 secondModel,
                 secondWindowTabs,
-                secondModelTab,
+                secondModel.getTabAt(1),
                 EMPTY,
                 secondWindowTabs,
-                secondModelTab);
+                secondModel.getTabAt(1));
         Assert.assertEquals(TEST_URL_0, ChromeTabUtils.getUrlStringOnUiThread(firstWindowTabs[1]));
         Assert.assertEquals(TEST_URL_1, ChromeTabUtils.getUrlStringOnUiThread(secondWindowTabs[1]));
 
@@ -413,7 +418,8 @@ public class UndoTabModelTest {
         Tab tab0 = firstModel.getTabAt(0);
         Tab tab1 = firstModel.getTabAt(1);
         Tab[] firstWindowTabs = new Tab[] {tab0, tab1};
-        checkState(firstModel, firstWindowTabs, tab0, EMPTY, firstWindowTabs, tab0);
+        // After restoring tab1, it should selected as the current tab.
+        checkState(firstModel, firstWindowTabs, tab1, EMPTY, firstWindowTabs, tab1);
         Assert.assertEquals(TEST_URL_1, ChromeTabUtils.getUrlStringOnUiThread(tab1));
     }
 }

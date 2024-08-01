@@ -7,6 +7,7 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -93,14 +94,14 @@ const int64_t kDefaultCallbackIntervalMs = 1000 * 20;
 // Logs the type of incident in |incident_data| to a user metrics histogram.
 void LogIncidentDataType(IncidentDisposition disposition,
                          const Incident& incident) {
-  static const char* const kHistogramNames[] = {
+  static auto const kHistogramNames = std::to_array({
       "SBIRS.ReceivedIncident",
       "SBIRS.DroppedIncident",
       "SBIRS.Incident",
       "SBIRS.PrunedIncident",
       "SBIRS.DiscardedIncident",
       "SBIRS.NoDownloadIncident",
-  };
+  });
   static_assert(std::size(kHistogramNames) == NUM_DISPOSITIONS,
                 "Keep kHistogramNames in sync with enum IncidentDisposition.");
   DCHECK_GE(disposition, 0);

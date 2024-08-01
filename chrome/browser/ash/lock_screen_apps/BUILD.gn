@@ -27,6 +27,8 @@ static_library("lock_screen_apps") {
     "toast_dialog_view.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//apps",
     "//ash",
@@ -99,6 +101,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",

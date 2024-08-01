@@ -2141,7 +2141,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -13877,6 +13877,46 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_unit_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_unit_test_apk",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP2A.240705.004",
+            "device_os_type": "userdebug",
+            "device_type": "panther",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "chrome_public_unit_test_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"
+      },
+      {
+        "args": [
+          "--gtest-also-run-pre-tests",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -27858,7 +27898,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 15
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -28799,6 +28839,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -28835,6 +28876,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -28874,6 +28916,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -28908,6 +28951,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -29029,6 +29073,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -29064,6 +29109,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -29098,6 +29144,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -29166,6 +29213,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [

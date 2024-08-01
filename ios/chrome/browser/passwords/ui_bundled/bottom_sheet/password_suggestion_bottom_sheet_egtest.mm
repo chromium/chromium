@@ -7,7 +7,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -41,17 +39,7 @@ static constexpr char kFormPassword[] = "pw";
 
 namespace {
 
-using base::test::ios::kWaitForActionTimeout;
 using password_manager_test_utils::DeleteCredential;
-
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
-}
 
 // Get the top presented view controller, in this case the bottom sheet view
 // controller.
@@ -143,25 +131,6 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   if ([self isRunningTest:@selector(testOpenKeyboardOnAutofocus)]) {
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordBottomSheetAutofocus);
-  }
-
-  if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetOpenPasswordDetails)] ||
-      [self
-          isRunningTest:@selector
-          (testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication
-              )] ||
-      [self
-          isRunningTest:@selector(testOpenPasswordBottomSheetDeletePassword)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-  }
-
-  if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication
-                )]) {
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
   return config;
@@ -296,7 +265,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 
   [self loadLoginAutofocusPage];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // This test verifies that the password bottom sheet does not open when the
@@ -320,7 +289,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // This test will allow us to know if we're using a coherent browser state to
@@ -375,7 +344,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
@@ -589,60 +558,6 @@ id<GREYMatcher> OpenKeyboardButton() {
 
   // Verify visit metric was not recorded.
   CheckPasswordDetailsVisitMetricCount(0);
-}
-
-- (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  NSURL* URL = net::NSURLWithGURL(
-      self.testServer->GetURL("/simple_login_form_empty.html"));
-  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
-  [PasswordSuggestionBottomSheetAppInterface
-      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
-                                                   kSuccess];
-  [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
-                                                  password:@"password"
-                                                       URL:URL];
-  [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
-                                                  password:@"password2"
-                                                       URL:URL];
-  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
-  GREYAssertEqual(2, credentialsCount, @"Wrong number of stored credentials.");
-
-  [self loadLoginPage];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
-
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
-
-  // Long press to open context menu.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
-      performAction:grey_longPress()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                         IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
-                     grey_interactable(), nullptr)] performAction:grey_tap()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                   IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
-      assertWithMatcher:grey_textFieldValue(@"user2")];
-
-  // Verify visit metric was recorded.
-  CheckPasswordDetailsVisitMetricCount(1);
 }
 
 - (void)testOpenPasswordBottomSheetDeletePassword {
@@ -862,7 +777,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Dismiss #2.
   [self loadLoginPage];
@@ -876,7 +791,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Dismiss #3.
   [self loadLoginPage];
@@ -890,13 +805,13 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Verify that keyboard is shown.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // TODO(crbug.com/40279461): Fix flaky test & re-enable.
@@ -933,7 +848,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Tests that the Password Bottom Sheet appears when tapping on a password

@@ -109,7 +109,7 @@ class ScopedActivatable : public views::WidgetObserver {
       return;
     }
 
-    OverviewItemBase* item = item_view->GetOverviewItem();
+    OverviewItemBase* item = item_view->overview_item();
     if (!item) {
       return;
     }
@@ -193,12 +193,13 @@ bool OverviewFocusCycler::AcceptSelection() {
   }
 
   if (auto* preview_view = views::AsViewClass<DeskPreviewView>(focused_view)) {
-    return preview_view->MaybeActivateFocusedViewOnOverviewExit(
-        overview_session_);
+    preview_view->AcceptSelection();
+    return true;
   }
 
   if (auto* item_view = views::AsViewClass<OverviewItemView>(focused_view)) {
-    return item_view->MaybeActivateFocusedViewOnOverviewExit(overview_session_);
+    item_view->AcceptSelection(overview_session_);
+    return true;
   }
 
   return false;

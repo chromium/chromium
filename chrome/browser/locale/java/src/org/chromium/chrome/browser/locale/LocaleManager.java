@@ -16,7 +16,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.base.PageTransition;
 
@@ -86,14 +85,6 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
      */
     public void setSnackbarManager(SnackbarManager manager) {
         mDelegate.setSnackbarManager(manager);
-    }
-
-    /**
-     * Sets the settings launcher for search engines.
-     * @param settingsLauncher Launcher to start search engine settings on the snackbar UI.
-     */
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mDelegate.setSettingsLauncher(settingsLauncher);
     }
 
     /** Returns whether and which search engine promo should be shown. */

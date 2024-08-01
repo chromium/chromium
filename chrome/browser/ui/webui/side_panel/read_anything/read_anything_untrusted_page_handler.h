@@ -147,6 +147,13 @@ class ReadAnythingUntrustedPageHandler :
                      ui::AXNodeID target_node_id) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override;
+  void OnImageDataDownloaded(const ui::AXTreeID& target_tree_id,
+                             ui::AXNodeID,
+                             int id,
+                             int http_status_code,
+                             const GURL& image_url,
+                             const std::vector<SkBitmap>& bitmaps,
+                             const std::vector<gfx::Size>& sizes);
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,
@@ -157,7 +164,6 @@ class ReadAnythingUntrustedPageHandler :
 
   // ReadAnythingCoordinator::Observer:
   void Activate(bool active) override;
-  void OnCoordinatorDestroyed() override;
 
   void SetDefaultLanguageCode(const std::string& code);
 
@@ -199,7 +205,6 @@ class ReadAnythingUntrustedPageHandler :
   void PerformActionInTargetTree(const ui::AXTreeID& target_tree_id,
                                  const ui::AXActionData& data);
 
-  raw_ptr<ReadAnythingCoordinator> coordinator_;
   raw_ptr<ReadAnythingTabHelper> tab_helper_;
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;

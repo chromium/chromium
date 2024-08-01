@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] pad float32 1D constant tensor default options
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 1D tensor default options
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 2D tensor default options
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 3D tensor default options
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 4D tensor default options
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 5D tensor default options
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 2D tensor explicit options.mode='constant'
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 2D tensor options.value default constant mode
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 4D tensor options.mode='edge'
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 4D tensor options.mode='reflection'
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+[FAIL] pad float32 4D tensor options.mode='symmetric'
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN Service is not supported on this platform.
+Harness: the test ran to completion.
+

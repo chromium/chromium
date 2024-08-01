@@ -119,6 +119,7 @@ source_set("auction_worklet") {
     "//services/network/public/cpp",
     "//third_party/blink/public/common",
     "//third_party/inspector_protocol:crdtp",
+    "//third_party/zlib/google:compression_utils",
     "//url",
     "//v8",
   ]
@@ -194,6 +195,7 @@ source_set("tests") {
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//third_party/inspector_protocol:crdtp",
+    "//third_party/zlib/google:compression_utils",
     "//v8",
   ]
 

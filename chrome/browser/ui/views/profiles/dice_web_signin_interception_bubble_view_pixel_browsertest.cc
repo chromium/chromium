@@ -280,12 +280,12 @@ class DiceWebSigninInterceptionBubblePixelTest
 
     SkColor primary_highlight_color =
         GetParam().primary_profile_color.toSkColor();
+    DefaultAvatarColors avatar_colors = GetDefaultAvatarColors(
+        *browser()->window()->GetColorProvider(), primary_highlight_color);
     ProfileThemeColors colors = {
         /*profile_highlight_color=*/primary_highlight_color,
-        /*default_avatar_fill_color=*/primary_highlight_color,
-        /*default_avatar_stroke_color=*/
-        GetAvatarStrokeColor(*browser()->window()->GetColorProvider(),
-                             primary_highlight_color)};
+        /*default_avatar_fill_color=*/avatar_colors.fill_color,
+        /*default_avatar_stroke_color=*/avatar_colors.stroke_color};
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()

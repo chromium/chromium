@@ -34,15 +34,19 @@ namespace content {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerMac(initial_tree, delegate);
+  return new BrowserAccessibilityManagerMac(initial_tree, node_id_delegate,
+                                            delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerMac(
-      BrowserAccessibilityManagerMac::GetEmptyDocument(), delegate);
+      BrowserAccessibilityManagerMac::GetEmptyDocument(), node_id_delegate,
+      delegate);
 }
 
 BrowserAccessibilityManagerMac*
@@ -52,8 +56,9 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerMac() {
 
 BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
-    : BrowserAccessibilityManager(delegate) {
+    : BrowserAccessibilityManager(node_id_delegate, delegate) {
   Initialize(initial_tree);
 }
 
@@ -613,15 +618,6 @@ id BrowserAccessibilityManagerMac::GetWindow() {
 bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
   // If it's not the top-level document, we shouldn't fire AXLoadComplete.
   if (!IsRootFrameManager()) {
-    return false;
-  }
-
-  // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
-  // webpage and read content, despite the "Automatically speak the webpage"
-  // checkbox in Voiceover utility being unchecked. The checkbox is
-  // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
-  // support the default behavior.
-  if (base::mac::MacOSMajorVersion() < 11) {
     return false;
   }
 

@@ -101,18 +101,6 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "chromeos-betty-pi-arc-cfi-thin-lto-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "chromeos-betty-pi-arc-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "chromeos-betty-pi-arc-chrome-accessibility-fyi",
-)
-
-chrome_internal_verifier(
     builder = "chromeos-brya-chrome-skylab",
 )
 

@@ -150,6 +150,8 @@ class WTF_EXPORT StringImpl {
     return highest_static_string_length_;
   }
 
+  static scoped_refptr<StringImpl> Create(base::span<const UChar>);
+  static scoped_refptr<StringImpl> Create(base::span<const LChar>);
   static scoped_refptr<StringImpl> Create(const UChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(const LChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(
@@ -173,8 +175,18 @@ class WTF_EXPORT StringImpl {
     return Create(reinterpret_cast<const LChar*>(s));
   }
 
+  // Create a StringImpl with space for `length` LChar characters. `data` will
+  // be the character data allocated, and _must_be_completely_filled_in_ by the
+  // caller.
+  static scoped_refptr<StringImpl> CreateUninitialized(size_t length,
+                                                       base::span<LChar>& data);
   static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
                                                        LChar*& data);
+  // Create a StringImpl with space for `length` UChar characters. `data` will
+  // be the character data allocated, and _must_be_completely_filled_in_ by the
+  // caller.
+  static scoped_refptr<StringImpl> CreateUninitialized(size_t length,
+                                                       base::span<UChar>& data);
   static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
                                                        UChar*& data);
 

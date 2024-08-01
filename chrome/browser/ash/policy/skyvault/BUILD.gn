@@ -30,6 +30,8 @@ static_library("skyvault") {
     "policy_utils.h",
     "signin_notification_helper.cc",
     "signin_notification_helper.h",
+    "skyvault_capture_upload_notification.cc",
+    "skyvault_capture_upload_notification.h",
     "skyvault_rename_handler.cc",
     "skyvault_rename_handler.h",
   ]
@@ -37,6 +39,8 @@ static_library("skyvault") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/drive",
@@ -44,8 +48,12 @@ static_library("skyvault") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
     "//components/download/public/common:public",
@@ -66,6 +74,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ui/webui/ash/skyvault",
   ]
 }
 
@@ -74,6 +83,7 @@ source_set("unit_tests") {
 
   sources = [
     "signin_notification_helper_unittest.cc",
+    "skyvault_capture_upload_notification_unittest.cc",
     "skyvault_rename_handler_unittest.cc",
   ]
 

@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
@@ -84,16 +83,6 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
     public void setDisableAutoSwitchRunnable(Runnable runnable) {
         createAdapterIfNecessary();
         mSearchEngineAdapter.setDisableAutoSwitchRunnable(runnable);
-    }
-
-    /**
-     * Sets an instance of SettingsLauncher in a fragment.
-     *
-     * @param settingsLauncher The SettingsLauncher that is injected.
-     */
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        createAdapterIfNecessary();
-        mSearchEngineAdapter.setSettingsLauncher(settingsLauncher);
     }
 
     private void createAdapterIfNecessary() {

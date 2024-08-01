@@ -317,6 +317,13 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   base::WeakPtr<FrameOrWorkerScheduler> GetFrameOrWorkerSchedulerWeakPtr()
       override;
 
+  // Returns whether the given `TaskType` can be deferred for rendering in
+  // response to discrete input, which depends on the experimental
+  // DeferRendererTasksAfterInput policy and whether the type
+  // `is_deferrable_for_touchstart` (the CanBeDeferred QueueTrait).
+  bool ComputeCanBeDeferredForRendering(bool is_deferrable_for_touchstart,
+                                        TaskType) const;
+
   // Create QueueTraits for the default (non-finch) task queues.
   static MainThreadTaskQueue::QueueTraits ThrottleableTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits DeferrableTaskQueueTraits();

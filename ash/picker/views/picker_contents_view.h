@@ -6,6 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_CONTENTS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,9 @@ class ASH_EXPORT PickerContentsView : public views::View {
   PickerContentsView& operator=(const PickerContentsView&) = delete;
   ~PickerContentsView() override;
 
+  // views::View:
+  void Layout(PassKey) override;
+
   // Adds a new page.
   template <typename T>
   T* AddPage(std::unique_ptr<T> view) {
@@ -40,6 +44,10 @@ class ASH_EXPORT PickerContentsView : public views::View {
   }
 
  private:
+  // Applies fade in / fade out gradients at the top and bottom of the contents'
+  // scroll view to indicate when the contents can be scrolled.
+  std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
+
   raw_ptr<views::View> page_container_ = nullptr;
 };
 

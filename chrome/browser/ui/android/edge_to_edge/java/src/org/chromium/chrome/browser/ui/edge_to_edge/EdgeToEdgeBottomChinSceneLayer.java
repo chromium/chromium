@@ -41,6 +41,11 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** The current Y offset to apply to the bottom chin in px. */
     private int mCurrentYOffsetPx;
 
+    /** Attributes for the divider. */
+    private int mDividerColor;
+
+    private boolean mIsDividerVisible;
+
     /** Build a bottom chin scene layer. */
     public EdgeToEdgeBottomChinSceneLayer() {}
 
@@ -77,6 +82,15 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
         mColor = color;
     }
 
+    /**
+     * Set the color for the divider.
+     *
+     * @see #setDividerVisible(boolean)
+     */
+    public void setDividerColor(@ColorInt int dividerColor) {
+        mDividerColor = dividerColor;
+    }
+
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
@@ -102,6 +116,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                         (int) viewport.width(),
                         mHeight,
                         mColor,
+                        mDividerColor,
                         viewport.height() + mCurrentYOffsetPx);
 
         return this;
@@ -158,6 +173,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                 int containerWidth,
                 int containerHeight,
                 int colorARGB,
+                int dividerColor,
                 float yOffset);
     }
 }

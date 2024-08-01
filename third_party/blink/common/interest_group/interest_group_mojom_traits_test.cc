@@ -270,6 +270,23 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeTrustedBiddingSignalsCoordinator) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.trusted_bidding_signals_coordinator =
+      url::Origin::Create(GURL("https://example.test"));
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeInvalidTrustedBiddingSignalsCoordinator) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.trusted_bidding_signals_coordinator =
+      url::Origin::Create(GURL("http://example.test"));
+  SerializeAndDeserializeExpectFailure(interest_group,
+                                       "trustedBiddingSignalsCoordinator");
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUserBiddingSignals) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.user_bidding_signals = "[]";

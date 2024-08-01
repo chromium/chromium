@@ -40,7 +40,7 @@ class TestingApplicationContext : public ApplicationContext {
   void SetLastShutdownClean(bool clean);
 
   // Sets the ChromeBrowserStateManager.
-  void SetChromeBrowserStateManager(ios::ChromeBrowserStateManager* manager);
+  void SetChromeBrowserStateManager(ChromeBrowserStateManager* manager);
 
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);
@@ -70,7 +70,7 @@ class TestingApplicationContext : public ApplicationContext {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
   const std::string& GetApplicationCountry() override;
-  ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
+  ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
@@ -107,7 +107,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   std::unique_ptr<MockPromosManager> promos_manager_;
 
-  raw_ptr<ios::ChromeBrowserStateManager> chrome_browser_state_manager_;
+  raw_ptr<ChromeBrowserStateManager> chrome_browser_state_manager_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   bool was_last_shutdown_clean_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;

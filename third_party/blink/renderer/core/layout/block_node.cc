@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -893,7 +894,7 @@ void BlockNode::StoreResultInLayoutBox(const LayoutResult* result,
 
 MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
-    const MinMaxSizesType type,
+    const SizeType type,
     const ConstraintSpace& constraint_space,
     const MinMaxSizesFloatInput float_input) const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
@@ -981,7 +982,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   }
 
   const bool has_aspect_ratio = !Style().AspectRatio().IsAuto();
-  if (has_aspect_ratio && type == MinMaxSizesType::kContent) {
+  if (has_aspect_ratio && type == SizeType::kContent) {
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
@@ -1051,7 +1052,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
       const BoxStrut border_padding =
           fragment_geometry.border + fragment_geometry.padding;
       const MinMaxSizes min_max = ComputeMinMaxInlineSizesFromAspectRatio(
-          constraint_space, Style(), border_padding);
+          constraint_space, *this, border_padding);
       result->sizes.min_size =
           min_max.ClampSizeToMinAndMax(result->sizes.min_size);
       result->sizes.max_size =
@@ -1588,6 +1589,8 @@ void BlockNode::HandleScrollMarkerGroup() const {
   context.parent = group_node.GetLayoutBox();
   DCHECK(context.parent);
 
+  To<ScrollMarkerGroupPseudoElement>(group_node.GetLayoutBox()->GetNode())
+      ->ClearFocusGroup();
   AttachScrollMarkers(*box_, context);
 
   DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());

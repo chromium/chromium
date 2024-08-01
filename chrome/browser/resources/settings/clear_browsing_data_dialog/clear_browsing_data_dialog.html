@@ -160,8 +160,8 @@
         </cr-tabs>
       </div>
       <div slot="body">
-        <iron-pages id="pages" selected="[[selectedTabIndex_]]"
-            on-selected-item-changed="updateClearButtonState_">
+        <cr-page-selector id="pages" selected="[[selectedTabIndex_]]"
+            on-iron-select="updateClearButtonState_">
           <div id="basic-tab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
@@ -318,7 +318,7 @@
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
           </div>
-        </iron-pages>
+        </cr-page-selector>
       </div>
       <div slot="button-container">
         <paper-spinner-lite active="[[clearingInProgress_]]">

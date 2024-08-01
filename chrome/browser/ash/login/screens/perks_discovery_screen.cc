@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,7 +16,30 @@
 namespace ash {
 namespace {
 
+constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
+
+bool CheckPayloadFormat(const growth::Payload* payload) {
+  const base::Value::List* perks = payload->FindList("perks");
+  if (!perks) {
+    return false;
+  }
+  for (const auto& perk : *perks) {
+    if (!perk.GetDict().FindString("id") ||
+        !perk.GetDict().FindString("title") ||
+        !perk.GetDict().FindString("text") ||
+        !perk.GetDict().FindString("icon") ||
+        !perk.GetDict().FindStringByDottedPath("content.illustration.url") ||
+        !perk.GetDict().FindStringByDottedPath("content.illustration.height") ||
+        !perk.GetDict().FindStringByDottedPath("content.illustration.width") ||
+        !perk.GetDict().FindStringByDottedPath("primaryButton.label") ||
+        !perk.GetDict().FindStringByDottedPath("secondaryButton.label") ||
+        !perk.GetDict().FindDictByDottedPath("primaryButton.action")) {
+      return false;
+    }
+  }
+  return true;
+}
 
 std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     const growth::Payload* payload) {
@@ -25,7 +49,12 @@ std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     return perks_result;
   }
 
-  // TODO(b:353480634) Add sanity check for the payload data format.
+  if (!CheckPayloadFormat(payload)) {
+    // TODO(b/347181006) add a metric to track this error
+    LOG(ERROR) << "Payload malformed.";
+    return perks_result;
+  }
+
   const base::Value::List* perks = payload->FindList("perks");
   for (const auto& perk : *perks) {
     perks_result.push_back(SinglePerkDiscoveryPayload(perk.GetDict()));
@@ -64,10 +93,15 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
       title(perk_data.title),
       subtitle(perk_data.subtitle),
       icon_url(perk_data.icon_url),
+      content(perk_data.content),
       primary_button(perk_data.primary_button.Clone()),
       secondary_button(perk_data.secondary_button.Clone()) {}
 
 Content::Content() = default;
+
+Content::Content(const Content& content) {
+  illustration = content.illustration;
+}
 
 Content::~Content() = default;
 
@@ -113,6 +147,11 @@ bool PerksDiscoveryScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
+  if (!features::IsOobePerksDiscoveryEnabled()) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
   return false;
 }
 
@@ -126,6 +165,17 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
     exit_callback_.Run(Result::kError);
     return;
   }
+
+  if (!growth::GetCampaignId(campaign).has_value()) {
+    LOG(ERROR) << "Invalid: Missing campaign id.";
+    // campaign_id is mandatory to forward the user action to the
+    // campaign_manager.
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+
+  campaign_id_ = growth::GetCampaignId(campaign).value();
+  group_id_ = growth::GetCampaignGroupId(campaign);
   auto* payload = GetPayloadBySlot(campaign, growth::Slot::kOobePerkDiscovery);
   if (!payload) {
     LOG(ERROR) << "Payload object is null. Failed to retrieve payload for "
@@ -195,7 +245,43 @@ void PerksDiscoveryScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
 
+  if (action_id == kUserActionFinish) {
+    CHECK_EQ(args.size(), 2u);
+    OnPerksSelectionFinished(args[1].GetList());
+    exit_callback_.Run(Result::kNext);
+    return;
+  }
+
   BaseScreen::OnUserAction(args);
+}
+
+void PerksDiscoveryScreen::OnPerksSelectionFinished(
+    const base::Value::List& selected_perks) {
+  for (const auto& perk_selected : selected_perks) {
+    auto perk = std::find_if(perks_data_.cbegin(), perks_data_.cend(),
+                             [&](const SinglePerkDiscoveryPayload& perk_data) {
+                               return perk_data.id == perk_selected.GetString();
+                             });
+
+    CHECK(perk != perks_data_.end())
+        << "Failed to find perk " << perk_selected.GetString();
+    PerformButtonAction(perk->primary_button);
+  }
+}
+
+void PerksDiscoveryScreen::PerformButtonAction(
+    const base::Value::Dict& button_data) {
+  if (!button_data.FindDict("action")) {
+    // TODO(b/347181006) Record error metrics.
+    return;
+  }
+  const growth::Action action = growth::Action(button_data.FindDict("action"));
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  if (!campaigns_manager) {
+    // TODO(b/347181006) Record error metrics.
+    return;
+  }
+  campaigns_manager->PerformAction(campaign_id_, group_id_, &action);
 }
 
 }  // namespace ash

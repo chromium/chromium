@@ -54,7 +54,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   const bool wait_for_initialization_;
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;

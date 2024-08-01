@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"

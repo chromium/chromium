@@ -83,7 +83,7 @@ static bool CueIsBefore(const TextTrackCue* cue, TextTrackCue* other_cue) {
 
 wtf_size_t TextTrackCueList::FindInsertionIndex(
     const TextTrackCue* cue_to_insert) const {
-  auto* it =
+  auto it =
       std::upper_bound(list_.begin(), list_.end(), cue_to_insert, CueIsBefore);
   wtf_size_t index = base::checked_cast<wtf_size_t>(it - list_.begin());
   SECURITY_DCHECK(index <= list_.size());

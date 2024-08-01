@@ -86,13 +86,11 @@ class PasswordUIViewAndroid
   void HandleShowPasswordEntryEditingView(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& context,
-      const base::android::JavaRef<jobject>& settings_launcher,
       int index,
       const base::android::JavaParamRef<jobject>& obj);
   void HandleShowBlockedCredentialView(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& context,
-      const base::android::JavaRef<jobject>& settings_launcher,
       int index,
       const base::android::JavaParamRef<jobject>& obj);
   void ShowMigrationWarning(

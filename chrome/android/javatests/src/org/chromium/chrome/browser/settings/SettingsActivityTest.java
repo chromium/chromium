@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.settings;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.Color;
@@ -21,24 +15,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
-import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.test.util.UiDisableIf;
 
 /** Tests for the Settings menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -51,37 +32,6 @@ public class SettingsActivityTest {
     @After
     public void tearDown() {
         mSettingsActivityTestRule.getActivity().finish();
-    }
-
-    @Test
-    @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338990739
-    // Setting BrowserSignin suppresses the sync promo so the password settings preference
-    // is visible without scrolling.
-    @Policies.Add({
-        @Policies.Item(key = "PasswordManagerEnabled", string = "false"),
-        @Policies.Item(key = "BrowserSignin", string = "0")
-    })
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    @DisableFeatures({
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_NO_MIGRATION
-    })
-    public void testPasswordSettings_ManagedAndDisabled() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
-                });
-
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        onView(withText(R.string.password_manager_settings_title)).perform(click());
-        onView(withText(R.string.password_settings_save_passwords)).check(matches(isDisplayed()));
     }
 
     /** Test status bar is always black in Automotive devices. */

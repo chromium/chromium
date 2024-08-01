@@ -20,7 +20,6 @@
 #include "content/app/mojo/mojo_init.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/network_service_instance_impl.h"
-#include "content/browser/notification_service_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
@@ -62,8 +61,6 @@ class UnitTestTestSuite::UnitTestEventListener
     SetNetworkConnectionTrackerForTesting(
         network::TestNetworkConnectionTracker::GetInstance());
 
-    notification_service_ = std::make_unique<NotificationServiceImpl>();
-
     content_clients_ = create_clients_.Run();
     CHECK(content_clients_->content_client.get());
     SetContentClient(content_clients_->content_client.get());
@@ -91,7 +88,6 @@ class UnitTestTestSuite::UnitTestEventListener
 
     SetNetworkConnectionTrackerForTesting(nullptr);
     test_network_connection_tracker_.reset();
-    notification_service_.reset();
 
     // If the network::NetworkService object was instantiated during a unit test
     // it will be deleted because network_service_instance.cc has it in a
@@ -109,7 +105,6 @@ class UnitTestTestSuite::UnitTestEventListener
   base::OnceClosure first_test_start_callback_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
-  std::unique_ptr<NotificationServiceImpl> notification_service_;
   std::unique_ptr<UnitTestTestSuite::ContentClients> content_clients_;
   std::unique_ptr<BrowserAccessibilityStateImpl> browser_accessibility_state_;
 };

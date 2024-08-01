@@ -416,6 +416,15 @@
   <message name="IDS_MANAGEMENT_DIALOG_DEVICE_SIGNALS" desc="Disclosure that device information can be visible to the admin for device safety. The OS, browser info and and installed software may be visible to the admin to assess the device safety.">
     For device safety, OS, browser info, and installed software may be visible
   </message>
+  <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED" desc="Disclosure that an unnamed organization is managing the browser.">
+    Your organization is managing your browser
+  </message>
+  <message name="IDS_MANAGEMENT_DIALOG_PROFILE_MANAGED_BY" desc="Disclosure that a known organization is managing the profile.">
+    <ph name="MANAGER">$1<ex>The Company</ex></ph> is managing your profile
+  </message>
+  <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY" desc="Disclosure that a known organization is managing the browser.">
+    <ph name="MANAGER">$1<ex>The Company</ex></ph> is managing your browser
+  </message>
   <message name="IDS_MANAGEMENT_DIALOG_THINGS_TO_CONSIDER_SUBTITLE" desc="Subtitle of a section of things to consider regarding that an admin can do an see while managing the browser and profile.">
     Things to consider
   </message>

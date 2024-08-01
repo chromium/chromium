@@ -213,7 +213,9 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(100.0);
   }
-  void SetAmbientLightSensorEnabled(bool enabled) override {}
+  void SetAmbientLightSensorEnabled(
+      bool enabled,
+      AmbientLightSensorEnabledChangeSource source) override {}
   void GetAmbientLightSensorEnabled(
       base::OnceCallback<void(std::optional<bool>)> callback) override {
     std::move(callback).Run(true);
@@ -275,7 +277,9 @@ class DummyKeyboardBrightnessControlDelegate
     std::move(callback).Run(100.0);
   }
 
-  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
+  void HandleSetKeyboardAmbientLightSensorEnabled(
+      bool enabled,
+      KeyboardAmbientLightSensorEnabledChangeSource source) override {}
 
   void HandleGetKeyboardAmbientLightSensorEnabled(
       base::OnceCallback<void(std::optional<bool>)> callback) override {}

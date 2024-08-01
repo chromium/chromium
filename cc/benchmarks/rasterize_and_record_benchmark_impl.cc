@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/benchmarks/rasterize_and_record_benchmark_impl.h"
 
 #include <stddef.h>
@@ -129,7 +134,9 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->GetPaintWorkletRecords();
   }
 
-  void OnTilesAdded() override { return base_client_->OnTilesAdded(); }
+  void OnAllTilesDoneCleared() override {
+    base_client_->OnAllTilesDoneCleared();
+  }
 
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const override {

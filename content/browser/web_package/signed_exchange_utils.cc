@@ -20,7 +20,6 @@
 #include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
@@ -52,10 +51,7 @@ void ReportErrorAndTraceEvent(
 }
 
 bool IsSignedExchangeHandlingEnabled(BrowserContext* context) {
-  if (!GetContentClient()->browser()->AllowSignedExchange(context))
-    return false;
-
-  return base::FeatureList::IsEnabled(features::kSignedHTTPExchange);
+  return GetContentClient()->browser()->AllowSignedExchange(context);
 }
 
 bool IsSignedExchangeReportingForDistributorsEnabled() {

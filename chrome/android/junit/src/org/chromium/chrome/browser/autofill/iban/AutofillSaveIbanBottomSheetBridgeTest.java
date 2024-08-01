@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -97,7 +98,10 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
         mAutofillSaveIbanBottomSheetBridge.destroy();
 
         verify(mBottomSheetController)
-                .hideContent(any(AutofillSaveIbanBottomSheetContent.class), eq(true));
+                .hideContent(
+                        any(AutofillSaveIbanBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(StateChangeReason.NONE));
     }
 
     @Test

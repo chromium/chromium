@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("notification_client") {
+  sources = [
+    "safety_check_notification_client.h",
+    "safety_check_notification_client.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_check_notification_client_unittest.mm" ]
+  deps = [
+    ":notification_client",
+    "//components/prefs",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}

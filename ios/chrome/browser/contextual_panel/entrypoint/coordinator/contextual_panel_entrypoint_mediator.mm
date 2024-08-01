@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
+#import "base/check_op.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/stringprintf.h"
@@ -18,6 +19,9 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -26,10 +30,14 @@
 
 @interface ContextualPanelEntrypointMediator () <
     ContextualPanelTabHelperObserving,
+    InfobarBadgeTabHelperObserving,
     WebStateListObserving>
 @end
 
 @implementation ContextualPanelEntrypointMediator {
+  // Whether there currently are any Infobar badges being shown.
+  BOOL _infobarBadgesCurrentlyShown;
+
   // The command handler for contextual sheet commands.
   __weak id<ContextualSheetCommands> _contextualSheetHandler;
 
@@ -59,6 +67,13 @@
   // Bridge for the ContextualPanelTabHelper observation.
   std::unique_ptr<ContextualPanelTabHelperObserverBridge>
       _contextualPanelObserverBridge;
+
+  // Bridge for the InfobarBadgeTabHelper observation.
+  std::unique_ptr<InfobarBadgeTabHelperObserverBridge>
+      _infobarBadgeObserverBridge;
+  std::unique_ptr<base::ScopedObservation<InfobarBadgeTabHelper,
+                                          InfobarBadgeTabHelperObserverBridge>>
+      _infobarBadgeObservation;
 
   // Forwarder to always be observing the active ContextualPanelTabHelper.
   std::unique_ptr<ActiveContextualPanelTabHelperObservationForwarder>
@@ -91,11 +106,27 @@
     _activeContextualPanelObservationForwarder =
         std::make_unique<ActiveContextualPanelTabHelperObservationForwarder>(
             webStateList, _contextualPanelObserverBridge.get());
+
+    // Setup InfobarBadgeTabHelper observation.
+    _infobarBadgeObserverBridge =
+        std::make_unique<InfobarBadgeTabHelperObserverBridge>(self);
+    _infobarBadgeObservation = std::make_unique<base::ScopedObservation<
+        InfobarBadgeTabHelper, InfobarBadgeTabHelperObserverBridge>>(
+        _infobarBadgeObserverBridge.get());
+
+    if (_webStateList->GetActiveWebState()) {
+      _infobarBadgeObservation->Observe(
+          InfobarBadgeTabHelper::GetOrCreateForWebState(
+              _webStateList->GetActiveWebState()));
+    }
   }
   return self;
 }
 
 - (void)disconnect {
+  _infobarBadgeObservation->Reset();
+  _infobarBadgeObservation.reset();
+  _infobarBadgeObserverBridge.reset();
   _activeContextualPanelObservationForwarder.reset();
   _contextualPanelObserverBridge.reset();
   _webStateListObservation.reset();
@@ -177,8 +208,11 @@
     return;
   }
 
-  // Update old active web state's visible time.
+  // De-register observer bridge for the old WebState's InfobarBadgeTabHelper.
+  _infobarBadgeObservation->Reset();
+
   if (status.old_active_web_state) {
+    // Update old active web state's visible time.
     ContextualPanelTabHelper* contextualPanelTabHelper =
         ContextualPanelTabHelper::FromWebState(status.old_active_web_state);
     std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
@@ -194,9 +228,32 @@
   if (!status.new_active_web_state) {
     return;
   }
+
+  // Register observer bridge for the new WebState's InfobarBadgeTabHelper.
+  _infobarBadgeObservation->Observe(
+      InfobarBadgeTabHelper::GetOrCreateForWebState(
+          status.new_active_web_state));
+
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
   [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()];
+}
+
+#pragma mark - InfobarBadgeTabHelperObserving
+
+- (void)infobarBadgesUpdated:(InfobarBadgeTabHelper*)tabHelper {
+  DCHECK_EQ(tabHelper, InfobarBadgeTabHelper::GetOrCreateForWebState(
+                           _webStateList->GetActiveWebState()));
+
+  size_t badgesCount = tabHelper->GetInfobarBadgesCount();
+
+  BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
+  if (_infobarBadgesCurrentlyShown == infobarBadgesCurrentlyShown) {
+    return;
+  }
+  _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
+
+  [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
 }
 
 #pragma mark - private
@@ -412,7 +469,8 @@
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
 
-  return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
+  return !_infobarBadgesCurrentlyShown &&
+         !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }

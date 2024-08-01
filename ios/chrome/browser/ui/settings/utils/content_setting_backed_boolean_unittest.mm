@@ -23,7 +23,7 @@ class ContentSettingBackedBooleanTest : public PlatformTest {
  public:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     observable_boolean_ = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:SettingsMap()
                              settingID:kTestContentSettingID

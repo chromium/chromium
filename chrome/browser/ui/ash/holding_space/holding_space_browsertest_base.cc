@@ -151,7 +151,7 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
 void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
   HoldingSpaceBrowserTestBase::SetUpOnMainThread();
 
-  if (!features::IsHoldingSpacePredictabilityEnabled()) {
+  {
     ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 

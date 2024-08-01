@@ -164,26 +164,49 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         },
         frame, SharedGpuContext::ContextProviderWrapper());
 
-    return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-        frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
-        0u, sk_image_info, frame->mailbox_holder(0).texture_target,
-        frame->metadata().texture_origin_is_top_left,
-        // Pass nullptr for |context_provider_wrapper|, because we don't
-        // know which context the mailbox came from. It is used only to
-        // detect when the mailbox is invalid due to context loss, and is
-        // ignored when |is_cross_thread|.
-        base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-        // Pass null |context_thread_ref|, again because we don't know
-        // which context the mailbox came from. This should always trigger
-        // |is_cross_thread|.
-        base::PlatformThreadRef(),
-        // The task runner is only used for |release_callback|.
-        ThreadScheduler::Current()->CleanupTaskRunner(),
-        std::move(release_callback),
-        /*supports_display_compositing=*/true,
-        // TODO(junov): Figure out how to determine whether frame is an
-        // overlay candidate. StorageType info seems insufficient.
-        /*is_overlay_candidate=*/false);
+    if (frame->HasSharedImages()) {
+      return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+          frame->shared_image(0), frame->mailbox_holder(0).sync_token, 0u,
+          sk_image_info, frame->mailbox_holder(0).texture_target,
+          frame->metadata().texture_origin_is_top_left,
+          // Pass nullptr for |context_provider_wrapper|, because we don't
+          // know which context the mailbox came from. It is used only to
+          // detect when the mailbox is invalid due to context loss, and is
+          // ignored when |is_cross_thread|.
+          base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
+          // Pass null |context_thread_ref|, again because we don't know
+          // which context the mailbox came from. This should always trigger
+          // |is_cross_thread|.
+          base::PlatformThreadRef(),
+          // The task runner is only used for |release_callback|.
+          ThreadScheduler::Current()->CleanupTaskRunner(),
+          std::move(release_callback),
+          /*supports_display_compositing=*/true,
+          // TODO(junov): Figure out how to determine whether frame is an
+          // overlay candidate. StorageType info seems insufficient.
+          /*is_overlay_candidate=*/false);
+    } else {
+      return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+          frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
+          0u, sk_image_info, frame->mailbox_holder(0).texture_target,
+          frame->metadata().texture_origin_is_top_left,
+          // Pass nullptr for |context_provider_wrapper|, because we don't
+          // know which context the mailbox came from. It is used only to
+          // detect when the mailbox is invalid due to context loss, and is
+          // ignored when |is_cross_thread|.
+          base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
+          // Pass null |context_thread_ref|, again because we don't know
+          // which context the mailbox came from. This should always trigger
+          // |is_cross_thread|.
+          base::PlatformThreadRef(),
+          // The task runner is only used for |release_callback|.
+          ThreadScheduler::Current()->CleanupTaskRunner(),
+          std::move(release_callback),
+          /*supports_display_compositing=*/true,
+          // TODO(junov): Figure out how to determine whether frame is an
+          // overlay candidate. StorageType info seems insufficient.
+          /*is_overlay_candidate=*/false);
+    }
   }
 
   gfx::Rect final_dest_rect = dest_rect;

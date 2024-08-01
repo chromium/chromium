@@ -224,6 +224,8 @@ class DeclarativeNetRequestBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionBrowserTest::SetUpCommandLine(command_line);
+
     if (GetAllowChromeURLs()) {
       command_line->AppendSwitch(switches::kExtensionsOnChromeURLs);
     } else {

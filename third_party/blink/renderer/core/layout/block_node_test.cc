@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -188,7 +188,7 @@ TEST_F(BlockNodeForTest, MinContentForControls) {
   for (const auto* id : ids) {
     BlockNode box(GetLayoutBoxByElementId(id));
     MinMaxSizes sizes = box.ComputeMinMaxSizes(WritingMode::kHorizontalTb,
-                                               MinMaxSizesType::kContent, space)
+                                               SizeType::kContent, space)
                             .sizes;
     EXPECT_EQ(LayoutUnit(kExpectedMinWidth), sizes.min_size);
   }

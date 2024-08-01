@@ -48,8 +48,8 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   // MLGraphBuilder operation build method.
   MLOperator(MLGraphBuilder* builder,
              webnn::mojom::blink::Operation::Tag kind,
-             OperationSubKind sub_kind = absl::monostate{},
-             const bindings::DictionaryBase* options = nullptr);
+             const bindings::DictionaryBase* options,
+             OperationSubKind sub_kind = absl::monostate{});
 
   MLOperator(const MLOperator&) = delete;
   MLOperator& operator=(const MLOperator&) = delete;
@@ -66,7 +66,6 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   }
 
   const bindings::DictionaryBase* Options() const;
-  bool IsConnected() const;
   const HeapVector<Member<const MLOperand>>& Inputs() const;
   const HeapVector<Member<const MLOperand>>& Outputs() const;
   MLGraphBuilder const* Builder() const { return builder_.Get(); }
@@ -83,15 +82,12 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  private:
   Member<MLGraphBuilder> builder_;
   webnn::mojom::blink::Operation::Tag kind_;
-  OperationSubKind sub_kind_;
 
   // The correct type of options_ depends on OperatorKind. For example, if the
   // OperatorKind is kClamp, options_ could static_cast to MLClampOptions.
   Member<const bindings::DictionaryBase> options_;
-  // is_conneted_ indicates whether the operator is connected with operands.
-  // An operator without operand connections could be used by an MLActivation
-  // to represent an activation function that is fused into another operator.
-  bool is_connected_{false};
+  OperationSubKind sub_kind_;
+
   HeapVector<Member<const MLOperand>> inputs_;
   HeapVector<Member<const MLOperand>> outputs_;
 };
@@ -119,7 +115,9 @@ class MODULES_EXPORT MLArgMinMaxOperator : public MLOperator {
 
 class MODULES_EXPORT MLConcatOperator : public MLOperator {
  public:
-  MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis);
+  MLConcatOperator(MLGraphBuilder* builder,
+                   const uint32_t axis,
+                   const bindings::DictionaryBase* options);
 
   MLConcatOperator(const MLConcatOperator&) = delete;
   MLConcatOperator& operator=(const MLConcatOperator&) = delete;
@@ -211,7 +209,7 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
   MLPadOperator(MLGraphBuilder* builder,
                 const Vector<uint32_t>& beginning_padding,
                 const Vector<uint32_t>& ending_padding,
-                const bindings::DictionaryBase* options = nullptr);
+                const bindings::DictionaryBase* options);
 
   MLPadOperator(const MLPadOperator&) = delete;
   MLPadOperator& operator=(const MLPadOperator&) = delete;
@@ -230,7 +228,8 @@ class MODULES_EXPORT MLSliceOperator : public MLOperator {
  public:
   MLSliceOperator(MLGraphBuilder* builder,
                   const Vector<uint32_t>& beginning_padding,
-                  const Vector<uint32_t>& ending_padding);
+                  const Vector<uint32_t>& ending_padding,
+                  const bindings::DictionaryBase* options);
 
   MLSliceOperator(const MLSliceOperator&) = delete;
   MLSliceOperator& operator=(const MLSliceOperator&) = delete;
@@ -247,7 +246,9 @@ class MODULES_EXPORT MLSliceOperator : public MLOperator {
 
 class MODULES_EXPORT MLSoftmaxOperator : public MLOperator {
  public:
-  MLSoftmaxOperator(MLGraphBuilder* builder, const uint32_t axis);
+  MLSoftmaxOperator(MLGraphBuilder* builder,
+                    const uint32_t axis,
+                    const bindings::DictionaryBase* options);
 
   MLSoftmaxOperator(const MLSoftmaxOperator&) = delete;
   MLSoftmaxOperator& operator=(const MLSoftmaxOperator&) = delete;
@@ -264,10 +265,10 @@ class MODULES_EXPORT MLSplitOperator : public MLOperator {
  public:
   MLSplitOperator(MLGraphBuilder* builder,
                   const uint32_t splits,
-                  const bindings::DictionaryBase* options = nullptr);
+                  const bindings::DictionaryBase* options);
   MLSplitOperator(MLGraphBuilder* builder,
                   const Vector<uint32_t>& splits,
-                  const bindings::DictionaryBase* options = nullptr);
+                  const bindings::DictionaryBase* options);
 
   MLSplitOperator(const MLSplitOperator&) = delete;
   MLSplitOperator& operator=(const MLSplitOperator&) = delete;

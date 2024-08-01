@@ -64,6 +64,7 @@ class MagicBoostCardController : public ReadWriteCardController {
 
   // Shows/closes Magic Boost disclaimer widget.
   void ShowDisclaimerUi(int64_t display_id);
+  void CloseDisclaimerUi();
 
   // The setter and getter of the features that trigger the magic boost opt in
   // card.

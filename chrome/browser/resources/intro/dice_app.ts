@@ -7,23 +7,28 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './sign_in_promo.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './dice_app.html.js';
+import {getCss} from './dice_app.css.js';
+import {getHtml} from './dice_app.html.js';
 
-export interface IntroAppElement {
+export interface DiceAppElement {
   $: {
     viewManager: CrViewManagerElement,
   };
 }
 
-export class IntroAppElement extends PolymerElement {
+export class DiceAppElement extends CrLitElement {
   static get is() {
     return 'intro-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   override connectedCallback() {
@@ -43,15 +48,15 @@ export class IntroAppElement extends PolymerElement {
         'signInPromo', 'no-animation', 'no-animation');
   }
 
-  async setupViewManagerForTest(queryParams: URLSearchParams) {
-    await (this.setupViewManager_(queryParams));
+  setupViewManagerForTest(queryParams: URLSearchParams) {
+    return this.setupViewManager_(queryParams);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'intro-app': IntroAppElement;
+    'intro-app': DiceAppElement;
   }
 }
 
-customElements.define(IntroAppElement.is, IntroAppElement);
+customElements.define(DiceAppElement.is, DiceAppElement);

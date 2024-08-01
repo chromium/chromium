@@ -586,6 +586,10 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
   }
 
+  if (mouse_data->is_double_click) {
+    flags |= ui::EF_IS_DOUBLE_CLICK;
+  }
+
   // Locations are assumed to be in screen coordinates.
   gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
   AccessibilityManager::Get()->SendSyntheticMouseEvent(

@@ -49,6 +49,10 @@ class DualMediaSinkService {
   // Returns the lazily-created leaky singleton instance.
   static DualMediaSinkService* GetInstance();
 
+  // Returns whether the singleton instance for `DualMediaSinkService` has been
+  // instantiated.
+  static bool HasInstance();
+
   DualMediaSinkService(const DualMediaSinkService&) = delete;
   DualMediaSinkService& operator=(const DualMediaSinkService&) = delete;
 
@@ -74,6 +78,10 @@ class DualMediaSinkService {
   void AddLogger(LoggerImpl* logger_impl);
 
   void RemoveLogger(LoggerImpl* logger_impl);
+
+  // Asks `cast_media_sink_service_` to stop observing pref changes. Called as
+  // part of browser process shutdown.
+  void StopObservingPrefChanges();
 
   virtual void DiscoverSinksNow();
 

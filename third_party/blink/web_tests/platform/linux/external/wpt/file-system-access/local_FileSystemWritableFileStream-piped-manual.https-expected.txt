@@ -1,23 +1,23 @@
 This is a testharness.js-based test.
 [FAIL] User succesfully selected an empty directory.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] User granted write access.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] can be piped to with a string
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] can be piped to with an ArrayBuffer
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] can be piped to with a Blob
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] can be piped to with a param object with write command
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] can be piped to with a param object with multiple commands
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] multiple operations can be queued
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] plays well with fetch
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] abort() aborts write
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 Harness: the test ran to completion.
 

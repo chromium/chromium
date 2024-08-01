@@ -9,7 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace {
@@ -34,7 +36,8 @@ std::u16string ChromeAppModalDialogManagerDelegate::GetTitle(
       profile, origin.GetURL(), kUrlIdentityAllowedTypes, kUrlIdentityOptions);
 
   if (url_identity.type == UrlIdentity::Type::kChromeExtension) {
-    return url_identity.name;
+    return l10n_util::GetStringFUTF16(IDS_JAVASCRIPT_MESSAGEBOX_TITLE_EXTENSION,
+                                      url_identity.name);
   }
 
   if (url_identity.type == UrlIdentity::Type::kIsolatedWebApp) {

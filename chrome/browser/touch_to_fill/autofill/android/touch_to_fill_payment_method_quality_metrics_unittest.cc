@@ -34,7 +34,7 @@ class TouchToFillForPaymentMethodsTest
  public:
   void SetUp() override {
     SetUpHelper();
-    ON_CALL(*autofill_client_, ShowTouchToFillCreditCard)
+    ON_CALL(payments_autofill_client(), ShowTouchToFillCreditCard)
         .WillByDefault(testing::Return(true));
     MockFastCheckoutClient* fast_checkout_client =
         static_cast<MockFastCheckoutClient*>(
@@ -99,6 +99,11 @@ class TouchToFillForPaymentMethodsTest
   TouchToFillDelegateAndroidImpl& touch_to_fill_delegate() {
     return *static_cast<TouchToFillDelegateAndroidImpl*>(
         autofill_manager().touch_to_fill_delegate());
+  }
+
+  MockPaymentsAutofillClient& payments_autofill_client() {
+    return *static_cast<MockPaymentsAutofillClient*>(
+        autofill_client_->GetPaymentsAutofillClient());
   }
 };
 

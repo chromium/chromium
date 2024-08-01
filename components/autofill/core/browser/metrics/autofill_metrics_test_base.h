@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,10 +37,11 @@ constexpr char kTestDuplicateLocalCardId[] =
 constexpr char kTestDuplicateMaskedCardId[] =
     "10000000-0000-0000-0000-000000000005";
 
-class MockAutofillClient : public TestAutofillClient {
+class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
  public:
-  MockAutofillClient();
-  ~MockAutofillClient() override;
+  explicit MockPaymentsAutofillClient(AutofillClient* client);
+  ~MockPaymentsAutofillClient() override;
+
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               ((base::WeakPtr<TouchToFillDelegate>),
@@ -248,11 +250,16 @@ class AutofillMetricsBaseTest {
     return *autofill_client_->GetTestUkmRecorder();
   }
 
+  MockPaymentsAutofillClient& payments_autofill_client() {
+    return static_cast<MockPaymentsAutofillClient&>(
+        *autofill_client_->GetPaymentsAutofillClient());
+  }
+
   const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<MockAutofillClient> autofill_client_;
+  std::unique_ptr<TestAutofillClient> autofill_client_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
 

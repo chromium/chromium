@@ -9,10 +9,10 @@ include_rules = [
   "+ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h",
   "+ios/chrome/browser/ui/whats_new/whats_new_util.h",
   "+ios/chrome/browser/ui/presenters",
-  "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/ui/sharing",
   "+ios/chrome/browser/ui/tab_switcher/tab_utils.h",
-  "+ios/chrome/browser/ui/policy/user_policy_util.h",
+  "+ios/chrome/browser/policy/ui_bundled/user_policy_util.h",
   "+ios/chrome/browser/ui/settings/clear_browsing_data/features.h",
 ]
 

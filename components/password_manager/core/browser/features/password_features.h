@@ -147,10 +147,6 @@ BASE_DECLARE_FEATURE(kClearLoginDatabaseForUPMUsers);
 // dictates the min value of base::android::BuildInfo::gms_version_code() for
 // the flag take effect.
 inline constexpr char kLocalUpmMinGmsVersionParam[] = "min_gms_version";
-// Default value of kLocalUpmMinGmsVersionParam.
-inline constexpr int kDefaultLocalUpmMinGmsVersion = 240212000;
-// The min GMS version, which supports UPM for syncing users.
-inline constexpr int kAccountUpmMinGmsVersion = 223012000;
 
 // Same as above, but for automotive.
 //
@@ -158,7 +154,6 @@ inline constexpr int kAccountUpmMinGmsVersion = 223012000;
 // feature guard remaining on automotive!
 inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
     "min_gms_version_for_auto";
-inline constexpr int kDefaultLocalUpmMinGmsVersionForAuto = 241512000;
 // Helper function returning the status of
 // `UnifiedPasswordManagerSyncOnlyInGMSCore`.
 bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();

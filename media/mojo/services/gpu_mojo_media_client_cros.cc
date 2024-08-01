@@ -9,11 +9,11 @@
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/ipc/service/vda_video_decoder.h"
 
 namespace media {
 
@@ -45,13 +45,11 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
       break;
   }
 
-  if (gpu_preferences.enable_chromeos_direct_video_decoder) {
 #if BUILDFLAG(USE_VAAPI)
-    return VideoDecoderType::kVaapi;
+  return VideoDecoderType::kVaapi;
 #elif BUILDFLAG(USE_V4L2_CODEC)
-    return VideoDecoderType::kV4L2;
+  return VideoDecoderType::kV4L2;
 #endif
-  }
   NOTREACHED_NORETURN();
 }
 
@@ -126,8 +124,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
   }
 
   std::optional<SupportedVideoDecoderConfigs>
-  GetPlatformSupportedVideoDecoderConfigs(
-      GetVdaConfigsCB get_vda_configs) final {
+  GetPlatformSupportedVideoDecoderConfigs() final {
     VideoDecoderType decoder_implementation =
         GetActualPlatformDecoderImplementation(gpu_preferences_);
     switch (decoder_implementation) {

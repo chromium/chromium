@@ -1008,12 +1008,18 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
       delete;
 
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AccessibilityManagerTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityFaceGaze);
+  }
+
   void SetUpOnMainThread() override {
+    AccessibilityManagerTest::SetUpOnMainThread();
     UninstallSodaForTesting();
     EnsureSodaObservation();
     ClearMessageCenter();
     AssertMessageCenterEmpty();
-    AccessibilityManagerTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
@@ -1039,7 +1045,7 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
     // We require `install_pumpkin_callback_` to be set before `OnPumpkinError`
     // can be called.
     manager->install_pumpkin_callback_ = base::DoNothing();
-    AccessibilityManager::Get()->OnPumpkinError("Error");
+    manager->OnPumpkinError("Error");
   }
 
   void OnPumpkinInstalled(bool success, const std::string& root_path) {
@@ -1049,6 +1055,20 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
   void OnPumpkinDataCreated(
       std::optional<extensions::api::accessibility_private::PumpkinData> data) {
     AccessibilityManager::Get()->OnPumpkinDataCreated(std::move(data));
+  }
+
+  void InstallFaceGazeAssetsAndWait() {
+    base::RunLoop loop;
+    AccessibilityManager::Get()->InstallFaceGazeAssets(base::DoNothing());
+    loop.RunUntilIdle();
+  }
+
+  void OnFaceGazeAssetsFailed() {
+    AccessibilityManager* manager = AccessibilityManager::Get();
+    // We require `install_facegaze_assets_callback_` to be set before
+    // `OnFaceGazeAssetsFailed` can be called.
+    manager->install_facegaze_assets_callback_ = base::DoNothing();
+    manager->OnFaceGazeAssetsFailed("Error");
   }
 
   speech::SodaInstaller* soda_installer() {
@@ -1548,6 +1568,35 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   SetDictationEnabled(true);
   InstallPumpkinAndWait();
   OnPumpkinDataCreated(std::nullopt);
+}
+
+// Ensures that the correct notification is shown when the facegaze-assets DLC
+// is successfully downloaded.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsSucceeded) {
+  AccessibilityManager::Get()->EnableFaceGaze(true);
+  InstallFaceGazeAssetsAndWait();
+
+  message_center::NotificationList::Notifications notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  ASSERT_EQ(u"Face control files downloaded",
+            (*notifications.begin())->title());
+  ASSERT_EQ(u"Face control will be available to other users on the device",
+            (*notifications.begin())->message());
+}
+
+// Ensures that the correct notification is shown when the facegaze-assets DLC
+// fails to download.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsFailed) {
+  AccessibilityManager::Get()->EnableFaceGaze(true);
+  OnFaceGazeAssetsFailed();
+
+  message_center::NotificationList::Notifications notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  ASSERT_EQ(u"Couldn't download face control files",
+            (*notifications.begin())->title());
+  ASSERT_EQ(u"Try again later", (*notifications.begin())->message());
 }
 
 enum DictationDialogTestVariant {

@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
@@ -268,7 +268,8 @@ public class LegacySyncPromoView extends FrameLayout
                 new ButtonPresent(
                         R.string.enable_sync_button,
                         view -> {
-                            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                            SettingsLauncher settingsLauncher =
+                                    SettingsLauncherFactory.createSettingsLauncher();
                             settingsLauncher.launchSettingsActivity(
                                     getContext(),
                                     ManageSyncSettings.class,

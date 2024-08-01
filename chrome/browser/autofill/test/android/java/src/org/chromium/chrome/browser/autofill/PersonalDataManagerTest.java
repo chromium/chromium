@@ -1294,22 +1294,9 @@ public class PersonalDataManagerTest {
 
         Iban storedLocalIban = mHelper.getIban(ibanGuid);
         String dot = "\u2022";
-        // \u2022 is Bullet and \u2006 is SIX-PER-EM SPACE (small space between bullets). The
-        // expected string is 'CH•• •••• •••• •••• •800 9'.
-        Assert.assertEquals(
-                "CH"
-                        + dot.repeat(2)
-                        + "\u2006"
-                        + dot.repeat(4)
-                        + "\u2006"
-                        + dot.repeat(4)
-                        + "\u2006"
-                        + dot.repeat(4)
-                        + "\u2006"
-                        + dot
-                        + "800"
-                        + "\u20069",
-                storedLocalIban.getLabel());
+        // \u2022 is Bullet and \u2006 is SIX-PER-EM SPACE (small space between
+        // bullets). The expected string is 'CH •••8009'.
+        Assert.assertEquals("CH" + "\u2006" + dot.repeat(2) + "8009", storedLocalIban.getLabel());
     }
 
     @Test

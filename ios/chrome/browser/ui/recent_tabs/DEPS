@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/ui/authentication",
-  "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ui/settings/sync/utils",
   "+ios/chrome/browser/ui/sharing",

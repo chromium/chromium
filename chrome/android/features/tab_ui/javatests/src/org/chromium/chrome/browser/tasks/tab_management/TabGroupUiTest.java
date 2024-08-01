@@ -441,7 +441,8 @@ public class TabGroupUiTest {
                 coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    coordinator.simulateEdgeToEdgeChangeForTesting(100);
+                    coordinator.simulateEdgeToEdgeChangeForTesting(
+                            100, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
                 });
 
         assertFalse(

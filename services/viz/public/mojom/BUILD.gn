@@ -21,6 +21,7 @@ mojom("mojom") {
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",
+    "compositing/frame_interval_inputs.mojom",
     "compositing/frame_sink_bundle.mojom",
     "compositing/frame_sink_bundle_id.mojom",
     "compositing/frame_sink_id.mojom",
@@ -389,6 +390,21 @@ mojom("mojom") {
       traits_headers = [
         "//services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h",
       ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.FrameIntervalInputs"
+          cpp = "::viz::FrameIntervalInputs"
+        },
+        {
+          mojom = "viz.mojom.ContentFrameIntervalInfo"
+          cpp = "::viz::ContentFrameIntervalInfo"
+        },
+      ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/frame_interval_inputs_mojom_traits.cc" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/frame_interval_inputs_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {

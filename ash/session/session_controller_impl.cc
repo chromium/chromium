@@ -258,6 +258,14 @@ std::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
                  : std::nullopt;
 }
 
+void SessionControllerImpl::NotifyFirstSessionReady() {
+  CHECK(IsActiveUserSessionStarted());
+
+  for (auto& observer : observers_) {
+    observer.OnFirstSessionReady();
+  }
+}
+
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
   if (!IsActiveUserSessionStarted())
     return false;

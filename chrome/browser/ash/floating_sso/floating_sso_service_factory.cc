@@ -16,6 +16,8 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace ash::floating_sso {
 
@@ -54,13 +56,16 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
   PrefService* prefs = profile->GetPrefs();
   syncer::OnceModelTypeStoreFactory create_store_callback =
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  network::mojom::CookieManager* cookie_manager =
+      profile->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess();
   return std::make_unique<FloatingSsoService>(
       prefs,
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::COOKIES,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),
-      std::move(create_store_callback));
+      cookie_manager, std::move(create_store_callback));
 }
 
 bool FloatingSsoServiceFactory::ServiceIsCreatedWithBrowserContext() const {

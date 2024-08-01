@@ -44,6 +44,8 @@ class HistoryClustersSidePanelUIConfig
 
   // DefaultTopChromeWebUIConfig::
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool IsPreloadable() override;
+  std::optional<int> GetCommandIdForTesting() override;
 };
 
 class HistoryClustersSidePanelUI : public TopChromeWebUIController,

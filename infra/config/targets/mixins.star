@@ -632,15 +632,15 @@ targets.mixin(
 targets.mixin(
     name = "gpu_integration_test_common_args",
     args = [
-        "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+        targets.magic_args.GPU_PARALLEL_JOBS,
     ],
     android_args = [
-        "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+        targets.magic_args.GPU_TELEMETRY_NO_ROOT_FOR_UNROOTED_DEVICES,
         # See crbug.com/333414298 for context on why this is necessary.
         "--initial-find-device-attempts=3",
     ],
     chromeos_args = [
-        "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+        targets.magic_args.CROS_TELEMETRY_REMOTE,
     ],
     # TODO(crbug.com/40862371): having --xvfb and --no-xvfb is confusing.
     lacros_args = [
@@ -1155,6 +1155,26 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "mac_15_arm64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "os": "Mac-15",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "mac_15_x64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "os": "Mac-15",
+        },
+    ),
+)
+
+targets.mixin(
     name = "mac_arm64_apple_m1_gpu_experimental",
     swarming = targets.swarming(
         dimensions = {
@@ -1261,7 +1281,7 @@ targets.mixin(
         dimensions = {
             "cpu": "x86-64",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.5",
+            "os": "Mac-14.6-23G5075b",
             "display_attached": "1",
         },
     ),
@@ -1852,6 +1872,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win10_nvidia_rtx_4070_super_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "10de:2783",
+            "os": "Windows-10",
+            "pool": "chromium.tests.gpu.experimental",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win11_qualcomm_adreno_690_stable",
     swarming = targets.swarming(
         dimensions = {
@@ -1940,15 +1972,31 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "xcode_16_beta",
+    name = "xcode_16_main",
     args = [
         "--xcode-build-version",
-        "16a5202i",
+        "16a5211f",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16a5202i",
+                name = "xcode_ios_16a5211f",
+                path = "Xcode.app",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
+    name = "xcode_16_beta",
+    args = [
+        "--xcode-build-version",
+        "16a5211f",
+    ],
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "xcode_ios_16a5211f",
                 path = "Xcode.app",
             ),
         ],

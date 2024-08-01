@@ -4,6 +4,7 @@
 
 import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/features.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 # Xcode 13.1 or higher is required to build Chromium on iOS. This file should
@@ -23,7 +24,9 @@ declare_args() {
   ios_enable_open_extension = true
 
   # Enable credential provider extension.
-  ios_enable_credential_provider_extension = true
+  # TODO(crbug.com/356196908): The iOS for Blink should be built without
+  # //components/keyed_service/core dependency.
+  ios_enable_credential_provider_extension = !use_blink
 
   # Enable intents extension.
   ios_enable_intents_extension = true
@@ -59,7 +62,8 @@ declare_args() {
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
-  # Apple developer documentation (https://goo.gl/yv1xEF).
+  # Apple developer documentation
+  # (https://developer.apple.com/documentation/security/complying_with_encryption_export_regulations).
   ios_encryption_export_compliance_code = ""
 
   # List of plist templates to merge when generating chrome Info.plist.

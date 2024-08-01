@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1044891598689252897">साइटें सामान्य रूप से काम करेंगी</translation>
 <translation id="1073417869336441572">हमें बताएं कि आपने तीसरे पक्ष की कुकी को अनुमति क्यों दी है. इससे हमें Chrome को बेहतर बनाने में मदद मिलेगी. <ph name="BEGIN_LINK" />सुझाव/राय दें या शिकायत करें<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">कीमत में गिरावट वाला कार्ड छिपाएं</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1192844206376121885">इससे वह डेटा और सभी कुकी मिट जाएंगी जिन्हें <ph name="ORIGIN" /> ने सेव किया है.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">सहायता और फ़ीडबैक</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
-<translation id="2550801787432930915">कीमत में गिरावट वाला कार्ड</translation>
 <translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="257931822824936280">बड़ा किया गया - छोटा करने के लिए क्‍लिक करें.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3859306556332390985">आगे जाएं</translation>
 <translation id="3895926599014793903">ज़बरदस्ती ज़ूम करना चालू करें</translation>
+<translation id="3905475044299942653">साइटों को ज़्यादा सूचनाएं भेजने से रोकें</translation>
 <translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">शायद कुछ सुविधाएं काम न करें. इससे जुड़ी साइटें अब भी तीसरे पक्ष की कुकी का इस्तेमाल कर सकती हैं.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">सुरक्षित कॉन्टेंट</translation>
 <translation id="662080504995468778">इसपर रहें</translation>
 <translation id="6653342741369270081">फ़ुल स्क्रीन से बाहर निकलने के लिए 'वापस जाएं' बटन दबाएं.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{'इस टैब का इस्तेमाल करके जारी रखें' मॉड्यूल को छिपाएं}one{'इस टैब का इस्तेमाल करके जारी रखें' मॉड्यूल को छिपाएं}other{'इन टैब का इस्तेमाल करके जारी रखें' मॉड्यूल को छिपाएं}}</translation>
 <translation id="6689172468748959065">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="6697925417670533197">डाउनलोड हो रहे हैं</translation>
 <translation id="6722828510648505498">पहचान करने वाली सेवा से जुड़े, साइन इन करने के अनुरोध ब्लॉक करें.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> के लिए कोई विकल्प चुनें</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6818926723028410516">आइटम चुनें</translation>
+<translation id="6840760312327750441">टैब को ग्रुप करने के लिए, टैब को दबाकर रखें. इसके बाद, इसे दूसरे टैब पर खींचें और छोड़ें.</translation>
 <translation id="6864395892908308021">इस डिवाइस के साथ NFC काम नहीं कर सकता</translation>
 <translation id="6912998170423641340">साइटों को क्लिपबोर्ड से टेक्स्ट और इमेज पढ़ने से रोकें</translation>
 <translation id="6945221475159498467">चुनें</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">यह पेज सुरक्षित नहीं है</translation>
 <translation id="930525582205581608">क्या आप इस साइट की सेव की गई जानकारी मिटाना चाहते हैं?</translation>
 <translation id="947156494302904893">किसी साइट को विज़िट करने पर, वह इस बात की पुष्टि कर सकती है कि आप बॉट के बजाय असली उपयोगकर्ता हैं</translation>
+<translation id="959682366969460160">व्‍यवस्‍थित हों</translation>
 <translation id="967624055006145463">डेटा सेव किया गया</translation>
 </translationbundle>

@@ -6,6 +6,7 @@
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/branches.star", "branches")
+load("//lib/html.star", "linkify")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -76,10 +77,9 @@ try_.builder(
 # (tests content shell) to avoid coupling their build configurations.
 try_.builder(
     name = "linux-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
+    description_html = "Runs {} against Chrome.".format(
+        linkify("https://web-platform-tests.org", "web platform tests"),
+    ),
     mirrors = ["ci/linux-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
@@ -419,27 +419,21 @@ blink_mac_builder(
 )
 
 blink_mac_builder(
-    name = "mac13.arm64-skia-alt-blink-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    builder_config_settings = builder_config.try_settings(
-        retry_failed_shards = True,
-    ),
+    name = "mac13-skia-alt-arm64-blink-rel",
+    branch_selector = None,
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac13-skia-alt-arm64-rel-tests",
+    ],
     gn_args = gn_args.config(
+        # TODO(crbug.com/40937352): Currently we override the gn args instead
+        # of using mac-arm64-rel's gn args. Ideally Graphite should be tested
+        # with dcheck on. However, mac-arm64-rel's gn args has dcheck off so
+        # we override gn args here to enable dcheck via "release_try_builder".
+        # In future, we should add a dedicated CI builder with dcheck enabled
+        # and mirror it here.
         configs = [
-            "release_builder",
+            "release_try_builder",
             "remoteexec",
             "chrome_with_codecs",
             "mac",
@@ -449,6 +443,8 @@ blink_mac_builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
+    contact_team_email = "chrome-skia-graphite@google.com",
+    main_list_view = "try",
 )
 
 blink_mac_builder(
@@ -491,6 +487,80 @@ blink_mac_builder(
     name = "mac14.arm64-blink-rel",
     description_html = """\
     Runs web tests against content-shell on Mac 14 (ARM).\
+    """,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "chrome_with_codecs",
+            "mac",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
+
+blink_mac_builder(
+    name = "mac15-blink-rel",
+    description_html = """\
+    Runs web tests against content-shell on Mac 15 (Intel) as a
+    <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs">standalone trybot to generate new web test expectations</a>.\
+    """,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "chrome_with_codecs",
+            "minimal_symbols",
+            "mac",
+            "x64",
+        ],
+    ),
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
+
+blink_mac_builder(
+    name = "mac15.arm64-blink-rel",
+    description_html = """\
+    Runs web tests against content-shell on Mac 15 (Intel) as a
+    <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs">standalone trybot to generate new web test expectations</a>.\
     """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

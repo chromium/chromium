@@ -904,6 +904,14 @@ const char kDisallowLacros[] = "disallow-lacros";
 // used, event if --disallow-lacros is set.
 const char kDisableDisallowLacros[] = "disable-disallow-lacros";
 
+// This flag is a replacement for
+// `features::kLacrosOnly` during the in-between phase where users should not be
+// able to enable Lacros but developers should for debugging. Just like
+// `features::kLacrosOnly`, passing the flag alone does not guarantee that
+// Lacros is enabled and other conditions like whether Lacros is allowed to be
+// enabled i.e. `standalone_browser::BrowserSupport::IsAllowed()` still apply.
+const char kEnableLacrosForTesting[] = "enable-lacros-for-testing";
+
 // Supply secret key for the mahi feature.
 const char kMahiFeatureKey[] = "mahi-feature-key";
 

@@ -32,180 +32,59 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     ext_nodot.erase(ext_nodot.begin());
   }
 
-  // TODO(crbug.com/40189213): Remove iOS availability check when cronet
-  // deployment target is bumped to 14.
-  if (@available(macOS 11, iOS 14, *)) {
-    UTType* uttype =
-        [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext_nodot)];
-    // Dynamic UTTypes are made by the system in the event that there's a
-    // non-identifiable mime type. For now, we should treat dynamic UTTypes as a
-    // nonstandard format.
-    if (uttype.dynamic || uttype.preferredMIMEType == nil) {
-      return false;
-    }
-    *result = base::SysNSStringToUTF8(uttype.preferredMIMEType);
-    return true;
+  UTType* uttype =
+      [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext_nodot)];
+  // Dynamic UTTypes are made by the system in the event that there's a
+  // non-identifiable mime type. For now, we should treat dynamic UTTypes as a
+  // nonstandard format.
+  if (uttype.dynamic || uttype.preferredMIMEType == nil) {
+    return false;
   }
-#if (BUILDFLAG(IS_MAC) &&                                    \
-     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
-    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
-  else {
-    base::apple::ScopedCFTypeRef<CFStringRef> ext_ref(
-        base::SysUTF8ToCFStringRef(ext_nodot));
-    if (!ext_ref) {
-      return false;
-    }
-    base::apple::ScopedCFTypeRef<CFStringRef> uti(
-        UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
-                                              ext_ref.get(),
-                                              /*inConformingToUTI=*/nullptr));
-    if (!uti) {
-      return false;
-    }
-    base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
-        UTTypeCopyPreferredTagWithClass(uti.get(), kUTTagClassMIMEType));
-    if (!mime_ref) {
-      return false;
-    }
-
-    *result = base::SysCFStringRefToUTF8(mime_ref.get());
-    return true;
-  }
-#else
-  NOTREACHED_IN_MIGRATION();
-  return false;
-#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
-        // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
-        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
+  *result = base::SysNSStringToUTF8(uttype.preferredMIMEType);
+  return true;
 }
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     const std::string& mime_type,
     base::FilePath::StringType* ext) const {
-  // TODO(crbug.com/40189213): Remove iOS availability check when cronet
-  // deployment target is bumped to 14.
-  if (@available(macOS 11, iOS 14, *)) {
-    UTType* uttype =
-        [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
-    if (uttype.dynamic || uttype.preferredFilenameExtension == nil) {
-      return false;
-    }
-    *ext = base::SysNSStringToUTF8(uttype.preferredFilenameExtension);
-    return true;
+  UTType* uttype = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
+  if (uttype.dynamic || uttype.preferredFilenameExtension == nil) {
+    return false;
   }
-#if (BUILDFLAG(IS_MAC) &&                                    \
-     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
-    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
-  else {
-    base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
-        base::SysUTF8ToCFStringRef(mime_type));
-    if (!mime_ref) {
-      return false;
-    }
-    base::apple::ScopedCFTypeRef<CFStringRef> uti(
-        UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
-                                              mime_ref.get(),
-                                              /*inConformingToUTI=*/nullptr));
-    if (!uti) {
-      return false;
-    }
-    base::apple::ScopedCFTypeRef<CFStringRef> ext_ref(
-        UTTypeCopyPreferredTagWithClass(uti.get(),
-                                        kUTTagClassFilenameExtension));
-    if (!ext_ref) {
-      return false;
-    }
-
-    *ext = base::SysCFStringRefToUTF8(ext_ref.get());
-    return true;
-  }
-
-#else
-  NOTREACHED_IN_MIGRATION();
-  return false;
-#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
-        // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
-        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
+  *ext = base::SysNSStringToUTF8(uttype.preferredFilenameExtension);
+  return true;
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
     const std::string& mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
-  // TODO(crbug.com/40189213): Remove iOS availability check when cronet
-  // deployment target is bumped to 14.
-  if (@available(macOS 11, iOS 14, *)) {
-    NSArray<UTType*>* types =
-        [UTType typesWithTag:base::SysUTF8ToNSString(mime_type)
-                    tagClass:UTTagClassMIMEType
-            conformingToType:nil];
-    bool extensions_found = false;
-    if (types) {
-      NSInteger numberOfTypes = (NSInteger)types.count;
-      for (NSInteger i = 0; i < numberOfTypes; ++i) {
-        UTType* type = types[i];
-        if (!type || type.preferredFilenameExtension == nil) {
-          continue;
-        }
-        extensions_found = true;
-        NSArray<NSString*>* extensions_list =
-            type.tags[UTTagClassFilenameExtension];
-        for (NSString* extension in extensions_list) {
-          extensions->insert(base::SysNSStringToUTF8(extension));
-        }
+  NSArray<UTType*>* types =
+      [UTType typesWithTag:base::SysUTF8ToNSString(mime_type)
+                  tagClass:UTTagClassMIMEType
+          conformingToType:nil];
+  bool extensions_found = false;
+  if (types) {
+    for (UTType* type in types) {
+      if (!type || type.preferredFilenameExtension == nil) {
+        continue;
       }
-    }
-
-    if (extensions_found) {
-      return;
-    }
-
-    base::FilePath::StringType ext;
-    if (GetPlatformPreferredExtensionForMimeType(mime_type, &ext)) {
-      extensions->insert(ext);
+      extensions_found = true;
+      NSArray<NSString*>* extensions_list =
+          type.tags[UTTagClassFilenameExtension];
+      for (NSString* extension in extensions_list) {
+        extensions->insert(base::SysNSStringToUTF8(extension));
+      }
     }
   }
-#if (BUILDFLAG(IS_MAC) &&                                    \
-     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
-    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
-  else {
-    base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
-        base::SysUTF8ToCFStringRef(mime_type));
-    if (mime_ref) {
-      bool extensions_found = false;
-      base::apple::ScopedCFTypeRef<CFArrayRef> types(
-          UTTypeCreateAllIdentifiersForTag(kUTTagClassMIMEType, mime_ref.get(),
-                                           nullptr));
-      if (types) {
-        for (CFIndex i = 0; i < CFArrayGetCount(types.get()); i++) {
-          base::apple::ScopedCFTypeRef<CFArrayRef> extensions_list(
-              UTTypeCopyAllTagsWithClass(
-                  base::apple::CFCast<CFStringRef>(
-                      CFArrayGetValueAtIndex(types.get(), i)),
-                  kUTTagClassFilenameExtension));
-          if (!extensions_list) {
-            continue;
-          }
-          extensions_found = true;
-          for (NSString* extension in base::apple::CFToNSPtrCast(
-                   extensions_list.get())) {
-            extensions->insert(base::SysNSStringToUTF8(extension));
-          }
-        }
-      }
-      if (extensions_found) {
-        return;
-      }
-    }
 
-    // Huh? Give up.
-    base::FilePath::StringType ext;
-    if (GetPlatformPreferredExtensionForMimeType(mime_type, &ext)) {
-      extensions->insert(ext);
-    }
+  if (extensions_found) {
+    return;
   }
-#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
-        // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
-        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
+
+  base::FilePath::StringType ext;
+  if (GetPlatformPreferredExtensionForMimeType(mime_type, &ext)) {
+    extensions->insert(ext);
+  }
 }
 
 }  // namespace net

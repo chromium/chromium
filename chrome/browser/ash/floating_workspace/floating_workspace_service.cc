@@ -13,6 +13,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"

@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import './description_citation.js';
 import './product_selector.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
 import {assert} from '//resources/js/assert.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
@@ -18,7 +21,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {TableColumn} from './app.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
+import type {ProductSpecificationsDescriptionText} from './shopping_service.mojom-webui.js';
 import {getTemplate} from './table.html.js';
+import {WindowProxy} from './window_proxy.js';
 
 export interface TableElement {
   $: {
@@ -135,6 +140,10 @@ export class TableElement extends PolymerElement {
 
   private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn>&
                                 {model: {columnIndex: number}}) {
+    if (!WindowProxy.getInstance().onLine) {
+      this.dispatchEvent(new Event('unavailable-action-attempted'));
+      return;
+    }
     this.shoppingApi_.switchToOrOpenTab(
         {url: this.columns[e.model.columnIndex].selectedItem.url});
   }
@@ -168,6 +177,17 @@ export class TableElement extends PolymerElement {
         this.showSummary_(title, rowIndex);
   }
 
+  private computeCitationIndex_(
+      summaries: ProductSpecificationsDescriptionText[], summaryIndex: number,
+      urlIndex: number): number {
+    // Citations should start from 1.
+    let citationIndex = 1;
+    for (let i = 0; i < summaryIndex; i++) {
+      citationIndex += summaries[i].urls.length;
+    }
+    return citationIndex + urlIndex;
+  }
+
   private showDescription_(title: string, rowIndex: number): boolean {
     const rowDetails = this.columns.map(
         column => column.productDetails && column.productDetails[rowIndex]);
@@ -184,7 +204,8 @@ export class TableElement extends PolymerElement {
 
     return rowDetails.some(detail => {
       return detail && detail.title === title && detail.summary &&
-          detail.summary.length > 0 && detail.summary !== 'N/A';
+          detail.summary.length > 0 &&
+          detail.summary.some((summaryObj) => summaryObj.text !== 'N/A');
     });
   }
 

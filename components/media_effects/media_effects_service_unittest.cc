@@ -4,8 +4,18 @@
 
 #include "components/media_effects/media_effects_service.h"
 
+#include <memory>
+
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/files/scoped_temp_file.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "components/media_effects/media_effects_model_provider.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,18 +48,64 @@ void SetFramingSync(
       result_future.GetCallback());
   EXPECT_EQ(media::mojom::SetConfigurationResult::kOk, result_future.Get());
 }
+
+class FakeModelProvider : public MediaEffectsModelProvider {
+ public:
+  ~FakeModelProvider() override = default;
+
+  // MediaEffectsModelProvider:
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+    if (model_path_) {
+      observer->OnBackgroundSegmentationModelUpdated(*model_path_);
+    }
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  // Sets the model path and notifies observers about it:
+  void SetModelPath(base::FilePath model_path) {
+    model_path_ = std::move(model_path);
+    for (auto& observer : observers_) {
+      observer.OnBackgroundSegmentationModelUpdated(*model_path_);
+    }
+  }
+
+  base::WeakPtr<FakeModelProvider> weak_ptr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::ObserverList<Observer> observers_;
+  std::optional<base::FilePath> model_path_;
+
+  // Must be last:
+  base::WeakPtrFactory<FakeModelProvider> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 class MediaEffectsServiceTest : public testing::Test {
+ public:
+  MediaEffectsServiceTest() {
+    auto model_provider = std::make_unique<FakeModelProvider>();
+    model_provider_ = model_provider->weak_ptr();
+
+    service_.emplace(browser_context_.prefs(), std::move(model_provider));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   user_prefs::TestBrowserContextWithPrefs browser_context_;
-  MediaEffectsService service_{browser_context_.prefs()};
+  std::optional<MediaEffectsService> service_;
+  base::WeakPtr<FakeModelProvider> model_provider_;
 };
 
 TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       kDeviceId, effects_manager.BindNewPipeAndPassReceiver());
 
   EXPECT_TRUE(GetConfigurationSync(effects_manager)->framing.is_null());
@@ -65,7 +121,7 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsManager) {
 TEST_F(MediaEffectsServiceTest,
        BindVideoEffectsManager_TwoRegistrantsWithSameIdConnectToSameManager) {
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -75,7 +131,7 @@ TEST_F(MediaEffectsServiceTest,
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio},
@@ -86,7 +142,7 @@ TEST_F(
     MediaEffectsServiceTest,
     BindVideoEffectsManager_TwoRegistrantsWithDifferentIdConnectToDifferentManager) {
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       "test_device_1", effects_manager1.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -96,7 +152,7 @@ TEST_F(
             GetConfigurationSync(effects_manager1)->framing->padding_ratios);
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       "test_device_2", effects_manager2.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a separate instance of
@@ -114,17 +170,17 @@ TEST_F(
   auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager1;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       kDeviceId, effects_manager1.BindNewPipeAndPassReceiver());
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager2;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       kDeviceId, effects_manager2.BindNewPipeAndPassReceiver());
 
   auto effects_processor_future =
       fake_effects_service.GetEffectsProcessorCreationFuture();
 
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor;
-  service_.BindVideoEffectsProcessor(
+  service_->BindVideoEffectsProcessor(
       kDeviceId, effects_processor.BindNewPipeAndPassReceiver());
 
   const float kFramingPaddingRatio = 0.234;
@@ -153,7 +209,7 @@ TEST_F(
   base::RunLoop().RunUntilIdle();
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager3;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       kDeviceId, effects_manager3.BindNewPipeAndPassReceiver());
 
   // Expect `framing` to be unset because it is a new instance of
@@ -174,7 +230,7 @@ TEST_F(MediaEffectsServiceTest, BindVideoEffectsProcessor) {
       fake_effects_service.GetEffectsProcessorCreationFuture();
 
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor;
-  service_.BindVideoEffectsProcessor(
+  service_->BindVideoEffectsProcessor(
       kDeviceId, effects_processor.BindNewPipeAndPassReceiver());
 
   EXPECT_TRUE(effects_processor_future->Wait());
@@ -199,7 +255,7 @@ TEST_F(
   auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
 
   mojo::Remote<media::mojom::VideoEffectsManager> effects_manager;
-  service_.BindVideoEffectsManager(
+  service_->BindVideoEffectsManager(
       "test_device_1", effects_manager.BindNewPipeAndPassReceiver());
 
   constexpr float kFramingPaddingRatio1 = 0.234;
@@ -212,7 +268,7 @@ TEST_F(
       fake_effects_service.GetEffectsProcessorCreationFuture();
 
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor1;
-  service_.BindVideoEffectsProcessor(
+  service_->BindVideoEffectsProcessor(
       "test_device_2", effects_processor1.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(effects_processor_future1->Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 1u);
@@ -232,7 +288,7 @@ TEST_F(
       fake_effects_service.GetEffectsProcessorCreationFuture();
 
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor2;
-  service_.BindVideoEffectsProcessor(
+  service_->BindVideoEffectsProcessor(
       "test_device_3", effects_processor2.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(effects_processor_future2->Wait());
   ASSERT_EQ(fake_effects_service.GetProcessors().size(), 2u);
@@ -256,4 +312,71 @@ TEST_F(
   EXPECT_NE(padding2, padding3);
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio2}, padding2);
   EXPECT_EQ(gfx::InsetsF{kFramingPaddingRatio3}, padding3);
+}
+
+TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
+  constexpr char kFirstModelBytes[] = "abcdefgh";
+  constexpr char kSecondModelBytes[] = "ijklmnop";
+
+  mojo::Remote<video_effects::mojom::VideoEffectsService> service;
+  video_effects::FakeVideoEffectsService fake_effects_service(
+      service.BindNewPipeAndPassReceiver());
+  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+
+  // Setting the model file path for the first time propagates the model file to
+  // Video Effects Service: Prepare model file:
+  base::ScopedTempFile temporary_model_file_path1;
+  ASSERT_TRUE(temporary_model_file_path1.Create());
+  ASSERT_TRUE(
+      base::WriteFile(temporary_model_file_path1.path(), kFirstModelBytes));
+
+  // Set it on Media Effects Service:
+  auto model_opened_future =
+      fake_effects_service.GetBackgroundSegmentationModelFuture();
+  model_provider_->SetModelPath(temporary_model_file_path1.path());
+
+  auto model_file = model_opened_future->Take();
+  EXPECT_TRUE(model_file.IsValid());
+
+  // Validate that the contents match the contents of the model file:
+  std::string contents(sizeof(kFirstModelBytes), '\0');
+  ASSERT_TRUE(
+      model_file.Read(0, base::as_writable_bytes(base::make_span(contents))));
+  EXPECT_STREQ(contents.data(), kFirstModelBytes);
+
+  // Setting the model file path for the second time propagates the model file
+  // to Video Effects Service: Prepare model file:
+  base::ScopedTempFile temporary_model_file_path2;
+  ASSERT_TRUE(temporary_model_file_path2.Create());
+  ASSERT_TRUE(
+      base::WriteFile(temporary_model_file_path2.path(), kSecondModelBytes));
+
+  // Set it on Media Effects Service:
+  model_opened_future =
+      fake_effects_service.GetBackgroundSegmentationModelFuture();
+  model_provider_->SetModelPath(temporary_model_file_path2.path());
+
+  model_file = model_opened_future->Take();
+  EXPECT_TRUE(model_file.IsValid());
+
+  // Validate that the contents match the contents of the model file:
+  contents.resize(sizeof(kSecondModelBytes));
+  ASSERT_TRUE(
+      model_file.Read(0, base::as_writable_bytes(base::make_span(contents))));
+  EXPECT_STREQ(contents.data(), kSecondModelBytes);
+
+  // Setting the model file to a path that doesn't exist does not propagate the
+  // model to Video Effects Service: Set invalid path to the model:
+  base::ScopedTempDir temporary_directory;
+  ASSERT_TRUE(temporary_directory.CreateUniqueTempDir());
+
+  model_opened_future =
+      fake_effects_service.GetBackgroundSegmentationModelFuture();
+  model_provider_->SetModelPath(
+      temporary_directory.GetPath().AppendASCII("should_not_exist.tmp"));
+  // Since we want to make sure that the service did *not* receive the model
+  // file, make the run loop run until it's idle and then verify that the future
+  // is not ready.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(model_opened_future->IsReady());
 }

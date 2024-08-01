@@ -30,7 +30,7 @@ use cr-tab-box. Key differences include:
 
 * cr-tab-box contains slots for both tabs and corresponding panels. cr-tabs
   has only one slot for tabs, and is generally used in combination with
-  something like iron-pages.
+  something like cr-page-selector.
 * cr-tabs is kept up to date with current user-facing WebUI styles. cr-tab-box
   is intended for debug UIs and uses very simple styling.
 * cr-tabs depends on Polymer, while cr-tab-box does not.

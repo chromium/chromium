@@ -97,9 +97,7 @@ class HighlightBorder : public views::View {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(
-        chromeos::features::IsJellyEnabled()
-            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing)
-            : GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused));
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
@@ -158,10 +156,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     bool is_for_unresizable)
     : anchor_(anchor),
       close_callback_(std::move(close_callback)),
-      background_color_id_(
-          chromeos::features::IsJellyEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDialogContainer)
-              : ash::kColorAshDialogBackgroundColor) {
+      background_color_id_(cros_tokens::kCrosSysDialogContainer) {
   // Setup delegate.
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -184,49 +179,35 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(chromeos::features::IsJellyEnabled()
-                             ? gfx::Insets::TLBR(32, 32, 32, 28)
-                             : gfx::Insets::TLBR(20, 24, 24, 24))
+      .SetInteriorMargin(gfx::Insets::TLBR(32, 32, 32, 28))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred,
                                    /*adjust_height_for_width=*/true));
 
-  constexpr gfx::Size kLogoImageSize(152, 126);
   auto image =
-      chromeos::features::IsJellyEnabled()
-          ? ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-                IDR_ARC_COMPAT_MODE_SPLASH_SCREEN_IMAGE)
-          : ui::ImageModel::FromVectorIcon(kCompatModeSplashscreenIcon,
-                                           background_color_id_,
-                                           kLogoImageSize.width());
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_ARC_COMPAT_MODE_SPLASH_SCREEN_IMAGE);
   AddChildView(
       views::Builder<views::ImageView>()  // Logo
           .SetImage(image)
-          .SetProperty(
-              views::kMarginsKey,
-              gfx::Insets::TLBR(
-                  0, 0, chromeos::features::IsJellyEnabled() ? 16 : 0, 0))
+          .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 16, 0))
           .Build());
 
-  const raw_ptr<views::Label> title_label = AddChildView(
-      views::Builder<views::Label>()  // Header
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE))
-          .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
-          .SetAllowCharacterBreak(true)
-          .SetMultiLine(true)
-          .SetProperty(
-              views::kMarginsKey,
-              gfx::Insets::VH(chromeos::features::IsJellyEnabled() ? 16 : 8, 0))
-          .Build());
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosDisplay7, *title_label);
-    title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  }
+  const raw_ptr<views::Label> title_label =
+      AddChildView(views::Builder<views::Label>()  // Header
+                       .SetText(l10n_util::GetStringUTF16(
+                           IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE))
+                       .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+                       .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                       .SetAllowCharacterBreak(true)
+                       .SetMultiLine(true)
+                       .SetProperty(views::kMarginsKey, gfx::Insets::VH(16, 0))
+                       .Build());
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosDisplay7, *title_label);
+  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
   const raw_ptr<views::Label> body_label = AddChildView(
       views::Builder<views::Label>()  // Body
@@ -241,40 +222,22 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
           .SetHorizontalAlignment(gfx::ALIGN_CENTER)
           .SetMultiLine(true)
           .Build());
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
-                                               *body_label);
-    body_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-  }
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
+                                             *body_label);
+  body_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    AddChildView(
-        views::Builder<ash::PillButton>()  // Close button
-            .CopyAddressTo(&close_button_)
-            .SetCallback(base::BindRepeating(
-                &ArcSplashScreenDialogView::OnCloseButtonClicked,
-                base::Unretained(this)))
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
-            .SetPillButtonType(ash::PillButton::kPrimaryLargeWithoutIcon)
-            .SetIsDefault(true)
-            .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(32, 0, 0, 0))
-            .Build());
-  } else {
-    AddChildView(
-        views::Builder<views::MdTextButton>()  // Close button
-            .CopyAddressTo(&close_button_)
-            .SetCallback(base::BindRepeating(
-                &ArcSplashScreenDialogView::OnCloseButtonClicked,
-                base::Unretained(this)))
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
-            .SetCornerRadius(16)
-            .SetStyle(ui::ButtonStyle::kProminent)
-            .SetIsDefault(true)
-            .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(20, 0, 0, 0))
-            .Build());
-  }
+  AddChildView(
+      views::Builder<ash::PillButton>()  // Close button
+          .CopyAddressTo(&close_button_)
+          .SetCallback(base::BindRepeating(
+              &ArcSplashScreenDialogView::OnCloseButtonClicked,
+              base::Unretained(this)))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
+          .SetPillButtonType(ash::PillButton::kPrimaryLargeWithoutIcon)
+          .SetIsDefault(true)
+          .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(32, 0, 0, 0))
+          .Build());
 
   // Setup highlight border.
   highlight_border_ =
@@ -302,8 +265,7 @@ gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const auto* widget = GetWidget();
   if (widget && widget->parent()) {
-    const int kHorizontalMarginDp =
-        chromeos::features::IsJellyEnabled() ? 36 : 32;
+    const int kHorizontalMarginDp = 36;
     width = std::min(widget->parent()->GetWindowBoundsInScreen().width() -
                          kHorizontalMarginDp * 2,
                      width);
@@ -314,15 +276,13 @@ gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize(
 
 gfx::Rect ArcSplashScreenDialogView::GetBubbleBounds() {
   gfx::Rect bubble_bounds = BubbleDialogDelegate::GetBubbleBounds();
-  if (chromeos::features::IsJellyEnabled()) {
-    constexpr int kMarginTopDp = 8;
-    bubble_bounds.Offset(0, kMarginTopDp);
-  }
+  constexpr int kMarginTopDp = 8;
+  bubble_bounds.Offset(0, kMarginTopDp);
   return bubble_bounds;
 }
 
 void ArcSplashScreenDialogView::AddedToWidget() {
-  const int kCornerRadius = chromeos::features::IsJellyEnabled() ? 20 : 12;
+  const int kCornerRadius = 20;
   auto* const frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(kCornerRadius);

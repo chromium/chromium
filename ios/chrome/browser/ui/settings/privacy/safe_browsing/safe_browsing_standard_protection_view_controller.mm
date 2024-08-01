@@ -8,11 +8,11 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
@@ -222,15 +222,6 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
 
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
-    [model addSectionWithIdentifier:SectionIdentifierHeaderShield];
-    [model addSectionWithIdentifier:SectionIdentifierHeaderMetric];
-    [model setHeader:self.shieldIconHeader
-        forSectionWithIdentifier:SectionIdentifierHeaderShield];
-    [model setHeader:self.metricIconHeader
-        forSectionWithIdentifier:SectionIdentifierHeaderMetric];
-  }
   [model
       addSectionWithIdentifier:SectionIdentifierSafeBrowsingStandardProtection];
   for (TableViewItem* item in self.safeBrowsingStandardProtectionItems) {

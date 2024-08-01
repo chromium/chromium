@@ -92,7 +92,14 @@
       if (_appState.initStage > InitStageNormalUI &&
           _appState.firstSceneHasInitializedUI &&
           _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
-        safetyCheckManager->StartSafetyCheck();
+        // When the Safety Check Notifications feature is enabled, the Magic
+        // Stack should never initiate a Safety Check run.
+        //
+        // TODO(crbug.com/354727175): Remove `StartSafetyCheck()` from the Magic
+        // Stack once Safety Check Notifications fully launches.
+        if (!IsSafetyCheckNotificationsEnabled()) {
+          safetyCheckManager->StartSafetyCheck();
+        }
       }
     }
   }
@@ -198,7 +205,14 @@
   if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
       nextInitStage == InitStageFinal && appState.firstSceneHasInitializedUI &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
-    _safetyCheckManager->StartSafetyCheck();
+    // When the Safety Check Notifications feature is enabled, the Magic
+    // Stack should never initiate a Safety Check run.
+    //
+    // TODO(crbug.com/354727175): Remove `StartSafetyCheck()` from the Magic
+    // Stack once Safety Check Notifications fully launches.
+    if (!IsSafetyCheckNotificationsEnabled()) {
+      _safetyCheckManager->StartSafetyCheck();
+    }
   }
 }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/grit/generated_resources.h"
@@ -69,30 +70,25 @@ base::Uuid STGEverythingMenu::GetTabGroupIdFromCommandId(int command_id) {
   return sorted_tab_groups_.at(idx_in_sorted_tab_group);
 }
 
-const SavedTabGroupModel*
-STGEverythingMenu::GetSavedTabGroupModelFromBrowser() {
-  CHECK(browser_);
-  auto* profile = browser_->profile();
-  CHECK(!profile->IsOffTheRecord());
-  auto* keyed_service = SavedTabGroupServiceFactory::GetForProfile(profile);
-  return keyed_service->model();
-}
-
 std::vector<base::Uuid> STGEverythingMenu::GetSortedTabGroupsByCreationTime(
-    const SavedTabGroupModel* stg_model) {
-  CHECK(stg_model);
+    TabGroupServiceWrapper* wrapper_service) {
+  CHECK(wrapper_service);
   std::vector<base::Uuid> sorted_tab_groups;
-  for (const SavedTabGroup& group : stg_model->saved_tab_groups()) {
+  for (const SavedTabGroup& group : wrapper_service->GetAllGroups()) {
     sorted_tab_groups.push_back(group.saved_guid());
   }
   auto compare_by_creation_time = [=](const base::Uuid& a,
                                       const base::Uuid& b) {
-    const auto* const saved_tab_group_a = stg_model->Get(a);
-    const auto* const saved_tab_group_b = stg_model->Get(b);
+    const std::optional<SavedTabGroup> saved_tab_group_a =
+        wrapper_service->GetGroup(a);
+    const std::optional<SavedTabGroup> saved_tab_group_b =
+        wrapper_service->GetGroup(b);
+
     // If either gets deleted while creating the model, ignore the order.
-    if (!saved_tab_group_a || !saved_tab_group_b) {
+    if (!saved_tab_group_a.has_value() || !saved_tab_group_b.has_value()) {
       return false;
     }
+
     return saved_tab_group_a->creation_time_windows_epoch_micros() >
            saved_tab_group_b->creation_time_windows_epoch_micros();
   };
@@ -112,15 +108,17 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
       menu_model->GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
       kCreateNewTabGroup);
 
-  const auto* stg_model = GetSavedTabGroupModelFromBrowser();
-  if (!stg_model->IsEmpty()) {
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
+  if (!wrapper_service->GetAllGroups().empty()) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  sorted_tab_groups_ = GetSortedTabGroupsByCreationTime(stg_model);
+  sorted_tab_groups_ = GetSortedTabGroupsByCreationTime(wrapper_service.get());
   const auto* const color_provider = browser_->window()->GetColorProvider();
   for (size_t i = 0; i < sorted_tab_groups_.size(); ++i) {
-    const auto* const tab_group = stg_model->Get(sorted_tab_groups_[i]);
+    const std::optional<SavedTabGroup> tab_group =
+        wrapper_service->GetGroup(sorted_tab_groups_[i]);
     // In case any tab group gets deleted while creating the model.
     if (!tab_group) {
       continue;

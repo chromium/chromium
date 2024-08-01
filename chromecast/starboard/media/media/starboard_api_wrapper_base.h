@@ -66,6 +66,10 @@ class StarboardApiWrapperBase : public StarboardApiWrapper {
   bool DrmIsServerCertificateUpdatable(void* drm_system) override;
   void DrmDestroySystem(void* drm_system) override;
 
+  StarboardMediaSupportType CanPlayMimeAndKeySystem(
+      const char* mime,
+      const char* key_system) override;
+
  private:
   // Converts StarboardSampleInfo to SbPlayerSampleInfo. `side_data` is used to
   // store side data for this sample, since that data must outlive this function

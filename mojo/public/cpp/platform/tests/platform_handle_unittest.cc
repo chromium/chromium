@@ -158,7 +158,7 @@ class PlatformHandleTest : public testing::Test,
   PlatformHandle SetUpSharedMemory() {
     auto region = base::UnsafeSharedMemoryRegion::Create(kTestData.size());
     auto mapping = region.Map();
-    memcpy(mapping.memory(), kTestData.data(), kTestData.size());
+    base::as_writable_chars(base::span(mapping)).copy_from(kTestData);
     auto generic_region =
         base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
             std::move(region));
@@ -184,8 +184,7 @@ class PlatformHandleTest : public testing::Test,
     auto region =
         base::UnsafeSharedMemoryRegion::Deserialize(std::move(generic_region));
     auto mapping = region.Map();
-    std::string contents(static_cast<char*>(mapping.memory()),
-                         kTestData.size());
+    std::string contents(base::as_string_view(mapping));
 
     // Let |handle| retain ownership.
     generic_region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(

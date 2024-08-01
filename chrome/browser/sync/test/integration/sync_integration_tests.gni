@@ -151,6 +151,7 @@ if (is_android) {
     "//components/reading_list/core:test_support",
     "//components/reading_list/features:flags",
     "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups:test_support",
     "//components/sync:test_support",
     "//components/sync_bookmarks",
     "//components/sync_device_info:test_support",

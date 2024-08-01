@@ -35,6 +35,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDialogDelegate.TimePeriodChangeObserver;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -66,6 +67,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mTabModelSelectorMock.getCurrentTab()).thenReturn(mTabMock);
+        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mQuickDeleteView =
@@ -87,7 +89,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -116,7 +117,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -134,7 +134,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -156,7 +155,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -189,7 +187,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 

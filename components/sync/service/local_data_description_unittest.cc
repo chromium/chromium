@@ -62,5 +62,25 @@ TEST(LocalDataDescriptionTest, DomainsAreDeduped) {
             BuildDescription(3, {"a.com"}, 1));
 }
 
+TEST(LocalDataDescriptionTest, GetDomainsDisplayText) {
+  EXPECT_EQ(GetDomainsDisplayText(LocalDataDescription({GURL("http://a.com")})),
+            u"a.com");
+  EXPECT_EQ(GetDomainsDisplayText(LocalDataDescription(
+                {GURL("http://a.com"), GURL("http://b.com")})),
+            u"a.com, b.com");
+  EXPECT_EQ(
+      GetDomainsDisplayText(LocalDataDescription(
+          {GURL("http://a.com"), GURL("http://b.com"), GURL("http://c.com")})),
+      u"a.com, b.com, and 1 more");
+  EXPECT_EQ(GetDomainsDisplayText(LocalDataDescription(
+                {GURL("http://a.com"), GURL("http://b.com"),
+                 GURL("http://c.com"), GURL("http://d.com")})),
+            u"a.com, b.com, and 2 more");
+  EXPECT_EQ(
+      GetDomainsDisplayText(LocalDataDescription(
+          {GURL("http://a.com"), GURL("http://a.com"), GURL("http://b.com")})),
+      u"a.com, b.com");
+}
+
 }  // namespace
 }  // namespace syncer

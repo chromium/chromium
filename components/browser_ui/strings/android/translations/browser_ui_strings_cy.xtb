@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Cuddio cerdyn gostyngiad pris</translation>
 <translation id="1178581264944972037">Seibio</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1192844206376121885">Bydd hyn yn dileu'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Help ac adborth</translation>
 <translation id="2501278716633472235">Mynd yn ôl</translation>
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
-<translation id="2550801787432930915">Cerdyn gostyngiad pris</translation>
 <translation id="2570922361219980984">Mae mynediad lleoliad hefyd wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3859306556332390985">Chwilio ymlaen</translation>
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
+<translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
 <translation id="3908288065506437185">Rhwystro cwcis trydydd parti yn y modd Anhysbys</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Mae'n bosib na fydd rhai nodweddion yn gweithio. Gall gwefannau cysylltiedig barhau i ddefnyddio cwcis trydydd parti.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Cynnwys gwarchodedig</translation>
 <translation id="662080504995468778">Aros</translation>
 <translation id="6653342741369270081">Pwyswch y botwm yn ôl i adael y sgrin lawn.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Cuddio parhau gyda'r tab hwn}zero{Cuddio parhau gyda'r tabiau hyn}two{Cuddio parhau gyda'r tabiau hyn}few{Cuddio parhau gyda'r tabiau hyn}many{Cuddio parhau gyda'r tabiau hyn}other{Cuddio parhau gyda'r tabiau hyn}}</translation>
 <translation id="6689172468748959065">Lluniau proffil</translation>
 <translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>
 <translation id="6722828510648505498">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Dewiswch opsiwn ar gyfer <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Chwarae</translation>
 <translation id="6818926723028410516">Dewis eitemau</translation>
+<translation id="6840760312327750441">I grwpio tabiau, cyffyrddwch a daliwch dab. Llusgwch ef i dab arall.</translation>
 <translation id="6864395892908308021">Ni all y ddyfais hon ddarllen NFC</translation>
 <translation id="6912998170423641340">Rhwystro gwefannau rhag darllen testun a lluniau o'r clipfwrdd</translation>
 <translation id="6945221475159498467">Dewis</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
 <translation id="930525582205581608">Anghofio'r wefan hon?</translation>
 <translation id="947156494302904893">Gall gwefannau rydych yn ymweld â nhw gadarnhau eich bod yn berson go iawn ac nid bot</translation>
+<translation id="959682366969460160">Byddwch yn drefnus</translation>
 <translation id="967624055006145463">Data a storiwyd</translation>
 </translationbundle>

@@ -26,6 +26,6 @@ enum class AppLaunchSource {
   EXTERNAL_ACTION = 10,
   kMaxValue = EXTERNAL_ACTION,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 #endif  // IOS_CHROME_APP_STARTUP_APP_LAUNCH_METRICS_H_

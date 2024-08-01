@@ -720,6 +720,55 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
 
+// Verifies "Save as" is not enabled for links blocked via policy.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       SaveAsEntryIsDisabledForBlockedUrls) {
+  base::Value::List list;
+  list.Append("google.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(GURL(), GURL("http://www.google.com/"));
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_SAVE_PAGE));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_SAVE_PAGE));
+}
+
+// Verifies "Save image as" is not enabled for links blocked via policy.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       SaveImageAsEntryIsDisabledForBlockedUrls) {
+  base::Value::List list;
+  list.Append("url.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeImage(GURL("http://url.com/image.png"));
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+}
+
+// Verifies "Save video as" is not enabled for links blocked via policy.
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
+                       SaveVideoAsEntryIsDisabledForBlockedUrls) {
+  base::Value::List list;
+  list.Append("example.com");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                            std::move(list));
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL("http://example.com/"), GURL("http://example.com/foo.mp4"), u"",
+      blink::mojom::ContextMenuDataMediaType::kVideo, ui::MENU_SOURCE_MOUSE);
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEAVAS));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEAVAS));
+}
+
 class ContextMenuForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTestBase {
  protected:
@@ -3331,14 +3380,33 @@ class LensOverlayBrowserTest : public SearchByRegionBrowserBaseTest {
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   }
 
-  void OpenContextMenuAndClickRegionSearchEntrypoint(
+  void OpenContextMenuAndSelectRegionSearchEntrypoint(
+      int event_flags,
       ContextMenuNotificationObserver::MenuShownCallback callback) {
     // |menu_observer_| will cause the search lens for image menu item to be
     // clicked.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
-        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, event_flags,
         std::move(callback));
     RightClickToOpenContextMenu();
+  }
+
+  void OpenImagePageAndContextMenuForLensImageSearch(
+      std::string image_path,
+      int event_flags,
+      ContextMenuNotificationObserver::MenuShownCallback callback) {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    GURL image_url(embedded_test_server()->GetURL(image_path));
+    GURL page("data:text/html,<img src='" + image_url.spec() + "'>");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, event_flags,
+        std::move(callback));
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::SimulateMouseClickAt(tab, 0, blink::WebMouseEvent::Button::kRight,
+                                  gfx::Point(15, 15));
   }
 };
 
@@ -3352,7 +3420,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
 
-  OpenContextMenuAndClickRegionSearchEntrypoint(base::NullCallback());
+  OpenContextMenuAndSelectRegionSearchEntrypoint(ui::EF_MOUSE_BUTTON,
+                                                 base::NullCallback());
 
   // Clicking the region search entrypoint should eventually result in overlay
   // state.
@@ -3364,7 +3433,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                        RegionSearchContextMenuDoesNotOpenRegionSearch) {
   bool run = false;
-  OpenContextMenuAndClickRegionSearchEntrypoint(
+  OpenContextMenuAndSelectRegionSearchEntrypoint(
+      ui::EF_MOUSE_BUTTON,
       // Callback that will be called after the context menu item is clicked.
       base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
         // Verify the normal region search flow does not activate
@@ -3376,6 +3446,72 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
 
   // Verify the callback above finished running before finishing the test.
   ASSERT_TRUE(base::test::RunUntil([&]() { return run == true; }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
+                       RegionSearchContextMenuOpensRegionSearchForKeyboard) {
+  bool run = false;
+  // EF_NONE event_type will be treated as a keyboard press.
+  OpenContextMenuAndSelectRegionSearchEntrypoint(
+      ui::EF_NONE,
+      // Callback that will be called after the context menu item is clicked.
+      base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
+        // Verify the normal region search flow activates.
+        lens::LensRegionSearchController* controller =
+            menu->GetLensRegionSearchControllerForTesting();
+        ASSERT_NE(controller, nullptr);
+        run = true;
+      }));
+
+  // Verify the callback above finished running before finishing the test.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return run == true; }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
+                       ImageSearchContextMenuDoesNotOpenImageSearch) {
+  bool run = false;
+  int starting_tab_index = browser()->tab_strip_model()->active_index();
+  OpenImagePageAndContextMenuForLensImageSearch(
+      "/google/logo.gif", ui::EF_MOUSE_BUTTON,
+      // Callback that will be called after the context menu item is clicked.
+      base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
+        // Verify the normal image search flow does not activate.
+        lens::LensRegionSearchController* controller =
+            menu->GetLensRegionSearchControllerForTesting();
+        ASSERT_EQ(controller, nullptr);
+        run = true;
+      }));
+
+  // Verify the callback above finished running before finishing the test.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return run == true; }));
+  // Verify that the tab has not been changed.
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), starting_tab_index);
+}
+
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_ImageSearchContextMenuOpensImageSearchForKeyboard \
+  DISABLED_ImageSearchContextMenuOpensImageSearchForKeyboard
+#else
+#define MAYBE_ImageSearchContextMenuOpensImageSearchForKeyboard \
+  ImageSearchContextMenuOpensImageSearchForKeyboard
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayBrowserTest,
+    MAYBE_ImageSearchContextMenuOpensImageSearchForKeyboard) {
+  bool run = false;
+  int starting_tab_index = browser()->tab_strip_model()->active_index();
+  // EF_NONE event_type will be treated as a keyboard press.
+  OpenImagePageAndContextMenuForLensImageSearch(
+      "/google/logo.gif", ui::EF_NONE,
+      // Callback that will be called after the context menu item is clicked.
+      base::BindLambdaForTesting(
+          [&](RenderViewContextMenu* menu) { run = true; }));
+
+  // Verify the callback above finished running before finishing the test.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return run == true; }));
+  // Verify that a new tab opens with Lens results.
+  ASSERT_NE(browser()->tab_strip_model()->active_index(), starting_tab_index);
 }
 
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

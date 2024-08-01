@@ -159,7 +159,7 @@ interface SeaPenProvider {
 
     // Sets the given SeaPen image id as the user's background. Must be a valid
     // id from a previous call to `GetRecentSeaPenImageIds`.
-    SelectRecentSeaPenImage(uint32 id) => (bool success);
+    SelectRecentSeaPenImage(uint32 id, bool preview_mode) => (bool success);
 
     // Fetches the thumbnail data for the given recent Sea Pen image `id`.
     // `id` must be a valid id from a previous call to
@@ -181,4 +181,12 @@ interface SeaPenProvider {
 
     // Called when the user close the introduction dialog for SeaPen feature.
     HandleSeaPenIntroductionDialogClosed();
+
+    // Indicates whether the device is in tablet mode.
+    IsInTabletMode() => (bool tablet_mode);
+
+    // Called to force the browser window to make the native views transparent
+    // so that the user can see wallpaper in fullscreen on their desktop. Safe
+    // to call multiple times.
+    MakeTransparent();
 };

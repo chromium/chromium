@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.SampleUniqueAnnotations
 
-#ifndef org_jni_zero_SampleUniqueAnnotations_JNI
-#define org_jni_zero_SampleUniqueAnnotations_JNI
+#ifndef org_jni_1zero_SampleUniqueAnnotations_JNI
+#define org_jni_1zero_SampleUniqueAnnotations_JNI
 
 #include <jni.h>
 
@@ -87,4 +87,4 @@ static void Java_SampleUniqueAnnotations_useBar1(
 }
 
 
-#endif  // org_jni_zero_SampleUniqueAnnotations_JNI
+#endif  // org_jni_1zero_SampleUniqueAnnotations_JNI

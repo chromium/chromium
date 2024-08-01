@@ -29,6 +29,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -36,9 +37,14 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
@@ -46,6 +52,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -191,11 +198,6 @@ static void ThrowNotOpenException(ExceptionState* exception_state) {
                                      "RTCDataChannel.readyState is not 'open'");
 }
 
-static void ThrowNoBlobSupportException(ExceptionState* exception_state) {
-  exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                     "Blob support not implemented yet");
-}
-
 static void ThrowSendBufferFullException(ExceptionState* exception_state) {
   exception_state->ThrowDOMException(DOMExceptionCode::kOperationError,
                                      "RTCDataChannel send queue is full");
@@ -280,17 +282,13 @@ void RTCDataChannel::Observer::OnMessageImpl(webrtc::DataBuffer buffer) {
 
 RTCDataChannel::RTCDataChannel(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel,
-    RTCPeerConnectionHandler* peer_connection_handler)
+    rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
     : ActiveScriptWrappable<RTCDataChannel>({}),
       ExecutionContextLifecycleObserver(context),
       observer_(base::MakeRefCounted<Observer>(
           context->GetTaskRunner(TaskType::kNetworking),
           this,
-          std::move(data_channel))),
-      signaling_thread_(peer_connection_handler->signaling_thread()) {
-  DCHECK(peer_connection_handler);
-
+          std::move(data_channel))) {
   // Register observer and get state update to make up for state change updates
   // that might have been missed between creating the webrtc::DataChannel object
   // on the signaling thread and RTCDataChannel construction posted on the main
@@ -311,46 +309,46 @@ RTCDataChannel::~RTCDataChannel() {
 }
 
 String RTCDataChannel::label() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return String::FromUTF8(channel()->label());
 }
 
 bool RTCDataChannel::reliable() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return channel()->reliable();
 }
 
 bool RTCDataChannel::ordered() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return channel()->ordered();
 }
 
 std::optional<uint16_t> RTCDataChannel::maxPacketLifeTime() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (channel()->maxPacketLifeTime())
     return *channel()->maxPacketLifeTime();
   return std::nullopt;
 }
 
 std::optional<uint16_t> RTCDataChannel::maxRetransmits() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (channel()->maxRetransmitsOpt())
     return *channel()->maxRetransmitsOpt();
   return std::nullopt;
 }
 
 String RTCDataChannel::protocol() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return String::FromUTF8(channel()->protocol());
 }
 
 bool RTCDataChannel::negotiated() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return channel()->negotiated();
 }
 
 std::optional<uint16_t> RTCDataChannel::id() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (id_.has_value()) {
     return id_;
   }
@@ -412,14 +410,13 @@ void RTCDataChannel::setBinaryType(const String& binary_type,
     return;
   }
   if (binary_type == "blob") {
-    // TODO(crbug.com/webrtc/2276): the default is specified as "blob".
-    ThrowNoBlobSupportException(&exception_state);
+    binary_type_ = kBinaryTypeBlob;
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
-bool RTCDataChannel::ValidateSendLength(size_t length,
+bool RTCDataChannel::ValidateSendLength(uint64_t length,
                                         ExceptionState& exception_state) {
   // Send algorithm: https://w3c.github.io/webrtc-pc/#datachannel-send
 
@@ -438,7 +435,7 @@ bool RTCDataChannel::ValidateSendLength(size_t length,
 }
 
 void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != webrtc::DataChannelInterface::kOpen) {
     ThrowNotOpenException(&exception_state);
     return;
@@ -456,6 +453,7 @@ void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
 
 void RTCDataChannel::send(DOMArrayBuffer* data,
                           ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != webrtc::DataChannelInterface::kOpen) {
     ThrowNotOpenException(&exception_state);
     return;
@@ -472,6 +470,7 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
 
 void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
                           ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != webrtc::DataChannelInterface::kOpen) {
     ThrowNotOpenException(&exception_state);
     return;
@@ -486,20 +485,39 @@ void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
 }
 
 void RTCDataChannel::send(Blob* data, ExceptionState& exception_state) {
-  // FIXME: implement
-  ThrowNoBlobSupportException(&exception_state);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ValidateSendLength(data->size(), exception_state)) {
+    return;
+  }
+
+  buffered_amount_ += data->size();
+
+  PendingMessage* message = MakeGarbageCollected<PendingMessage>();
+  message->type_ = PendingMessage::Type::kBufferPending;
+  message->blob_reader_ =
+      BlobReader::Create(GetExecutionContext(), this, message);
+  message->blob_reader_->Start(data);
+  pending_messages_.push_back(message);
 }
 
 void RTCDataChannel::close() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == webrtc::DataChannelInterface::kClosing ||
       state_ == webrtc::DataChannelInterface::kClosed) {
     return;
   }
   closed_from_owner_ = true;
   OnStateChange(webrtc::DataChannelInterface::kClosing);
-  if (observer_)
-    channel()->Close();
+
+  if (observer_) {
+    if (pending_messages_.empty()) {
+      channel()->Close();
+    } else {
+      PendingMessage* message = MakeGarbageCollected<PendingMessage>();
+      message->type_ = PendingMessage::Type::kCloseEvent;
+      pending_messages_.push_back(message);
+    }
+  }
 }
 
 const AtomicString& RTCDataChannel::InterfaceName() const {
@@ -557,6 +575,7 @@ bool RTCDataChannel::HasPendingActivity() const {
 }
 
 void RTCDataChannel::Trace(Visitor* visitor) const {
+  visitor->Trace(pending_messages_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -574,7 +593,7 @@ void RTCDataChannel::DispatchOpenEvent() {
 
 void RTCDataChannel::OnStateChange(
     webrtc::DataChannelInterface::DataState state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ == webrtc::DataChannelInterface::kClosed)
     return;
@@ -620,7 +639,7 @@ void RTCDataChannel::OnStateChange(
 }
 
 void RTCDataChannel::OnBufferedAmountChange(unsigned sent_data_size) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   unsigned previous_amount = buffered_amount_;
   DVLOG(1) << "OnBufferedAmountChange " << previous_amount;
   DCHECK_GE(buffered_amount_, sent_data_size);
@@ -633,11 +652,16 @@ void RTCDataChannel::OnBufferedAmountChange(unsigned sent_data_size) {
 }
 
 void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (buffer.binary) {
     if (binary_type_ == kBinaryTypeBlob) {
-      // FIXME: Implement.
+      auto blob_data = std::make_unique<BlobData>();
+      blob_data->AppendBytes(base::make_span(buffer.data));
+      uint64_t blob_size = blob_data->length();
+      auto* blob = MakeGarbageCollected<Blob>(
+          BlobDataHandle::Create(std::move(blob_data), blob_size));
+      DispatchEvent(*MessageEvent::Create(blob));
       return;
     }
     if (binary_type_ == kBinaryTypeArrayBuffer) {
@@ -675,14 +699,23 @@ RTCDataChannel::channel() const {
 }
 
 void RTCDataChannel::SendRawData(const char* data, size_t length) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   rtc::CopyOnWriteBuffer buffer(data, length);
   webrtc::DataBuffer data_buffer(buffer, true);
   RecordMessageSent(*channel().get(), data_buffer.size());
-  SendDataBuffer(std::move(data_buffer));
+
+  if (pending_messages_.empty()) {
+    SendDataBuffer(std::move(data_buffer));
+  } else {
+    PendingMessage* message = MakeGarbageCollected<PendingMessage>();
+    message->type_ = PendingMessage::Type::kBufferReady;
+    message->buffer_ = std::move(data_buffer);
+    pending_messages_.push_back(message);
+  }
 }
 
 void RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // SCTP data channels queue the packet on failure and always return true, so
   // Send can be called asynchronously for them.
   channel()->SendAsync(std::move(data_buffer), [](webrtc::RTCError error) {
@@ -721,6 +754,95 @@ void RTCDataChannel::CreateFeatureHandleForScheduler() {
           SchedulingPolicy::Feature::kWebRTC,
           {SchedulingPolicy::DisableAggressiveThrottling(),
            SchedulingPolicy::DisableAlignWakeUps()});
+}
+
+void RTCDataChannel::ProcessSendQueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool stop_processing = false;
+  while (!pending_messages_.empty() && !stop_processing) {
+    auto& message = pending_messages_.front();
+    switch (message->type_) {
+      case PendingMessage::Type::kBufferReady:
+        SendDataBuffer(std::move(*message->buffer_));
+        pending_messages_.pop_front();
+        break;
+      case PendingMessage::Type::kBufferPending:
+        if (message->blob_reader_->HasFinishedLoading()) {
+          SendDataBuffer(std::move(*message->buffer_));
+          pending_messages_.pop_front();
+        } else {
+          stop_processing = true;
+        }
+        break;
+      case PendingMessage::Type::kCloseEvent:
+        channel()->Close();
+        pending_messages_.pop_front();
+        break;
+      case PendingMessage::Type::kBlobFailure:
+        pending_messages_.pop_front();
+        break;
+    }
+  }
+}
+
+void RTCDataChannel::PendingMessage::Trace(Visitor* visitor) const {
+  visitor->Trace(blob_reader_);
+}
+
+void RTCDataChannel::BlobReader::DidFinishLoading(FileReaderData data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DOMArrayBuffer* array_buffer = std::move(data).AsDOMArrayBuffer();
+  rtc::CopyOnWriteBuffer buffer(
+      static_cast<const char*>((array_buffer->Data())),
+      array_buffer->ByteLength());
+  message_->buffer_ = webrtc::DataBuffer(buffer, true);
+  message_->type_ = RTCDataChannel::PendingMessage::Type::kBufferReady;
+  data_channel_->ProcessSendQueue();
+}
+
+void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::ConsoleMessageSource::kJavaScript,
+      mojom::ConsoleMessageLevel::kError,
+      "Couldn't read Blob content, skipping message."));
+  message_->type_ = RTCDataChannel::PendingMessage::Type::kBlobFailure;
+  data_channel_->ProcessSendQueue();
+}
+
+RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
+                                       RTCDataChannel* data_channel,
+                                       PendingMessage* message)
+    : ExecutionContextLifecycleObserver(context),
+      loader_(MakeGarbageCollected<FileReaderLoader>(
+          this,
+          GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
+      data_channel_(data_channel),
+      message_(message) {}
+
+RTCDataChannel::BlobReader::~BlobReader() = default;
+
+void RTCDataChannel::BlobReader::Start(Blob* blob) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  loader_->Start(blob->GetBlobDataHandle());
+}
+
+void RTCDataChannel::BlobReader::Trace(Visitor* visitor) const {
+  ExecutionContextLifecycleObserver::Trace(visitor);
+  FileReaderAccumulator::Trace(visitor);
+  visitor->Trace(loader_);
+  visitor->Trace(data_channel_);
+  visitor->Trace(message_);
+}
+
+bool RTCDataChannel::BlobReader::HasFinishedLoading() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return loader_->HasFinishedLoading();
+}
+
+void RTCDataChannel::BlobReader::ContextDestroyed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  loader_->Cancel();
 }
 
 }  // namespace blink

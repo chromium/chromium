@@ -95,6 +95,6 @@ ScrollOffsetMap FakePictureLayerTilingClient::GetRasterInducingScrollOffsets()
   return ScrollOffsetMap();
 }
 
-void FakePictureLayerTilingClient::OnTilesAdded() {}
+void FakePictureLayerTilingClient::OnAllTilesDoneCleared() {}
 
 }  // namespace cc

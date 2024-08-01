@@ -122,6 +122,7 @@ function setupEvents() {
     primaryButton.addEventListener('click', function() {
       switch (interstitialType) {
         case 'CAPTIVE_PORTAL':
+        case 'SUPERVISED_USER_VERIFY':
           sendCommand(SecurityInterstitialCommandId.CMD_OPEN_LOGIN);
           break;
 

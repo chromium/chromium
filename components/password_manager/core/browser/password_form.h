@@ -519,10 +519,11 @@ struct PasswordForm {
   // It's based on heuristics and may be inaccurate.
   bool IsLikelyResetPasswordForm() const;
 
-  // Returns the `PasswordFormType` classification of this form. Note that just
-  // as `IsLikelyLoginForm()`, `IsLikelySignupForm()`, etc. this prediction is
-  // based on heuristics and may be inaccurate.
-  autofill::AutofillClient::PasswordFormType GetPasswordFormType() const;
+  // Returns the `PasswordFormClassification::Type` classification of this form.
+  // Note that just as `IsLikelyLoginForm()`, `IsLikelySignupForm()`, etc. this
+  // prediction is based on heuristics and may be inaccurate.
+  autofill::AutofillClient::PasswordFormClassification::Type
+  GetPasswordFormType() const;
 
   // Returns true if current password element is set.
   bool HasUsernameElement() const;

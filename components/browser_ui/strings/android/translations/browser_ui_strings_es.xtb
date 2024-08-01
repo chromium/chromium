@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Ocultar tarjeta de bajada de precio</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1192844206376121885">Esta acción eliminará todos los datos y las cookies almacenados por <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL truncada</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
+<translation id="1500473259453106018">Ocultar tarjeta Bajadas de precio en pestañas</translation>
 <translation id="1510341833810331442">Los sitios no tienen permiso para guardar datos en tu dispositivo</translation>
 <translation id="1547123415014299762">Se permiten las cookies de terceros</translation>
 <translation id="1568470248891039841">Los sitios que visites pueden insertar contenido de otros sitios, como imágenes, anuncios y texto. Estos otros sitios pueden solicitar permiso para usar información que hayan guardado sobre ti mientras navegas por el sitio. <ph name="BEGIN_LINK" />Más información sobre el contenido insertado<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Ayuda y comentarios</translation>
 <translation id="2501278716633472235">Volver</translation>
 <translation id="2546283357679194313">Cookies y datos de sitios</translation>
-<translation id="2550801787432930915">Tarjeta de bajada de precio</translation>
 <translation id="2570922361219980984">El acceso a la ubicación también está desactivado en este dispositivo. Actívalo en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Ampliado (hacer clic para contraer)</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3232293466644486101">Eliminar datos de navegación...</translation>
 <translation id="3242646949159196181">Cuando esta opción está activada, los sitios pueden reproducir sonido. Si está desactivada, los sitios no pueden reproducir sonido.</translation>
+<translation id="3273479183583863618">Bajadas de precio en pestañas</translation>
 <translation id="3277252321222022663">Permitir que los sitios accedan a los sensores (recomendado)</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="3295019059349372795">Capítulo 11: La maravillosa Ciudad Esmeralda de Oz</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Volver</translation>
 <translation id="3859306556332390985">Buscar hacia delante</translation>
 <translation id="3895926599014793903">Forzar zoom</translation>
+<translation id="3905475044299942653">Dejar de recibir muchas notificaciones</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Es posible que no puedas usar algunas funciones. Los sitios relacionados podrán seguir usando cookies de terceros.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Seguir aquí</translation>
 <translation id="6653342741369270081">Pulsa el botón para volver si quieres salir de la pantalla completa.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ocultar Continuar con esta pestaña}other{Ocultar Continuar con estas pestañas}}</translation>
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>
 <translation id="6722828510648505498">Bloquea las solicitudes de inicio de sesión de servicios de identidad.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Selecciona una opción para <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Seleccionar elementos</translation>
+<translation id="6840760312327750441">Para agrupar pestañas, mantén pulsada una pestaña. A continuación, arrástrala sobre otra pestaña.</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
+<translation id="6870169401250095575">Ocultar tarjeta Comprobación de seguridad</translation>
 <translation id="6912998170423641340">Evitar que los sitios lean texto e imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Un sitio que visites puede guardar información sobre lo que estés haciendo para funcionar como cabría esperar; por ejemplo, para mantener tu sesión iniciada en un sitio o para guardar artículos en tu carrito de la compra. Los sitios suelen guardar esta información en tu dispositivo de forma temporal.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="7990211076305263060">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar tu micrófono. Si está desactivada, los sitios no pueden usar tu micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar tarjeta Continuar con esta pestaña}other{Ocultar tarjeta Continuar con estas pestañas}}</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
 <translation id="930525582205581608">¿Olvidar este sitio?</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
+<translation id="959682366969460160">Mantenlo todo organizado</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 </translationbundle>

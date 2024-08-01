@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -69,9 +70,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -316,6 +317,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       tabIdentifier:webStateList->GetWebStateAt(webStateIndex)];
 }
 
+- (void)updateForTabInserted {
+  // Default implementation is a no-op.
+}
+
 - (void)addWebStateObservations {
   int firstIndex =
       IsPinnedTabsEnabled() ? self.webStateList->pinned_tabs_count() : 0;
@@ -529,6 +534,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress()) {
+    if (change.type() == WebStateListChange::Type::kInsert) {
+      [self updateForTabInserted];
+    }
     return;
   }
 
@@ -680,6 +688,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       break;
     }
     case WebStateListChange::Type::kInsert: {
+      [self updateForTabInserted];
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
       if ([self isPinnedWebState:insertChange.index()]) {
@@ -1651,6 +1660,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)switchToMode:(TabGridMode)mode {
   self.currentMode = mode;
+}
+
+- (void)setPageAsActive {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 #pragma mark - TabGridToolbarsGridDelegate

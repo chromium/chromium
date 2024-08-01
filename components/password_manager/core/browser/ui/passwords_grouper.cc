@@ -56,9 +56,10 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
   branding_info.name = group_name;
 
   GURL::Replacements replacements;
-  std::string query = kFallbackIconQueryParams +
-                      base::EscapeQueryParamValue(credential.GetURL().spec(),
-                                                  /*use_plus=*/false);
+  std::string query =
+      kFallbackIconQueryParams +
+      base::EscapeQueryParamValue(credential.GetURL().possibly_invalid_spec(),
+                                  /*use_plus=*/false);
   replacements.SetQueryStr(query);
   branding_info.icon_url =
       GURL(kDefaultFallbackIconUrl).ReplaceComponents(replacements);

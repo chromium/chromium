@@ -244,8 +244,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kScriptSchedulingType_InOrder,
           WebFeature::kScriptSchedulingType_Async,
           WebFeature::kClientHintsMetaHTTPEquivAcceptCH,
-          WebFeature::kAutomaticLazyAds,
-          WebFeature::kAutomaticLazyEmbeds,
           WebFeature::kCookieDomainNonASCII,
           WebFeature::kClientHintsMetaEquivDelegateCH,
           WebFeature::kAuthorizationCoveredByWildcard,
@@ -403,6 +401,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kIdentityDigitalCredentials,
           WebFeature::kIdentityDigitalCredentialsDeepLink,
           WebFeature::kV8FileSystemObserver_Observe_Method,
+          WebFeature::kGamepadHapticActuatorType,
       }));
   return *opt_in_features;
 }

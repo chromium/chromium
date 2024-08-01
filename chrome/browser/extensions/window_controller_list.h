@@ -44,13 +44,12 @@ class WindowControllerList {
 
   // Returns the focused or last added window matching the context the function
   // was invoked in.
-  WindowController* CurrentWindowForFunction(
-      const ExtensionFunction* function) const;
+  WindowController* CurrentWindowForFunction(ExtensionFunction* function) const;
 
   // Returns the focused or last added window matching the context the function
   // was invoked in using |filter|.
   WindowController* CurrentWindowForFunctionWithFilter(
-      const ExtensionFunction* function,
+      ExtensionFunction* function,
       WindowController::TypeFilter filter) const;
 
   const ControllerList& windows() const { return windows_; }

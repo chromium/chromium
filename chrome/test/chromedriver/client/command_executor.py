@@ -264,6 +264,12 @@ class Command(object):
   RUN_BOUNCE_TRACKING_MITIGATIONS = (
         _Method.DELETE,
         '/session/:sessionId/storage/run_bounce_tracking_mitigations')
+  CREATE_VIRTUAL_PRESSURE_SOURCE = (
+      _Method.POST, '/session/:sessionId/pressuresource')
+  UPDATE_VIRTUAL_PRESSURE_SOURCE = (
+      _Method.POST, '/session/:sessionId/pressuresource/:type')
+  REMOVE_VIRTUAL_PRESSURE_SOURCE = (
+      _Method.DELETE, '/session/:sessionId/pressuresource/:type')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')

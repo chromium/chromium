@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -39,7 +40,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -73,19 +74,23 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
 TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // Create sign-in coordinator.
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
-                                                            signin_metrics::
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_START_PAGE];
+                                                            accessPoint];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -132,19 +137,23 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
 TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
   // Create sign-in coordinator.
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
-                                                            signin_metrics::
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_START_PAGE];
+                                                            accessPoint];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -185,19 +194,23 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
 TEST_F(TrustedVaultReauthenticationCoordinatorTest,
        TestInterruptUIShutdownNoDismiss) {
   // Create sign-in coordinator.
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
-                                                            signin_metrics::
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_START_PAGE];
+                                                            accessPoint];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =

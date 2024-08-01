@@ -305,6 +305,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void GetRecoverableKeyStores(
       const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
       GetRecoverableKeyStoresCallback) override;
+  void SetUserDataStorageWriteEnabled(
+      const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+      SetUserDataStorageWriteEnabledCallback callback) override;
 
   int get_prepare_guest_request_count() const {
     return prepare_guest_request_count_;

@@ -1359,7 +1359,7 @@ Response PageHandler::BringToFront() {
 
   WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
   web_contents->Activate();
-  web_contents->Focus();
+  web_contents->GetOutermostWebContents()->Focus();
   return Response::Success();
 }
 

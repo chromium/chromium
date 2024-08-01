@@ -240,7 +240,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.faviconView.hidden = YES;
   } else {
     NSAttributedString* attributedText =
-        [self createSiteNameLabelAttributedText:credential];
+        CreateSiteNameLabelAttributedText(credential);
     self.siteNameLabel.attributedText = attributedText;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.siteNameLabel.numberOfLines = 0;
@@ -440,45 +440,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
     favicon = static_cast<FaviconView*>(self.faviconView);
   }
   [favicon configureWithAttributes:attributes];
-}
-
-// Creates the attributed string containing the site name and potentially a host
-// subtitle for the site name label.
-- (NSMutableAttributedString*)createSiteNameLabelAttributedText:
-    (ManualFillCredential*)credential {
-  NSString* siteName = credential.siteName ? credential.siteName : @"";
-  NSString* host;
-  NSMutableAttributedString* attributedString;
-
-  BOOL shouldShowHost = credential.host && credential.host.length &&
-                        ![credential.host isEqualToString:credential.siteName];
-  if (shouldShowHost) {
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      host = credential.host;
-    }
-
-    // If the Keyboard Accessory Upgrade feature is disabled, `host` will be
-    // `nil` here, and so it won't be added to `attributedString` right away.
-    attributedString = CreateHeaderAttributedString(siteName, host);
-
-    if (!IsKeyboardAccessoryUpgradeEnabled()) {
-      host = [NSString stringWithFormat:@" –– %@", credential.host];
-      NSDictionary* attributes = @{
-        NSForegroundColorAttributeName :
-            [UIColor colorNamed:kTextSecondaryColor],
-        NSFontAttributeName :
-            [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-      };
-      NSAttributedString* hostAttributedString =
-          [[NSAttributedString alloc] initWithString:host
-                                          attributes:attributes];
-      [attributedString appendAttributedString:hostAttributedString];
-    }
-  } else {
-    attributedString = CreateHeaderAttributedString(siteName, nil);
-  }
-
-  return attributedString;
 }
 
 @end

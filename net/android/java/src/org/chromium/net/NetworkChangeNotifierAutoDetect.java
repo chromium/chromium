@@ -40,9 +40,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.base.compat.ApiHelperForO;
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
 
@@ -432,13 +429,12 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         /**
-         * Registers networkCallback to receive notifications about default network.
-         * Only callable on P and newer releases.
+         * Registers networkCallback to receive notifications about default network. Only callable
+         * on P and newer releases.
          */
         @RequiresApi(Build.VERSION_CODES.P)
         void registerDefaultNetworkCallback(NetworkCallback networkCallback, Handler handler) {
-            ApiHelperForO.registerDefaultNetworkCallback(
-                    mConnectivityManager, networkCallback, handler);
+            mConnectivityManager.registerDefaultNetworkCallback(networkCallback, handler);
         }
 
         /** Unregisters networkCallback from receiving notifications. */
@@ -450,7 +446,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         Network getDefaultNetwork() {
             Network defaultNetwork = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                defaultNetwork = ApiHelperForM.getActiveNetwork(mConnectivityManager);
+                defaultNetwork = mConnectivityManager.getActiveNetwork();
                 // getActiveNetwork() returning null cannot be trusted to indicate disconnected
                 // as it suffers from https://crbug.com/677365.
                 if (defaultNetwork != null) {
@@ -715,8 +711,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                     subtype,
                     isMetered,
                     String.valueOf(networkToNetId(network)),
-                    ApiHelperForP.isPrivateDnsActive(mLinkProperties),
-                    ApiHelperForP.getPrivateDnsServerName(mLinkProperties));
+                    mLinkProperties.isPrivateDnsActive(),
+                    mLinkProperties.getPrivateDnsServerName());
         }
     }
 
@@ -1422,7 +1418,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      */
     public static long networkToNetId(Network network) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return ApiHelperForM.getNetworkHandle(network);
+            return network.getNetworkHandle();
         } else {
             // NOTE(pauljensen): This depends on Android framework implementation details. These
             // details cannot change because Lollipop is long since released.

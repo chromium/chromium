@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/stringprintf.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
@@ -195,6 +196,8 @@ void ContextualPanelTabHelper::QueryModels() {
 
   responses_.clear();
 
+  request_start_time_ = base::Time::Now();
+
   // First, create all the response objects, to track completed responses
   // correctly if a response returns synchronously.
   for (const auto& [key, model] : models_) {
@@ -221,6 +224,12 @@ void ContextualPanelTabHelper::ModelCallbackReceived(
     DCHECK_EQ(item_type, configuration->item_type);
   }
   responses_[item_type] = ModelResponse(std::move(configuration));
+
+  std::string histogram_name =
+      base::StringPrintf("IOS.ContextualPanel.%s.ModelResponseTime",
+                         StringForItemType(item_type).c_str());
+  base::UmaHistogramTimes(histogram_name,
+                          base::Time::Now() - request_start_time_);
 
   // Check if all models have returned.
   for (const auto& [key, response] : responses_) {

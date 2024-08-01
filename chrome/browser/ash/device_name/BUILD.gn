@@ -19,6 +19,8 @@ static_library("device_name") {
     "device_name_validator.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",
@@ -72,6 +74,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/handlers:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/network:test_support",

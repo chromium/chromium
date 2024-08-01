@@ -663,21 +663,25 @@ gfx::Size Label::CalculatePreferredSize(
   // TODO(munjal): This logic probably belongs to the View class. But for now,
   // put it here since putting it in View class means all inheriting classes
   // need to respect the |collapse_when_hidden_| flag.
-  if (!GetVisible() && collapse_when_hidden_)
+  if (!GetVisible() && collapse_when_hidden_) {
     return gfx::Size();
+  }
 
-  if (GetMultiLine() && fixed_width_ != 0 && !GetText().empty())
-    return gfx::Size(fixed_width_, GetHeightForWidth(fixed_width_));
+  if (GetMultiLine() && fixed_width_ != 0 && !GetText().empty()) {
+    return gfx::Size(fixed_width_, GetLabelHeightForWidth(fixed_width_));
+  }
 
   gfx::Size size(GetBoundedTextSize(available_size));
   const gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
 
-  if (GetMultiLine() && max_width_ != 0 && max_width_ < size.width())
-    return gfx::Size(max_width_, GetHeightForWidth(max_width_));
+  if (GetMultiLine() && max_width_ != 0 && max_width_ < size.width()) {
+    return gfx::Size(max_width_, GetLabelHeightForWidth(max_width_));
+  }
 
-  if (GetMultiLine() && GetMaxLines() > 0)
-    return gfx::Size(size.width(), GetHeightForWidth(size.width()));
+  if (GetMultiLine() && GetMaxLines() > 0) {
+    return gfx::Size(size.width(), GetLabelHeightForWidth(size.width()));
+  }
   return size;
 }
 
@@ -710,9 +714,10 @@ gfx::Size Label::GetMinimumSize() const {
   return size;
 }
 
-int Label::GetHeightForWidth(int w) const {
-  if (!GetVisible() && collapse_when_hidden_)
+int Label::GetLabelHeightForWidth(int w) const {
+  if (!GetVisible() && collapse_when_hidden_) {
     return 0;
+  }
 
   w -= GetInsets().width();
   int height = 0;
@@ -1269,8 +1274,11 @@ gfx::Size Label::GetTextSize() const {
 
 gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
   gfx::Size size;
+  const int base_line_height = GetLineHeight();
+  SizeBound w =
+      std::max<SizeBound>(0, available_size.width() - GetInsets().width());
   if (GetText().empty()) {
-    size = gfx::Size(0, GetLineHeight());
+    size = gfx::Size(0, base_line_height);
   } else if (max_width_single_line_ > 0) {
     DCHECK(!GetMultiLine());
     // Enable eliding during text width calculation. This allows the RenderText
@@ -1282,17 +1290,24 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
     full_text_->SetDisplayRect(
         gfx::Rect(0, 0, max_width_single_line_ - GetInsets().width(), 0));
     size = full_text_->GetStringSize();
+
+    if (base_line_height > 0) {
+      size.set_height(base::checked_cast<int>(GetRequiredLines()) *
+                      base_line_height);
+    }
   } else {
-    const int width = available_size.width().is_bounded()
-                          ? available_size.width().value()
-                          : 0;
+    const int width = w.is_bounded() ? w.value() : 0;
     // SetDisplayRect() has side-effect. The text height will change to respect
     // width.
-    // TODO(crbug.com/40232910): `width` should respect insets, but doing so
-    // will break LabelTest.MultiLineSizing. Fix that.
     full_text_->SetDisplayRect(gfx::Rect(0, 0, width, 0));
     size = full_text_->GetStringSize();
+
+    if (base_line_height > 0) {
+      size.set_height(base::checked_cast<int>(GetRequiredLines()) *
+                      base_line_height);
+    }
   }
+
   const gfx::Insets shadow_margin = -gfx::ShadowValue::GetMargin(GetShadows());
   size.Enlarge(shadow_margin.width(), shadow_margin.height());
   return size;

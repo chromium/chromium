@@ -669,6 +669,10 @@ void RenderThreadImpl::Init() {
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
+  // The destructor should not run in multi-process mode because Shutdown()
+  // terminates the process. The destructor only needs to clean up for tests.
+  CHECK(IsSingleProcess());
+
   g_main_task_runner.Get() = nullptr;
 
   // Need to make sure this reference is removed on the correct task runner;
@@ -1488,9 +1492,21 @@ void RenderThreadImpl::TransferSharedLastForegroundTime(
     base::ReadOnlySharedMemoryRegion last_foreground_time_region) {
   last_foreground_time_mapping_ = last_foreground_time_region.Map();
   CHECK(last_foreground_time_mapping_.IsValid());
-  base::internal::SetSharedLastForegroundTimeForMetrics(
-      last_foreground_time_mapping_
-          .GetMemoryAs<std::atomic<base::TimeTicks>>());
+
+  if (!IsSingleProcess()) {
+    // The pointer will only be valid until `last_foreground_time_mapping_` is
+    // unmapped. In multi-process mode, that's on process exit, so it's safe to
+    // save the pointer and never reset it. In single-process mode, it's
+    // important that other threads not have a copy of the pointer after `this`
+    // is destroyed. But also, since base stores the pointer in a per-process
+    // global, in single-process-mode each RenderThreadImpl would overwrite it
+    // and the stored value would be wrong for most "renderers" anyway. So the
+    // easiest way to avoid accessing the pointer after it's unmapped is to
+    // never set it in the first place.
+    base::internal::SetSharedLastForegroundTimeForMetrics(
+        last_foreground_time_mapping_
+            .GetMemoryAs<std::atomic<base::TimeTicks>>());
+  }
 }
 
 void RenderThreadImpl::OnNetworkConnectionChanged(

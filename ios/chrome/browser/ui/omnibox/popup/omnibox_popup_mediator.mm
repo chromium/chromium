@@ -160,6 +160,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [_bottomOmniboxEnabled stop];
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
+  if (_remoteSuggestionsServiceObserverBridge) {
+    self.remoteSuggestionsService->RemoveObserver(
+        _remoteSuggestionsServiceObserverBridge.get());
+    _remoteSuggestionsServiceObserverBridge.reset();
+  }
 }
 
 - (void)updateMatches:(const AutocompleteResult&)result {
@@ -327,10 +332,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                                          options:@{}
                                completionHandler:^(BOOL success) {
                                  if (success) {
-                                   [weakSelf
-                                       autocompleteResultConsumer:sender
-                                              didSelectSuggestion:suggestion
-                                                            inRow:row];
+                                   [weakSelf callActionTapped];
                                  }
                                }];
       break;
@@ -716,6 +718,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   DCHECK(begin <= self.autocompleteResult.size());
   DCHECK(end <= self.autocompleteResult.size());
   self.autocompleteController->GroupSuggestionsBySearchVsURL(begin, end);
+}
+
+- (void)callActionTapped {
+  _delegate->OnCallActionTap();
 }
 
 #pragma mark - CarouselItemMenuProvider

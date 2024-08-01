@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.tab_group_sync;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -128,5 +131,24 @@ public final class TabGroupSyncUtils {
             eventDetails.closingSource = source;
         }
         tabGroupSyncService.recordTabGroupEvent(eventDetails);
+    }
+
+    /**
+     * Tries to get the saved group for a given tab id, returning null if anything goes wrong, such
+     * as the tab not being in a group.
+     *
+     * @param tabId The id of the tab.
+     * @param tabModel The tab model to look up the tab in.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The group data object.
+     */
+    public static SavedTabGroup getSavedTabGroupFromTabId(
+            int tabId,
+            @NonNull TabModel tabModel,
+            @NonNull TabGroupSyncService tabGroupSyncService) {
+        @Nullable Tab tab = tabModel.getTabById(tabId);
+        if (tab == null || tab.getTabGroupId() == null) return null;
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tab.getTabGroupId());
+        return tabGroupSyncService.getGroup(localTabGroupId);
     }
 }

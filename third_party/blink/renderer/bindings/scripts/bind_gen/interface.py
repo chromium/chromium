@@ -1564,7 +1564,7 @@ def make_report_measure_as(cg_context):
     if measure_as and measure_as.startswith("WebDXFeature::"):
         text = _format(
             "// [Measure], [MeasureAs]\n"
-            "UseCounter::CountWebDXFeature(${current_execution_context}, {measure_constant});",
+            "bindings::CountWebDXFeature(${isolate}, {measure_constant});",
             measure_constant=measure_as)
     else:
         text = _format(

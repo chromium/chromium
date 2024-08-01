@@ -158,6 +158,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/common",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin/model:fake_system_identity",

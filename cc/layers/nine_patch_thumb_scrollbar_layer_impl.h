@@ -55,8 +55,8 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
     thumb_ui_resource_id_ = uid;
   }
 
-  void set_track_ui_resource_id(UIResourceId uid) {
-    track_ui_resource_id_ = uid;
+  void set_track_and_buttons_ui_resource_id(UIResourceId uid) {
+    track_and_buttons_ui_resource_id_ = uid;
   }
 
  protected:
@@ -77,17 +77,17 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
                         AppendQuadsData* append_quads_data,
                         viz::SharedQuadState* shared_quad_state);
 
-  void AppendTrackQuads(viz::CompositorRenderPass* render_pass,
-                        AppendQuadsData* append_quads_data,
-                        viz::SharedQuadState* shared_quad_state);
+  void AppendTrackAndButtonsQuads(viz::CompositorRenderPass* render_pass,
+                                  AppendQuadsData* append_quads_data,
+                                  viz::SharedQuadState* shared_quad_state);
 
-  UIResourceId thumb_ui_resource_id_;
-  UIResourceId track_ui_resource_id_;
+  UIResourceId thumb_ui_resource_id_ = 0;
+  UIResourceId track_and_buttons_ui_resource_id_ = 0;
 
-  int thumb_thickness_;
-  int thumb_length_;
-  int track_start_;
-  int track_length_;
+  int thumb_thickness_ = 0;
+  int thumb_length_ = 0;
+  int track_start_ = 0;
+  int track_length_ = 0;
 
   gfx::Size image_bounds_;
   gfx::Rect aperture_;

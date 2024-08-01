@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/share_target_discovered_callback.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
@@ -23,6 +22,7 @@ class NearbyShareContactManager;
 class NearbyShareCertificateManager;
 class NearbyShareHttpNotifier;
 class NearbyShareLocalDeviceDataManager;
+class NearbyShareSettings;
 
 // This service implements Nearby Sharing on top of the Nearby Connections mojo.
 // Currently only single profile will be allowed to be bound at a time and only

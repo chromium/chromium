@@ -38,6 +38,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/mouse_constants.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -46,7 +47,10 @@ namespace ash {
 
 class GlanceablesTasksViewTest : public AshTestBase {
  public:
-  GlanceablesTasksViewTest() {
+  GlanceablesTasksViewTest()
+      : AshTestBase(std::make_unique<base::test::TaskEnvironment>(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
         /*disabled_features=*/{});
@@ -748,6 +752,49 @@ TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromEditInBrowserView) {
   // Simulate that the widget is hidden safely after opening a browser window.
   view()->GetWidget()->Hide();
   EXPECT_FALSE(view()->GetWidget()->GetNativeWindow()->IsVisible());
+}
+
+TEST_F(GlanceablesTasksViewTest, ComboboxAccessibleActiveDescendantId) {
+  auto* combobox = GetComboBoxView();
+  ui::AXNodeData node_data;
+  base::test::TaskEnvironment* task_environment_ = task_environment();
+
+  // Combobox is closed initially.
+  ASSERT_FALSE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
+
+  // Check accessibility of combobox when it is open.
+  LeftClickOn(combobox);
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  ASSERT_TRUE(combobox->MenuItemAtIndex(0));
+  ASSERT_TRUE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
+  ASSERT_EQ(
+      node_data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId),
+      combobox->MenuItemAtIndex(0)->GetViewAccessibility().GetUniqueId());
+
+  // Select second item in combobox menu items.
+  MenuSelectionAt(1);
+  // Advance time so that subsequent mouse click is considered valid.
+  task_environment_->AdvanceClock(views::kMinimumTimeBetweenButtonClicks +
+                                  base::Milliseconds(10));
+
+  LeftClickOn(combobox);  // Open combobox.
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  ASSERT_TRUE(combobox->MenuItemAtIndex(1));
+  ASSERT_TRUE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
+  ASSERT_EQ(
+      node_data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId),
+      combobox->MenuItemAtIndex(1)->GetViewAccessibility().GetUniqueId());
+
+  // Check accessibility of combobox when it is closed.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  ASSERT_FALSE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
 }
 
 }  // namespace ash

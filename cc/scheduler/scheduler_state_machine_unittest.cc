@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/scheduler/scheduler_state_machine.h"
 
 #include <stddef.h>
@@ -2259,7 +2264,8 @@ TEST(SchedulerStateMachineTest, TestImplLatencyTakesPriorityImplInvalidations) {
 
   // Impl-side invalidation creates a pending tree which is not yet activated.
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   viz::BeginFrameId frame_id = viz::BeginFrameId(0, 1);
   state.OnBeginImplFrame(frame_id, kAnimateOnly);
   state.OnBeginImplFrameDeadline();
@@ -2421,7 +2427,8 @@ TEST(SchedulerStateMachineTest, NoImplSideInvalidationsWhileInvisible) {
   // No impl-side invalidations should be performed while we are not visible.
   state.SetVisible(false);
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 }
@@ -2436,7 +2443,8 @@ TEST(SchedulerStateMachineTest,
   // frames.
   state.SetBeginFrameSourcePaused(true);
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 }
@@ -2450,7 +2458,8 @@ TEST(SchedulerStateMachineTest,
   SET_UP_STATE(state);
 
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
@@ -2467,7 +2476,8 @@ TEST(SchedulerStateMachineTest,
   bool needs_first_draw_on_activation = true;
   state.set_should_defer_invalidation_for_fast_main_frame(true);
   state.SetNeedsBeginMainFrame();
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
@@ -2497,7 +2507,8 @@ TEST(SchedulerStateMachineTest,
 
   bool needs_first_draw_on_activation = true;
   state.set_should_defer_invalidation_for_fast_main_frame(true);
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 }
@@ -2521,7 +2532,8 @@ TEST(SchedulerStateMachineTest,
 
   bool needs_first_draw_on_activation = true;
   state.set_should_defer_invalidation_for_fast_main_frame(true);
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.SetNeedsBeginMainFrame();
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(
@@ -2541,7 +2553,8 @@ TEST(SchedulerStateMachineTest,
   bool needs_first_draw_on_activation = true;
   state.set_should_defer_invalidation_for_fast_main_frame(false);
   state.SetNeedsBeginMainFrame();
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
@@ -2567,7 +2580,8 @@ TEST(SchedulerStateMachineTest, NoImplSideInvalidationUntilFrameSinkActive) {
   state.SetNeedsBeginMainFrame();
 
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
 
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(
@@ -2583,7 +2597,8 @@ TEST(SchedulerStateMachineTest, NoImplSideInvalidationUntilFrameSinkActive) {
   state.OnBeginImplFrameIdle();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
 
   state.IssueNextBeginImplFrame();
   // No impl side invalidation because we're still waiting for first activation.
@@ -2597,7 +2612,8 @@ TEST(SchedulerStateMachineTest, NoImplSideInvalidationUntilFrameSinkActive) {
   state.OnBeginImplFrameIdle();
 
   state.SetNeedsBeginMainFrame();
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
 
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(
@@ -2625,7 +2641,8 @@ TEST(SchedulerStateMachineTest, ImplSideInvalidationWhenPendingTreeExists) {
   // Request an impl-side invalidation after the commit. The request should wait
   // till the current pending tree is activated.
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 
   // Activate the pending tree. Since the commit fills the impl-side
@@ -2663,7 +2680,8 @@ TEST(SchedulerStateMachineTest, ImplSideInvalidationWhileReadyToCommit) {
   // Request an impl-side invalidation after we are ready to commit. The
   // invalidations are merged.
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   EXPECT_TRUE(state.needs_impl_side_invalidation());
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::POST_COMMIT);
@@ -2678,7 +2696,8 @@ TEST(SchedulerStateMachineTest,
 
   // Set up a request for impl-side invalidation.
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   state.OnBeginImplFrameDeadline();
   EXPECT_ACTION_UPDATE_STATE(
@@ -2687,7 +2706,8 @@ TEST(SchedulerStateMachineTest,
 
   // Request another invalidation, which should wait until the pending tree is
   // activated *and* we start the next BeginFrame.
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
   state.NotifyReadyToActivate();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
@@ -2729,7 +2749,8 @@ TEST(SchedulerStateMachineTest, ImplSideInvalidationsThrottledOnDraw) {
   // Request impl-side invalidation and start a new frame, which should be
   // blocked on the ack for the previous frame.
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   state.OnBeginImplFrameDeadline();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
@@ -2752,7 +2773,8 @@ TEST(SchedulerStateMachineTest, PrepareTilesWaitForImplSideInvalidation) {
   // Request a PrepareTiles and impl-side invalidation. The impl-side
   // invalidation should run first, since it will perform PrepareTiles as well.
   bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.SetNeedsPrepareTiles();
   state.IssueNextBeginImplFrame();
   state.OnBeginImplFrameDeadline();
@@ -2905,7 +2927,8 @@ TEST(SchedulerStateMachineTest, AllowSkippingActiveTreeFirstDraws) {
   // Impl-side invalidation creates a pending tree which is activated but not
   // drawn in this frame.
   bool needs_first_draw_on_activation = false;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   viz::BeginFrameId frame_id = viz::BeginFrameId(0, 1);
   state.OnBeginImplFrame(frame_id, kAnimateOnly);
   state.OnBeginImplFrameDeadline();
@@ -3085,7 +3108,8 @@ TEST(SchedulerStateMachineTest, TestFullPipelineModeDoesntBlockAfterCommit) {
   SET_UP_STATE(state);
 
   const bool needs_first_draw_on_activation = true;
-  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kUntracked);
   state.SetNeedsBeginMainFrame();
   state.SetNeedsRedraw(true);
 
@@ -3179,7 +3203,7 @@ TEST(SchedulerStateMachineTest,
   // Request an impl-side invalidation and start a new frame. The invalidations
   // are paused to avoid new updates which have to be drained through the
   // pipeline.
-  state.SetNeedsImplSideInvalidation(true);
+  state.SetNeedsImplSideInvalidation(true, RedrawReason::kUntracked);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 

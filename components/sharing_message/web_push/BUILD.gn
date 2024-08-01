@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("web_push") {
+  sources = [
+    "json_web_token_util.cc",
+    "json_web_token_util.h",
+    "web_push_common.cc",
+    "web_push_common.h",
+    "web_push_sender.cc",
+    "web_push_sender.h",
+  ]
+  deps = [
+    "//base",
+    "//components/gcm_driver/crypto",
+    "//crypto",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "json_web_token_util_unittest.cc",
+    "web_push_sender_unittest.cc",
+  ]
+  deps = [
+    ":web_push",
+    "//base",
+    "//base/test:test_support",
+    "//crypto",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/mojom:url_loader_base",
+    "//testing/gtest",
+    "//third_party/boringssl",
+    "//third_party/re2",
+  ]
+}

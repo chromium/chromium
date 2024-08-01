@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // For some sample vp9 test videos, $filename, there is a file of golden value
 // of frame entropy, named $filename.context. These values are dumped from
 // libvpx.
@@ -663,7 +668,7 @@ TEST_P(Vp9ParserTest, VerifyFirstFrame) {
 INSTANTIATE_TEST_SUITE_P(All, Vp9ParserTest, ::testing::ValuesIn(kTestParams));
 
 TEST_F(Vp9ParserTest, CheckColorSpace) {
-  Vp9FrameHeader fhdr;
+  Vp9FrameHeader fhdr{};
   EXPECT_FALSE(fhdr.GetColorSpace().IsSpecified());
   fhdr.color_space = Vp9ColorSpace::BT_709;
   EXPECT_EQ(VideoColorSpace::REC709(), fhdr.GetColorSpace());

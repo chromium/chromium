@@ -114,6 +114,52 @@ struct ASH_EXPORT PlaybackContext {
   std::string queue_name;
 };
 
+// State of the media player.
+enum PlaybackState {
+  kPlaying,
+  kPaused,
+  kSwitchedToNext,
+  kEnded,
+  kNone,
+};
+
+// Data structure that defines the media player playback status. The value flows
+// from the web UI player to the API request classes for playback reporting
+// purpose.
+struct ASH_EXPORT PlaybackData {
+  PlaybackData(const PlaybackState state,
+               const std::string& title,
+               const GURL& url,
+               std::optional<int> media_start,
+               std::optional<int> media_end,
+               bool initial_playback);
+  PlaybackData(const PlaybackData&);
+  PlaybackData& operator=(const PlaybackData&);
+  ~PlaybackData();
+
+  std::string ToString() const;
+
+  // Playback state.
+  PlaybackState state;
+
+  // Track title.
+  std::string title;
+
+  // Track media url.
+  GURL url;
+
+  // Start time in second of the period that the playback event covers. Value is
+  // null when `initial_playback` is true.
+  std::optional<int> media_start;
+
+  // End time in second of the period that the playback event covers. Value is
+  // null when `initial_playback` is true.
+  std::optional<int> media_end;
+
+  // Indicate if it's the initial playback, i.e. first playback after loading.
+  bool initial_playback;
+};
+
 using GetPlaylistCallback =
     base::OnceCallback<void(google_apis::ApiErrorCode http_error_code,
                             std::optional<Playlist> playlist)>;
@@ -125,6 +171,10 @@ using GetMusicSectionCallback = base::OnceCallback<void(
 using GetPlaybackContextCallback = base::OnceCallback<void(
     google_apis::ApiErrorCode http_error_code,
     std::optional<const PlaybackContext> playback_context)>;
+
+using ReportPlaybackCallback = base::OnceCallback<void(
+    google_apis::ApiErrorCode http_error_code,
+    std::optional<const std::string> new_playback_reporting_token)>;
 
 }  // namespace ash::youtube_music
 

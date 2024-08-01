@@ -853,6 +853,7 @@ PasswordFormManager::PasswordFormManager(
 }
 
 void PasswordFormManager::DelayFillForServerSidePredictions() {
+  server_side_predictions_timer_ = std::make_unique<base::ElapsedTimer>();
   async_predictions_waiter_.StartTimer();
   server_predictions_closure_ = async_predictions_waiter_.CreateClosure();
 }
@@ -1083,6 +1084,11 @@ void PasswordFormManager::ProcessServerPredictions(
   UpdatePredictionsForObservedForm(predictions);
   if (parser_.predictions()) {
     if (!server_predictions_closure_.is_null()) {
+      if (server_side_predictions_timer_) {
+        base::UmaHistogramTimes("PasswordManager.ServerPredictionsWaitDuration",
+                                server_side_predictions_timer_->Elapsed());
+        server_side_predictions_timer_.reset();
+      }
       // Signals the availability of server predictions, but there might be
       // other callbacks still outstanding.
       std::move(server_predictions_closure_).Run();
@@ -1159,15 +1165,15 @@ void PasswordFormManager::FillNow() {
   if (parsed_observed_form_->HasPasswordElement() &&
       !parsed_observed_form_->IsSingleUsername()) {
     metrics_recorder_->RecordPotentialPreferredMatch(
-        form_fetcher_->GetPreferredMatch(),
-        form_fetcher_->WereGroupedCredentialsAvailable());
+        form_fetcher_->GetPreferredOrPotentialMatchedFormType());
   }
 
   SendFillInformationToRenderer(
       client_, driver_.get(), *parsed_observed_form_.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), metrics_recorder_.get(),
-      WebAuthnCredentialsAvailable());
+      WebAuthnCredentialsAvailable(),
+      form_parsing_result.suggestion_banned_fields);
   // No logic should be added after the call to `SendFillInformationToRenderer`.
   // That function can cause this `PasswordFormManager` to be destroyed, it can
   // happen when there are saved credentials available for filling on this

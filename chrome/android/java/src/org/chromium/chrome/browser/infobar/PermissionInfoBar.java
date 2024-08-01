@@ -12,7 +12,7 @@ import android.text.Spanned;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -176,7 +176,7 @@ public class PermissionInfoBar extends ConfirmInfoBar
         fragmentArguments.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         settingsLauncher.launchSettingsActivity(
                 getContext(), SingleCategorySettings.class, fragmentArguments);
     }

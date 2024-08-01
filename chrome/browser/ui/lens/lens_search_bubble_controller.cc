@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,9 +25,11 @@ class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
  public:
   explicit LensSearchBubbleDialogView(
       views::View* anchor_view,
-      std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
+      std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
+      base::WeakPtr<LensSearchBubbleController> search_bubble_controller)
       : WebUIBubbleDialogView(anchor_view, contents_wrapper->GetWeakPtr()),
-        contents_wrapper_(std::move(contents_wrapper)) {
+        contents_wrapper_(std::move(contents_wrapper)),
+        search_bubble_controller_(search_bubble_controller) {
     // This bubble persists even when deactivated. It must be closed
     // through the LensSearchBubbleController.
     set_close_on_deactivate(false);
@@ -39,8 +42,16 @@ class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
     return anchor_rect;
   }
 
+  // WebUIContentsWrapper::Host:
+  void CloseUI() override {
+    WebUIBubbleDialogView::CloseUI();
+    search_bubble_controller_->RemoveLensOverlayControllerGlue();
+    search_bubble_controller_->Close();
+  }
+
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  base::WeakPtr<LensSearchBubbleController> search_bubble_controller_;
 };
 
 BEGIN_METADATA(LensSearchBubbleDialogView)
@@ -50,31 +61,33 @@ LensSearchBubbleController::LensSearchBubbleController(
     LensOverlayController* lens_overlay_controller)
     : lens_overlay_controller_(lens_overlay_controller) {}
 
-LensSearchBubbleController::~LensSearchBubbleController() {
-  Close();
-}
+LensSearchBubbleController::~LensSearchBubbleController() = default;
 
 void LensSearchBubbleController::Show() {
   if (bubble_view_) {
     return;
   }
 
-  content::WebContents* contents =
+  content::WebContents* overlay_web_contents =
       lens_overlay_controller_->GetTabInterface()->GetContents();
 
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<SearchBubbleUI>>(
           GURL(chrome::kChromeUILensSearchBubbleURL),
-          contents->GetBrowserContext(), IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE,
+          Profile::FromBrowserContext(
+              overlay_web_contents->GetBrowserContext()),
+          IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
-
+  web_contents_ = contents_wrapper->web_contents();
+  lens::LensOverlayControllerGlue::CreateForWebContents(
+      web_contents_, lens_overlay_controller_);
   std::unique_ptr<LensSearchBubbleDialogView> bubble_view =
       std::make_unique<LensSearchBubbleDialogView>(
           lens_overlay_controller_->GetTabInterface()
               ->GetBrowserWindowInterface()
               ->TopContainer(),
-          std::move(contents_wrapper));
+          std::move(contents_wrapper), weak_factory_.GetWeakPtr());
   bubble_view->SetProperty(views::kElementIdentifierKey,
                            kLensSearchBubbleElementId);
   bubble_view_ = bubble_view->GetWeakPtr();
@@ -82,13 +95,29 @@ void LensSearchBubbleController::Show() {
 }
 
 void LensSearchBubbleController::Close() {
-  if (!bubble_view_) {
-    return;
+  // Bubble view will still exist if being closed through the lens overlay
+  // controller.
+  if (bubble_view_) {
+    DCHECK(bubble_view_->GetWidget());
+    bubble_view_->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    RemoveLensOverlayControllerGlue();
   }
-  DCHECK(bubble_view_->GetWidget());
-  bubble_view_->GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kUnspecified);
+  // RealboxOmniboxClient has a reference to web_contents_ so must reset before
+  // web_contents_ gets destroyed.
+  contextual_searchbox_handler_.reset();
   bubble_view_ = nullptr;
+  web_contents_ = nullptr;
+}
+
+void LensSearchBubbleController::RemoveLensOverlayControllerGlue() {
+  CHECK(web_contents_);
+  web_contents_->RemoveUserData(LensOverlayControllerGlue::UserDataKey());
+}
+
+void LensSearchBubbleController::SetContextualSearchboxHandler(
+    std::unique_ptr<RealboxHandler> handler) {
+  contextual_searchbox_handler_ = std::move(handler);
 }
 
 }  // namespace lens

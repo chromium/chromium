@@ -2238,7 +2238,8 @@ TEST_F(LayerTreeImplTest, NumLayersSmallTree) {
 }
 
 TEST_F(LayerTreeImplTest, DeviceScaleFactorNeedsDrawPropertiesUpdate) {
-  host_impl().active_tree()->UpdateDrawProperties();
+  host_impl().active_tree()->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
   EXPECT_FALSE(host_impl().active_tree()->needs_update_draw_properties());
   host_impl().active_tree()->SetDeviceScaleFactor(1.f);
   EXPECT_FALSE(host_impl().active_tree()->needs_update_draw_properties());
@@ -2249,7 +2250,8 @@ TEST_F(LayerTreeImplTest, DeviceScaleFactorNeedsDrawPropertiesUpdate) {
 TEST_F(LayerTreeImplTest, DisplayColorSpacesDoesNotNeedDrawPropertiesUpdate) {
   host_impl().active_tree()->SetDisplayColorSpaces(
       gfx::DisplayColorSpaces(gfx::ColorSpace::CreateXYZD50()));
-  host_impl().active_tree()->UpdateDrawProperties();
+  host_impl().active_tree()->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
   EXPECT_FALSE(host_impl().active_tree()->needs_update_draw_properties());
   host_impl().active_tree()->SetDisplayColorSpaces(
       gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSRGB()));

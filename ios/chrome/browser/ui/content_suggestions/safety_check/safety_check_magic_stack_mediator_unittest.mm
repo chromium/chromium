@@ -48,14 +48,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    browser_state_manager_ =
-        std::make_unique<TestChromeBrowserStateManager>(builder.Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
-
     ChromeBrowserState* browser_state =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     pref_service_ = browser_state->GetPrefs();
 
@@ -86,8 +80,9 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   id mock_app_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
   SafetyCheckMagicStackMediator* mediator_;

@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_IMPL_H_
 #define SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_IMPL_H_
 
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -63,6 +65,8 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   // invoked, we would re-enter code inside the caller).
   bool Initialize();
 
+  void SetBackgroundSegmentationModel(base::span<const uint8_t> model_blob);
+
   void PostProcess(media::mojom::VideoBufferHandlePtr input_frame_data,
                    media::mojom::VideoFrameInfoPtr input_frame_info,
                    media::mojom::VideoBufferHandlePtr result_frame_data,
@@ -106,6 +110,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<VideoEffectsProcessorWebGpu> processor_webgpu_;
+  std::vector<uint8_t> background_segmentation_model_blob_;
 
   // We'll keep track of how many context losses we've experienced. If this
   // number is too high, we'll make this processor defunct, assuming that

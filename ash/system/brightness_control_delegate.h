@@ -32,6 +32,17 @@ class BrightnessControlDelegate {
     kMaxValue = kRestoredFromUserPref,
   };
 
+  // Enum to represent the source of a ambient light sensor change,
+  // Note that changing brightness can also disable the Ambient Light
+  // Sensor. This change is not directly made by calling the
+  // SetAmbientLightSensorEnabled function in the BrightnessControlDelegate in
+  // Chrome, it is handled in the platform.
+  enum class AmbientLightSensorEnabledChangeSource {
+    kSettingsApp = 0,
+    kRestoredFromUserPref = 1,
+    kMaxValue = kRestoredFromUserPref,
+  };
+
   // Requests that the brightness be set to |percent|, in the range
   // [0.0, 100.0].  |gradual| specifies whether the transition to the new
   // brightness should be animated or instantaneous. |source| is required to
@@ -47,7 +58,9 @@ class BrightnessControlDelegate {
 
   // Sets whether the ambient light sensor should be used in brightness
   // calculations.
-  virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
+  virtual void SetAmbientLightSensorEnabled(
+      bool enabled,
+      AmbientLightSensorEnabledChangeSource source) = 0;
 
   // Asynchronously invokes |callback| with true if the ambient light sensor is
   // enabled (i.e. if the ambient light sensor is currently being used in

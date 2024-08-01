@@ -6,7 +6,6 @@
 
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -86,7 +84,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
@@ -128,9 +126,6 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
 
 // Tests Password Visit metrics are logged only once after opening the surface.
 TEST_F(PasswordDetailsCoordinatorTest, VisitMetricsAreLoggedOnlyOnce) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordAuthOnEntryV2);
-
   HistogramTester histogram_tester;
   CheckPasswordDetailsVisitMetricsCount(0, histogram_tester);
 

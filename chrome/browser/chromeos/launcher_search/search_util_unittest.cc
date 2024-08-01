@@ -14,6 +14,8 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
 namespace crosapi {
@@ -82,8 +84,8 @@ TEST(SearchUtilTest, CreateAnswerResult) {
   match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
   match.contents = u"contents";
   match.description = u"description";
+  match.answer_type = omnibox::ANSWER_TYPE_DICTIONARY;
 
-  SuggestionAnswer answer;
   std::string json =
       R"({ "l": [)"
       R"(  { "il": { "t": [{ "t": "text one", "tt": 8 }],)"
@@ -94,27 +96,58 @@ TEST(SearchUtilTest, CreateAnswerResult) {
       R"(] })";
   std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
-  ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", &answer));
-  match.answer = answer;
 
-  const auto result =
-      CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
-  EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
-  EXPECT_EQ(result->relevance, 1248);
-  ASSERT_TRUE(result->destination_url.has_value());
-  EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
-  EXPECT_EQ(result->is_omnibox_search,
-            mojom::SearchResult::OptionalBool::kTrue);
-  EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+  // Create answer result using SuggestionAnswer.
+  {
+    SuggestionAnswer answer;
+    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"1", &answer));
+    match.answer = answer;
 
-  ASSERT_TRUE(result->contents.has_value());
-  EXPECT_EQ(result->contents.value(), u"contents");
-  ASSERT_TRUE(result->additional_contents.has_value());
-  EXPECT_EQ(result->additional_contents.value(), u"additional one");
-  ASSERT_TRUE(result->description.has_value());
-  EXPECT_EQ(result->description.value(), u"text two");
-  ASSERT_TRUE(result->additional_description.has_value());
-  EXPECT_EQ(result->additional_description.value(), u"additional two");
+    const auto result =
+        CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
+    EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
+    EXPECT_EQ(result->relevance, 1248);
+    ASSERT_TRUE(result->destination_url.has_value());
+    EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
+    EXPECT_EQ(result->is_omnibox_search,
+              mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+
+    ASSERT_TRUE(result->contents.has_value());
+    EXPECT_EQ(result->contents.value(), u"contents");
+    ASSERT_TRUE(result->additional_contents.has_value());
+    EXPECT_EQ(result->additional_contents.value(), u"additional one");
+    ASSERT_TRUE(result->description.has_value());
+    EXPECT_EQ(result->description.value(), u"text two");
+    ASSERT_TRUE(result->additional_description.has_value());
+    EXPECT_EQ(result->additional_description.value(), u"additional two");
+  }
+  // Create answer result using omnibox::RichAnswerTemplate.
+  {
+    omnibox::RichAnswerTemplate answer_template;
+    ASSERT_TRUE(omnibox::answer_data_parser::ParseJsonToAnswerData(
+        value->GetDict(), &answer_template));
+    match.answer_template = answer_template;
+
+    const auto result =
+        CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
+    EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
+    EXPECT_EQ(result->relevance, 1248);
+    ASSERT_TRUE(result->destination_url.has_value());
+    EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
+    EXPECT_EQ(result->is_omnibox_search,
+              mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+
+    ASSERT_TRUE(result->contents.has_value());
+    EXPECT_EQ(result->contents.value(), u"contents");
+    ASSERT_TRUE(result->additional_contents.has_value());
+    EXPECT_EQ(result->additional_contents.value(), u"additional one");
+    ASSERT_TRUE(result->description.has_value());
+    EXPECT_EQ(result->description.value(), u"text two");
+    ASSERT_TRUE(result->additional_description.has_value());
+    EXPECT_EQ(result->additional_description.value(), u"additional two");
+  }
 }
 
 // Tests result conversion for a rich entity Omnibox result.
@@ -165,8 +198,8 @@ TEST(SearchUtilTest, CreateWeatherResult) {
   match.contents = u"Weather in Perth";
   match.contents_class = {
       ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
+  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
 
-  SuggestionAnswer answer;
   const std::string json =
       R"({ "l": [)"
       R"(  { "il": { "t": [ { "t": "weather in perth", "tt": 8 } ] } },)"
@@ -181,33 +214,69 @@ TEST(SearchUtilTest, CreateWeatherResult) {
       R"(] })";
   const std::optional<base::Value> value = base::JSONReader::Read(json);
   ASSERT_TRUE(value && value->is_dict());
-  ASSERT_TRUE(SuggestionAnswer::ParseAnswer(
-      value->GetDict(), /* The answer type for 'weather'. */ u"8", &answer));
-  match.answer = answer;
 
-  const auto result =
-      CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
-  EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
-  EXPECT_EQ(result->relevance, 1200);
-  ASSERT_TRUE(result->destination_url.has_value());
-  EXPECT_EQ(result->destination_url.value(),
-            GURL("https://www.example.com.au/weather"));
-  EXPECT_EQ(result->is_omnibox_search,
-            mojom::SearchResult::OptionalBool::kTrue);
-  EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+  // Create weather result using SuggestionAnswer.
+  {
+    SuggestionAnswer answer;
+    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(
+        value->GetDict(), /* The answer type for 'weather'. */ u"8", &answer));
+    match.answer = answer;
+    const auto result =
+        CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
 
-  ASSERT_TRUE(result->contents.has_value());
-  EXPECT_EQ(result->contents.value(), u"Weather in Perth");
-  EXPECT_FALSE(result->additional_contents.has_value());
-  ASSERT_TRUE(result->description.has_value());
-  EXPECT_EQ(result->description.value(), u"16°C");
-  ASSERT_TRUE(result->additional_description.has_value());
-  EXPECT_EQ(result->additional_description.value(), u"Perth WA, Australia");
-  ASSERT_TRUE(result->description_a11y_label.has_value());
-  EXPECT_EQ(result->description_a11y_label.value(), u"Sunny");
-  ASSERT_TRUE(result->image_url.has_value());
-  EXPECT_EQ(result->image_url.value(),
-            GURL("https://www.weather.com.au/sunny.png"));
+    EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
+    EXPECT_EQ(result->relevance, 1200);
+    ASSERT_TRUE(result->destination_url.has_value());
+    EXPECT_EQ(result->destination_url.value(),
+              GURL("https://www.example.com.au/weather"));
+    EXPECT_EQ(result->is_omnibox_search,
+              mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+
+    ASSERT_TRUE(result->contents.has_value());
+    EXPECT_EQ(result->contents.value(), u"Weather in Perth");
+    EXPECT_FALSE(result->additional_contents.has_value());
+    ASSERT_TRUE(result->description.has_value());
+    EXPECT_EQ(result->description.value(), u"16°C");
+    ASSERT_TRUE(result->additional_description.has_value());
+    EXPECT_EQ(result->additional_description.value(), u"Perth WA, Australia");
+    ASSERT_TRUE(result->description_a11y_label.has_value());
+    EXPECT_EQ(result->description_a11y_label.value(), u"Sunny");
+    ASSERT_TRUE(result->image_url.has_value());
+    EXPECT_EQ(result->image_url.value(),
+              GURL("https://www.weather.com.au/sunny.png"));
+  }
+  // Create weather result using omnibox::RichAnswerTemplate.
+  {
+    omnibox::RichAnswerTemplate answer_template;
+    ASSERT_TRUE(omnibox::answer_data_parser::ParseJsonToAnswerData(
+        value->GetDict(), &answer_template));
+    match.answer_template = answer_template;
+    const auto result =
+        CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
+
+    EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
+    EXPECT_EQ(result->relevance, 1200);
+    ASSERT_TRUE(result->destination_url.has_value());
+    EXPECT_EQ(result->destination_url.value(),
+              GURL("https://www.example.com.au/weather"));
+    EXPECT_EQ(result->is_omnibox_search,
+              mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_EQ(result->is_answer, mojom::SearchResult::OptionalBool::kTrue);
+
+    ASSERT_TRUE(result->contents.has_value());
+    EXPECT_EQ(result->contents.value(), u"Weather in Perth");
+    EXPECT_FALSE(result->additional_contents.has_value());
+    ASSERT_TRUE(result->description.has_value());
+    EXPECT_EQ(result->description.value(), u"16°C");
+    ASSERT_TRUE(result->additional_description.has_value());
+    EXPECT_EQ(result->additional_description.value(), u"Perth WA, Australia");
+    ASSERT_TRUE(result->description_a11y_label.has_value());
+    EXPECT_EQ(result->description_a11y_label.value(), u"Sunny");
+    ASSERT_TRUE(result->image_url.has_value());
+    EXPECT_EQ(result->image_url.value(),
+              GURL("https://www.weather.com.au/sunny.png"));
+  }
 }
 
 // Tests result conversion for a calculator result. A calculator result can

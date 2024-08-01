@@ -315,6 +315,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     DisplaySizeScreenView::kScreenId,
     TouchpadScrollScreenView::kScreenId,
     CategoriesSelectionScreenView::kScreenId,
+    PerksDiscoveryScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
@@ -987,12 +988,10 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnEnterOldPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::IsOobePerksDiscoveryEnabled()) {
-    append(std::make_unique<PerksDiscoveryScreen>(
-        oobe_ui->GetView<PerksDiscoveryScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnPerksDiscoveryScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<PerksDiscoveryScreen>(
+      oobe_ui->GetView<PerksDiscoveryScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnPerksDiscoveryScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<OSAuthErrorScreen>(
       oobe_ui->GetView<OSAuthErrorScreenHandler>()->AsWeakPtr(),
@@ -1485,9 +1484,6 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     }
     case GaiaScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
-      break;
-    case GaiaScreen::Result::START_CONSUMER_KIOSK:
-      // TODO(crbug.com/256596599) Remove.
       break;
     case GaiaScreen::Result::ENTER_QUICK_START:
       [[fallthrough]];

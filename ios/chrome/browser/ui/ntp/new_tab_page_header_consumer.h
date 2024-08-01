@@ -21,6 +21,9 @@
 // Sets whether voice search is currently enabled.
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;
 
+// Update account particle disc error badge.
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_CONSUMER_H_

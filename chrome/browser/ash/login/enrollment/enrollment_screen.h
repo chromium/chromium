@@ -79,7 +79,7 @@ class EnrollmentScreen
   void SetEnrollmentConfig(const policy::EnrollmentConfig& enrollment_config);
 
   // EnrollmentScreenView::Controller implementation:
-  void OnLoginDone(const std::string& user,
+  void OnLoginDone(login::OnlineSigninArtifacts signin_artifacts,
                    int license_type,
                    const std::string& auth_code) override;
   void OnRetry() override;

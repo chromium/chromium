@@ -65,6 +65,7 @@ static_library("accessibility") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/audio",

@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "services/device/public/mojom/pressure_manager.mojom";
+import "services/device/public/mojom/pressure_update.mojom";
+
+// Result of CreateVirtualPressureSource
+enum CreateVirtualPressureSourceResult {
+  kSuccess,
+  kSourceTypeAlreadyOverridden,
+};
+
+// Result of UpdateVirtualPressureSourceState
+enum UpdateVirtualPressureSourceStateResult {
+  kSuccess,
+  kSourceTypeNotOverridden,
+};
+
+// Provides a way to set and update virtual pressure sources as described in
+// https://w3c.github.io/compute-pressure/#automation
+//
+// This interface exists solely for the content_shell and
+// InternalsComputePressure implementation, as the ChromeDriver-based code path
+// uses CDP to achieve the same results.
+interface WebPressureManagerAutomation {
+  // Creates a new virtual pressure source of type |source|.
+  CreateVirtualPressureSource(
+      device.mojom.PressureSource source,
+      device.mojom.VirtualPressureSourceMetadata metadata) =>
+      (CreateVirtualPressureSourceResult result);
+
+  // Removes a previously created virtual pressure source.
+  RemoveVirtualPressureSource(device.mojom.PressureSource source) => ();
+
+  // Sends a state update for a given virtual pressure source.
+  UpdateVirtualPressureSourceState(
+      device.mojom.PressureSource source, device.mojom.PressureState state) =>
+      (UpdateVirtualPressureSourceStateResult result);
+};

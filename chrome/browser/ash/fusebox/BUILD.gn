@@ -22,6 +22,8 @@ static_library("fusebox") {
     "fusebox_server.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":fusebox_proto",
     "//base",

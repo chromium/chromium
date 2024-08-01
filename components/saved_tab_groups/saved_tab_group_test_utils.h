@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -36,7 +37,8 @@ SavedTabGroupTab CreateSavedTabGroupTab(
     const std::u16string& title,
     const base::Uuid& group_guid,
     std::optional<int> position = std::nullopt);
-SavedTabGroup CreateTestSavedTabGroup();
+SavedTabGroup CreateTestSavedTabGroup(
+    std::optional<base::Time> creation_date = std::nullopt);
 SavedTabGroup CreateTestSavedTabGroupWithNoTabs();
 TabGroupVisualData CreateTabGroupVisualData();
 

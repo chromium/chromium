@@ -65,16 +65,9 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, ConstructDestruct) {
   EXPECT_NE(nullptr, bridge());
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(chromeos::features::kJelly);
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly) {
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(chromeos::features::kJelly);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->jelly_colors);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Enabled) {

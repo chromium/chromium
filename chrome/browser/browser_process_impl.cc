@@ -59,6 +59,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
 #include "chrome/browser/media/chrome_media_session_client.h"
+#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -121,8 +122,8 @@
 #include "components/sessions/core/session_id_generator.h"
 #include "components/subresource_filter/content/browser/safe_browsing_ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
 #include "components/update_client/update_query_params.h"
@@ -294,7 +295,6 @@ void BrowserProcessImpl::Init() {
   download_status_updater_ = std::make_unique<DownloadStatusUpdater>();
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  // Must be created after the NotificationService.
   print_job_manager_ = std::make_unique<printing::PrintJobManager>();
 #endif
 
@@ -510,6 +510,13 @@ void BrowserProcessImpl::StartTearDown() {
     // free).
     profile_manager_.reset();
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (media_router::DualMediaSinkService::HasInstance()) {
+    media_router::DualMediaSinkService::GetInstance()
+        ->StopObservingPrefChanges();
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The `media_file_system_registry_` cannot be reset until the
@@ -848,13 +855,9 @@ NotificationUIManager* BrowserProcessImpl::notification_ui_manager() {
 }
 
 NotificationPlatformBridge* BrowserProcessImpl::notification_platform_bridge() {
-#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   if (!created_notification_bridge_)
     CreateNotificationPlatformBridge();
   return notification_bridge_.get();
-#else
-  return nullptr;
-#endif
 }
 
 policy::ChromeBrowserPolicyConnector*
@@ -1397,11 +1400,9 @@ void BrowserProcessImpl::CreateIconManager() {
 }
 
 void BrowserProcessImpl::CreateNotificationPlatformBridge() {
-#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   DCHECK(!notification_bridge_);
   notification_bridge_ = NotificationPlatformBridge::Create();
   created_notification_bridge_ = true;
-#endif
 }
 
 void BrowserProcessImpl::CreateNotificationUIManager() {

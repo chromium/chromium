@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -405,9 +406,10 @@ TEST_F(TransformStreamTest, CreateFromReadableWritablePair) {
       ReadableStream::Create(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   WritableStream* writable =
       WritableStream::Create(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  TransformStream transform(readable, writable);
-  EXPECT_EQ(readable, transform.Readable());
-  EXPECT_EQ(writable, transform.Writable());
+  TransformStream* transform =
+      MakeGarbageCollected<TransformStream>(readable, writable);
+  EXPECT_EQ(readable, transform->Readable());
+  EXPECT_EQ(writable, transform->Writable());
 }
 
 TEST_F(TransformStreamTest, WaitInTransform) {

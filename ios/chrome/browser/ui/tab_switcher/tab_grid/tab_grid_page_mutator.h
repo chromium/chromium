@@ -19,6 +19,9 @@
 // Notifies the model that the mode the grid should switch to `mode`.
 - (void)switchToMode:(TabGridMode)mode;
 
+// Notifies the model that the current page is the active one.
+- (void)setPageAsActive;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_PAGE_MUTATOR_H_

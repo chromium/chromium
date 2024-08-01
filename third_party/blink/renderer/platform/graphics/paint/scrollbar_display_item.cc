@@ -53,8 +53,7 @@ PaintRecord ScrollbarDisplayItem::Paint() const {
 
   // Skip track and button painting for Minimal mode Fluent scrollbars.
   if (!scrollbar->IsFluentOverlayScrollbarMinimalMode()) {
-    scrollbar->PaintPart(canvas, cc::ScrollbarPart::kTrackButtonsTickmarks,
-                         rect);
+    scrollbar->PaintTrackAndButtons(*canvas, rect);
   }
 
   gfx::Rect thumb_rect = scrollbar->ThumbRect();
@@ -62,7 +61,7 @@ PaintRecord ScrollbarDisplayItem::Paint() const {
   if (scrollbar->IsFluentOverlayScrollbarMinimalMode()) {
     thumb_rect = scrollbar->ShrinkMainThreadedMinimalModeThumbRect(thumb_rect);
   }
-  scrollbar->PaintPart(canvas, cc::ScrollbarPart::kThumb, thumb_rect);
+  scrollbar->PaintThumb(*canvas, thumb_rect);
 
   scrollbar->ClearNeedsUpdateDisplay();
   data_->record_ = recorder.finishRecordingAsPicture();

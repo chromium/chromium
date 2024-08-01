@@ -337,9 +337,9 @@ bool PasswordForm::IsLikelyResetPasswordForm() const {
          !HasUsernameElement();
 }
 
-autofill::AutofillClient::PasswordFormType PasswordForm::GetPasswordFormType()
-    const {
-  using enum autofill::AutofillClient::PasswordFormType;
+autofill::AutofillClient::PasswordFormClassification::Type
+PasswordForm::GetPasswordFormType() const {
+  using enum autofill::AutofillClient::PasswordFormClassification::Type;
   if (IsLikelyLoginForm()) {
     return kLoginForm;
   } else if (IsLikelySignupForm()) {

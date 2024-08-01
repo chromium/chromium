@@ -63,11 +63,10 @@ void PaymentsNetworkInterfaceTestBase::IssueOAuthToken() {
       "totally_real_token", AutofillClock::Now() + base::Days(10));
 
   // Verify the auth header.
-  std::string auth_header_value;
-  EXPECT_TRUE(intercepted_headers_.GetHeader(
-      net::HttpRequestHeaders::kAuthorization, &auth_header_value))
+  EXPECT_THAT(
+      intercepted_headers_.GetHeader(net::HttpRequestHeaders::kAuthorization),
+      testing::Optional(std::string("Bearer totally_real_token")))
       << intercepted_headers_.ToString();
-  EXPECT_EQ("Bearer totally_real_token", auth_header_value);
 }
 
 void PaymentsNetworkInterfaceTestBase::ReturnResponse(

@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -22,6 +26,7 @@ class AutofillClient;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class MerchantPromoCodeManager;
+class TouchToFillDelegate;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
@@ -93,6 +98,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   MockIbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
+  AutofillOfferManager* GetAutofillOfferManager() override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilities) override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -151,6 +161,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   }
 
   MockMerchantPromoCodeManager* GetMockMerchantPromoCodeManager();
+
+  void set_autofill_offer_manager(
+      std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
+    autofill_offer_manager_ = std::move(autofill_offer_manager);
+  }
 
  private:
   const raw_ref<AutofillClient> client_;
@@ -215,6 +230,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
+
+  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 };
 
 }  // namespace payments

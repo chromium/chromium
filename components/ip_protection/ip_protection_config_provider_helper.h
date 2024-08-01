@@ -34,27 +34,26 @@ class IpProtectionConfigProviderHelper {
 
   // Creates a blind-signed auth token by converting token fetched using the
   // `quiche::BlindSignAuth` library to a
-  // `network::mojom::BlindSignedAuthToken`.
-  static network::mojom::BlindSignedAuthTokenPtr CreateBlindSignedAuthToken(
-      const quiche::BlindSignToken& bsa_token);
+  // `network::BlindSignedAuthToken`.
+  static std::optional<network::BlindSignedAuthToken>
+  CreateBlindSignedAuthToken(const quiche::BlindSignToken& bsa_token);
 
   // Creates a `quiche::BlindSignToken()` in the format that the BSA library
   // will return them.
   static quiche::BlindSignToken CreateBlindSignTokenForTesting(
       std::string token_value,
       base::Time expiration,
-      const network::mojom::GeoHint& geo_hint);
+      const network::GeoHint& geo_hint);
 
   static privacy::ppn::PrivacyPassTokenData CreatePrivacyPassTokenForTesting(
       std::string token_value);
 
   // Converts a mock token value and expiration time into the struct that will
   // be passed to the network service.
-  static network::mojom::BlindSignedAuthTokenPtr
-  CreateMockBlindSignedAuthTokenForTesting(
-      std::string token_value,
-      base::Time expiration,
-      const network::mojom::GeoHint& geo_hint);
+  static std::optional<network::BlindSignedAuthToken>
+  CreateMockBlindSignedAuthTokenForTesting(std::string token_value,
+                                           base::Time expiration,
+                                           const network::GeoHint& geo_hint);
 
   // Service types used for GetProxyConfigRequest.
   static constexpr char kChromeIpBlinding[] = "chromeipblinding";

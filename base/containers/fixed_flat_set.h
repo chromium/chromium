@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_CONTAINERS_FIXED_FLAT_SET_H_
 #define BASE_CONTAINERS_FIXED_FLAT_SET_H_
 
@@ -125,7 +120,7 @@ template <class Key, size_t N, class Compare = std::less<>>
 consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
-  std::sort(data, data + N, comp);
+  std::ranges::sort(data, comp);
   return MakeFixedFlatSet<Key>(sorted_unique, std::move(data), comp);
 }
 

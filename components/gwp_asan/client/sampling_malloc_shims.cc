@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/gwp_asan/client/sampling_malloc_shims.h"
 
 #include <algorithm>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
@@ -19,6 +23,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <pthread.h>

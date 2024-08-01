@@ -51,15 +51,21 @@ class IOSChromeSafetyCheckManagerObserver : public base::CheckedObserver {
 
 // This class handles the bulk of the safety check feature, namely:
 //
-// 1. Observing changes in the password check status and compromised credentials
-// list.
-// 2. Determining if the user has Enhanced Safe Browsing enabled.
-// 3. Determining if the browser is up-to-date.
-// 4. Determining if the Safety Check is currently running.
-// 5. Determining if the previous Safety Check run found any issues.
+// 1. Monitors:
+//    - Password check status and compromised credentials list
+//    - Enhanced Safe Browsing enablement
+//    - App update status
+//    - Safety Check execution status (running/complete)
+//    - Results of previous Safety Check runs
 //
-// This class notifies its observers (`IOSChromeSafetyCheckManagerObserver`)
-// when state from the above list change.
+// 2. Automatic Safety Check Runs:
+//    - Triggers Safety Check automatically if the last run is older than
+//      'kSafetyCheckAutorunDelay' (e.g., 30 days), regardless of whether the
+//      previous run was manual or automatic.
+//
+// 3. Observer Notifications:
+//    - Notifies `IOSChromeSafetyCheckManagerObserver` of any state changes
+//      (e.g., compromised password detected, Safety Check completed).
 class IOSChromeSafetyCheckManager
     : public KeyedService,
       public IOSChromePasswordCheckManager::Observer {

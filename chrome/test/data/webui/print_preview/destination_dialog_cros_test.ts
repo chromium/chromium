@@ -6,9 +6,9 @@ import type {Destination, DestinationStore, LocalDestinationInfo, PrintPreviewDe
 import {DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, makeRecentDestination, NativeLayerImpl, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 

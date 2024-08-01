@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chromeos/ash/components/memory/elf_sections.h"
 
 namespace ash {
 
@@ -51,8 +52,8 @@ int ParseElfHeaderAndMlockBinaryText(struct dl_phdr_info* info,
   for (int i = 0; i < info->dlpi_phnum; i++) {
     if (info->dlpi_phdr[i].p_type == PT_LOAD &&
         info->dlpi_phdr[i].p_flags == (PF_R | PF_X)) {
-      void* vaddr =
-          reinterpret_cast<void*>(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
+      uintptr_t vaddr = reinterpret_cast<uintptr_t>(info->dlpi_addr +
+                                                    info->dlpi_phdr[i].p_vaddr);
       size_t segsize = info->dlpi_phdr[i].p_filesz;
 
       ssize_t max_lockable_size = kCrOSLockMainProgramTextMaxSize.Get();
@@ -61,8 +62,27 @@ int ParseElfHeaderAndMlockBinaryText(struct dl_phdr_info* info,
         segsize = std::min(static_cast<ssize_t>(segsize), max_lockable_size);
       }
 
-      PLOG_IF(ERROR, MlockMapping(vaddr, segsize) != 0)
-          << "Unable to lock memory region " << vaddr;
+      if (kRodataAddr == 0 && kTextHotAddr == 0) {
+        LOG(WARNING) << "elf section data is not found. mlock first "
+                     << segsize / 1024 / 1024 << " MiB";
+        PLOG_IF(ERROR, !MlockMapping(reinterpret_cast<void*>(vaddr), segsize))
+            << "Unable to lock memory region " << vaddr;
+      } else {
+        // mlock(2) of Linux allows address and size not being aligned with page
+        // size and automatically rounds the address down to the nearest
+        // boundary. Since this is ash specific logic, we use the address and
+        // the size directly without aligning.
+        // https://man7.org/linux/man-pages/man2/mlockall.2.html
+        PLOG_IF(ERROR,
+                !MlockMapping(reinterpret_cast<void*>(vaddr + kRodataAddr),
+                              kRodataSize))
+            << "Unable to lock memory region " << vaddr << " for .rodata";
+        PLOG_IF(ERROR,
+                !MlockMapping(reinterpret_cast<void*>(vaddr + kTextHotAddr),
+                              kTextHotSize))
+            << "Unable to lock memory region " << vaddr << " for .text.hot";
+      }
+
       return 1;
     }
   }

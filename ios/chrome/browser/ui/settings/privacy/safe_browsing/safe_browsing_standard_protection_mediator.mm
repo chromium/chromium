@@ -353,14 +353,8 @@ const CGFloat kSymbolSize = 20;
       base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
   leakCheckItem.enabled = self.inSafeBrowsingStandardProtection;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
-    leakCheckItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
-  } else {
-    leakCheckItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY);
-  }
+  leakCheckItem.detailText = l10n_util::GetNSString(
+      IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
 }
 
 #pragma mark - SafeBrowsingStandardProtectionViewControllerDelegate

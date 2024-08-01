@@ -234,6 +234,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7395825497086981028">La contraseña se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Usa Chromium en todas partes</translation>
 <translation id="7523464085759699266">Activa la opción "Bloquear las pestañas de incógnito cuando cierras Chromium".</translation>
+<translation id="7531461704633548377">De Chromium</translation>
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Chromium y activa la cámara.</translation>
 <translation id="7710137812207066069">Abre una pestaña nueva en Chromium.</translation>
 <translation id="7747820849741499258">Buscar en Chromium</translation>
@@ -264,6 +265,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8386869251364507178">Acciones de Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="8458950033462118672">Si quieres abrir vínculos de forma automática en Chromium, elígelo como la app de navegador predeterminada.</translation>
+<translation id="8502918057530111907">Usa Chromium de forma predeterminada para obtener información sobre precios fácilmente</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>

@@ -68,6 +68,7 @@ source_set("bottom_sheet_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings/password:title_view",
@@ -96,7 +97,6 @@ source_set("eg2_tests") {
   sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
@@ -107,7 +107,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:eg_test_support",
     "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_details:password_details_table_view_constants",
     "//ios/chrome/common/ui/confirmation_alert:constants",

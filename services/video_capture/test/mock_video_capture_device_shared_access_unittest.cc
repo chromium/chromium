@@ -65,12 +65,12 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
         service_device_factory_.get(), base::DoNothing());
 
     // Obtain the mock device backed source from |source_provider_|.
-    base::MockCallback<DeviceFactory::GetDeviceInfosCallback>
-        device_infos_receiver;
+    base::MockCallback<mojom::VideoSourceProvider::GetSourceInfosCallback>
+        source_infos_receiver;
     base::RunLoop wait_loop;
-    EXPECT_CALL(device_infos_receiver, Run(_))
+    EXPECT_CALL(source_infos_receiver, Run)
         .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-    source_provider_->GetSourceInfos(device_infos_receiver.Get());
+    source_provider_->GetSourceInfos(source_infos_receiver.Get());
     // We must wait for the response to GetDeviceInfos before calling
     // CreateDevice.
     wait_loop.Run();

@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -29,6 +29,10 @@ const CGFloat kEntrypointHeightMultiplier = 0.72;
 // the entrypoint container's height.
 const CGFloat kLabelTrailingSpaceMultiplier = 0.375;
 const CGFloat kLabelLeadingSpaceMultiplier = 0.095;
+
+// Entrypoint and Infobar badges separator constants.
+const CGFloat kSeparatorHeightMultiplier = 0.35;
+const CGFloat kSeparatorWidthConstant = 1;
 
 // Amount of time animating the entrypoint into the location bar should take.
 const NSTimeInterval kEntrypointDisplayingAnimationTime = 0.3;
@@ -71,17 +75,26 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   UIImageView* _imageView;
   UILabel* _label;
 
+  // The small vertical pill-shaped line separating the Contextual Panel
+  // entrypoint and Infobar badges, if present.
+  UIView* _separator;
+
   // Constraints for the two states of the trailing edge of the entrypoint
   // container. They are activated/deactivated as needed when the label is
   // shown/hidden.
   NSLayoutConstraint* _largeTrailingConstraint;
   NSLayoutConstraint* _smallTrailingConstraint;
 
+  // Whether the entrypoint should be "tapped" visually, because the Contextual
+  // Panel is open.
+  BOOL _entrypointTapped;
   // Whether the entrypoint should currently be shown or not (transcends
   // fullscreen events).
   BOOL _entrypointDisplayed;
   // Whether the entrypoint should currently collapse for fullscreen.
   BOOL _shouldCollapseForFullscreen;
+  // Whether there currently are any Infobar badges being shown.
+  BOOL _infobarBadgesCurrentlyShown;
 }
 @end
 
@@ -99,8 +112,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _entrypointItemsWrapper = [self configuredEntrypointItemsWrapper];
   _imageView = [self configuredImageView];
   _label = [self configuredLabel];
+  _separator = [self configuredSeparator];
 
   [self.view addSubview:_entrypointContainer];
+  [self.view addSubview:_separator];
   [_entrypointContainer addSubview:_entrypointItemsWrapper];
   [_entrypointItemsWrapper addSubview:_imageView];
   [_entrypointItemsWrapper addSubview:_label];
@@ -121,6 +136,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _entrypointItemsWrapper.layer.cornerRadius =
       _entrypointItemsWrapper.bounds.size.height / 2.0;
+
+  _separator.layer.cornerRadius = _separator.bounds.size.width / 2.0;
 }
 
 - (void)displayEntrypointView:(BOOL)display {
@@ -227,6 +244,17 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   return label;
 }
 
+// Creates and configures the entrypoint's pill-shaped separator (vertical
+// line).
+- (UIView*)configuredSeparator {
+  UIView* view = [[UIView alloc] init];
+  view.translatesAutoresizingMaskIntoConstraints = NO;
+  view.isAccessibilityElement = NO;
+  view.backgroundColor = [UIColor colorNamed:kGrey400Color];
+
+  return view;
+}
+
 - (void)activateInitialConstraints {
   // Leading space before the start of the button container view.
   UILayoutGuide* entrypointLeadingSpace = [[UILayoutGuide alloc] init];
@@ -244,6 +272,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       constraintEqualToAnchor:labelTrailingSpace.trailingAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
+    [self.view.widthAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.heightAnchor],
     _smallTrailingConstraint,
     // The entrypoint doesn't fully fill the height of the location bar, so to
     // make it exactly follow the curvature of the location bar's corner radius,
@@ -258,6 +288,12 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
         constraintEqualToAnchor:_entrypointContainer.leadingAnchor],
     [_entrypointContainer.leadingAnchor
         constraintEqualToAnchor:entrypointLeadingSpace.trailingAnchor],
+    [_separator.centerXAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [_separator.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
+    [_separator.widthAnchor constraintEqualToConstant:kSeparatorWidthConstant],
+    [_separator.heightAnchor
+        constraintEqualToAnchor:self.view.heightAnchor
+                     multiplier:kSeparatorHeightMultiplier],
     [_entrypointContainer.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:kEntrypointHeightMultiplier],
@@ -266,7 +302,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self.view.leadingAnchor
         constraintEqualToAnchor:entrypointLeadingSpace.leadingAnchor],
     [self.view.trailingAnchor
-        constraintEqualToAnchor:_entrypointContainer.trailingAnchor],
+        constraintGreaterThanOrEqualToAnchor:_entrypointContainer
+                                                 .trailingAnchor],
     [_imageView.heightAnchor
         constraintEqualToAnchor:_entrypointContainer.heightAnchor],
     [_imageView.widthAnchor constraintEqualToAnchor:_imageView.heightAnchor],
@@ -317,6 +354,35 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
       UIContentSizeCategoryAccessibilityLarge);
 }
 
+// Sets the proper entrypoint visual features depending on current infobar
+// badges status and whether the Contextual Panel is open.
+- (void)refreshEntrypointVisualElements {
+  BOOL shouldShowMutedColors =
+      _infobarBadgesCurrentlyShown || _entrypointTapped;
+
+  // Entrypoint icon tint color.
+  _imageView.tintColor = shouldShowMutedColors
+                             ? [UIColor colorNamed:kGrey600Color]
+                             : [UIColor colorNamed:kBlue600Color];
+
+  // Entrypoint container shadow.
+  _entrypointContainer.layer.shadowOpacity =
+      shouldShowMutedColors ? 0 : kEntrypointContainerShadowOpacity;
+
+  // Entrypoint container background color.
+  UIColor* untappedEntrypointColor =
+      _infobarBadgesCurrentlyShown
+          ? nil
+          : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+
+  _entrypointContainer.backgroundColor =
+      _entrypointTapped ? [UIColor colorNamed:kTertiaryBackgroundColor]
+                        : untappedEntrypointColor;
+
+  // Separator visibility.
+  _separator.hidden = !_infobarBadgesCurrentlyShown;
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:
@@ -337,7 +403,15 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _imageView.image = image;
 }
 
+- (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
+  _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
+  [self refreshEntrypointVisualElements];
+  [self transitionToSmallEntrypoint];
+}
+
 - (void)showEntrypoint {
+  [self refreshEntrypointVisualElements];
+
   if (_entrypointDisplayed) {
     return;
   }
@@ -432,16 +506,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 }
 
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened {
-  // Using `clipsToBounds` to remove the shadow when in "opened" state.
-  _entrypointContainer.clipsToBounds = opened;
-
-  _imageView.tintColor = opened ? [UIColor colorNamed:kGrey600Color]
-                                : [UIColor colorNamed:kBlue600Color];
-
-  _entrypointContainer.backgroundColor =
-      opened ? [UIColor colorNamed:kTertiaryBackgroundColor]
-             : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
-
+  _entrypointTapped = opened;
+  [self refreshEntrypointVisualElements];
   [self transitionToSmallEntrypoint];
 }
 

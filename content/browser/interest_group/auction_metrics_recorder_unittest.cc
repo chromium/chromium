@@ -37,8 +37,10 @@ class AuctionMetricsRecorderTest : public testing::Test {
         source_id_(ukm::AssignNewSourceId()),
         recorder_(source_id_) {}
 
-  void FastForwardTime(base::TimeDelta delta) {
+  // Advances the clock and returns the new current time.
+  base::TimeTicks FastForwardTime(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
+    return base::TimeTicks::Now();
   }
 
   bool HasMetric(std::string metric_name) {
@@ -139,6 +141,52 @@ TEST_F(AuctionMetricsRecorderTest, LoadInterestGroupPhaseLatencyAndEndTime) {
       720);
 }
 
+TEST_F(AuctionMetricsRecorderTest,
+       WorkletCreationPhaseMetricsHaveNoValuesForNoWorkletsCreated) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, WorkletCreationPhaseMetricsWithOneRecord) {
+  FastForwardTime(base::Milliseconds(722));
+  recorder().OnWorkletRequested();  // start of phase at 722
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletReady();  // end of phase at 822
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 722 becomes 720 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName),
+      720);
+  // 822 becomes 820 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName),
+            820);
+}
+
+TEST_F(AuctionMetricsRecorderTest, WorkletCreationPhaseMetricsWithTwoRecords) {
+  FastForwardTime(base::Milliseconds(722));
+  recorder().OnWorkletRequested();  // start of phase at 722
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletReady();
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletRequested();
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletReady();  // end of phase at 1022
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 722 becomes 720 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName),
+      720);
+  // 1022 becomes 1020 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName),
+            1020);
+}
+
 TEST_F(AuctionMetricsRecorderTest, NumInterestGroups) {
   recorder().SetNumInterestGroups(42);
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
@@ -235,7 +283,8 @@ TEST_F(AuctionMetricsRecorderTest, NumBidderWorklets) {
           /*signals_url=*/std::nullopt,
           /*needs_cors_for_additional_bid=*/false,
           /*experiment_group_id=*/std::nullopt,
-          /*trusted_bidding_signals_slot_size_param=*/"");
+          /*trusted_bidding_signals_slot_size_param=*/"",
+          /*trusted_signals_coordinator=*/std::nullopt);
       recorder().ReportBidderWorkletKey(worklet_key);
     }
   }
@@ -867,7 +916,10 @@ TEST_F(AuctionMetricsRecorderTest,
       {/*code_ready_latency=*/std::nullopt,
        /*config_promises_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_bidding_signals_latency=*/std::nullopt});
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
 
   EXPECT_FALSE(
       HasMetric(UkmEntry::kMeanGenerateBidCodeReadyLatencyInMillisName));
@@ -893,7 +945,10 @@ TEST_F(AuctionMetricsRecorderTest,
       {/*code_ready_latency=*/base::Milliseconds(105),
        /*config_promises_latency=*/base::Milliseconds(205),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
-       /*trusted_bidding_signals_latency=*/base::Milliseconds(405)});
+       /*trusted_bidding_signals_latency=*/base::Milliseconds(405),
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 105 becomes 100 because of bucketing
@@ -939,12 +994,18 @@ TEST_F(AuctionMetricsRecorderTest,
       {/*code_ready_latency=*/base::Milliseconds(105),
        /*config_promises_latency=*/base::Milliseconds(205),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
-       /*trusted_bidding_signals_latency=*/base::Milliseconds(405)});
+       /*trusted_bidding_signals_latency=*/base::Milliseconds(405),
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().RecordGenerateBidDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(305),
        /*config_promises_latency=*/base::Milliseconds(405),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
-       /*trusted_bidding_signals_latency=*/base::Milliseconds(605)});
+       /*trusted_bidding_signals_latency=*/base::Milliseconds(605),
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 205 becomes 200 because of bucketing
@@ -990,17 +1051,26 @@ TEST_F(AuctionMetricsRecorderTest,
       {/*code_ready_latency=*/base::Milliseconds(105),
        /*config_promises_latency=*/base::Milliseconds(205),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
-       /*trusted_bidding_signals_latency=*/base::Milliseconds(405)});
+       /*trusted_bidding_signals_latency=*/base::Milliseconds(405),
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().RecordGenerateBidDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(305),
        /*config_promises_latency=*/base::Milliseconds(405),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
-       /*trusted_bidding_signals_latency=*/base::Milliseconds(605)});
+       /*trusted_bidding_signals_latency=*/base::Milliseconds(605),
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().RecordGenerateBidDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(-200),
        /*config_promises_latency=*/base::Milliseconds(-300),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(-400),
-       /*trusted_bidding_signals_latency=*/base::Milliseconds(-500)});
+       /*trusted_bidding_signals_latency=*/base::Milliseconds(-500),
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 205 becomes 200 because of bucketing
@@ -1080,28 +1150,40 @@ TEST_F(AuctionMetricsRecorderTest,
         {/*code_ready_latency=*/base::Milliseconds(305),
          /*config_promises_latency=*/base::Milliseconds(100),
          /*direct_from_seller_signals_latency=*/base::Milliseconds(50),
-         /*trusted_bidding_signals_latency=*/std::nullopt});
+         /*trusted_bidding_signals_latency=*/std::nullopt,
+         /*deps_wait_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   }
   for (int i = 0; i < 14; ++i) {
     recorder().RecordGenerateBidDependencyLatencies(
         {/*code_ready_latency=*/base::Milliseconds(100),
          /*config_promises_latency=*/base::Milliseconds(405),
          /*direct_from_seller_signals_latency=*/std::nullopt,
-         /*trusted_bidding_signals_latency=*/base::Milliseconds(50)});
+         /*trusted_bidding_signals_latency=*/base::Milliseconds(50),
+         /*deps_wait_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   }
   for (int i = 0; i < 18; ++i) {
     recorder().RecordGenerateBidDependencyLatencies(
         {/*code_ready_latency=*/base::Milliseconds(50),
          /*config_promises_latency=*/std::nullopt,
          /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
-         /*trusted_bidding_signals_latency=*/base::Milliseconds(100)});
+         /*trusted_bidding_signals_latency=*/base::Milliseconds(100),
+         /*deps_wait_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   }
   for (int i = 0; i < 21; ++i) {
     recorder().RecordGenerateBidDependencyLatencies(
         {/*code_ready_latency=*/std::nullopt,
          /*config_promises_latency=*/base::Milliseconds(100),
          /*direct_from_seller_signals_latency=*/base::Milliseconds(50),
-         /*trusted_bidding_signals_latency=*/base::Milliseconds(605)});
+         /*trusted_bidding_signals_latency=*/base::Milliseconds(605),
+         /*deps_wait_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_start_time*/ base::TimeTicks::Now(),
+         /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   }
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
@@ -1155,12 +1237,18 @@ TEST_F(AuctionMetricsRecorderTest, GenerateBidCriticalPathMetricsComputeMean) {
       {/*code_ready_latency=*/base::Milliseconds(205),
        /*config_promises_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_bidding_signals_latency=*/std::nullopt});
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().RecordGenerateBidDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(405),
        /*config_promises_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_bidding_signals_latency=*/std::nullopt});
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   EXPECT_EQ(
@@ -1199,17 +1287,26 @@ TEST_F(AuctionMetricsRecorderTest,
       {/*code_ready_latency=*/base::Milliseconds(205),
        /*config_promises_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_bidding_signals_latency=*/std::nullopt});
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().RecordGenerateBidDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(405),
        /*config_promises_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_bidding_signals_latency=*/std::nullopt});
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().RecordGenerateBidDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(-100),
        /*config_promises_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_bidding_signals_latency=*/std::nullopt});
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_start_time*/ base::TimeTicks::Now(),
+       /*generate_bid_finish_time*/ base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   EXPECT_EQ(
@@ -1240,6 +1337,95 @@ TEST_F(AuctionMetricsRecorderTest,
   EXPECT_FALSE(HasMetric(
       UkmEntry::
           kMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       GenerateBidPhaseMetricsHaveNoValuesForNoGenerateBids) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kBidSignalsFetchPhaseStartTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kBidSignalsFetchPhaseEndTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kBidGenerationPhaseStartTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kBidGenerationPhaseEndTimeInMillisName));
+}
+
+// Times for this test:
+// - GenerateBid called at 205
+// - Signals fetched by (205 + 410) = 615
+// - GenerateBid complete by (615 + 190) = 805
+TEST_F(AuctionMetricsRecorderTest, GenerateBidPhaseMetricsWithOneRecord) {
+  recorder().RecordGenerateBidDependencyLatencies(
+      {/*code_ready_latency=*/std::nullopt,
+       /*config_promises_latency=*/std::nullopt,
+       /*direct_from_seller_signals_latency=*/std::nullopt,
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/FastForwardTime(base::Milliseconds(205)),
+       /*generate_bid_start_time=*/FastForwardTime(base::Milliseconds(410)),
+       /*generate_bid_finish_time=*/FastForwardTime(base::Milliseconds(190))});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 205 becomes 200 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kBidSignalsFetchPhaseStartTimeInMillisName),
+      200);
+  // 615 becomes 610 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kBidSignalsFetchPhaseEndTimeInMillisName),
+            610);
+  // 615 becomes 610 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kBidGenerationPhaseStartTimeInMillisName),
+            610);
+  // 805 becomes 800 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kBidGenerationPhaseEndTimeInMillisName),
+            800);
+}
+
+// Times for this test:
+// - GenerateBid[bid2] called at 115
+// - GenerateBid[bid1] called at (115 + 105) = 220
+// - Signals fetched[bid1] by (220 + 415) = 635
+// - GenerateBid complete[bid1] by (635 + 250) = 885
+// - Signals fetched[bid2] by (885 + 610) = 1495
+// - GenerateBid complete[bid2] by (1495 + 100) = 1595
+//
+// Phases:
+// - BidSignalsFetch start: min(115, 220) = 115
+// - BidSignalsFetch end: max(635, 1495) = 1495
+// - BidGeneration start: min(635, 1495) = 635
+// - BidGeneration end: max(885, 1595) = 1595
+TEST_F(AuctionMetricsRecorderTest, GenerateBidPhaseMetricsWithTwoRecords) {
+  base::TimeTicks bid2_start_time = FastForwardTime(base::Milliseconds(115));
+
+  recorder().RecordGenerateBidDependencyLatencies(
+      {/*code_ready_latency=*/std::nullopt,
+       /*config_promises_latency=*/std::nullopt,
+       /*direct_from_seller_signals_latency=*/std::nullopt,
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/FastForwardTime(base::Milliseconds(105)),
+       /*generate_bid_start_time=*/FastForwardTime(base::Milliseconds(415)),
+       /*generate_bid_finish_time=*/FastForwardTime(base::Milliseconds(250))});
+  recorder().RecordGenerateBidDependencyLatencies(
+      {/*code_ready_latency=*/std::nullopt,
+       /*config_promises_latency=*/std::nullopt,
+       /*direct_from_seller_signals_latency=*/std::nullopt,
+       /*trusted_bidding_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/bid2_start_time,
+       /*generate_bid_start_time=*/FastForwardTime(base::Milliseconds(610)),
+       /*generate_bid_finish_time=*/FastForwardTime(base::Milliseconds(100))});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 115 becomes 110 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kBidSignalsFetchPhaseStartTimeInMillisName),
+      110);
+  // 1495 becomes 1490 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kBidSignalsFetchPhaseEndTimeInMillisName),
+            1490);
+  // 635 becomes 630 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kBidGenerationPhaseStartTimeInMillisName),
+            630);
+  // 1595 becomes 1590 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kBidGenerationPhaseEndTimeInMillisName),
+            1590);
 }
 
 TEST_F(AuctionMetricsRecorderTest,
@@ -1555,7 +1741,10 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/std::nullopt,
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_scoring_signals_latency=*/std::nullopt});
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
 
   EXPECT_FALSE(HasMetric(UkmEntry::kMeanScoreAdCodeReadyLatencyInMillisName));
   EXPECT_FALSE(HasMetric(UkmEntry::kMaxScoreAdCodeReadyLatencyInMillisName));
@@ -1574,7 +1763,10 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(105),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
-       /*trusted_scoring_signals_latency=*/base::Milliseconds(405)});
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(405),
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 105 becomes 100 because of bucketing
@@ -1607,11 +1799,17 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(105),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
-       /*trusted_scoring_signals_latency=*/base::Milliseconds(405)});
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(405),
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(305),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
-       /*trusted_scoring_signals_latency=*/base::Milliseconds(605)});
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(605),
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 205 becomes 200 because of bucketing
@@ -1646,15 +1844,24 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(105),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
-       /*trusted_scoring_signals_latency=*/base::Milliseconds(405)});
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(405),
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(305),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
-       /*trusted_scoring_signals_latency=*/base::Milliseconds(605)});
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(605),
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(-200),
        /*direct_from_seller_signals_latency=*/base::Milliseconds(-400),
-       /*trusted_scoring_signals_latency=*/base::Milliseconds(-500)});
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(-500),
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   // 205 becomes 200 because of bucketing
@@ -1716,19 +1923,28 @@ TEST_F(AuctionMetricsRecorderTest,
     recorder().RecordScoreAdDependencyLatencies(
         {/*code_ready_latency=*/base::Milliseconds(305),
          /*direct_from_seller_signals_latency=*/base::Milliseconds(50),
-         /*trusted_scoring_signals_latency=*/std::nullopt});
+         /*trusted_scoring_signals_latency=*/std::nullopt,
+         /*deps_wait_start_time=*/base::TimeTicks::Now(),
+         /*score_ad_start_time=*/base::TimeTicks::Now(),
+         /*score_ad_finish_time=*/base::TimeTicks::Now()});
   }
   for (int i = 0; i < 18; ++i) {
     recorder().RecordScoreAdDependencyLatencies(
         {/*code_ready_latency=*/base::Milliseconds(50),
          /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
-         /*trusted_scoring_signals_latency=*/base::Milliseconds(100)});
+         /*trusted_scoring_signals_latency=*/base::Milliseconds(100),
+         /*deps_wait_start_time=*/base::TimeTicks::Now(),
+         /*score_ad_start_time=*/base::TimeTicks::Now(),
+         /*score_ad_finish_time=*/base::TimeTicks::Now()});
   }
   for (int i = 0; i < 21; ++i) {
     recorder().RecordScoreAdDependencyLatencies(
         {/*code_ready_latency=*/std::nullopt,
          /*direct_from_seller_signals_latency=*/base::Milliseconds(50),
-         /*trusted_scoring_signals_latency=*/base::Milliseconds(605)});
+         /*trusted_scoring_signals_latency=*/base::Milliseconds(605),
+         /*deps_wait_start_time=*/base::TimeTicks::Now(),
+         /*score_ad_start_time=*/base::TimeTicks::Now(),
+         /*score_ad_finish_time=*/base::TimeTicks::Now()});
   }
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
@@ -1767,11 +1983,17 @@ TEST_F(AuctionMetricsRecorderTest, ScoreAdCriticalPathMetricsComputeMean) {
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(205),
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_scoring_signals_latency=*/std::nullopt});
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(405),
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_scoring_signals_latency=*/std::nullopt});
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   EXPECT_EQ(GetMetricValue(UkmEntry::kNumScoreAdCodeReadyOnCriticalPathName),
@@ -1801,15 +2023,24 @@ TEST_F(AuctionMetricsRecorderTest,
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(205),
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_scoring_signals_latency=*/std::nullopt});
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(405),
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_scoring_signals_latency=*/std::nullopt});
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().RecordScoreAdDependencyLatencies(
       {/*code_ready_latency=*/base::Milliseconds(-100),
        /*direct_from_seller_signals_latency=*/std::nullopt,
-       /*trusted_scoring_signals_latency=*/std::nullopt});
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_start_time=*/base::TimeTicks::Now(),
+       /*score_ad_finish_time=*/base::TimeTicks::Now()});
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
   EXPECT_EQ(GetMetricValue(UkmEntry::kNumScoreAdCodeReadyOnCriticalPathName),
@@ -1832,6 +2063,91 @@ TEST_F(AuctionMetricsRecorderTest,
   EXPECT_FALSE(HasMetric(
       UkmEntry::
           kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdPhaseMetricsHaveNoValuesForNoScoreAds) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(
+      HasMetric(UkmEntry::kScoreSignalsFetchPhaseStartTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kScoreSignalsFetchPhaseEndTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kScoringPhaseStartTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kScoringPhaseEndTimeInMillisName));
+}
+
+// Times for this test:
+// - ScoreAd called at 205
+// - Signals fetched by (205 + 410) = 615
+// - ScoreAd complete by (615 + 190) = 805
+TEST_F(AuctionMetricsRecorderTest, ScoreAdPhaseMetricsWithOneRecord) {
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/std::nullopt,
+       /*direct_from_seller_signals_latency=*/std::nullopt,
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/FastForwardTime(base::Milliseconds(205)),
+       /*score_ad_start_time=*/FastForwardTime(base::Milliseconds(410)),
+       /*score_ad_finish_time=*/FastForwardTime(base::Milliseconds(190))});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 205 becomes 200 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kScoreSignalsFetchPhaseStartTimeInMillisName),
+      200);
+  // 615 becomes 610 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kScoreSignalsFetchPhaseEndTimeInMillisName),
+      610);
+  // 615 becomes 610 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kScoringPhaseStartTimeInMillisName), 610);
+  // 805 becomes 800 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kScoringPhaseEndTimeInMillisName), 800);
+}
+
+// Times for this test:
+// - ScoreAd[bid2] called at 115
+// - ScoreAd[bid1] called at (115 + 105) = 220
+// - Signals fetched[bid1] by (220 + 415) = 635
+// - ScoreAd complete[bid1] by (635 + 250) = 885
+// - Signals fetched[bid2] by (885 + 610) = 1495
+// - ScoreAd complete[bid2] by (1495 + 100) = 1595
+//
+// Phases:
+// - ScoreSignalsFetch start: min(115, 220) = 115
+// - ScoreSignalsFetch end: max(635, 1495) = 1495
+// - Scoring start: min(635, 1495) = 635
+// - Scoring end: max(885, 1595) = 1595
+TEST_F(AuctionMetricsRecorderTest, ScoreAdPhaseMetricsWithTwoRecords) {
+  base::TimeTicks bid2_start_time = FastForwardTime(base::Milliseconds(115));
+
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/std::nullopt,
+       /*direct_from_seller_signals_latency=*/std::nullopt,
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/FastForwardTime(base::Milliseconds(105)),
+       /*score_ad_start_time=*/FastForwardTime(base::Milliseconds(415)),
+       /*score_ad_finish_time=*/FastForwardTime(base::Milliseconds(250))});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/std::nullopt,
+       /*direct_from_seller_signals_latency=*/std::nullopt,
+       /*trusted_scoring_signals_latency=*/std::nullopt,
+       /*deps_wait_start_time=*/bid2_start_time,
+       /*score_ad_start_time=*/FastForwardTime(base::Milliseconds(610)),
+       /*score_ad_finish_time=*/FastForwardTime(base::Milliseconds(100))});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 115 becomes 110 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kScoreSignalsFetchPhaseStartTimeInMillisName),
+      110);
+  // 1495 becomes 1490 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kScoreSignalsFetchPhaseEndTimeInMillisName),
+      1490);
+  // 635 becomes 630 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kScoringPhaseStartTimeInMillisName), 630);
+  // 1595 becomes 1590 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kScoringPhaseEndTimeInMillisName), 1590);
 }
 
 TEST_F(AuctionMetricsRecorderTest, MultiBidCount) {

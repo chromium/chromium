@@ -74,6 +74,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void DidPresentCompositorFrames(viz::FrameTimingDetailsMap timing_details,
                                   uint32_t frame_token) override;
   void SetMemoryPolicy(size_t bytes_limit) override;
+  float GetVelocityInPixelsPerSecond() override;
   void DidBecomeActive() override;
   void DidChangeRootLayerScrollOffset(const gfx::PointF& root_offset) override;
   void SynchronouslyZoomBy(float zoom_delta, const gfx::Point& anchor) override;
@@ -90,6 +91,8 @@ class CONTENT_EXPORT SynchronousCompositorHost
       uint32_t version,
       viz::CompositorFrameMetadata frame_metadata,
       std::optional<viz::LocalSurfaceId> new_local_surface_id);
+  void BeginFrameComplete(
+      blink::mojom::SyncCompositorCommonRendererParamsPtr params);
 
   // Called when the mojo channel should be created.
   void InitMojo();
@@ -181,6 +184,9 @@ class CONTENT_EXPORT SynchronousCompositorHost
 
   // Updated by both renderer and browser. This is in physical pixels.
   gfx::PointF root_scroll_offset_;
+
+  float velocity_in_pixels_per_second_ = 0.f;
+  base::TimeDelta last_begin_frame_time_delta_;
 
   // Indicates that whether OnComputeScroll is called or overridden. The
   // fling_controller should advance the fling only when OnComputeScroll is not

@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1553,5 +1554,18 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, is_signed_in,
                                              kAccountFullName16),
             GetMessageWrapper()->GetDescription());
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+TEST_F(SaveUpdatePasswordMessageDelegateTest, RecordsPromptShownWhenEnqueuing) {
+  base::HistogramTester histogram_tester;
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormSubmissionsVsSavePrompts",
+      password_manager::metrics_util::SaveFlowStep::kSavePromptShown, 1);
   DismissMessage(messages::DismissReason::UNKNOWN);
 }

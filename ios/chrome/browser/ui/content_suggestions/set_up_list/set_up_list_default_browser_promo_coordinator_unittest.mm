@@ -40,7 +40,7 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIWindow* window_;

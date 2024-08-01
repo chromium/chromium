@@ -167,6 +167,15 @@ const base::FeatureParam<MemtagMode> kMemtagModeParam{
 #endif
     &kMemtagModeOptions};
 
+constexpr FeatureParam<RetagMode>::Option kRetagModeOptions[] = {
+    {RetagMode::kIncrement, "increment"},
+    {RetagMode::kRandom, "random"},
+};
+
+const base::FeatureParam<RetagMode> kRetagModeParam{
+    &kPartitionAllocMemoryTagging, "retag-mode", RetagMode::kIncrement,
+    &kRetagModeOptions};
+
 constexpr FeatureParam<MemoryTaggingEnabledProcesses>::Option
     kMemoryTaggingEnabledProcessesOptions[] = {
         {MemoryTaggingEnabledProcesses::kBrowserOnly, "browser-only"},

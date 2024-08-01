@@ -103,4 +103,24 @@ TEST(X11ConnectionTest, Error) {
   EXPECT_EQ(drawable_error->bad_value, static_cast<uint32_t>(invalid_window));
 }
 
+TEST(X11ConnectionTest, LargeQueryTree) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+
+  Window root = CreateWindow(&connection);
+  for (size_t i = 0; i < 0x10000; i++) {
+    connection.CreateWindow({
+        .depth = connection.default_root_depth().depth,
+        .wid = connection.GenerateId<Window>(),
+        .parent = root,
+        .width = 1,
+        .height = 1,
+        .override_redirect = Bool32(true),
+    });
+  }
+
+  // Ensure large QueryTree requests don't cause a crash.
+  connection.QueryTree(root).Sync();
+}
+
 }  // namespace x11

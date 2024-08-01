@@ -50,7 +50,7 @@ class TabGroupSyncUtilTest : public PlatformTest {
     test_browser_state_builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    chrome_browser_state_ = test_browser_state_builder.Build();
+    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
         TabGroupSyncServiceFactory::GetForBrowserState(

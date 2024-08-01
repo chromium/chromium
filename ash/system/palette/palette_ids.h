@@ -20,6 +20,7 @@ enum class PaletteToolId {
   LASER_POINTER,
   MAGNIFY,
   ENTER_CAPTURE_MODE,
+  MARKER_MODE,
 };
 
 // Usage of each pen palette option. This enum is used to back an UMA histogram
@@ -35,6 +36,7 @@ enum PaletteTrayOptions {
   PALETTE_LASER_POINTER,
   PALETTE_METALAYER,
   PALETTE_ENTER_CAPTURE_MODE,
+  PALETTE_MARKER_MODE,
   PALETTE_OPTIONS_COUNT
 };
 

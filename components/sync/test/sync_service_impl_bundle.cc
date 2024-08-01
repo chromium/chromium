@@ -30,8 +30,8 @@ SyncServiceImplBundle::~SyncServiceImplBundle() = default;
 std::unique_ptr<SyncClientMock> SyncServiceImplBundle::CreateSyncClientMock() {
   auto sync_client = std::make_unique<testing::NiceMock<SyncClientMock>>();
   ON_CALL(*sync_client, GetPrefService()).WillByDefault(Return(&pref_service_));
-  ON_CALL(*sync_client, GetSyncApiComponentFactory())
-      .WillByDefault(Return(&component_factory_));
+  ON_CALL(*sync_client, GetSyncEngineFactory())
+      .WillByDefault(Return(&engine_factory_));
   ON_CALL(*sync_client, GetSyncInvalidationsService())
       .WillByDefault(Return(sync_invalidations_service()));
   ON_CALL(*sync_client, GetTrustedVaultClient())

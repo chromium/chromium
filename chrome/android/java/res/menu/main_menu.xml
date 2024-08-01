@@ -65,7 +65,7 @@ found in the LICENSE file.
             android:icon="@drawable/ic_add_box_rounded_corner" />
         <item android:id="@+id/quick_delete_menu_id"
             android:title="@string/menu_quick_delete"
-            android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
+            android:icon="@drawable/material_ic_delete_24dp"/>
         <item android:id="@+id/quick_delete_divider_line_id"
             android:title="@null" />
         <item android:id="@+id/downloads_menu_id"
@@ -185,10 +185,10 @@ found in the LICENSE file.
             android:icon="@drawable/ic_add_box_rounded_corner" />
         <item android:id="@+id/menu_select_tabs"
             android:title="@string/menu_select_tabs"
-            android:icon="@drawable/ic_select_tabs" />
+            android:icon="@drawable/ic_select_check_box_24dp" />
         <item android:id="@id/quick_delete_menu_id"
             android:title="@string/menu_quick_delete"
-            android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
+            android:icon="@drawable/material_ic_delete_24dp"/>
         <item android:id="@id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
@@ -208,6 +208,6 @@ found in the LICENSE file.
             android:icon="@drawable/settings_cog" />
         <item android:id="@id/quick_delete_menu_id"
             android:title="@string/menu_quick_delete"
-            android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
+            android:icon="@drawable/material_ic_delete_24dp"/>
     </group>
 </menu>

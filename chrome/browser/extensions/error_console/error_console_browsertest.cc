@@ -162,8 +162,9 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     ErrorObserver& operator=(const ErrorObserver&) = delete;
 
     virtual ~ErrorObserver() {
-      if (error_console_)
+      if (error_console_) {
         error_console_->RemoveObserver(this);
+      }
     }
 
     // ErrorConsole::Observer implementation.

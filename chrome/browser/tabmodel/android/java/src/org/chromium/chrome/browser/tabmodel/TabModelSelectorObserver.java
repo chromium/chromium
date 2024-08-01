@@ -42,4 +42,7 @@ public interface TabModelSelectorObserver {
      * are reliable.
      */
     default void onTabStateInitialized() {}
+
+    /** Called when the tab model selector is detroyed. */
+    default void onDestroyed() {}
 }

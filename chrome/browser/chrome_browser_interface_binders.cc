@@ -68,7 +68,6 @@
 #include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
 #include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/feed/buildflags.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
@@ -157,7 +156,6 @@
 #else
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
-#include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
@@ -192,6 +190,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
@@ -1194,7 +1193,8 @@ void PopulateChromeWebUIFrameBinders(
                                            lens::LensUntrustedUI>(map);
   }
 
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+  if (lens::features::IsLensOverlayEnabled() &&
+      lens::features::IsLensOverlaySearchBubbleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         lens::mojom::SearchBubblePageHandlerFactory, lens::SearchBubbleUI>(map);
   }
@@ -1310,11 +1310,6 @@ void PopulateChromeWebUIFrameBinders(
   if (IsDriveModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         file_suggestion::mojom::FileSuggestionHandler, NewTabPageUI>(map);
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
-    RegisterWebUIControllerInterfaceBinder<ntp::feed::mojom::FeedHandler,
-                                           NewTabPageUI>(map);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
@@ -1764,7 +1759,7 @@ void PopulateChromeWebUIFrameBinders(
                                          DiscardsUI>(map);
 #endif
 
-#if BUILDFLAG(ENABLE_FEED_V2) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   RegisterWebUIControllerInterfaceBinder<feed_internals::mojom::PageHandler,
                                          FeedInternalsUI>(map);
 #endif
@@ -1829,6 +1824,12 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
     RegisterWebUIControllerInterfaceBinder<
         related_website_sets::mojom::RelatedWebsiteSetsPageHandler,
+        privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
+    RegisterWebUIControllerInterfaceBinder<
+        private_state_tokens::mojom::PrivateStateTokensPageHandler,
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
 #endif
@@ -1931,6 +1932,12 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (lens::features::IsLensOverlayEnabled()) {
     registry.ForWebUI<lens::LensUntrustedUI>()
         .Add<lens::mojom::LensPageHandlerFactory>()
+        .Add<searchbox::mojom::PageHandler>()
+        .Add<color_change_listener::mojom::PageHandler>();
+  }
+  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+    registry.ForWebUI<lens::SearchBubbleUI>()
+        .Add<lens::mojom::SearchBubblePageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
         .Add<color_change_listener::mojom::PageHandler>();
   }

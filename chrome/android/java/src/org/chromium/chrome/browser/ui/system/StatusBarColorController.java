@@ -12,6 +12,7 @@ import android.view.Window;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
@@ -76,7 +76,7 @@ public class StatusBarColorController
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private final StatusBarColorProvider mStatusBarColorProvider;
     private final ActivityTabProvider.ActivityTabTabObserver mStatusBarColorTabObserver;
-    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver;
     private final TopUiThemeColorProvider mTopUiThemeColor;
     private final @ColorInt int mStandardPrimaryBgColor;
     private final @ColorInt int mIncognitoPrimaryBgColor;
@@ -235,17 +235,14 @@ public class StatusBarColorController
                     }
                 };
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        mIsIncognitoBranded = newModel.isIncognitoBranded();
-                        // When opening a new Incognito Tab from a normal Tab (or vice versa), the
-                        // status bar color is updated. However, this update is triggered after the
-                        // animation, so we update here for the duration of the new Tab animation.
-                        // See https://crbug.com/917689.
-                        updateStatusBarColor();
-                    }
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    mIsIncognitoBranded = tabModel.isIncognitoBranded();
+                    // When opening a new Incognito Tab from a normal Tab (or vice versa), the
+                    // status bar color is updated. However, this update is triggered after the
+                    // animation, so we update here for the duration of the new Tab animation.
+                    // See https://crbug.com/917689.
+                    updateStatusBarColor();
                 };
 
         if (layoutManagerSupplier != null) {
@@ -271,7 +268,7 @@ public class StatusBarColorController
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
         if (mTabModelSelector != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         }
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -371,7 +368,7 @@ public class StatusBarColorController
         assert mTabModelSelector == null : "mTabModelSelector should only be set once.";
         mTabModelSelector = tabModelSelector;
         if (mTabModelSelector != null) {
-            mTabModelSelector.addObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
             mIsIncognitoBranded = mTabModelSelector.isIncognitoBrandedModelSelected();
             updateStatusBarColor();
         }

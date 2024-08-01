@@ -1541,7 +1541,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   if (!cache_success.IsFullCacheHit()) {
     ApplyPropertiesFromCascade(state, cascade, cache_success);
-    MaybeAddToMatchedPropertiesCache(state, cache_success, result);
+    MaybeAddToMatchedPropertiesCache(state, cache_success);
   }
 
   // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
@@ -2463,8 +2463,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
 
 void StyleResolver::MaybeAddToMatchedPropertiesCache(
     StyleResolverState& state,
-    const CacheSuccess& cache_success,
-    const MatchResult& match_result) {
+    const CacheSuccess& cache_success) {
   state.LoadPendingResources();
 
   // NOTE: We replace everything that isn't a full cache hit. There are cases

@@ -133,6 +133,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
   // input_method::InputMethodManager::Observer:
   void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
@@ -385,6 +387,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  session_manager::SessionState last_session_ =
+      session_manager::SessionState::UNKNOWN;
 
   // Task runner where settings refreshes are scheduled to run.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

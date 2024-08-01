@@ -86,8 +86,9 @@ void ChromeAppIcon::ApplyEffects(int resource_size_in_dip,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Badge should be added after graying out the icon to have a crisp look.
-  if (badge_type != Badge::kNone)
+  if (badge_type != Badge::kNone) {
     util::ApplyBadge(image_skia, badge_type);
+  }
 #endif
 
   if (rounded_corners) {

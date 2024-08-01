@@ -7,7 +7,7 @@
 
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #include "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

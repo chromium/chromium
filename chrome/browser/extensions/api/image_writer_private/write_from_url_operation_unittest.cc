@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -201,11 +202,11 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, DownloadFile) {
 }
 
 TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
-  std::unique_ptr<char[]> char_buffer(new char[kTestFileSize]);
-  base::span<char> chars = base::make_span(char_buffer.get(), kTestFileSize);
-  base::ReadFile(test_utils_.GetImagePath(), chars);
+  base::HeapArray<char> char_buffer =
+      base::HeapArray<char>::Uninit(kTestFileSize);
+  base::ReadFile(test_utils_.GetImagePath(), char_buffer);
   base::MD5Digest expected_digest;
-  base::MD5Sum(base::as_bytes(chars), &expected_digest);
+  base::MD5Sum(base::as_bytes(char_buffer.as_span()), &expected_digest);
   std::string expected_hash = base::MD5DigestToBase16(expected_digest);
 
   scoped_refptr<WriteFromUrlOperationForTest> operation =

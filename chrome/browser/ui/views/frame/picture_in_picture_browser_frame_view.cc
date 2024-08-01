@@ -189,7 +189,8 @@ class WindowEventObserver : public ui::EventObserver {
     // Calculate input bounds for Linux. This is needed because the input bounds
     // is not necessary the same as the local bounds on Linux.
     if (pip_browser_frame_view_->ShouldDrawFrameShadow()) {
-      gfx::Insets insets = pip_browser_frame_view_->MirroredFrameBorderInsets();
+      gfx::Insets insets =
+          pip_browser_frame_view_->RestoredMirroredFrameBorderInsets();
       if (pip_browser_frame_view_->frame()->tiled()) {
         insets = gfx::Insets();
       }
@@ -886,8 +887,8 @@ void PictureInPictureBrowserFrameView::RemovedFromWidget() {
 }
 
 #if BUILDFLAG(IS_LINUX)
-gfx::Insets PictureInPictureBrowserFrameView::MirroredFrameBorderInsets()
-    const {
+gfx::Insets
+PictureInPictureBrowserFrameView::RestoredMirroredFrameBorderInsets() const {
   auto border = FrameBorderInsets();
   return base::i18n::IsRTL() ? gfx::Insets::TLBR(border.top(), border.right(),
                                                  border.bottom(), border.left())
@@ -901,7 +902,7 @@ gfx::Insets PictureInPictureBrowserFrameView::GetInputInsets() const {
 SkRRect PictureInPictureBrowserFrameView::GetRestoredClipRegion() const {
   gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawFrameShadow()) {
-    gfx::InsetsF border(MirroredFrameBorderInsets());
+    gfx::InsetsF border(RestoredMirroredFrameBorderInsets());
     bounds_dip.Inset(border);
   }
 
@@ -1175,7 +1176,8 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     PaintRestoredFrameBorderLinux(
         *canvas, *this, frame_background_.get(), GetRestoredClipRegion(),
         ShouldDrawFrameShadow(), ShouldPaintAsActive(),
-        MirroredFrameBorderInsets(), GetShadowValues(), frame()->tiled());
+        RestoredMirroredFrameBorderInsets(), GetShadowValues(),
+        frame()->tiled());
   }
 #endif
   BrowserNonClientFrameView::OnPaint(canvas);

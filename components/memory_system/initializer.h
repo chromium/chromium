@@ -8,8 +8,8 @@
 #include <optional>
 #include <string_view>
 
+#include "base/profiler/process_type.h"
 #include "components/memory_system/parameters.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 
 namespace memory_system {
@@ -28,7 +28,7 @@ class Initializer {
                                     std::string_view process_type);
   Initializer& SetProfilingClientParameters(
       version_info::Channel channel,
-      metrics::CallStackProfileParams::Process process_type);
+      base::ProfilerProcessType process_type);
   Initializer& SetDispatcherParameters(
       DispatcherParameters::PoissonAllocationSamplerInclusion
           poisson_allocation_sampler_inclusion,

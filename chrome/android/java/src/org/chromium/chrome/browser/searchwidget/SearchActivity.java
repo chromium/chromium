@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -331,7 +330,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         new OmniboxActionDelegateImpl(
                                 this,
                                 () -> mSearchBoxDataProvider.getTab(),
-                                new SettingsLauncherImpl(),
                                 // TODO(ender): phase out callbacks when the modules below are
                                 // components.
                                 // Open URL in an existing, else new regular tab.

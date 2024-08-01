@@ -14,6 +14,7 @@ namespace ash {
 
 class KioskEnableScreenView;
 
+// TODO(crbug.com/256596599): Remove this class.
 // Representation independent class that controls screen for enabling
 // consumer kiosk mode.
 class KioskEnableScreen : public BaseScreen {
@@ -34,13 +35,6 @@ class KioskEnableScreen : public BaseScreen {
 
   void HandleClose();
   void HandleEnable();
-
-  // Callback for KioskChromeAppManager::EnableConsumerModeKiosk().
-  void OnEnableConsumerKioskAutoLaunch(bool success);
-
-  // Callback for KioskChromeAppManager::GetConsumerKioskModeStatus().
-  void OnGetConsumerKioskAutoLaunchStatus(
-      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
 
   base::WeakPtr<KioskEnableScreenView> view_;
   base::RepeatingClosure exit_callback_;

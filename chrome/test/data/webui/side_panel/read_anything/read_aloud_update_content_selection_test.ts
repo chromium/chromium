@@ -99,7 +99,9 @@ suite('ReadAloud_UpdateContentSelection', () => {
   suite('Before speech started', () => {
     test('inner html of container matches expected html', () => {
       assertFalse(app.speechPlayingState.isSpeechActive);
-      assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
+      assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+      // isSpeechTreeInitialized is set in updateContent
+      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
       // The expected HTML before any highlights are added.
       const expected = '<div><p>World</p><p>Friend!</p></div>';
       const innerHTML = app.$.container.innerHTML;

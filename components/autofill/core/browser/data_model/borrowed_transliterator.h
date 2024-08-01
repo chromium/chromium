@@ -24,14 +24,13 @@ class BorrowedTransliterator {
   BorrowedTransliterator();
   virtual ~BorrowedTransliterator();
 
-  void Transliterate(icu::UnicodeString* text) const;
-
- private:
-  static base::Lock& GetLock();
-
   // Use ICU transliteration to remove diacritics, fold case and transliterate
   // Latin to ASCII.
   // See http://userguide.icu-project.org/transforms/general
+  void Transliterate(icu::UnicodeString& text) const;
+
+ private:
+  static base::Lock& GetLock();
   static icu::Transliterator* GetTransliterator();
 
   base::AutoLock auto_lock_;
@@ -41,6 +40,7 @@ class BorrowedTransliterator {
 // remove the diacritics. This function also converts other Latin characters to
 // ascii (ł -> l, ß -> ss). It does not perform German transliteration (ö
 // becomes o, not oe).
+// TODO(crbug.com/328968064): Perform German transliteration.
 std::u16string RemoveDiacriticsAndConvertToLowerCase(std::u16string_view value);
 
 }  // namespace autofill

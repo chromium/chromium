@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/notification_service_impl.h"
 #include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_switches.h"
@@ -90,8 +89,6 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
     if (parameters.command_line->HasSwitch(switches::kBrowserStartupDialog)) {
       WaitForDebugger("Browser");
     }
-
-    notification_service_ = std::make_unique<NotificationServiceImpl>();
 
 #if BUILDFLAG(IS_WIN)
     base::win::EnableHighDPISupport();
@@ -201,8 +198,6 @@ void BrowserMainRunnerImpl::Shutdown() {
     ole_initializer_.reset(NULL);
 #endif
     main_loop_.reset(nullptr);
-
-    notification_service_.reset(nullptr);
 
     is_shutdown_ = true;
   }

@@ -74,7 +74,16 @@ class BuildStatus(enum.Flag):
     SCHEDULED = enum.auto()
     STARTED = enum.auto()
     SUCCESS = enum.auto()
-    FAILURE = enum.auto()
+    # `*_FAILURE` are Chromium-specific reasons why a build appears red:
+    # https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipe_modules/tryserver/api.py;l=295-309;drc=6ba67afd6fb7718743af91b847ddf1907f3ee9a6;bpv=0;bpt=0
+    #
+    # These reasons are opaque to Buildbucket, which treats all of them as just
+    # `FAILURE`.
+    TEST_FAILURE = enum.auto()
+    COMPILE_FAILURE = enum.auto()
+    PATCH_FAILURE = enum.auto()
+    OTHER_FAILURE = enum.auto()
+    FAILURE = TEST_FAILURE | COMPILE_FAILURE | PATCH_FAILURE | OTHER_FAILURE
     INFRA_FAILURE = enum.auto()
     CANCELED = enum.auto()
     COMPLETED = SUCCESS | FAILURE | INFRA_FAILURE | CANCELED

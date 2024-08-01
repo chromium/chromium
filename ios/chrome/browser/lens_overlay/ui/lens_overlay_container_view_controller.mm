@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
 namespace {
 

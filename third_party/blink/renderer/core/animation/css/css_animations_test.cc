@@ -345,9 +345,6 @@ bool BackdropFilterFlag(const ComputedStyle& style) {
 bool BackgroundColorFlag(const ComputedStyle& style) {
   return style.HasCurrentBackgroundColorAnimation();
 }
-bool ClipPathFlag(const ComputedStyle& style) {
-  return style.HasCurrentClipPathAnimation();
-}
 
 bool CompositedOpacityFlag(const ComputedStyle& style) {
   return style.IsRunningOpacityAnimationOnCompositor();
@@ -389,7 +386,6 @@ FlagData flag_data[] = {
     {"filter", "contrast(10%)", "contrast(20%)", FilterFlag},
     {"backdrop-filter", "blur(10px)", "blur(20px)", BackdropFilterFlag},
     {"background-color", "red", "blue", BackgroundColorFlag},
-    {"clip-path", "circle(10%)", "circle(20%)", ClipPathFlag},
 };
 
 FlagData compositor_flag_data[] = {

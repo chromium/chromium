@@ -73,10 +73,29 @@ TEST_F(TraceReportDatabaseTest, AddingNewTraceReport) {
   // Verify that the conversion from string to Token is done correctly
   EXPECT_EQ(new_uuid, received_reports[0].uuid);
   EXPECT_EQ(received_reports.size(), 1u);
+  EXPECT_TRUE(received_reports[0].has_trace_content);
   EXPECT_EQ(received_reports[0].scenario_name, "test_scenario");
   EXPECT_EQ(received_reports[0].upload_rule_name, "test_rule");
   EXPECT_EQ(received_reports[0].total_size, new_size);
   EXPECT_EQ(received_reports[0].upload_state, ReportUploadState::kPending);
+}
+
+TEST_F(TraceReportDatabaseTest, AddingNewTraceReportNoContent) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  // Create Report for the local traces database.
+  NewTraceReport new_report = MakeNewTraceReport();
+  const auto new_uuid = new_report.uuid;
+  new_report.trace_content = "";
+
+  ASSERT_TRUE(trace_report_.AddTrace(new_report));
+
+  auto received_reports = trace_report_.GetAllReports();
+
+  // Verify that the conversion from string to Token is done correctly
+  EXPECT_EQ(received_reports.size(), 1u);
+  EXPECT_EQ(new_uuid, received_reports[0].uuid);
+  EXPECT_FALSE(received_reports[0].has_trace_content);
 }
 
 TEST_F(TraceReportDatabaseTest, RetrieveTraceContentFromReport) {
@@ -201,7 +220,12 @@ TEST_F(TraceReportDatabaseTest, DeleteTraceContentOlderThan) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
 
   ASSERT_TRUE(trace_report_.DeleteTraceContentOlderThan(base::Days(10)));
-  EXPECT_EQ(trace_report_.GetAllReports().size(), 8u);
+  auto received_reports = trace_report_.GetAllReports();
+  EXPECT_EQ(received_reports.size(), 8u);
+  for (const auto& report : received_reports) {
+    EXPECT_EQ(report.has_trace_content,
+              trace_report_.GetTraceContent(report.uuid).has_value());
+  }
   for (const auto& uuid : old_traces) {
     EXPECT_FALSE(trace_report_.GetTraceContent(uuid));
   }

@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -1033,6 +1034,8 @@ public class MainSettingsFragmentTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
     @DisableFeatures({
         ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
     })
     public void testTabsSettingsOn_GroupSync_KillSwitchActive() {
@@ -1058,6 +1061,8 @@ public class MainSettingsFragmentTest {
     @SmallTest
     @DisableFeatures({
         ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+        ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
     })
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
@@ -1080,13 +1085,24 @@ public class MainSettingsFragmentTest {
             Assert.assertNull(
                     "Safety check should not be shown on automotive",
                     mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
-        } else {
-            assertSettingsExists(MainSettings.PREF_SAFETY_HUB, SafetyHubFragment.class);
-            // Safety check should be hidden when safety hub is enabled.
-            Assert.assertNull(
-                    "Safety check setting should be hidden",
-                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+            return;
         }
+
+        assertSettingsExists(MainSettings.PREF_SAFETY_HUB, SafetyHubFragment.class);
+        // Safety check should be hidden when safety hub is enabled.
+        Assert.assertNull(
+                "Safety check setting should be hidden",
+                mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+
+        // Verify that the correct metrics are logged.
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SafetyHubMetricUtils.EXTERNAL_INTERACTIONS_HISTOGRAM_NAME,
+                        SafetyHubMetricUtils.ExternalInteractions.OPEN_FROM_SETTINGS_PAGE);
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText(R.string.prefs_safety_check))));
+        onView(withText(R.string.prefs_safety_check)).perform(click());
+        histogramExpectation.assertExpected();
     }
 
     @Test

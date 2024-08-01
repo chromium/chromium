@@ -932,6 +932,11 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
   hidden_polite_view->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(kPoliteText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  hidden_polite_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::string val;
+  ASSERT_TRUE(node_data.GetStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_EQ("polite", val);
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

@@ -1903,7 +1903,8 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     }
     base::RunLoop run_loop;
     apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
-    LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    ASSERT_TRUE(LaunchFromAppShim(site, /*urls=*/{},
+                                  /*wait_for_complete_launch=*/true));
     run_loop.Run();
     if (!app_browser_ && !had_open_browsers) {
       browser_added_waiter.Wait();
@@ -1916,7 +1917,8 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   } else {
     base::RunLoop run_loop;
     apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
-    LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    ASSERT_TRUE(LaunchFromAppShim(site, /*urls=*/{},
+                                  /*wait_for_complete_launch=*/true));
     run_loop.Run();
   }
 #else

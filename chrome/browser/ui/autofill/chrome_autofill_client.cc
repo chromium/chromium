@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
-#include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -344,11 +343,6 @@ AddressNormalizer* ChromeAutofillClient::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
 }
 
-AutofillOfferManager* ChromeAutofillClient::GetAutofillOfferManager() {
-  return AutofillOfferManagerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
-}
-
 const GURL& ChromeAutofillClient::GetLastCommittedPrimaryMainFrameURL() const {
   return web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 }
@@ -541,30 +535,6 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #else
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, original_profile, options, std::move(callback));
-#endif
-}
-
-// TODO(crbug.com/309163844): Add follow-up ManualFallback for showing IBANs.
-bool ChromeAutofillClient::ShowTouchToFillCreditCard(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
-#if BUILDFLAG(IS_ANDROID)
-  // Create the manual filling controller which will be used to show the
-  // unmasked virtual card details in the manual fallback.
-  ManualFillingController::GetOrCreate(web_contents())
-      ->UpdateSourceAvailability(
-          ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
-          !cards_to_suggest.empty());
-
-  return GetPaymentsAutofillClient()
-      ->GetTouchToFillPaymentMethodController()
-      .Show(std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-            delegate, std::move(cards_to_suggest),
-            std::move(card_acceptabilities));
-#else
-  // Touch To Fill is not supported on Desktop.
-  NOTREACHED_NORETURN();
 #endif
 }
 
@@ -883,15 +853,15 @@ base::span<const AutofillProfile> ChromeAutofillClient::GetTestAddresses()
   return test_addresses_;
 }
 
-AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
-    AutofillManager& manager,
-    FormGlobalId form_id,
-    FieldGlobalId field_id) const {
+AutofillClient::PasswordFormClassification
+ChromeAutofillClient::ClassifyAsPasswordForm(AutofillManager& manager,
+                                             FormGlobalId form_id,
+                                             FieldGlobalId field_id) const {
   // Find the form with `form_id` and decompose into renderer forms.
   std::optional<RendererFormsWithServerPredictions> forms_and_predictions =
       RendererFormsWithServerPredictions::FromBrowserForm(manager, form_id);
   if (!forms_and_predictions) {
-    return PasswordFormType::kNoPasswordForm;
+    return {};
   }
 
   // Find the form to which `field_id` belongs.
@@ -905,7 +875,7 @@ AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
                form.fields().end();
       });
   if (it == forms_and_predictions->renderer_forms.end()) {
-    return PasswordFormType::kNoPasswordForm;
+    return {};
   }
 
   password_manager::FormDataParser parser;
@@ -918,8 +888,15 @@ AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
   std::unique_ptr<password_manager::PasswordForm> pw_form =
       parser.Parse(it->first, password_manager::FormDataParser::Mode::kFilling,
                    /*stored_usernames=*/{});
-  return pw_form ? pw_form->GetPasswordFormType()
-                 : PasswordFormType::kNoPasswordForm;
+  if (!pw_form) {
+    return {};
+  }
+  PasswordFormClassification result{.type = pw_form->GetPasswordFormType()};
+  if (!pw_form->username_element_renderer_id.is_null()) {
+    result.username_field = FieldGlobalId(
+        field_id.frame_token, pw_form->username_element_renderer_id);
+  }
+  return result;
 }
 
 }  // namespace autofill

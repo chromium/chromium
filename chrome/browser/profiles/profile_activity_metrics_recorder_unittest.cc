@@ -234,21 +234,21 @@ TEST_F(ProfileActivityMetricsRecorderTest, SessionInactivityNotRecorded) {
 TEST_F(ProfileActivityMetricsRecorderTest, ProfileState) {
   Profile* regular_profile = profile_manager()->CreateTestingProfile("p1");
   Profile* guest_profile = profile_manager()->CreateGuestProfile();
-  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 0);
+  histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 0);
 
   ActivateBrowser(regular_profile);
-  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 1);
+  histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 1);
   // This is somehow important for the session to end later in the test.
   SimulateUserEvent();
 
   // Repeating the same thing immediately has no impact.
   ActivateBrowser(regular_profile);
-  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 1);
+  histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 1);
 
   // Repeating the same thing immediately has no impact (neither for any other
   // profile).
   ActivateGuestBrowser(guest_profile);
-  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 1);
+  histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 1);
 
   // Stay inactive so the session ends and stay inactive long after that.
   task_environment()->FastForwardBy(kInactivityTimeout * 2 +
@@ -256,11 +256,11 @@ TEST_F(ProfileActivityMetricsRecorderTest, ProfileState) {
 
   // Now we get another record (no matter which profile triggers that).
   ActivateBrowser(regular_profile);
-  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 2);
+  histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 2);
 
   // Repeating the same thing immediately has no impact.
   ActivateBrowser(regular_profile);
-  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 2);
+  histograms()->ExpectTotalCount("Profile.State.LastUsed_All", 2);
 }
 
 TEST_F(ProfileActivityMetricsRecorderTest, AccountMetrics) {

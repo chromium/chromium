@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
+#include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/decorators/process_hosted_content_types_aggregator.h"
 #include "components/performance_manager/decorators/process_priority_aggregator.h"
@@ -60,6 +61,9 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.process_hosted_content_types_aggregator) {
     Install<ProcessHostedContentTypesAggregator>(graph);
+  }
+  if (flags_.page_aggregator) {
+    Install<PageAggregator>(graph);
   }
   if (flags_.resource_attribution_scheduler) {
     Install<resource_attribution::internal::QueryScheduler>(graph);

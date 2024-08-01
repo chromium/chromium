@@ -56,6 +56,7 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -383,10 +384,10 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   // When searching for a hit in SharedBitmap, we don't consider the bitmap
   // format (RGBA 8888 vs F16) since the allocated bitmap is always RGBA_8888.
-  auto* it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
-                            [this](const RegisteredBitmap& registered) {
-                              return registered.bitmap->size() != size_;
-                            });
+  auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
+                           [this](const RegisteredBitmap& registered) {
+                             return registered.bitmap->size() != size_;
+                           });
   recycled_bitmaps_.Shrink(
       static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
 
@@ -715,11 +716,12 @@ void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
 scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
+  scoped_refptr<gpu::ClientSharedImage> client_si;
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   constexpr bool force_gpu_result = true;
   if (!PrepareTransferableResourceInternal(
-          nullptr, nullptr, &transferable_resource, &release_callback,
+          nullptr, &client_si, &transferable_resource, &release_callback,
           force_gpu_result)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
@@ -739,10 +741,8 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   DCHECK(release_callback);
   DCHECK_EQ(size_.width(), transferable_resource.size.width());
   DCHECK_EQ(size_.height(), transferable_resource.size.height());
+  CHECK(client_si);
 
-  // We reuse the same mailbox name from above since our texture id was consumed
-  // from it.
-  const auto& sk_image_mailbox = transferable_resource.mailbox();
   // Use the sync token generated after producing the mailbox. Waiting for this
   // before trying to use the mailbox with some other context will ensure it is
   // valid. We wouldn't need to wait for the consume done in this function
@@ -759,9 +759,10 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   // TODO(xidachen): Create a small pool of recycled textures from
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
   // in DrawingBuffer.
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      sk_image_mailbox, sk_image_sync_token, /* shared_image_texture_id = */ 0,
-      sk_image_info, transferable_resource.texture_target(),
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      std::move(client_si), sk_image_sync_token,
+      /* shared_image_texture_id = */ 0, sk_image_info,
+      transferable_resource.texture_target(),
       /* is_origin_top_left = */ opengl_flip_y_extension_,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

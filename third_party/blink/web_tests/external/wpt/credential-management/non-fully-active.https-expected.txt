@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] non-fully active document behavior for CredentialsContainer
-  promise_rejects_dom: Expected NotAllowedError for get() on non-fully-active document function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'get' on 'CredentialsContainer': Context is detached" that is not a DOMException NotAllowedError: property "code" is equal to 11, expected 0
-Harness: the test ran to completion.
-

@@ -73,6 +73,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

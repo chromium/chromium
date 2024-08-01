@@ -18,6 +18,9 @@
 // Navigates to the customization submenu for a given `type`.
 - (void)navigateToSubmenuForType:(CustomizationToggleType)type;
 
+// Navigates to an external URL for a given `type`.
+- (void)navigateToLinkForType:(CustomizationLinkType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_MUTATOR_H_

@@ -190,6 +190,7 @@ public class AwContentsRenderTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSoftwareCanvas() throws Throwable {
+        mAwContents.getSettings().setAllowFileAccess(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.setLayerType(View.LAYER_TYPE_SOFTWARE, null));
 

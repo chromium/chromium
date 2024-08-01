@@ -127,3 +127,8 @@ const void* SbDrmGetMetrics(SbDrmSystem drm_system, int* size) {
   return nullptr;
 }
 void SbDrmDestroySystem(SbDrmSystem drm_system) {}
+
+SbMediaSupportType SbMediaCanPlayMimeAndKeySystem(const char* mime,
+                                                  const char* key_system) {
+  return kSbMediaSupportTypeMaybe;
+}

@@ -7,8 +7,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace password_manager {
+
+namespace {
+
+void RecordWaitResult(PasswordFormPredictionWaiter::WaitResult result) {
+  base::UmaHistogramEnumeration("PasswordManager.PredictionWaitResult", result);
+}
+
+}  // namespace
 
 PasswordFormPredictionWaiter::PasswordFormPredictionWaiter(Client* client)
     : client_(client) {}
@@ -39,6 +48,12 @@ base::OnceClosure PasswordFormPredictionWaiter::CreateClosure() {
 }
 
 void PasswordFormPredictionWaiter::OnTimeout() {
+  if (outstanding_closures_ > 1) {
+    RecordWaitResult(WaitResult::kTimeoutWaitingForTwoOrMoreClosures);
+  } else {
+    RecordWaitResult(WaitResult::kTimeoutWaitingForOneClosure);
+  }
+
   // The barrier closure remains active. OnWaitCompleted() will still be called
   // if the callbacks occur ever the timeout.
   client_->OnTimeout();
@@ -49,6 +64,7 @@ void PasswordFormPredictionWaiter::OnClosureComplete() {
   outstanding_closures_--;
 
   if (outstanding_closures_ == 0) {
+    RecordWaitResult(WaitResult::kNoTimeout);
     weak_ptr_factory_.InvalidateWeakPtrs();
     timer_.Stop();
     client_->OnWaitCompleted();

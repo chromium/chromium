@@ -171,10 +171,13 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   }
 
   // Use SetNeedsPaintInvalidation to cause the scrollbar (or parts thereof)
-  // to repaint. Here "track" includes track, buttons and tickmarks, i.e. all
-  // things except the thumb.
-  bool TrackNeedsRepaint() const { return track_needs_repaint_; }
-  void ClearTrackNeedsRepaint() { track_needs_repaint_ = false; }
+  // to repaint.
+  bool TrackAndButtonsNeedRepaint() const {
+    return track_and_buttons_need_repaint_;
+  }
+  void ClearTrackAndButtonsNeedRepaint() {
+    track_and_buttons_need_repaint_ = false;
+  }
   bool ThumbNeedsRepaint() const { return thumb_needs_repaint_; }
   void ClearThumbNeedsRepaint() { thumb_needs_repaint_ = false; }
 
@@ -275,7 +278,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool ThumbWillBeUnderMouse() const;
   bool DeltaWillScroll(ScrollOffset delta) const;
 
-  bool track_needs_repaint_ = true;
+  bool track_and_buttons_need_repaint_ = true;
   bool thumb_needs_repaint_ = true;
   bool needs_update_display_ = true;
 

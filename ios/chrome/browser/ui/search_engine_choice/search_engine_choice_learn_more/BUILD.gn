@@ -12,12 +12,12 @@ source_set("search_engine_choice_learn_more") {
   deps = [
     "//base",
     "//components/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/resources",
     "//ios/chrome/common:string_util",

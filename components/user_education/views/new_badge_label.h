@@ -74,7 +74,6 @@ class NewBadgeLabel : public views::Label {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  int GetHeightForWidth(int w) const override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
   void OnPaint(gfx::Canvas* canvas) override;

@@ -2,7 +2,6 @@ include_rules = [
     # To only allow a subset of base/ in Blink, we explicitly list all
     # directories and files instead of writing 'base/'.
     "+base/allocator/buildflags.h",
-    "+base/allocator/partition_allocator",
     "+base/android/build_info.h",
     "+base/android/sys_utils.h",
     "+base/atomic_ref_count.h",
@@ -60,6 +59,7 @@ include_rules = [
     "+net/http/http_util.h",
     "+net/http/http_request_headers.h",
     "+net/http/http_response_headers.h",
+    "+partition_alloc",
     "+services/metrics/public/cpp/metrics_utils.h",
     "+services/metrics/public/cpp/ukm_builders.h",
     "+services/metrics/public/cpp/ukm_entry_builder.h",

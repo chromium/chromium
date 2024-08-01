@@ -1149,6 +1149,7 @@ suite('shortcutCustomizationAppTest', function() {
         [1]: [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          acceleratorLocked: false,
           locked: true,
           layoutProperties: {
             textAccelerator: {
@@ -1222,6 +1223,7 @@ suite('shortcutCustomizationAppTest', function() {
         [2]: [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
+          acceleratorLocked: false,
           locked: false,
           layoutProperties: {
             standardAccelerator: {
@@ -1265,6 +1267,7 @@ suite('shortcutCustomizationAppTest', function() {
           {
             type: AcceleratorType.kDefault,
             state: AcceleratorState.kEnabled,
+            acceleratorLocked: false,
             locked: false,
             layoutProperties: {
               standardAccelerator: {
@@ -1284,6 +1287,7 @@ suite('shortcutCustomizationAppTest', function() {
           {
             type: AcceleratorType.kDefault,
             state: AcceleratorState.kEnabled,
+            acceleratorLocked: false,
             locked: false,
             layoutProperties: {
               standardAccelerator: {

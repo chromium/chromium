@@ -14,3 +14,68 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
+
+static_library("manage_mirrorsync") {
+  sources = [
+    "manage_mirrorsync_dialog.cc",
+    "manage_mirrorsync_dialog.h",
+    "manage_mirrorsync_page_handler.cc",
+    "manage_mirrorsync_page_handler.h",
+    "manage_mirrorsync_ui.cc",
+    "manage_mirrorsync_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//components/drive",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/web_dialogs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/manage_mirrorsync:resources",
+    "//chrome/browser/ui/webui",
+    "//ui/aura",
+    "//ui/base:types",
+    "//ui/webui",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "manage_mirrorsync_dialog_browsertest.cc" ]
+
+  deps = [
+    ":manage_mirrorsync",
+    ":mojo_bindings",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//components/drive",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gmock",
+  ]
+}

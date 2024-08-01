@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillLocalIbanEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
@@ -95,7 +94,6 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -140,9 +138,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private boolean mIsNewlyCreated;
 
     private static boolean sActivityNotExportedChecked;
-
-    /** An instance of settings launcher that can be injected into a fragment */
-    private SettingsLauncher mSettingsLauncher = new SettingsLauncherImpl();
 
     private SnackbarManager mSnackbarManager;
 
@@ -525,13 +520,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof FragmentSettingsLauncher) {
             FragmentSettingsLauncher fragmentSettingsLauncher = (FragmentSettingsLauncher) fragment;
-            fragmentSettingsLauncher.setSettingsLauncher(mSettingsLauncher);
-        }
-        if (fragment instanceof FragmentHelpAndFeedbackLauncher) {
-            FragmentHelpAndFeedbackLauncher fragmentHelpAndFeedbackLauncher =
-                    (FragmentHelpAndFeedbackLauncher) fragment;
-            fragmentHelpAndFeedbackLauncher.setHelpAndFeedbackLauncher(
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
+            fragmentSettingsLauncher.setSettingsLauncher(
+                    SettingsLauncherFactory.createSettingsLauncher());
         }
 
         // Settings screen specific attachments.
@@ -553,7 +543,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     mProfile,
                     new SafetyCheckUpdatesDelegateImpl(),
                     new SafetyCheckBridge(mProfile),
-                    mSettingsLauncher,
                     SigninAndHistorySyncActivityLauncherImpl.get(),
                     SyncConsentActivityLauncherImpl.get(),
                     getModalDialogManagerSupplier(),
@@ -565,22 +554,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create(
                     (PasswordCheckFragmentView) fragment,
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile),
-                    mSettingsLauncher,
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
                     IntentUtils::addTrustedIntentExtras,
                     mProfile);
         }
         if (fragment instanceof CredentialEntryFragmentViewBase) {
-            CredentialEditUiFactory.create(
-                    (CredentialEntryFragmentViewBase) fragment,
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
+            CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment, mProfile);
         }
         if (fragment instanceof SearchEngineSettings) {
             SearchEngineSettings settings = (SearchEngineSettings) fragment;
             settings.setDisableAutoSwitchRunnable(
                     () -> LocaleManager.getInstance().setSearchEngineAutoSwitch(false));
-            settings.setSettingsLauncher(mSettingsLauncher);
         }
         if (fragment instanceof ImageDescriptionsSettings) {
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;

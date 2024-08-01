@@ -39,7 +39,7 @@ class BreakList {
 
   // Clear the breaks and set a break at position 0 with the supplied |value|.
   // Returns whether or not the breaks changed while applying the |value|.
-  bool SetValue(T value);
+  bool ClearAndSetInitialValue(T value);
 
   // Adjust the breaks to apply |value| over the supplied |range|.
   // Range |range| must be between [0, max_).
@@ -59,6 +59,13 @@ class BreakList {
   // the next break's start position (or |max_| for the terminal break).
   // Iterator |i| must be valid and must not be |break_.end()|.
   Range GetRange(const const_iterator& i) const;
+
+  // Clears the breaks, and sets a break at position 0 with the value of the
+  // existing break at position 0. Only applicable on non-empty breaklists.
+  void Reset() {
+    DCHECK(breaks().size() > 0);
+    ClearAndSetInitialValue(breaks().front().second);
+  }
 
   // Comparison functions for testing purposes.
   bool EqualsValueForTesting(T value) const;
@@ -81,7 +88,7 @@ template <class T>
 BreakList<T>::BreakList(T value) : breaks_(1, Break(0, value)) {}
 
 template <class T>
-bool BreakList<T>::SetValue(T value) {
+bool BreakList<T>::ClearAndSetInitialValue(T value) {
   // Return false if setting |value| does not change the breaks.
   if (breaks_.size() == 1 && breaks_[0].second == value)
     return false;

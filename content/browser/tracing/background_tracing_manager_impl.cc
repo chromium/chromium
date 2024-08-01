@@ -194,7 +194,7 @@ class PreferenceManagerImpl
 
 BASE_FEATURE(kBackgroundTracingDatabase,
              "BackgroundTracingDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 const char BackgroundTracingManager::kContentTriggerConfig[] =

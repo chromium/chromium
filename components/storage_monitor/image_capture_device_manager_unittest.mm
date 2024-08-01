@@ -177,11 +177,7 @@ const char kTestFileContents[] = "test";
 }
 
 - (NSString*)UTI {
-  if (@available(macOS 11, *)) {
-    return UTTypeImage.identifier;
-  } else {
-    return base::apple::CFToNSPtrCast(kUTTypeImage);
-  }
+  return UTTypeImage.identifier;
 }
 
 - (NSDate*)modificationDate {

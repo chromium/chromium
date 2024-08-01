@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "components/url_deduplication/deduplication_strategy.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -109,9 +108,7 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
 }
 }  // namespace
 
-DocsURLStripHandler::DocsURLStripHandler() {}
-
-DocsURLStripHandler::~DocsURLStripHandler() = default;
+namespace url_deduplication {
 
 GURL DocsURLStripHandler::StripExtraParams(GURL url) {
   if (!url.is_valid()) {
@@ -184,3 +181,5 @@ GURL DocsURLStripHandler::StripExtraParams(GURL url) {
   cache->Put(url, deduping_url);
   return deduping_url;
 }
+
+}  // namespace url_deduplication

@@ -99,6 +99,8 @@ COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomReadOnlyRostersOAuth2Scope[];
 
 // OAuth2 scopes for Optimization Guide.
 COMPONENT_EXPORT(GOOGLE_APIS)

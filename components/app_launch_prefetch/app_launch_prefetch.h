@@ -35,7 +35,7 @@ enum class SubprocessType {
 // direct the Windows prefetcher to use the profile indicated by
 // `prefetch_type`.
 COMPONENT_EXPORT(APP_LAUNCH_PREFETCH)
-base::CommandLine::StringPieceType GetPrefetchSwitch(SubprocessType type);
+base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type);
 
 }  // namespace app_launch_prefetch
 

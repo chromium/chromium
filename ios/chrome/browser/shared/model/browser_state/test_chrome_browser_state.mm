@@ -163,8 +163,9 @@ void TestChromeBrowserState::Init() {
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
 
-  if (!base::PathExists(state_path_)) {
-    base::CreateDirectory(state_path_);
+  const base::FilePath state_path = GetStatePath();
+  if (!base::PathExists(state_path)) {
+    base::CreateDirectory(state_path);
   }
 
   // Normally this would happen during browser startup, but for tests we need to
@@ -312,15 +313,19 @@ void TestChromeBrowserState::SetSharedURLLoaderFactory(
   test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
 }
 
-TestChromeBrowserState::Builder::Builder() : build_called_(false) {}
+TestChromeBrowserState::Builder::Builder() = default;
 
-TestChromeBrowserState::Builder::~Builder() {}
+TestChromeBrowserState::Builder::Builder(Builder&&) = default;
+
+TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::operator=(
+    Builder&&) = default;
+
+TestChromeBrowserState::Builder::~Builder() = default;
 
 TestChromeBrowserState::Builder&
 TestChromeBrowserState::Builder::AddTestingFactory(
     BrowserStateKeyedServiceFactory* service_factory,
     BrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
-  DCHECK(!build_called_);
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }
@@ -329,7 +334,6 @@ TestChromeBrowserState::Builder&
 TestChromeBrowserState::Builder::AddTestingFactory(
     RefcountedBrowserStateKeyedServiceFactory* service_factory,
     RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
-  DCHECK(!build_called_);
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }
@@ -337,23 +341,14 @@ TestChromeBrowserState::Builder::AddTestingFactory(
 TestChromeBrowserState::Builder&
 TestChromeBrowserState::Builder::AddTestingFactories(
     TestingFactories testing_factories) {
-  DCHECK(!build_called_);
   for (auto& item : testing_factories) {
     testing_factories.emplace_back(std::move(item));
   }
   return *this;
 }
 
-TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetPath(
-    const base::FilePath& path) {
-  DCHECK(!build_called_);
-  state_path_ = path;
-  return *this;
-}
-
 TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetName(
     const std::string& name) {
-  DCHECK(!build_called_);
   browser_state_name_ = name;
   return *this;
 }
@@ -361,7 +356,6 @@ TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetName(
 TestChromeBrowserState::Builder&
 TestChromeBrowserState::Builder::SetPrefService(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs) {
-  DCHECK(!build_called_);
   pref_service_ = std::move(prefs);
   return *this;
 }
@@ -369,7 +363,6 @@ TestChromeBrowserState::Builder::SetPrefService(
 TestChromeBrowserState::Builder&
 TestChromeBrowserState::Builder::SetPolicyConnector(
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector) {
-  DCHECK(!build_called_);
   policy_connector_ = std::move(policy_connector);
   return *this;
 }
@@ -382,29 +375,21 @@ TestChromeBrowserState::Builder::SetUserCloudPolicyManager(
 }
 
 std::unique_ptr<TestChromeBrowserState>
-TestChromeBrowserState::Builder::Build() {
-  DCHECK(!build_called_);
-  build_called_ = true;
+TestChromeBrowserState::Builder::Build() && {
+  return std::move(*this).Build(base::CreateUniqueTempDirectoryScopedToTest());
+}
 
-  // Ensure that both `state_path_` and `browser_state_name_` are not empty.
-  // If set by the user, then use the provided values, otherwise ensure that
-  // the name is equal to `state_path_` basename.
-  if (state_path_.empty()) {
-    if (browser_state_name_.empty()) {
-      browser_state_name_ = "Test";
-    }
+std::unique_ptr<TestChromeBrowserState> TestChromeBrowserState::Builder::Build(
+    const base::FilePath& data_dir) && {
+  CHECK(!data_dir.empty());
 
-    state_path_ = base::CreateUniqueTempDirectoryScopedToTest().Append(
-        browser_state_name_);
-  } else if (browser_state_name_.empty()) {
-    browser_state_name_ = state_path_.BaseName().AsUTF8Unsafe();
+  // Ensure that the name is not empty.
+  if (browser_state_name_.empty()) {
+    browser_state_name_ = "Test";
   }
 
-  DCHECK(!state_path_.empty());
-  DCHECK(!browser_state_name_.empty());
-
   return base::WrapUnique(new TestChromeBrowserState(
-      state_path_, browser_state_name_, std::move(pref_service_),
-      std::move(testing_factories_), std::move(policy_connector_),
-      std::move(user_cloud_policy_manager_)));
+      data_dir.Append(browser_state_name_), browser_state_name_,
+      std::move(pref_service_), std::move(testing_factories_),
+      std::move(policy_connector_), std::move(user_cloud_policy_manager_)));
 }

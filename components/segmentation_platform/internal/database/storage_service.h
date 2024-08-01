@@ -164,6 +164,9 @@ class StorageService {
       std::unique_ptr<CachedResultProvider> provider) {
     cached_result_provider_ = std::move(provider);
   }
+  void set_profile_id_for_testing(const std::string& profile_id) {
+    profile_id_ = profile_id;
+  }
 
   // Get a WeakPtr to the service. Feature processors are destroyed after
   // service sometimes due to posted tasks. WeakPtr is useful to refer to the
@@ -203,7 +206,7 @@ class StorageService {
   raw_ptr<UkmDataManager> ukm_data_manager_;
 
   // The profile ID of the current profile, used to query the UKM database.
-  const std::string profile_id_;
+  std::string profile_id_;
 
   // Database maintenance.
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;

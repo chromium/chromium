@@ -48,8 +48,13 @@ TEST(WritingDirectionModeTest, IsFlippedXY) {
       {{WritingMode::kVerticalRl, TextDirection::kRtl}, true, true},
       {{WritingMode::kVerticalLr, TextDirection::kLtr}, false, false},
       {{WritingMode::kVerticalLr, TextDirection::kRtl}, false, true},
+      {{WritingMode::kSidewaysRl, TextDirection::kLtr}, true, false},
+      {{WritingMode::kSidewaysRl, TextDirection::kRtl}, true, true},
+      {{WritingMode::kSidewaysLr, TextDirection::kLtr}, false, true},
+      {{WritingMode::kSidewaysLr, TextDirection::kRtl}, false, false},
   };
   for (const TestData& data : test_data_list) {
+    SCOPED_TRACE(data.writing_direction);
     EXPECT_EQ(data.writing_direction.IsFlippedX(), data.is_flipped_x);
     EXPECT_EQ(data.writing_direction.IsFlippedY(), data.is_flipped_y);
   }

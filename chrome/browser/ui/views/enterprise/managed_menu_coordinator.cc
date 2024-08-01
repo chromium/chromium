@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/enterprise/managed_menu_coordinator.h"
 
 #include "chrome/browser/ui/views/enterprise/managed_menu_view.h"
+#include "chrome/browser/ui/views/enterprise/management_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/management_toolbar_button.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 

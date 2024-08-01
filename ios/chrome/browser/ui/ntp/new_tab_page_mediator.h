@@ -28,6 +28,9 @@ class GURL;
 @protocol NewTabPageHeaderConsumer;
 @class NewTabPageState;
 class PrefService;
+namespace syncer {
+class SyncService;
+}
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 @protocol UserAccountImageUpdateDelegate;
@@ -48,6 +51,7 @@ class UrlLoadingBrowserAgent;
                    isIncognito:(BOOL)isIncognito
            discoverFeedService:(DiscoverFeedService*)discoverFeedService
                    prefService:(PrefService*)prefService
+                   syncService:(syncer::SyncService*)syncService
                     isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

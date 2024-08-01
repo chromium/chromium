@@ -236,7 +236,7 @@ mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
   LOG(ERROR) << "[WebNN] CreateError: " << error_message;
   if (!label.empty()) {
     return mojom::Error::New(
-        error_code, base::StrCat({kBackendName, GetLabelErrorSuffix(label),
+        error_code, base::StrCat({kBackendName, GetErrorLabelPrefix(label),
                                   error_message}));
   }
   return mojom::Error::New(error_code, kBackendName + error_message);

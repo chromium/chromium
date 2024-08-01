@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -1061,10 +1062,36 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   ASSERT_TRUE(succeeded);
 }
 
+void ExpectCliResult(base::CommandLine command_line,
+                     bool elevate,
+                     std::optional<std::string> want_stdout,
+                     std::optional<int> want_exit_code) {
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
+  if (elevate) {
+    command_line = MakeElevated(command_line);
+  }
+  VLOG(0) << "Run command (with expectations): "
+          << command_line.GetCommandLineString();
+  std::string output;
+  int exit_code = EXIT_FAILURE;
+  bool run_succeeded =
+      base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
+  VPLOG_IF(0, !run_succeeded);
+  ASSERT_TRUE(run_succeeded);
+
+  if (want_exit_code) {
+    ASSERT_EQ(*want_exit_code, exit_code) << "stdout:\n" << output;
+  }
+  if (want_stdout) {
+    ASSERT_EQ(*want_stdout, output) << "exit code:" << exit_code;
+  }
+}
+
 void ExpectPing(UpdaterScope scope,
                 ScopedServer* test_server,
                 int event_type,
                 std::optional<GURL> target_url) {
+  ASSERT_TRUE(test_server) << "TEST ISSUE - nil `test_server` in ExpectPing";
   request::MatcherGroup request_matchers = {
       request::GetPathMatcher(test_server->update_path()),
       request::GetUpdaterUserAgentMatcher(),

@@ -27,30 +27,17 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
-namespace features {
-
-// Enables or disables performing SubresourceFilter checks from the Browser
-// against any aliases for the requested URL found from DNS CNAME records.
-BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser,
-             "SendCnameAliasesToSubresourceFilterFromBrowser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace subresource_filter {
 
 ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
     content::NavigationHandle* handle,
     AsyncDocumentSubresourceFilter* parent_frame_filter,
-    bool bypass_alias_check,
+    bool alias_check_enabled,
     base::RepeatingCallback<std::string(const GURL& url)>
         disallow_message_callback)
     : content::NavigationThrottle(handle),
       parent_frame_filter_(parent_frame_filter),
-      alias_check_enabled_(
-          !bypass_alias_check &&
-          base::FeatureList::IsEnabled(
-              features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
+      alias_check_enabled_(alias_check_enabled),
       disallow_message_callback_(std::move(disallow_message_callback)) {
   CHECK(!IsInSubresourceFilterRoot(handle), base::NotFatalUntil::M129);
   CHECK(parent_frame_filter_, base::NotFatalUntil::M129);

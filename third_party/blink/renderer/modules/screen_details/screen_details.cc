@@ -35,8 +35,8 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
   if (screens_.empty())
     return nullptr;
 
-  auto* it = base::ranges::find(screens_, current_display_id_,
-                                &ScreenDetailed::DisplayId);
+  auto it = base::ranges::find(screens_, current_display_id_,
+                               &ScreenDetailed::DisplayId);
   CHECK(it != screens_.end(), base::NotFatalUntil::M130);
   return it->Get();
 }
@@ -145,7 +145,7 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
       auto id = screen->DisplayId();
       auto new_it = base::ranges::find(new_infos.screen_infos, id,
                                        &display::ScreenInfo::display_id);
-      DCHECK(new_it != new_infos.screen_infos.end());
+      CHECK(new_it != new_infos.screen_infos.end(), base::NotFatalUntil::M130);
       auto old_it = base::ranges::find(prev_screen_infos_.screen_infos, id,
                                        &display::ScreenInfo::display_id);
       if (old_it != prev_screen_infos_.screen_infos.end() &&

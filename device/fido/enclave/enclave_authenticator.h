@@ -98,6 +98,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
       base::span<const uint8_t> uv_public_key);
   void ProcessMakeCredentialResponse(std::optional<cbor::Value> response);
   void ProcessGetAssertionResponse(std::optional<cbor::Value> response);
+  void ProcessErrorResponse(const ErrorResponse& error);
+
+  // `Complete*` methods invoke callbacks that can result in `this` being
+  // destroyed, and so should only be called immediately before a return.
   void CompleteRequestWithError(
       absl::variant<GetAssertionStatus, MakeCredentialStatus> error);
   void CompleteMakeCredentialRequest(
@@ -106,7 +110,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   void CompleteGetAssertionRequest(
       GetAssertionStatus status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
-  void ProcessErrorResponse(const ErrorResponse& error);
 
   const std::array<uint8_t, 8> id_;
   const NetworkContextFactory network_context_factory_;

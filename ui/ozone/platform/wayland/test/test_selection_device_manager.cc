@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 #include <wayland-server-core.h>
@@ -29,10 +34,11 @@ std::vector<uint8_t> ReadDataOnWorkerThread(base::ScopedFD fd) {
   constexpr size_t kChunkSize = 1024;
   std::vector<uint8_t> bytes;
   while (true) {
-    uint8_t chunk[kChunkSize];
-    ssize_t bytes_read = HANDLE_EINTR(read(fd.get(), chunk, kChunkSize));
+    std::array<uint8_t, kChunkSize> chunk;
+    ssize_t bytes_read =
+        HANDLE_EINTR(read(fd.get(), chunk.data(), chunk.size()));
     if (bytes_read > 0) {
-      bytes.insert(bytes.end(), chunk, chunk + bytes_read);
+      bytes.insert(bytes.end(), chunk.begin(), chunk.begin() + bytes_read);
       continue;
     }
     if (bytes_read < 0) {

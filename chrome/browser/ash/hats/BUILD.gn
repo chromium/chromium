@@ -18,6 +18,8 @@ static_library("hats") {
     "hats_notification_controller.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
@@ -62,6 +64,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//testing/gtest",

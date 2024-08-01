@@ -17,7 +17,6 @@ class BrowserAccessibilityStateImpl;
 class ContentClient;
 class MockAgentSchedulingGroupHostFactory;
 class MockRenderProcessHostFactory;
-class NotificationServiceImpl;
 class TestContentBrowserClient;
 class TestRenderViewHostFactory;
 
@@ -45,7 +44,6 @@ class TestContentClientInitializer {
  private:
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
-  std::unique_ptr<NotificationServiceImpl> notification_service_;
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<TestContentBrowserClient> content_browser_client_;
   std::unique_ptr<MockRenderProcessHostFactory> rph_factory_;

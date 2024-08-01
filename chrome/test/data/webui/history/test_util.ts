@@ -4,8 +4,8 @@
 
 import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement, HistoryEntry, HistoryQuery} from 'chrome://history/history.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {middleOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {middleOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
 
 
 /**

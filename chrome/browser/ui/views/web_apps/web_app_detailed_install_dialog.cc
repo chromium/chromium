@@ -298,10 +298,6 @@ class ImageCarouselView : public views::View {
     return gfx::Size(width, fixed_height);
   }
 
-  int GetHeightForWidth(int w) const override {
-    return CalculatePreferredSize(views::SizeBounds(w, {})).height();
-  }
-
  private:
   void OnScrollButtonClicked(ButtonType button_type) {
     DCHECK(image_inner_container_->children().size());

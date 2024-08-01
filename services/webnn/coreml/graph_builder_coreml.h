@@ -41,7 +41,9 @@ concept IsSupportedTensorType =
 
 inline constexpr char kPlaceholderInputName[] = "placeholder";
 
-// Get name identifiers used in CoreML model files for output operands.
+// Get name identifiers used in CoreML model files for input or output operands.
+std::string GetCoreMLNameFromInput(std::string_view input_name,
+                                   uint64_t operand_id);
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
                                     uint64_t operand_id);
 
@@ -59,9 +61,6 @@ class GraphBuilderCoreml {
   // future operations can look them up based on operand id.
   // When an operation is decomposed, additional `OperandInfo` entities are
   // created to represent intermediate layers.
-
-  // For the inputs of the model, this information is exposed publicly via
-  // FindInputOperandInfo.
   struct OperandInfo {
     OperandInfo();
     OperandInfo(std::string name,
@@ -82,40 +81,17 @@ class GraphBuilderCoreml {
     CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
-  // Used by `GraphImplCoreml` to get model input's information. The model
-  // inputs dimensions are always non scalar.
-  struct InputOperandInfo {
-    InputOperandInfo();
-    InputOperandInfo(std::string name,
-                     std::vector<uint32_t> dimensions,
-                     OperandDataType data_type);
-    InputOperandInfo(InputOperandInfo&);
-    InputOperandInfo(InputOperandInfo&&);
-    ~InputOperandInfo();
-
-    // Identifier for this operand in coreml model file.
-    std::string coreml_name;
-    std::vector<uint32_t> dimensions;
-    OperandDataType data_type;
-  };
-
   struct Result {
     explicit Result(base::FilePath ml_package_dir);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     ~Result();
 
-    // This method must be called with an `input_name` which corresponds to some
-    // input, or else it will crash.
-    InputOperandInfo FindModelInputOperandInfo(
-        const std::string& input_name) const;
     const base::FilePath& GetModelFilePath();
 
     [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
     const base::FilePath ml_package_dir;
-    // Used to get operand info to specify input for a MILSpec::Operation.
-    std::map<std::string, uint64_t> input_name_to_id_map;
     std::map<uint64_t, OperandInfo> id_to_operand_info_map;
   };
 
@@ -192,6 +168,10 @@ class GraphBuilderCoreml {
       const T& operation,
       CoreML::Specification::MILSpec::Block& block,
       std::string_view operand_op_name);
+  template <typename T>
+  void AddUnaryOperation(std::string_view op_name,
+                         const T& operation,
+                         CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddUnaryFloatsOperationWithEpsilon(
       std::string_view op_name,
@@ -235,12 +215,14 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       uint64_t lhs_operand_id,
-      uint64_t rhs_operand_id,
+      std::variant<uint64_t, CoreML::Specification::MILSpec::Value> rhs_operand,
       uint64_t output_operand_id,
       const mojom::ElementWiseBinary::Kind kind,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
+  AddOperationForElementwiseUnary(mojom::ElementWiseUnary::Kind kind,
+                                  uint64_t input_operand_id,
+                                  uint64_t output_operand_id,
                                   CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForElu(
       const mojom::Elu& operation,
@@ -327,11 +309,6 @@ class GraphBuilderCoreml {
       uint64_t constant_id,
       uint64_t offset,
       CoreML::Specification::MILSpec::Block& block);
-  // Create a `const` operation for an internal operand with `value`.
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddInternalConstantWithValue(uint64_t internal_operand_id,
-                               CoreML::Specification::MILSpec::Value value,
-                               CoreML::Specification::MILSpec::Block& block);
 
   // Populate generic fields that apply to all `const` operations.
   base::expected<void, mojom::ErrorPtr> PopulateConstantOpFromOperand(
@@ -350,9 +327,6 @@ class GraphBuilderCoreml {
   // Accessors for fields declared in `result_`.
   const base::FilePath& ml_package_dir() const {
     return result_->ml_package_dir;
-  }
-  std::map<std::string, uint64_t>& input_name_to_id_map() const {
-    return result_->input_name_to_id_map;
   }
   std::map<uint64_t, OperandInfo>& id_to_operand_info_map() const {
     return result_->id_to_operand_info_map;

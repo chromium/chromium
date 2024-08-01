@@ -154,6 +154,10 @@ class IncompleteResultsReason(NamedTuple):
             return 'build was canceled'
         elif self.build_status is BuildStatus.MISSING:
             return 'build is missing and not triggered'
+        elif self.build_status is BuildStatus.COMPILE_FAILURE:
+            return 'build failed to compile'
+        elif self.build_status is BuildStatus.PATCH_FAILURE:
+            return 'build failed to apply patch'
         elif self.build_status not in BuildStatus.COMPLETED:
             return 'build is not complete'
         return 'results are incomplete for an unknown reason'

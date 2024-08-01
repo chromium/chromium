@@ -21,8 +21,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:129-
 
 owners:
 - ayag@chromium.org

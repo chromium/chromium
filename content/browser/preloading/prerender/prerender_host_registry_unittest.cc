@@ -448,20 +448,11 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
 class PrerenderHostRegistryLimitTest : public PrerenderHostRegistryTest {
  public:
   PrerenderHostRegistryLimitTest() {
-    if (base::FeatureList::IsEnabled(
-            features::kPrerender2NewLimitAndScheduler)) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kPrerender2NewLimitAndScheduler,
-            {{"max_num_of_running_speculation_rules_eager_prerenders",
-              base::NumberToString(MaxNumOfRunningSpeculationRules())}}}},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kPrerender2,
-            {{"max_num_of_running_speculation_rules",
-              base::NumberToString(MaxNumOfRunningSpeculationRules())}}}},
-          {});
-    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2NewLimitAndScheduler,
+          {{"max_num_of_running_speculation_rules_eager_prerenders",
+            base::NumberToString(MaxNumOfRunningSpeculationRules())}}}},
+        {});
   }
 
   int MaxNumOfRunningSpeculationRules() { return 2; }

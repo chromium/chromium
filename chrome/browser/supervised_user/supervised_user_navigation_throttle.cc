@@ -23,6 +23,7 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -34,7 +35,7 @@ SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
   CHECK(profile);
-  if (!supervised_user::IsSubjectToParentalControls(*profile->GetPrefs())) {
+  if (!profile->IsChild()) {
     return nullptr;
   }
 
@@ -129,6 +130,7 @@ SupervisedUserNavigationThrottle::ProcessRequest() {
   CheckURL();
 
   if (deferred_) {
+    waiting_for_decision_.emplace();
     return NavigationThrottle::DEFER;
   }
   return NavigationThrottle::PROCEED;
@@ -136,38 +138,27 @@ SupervisedUserNavigationThrottle::ProcessRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillStartRequest() {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
-    // TODO(b/299088120): Proceed here and verify result in WillProcessResponse
-    // (unless decision is already known, then proceed or cancel).
-    return NavigationThrottle::PROCEED;
-  } else {
-    return ProcessRequest();
-  }
+  return ProcessRequest();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillRedirectRequest() {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
-    // TODO(b/299088120): Proceed here and verify result in WillProcessResponse
-    // (unless decision is already known, then proceed or cancel).
-    return NavigationThrottle::PROCEED;
-  } else {
-    return ProcessRequest();
-  }
+  return ProcessRequest();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserNavigationThrottle::WillProcessResponse() {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
-    // TODO(b/299088120): Consume the result of classification and make decision
-    // if available, otherwise defer.
-    return NavigationThrottle::PROCEED;
-  } else {
-    return NavigationThrottle::PROCEED;
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          supervised_user::kClassifyUrlOnProcessResponseEvent.name)) {
+    // Safety measure: do not execute the code below for the Default experiment
+    // groups. 0 means that either the checks were never asynchronous, or that
+    // they took less than 0ms rounded combined, which is safe approximation.
+    base::UmaHistogramTimes(
+        supervised_user::kClassifiedLaterThanContentResponseHistogramName,
+        total_delay_);
+    VLOG(1) << "Time spent waiting for classifications: " << total_delay_;
   }
+  return NavigationThrottle::PROCEED;
 }
 
 const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
@@ -206,6 +197,13 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   if (behavior == supervised_user::FilteringBehavior::kBlock) {
     ShowInterstitial(url, reason);
   } else if (deferred_) {
+    if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+            supervised_user::kClassifyUrlOnProcessResponseEvent.name)) {
+      // Safety measure: do not execute the code below for the Default
+      // experiment groups.
+      total_delay_ += waiting_for_decision_->Elapsed();
+      waiting_for_decision_ = std::nullopt;
+    }
     Resume();
   }
 }

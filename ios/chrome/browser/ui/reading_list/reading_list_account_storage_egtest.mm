@@ -134,7 +134,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // before [super tearDown] which calls sign-out.
   // TODO(crbug.com/40065405): Remove this when ChromeTestCase will always wait
   // for sign-out completion.
-  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+  [ChromeEarlGrey signOutAndClearIdentities];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncInitializedTimeout];
   // Shutdown network process after tests run to avoid hanging from
@@ -336,7 +336,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Sign-in with sync with `fakeIdentity1`.
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   // Sign-out and remove data.
-  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+  [ChromeEarlGrey signOutAndClearIdentities];
 
   OpenReadingList();
   [SigninEarlGreyUI

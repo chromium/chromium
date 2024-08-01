@@ -11,7 +11,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.compat.ApiHelperForN;
 
 /** Wrapper for the datareduction::DataSaverOSSetting. */
 @JNINamespace("datareduction::android")
@@ -22,7 +21,7 @@ public class DataSaverOSSetting {
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connMgr.isActiveNetworkMetered()) {
-            return ApiHelperForN.getRestrictBackgroundStatus(connMgr)
+            return connMgr.getRestrictBackgroundStatus()
                     == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
         }
         return false;

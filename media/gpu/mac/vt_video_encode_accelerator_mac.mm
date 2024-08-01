@@ -282,42 +282,41 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
 VideoEncodeAccelerator::SupportedProfiles
 VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
   SupportedProfiles profiles;
-  if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport))
+  if (!base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport)) {
     return profiles;
-  if (@available(macOS 11.0, *)) {
-    bool supported = CreateCompressionSession(VideoCodec::kHEVC,
-                                              kDefaultSupportedResolution);
-    DestroyCompressionSession();
-    if (!supported) {
-      DVLOG(1) << "Hardware HEVC encode acceleration is not available on this "
-                  "platform.";
-      return profiles;
-    }
-    SupportedProfile profile;
-    profile.max_resolution = kMaxSupportedResolution;
-    profile.max_framerate_numerator = kMaxFrameRateNumerator;
-    profile.max_framerate_denominator = kMaxFrameRateDenominator;
-    // Advertise VBR here, even though the peak bitrate is never actually used.
-    // See RequestEncodingParametersChange() for more details.
-    profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
-                                 VideoEncodeAccelerator::kVariableMode;
-    // L1T1 = no additional spatial and temporal layer = always supported.
-    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
-    if (IsSVCSupported(VideoCodec::kHEVC)) {
-      profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-    }
+  }
+  bool supported =
+      CreateCompressionSession(VideoCodec::kHEVC, kDefaultSupportedResolution);
+  DestroyCompressionSession();
+  if (!supported) {
+    DVLOG(1) << "Hardware HEVC encode acceleration is not available on this "
+                "platform.";
+    return profiles;
+  }
+  SupportedProfile profile;
+  profile.max_resolution = kMaxSupportedResolution;
+  profile.max_framerate_numerator = kMaxFrameRateNumerator;
+  profile.max_framerate_denominator = kMaxFrameRateDenominator;
+  // Advertise VBR here, even though the peak bitrate is never actually used.
+  // See RequestEncodingParametersChange() for more details.
+  profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                               VideoEncodeAccelerator::kVariableMode;
+  // L1T1 = no additional spatial and temporal layer = always supported.
+  profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
+  if (IsSVCSupported(VideoCodec::kHEVC)) {
+    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+  }
 
-    for (const auto& supported_profile : kSupportedProfiles) {
-      if (VideoCodecProfileToVideoCodec(supported_profile) ==
-          VideoCodec::kHEVC) {
-        // macOS doesn't support HEVC software encoding on both Intel and Apple
-        // Silicon Macs.
-        profile.is_software_codec = false;
-        profile.profile = supported_profile;
-        profiles.push_back(profile);
-      }
+  for (const auto& supported_profile : kSupportedProfiles) {
+    if (VideoCodecProfileToVideoCodec(supported_profile) == VideoCodec::kHEVC) {
+      // macOS doesn't support HEVC software encoding on both Intel and Apple
+      // Silicon Macs.
+      profile.is_software_codec = false;
+      profile.profile = supported_profile;
+      profiles.push_back(profile);
     }
   }
+
   return profiles;
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

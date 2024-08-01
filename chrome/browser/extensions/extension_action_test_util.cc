@@ -65,8 +65,9 @@ std::unique_ptr<KeyedService> BuildToolbarModel(
 ToolbarActionsModel* CreateToolbarModelImpl(Profile* profile,
                                             bool wait_for_ready) {
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile);
-  if (model)
+  if (model) {
     return model;
+  }
 
   // No existing model means it's a new profile (since we, by default, don't
   // create the ToolbarModel in testing).

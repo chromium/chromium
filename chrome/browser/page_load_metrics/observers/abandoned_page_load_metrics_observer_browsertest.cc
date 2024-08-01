@@ -58,6 +58,7 @@ class AbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kNonRedirectResponseStart,
             NavigationMilestone::kNonRedirectResponseLoaderCallback,
             NavigationMilestone::kCommitSent,
+            NavigationMilestone::kCommitReceived,
             NavigationMilestone::kDidCommit,
             NavigationMilestone::kParseStart,
             NavigationMilestone::kFirstContentfulPaint,
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
-  EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedNavigation").empty());
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedSRPNavigation").empty());
 
   // LCP is collected only at the end of the page lifecycle. Navigate to
   // flush.
@@ -265,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
 
   // No abandonment happened, so no abandonment metrics was logged.
   ExpectEmptyNavigationAbandonment();
-  EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedNavigation").empty());
+  EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedSRPNavigation").empty());
 }
 
 // Test navigations that are cancelled by `content::WebContents::Stop()` (which
@@ -298,19 +299,8 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
     EXPECT_TRUE(navigation.WaitForNavigationFinished());
     EXPECT_FALSE(navigation.was_committed());
 
-    auto ukm_entries = ukm_recorder.GetEntriesByName("AbandonedNavigation");
-    EXPECT_EQ(ukm_entries.size(), 1ul);
-    const ukm::mojom::UkmEntry* ukm_entry = ukm_entries[0].get();
-    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url_a);
-    ukm_recorder.ExpectEntryMetric(ukm_entry, "AbandonReason",
-                                   (int)AbandonReason::kExplicitCancellation);
-    ukm_recorder.ExpectEntryMetric(ukm_entry, "LastMilestoneBeforeAbandon",
-                                   (int)abandon_milestone);
-    EXPECT_FALSE(
-        ukm_recorder.EntryHasMetric(ukm_entry, "PreviousBackgroundedTime"));
-    EXPECT_FALSE(ukm_recorder.EntryHasMetric(ukm_entry, "PreviousHiddenTime"));
-    EXPECT_FALSE(
-        ukm_recorder.EntryHasMetric(ukm_entry, "RendererProcessInitTime"));
+    EXPECT_TRUE(
+        ukm_recorder.GetEntriesByName("AbandonedSRPNavigation").empty());
 
     histogram_tester.ExpectTotalCount(
         std::string(internal::kAbandonedPageLoadMetricsHistogramPrefix) +
@@ -330,28 +320,9 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
                NavigationMilestone::kFirstRedirectResponseLoaderCallback)) {
         histogram_tester.ExpectTotalCount(GetMilestoneHistogramName(milestone),
                                           0);
-        EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-            ukm_entry,
-            AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
-                milestone) +
-                "Time"));
       } else {
         histogram_tester.ExpectTotalCount(GetMilestoneHistogramName(milestone),
                                           1);
-        if (milestone == NavigationMilestone::kNonRedirectResponseStart ||
-            milestone ==
-                NavigationMilestone::kNonRedirectResponseLoaderCallback) {
-          EXPECT_TRUE(ukm_recorder.EntryHasMetric(
-              ukm_entry, "NonRedirectResponseReceived"));
-        } else {
-          EXPECT_EQ(
-              milestone != NavigationMilestone::kNavigationStart,
-              ukm_recorder.EntryHasMetric(
-                  ukm_entry,
-                  AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
-                      milestone) +
-                      "Time"));
-        }
       }
     }
 
@@ -399,7 +370,9 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest, TabHidden) {
+// crbug.com/355352905: The test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
+                       DISABLED_TabHidden) {
   base::HistogramTester histogram_tester;
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
 

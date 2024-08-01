@@ -377,12 +377,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     protected BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
-        boolean isValidIncognitoIntent =
-                IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(intent);
-        if (isValidIncognitoIntent
-                || IncognitoCustomTabIntentDataProvider.isValidEphemeralTabIntent(intent)) {
-            return new IncognitoCustomTabIntentDataProvider(
-                    intent, this, colorScheme, isValidIncognitoIntent);
+        if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(intent)) {
+            return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
+        } else if (EphemeralCustomTabIntentDataProvider.isValidEphemeralTabIntent(intent)) {
+            return new EphemeralCustomTabIntentDataProvider(intent, this, colorScheme);
         }
         return new CustomTabIntentDataProvider(intent, this, colorScheme);
     }

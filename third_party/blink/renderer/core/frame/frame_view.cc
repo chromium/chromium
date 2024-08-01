@@ -23,8 +23,7 @@
 namespace blink {
 
 FrameView::FrameView(const gfx::Rect& frame_rect)
-    : EmbeddedContentView(frame_rect),
-      frame_visibility_(blink::mojom::FrameVisibility::kRenderedInViewport) {}
+    : EmbeddedContentView(frame_rect) {}
 
 Frame& FrameView::GetFrame() const {
   if (const LocalFrameView* lfv = DynamicTo<LocalFrameView>(this))
@@ -300,16 +299,16 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 }
 
 void FrameView::UpdateFrameVisibility(bool intersects_viewport) {
-  blink::mojom::FrameVisibility frame_visibility;
+  mojom::blink::FrameVisibility frame_visibility;
   if (LifecycleUpdatesThrottled())
     return;
   if (IsVisible()) {
     frame_visibility =
         intersects_viewport
-            ? blink::mojom::FrameVisibility::kRenderedInViewport
-            : blink::mojom::FrameVisibility::kRenderedOutOfViewport;
+            ? mojom::blink::FrameVisibility::kRenderedInViewport
+            : mojom::blink::FrameVisibility::kRenderedOutOfViewport;
   } else {
-    frame_visibility = blink::mojom::FrameVisibility::kNotRendered;
+    frame_visibility = mojom::blink::FrameVisibility::kNotRendered;
   }
   if (frame_visibility != frame_visibility_) {
     frame_visibility_ = frame_visibility;

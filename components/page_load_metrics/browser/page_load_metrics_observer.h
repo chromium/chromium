@@ -172,6 +172,9 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnLoadEventStart(const mojom::PageLoadTiming& timing) override {}
   void OnParseStart(const mojom::PageLoadTiming& timing) override {}
   void OnParseStop(const mojom::PageLoadTiming& timing) override {}
+  void OnConnectStart(const mojom::PageLoadTiming& timing) override {}
+  void OnDomainLookupStart(const mojom::PageLoadTiming& timing) override {}
+  void OnDomainLookupEnd(const mojom::PageLoadTiming& timing) override {}
   void OnFirstPaintInPage(const mojom::PageLoadTiming& timing) override {}
   void OnFirstImagePaintInPage(const mojom::PageLoadTiming& timing) override {}
   void OnFirstContentfulPaintInPage(
@@ -258,8 +261,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override {}
 
  private:
-  raw_ptr<PageLoadMetricsObserverDelegate, DanglingUntriaged> delegate_ =
-      nullptr;
+  raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;
 };
 
 }  // namespace page_load_metrics

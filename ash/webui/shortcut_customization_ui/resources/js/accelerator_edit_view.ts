@@ -42,6 +42,7 @@ const accelerator: Accelerator = {
 };
 
 const standardAcceleratorInfoState: StandardAcceleratorInfo = {
+  acceleratorLocked: false,
   locked: false,
   state: AcceleratorState.kEnabled,
   type: AcceleratorType.kDefault,

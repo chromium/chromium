@@ -83,6 +83,7 @@ static_library("crostini") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/drive",
     "//chrome/browser/profiles:profile",
     "//chromeos/dbus/power",
@@ -103,6 +104,7 @@ static_library("crostini") {
     "//ash/constants",
     "//ash/resources/vector_icons",
     "//chrome/app/vector_icons",
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/borealis",
@@ -112,6 +114,8 @@ static_library("crostini") {
     "//chrome/browser/ash/guest_os/virtual_machines",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -149,6 +153,7 @@ static_library("crostini") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
   ]
 }
 
@@ -257,6 +262,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common",

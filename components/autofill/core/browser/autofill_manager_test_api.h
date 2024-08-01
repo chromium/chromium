@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 
 namespace autofill {
@@ -16,18 +17,11 @@ class AutofillManagerTestApi {
   explicit AutofillManagerTestApi(AutofillManager* manager)
       : manager_(*manager) {}
 
-  AutofillManager::LifecycleState lifecycle_state() const {
-    return manager_->lifecycle_state_;
+  const base::ObserverList<AutofillManager::Observer>& observers() {
+    return manager_->observers_;
   }
 
-  void SetLifecycleState(AutofillManager::LifecycleState lifecycle_state) {
-    manager_->SetLifecycleState(lifecycle_state, {});
-  }
-
-  void Reset() {
-    SetLifecycleState(AutofillManager::LifecycleState::kPendingReset);
-    manager_->Reset({});
-  }
+  void Reset() { manager_->Reset(); }
 
   void OnLoadedServerPredictions(
       std::string response,

@@ -113,6 +113,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private View mToolbarContainerView;
     @Mock private DragAndDropDelegate mDragDropDelegate;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
@@ -169,6 +170,7 @@ public class StripLayoutHelperManagerTest {
                 .thenReturn(mTabGroupModelFilter);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
         mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
 

@@ -51,7 +51,7 @@ class PinnedTabsMediatorTest : public PlatformTest {
  public:
   PinnedTabsMediatorTest() {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     regular_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     incognito_browser_ = std::make_unique<TestBrowser>(

@@ -311,4 +311,12 @@ std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
   return permuted_array;
 }
 
+bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
+  return kind == mojom::ElementWiseBinary::Kind::kEqual ||
+         kind == mojom::ElementWiseBinary::Kind::kGreater ||
+         kind == mojom::ElementWiseBinary::Kind::kGreaterOrEqual ||
+         kind == mojom::ElementWiseBinary::Kind::kLesser ||
+         kind == mojom::ElementWiseBinary::Kind::kLesserOrEqual;
+}
+
 }  // namespace webnn

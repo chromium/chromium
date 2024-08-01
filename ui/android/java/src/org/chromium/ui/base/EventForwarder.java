@@ -23,8 +23,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.MotionEventUtils;
 
@@ -44,8 +42,7 @@ public class EventForwarder {
 
     private long mNativeEventForwarder;
 
-    // Offsets for the events that passes through.
-    private float mCurrentTouchOffsetX;
+    // Offset for the events that passes through.
     private float mCurrentTouchOffsetY;
 
     // Offset for the drag events that's dispatching through other views.
@@ -113,7 +110,7 @@ public class EventForwarder {
     }
 
     private boolean hasTouchEventOffset() {
-        return mCurrentTouchOffsetX != 0.0f || mCurrentTouchOffsetY != 0.0f;
+        return mCurrentTouchOffsetY != 0.0f;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -262,7 +259,7 @@ public class EventForwarder {
 
             int gestureClassification = 0;
             if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                gestureClassification = ApiHelperForQ.getClassification(event);
+                gestureClassification = event.getClassification();
             }
 
             final boolean consumed =
@@ -316,24 +313,18 @@ public class EventForwarder {
      * DragEvent). This is used to handle content moving and not lining up properly with the android
      * input system.
      *
-     * @param dx The X offset in pixels to shift touch events.
      * @param dy The Y offset in pixels to shift touch events.
      */
-    public void setCurrentTouchEventOffsets(float dx, float dy) {
-        mCurrentTouchOffsetX = dx;
+    public void setCurrentTouchOffsetY(float dy) {
         mCurrentTouchOffsetY = dy;
     }
 
     /**
-     * Creates a new motion event differed from the given event by current touch offset if the
-     * offset is not zero.
-     *
      * Sets the current amount to offset incoming drag events by. Used for {@link DragEvent} only.
      * Usually used when dispatching drag events dispatched from views other than the ContentView.
      *
      * @param dx The X offset in pixels to shift drag events.
      * @param dy The Y offset in pixels to shift drag events.
-     *
      * @see #setCurrentTouchEventOffsets(float, float) to offset both touch and drag events.
      */
     public void setDragDispatchingOffset(float dx, float dy) {
@@ -350,7 +341,7 @@ public class EventForwarder {
     public MotionEvent createOffsetMotionEventIfNeeded(MotionEvent src) {
         if (!hasTouchEventOffset()) return src;
         MotionEvent dst = MotionEvent.obtain(src);
-        dst.offsetLocation(mCurrentTouchOffsetX, mCurrentTouchOffsetY);
+        dst.offsetLocation(/* deltaX= */ 0, mCurrentTouchOffsetY);
         return dst;
     }
 
@@ -499,7 +490,7 @@ public class EventForwarder {
     }
 
     public static int getMouseEventActionButton(MotionEvent event) {
-        return ApiHelperForM.getActionButton(event);
+        return event.getActionButton();
     }
 
     public boolean isTrackpadToMouseEventConversionEnabled() {
@@ -629,7 +620,7 @@ public class EventForwarder {
         containerView.getLocationOnScreen(locationOnScreen);
 
         // All coordinates are in device pixel. Conversion to DIP happens in the native.
-        float x = event.getX() + mCurrentTouchOffsetX + mDragDispatchingOffsetX;
+        float x = event.getX() + mDragDispatchingOffsetX;
         float y = event.getY() + mCurrentTouchOffsetY + mDragDispatchingOffsetY;
         float screenX = x + locationOnScreen[0];
         float screenY = y + locationOnScreen[1];

@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
@@ -157,6 +158,7 @@ class GifsButton : public views::LabelButton {
         TypographyToken::kCrosLabel1));
     label()->SetLineHeight(ash::TypographyProvider::Get()->ResolveLineHeight(
         ash::TypographyToken::kCrosLabel1));
+    label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
     StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/true);
@@ -299,6 +301,10 @@ void PickerEmojiBarView::SetSearchResults(
           ->AddChildView(std::move(item_view));
     }
   }
+}
+
+size_t PickerEmojiBarView::GetNumItems() const {
+  return item_row_->children().size();
 }
 
 void PickerEmojiBarView::SelectSearchResult(const PickerSearchResult& result) {

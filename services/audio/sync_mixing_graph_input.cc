@@ -29,9 +29,9 @@ double SyncMixingGraphInput::ProvideInput(
     uint32_t frames_delayed,
     const media::AudioGlitchInfo& glitch_info) {
   DCHECK_EQ(audio_bus->channels(), params_.channels());
-  TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"),
-               "SyncMixingGraphInput::ProvideInput", "frames_delayed",
-               frames_delayed, "bus frames", audio_bus->frames());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"),
+              "SyncMixingGraphInput::ProvideInput", "delay (frames)",
+              frames_delayed, "bus frames", audio_bus->frames());
 
   glitch_info_accumulator_.Add(glitch_info);
 
@@ -82,9 +82,10 @@ void SyncMixingGraphInput::Stop() {
 void SyncMixingGraphInput::Render(int fifo_frame_delay,
                                   media::AudioBus* audio_bus) {
   DCHECK(source_callback_);
-  TRACE_EVENT_BEGIN1(TRACE_DISABLED_BY_DEFAULT("audio"),
-                     "SyncMixingGraphInput::Render", "this",
-                     static_cast<void*>(this));
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"),
+              "SyncMixingGraphInput::Render", "this", static_cast<void*>(this),
+              "delay (frames)", fifo_frame_delay, "bus frames",
+              audio_bus->frames());
 
   base::TimeDelta delay = media::AudioTimestampHelper::FramesToTime(
       converter_render_frame_delay_ + fifo_frame_delay, params_.sample_rate());
@@ -92,11 +93,6 @@ void SyncMixingGraphInput::Render(int fifo_frame_delay,
                                glitch_info_accumulator_.GetAndReset(),
                                audio_bus,
                                /*is_mixing=*/true);
-
-  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                   "SyncMixingGraphInput::Render", "total frames delay",
-                   converter_render_frame_delay_ + fifo_frame_delay,
-                   "bus frames", audio_bus->frames());
 }
 
 }  // namespace audio

@@ -1,6 +1,11 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "media/audio/apple/audio_low_latency_input.h"
 
 #include <CoreServices/CoreServices.h>
@@ -52,14 +57,6 @@ void UndoDucking(AudioDeviceID output_device_id) {
 #endif
 
 namespace media {
-
-#if BUILDFLAG(IS_MAC)
-// Helper feature used to investigate the effects of removing the HW latency
-// compensation from microphones. See crbug.com/324128089.
-BASE_FEATURE(kIncludeMicrophonHardwareDelayMacOS,
-             "IncludeMicrophoneHardwareDelayMacOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // Number of blocks of buffers used in the |fifo_|.
 const int kNumberOfBlocksBufferInFifo = 2;
@@ -242,11 +239,9 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 
     // The hardware latency is fixed and will not change during the call.
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kIncludeMicrophonHardwareDelayMacOS)) {
-    hardware_latency_ = core_audio_mac::GetHardwareLatency(
-        audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
-        format_.mSampleRate, /*is_input=*/true);
-  }
+  hardware_latency_ = core_audio_mac::GetHardwareLatency(
+      audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
+      format_.mSampleRate, /*is_input=*/true);
 #else
   AudioManagerIOS* manager_ios = static_cast<AudioManagerIOS*>(manager_);
   hardware_latency_ = base::Seconds(manager_ios->HardwareLatency(
@@ -1034,9 +1029,8 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
 
 base::TimeTicks AUAudioInputStream::GetCaptureTime(
     const AudioTimeStamp* input_time_stamp) {
-  // Total latency is composed by the dynamic latency and the fixed
-  // hardware latency.
-  // https://lists.apple.com/archives/coreaudio-api/2017/Jul/msg00035.html
+  // We must subtract the hardware latency to calculate when the sample was
+  // received by the hardware capture device.
   return (input_time_stamp->mFlags & kAudioTimeStampHostTimeValid
               ? base::TimeTicks::FromMachAbsoluteTime(
                     input_time_stamp->mHostTime)

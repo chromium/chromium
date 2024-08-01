@@ -34,6 +34,7 @@ class FakePlusAddressService : public PlusAddressService {
   static constexpr char kFacet[] = "facet.bar";
 
   // PlusAddressService:
+  bool IsPlusAddress(const std::string& potential_plus_address) const override;
   void ReservePlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,

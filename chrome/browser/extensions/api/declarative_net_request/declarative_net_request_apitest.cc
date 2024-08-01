@@ -86,9 +86,6 @@ class DeclarativeNetRequestLazyApiTest
       : DeclarativeNetRequestApiTest(GetParam()) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         DeclarativeNetRequestLazyApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
@@ -241,6 +238,38 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
                        PrerenderedPageInterception) {
   ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
+}
+
+class DeclarativeNetRequestLazyApiResponseHeadersTest
+    : public DeclarativeNetRequestLazyApiTest {
+ public:
+  DeclarativeNetRequestLazyApiResponseHeadersTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+  }
+
+ private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestLazyApiTest.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         DeclarativeNetRequestLazyApiResponseHeadersTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         DeclarativeNetRequestLazyApiResponseHeadersTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         DeclarativeNetRequestLazyApiResponseHeadersTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiResponseHeadersTest,
+                       TestMatchOutcomeWithResponseHeaders) {
+  ASSERT_TRUE(RunExtensionTest("test_match_outcome_response_headers"))
+      << message_;
 }
 
 }  // namespace

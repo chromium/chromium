@@ -30,7 +30,9 @@ specific_include_rules = {
     "+components/safe_browsing",
     "+components/saved_tab_groups",
     "+components/search_engines",
+    "+components/sharing_message",
     "+components/translate",
     "+components/variations",
+    "+components/sharing_message",
   ]
 }

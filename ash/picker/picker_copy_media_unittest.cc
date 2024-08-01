@@ -24,12 +24,32 @@ TEST_F(PickerCopyMediaTest, CopiesText) {
 }
 
 TEST_F(PickerCopyMediaTest, CopiesLinks) {
-  CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com")));
+  CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com"), "Foo"));
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"https://foo.com/");
+  // We include the title as the `title` attribute for maximum compatibility.
+  // See `ShouldUseLinkTitle` in picker_insert_media.cc for more details.
   EXPECT_EQ(ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
-            u"<a href=\"https://foo.com/\">https://foo.com/</a>");
+            u"<a title=\"Foo\" href=\"https://foo.com/\">https://foo.com/</a>");
+}
+
+TEST_F(PickerCopyMediaTest, LinksAreEscaped) {
+  CopyMediaToClipboard(PickerLinkMedia(
+      GURL("https://foo.com/?\"><svg onload=\"alert(1)\"><a href=\""),
+      "<svg onload=\"alert(1)\">"));
+
+  EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
+            u"https://foo.com/"
+            u"?%22%3E%3Csvg%20onload=%22alert(1)%22%3E%3Ca%20href=%22");
+  EXPECT_EQ(
+      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+      u"<a"
+      u" title=\"&lt;svg onload=&quot;alert(1)&quot;&gt;\""
+      u" href=\"https://foo.com/"
+      u"?%22%3E%3Csvg%20onload=%22alert(1)%22%3E%3Ca%20href=%22\">"
+      u"https://foo.com/?%22%3E%3Csvg%20onload=%22alert(1)%22%3E%3Ca%20href=%22"
+      u"</a>");
 }
 
 TEST_F(PickerCopyMediaTest, CopiesFiles) {
@@ -47,7 +67,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PickerCopyMediaToastTest,
     ::testing::Values(PickerTextMedia(u"hello"),
-                      PickerLinkMedia(GURL("https://foo.com")),
+                      PickerLinkMedia(GURL("https://foo.com"), "Foo"),
                       PickerLocalFileMedia(base::FilePath("/foo.txt"))));
 
 TEST_P(PickerCopyMediaToastTest, ShowsToastAfterCopyingLink) {

@@ -368,10 +368,17 @@ public final class ProductionSupportedFlagList {
                 "When enabled, autofill uses an extra cache for matching regular expressions "
                         + "while executing local heuristics."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_STRUCTURED_FIELDS_DISABLE_ADDRESS_LINES,
+                "When enabled, Autofill disable address lines on forms with structured address"
+                        + " fields."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_LABEL_PRECEDENCE_FOR_TURKISH_ADDRESSES,
                 "When enabled, the precedence is given to the field label over the name when they"
                         + " match different types. Applied only for parsing of address forms in"
                         + " Turkish."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_UKM_EXPERIMENTAL_FIELDS,
+                "Enables UKM collection for experimental fields"),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_UPLOAD_VOTES_FOR_FIELDS_WITH_EMAIL,
                 "When enabled, autofill will issues votes for EMAIL_ADDRESS field types on fields"
@@ -399,6 +406,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_FORCE_DARK_MODE_MATCH_THEME,
                 "Automatically darken page if"
                         + " WebView is set to FORCE_DARK_AUTO and the app has dark theme"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_FRAME_RATE_HINTS,
+                "Provide frame rate hints to View system if supported by OS"),
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
@@ -462,6 +472,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
                 "Enables establishing the GPU channel asnchronously when requesting a new "
                         + "layer tree frame sink."),
+        Flag.baseFeature(
+                BlinkFeatures.ELEMENT_GET_INNER_HTML,
+                "Enables the getInnerHTML() function on elements."),
         Flag.baseFeature(BlinkFeatures.TEXT_SIZE_ADJUST_IMPROVEMENTS, "Improved text-size-adjust."),
         Flag.baseFeature(
                 BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,
@@ -516,6 +529,9 @@ public final class ProductionSupportedFlagList {
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),
         Flag.baseFeature(
+                BlinkFeatures.REPORT_EVENT_TIMING_AT_VISIBILITY_CHANGE,
+                "Report event timing to UKM at visibility change."),
+        Flag.baseFeature(
                 BlinkFeatures.RUN_TEXT_INPUT_UPDATE_POST_LIFECYCLE,
                 "Runs code to update IME state at the end of a lifecycle update "
                         + "rather than the beginning."),
@@ -547,6 +563,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_IMAGE_DRAG,
                 "If enabled, images can be dragged out from Webview"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_DRAG_DROP_FILES,
+                "If enabled, files can be dropped into WebView"),
         Flag.baseFeature(
                 BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
                 "Combines WebRTC's worker thread and network thread onto a single thread."),
@@ -787,6 +806,10 @@ public final class ProductionSupportedFlagList {
                 "Enables text selection menu item modification based on "
                         + "embedder implementation."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_AUTO_SAA,
+                "Enable auto granting storage access API requests. This will be done "
+                        + "if a relationship is detected between the app and the website."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
                 "Enable detection of the loading of mature sites on "
                         + "WebViews running on supervised user accounts"),
@@ -873,6 +896,9 @@ public final class ProductionSupportedFlagList {
                 "If enabled, it posts PowerMonitor broadcast receiver init to a background"
                         + " thread."),
         Flag.baseFeature(
+                BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND,
+                "If enabled, getMyMemoryState IPC will be posted to background."),
+        Flag.baseFeature(
                 BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
                 "Starts capturing bfcache blocking details"),
         Flag.baseFeature(
@@ -947,7 +973,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.ALLOW_JAVA_SCRIPT_TO_RESET_AUTOFILL_STATE,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
-        Flag.baseFeature("ShadowDomSupport", "Improve shadow DOM support in password manager"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
         Flag.baseFeature(
                 BlinkFeatures.BLINK_SCHEDULER_PRIORITIZE_NAVIGATION_IP_CS,

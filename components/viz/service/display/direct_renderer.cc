@@ -134,7 +134,8 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
 }
 
 const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
-    const AggregatedRenderPass* pass) {
+    const AggregatedRenderPass* pass,
+    const RenderPassRequirements& requirements) {
   return nullptr;
 }
 
@@ -191,10 +192,14 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     // for performance.
 #endif
 
+    const RenderPassRequirements requirements =
+        CalculateRenderPassRequirements(pass.get());
+
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
     if (!is_root && pass->copy_requests.empty()) {
-      if (const DrawQuad* quad = CanPassBeDrawnDirectly(pass.get())) {
+      if (const DrawQuad* quad =
+              CanPassBeDrawnDirectly(pass.get(), requirements)) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
         render_pass_bypass_quads_[pass->id] = quad;
@@ -202,8 +207,7 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
       }
     }
 
-    render_passes_in_frame[pass->id] =
-        CalculateRenderPassRequirements(pass.get());
+    render_passes_in_frame[pass->id] = requirements;
   }
   UMA_HISTOGRAM_COUNTS_1000(
       "Compositing.Display.FlattenedRenderPassCount",

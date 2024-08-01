@@ -3138,7 +3138,7 @@
         </message>
 
         <!-- Sanitize UI -->
-        <message name="IDS_OS_SANITIZE_APP_NAME" desc="Name of the Sanitize web app" translateable="false">
+        <message name="IDS_SANITIZE" desc="Name of the Sanitize web app" translateable="false">
           Sanitize
         </message>
         <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window" translateable="false">
@@ -3182,6 +3182,42 @@
         </message>
         <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" translateable="false">
           Verify your language settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_EXTENSIONS" translateable="false">
+          Extensions
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_INPUT" translateable="false">
+          ChromeOS Input
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROMEOS_NETWORK" translateable="false">
+          ChromeOS Network
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_STARTUP" translateable="false">
+          Chrome Startup
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_HOMEPAGE" translateable="false">
+          Chrome Homepage
+        </message>
+        <message name="IDS_SANITIZE_DONE_BUTTON_CHROME_LANGUAGES" translateable="false">
+          Chrome Languages
+        </message>
+        <message name="IDS_SANITIZE_HEADING" translateable="false" desc="Name of the 'Safety reset' window">
+          Sanitize your device
+        </message>
+        <message name="IDS_SANITIZE_DESCRIPTION" translateable="false" desc="Description of the sanitization feature on the sanitize window">
+          Getting unwanted pop-ups, or other unexpected behavior? Sometimes,
+          apps and extensions that you install can change your ChromeOS settings
+          without you knowing.
+        </message>
+        <message name="IDS_SANITIZE_WARNING" translateable="false" desc="Warning text in the 'Sanitize' window">
+          This will disable extensions and reset your settings to safe defaults.
+          Tabs, files, and cookies will be preserved.
+        </message>
+        <message name="IDS_SANITIZE_FEEDBACK" translateable="false" desc="Feedback label in the Reset Profile Settings dialog">
+          Help make ChromeOS better by reporting the current settings
+        </message>
+        <message name="IDS_SANITIZE_CANCEL" translateable="false" desc="Button label to cancel proceeding with sanitize">
+          Cancel
         </message>
 
         <!-- Sea Pen UI -->
@@ -3353,10 +3389,16 @@
           Shuffle
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
-          Describe the wallpaper you want to create or use a sample prompt
+        Describe the wallpaper you want to create or use a sample prompt
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message displayed when the search query uses an unsupported language.">
+          This language isn't supported at this time
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS" desc="Error message displayed when the search results were blocked.">
+          Can't create images of this. Try another prompt.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
           Powered by Google AI

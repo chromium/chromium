@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -96,9 +95,7 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
 class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
  protected:
   void SetUp() override {
-    IwaIdentityValidator::CreateSingleton();
     SetTrustedWebBundleIdsForTesting({web_bundle_id_});
-
     WebAppTest::SetUp();
   }
 

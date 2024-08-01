@@ -56,7 +56,7 @@ uint64_t HashModuleFilename(const base::FilePath& filename) {
 }  // namespace
 
 CallStackProfileBuilder::CallStackProfileBuilder(
-    const CallStackProfileParams& profile_params,
+    const base::CallStackProfileParams& profile_params,
     const WorkIdRecorder* work_id_recorder,
     base::OnceClosure completed_callback)
     : work_id_recorder_(work_id_recorder) {

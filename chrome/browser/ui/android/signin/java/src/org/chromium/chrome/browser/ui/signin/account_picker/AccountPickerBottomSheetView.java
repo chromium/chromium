@@ -77,8 +77,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
+    private final View mSigninInProgressView;
     private final ButtonCompat mDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
+    private @Nullable @ViewState Integer mCurrentViewState;
 
     /**
      * @param activity The activity that hosts this view. Used for inflating views.
@@ -109,6 +111,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_selected_account);
+        mSigninInProgressView =
+                mViewFlipper
+                        .getChildAt(ViewState.SIGNIN_IN_PROGRESS)
+                        .findViewById(R.id.account_picker_state_signin_in_progress);
         mDismissButton =
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
@@ -169,7 +175,27 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /** Sets the displayed view according to the given {@link ViewState}. */
     void setDisplayedView(@ViewState int state) {
+        if (mCurrentViewState != null && mCurrentViewState == state) {
+            return;
+        }
+
         mViewFlipper.setDisplayedChild(state);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && state == ViewState.SIGNIN_IN_PROGRESS
+                && mCurrentViewState != null) {
+            // The goal here is to make the progress view take the height of the previously shown
+            // view, to prevent the bottom sheet from "jumping" visually.
+            // (See https://crbug.com/327127097)
+            //
+            // At this point, all other children of mViewFlipper are set to `GONE` by
+            // `mViewFlipper.setDisplayedChild` above.
+            // Here, the previous view's visibility is set to `INVISIBLE` instead. Since the
+            // progress view's height is `MATCH_PARENT` and it's minimal height is smaller,
+            // the bottom sheet view's height will be defined by the invisible previous view, making
+            // the progress view having the same height than the previous view in consequence.
+            mViewFlipper.getChildAt(mCurrentViewState).setVisibility(View.INVISIBLE);
+        }
+        mCurrentViewState = state;
         View titleView = mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
         titleView.setFocusable(true);
         titleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);

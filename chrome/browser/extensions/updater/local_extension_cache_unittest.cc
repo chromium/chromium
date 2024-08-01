@@ -61,8 +61,9 @@ class LocalExtensionCacheTest : public testing::Test {
                            const base::Time& timestamp,
                            base::FilePath* filename) {
     const base::FilePath file = GetExtensionFileName(dir, id, version, "");
-    if (filename)
+    if (filename) {
       *filename = file;
+    }
     CreateFile(file, size, timestamp);
   }
 
@@ -91,8 +92,9 @@ class LocalExtensionCacheTest : public testing::Test {
 
     const base::FilePath file =
         GetExtensionFileName(dir, id, version, hex_hash);
-    if (filename)
+    if (filename) {
       *filename = file;
+    }
     EXPECT_TRUE(base::WriteFile(file, data));
     EXPECT_TRUE(base::TouchFile(file, timestamp, timestamp));
 

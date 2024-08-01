@@ -185,6 +185,10 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::AllPrerenderingCanceled;
     case PrerenderFinalStatus::kWindowClosed:
       return Preload::PrerenderFinalStatusEnum::WindowClosed;
+    case PrerenderFinalStatus::kSlowNetwork:
+      return Preload::PrerenderFinalStatusEnum::SlowNetwork;
+    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
+      return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
   }
 }
 

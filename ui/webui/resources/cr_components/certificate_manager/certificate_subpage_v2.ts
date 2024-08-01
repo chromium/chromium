@@ -23,6 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import type {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import {getTemplate} from './certificate_subpage_v2.html.js';
+import {Page} from './navigation_v2.js';
 
 export interface CertificateSubpageV2Element {
   $: {
@@ -32,7 +33,7 @@ export interface CertificateSubpageV2Element {
 
 declare global {
   interface HTMLElementEventMap {
-    'navigate-back': CustomEvent<void>;
+    'navigate-back': CustomEvent<{target: Page}>;
   }
 }
 
@@ -40,6 +41,7 @@ export class SubpageCertificateList {
   headerText: string;
   hideExport: boolean;
   certSource: CertificateSource;
+  showImport: boolean;
 }
 
 export class CertificateSubpageV2Element extends
@@ -56,11 +58,13 @@ export class CertificateSubpageV2Element extends
     return {
       subpageTitle: String,
       subpageCertLists: Array,
+      navigateBackTarget: Page,
     };
   }
 
   subpageTitle: string;
   subpageCertLists: SubpageCertificateList[] = [];
+  navigateBackTarget: Page;
 
   // Sets initial keyboard focus of the subpage.
   setInitialFocus() {
@@ -69,8 +73,13 @@ export class CertificateSubpageV2Element extends
 
   private onBackButtonClick_(e: Event) {
     e.preventDefault();
-    this.dispatchEvent(
-        new CustomEvent('navigate-back', {composed: true, bubbles: true}));
+    this.dispatchEvent(new CustomEvent('navigate-back', {
+      composed: true,
+      bubbles: true,
+      detail: {
+        target: this.navigateBackTarget,
+      },
+    }));
   }
 }
 

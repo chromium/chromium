@@ -13,8 +13,10 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -48,6 +50,7 @@
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/display_utils.h"
+#include "components/viz/service/display/frame_interval_matchers.h"
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/occlusion_culler.h"
 #include "components/viz/service/display/output_surface.h"
@@ -138,6 +141,9 @@ bool SupportsSetFrameRate(const OutputSurface* output_surface) {
 #if BUILDFLAG(IS_ANDROID)
   return output_surface->capabilities().supports_surfaceless &&
          gfx::SurfaceControl::SupportsSetFrameRate();
+#elif BUILDFLAG(IS_WIN)
+  return output_surface->capabilities().supports_dc_layers &&
+         features::ShouldUseSetPresentDuration();
 #else
   return false;
 #endif
@@ -295,9 +301,14 @@ void Display::Initialize(DisplayClient* client,
   if (output_surface_->software_device())
     output_surface_->software_device()->BindToClient(this);
 
-  frame_rate_decider_ = std::make_unique<FrameRateDecider>(
-      surface_manager_, this, hw_support_for_multiple_refresh_rates,
-      SupportsSetFrameRate(output_surface_.get()));
+  output_surface_supports_set_frame_rate_ =
+      SupportsSetFrameRate(output_surface_.get());
+  if (!base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
+    frame_rate_decider_ = std::make_unique<FrameRateDecider>(
+        surface_manager_, this, hw_support_for_multiple_refresh_rates,
+        output_surface_supports_set_frame_rate_);
+  }
+  UpdateFrameIntervalDeciderSettings();
 
   InitializeRenderer();
 
@@ -311,6 +322,48 @@ void Display::Initialize(DisplayClient* client,
   // it could miss a callback before setting this.
   if (skia_output_surface_)
     skia_output_surface_->AddContextLostObserver(this);
+}
+
+void Display::UpdateFrameIntervalDeciderSettings() {
+  if (!base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
+    return;
+  }
+
+  if (!frame_interval_decider_) {
+    frame_interval_decider_ = std::make_unique<FrameIntervalDecider>(*this);
+  }
+
+  // TODO(crbug.com/346732738): This is only implemented for android. Support
+  // other platforms / configurations.
+
+  FrameIntervalDecider::Settings settings;
+  std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
+  matchers.push_back(std::make_unique<InputBoostMatcher>());
+  matchers.push_back(std::make_unique<VideoConferenceMatcher>());
+#if BUILDFLAG(IS_ANDROID)
+  matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!output_surface_supports_set_frame_rate_) {
+    FrameIntervalDecider::FixedIntervalSettings fixed_interval_settings;
+    if (fixed_supported_intervals_.empty()) {
+      fixed_interval_settings.supported_intervals = {
+          BeginFrameArgs::DefaultInterval()};
+      fixed_interval_settings.default_interval =
+          BeginFrameArgs::DefaultInterval();
+    } else {
+      fixed_interval_settings.supported_intervals = fixed_supported_intervals_;
+      fixed_interval_settings.default_interval =
+          *fixed_supported_intervals_.begin();
+    }
+    settings.fixed_intervals = fixed_interval_settings;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  frame_interval_decider_->UpdateSettings(std::move(settings),
+                                          std::move(matchers));
 }
 
 void Display::AddObserver(DisplayObserver* observer) {
@@ -760,6 +813,29 @@ void Display::MaybeLogQuadsProperties(
                           logging_timer.Elapsed().InMicroseconds());
 }
 
+void Display::StartTrackingOverdraw(int interval_length_in_seconds) {
+  CHECK(!overdraw_tracker_);
+
+  OverdrawTracker::Settings settings;
+  settings.interval_length_in_seconds = interval_length_in_seconds;
+
+  overdraw_tracker_ = std::make_unique<OverdrawTracker>(settings);
+}
+
+OverdrawTracker::OverdrawTimeSeries Display::StopTrackingOverdraw() {
+  // Returns empty time series if `overdraw_tracker_` has no value. This could
+  // happen when gpu-process is restarted in middle of test and test scripts
+  // still calls this at the end.
+  if (!overdraw_tracker_) {
+    return OverdrawTracker::OverdrawTimeSeries();
+  }
+
+  auto overdraw_data = overdraw_tracker_->TakeDataAsTimeSeries();
+  overdraw_tracker_.reset();
+
+  return overdraw_data;
+}
+
 bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   if (debug_settings_->show_aggregated_damage !=
@@ -825,8 +901,16 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   base::ElapsedTimer aggregate_timer;
   AggregatedFrame frame;
   {
-    FrameRateDecider::ScopedAggregate scoped_aggregate(
-        frame_rate_decider_.get());
+    std::optional<FrameRateDecider::ScopedAggregate> scoped_aggregate;
+    if (frame_rate_decider_) {
+      scoped_aggregate.emplace(frame_rate_decider_.get());
+    }
+    std::unique_ptr<FrameIntervalDecider::ScopedAggregate>
+        scoped_interval_decider;
+    if (frame_interval_decider_) {
+      scoped_interval_decider = frame_interval_decider_->WrapAggregate(
+          *surface_manager_, params.frame_time);
+    }
     gfx::Rect target_damage_bounding_rect;
     if (output_surface_->capabilities().supports_target_damage)
       target_damage_bounding_rect = renderer_->GetTargetDamageBoundingRect();
@@ -951,6 +1035,11 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
     DBG_LOG("renderer.ptr", "renderer = %p%s", this,
             renderer_.get() == software_renderer_ ? " (software)" : "");
+
+    if (overdraw_tracker_) {
+      overdraw_tracker_->EstimateAndRecordOverdraw(&frame,
+                                                   base::TimeTicks::Now());
+    }
 
     draw_timer.emplace();
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
@@ -1295,7 +1384,7 @@ void Display::SetNeedsOneBeginFrame() {
 }
 
 void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
-  if (frame_rate_decider_->output_surface_supports_set_frame_rate()) {
+  if (output_surface_supports_set_frame_rate_) {
     float interval_s = interval.InSecondsF();
     float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
     output_surface_->SetFrameRate(frame_rate);
@@ -1309,6 +1398,34 @@ void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
   client_->SetPreferredFrameInterval(interval);
 }
 
+void Display::SetFrameInterval(FrameIntervalDecider::Result result,
+                               FrameIntervalMatcherType matcher_type) {
+  TRACE_EVENT_INSTANT("viz", "SetFrameInterval", "result",
+                      FrameIntervalMatcher::ResultToString(result),
+                      "matcher_type",
+                      FrameIntervalMatcher::MatcherTypeToString(matcher_type));
+
+  // TODO(crbug.com/346732738): This is only implemented for android. Support
+  // other platforms / configurations.
+
+  base::TimeDelta interval = absl::visit(
+      base::Overloaded(
+          [&](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
+            // For now, setting 0 implies no preference, and allow the OS to use
+            // its own heuristics to estimate.
+            return base::Milliseconds(0);
+          },
+          [](base::TimeDelta interval) { return interval; }),
+      result);
+
+  if (current_interval_ == interval) {
+    return;
+  }
+  current_interval_ = interval;
+
+  SetPreferredFrameInterval(interval);
+}
+
 base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
     const FrameSinkId& id,
     mojom::CompositorFrameSinkType* type) {
@@ -1317,11 +1434,17 @@ base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
 
 void Display::SetSupportedFrameIntervals(
     base::flat_set<base::TimeDelta> intervals) {
-  frame_rate_decider_->SetSupportedFrameIntervals(std::move(intervals));
+  if (frame_rate_decider_) {
+    frame_rate_decider_->SetSupportedFrameIntervals(intervals);
+  }
+  fixed_supported_intervals_ = std::move(intervals);
+  UpdateFrameIntervalDeciderSettings();
 }
 
 void Display::SetHwSupportForMultipleRefreshRates(bool support) {
-  frame_rate_decider_->SetHwSupportForMultipleRefreshRates(support);
+  if (frame_rate_decider_) {
+    frame_rate_decider_->SetHwSupportForMultipleRefreshRates(support);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

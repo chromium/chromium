@@ -5,10 +5,10 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify_builder")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
@@ -90,21 +90,6 @@ try_.builder(
             "no_symbols",
         ],
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-arm64-cast-rel",
-    branch_selector = branches.selector.MAIN,
-    mirrors = [
-        "ci/linux-arm64-cast-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-arm64-cast-rel",
-        ],
-    ),
-    contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -227,24 +212,6 @@ try_.builder(
     name = "linux-fieldtrial-rel",
     mirrors = ["ci/linux-fieldtrial-rel"],
     gn_args = "ci/linux-fieldtrial-rel",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-mbi-mode-per-render-process-host-rel",
-    mirrors = builder_config.copy_from("linux-rel"),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_builder",
-            "remoteexec",
-            "no_symbols",
-            "dcheck_always_on",
-            "mbi_mode_per_render_process_host",
-            "linux",
-            "x64",
-        ],
-    ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -478,21 +445,6 @@ try_.builder(
         "ci/WebKit Linux MSAN",
     ],
     gn_args = "ci/WebKit Linux MSAN",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-x64-cast-dbg",
-    branch_selector = branches.selector.MAIN,
-    mirrors = [
-        "ci/linux-x64-cast-dbg",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-x64-cast-dbg",
-        ],
-    ),
-    contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

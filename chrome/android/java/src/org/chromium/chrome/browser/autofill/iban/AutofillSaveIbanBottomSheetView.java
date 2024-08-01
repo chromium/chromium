@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -27,6 +28,9 @@ import org.chromium.chrome.R;
     /** The obfuscated value for IBAN. */
     final TextView mIbanLabel;
 
+    /** The nickname input by the user. */
+    EditText mNickname;
+
     /** The button that accepts the IBAN save prompt. */
     final Button mAcceptButton;
 
@@ -41,6 +45,7 @@ import org.chromium.chrome.R;
         mScrollView = mContentView.findViewById(R.id.autofill_save_iban_scroll_view);
         mTitle = mContentView.findViewById(R.id.autofill_local_save_iban_title_text);
         mIbanLabel = mContentView.findViewById(R.id.autofill_save_iban_label);
+        mNickname = mContentView.findViewById(R.id.autofill_save_iban_nickname_input);
         mAcceptButton = mContentView.findViewById(R.id.autofill_save_iban_confirm_button);
         mCancelButton = mContentView.findViewById(R.id.autofill_save_iban_cancel_button);
     }

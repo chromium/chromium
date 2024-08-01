@@ -989,26 +989,20 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     EXPECT_EQ(request->request.credentials_mode,
               network::mojom::CredentialsMode::kInclude);
 
-    std::string purpose_value;
-    EXPECT_TRUE(request->request.headers.GetHeader("Purpose", &purpose_value));
-    EXPECT_EQ(purpose_value, "prefetch");
+    EXPECT_THAT(request->request.headers.GetHeader("Purpose"),
+                testing::Optional(std::string("prefetch")));
 
-    std::string sec_purpose_value;
-    EXPECT_TRUE(
-        request->request.headers.GetHeader("Sec-Purpose", &sec_purpose_value));
-    EXPECT_EQ(sec_purpose_value, options.use_prefetch_proxy
-                                     ? "prefetch;anonymous-client-ip"
-                                     : "prefetch");
+    EXPECT_THAT(request->request.headers.GetHeader("Sec-Purpose"),
+                testing::Optional(std::string(
+                    options.use_prefetch_proxy ? "prefetch;anonymous-client-ip"
+                                               : "prefetch")));
 
-    std::string accept_value;
-    EXPECT_TRUE(request->request.headers.GetHeader("Accept", &accept_value));
-    EXPECT_EQ(accept_value, FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
-                                                   browser_context()));
+    EXPECT_THAT(request->request.headers.GetHeader("Accept"),
+                testing::Optional(FrameAcceptHeaderValue(
+                    /*allow_sxg_responses=*/true, browser_context())));
 
-    std::string upgrade_insecure_request_value;
-    EXPECT_TRUE(request->request.headers.GetHeader(
-        "Upgrade-Insecure-Requests", &upgrade_insecure_request_value));
-    EXPECT_EQ(upgrade_insecure_request_value, "1");
+    EXPECT_THAT(request->request.headers.GetHeader("Upgrade-Insecure-Requests"),
+                testing::Optional(std::string("1")));
 
     ASSERT_TRUE(request->request.trusted_params.has_value());
     VerifyIsolationInfo(request->request.trusted_params->isolation_info);
@@ -5743,15 +5737,15 @@ TEST_F(PrefetchServiceClientHintsTest, HighEntropyClientHints) {
   auto* pending = test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_TRUE(pending);
   EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-UA"));
-  std::string viewport_width;
-  EXPECT_TRUE(pending->request.headers.GetHeader("Sec-CH-Viewport-Width",
-                                                 &viewport_width));
+  std::optional<std::string> viewport_width =
+      pending->request.headers.GetHeader("Sec-CH-Viewport-Width");
+  EXPECT_TRUE(viewport_width.has_value());
 
   // Even though we hinted it above, if the actual RenderWidgetHostView reports
   // its size that gets used above. So accept any positive integer. (This
   // notably affects the results on Android.)
   int viewport_width_int;
-  EXPECT_TRUE(base::StringToInt(viewport_width, &viewport_width_int));
+  EXPECT_TRUE(base::StringToInt(*viewport_width, &viewport_width_int));
   EXPECT_GT(viewport_width_int, 0);
 }
 

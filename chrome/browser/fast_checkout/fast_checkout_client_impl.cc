@@ -152,7 +152,7 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(
-      autofill_client_->GetAutofillDriverFactory());
+      &autofill_client_->GetAutofillDriverFactory());
 }
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
@@ -630,25 +630,34 @@ void FastCheckoutClientImpl::A11yAnnounce(
   }
 }
 
-void FastCheckoutClientImpl::OnAutofillManagerDestroyed(
-    autofill::AutofillManager& manager) {
-  if (IsRunning()) {
-    if (autofill_client_->GetWebContents().IsBeingDestroyed()) {
-      OnRunComplete(FastCheckoutRunOutcome::kTabClosed);
-    } else {
-      OnRunComplete(FastCheckoutRunOutcome::kAutofillManagerDestroyed);
-    }
-    return;
-  }
-  InternalStop(/*allow_further_runs=*/true);
-}
-
-void FastCheckoutClientImpl::OnAutofillManagerReset(
-    autofill::AutofillManager& manager) {
-  if (IsShowing()) {
-    OnRunComplete(FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
-  } else {
-    OnRunComplete(FastCheckoutRunOutcome::kPageRefreshed);
+void FastCheckoutClientImpl::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    autofill::AutofillManager::LifecycleState old_state,
+    autofill::AutofillManager::LifecycleState new_state) {
+  using enum autofill::AutofillManager::LifecycleState;
+  switch (new_state) {
+    case kInactive:
+    case kActive:
+      break;
+    case kPendingReset:
+      if (IsShowing()) {
+        OnRunComplete(
+            FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
+      } else {
+        OnRunComplete(FastCheckoutRunOutcome::kPageRefreshed);
+      }
+      break;
+    case kPendingDeletion:
+      if (IsRunning()) {
+        if (autofill_client_->GetWebContents().IsBeingDestroyed()) {
+          OnRunComplete(FastCheckoutRunOutcome::kTabClosed);
+        } else {
+          OnRunComplete(FastCheckoutRunOutcome::kAutofillManagerDestroyed);
+        }
+        return;
+      }
+      InternalStop(/*allow_further_runs=*/true);
+      break;
   }
 }
 

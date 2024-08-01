@@ -3572,11 +3572,10 @@ void PaintPropertyTreeBuilder::UpdateGlobalMainThreadScrollingReasons() {
         cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
-  if (!object_.GetFrame()->Client()->GetWebFrame()) {
+  if (!RuntimeEnabledFeatures::ExcludePopupMainThreadScrollingReasonEnabled() &&
+      !object_.GetFrame()->Client()->GetWebFrame()) {
     // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
     // threaded scrolling.  This currently only happens in a WebPagePopup.
-    // (However, we still allow needs_composited_scrolling to be true in this
-    // case, so that the scroller gets layerized.)
     context_.global_main_thread_scrolling_reasons |=
         cc::MainThreadScrollingReason::kPopupNoThreadedInput;
   }

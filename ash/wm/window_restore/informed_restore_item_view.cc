@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"

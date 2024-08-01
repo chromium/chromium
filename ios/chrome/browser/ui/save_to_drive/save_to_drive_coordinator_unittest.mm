@@ -52,7 +52,7 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     drive_service_ =
         drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
     account_manager_service_ =

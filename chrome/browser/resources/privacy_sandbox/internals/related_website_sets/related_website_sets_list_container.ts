@@ -9,7 +9,7 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
+import type {Member, RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
 import {getCss} from './related_website_sets_list_container.css.js';
 import {getHtml} from './related_website_sets_list_container.html.js';
 
@@ -101,6 +101,10 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
 
   protected getDisplayedError(): string {
     return this.errorMessage.replace('Error', '');
+  }
+
+  protected getMemberSites_(item: RelatedWebsiteSet): Member[] {
+    return item.memberSites.filter(ms => ms.site !== item.primarySite);
   }
 }
 

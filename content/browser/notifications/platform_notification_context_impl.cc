@@ -151,8 +151,9 @@ void PlatformNotificationContextImpl::DidGetNotifications(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Abort if the profile has been shut down already. This mainly happens in
   // tests and very short lived sessions.
-  if (has_shutdown_)
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
     return;
+  }
 
   // Synchronize the notifications stored in the database with the set of
   // displaying notifications in |displayed_notifications|. This is necessary
@@ -177,8 +178,9 @@ void PlatformNotificationContextImpl::DoSyncNotificationData(
     std::set<std::string> displayed_notifications,
     bool initialized) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!initialized)
+  if (!initialized) {
     return;
+  }
 
   // Reset |next_trigger_| to keep track of the next trigger timestamp.
   next_trigger_ = std::nullopt;
@@ -199,14 +201,24 @@ void PlatformNotificationContextImpl::DoSyncNotificationData(
       "Notifications.Database.ExpiredNotificationCount",
       close_notification_ids.size());
 
-  if (service_proxy_) {
+  if (!has_shutdown_.load(std::memory_order_relaxed)) {
     // Schedule the next trigger timestamp.
-    if (next_trigger_)
-      service_proxy_->ScheduleTrigger(next_trigger_.value());
+    if (next_trigger_) {
+      GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+          ->PostTask(
+              FROM_HERE,
+              base::BindOnce(&PlatformNotificationContextImpl::ScheduleTrigger,
+                             this, next_trigger_.value()));
+    }
 
     // Close old notifications.
-    if (!close_notification_ids.empty())
-      service_proxy_->CloseNotifications(close_notification_ids);
+    if (!close_notification_ids.empty()) {
+      GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(
+                         &PlatformNotificationContextImpl::CloseNotifications,
+                         this, close_notification_ids));
+    }
   }
 }
 
@@ -223,10 +235,11 @@ void PlatformNotificationContextImpl::DoHandleSyncNotification(
     base::Time timestamp =
         data.notification_data.show_trigger_timestamp.value();
     // Check if we should display this notification.
-    if (timestamp <= base::Time::Now())
+    if (timestamp <= base::Time::Now()) {
       DoTriggerNotification(data);
-    else if (!next_trigger_ || next_trigger_.value() > timestamp)
+    } else if (!next_trigger_ || next_trigger_.value() > timestamp) {
       next_trigger_ = timestamp;
+    }
     return;
   }
 
@@ -254,10 +267,9 @@ void PlatformNotificationContextImpl::DoHandleSyncNotification(
 
 void PlatformNotificationContextImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  has_shutdown_ = true;
+  has_shutdown_.store(true, std::memory_order_relaxed);
 
-  if (service_proxy_)
-    service_proxy_->Shutdown();
+  service_proxy_.reset();
 
   services_.clear();
 
@@ -339,7 +351,7 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
     std::set<GURL> origins) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Make sure |browser_context_| is still valid before getting the controller.
-  if (!success || !service_proxy_ || has_shutdown_) {
+  if (!success || has_shutdown_.load(std::memory_order_relaxed)) {
     std::move(callback).Run(/* success= */ false, /* deleted_count= */ 0);
     return;
   }
@@ -405,8 +417,13 @@ void PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins(
     success = true;
   }
 
-  if (service_proxy_ && !deleted_notification_ids.empty())
-    service_proxy_->CloseNotifications(deleted_notification_ids);
+  if (!deleted_notification_ids.empty()) {
+    GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&PlatformNotificationContextImpl::CloseNotifications,
+                           this, deleted_notification_ids));
+  }
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success,
@@ -487,8 +504,9 @@ void PlatformNotificationContextImpl::DoTriggerNotification(
     const NotificationDatabaseData& database_data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // Bail out in case we can not display the notification after Shutdown.
-  if (!service_proxy_)
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
     return;
+  }
 
   blink::NotificationResources resources;
   NotificationDatabase::Status status = database_->ReadNotificationResources(
@@ -514,16 +532,20 @@ void PlatformNotificationContextImpl::DoTriggerNotification(
                                          write_database_data.origin);
 
   write_database_data.notification_resources = std::move(resources);
-  service_proxy_->DisplayNotification(std::move(write_database_data),
-                                      base::DoNothing());
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PlatformNotificationContextImpl::DisplayNotification,
+                     this, write_database_data, base::DoNothing()));
 }
 
 void PlatformNotificationContextImpl::WriteNotificationResources(
     std::vector<NotificationResourceData> resource_data,
     WriteResourcesResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (has_shutdown_ || !service_proxy_)
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
     return;
+  }
 
   InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoWriteNotificationResources, this,
@@ -585,8 +607,9 @@ void PlatformNotificationContextImpl::ReDisplayNotifications(
     std::vector<GURL> origins,
     ReDisplayNotificationsResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (has_shutdown_ || !service_proxy_)
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
     return;
+  }
 
   InitializeDatabase(
       base::BindOnce(&PlatformNotificationContextImpl::DoReDisplayNotifications,
@@ -631,8 +654,10 @@ void PlatformNotificationContextImpl::DoReDisplayNotifications(
 
       NotificationDatabaseData display_data = data;
       display_data.notification_resources = std::move(resources);
-      service_proxy_->DisplayNotification(std::move(display_data),
-                                          base::DoNothing());
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&PlatformNotificationContextImpl::DisplayNotification,
+                         this, display_data, base::DoNothing()));
       ++display_count;
     }
     if (status != NotificationDatabase::STATUS_OK)
@@ -903,7 +928,7 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
     bool initialized) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(database_data.notification_id.empty());
-  if (!initialized || !service_proxy_) {
+  if (!initialized || has_shutdown_.load(std::memory_order_relaxed)) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false,
                                   /* notification_id= */ ""));
@@ -970,11 +995,21 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
 
   if (status == NotificationDatabase::STATUS_OK) {
     if (CanTrigger(write_database_data)) {
-      if (replaces_existing)
-        service_proxy_->CloseNotifications({notification_id});
+      if (replaces_existing) {
+        std::set<std::string> notification_ids = {notification_id};
+        GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+            ->PostTask(FROM_HERE,
+                       base::BindOnce(
+                           &PlatformNotificationContextImpl::CloseNotifications,
+                           this, notification_ids));
+      }
 
       // Schedule notification to be shown.
-      service_proxy_->ScheduleNotification(std::move(write_database_data));
+      GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(
+                         &PlatformNotificationContextImpl::ScheduleNotification,
+                         this, write_database_data));
 
       // Respond with success as this notification got scheduled successfully.
       GetUIThreadTaskRunner({})->PostTask(
@@ -983,11 +1018,12 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
       return;
     }
 
-    // Display the notification immediately.
     write_database_data.notification_resources =
         database_data.notification_resources;
-    service_proxy_->DisplayNotification(std::move(write_database_data),
-                                        std::move(callback));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PlatformNotificationContextImpl::DisplayNotification,
+                       this, write_database_data, std::move(callback)));
     return;
   }
 
@@ -1006,12 +1042,19 @@ void PlatformNotificationContextImpl::DeleteNotificationData(
     bool close_notification,
     DeleteResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!service_proxy_)
+  if (has_shutdown_.load(std::memory_order_relaxed)) {
     return;
+  }
 
   // Close notification as we're about to delete its data.
-  if (close_notification)
-    service_proxy_->CloseNotifications({notification_id});
+  if (close_notification) {
+    std::set<std::string> notification_ids = {notification_id};
+    GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&PlatformNotificationContextImpl::CloseNotifications,
+                           this, notification_ids));
+  }
 
   bool should_log_close = service_proxy_->ShouldLogClose(origin);
   InitializeDatabase(base::BindOnce(
@@ -1037,7 +1080,10 @@ void PlatformNotificationContextImpl::DoDeleteNotificationData(
     NotificationDatabaseData data;
     if (database_->ReadNotificationData(notification_id, origin, &data) ==
         NotificationDatabase::STATUS_OK) {
-      service_proxy_->LogClose(std::move(data));
+      GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(&PlatformNotificationContextImpl::LogClose,
+                                    this, data));
     }
   }
 
@@ -1093,8 +1139,13 @@ void PlatformNotificationContextImpl::
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED)
     DestroyDatabase();
 
-  if (service_proxy_ && !deleted_notification_ids.empty())
-    service_proxy_->CloseNotifications(deleted_notification_ids);
+  if (!deleted_notification_ids.empty()) {
+    GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&PlatformNotificationContextImpl::CloseNotifications,
+                           this, deleted_notification_ids));
+  }
 }
 
 void PlatformNotificationContextImpl::OnStorageWiped() {
@@ -1212,6 +1263,46 @@ base::FilePath PlatformNotificationContextImpl::GetDatabasePath() const {
 void PlatformNotificationContextImpl::SetTaskRunnerForTesting(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
   task_runner_ = task_runner;
+}
+
+void PlatformNotificationContextImpl::DisplayNotification(
+    const NotificationDatabaseData& data,
+    WriteResultCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (service_proxy_) {
+    service_proxy_->DisplayNotification(data, std::move(callback));
+  }
+}
+
+void PlatformNotificationContextImpl::CloseNotifications(
+    const std::set<std::string>& notification_ids) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (service_proxy_) {
+    service_proxy_->CloseNotifications(notification_ids);
+  }
+}
+
+void PlatformNotificationContextImpl::ScheduleTrigger(base::Time timestamp) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (service_proxy_) {
+    service_proxy_->ScheduleTrigger(timestamp);
+  }
+}
+
+void PlatformNotificationContextImpl::ScheduleNotification(
+    const NotificationDatabaseData& data) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (service_proxy_) {
+    service_proxy_->ScheduleNotification(data);
+  }
+}
+
+void PlatformNotificationContextImpl::LogClose(
+    const NotificationDatabaseData& data) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (service_proxy_) {
+    service_proxy_->LogClose(data);
+  }
 }
 
 }  // namespace content

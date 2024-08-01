@@ -382,11 +382,6 @@ CXXMethodDecl* RecordInfo::InheritsNonVirtualTrace() {
   return 0;
 }
 
-bool RecordInfo::DeclaresGCMixinMethods() {
-  DetermineTracingMethods();
-  return has_gc_mixin_methods_;
-}
-
 bool RecordInfo::DeclaresLocalTraceMethod() {
   if (is_declaring_local_trace_ != kNotComputed)
     return is_declaring_local_trace_;
@@ -487,8 +482,6 @@ void RecordInfo::DetermineTracingMethods() {
     return;
   CXXMethodDecl* trace = nullptr;
   CXXMethodDecl* trace_after_dispatch = nullptr;
-  bool has_adjust_and_mark = false;
-  bool has_is_heap_object_alive = false;
   for (Decl* decl : record_->decls()) {
     CXXMethodDecl* method = dyn_cast<CXXMethodDecl>(decl);
     if (!method) {
@@ -509,18 +502,12 @@ void RecordInfo::DetermineTracingMethods() {
       case Config::NOT_TRACE_METHOD:
         if (method->getNameAsString() == kFinalizeName) {
           finalize_dispatch_method_ = method;
-        } else if (method->getNameAsString() == kAdjustAndMarkName) {
-          has_adjust_and_mark = true;
-        } else if (method->getNameAsString() == kIsHeapObjectAliveName) {
-          has_is_heap_object_alive = true;
         }
         break;
     }
   }
 
   // Record if class defines the two GCMixin methods.
-  has_gc_mixin_methods_ =
-      has_adjust_and_mark && has_is_heap_object_alive ? kTrue : kFalse;
   if (trace_after_dispatch) {
     trace_method_ = trace_after_dispatch;
     trace_dispatch_method_ = trace;

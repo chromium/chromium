@@ -333,7 +333,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         const bool buffer_appended =
-            multipart_parser_->AppendData(buffer, available);
+            multipart_parser_->AppendData(base::span(buffer, available));
         const bool multipart_receive_failed = multipart_parser_->IsCancelled();
         result = consumer_->EndRead(available);
         if (!buffer_appended || multipart_receive_failed) {
@@ -388,9 +388,10 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
       multipart_parser_->Cancel();
   }
 
-  void PartDataInMultipartReceived(const char* bytes, size_t size) override {
-    if (!current_entry_.AppendBytes(bytes, size))
+  void PartDataInMultipartReceived(base::span<const char> bytes) override {
+    if (!current_entry_.AppendBytes(bytes.data(), bytes.size())) {
       multipart_parser_->Cancel();
+    }
   }
 
   void PartDataInMultipartFullyReceived() override {

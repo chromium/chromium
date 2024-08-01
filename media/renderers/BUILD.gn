@@ -115,7 +115,7 @@ static_library("test_support") {
     "//base",
     "//components/viz/common",
     "//gpu:test_support",
-    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//media/base:test_support",
     "//ui/gfx",

@@ -422,6 +422,10 @@ BUILDERS = {
         },
         'perf_trigger': False,
     },
+    'android_arm64_high_end-builder-perf': {
+        'additional_compile_targets': ['trichrome_google_64_32_minimal_apks'],
+        'pinpoint_additional_compile_targets': [],
+    },
     'linux-builder-perf': {
         'additional_compile_targets': [
             'chromedriver_group',
@@ -1082,24 +1086,6 @@ BUILDERS = {
             'cpu': 'arm',
             'mac_model': 'MacBookPro18,3',
             'os': 'Mac',
-            'pool': 'chrome.tests.perf',
-        },
-    },
-    'mac-14-m1-pro-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'mac',
-        'dimension': {
-            'cpu': 'arm',
-            'mac_model': 'MacBookPro18,3',
-            'os': 'Mac-14',
             'pool': 'chrome.tests.perf',
         },
     },

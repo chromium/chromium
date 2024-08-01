@@ -64,6 +64,8 @@ class ReadAloudAppModel {
   // where this isn't needed.
   void InitAXPositionWithNode(ui::AXNode* ax_node);
 
+  void ResetGranularityIndex();
+
   // Returns a list of AXNodeIds representing the next nodes that should be
   // spoken and highlighted with Read Aloud.
   // This defaults to returning the first granularity until
@@ -77,6 +79,12 @@ class ReadAloudAppModel {
       bool is_pdf,
       bool is_docs,
       const std::set<ui::AXNodeID>* current_nodes);
+
+  // Asynchronously preprocess the text on the current page that will be
+  // used for Read Aloud.
+  void PreprocessTextForSpeech(bool is_pdf,
+                               bool is_docs,
+                               const std::set<ui::AXNodeID>* current_nodes);
 
   // Increments the processed_granularity_index_, updating ReadAloud's state of
   // the current granularity to refer to the next granularity. The current

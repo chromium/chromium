@@ -555,36 +555,6 @@ if (is_mac) {
 
       deps = [ ":common" ]
     }
-
-    action("gen_symbol_tools_packager") {
-      testonly = true
-      script = "scripts/gen_symbol_tools_packager.py"
-      _go_sources = [
-        "breakpad/src/tools/mac/upload_system_symbols/arch_reader.go",
-        "breakpad/src/tools/mac/upload_system_symbols/extract.go",
-        "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.go",
-      ]
-      _extra_sources = [
-        "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.sh",
-      ]
-
-      sources = [ "scripts/package_symbol_tools.py.template" ] + _go_sources +
-                _extra_sources
-      outputs = [ "$root_out_dir/package_symbol_tools.py" ]
-      deps = [
-        ":dump_syms",
-        ":symupload",
-        "//tools/mac:dsc_extractor",
-      ]
-      args = [
-               "-a",
-               target_cpu,
-               "-t",
-               rebase_path("scripts/package_symbol_tools.py.template",
-                           root_build_dir),
-             ] + [ "-go_src" ] + rebase_path(_go_sources, root_build_dir) +
-             [ "-extra" ] + rebase_path(_extra_sources, root_build_dir)
-    }
   } else if (current_toolchain == default_toolchain) {
     # The default toolchain builds the system-allocator binaries, which are
     # placed in the output dir of the default toolchain.
@@ -595,6 +565,11 @@ if (is_mac) {
     copy_exe("symupload") {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
+    }
+    copy_exe("breakpad_unittests") {
+      testonly = true
+      has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
   } else if (current_toolchain == host_toolchain && current_cpu == "arm64") {
     # TODO(crbug.com/349268750): This alias exists because the official Mac
@@ -613,6 +588,34 @@ if (is_mac) {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
+  }
+
+  action("gen_symbol_tools_packager") {
+    testonly = true
+    script = "scripts/gen_symbol_tools_packager.py"
+    _go_source_dir = "breakpad/src/tools/mac/upload_system_symbols"
+    _extra_sources = [
+      "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.sh",
+    ]
+
+    sources = [ "scripts/package_symbol_tools.py.template" ] +
+              [ _go_source_dir ] + _extra_sources
+    outputs = [ "$root_out_dir/package_symbol_tools.py" ]
+    deps = [
+      ":dump_syms",
+      ":symupload",
+      "//tools/mac:dsc_extractor",
+    ]
+    args = [
+             "-a",
+             target_cpu,
+             "-t",
+             rebase_path("scripts/package_symbol_tools.py.template",
+                         root_build_dir),
+             "-go_src",
+             rebase_path(_go_source_dir, root_build_dir),
+             "-extra",
+           ] + rebase_path(_extra_sources, root_build_dir)
   }
 }
 

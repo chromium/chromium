@@ -31,12 +31,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -59,11 +61,14 @@ PickerSearchResultsView::PickerSearchResultsView(
     PickerSearchResultsViewDelegate* delegate,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher,
-    PickerSubmenuController* submenu_controller)
-    : delegate_(delegate) {
+    PickerSubmenuController* submenu_controller,
+    PickerPreviewBubbleController* preview_controller)
+    : delegate_(delegate), preview_controller_(preview_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+  GetViewAccessibility().SetContainerLiveStatus("polite");
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
       picker_view_width, asset_fetcher, submenu_controller));
@@ -156,6 +161,7 @@ void PickerSearchResultsView::ClearSearchResults() {
   no_results_view_->SetVisible(false);
   StopLoadingAnimation();
   top_results_.clear();
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
@@ -182,6 +188,7 @@ void PickerSearchResultsView::AppendSearchResults(
   section_views_.push_back(section_view);
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
@@ -195,6 +202,8 @@ bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
   no_results_label_->SetText(std::move(description));
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
+  delegate_->OnSearchResultsViewHeightChanged();
+  AnnounceNoResultsFound();
   return true;
 }
 
@@ -202,6 +211,7 @@ void PickerSearchResultsView::ShowLoadingAnimation() {
   ClearSearchResults();
   skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
   skeleton_loader_view_->SetVisible(true);
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 void PickerSearchResultsView::SelectSearchResult(
@@ -215,7 +225,7 @@ void PickerSearchResultsView::AddResultToSection(
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
   PickerItemView* view = section_view->AddResult(
-      result, &preview_controller_,
+      result, preview_controller_,
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
 
@@ -240,9 +250,27 @@ int PickerSearchResultsView::GetIndex(
                   static_cast<int>(it - top_results_.begin()));
 }
 
+void PickerSearchResultsView::SetNumEmojiResultsForA11y(
+    size_t num_emoji_results) {
+  num_emoji_results_displayed_ = num_emoji_results;
+}
+
 void PickerSearchResultsView::StopLoadingAnimation() {
   skeleton_loader_view_->StopAnimation();
   skeleton_loader_view_->SetVisible(false);
+  delegate_->OnSearchResultsViewHeightChanged();
+}
+
+void PickerSearchResultsView::AnnounceNoResultsFound() {
+  if (num_emoji_results_displayed_ == 0) {
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
+  } else {
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+        IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
+        base::NumberToString16(num_emoji_results_displayed_)));
+  }
+  NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
 }
 
 BEGIN_METADATA(PickerSearchResultsView)

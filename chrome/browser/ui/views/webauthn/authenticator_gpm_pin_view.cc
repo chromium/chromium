@@ -15,10 +15,12 @@ namespace {
 constexpr int kBetweenChildSpacing = 8;
 }  // namespace
 
-AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
-                                                 bool ui_disabled,
-                                                 const std::u16string& pin,
-                                                 Delegate* delegate)
+AuthenticatorGPMPinView::AuthenticatorGPMPinView(
+    int pin_digits_count,
+    bool ui_disabled,
+    const std::u16string& pin,
+    const std::u16string& pin_accessible_description,
+    Delegate* delegate)
     : delegate_(delegate) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
@@ -30,6 +32,10 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
   pin_textfield->SetController(this);
   pin_textfield->GetViewAccessibility().SetName(
       delegate_->GetPinAccessibleName());
+  if (!pin_accessible_description.empty()) {
+    pin_textfield->GetViewAccessibility().SetDescription(
+        pin_accessible_description);
+  }
   pin_textfield->SetDisabled(ui_disabled);
   pin_textfield->SetPin(pin);
   pin_textfield->SetEnabled(!ui_disabled);

@@ -174,7 +174,7 @@ message SystemProfileProto {
     // The version of the OS.  The meaning of this field is OS-dependent.
     optional string version = 2;
 
-    // The fingerprint of the build.  This field is used only on Android.
+    // The fingerprint of the build.  Only used on Android and WebView.
     optional string build_fingerprint = 3;
 
     // The build number for the OS version. The same OS version may have a

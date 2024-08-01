@@ -154,6 +154,11 @@ const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
 const char kInvalidTestURLError[] = "Invalid test request URL.";
 const char kInvalidTestInitiatorError[] = "Invalid test request initiator.";
 const char kInvalidTestTabIdError[] = "Invalid test request tab ID.";
+const char kInvalidResponseHeaderObjectError[] =
+    R"(Values for header "*" must be specified as a list.)";
+const char kInvalidResponseHeaderNameError[] = R"(Invalid header name "*".)";
+const char kInvalidResponseHeaderValueError[] =
+    R"(Invalid header value for header "*".)";
 
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";

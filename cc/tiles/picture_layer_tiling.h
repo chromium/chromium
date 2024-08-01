@@ -55,7 +55,7 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual bool HasValidTilePriorities() const = 0;
   virtual bool RequiresHighResToDraw() const = 0;
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
-  virtual void OnTilesAdded() = 0;
+  virtual void OnAllTilesDoneCleared() = 0;
   virtual std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const = 0;
   virtual ScrollOffsetMap GetRasterInducingScrollOffsets() const = 0;
@@ -548,12 +548,12 @@ class CC_EXPORT PictureLayerTiling {
   Occlusion current_occlusion_in_layer_space_;
   float max_skewport_extent_in_screen_space_ = 0.f;
 
-  bool has_visible_rect_tiles_ = false;
-  bool has_skewport_rect_tiles_ = false;
-  bool has_soon_border_rect_tiles_ = false;
-  bool has_eventually_rect_tiles_ = false;
-  bool all_tiles_done_ = true;
-  bool can_use_lcd_text_;
+  bool has_visible_rect_tiles_ : 1 = false;
+  bool has_skewport_rect_tiles_ : 1 = false;
+  bool has_soon_border_rect_tiles_ : 1 = false;
+  bool has_eventually_rect_tiles_ : 1 = false;
+  bool all_tiles_done_ : 1 = true;
+  bool can_use_lcd_text_ : 1;
 };
 
 }  // namespace cc

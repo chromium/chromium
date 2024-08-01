@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
@@ -396,16 +397,23 @@ TEST_F(BirchItemTest, Attachment_Subtitle_Upcoming) {
 }
 
 TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
-  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
-                     base::Time(), "id_1", "icon_url");
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), std::nullopt,
+                     u"suggested", base::Time(), "id_1", "icon_url");
   // The title does not contain the ".gdoc" extension.
   EXPECT_EQ(u"file", item.title());
 }
 
+TEST_F(BirchItemTest, File_Title) {
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), "file_title",
+                     u"suggested", base::Time(), "id_1", "icon_url");
+  // When set, the title will take precedence over the file path.
+  EXPECT_EQ(u"file_title", item.title());
+}
+
 TEST_F(BirchItemTest, File_PerformAction) {
-  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
-                     "id_1", "icon_url");
-  EXPECT_EQ(u"file_path", item.title());
+  BirchFileItem item(base::FilePath("file_path"), "title", u"suggested",
+                     base::Time(), "id_1", "icon_url");
+  EXPECT_EQ(u"title", item.title());
   EXPECT_EQ(u"suggested", item.subtitle());
   EXPECT_EQ("id_1", item.file_id());
 
@@ -416,8 +424,8 @@ TEST_F(BirchItemTest, File_PerformAction) {
 
 TEST_F(BirchItemTest, File_PerformAction_Histograms) {
   base::HistogramTester histograms;
-  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
-                     "id_1", "icon_url");
+  BirchFileItem item(base::FilePath("file_path"), "title", u"suggested",
+                     base::Time(), "id_1", "icon_url");
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kFile,
@@ -560,6 +568,7 @@ TEST_F(BirchItemTest, SelfShare_PerformAction) {
       /*url=*/GURL("https://www.example.com/"),
       /*shared_time=*/base::Time(), /*device_name=*/u"my device",
       /*backup_icon=*/ui::ImageModel(),
+      /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
       /*activation_callback=*/activation_callback.Get());
   EXPECT_CALL(activation_callback, Run).Times(1);
   item.PerformAction();
@@ -703,8 +712,8 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
       "https://drive-thirdparty.googleusercontent.com/32/type/application/"
       "vnd.google-apps.document";
 
-  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
-                     base::Time(), "id_1", icon_url);
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), "title",
+                     u"suggested", base::Time(), "id_1", icon_url);
 
   base::test::TestFuture<const ui::ImageModel&, bool> future;
   item.LoadIcon(future.GetCallback());
@@ -722,6 +731,7 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
   BirchSelfShareItem item(u"self share guid", u"self share tab", page_url,
                           base::Time(), u"my device", ui::ImageModel(),
+                          SecondaryIconType::kTabFromDesktop,
                           base::DoNothing());
   base::test::TestFuture<const ui::ImageModel&, bool> future;
   item.LoadIcon(future.GetCallback());
@@ -740,6 +750,7 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
 TEST_F(BirchItemTest, LostMedia_VideoConference_Subtitle) {
   BirchLostMediaItem item(GURL(), u"test_title",
                           /*is_video_conference_tab=*/true, ui::ImageModel(),
+                          SecondaryIconType::kLostMediaVideoConference,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Ongoing · Switch to tab");
 }
@@ -747,6 +758,7 @@ TEST_F(BirchItemTest, LostMedia_VideoConference_Subtitle) {
 TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
   BirchLostMediaItem item(GURL(), u"test_title",
                           /*is_video_conference_tab=*/false, ui::ImageModel(),
+                          SecondaryIconType::kLostMediaVideo,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Playing · Switch to tab");
 }

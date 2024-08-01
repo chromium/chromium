@@ -2725,10 +2725,9 @@ void StyleEngine::ApplyUserRuleSetChanges(
       ClearKeyframeRules();
     }
 
-    for (auto* it = new_style_sheets.begin(); it != new_style_sheets.end();
-         it++) {
-      DCHECK(it->second);
-      AddUserKeyframeRules(*it->second);
+    for (const auto& sheet : new_style_sheets) {
+      DCHECK(sheet.second);
+      AddUserKeyframeRules(*sheet.second);
     }
     ScopedStyleResolver::KeyframesRulesAdded(GetDocument());
   }
@@ -2738,11 +2737,10 @@ void StyleEngine::ApplyUserRuleSetChanges(
       user_counter_style_map_->Dispose();
     }
 
-    for (auto* it = new_style_sheets.begin(); it != new_style_sheets.end();
-         it++) {
-      DCHECK(it->second);
-      if (!it->second->CounterStyleRules().empty()) {
-        EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
+    for (const auto& sheet : new_style_sheets) {
+      DCHECK(sheet.second);
+      if (!sheet.second->CounterStyleRules().empty()) {
+        EnsureUserCounterStyleMap().AddCounterStyles(*sheet.second);
       }
     }
 
@@ -3051,6 +3049,9 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
     }
     if (element->GetComputedStyle() &&
         element->ComputedStyleRef().ContainsStyle()) {
+      MarkCountersDirty();
+    }
+    if (element->PseudoElementStylesAffectCounters()) {
       MarkCountersDirty();
     }
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {

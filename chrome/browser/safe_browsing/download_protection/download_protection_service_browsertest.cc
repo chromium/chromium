@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -50,23 +52,17 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
   // The hash of 10 A's, followed by a newline. Was generated as follows:
   //   echo "AAAAAAAAAA" > a.zip
   //   sha256sum a.zip
-  static const uint8_t kAZipDigest[];
+  static constexpr std::string_view kAZipDigest =
+      "\x70\x5d\x29\x0c\x12\x89\x59\x01\xf8\x09\xf6\xc2\xfe\x77\x2a\x94\xdb\x51"
+      "\x81\xd7\x26\x46\x4d\x84\x06\x82\x10\x6f\x4a\x93\x4b\x87";
 
   // The hash of 9 B's, followed by a newline. Was generated as follows:
   //   echo "BBBBBBBBB" > a.zip
   //   sha256sum a.zip
-  static const uint8_t kBZipDigest[];
+  static constexpr std::string_view kBZipDigest =
+      "\x94\x1e\x17\x3f\x62\xbc\x04\x50\x6f\xeb\xb5\xe2\x8c\x38\x6c\xb2\x11\x91"
+      "\xf3\x77\xa7\x2c\x11\x92\xe0\x25\xb0\xe5\xc7\x70\x3b\x23";
 };
-
-const uint8_t DownloadProtectionServiceBrowserTest::kAZipDigest[] = {
-    0x70, 0x5d, 0x29, 0x0c, 0x12, 0x89, 0x59, 0x01, 0xf8, 0x09, 0xf6,
-    0xc2, 0xfe, 0x77, 0x2a, 0x94, 0xdb, 0x51, 0x81, 0xd7, 0x26, 0x46,
-    0x4d, 0x84, 0x06, 0x82, 0x10, 0x6f, 0x4a, 0x93, 0x4b, 0x87};
-
-const uint8_t DownloadProtectionServiceBrowserTest::kBZipDigest[] = {
-    0x94, 0x1e, 0x17, 0x3f, 0x62, 0xbc, 0x04, 0x50, 0x6f, 0xeb, 0xb5,
-    0xe2, 0x8c, 0x38, 0x6c, 0xb2, 0x11, 0x91, 0xf3, 0x77, 0xa7, 0x2c,
-    0x11, 0x92, 0xe0, 0x25, 0xb0, 0xe5, 0xc7, 0x70, 0x3b, 0x23};
 
 IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -86,13 +82,11 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
 
   EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_path());
   EXPECT_EQ(11, requests[0]->archived_binary(0).length());
-  EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
-            requests[0]->archived_binary(0).digests().sha256());
+  EXPECT_EQ(kAZipDigest, requests[0]->archived_binary(0).digests().sha256());
 
   EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_path());
   EXPECT_EQ(10, requests[0]->archived_binary(1).length());
-  EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
-            requests[0]->archived_binary(1).digests().sha256());
+  EXPECT_EQ(kBZipDigest, requests[0]->archived_binary(1).digests().sha256());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyRarHash) {
@@ -112,12 +106,10 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyRarHash) {
   ASSERT_EQ(2, requests[0]->archived_binary_size());
 
   EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_path());
-  EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
-            requests[0]->archived_binary(0).digests().sha256());
+  EXPECT_EQ(kAZipDigest, requests[0]->archived_binary(0).digests().sha256());
 
   EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_path());
-  EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
-            requests[0]->archived_binary(1).digests().sha256());
+  EXPECT_EQ(kBZipDigest, requests[0]->archived_binary(1).digests().sha256());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,

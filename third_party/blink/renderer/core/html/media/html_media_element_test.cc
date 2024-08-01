@@ -1514,7 +1514,8 @@ TEST_P(
     HTMLMediaElementTest,
     DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is re-used when moving to a same-origin
-  // document, if `kDocumentPictureInPictureAPI` is enabled.
+  // document, if `kDocumentPictureInPictureAPI` is enabled.  Note that this
+  // also tests moving from pip back to the opener, which should be retained.
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction(
       "https://a.com", "https://a.com",
@@ -1543,14 +1544,20 @@ TEST_P(
 
 TEST_P(
     HTMLMediaElementTest,
-    DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfOldDocumentIsInPictureInPicture) {
-  // Ensure that the WebMediaPlayer is not destroyed when moving to a
-  // same-origin document when the old document is in picture-in-picture window,
-  // if 'kDocumentPictureInPictureAPI' is enabled.
+    DestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfFirstDocumentIsInPictureInPicture) {
+  // Ensure that the WebMediaPlayer is destroyed when moving to a same-origin
+  // document when the old document is in picture-in-picture window on the first
+  // move, if `kDocumentPictureInPictureAPI` is enabled.  Note that, on
+  // subsequent moves, we'd expect it to be retained.  For the special case
+  // where the element is never added to the opener, it should be destroyed.
+  // See `HTMLMediaElement::ShouldReusePlayer()` for more information.  Note
+  // that the 'retained' case is tested elsewhere, since `MoveElement...` tests
+  // moving to the new document and also back to the old one: see
+  // `DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsEnabled`.
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction(
       "https://a.com", "https://a.com",
-      /*should_destroy=*/false,
+      /*should_destroy=*/true,
       /*is_new_document_picture_in_picture=*/false,
       /*is_old_document_picture_in_picture=*/true,
       /*is_new_document_opener=*/true,

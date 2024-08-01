@@ -23,6 +23,68 @@
 constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 
+// Mock version of AccountSelectionView for injection during tests.
+class MockAccountSelectionView : public AccountSelectionView {
+ public:
+  MockAccountSelectionView() : AccountSelectionView(/*delegate=*/nullptr) {}
+  ~MockAccountSelectionView() override = default;
+
+  MockAccountSelectionView(const MockAccountSelectionView&) = delete;
+  MockAccountSelectionView& operator=(const MockAccountSelectionView&) = delete;
+
+  MOCK_METHOD(
+      bool,
+      Show,
+      (const std::string& rp_for_display,
+       const std::vector<content::IdentityProviderData>& identity_provider_data,
+       Account::SignInMode sign_in_mode,
+       blink::mojom::RpMode rp_mode,
+       const std::optional<content::IdentityProviderData>& new_account_idp),
+      (override));
+
+  MOCK_METHOD(bool,
+              ShowFailureDialog,
+              (const std::string& rp_for_display,
+               const std::string& idp_for_display,
+               blink::mojom::RpContext rp_context,
+               blink::mojom::RpMode rp_mode,
+               const content::IdentityProviderMetadata& idp_metadata),
+              (override));
+
+  MOCK_METHOD(bool,
+              ShowErrorDialog,
+              (const std::string& rp_for_display,
+               const std::string& idp_for_display,
+               blink::mojom::RpContext rp_context,
+               blink::mojom::RpMode rp_mode,
+               const content::IdentityProviderMetadata& idp_metadata,
+               const std::optional<TokenError>& error),
+              (override));
+
+  MOCK_METHOD(bool,
+              ShowLoadingDialog,
+              (const std::string& rp_for_display,
+               const std::string& idp_for_display,
+               blink::mojom::RpContext rp_context,
+               blink::mojom::RpMode rp_mode),
+              (override));
+
+  MOCK_METHOD(std::string, GetTitle, (), (const, override));
+
+  MOCK_METHOD(std::optional<std::string>, GetSubtitle, (), (const, override));
+
+  MOCK_METHOD(void, ShowUrl, (LinkType type, const GURL& url), (override));
+
+  MOCK_METHOD(content::WebContents*,
+              ShowModalDialog,
+              (const GURL& url, blink::mojom::RpMode rp_mode),
+              (override));
+
+  MOCK_METHOD(void, CloseModalDialog, (), (override));
+
+  MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
+};
+
 class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
  public:
   IdentityDialogControllerTest()
@@ -83,68 +145,6 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
             /*request_permission=*/true,
             /*has_login_status_mismatch=*/false};
   }
-};
-
-// Mock version of AccountSelectionView for injection during tests.
-class MockAccountSelectionView : public AccountSelectionView {
- public:
-  MockAccountSelectionView() : AccountSelectionView(/*delegate=*/nullptr) {}
-  ~MockAccountSelectionView() override = default;
-
-  MockAccountSelectionView(const MockAccountSelectionView&) = delete;
-  MockAccountSelectionView& operator=(const MockAccountSelectionView&) = delete;
-
-  MOCK_METHOD(
-      bool,
-      Show,
-      (const std::string& rp_for_display,
-       const std::vector<content::IdentityProviderData>& identity_provider_data,
-       Account::SignInMode sign_in_mode,
-       blink::mojom::RpMode rp_mode,
-       const std::optional<content::IdentityProviderData>& new_account_idp),
-      (override));
-
-  MOCK_METHOD(bool,
-              ShowFailureDialog,
-              (const std::string& rp_for_display,
-               const std::string& idp_for_display,
-               blink::mojom::RpContext rp_context,
-               blink::mojom::RpMode rp_mode,
-               const content::IdentityProviderMetadata& idp_metadata),
-              (override));
-
-  MOCK_METHOD(bool,
-              ShowErrorDialog,
-              (const std::string& rp_for_display,
-               const std::string& idp_for_display,
-               blink::mojom::RpContext rp_context,
-               blink::mojom::RpMode rp_mode,
-               const content::IdentityProviderMetadata& idp_metadata,
-               const std::optional<TokenError>& error),
-              (override));
-
-  MOCK_METHOD(bool,
-              ShowLoadingDialog,
-              (const std::string& rp_for_display,
-               const std::string& idp_for_display,
-               blink::mojom::RpContext rp_context,
-               blink::mojom::RpMode rp_mode),
-              (override));
-
-  MOCK_METHOD(std::string, GetTitle, (), (const, override));
-
-  MOCK_METHOD(std::optional<std::string>, GetSubtitle, (), (const, override));
-
-  MOCK_METHOD(void, ShowUrl, (LinkType type, const GURL& url), (override));
-
-  MOCK_METHOD(content::WebContents*,
-              ShowModalDialog,
-              (const GURL& url),
-              (override));
-
-  MOCK_METHOD(void, CloseModalDialog, (), (override));
-
-  MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
 };
 
 TEST_F(IdentityDialogControllerTest, Accept) {

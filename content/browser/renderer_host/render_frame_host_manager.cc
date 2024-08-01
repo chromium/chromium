@@ -3829,7 +3829,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
   // TODO(yangsharon, rakina, crbug.com/1336305): Handle the
   // cross-SiteInstanceGroup  and crashed frame cases.
   CreateRenderViewHostCase create_rvh_case =
-      (ShouldCreateNewHostForAllFrames() &&
+      (render_frame_host_ &&
+       render_frame_host_->ShouldChangeRenderFrameHostOnSameSiteNavigation() &&
        create_frame_case == CreateFrameCase::kCreateSpeculative &&
        static_cast<SiteInstanceImpl*>(site_instance)->group() ==
            render_frame_host_->GetSiteInstance()->group() &&
@@ -5127,9 +5128,8 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 
   // If the feature is enabled, check if there is a corresponding speculative
   // RenderViewHost that also needs to be swapped in.
-  if (ShouldCreateNewHostForAllFrames() && render_frame_host_ &&
-      render_frame_host_->GetRenderViewHost() ==
-          frame_tree.speculative_render_view_host()) {
+  if (render_frame_host_ && render_frame_host_->GetRenderViewHost() ==
+                                frame_tree.speculative_render_view_host()) {
     CHECK(frame_tree_node_->IsMainFrame());
     frame_tree.MakeSpeculativeRVHCurrent();
   }

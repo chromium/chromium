@@ -189,7 +189,7 @@ void ChromeNativeAppWindowViewsAuraAsh::InitializeWindow(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// ChromeNativeAppWindowViews implementation:
+// ChromeNativeAppWindowViewsAura implementation:
 void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
     const AppWindow::CreateParams& create_params,
     views::Widget::InitParams* init_params,
@@ -275,8 +275,16 @@ void ChromeNativeAppWindowViewsAuraAsh::EnsureAppIconCreated() {
   LoadAppIcon(true /* allow_placeholder_icon */);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// ui::BaseWindow implementation:
+gfx::RoundedCornersF ChromeNativeAppWindowViewsAuraAsh::GetWindowRadii() const {
+  if (!GetNativeWindow() || !chromeos::features::IsRoundedWindowsEnabled()) {
+    return gfx::RoundedCornersF();
+  }
+
+  const int corner_radius =
+      GetNativeWindow()->GetProperty(aura::client::kWindowCornerRadiusKey);
+  return gfx::RoundedCornersF(corner_radius);
+}
+
 gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetRestoredBounds() const {
   gfx::Rect* bounds =
       GetNativeWindow()->GetProperty(ash::kRestoreBoundsOverrideKey);

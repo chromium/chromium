@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/common/api_error_codes.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -42,6 +43,9 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       FocusModeSoundsDelegate::PlaylistsCallback callback) override;
 
   void SetFailureCallback(base::RepeatingClosure callback);
+
+  // Reports music playback.
+  bool ReportPlayback(const youtube_music::PlaybackData& playback_data);
 
   // Reserves a playlist for the returned playlists.
   void ReservePlaylistForGetPlaylists(const std::string& playlist_id);
@@ -96,6 +100,24 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
     FocusModeSoundsDelegate::TrackCallback done_callback;
   };
 
+  // Struct that keeps track of ongoing `ReportPlaybackRequest` request. It
+  // contains enough information about how the current request should be done.
+  struct ReportPlaybackRequestState {
+    ReportPlaybackRequestState();
+    ~ReportPlaybackRequestState();
+
+    // Checks if it can report the playback for `url`.
+    bool CanReportPlaybackForUrl(const GURL& url);
+
+    // URL to `PlaybackState` map. It contains all playback data for the
+    // requests.
+    base::flat_map<GURL, youtube_music::PlaybackState> url_to_playback_state;
+
+    // URL to playback reporting token map. It contains all tokens for the
+    // requests.
+    base::flat_map<GURL, std::string> url_to_token;
+  };
+
   // Called when get playlists request is done.
   void OnGetPlaylistDone(size_t bucket,
                          google_apis::ApiErrorCode http_error_code,
@@ -113,11 +135,20 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       google_apis::ApiErrorCode http_error_code,
       std::optional<const youtube_music::PlaybackContext> playback_context);
 
+  // Called when report playback request is done.
+  void OnReportPlaybackDone(
+      const GURL& url,
+      google_apis::ApiErrorCode http_error_code,
+      std::optional<const std::string> new_playback_reporting_token);
+
   // Playlists request state for `GetPlaylists`.
   GetPlaylistsRequestState get_playlists_state_;
 
   // Next track request state for `GetPlaylists`.
   GetNextTrackRequestState next_track_state_;
+
+  // Report playback request state for `ReportPlayback`.
+  ReportPlaybackRequestState report_playback_state_;
 
   // Callback to run when the request fails.
   base::RepeatingClosure failure_callback_;

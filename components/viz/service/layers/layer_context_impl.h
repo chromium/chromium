@@ -49,7 +49,7 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void NotifyReadyToActivate() override;
   bool IsReadyToActivate() override;
   void NotifyReadyToDraw() override;
-  void SetNeedsRedrawOnImplThread() override;
+  void SetNeedsRedrawOnImplThread(cc::RedrawReason reason) override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
   void SetNeedsUpdateDisplayTreeOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
@@ -65,8 +65,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void DidCompletePageScaleAnimationOnImplThread() override;
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override;
-  void SetNeedsImplSideInvalidation(
-      bool needs_first_draw_on_activation) override;
+  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
+                                    cc::RedrawReason reason) override;
   void NotifyImageDecodeRequestFinished(int request_id,
                                         bool decode_succeeded) override;
   void NotifyTransitionRequestFinished(uint32_t sequence_id) override;

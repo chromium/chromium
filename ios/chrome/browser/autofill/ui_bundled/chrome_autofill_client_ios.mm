@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -23,6 +24,7 @@
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -112,6 +114,10 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
       web_state_->GetBrowserState()->GetURLLoaderFactory());
+}
+
+AutofillDriverFactory& ChromeAutofillClientIOS::GetAutofillDriverFactory() {
+  return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
 }
 
 AutofillCrowdsourcingManager*
@@ -298,14 +304,6 @@ void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_NORETURN();
 }
 
-bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED_IN_MIGRATION();
 }
@@ -414,13 +412,13 @@ std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   return std::nullopt;
 }
 
-AutofillClient::PasswordFormType
+AutofillClient::PasswordFormClassification
 ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
                                                 FormGlobalId form_id,
                                                 FieldGlobalId field_id) const {
   FormStructure* form_structure = manager.FindCachedFormById(form_id);
   if (!form_structure) {
-    return PasswordFormType::kNoPasswordForm;
+    return {};
   }
   // There is no form flattening on iOS (yet) - we can assume that the form here
   // consists of a single renderer form.
@@ -438,8 +436,15 @@ ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
   std::unique_ptr<password_manager::PasswordForm> pw_form =
       parser.Parse(form, password_manager::FormDataParser::Mode::kFilling,
                    /*stored_usernames=*/{});
-  return pw_form ? pw_form->GetPasswordFormType()
-                 : PasswordFormType::kNoPasswordForm;
+  if (!pw_form) {
+    return {};
+  }
+  PasswordFormClassification result{.type = pw_form->GetPasswordFormType()};
+  if (!pw_form->username_element_renderer_id.is_null()) {
+    result.username_field = FieldGlobalId(
+        field_id.frame_token, pw_form->username_element_renderer_id);
+  }
+  return result;
 }
 
 AutofillSaveCardInfoBarDelegateIOS*

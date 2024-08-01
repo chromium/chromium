@@ -13,7 +13,11 @@ assert(
     "ios_enable_credential_provider_extension must be true to depend on //ios/chrome/credential_provider_extension")
 
 tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
+  if (is_debug) {
+    info_plist = "InfoWithPasskeySupport.plist"
+  } else {
+    info_plist = "Info.plist"
+  }
 }
 
 compile_entitlements("entitlements") {

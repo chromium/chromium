@@ -12,7 +12,6 @@
 #include <string_view>
 
 #include "base/allocator/partition_alloc_support.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -31,6 +30,7 @@
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/client/sampling_helpers.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "components/gwp_asan/client/lightweight_detector/malloc_shims.h"
@@ -546,7 +546,7 @@ void MaybeEnableLightweightDetector(bool boost_sampling,
 }
 
 void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
-                                           const char* process_type) {
+                                           std::string_view process_type) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (!base::FeatureList::IsEnabled(internal::kExtremeLightweightUAFDetector)) {
     return;
@@ -557,8 +557,13 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
     case kAllProcesses:
       break;
     case kBrowserProcessOnly:
-      if (*process_type != '\0') {
+      if (!process_type.empty()) {
         return;  // Non-empty process_type means a non-browser process.
+      }
+      break;
+    case kNonRendererProcesses:
+      if (process_type == "renderer") {
+        return;
       }
       break;
   }

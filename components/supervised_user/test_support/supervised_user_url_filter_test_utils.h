@@ -9,11 +9,16 @@
 
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
+namespace version_info {
+enum class Channel;
+}
+
 namespace supervised_user {
 
 class FakeURLFilterDelegate : public SupervisedUserURLFilter::Delegate {
  public:
-  std::string GetCountryCode() override;
+  std::string GetCountryCode() const override;
+  version_info::Channel GetChannel() const override;
 };
 
 }  // namespace supervised_user

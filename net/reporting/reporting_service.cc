@@ -78,8 +78,7 @@ class ReportingServiceImpl : public ReportingService {
             net::features::kReportingApiEnableEnterpriseCookieIssues)) {
       return;
     }
-
-    // TODO(crbug.com/353957526): This function will be implemented later.
+    context_->cache()->SetEnterpriseReportingEndpoints(endpoints);
   }
 
   void SendReportsAndRemoveSource(
@@ -345,10 +344,8 @@ std::unique_ptr<ReportingService> ReportingService::Create(
     URLRequestContext* request_context,
     ReportingCache::PersistentReportingStore* store,
     const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints) {
-  // TODO(crbug.com/353957526): enterprise_reporting_endpoints will later on be
-  // passed into ReportingContext and eventually to the ReportingCache.
-  return std::make_unique<ReportingServiceImpl>(
-      ReportingContext::Create(policy, request_context, store));
+  return std::make_unique<ReportingServiceImpl>(ReportingContext::Create(
+      policy, request_context, store, enterprise_reporting_endpoints));
 }
 
 // static

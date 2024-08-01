@@ -116,15 +116,14 @@ void ScopedStyleResolver::AddCounterStyleRules(const RuleSet& rule_set) {
 void ScopedStyleResolver::AppendActiveStyleSheets(
     unsigned index,
     const ActiveStyleSheetVector& active_sheets) {
-  for (auto* active_iterator = active_sheets.begin() + index;
-       active_iterator != active_sheets.end(); active_iterator++) {
-    CSSStyleSheet* sheet = active_iterator->first;
+  for (const auto& active_sheet : base::span(active_sheets).subspan(index)) {
+    CSSStyleSheet* sheet = active_sheet.first;
     media_query_result_flags_.Add(sheet->GetMediaQueryResultFlags());
-    if (!active_iterator->second) {
+    if (!active_sheet.second) {
       continue;
     }
-    const RuleSet& rule_set = *active_iterator->second;
-    active_style_sheets_.push_back(*active_iterator);
+    const RuleSet& rule_set = *active_sheet.second;
+    active_style_sheets_.push_back(active_sheet);
     AddKeyframeRules(rule_set);
     AddFontFaceRules(rule_set);
     AddCounterStyleRules(rule_set);

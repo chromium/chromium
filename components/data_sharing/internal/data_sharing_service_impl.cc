@@ -15,6 +15,7 @@
 #include "components/data_sharing/internal/group_data_proto_utils.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/sync/base/model_type.h"
@@ -22,11 +23,15 @@
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace data_sharing {
 
 namespace {
+
+const char kGroupIdKey[] = "group_id";
+const char kTokenBlobKey[] = "token_blob";
 
 // Should not be called with kOk StatusCode, unless SDK delegate misbehaves by
 // passing it as an error value.
@@ -248,6 +253,28 @@ void DataSharingServiceImpl::InviteMember(
           weak_ptr_factory_.GetWeakPtr(), group_id, std::move(callback)));
 }
 
+void DataSharingServiceImpl::AddMember(
+    const GroupId& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       PeopleGroupActionOutcome::kPersistentFailure));
+    return;
+  }
+
+  data_sharing_pb::AddMemberParams params;
+  params.set_group_id(group_id.value());
+  params.set_access_token(access_token);
+  sdk_delegate_->AddMember(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void DataSharingServiceImpl::RemoveMember(
     const GroupId& group_id,
     const std::string& member_email,
@@ -448,13 +475,13 @@ void DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted(
        read_groups_result.value().group_data()) {
     GroupData group_data = GroupDataFromProto(group_data_proto);
 
-    if (added_group_ids.count(group_data.group_id) > 0) {
+    if (added_group_ids.count(group_data.group_token.group_id) > 0) {
       for (auto& observer : observers_) {
         observer.OnGroupAdded(group_data);
       }
     }
 
-    if (updated_group_ids.count(group_data.group_id) > 0) {
+    if (updated_group_ids.count(group_data.group_token.group_id) > 0) {
       for (auto& observer : observers_) {
         observer.OnGroupChanged(group_data);
       }
@@ -486,6 +513,41 @@ void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(
     return;
   }
   ui_delegate_->HandleShareURLIntercepted(url);
+}
+
+std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingURL(
+    const GroupData& group_data) {
+  if (!group_data.group_token.IsValid()) {
+    return nullptr;
+  }
+
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get());
+
+  url = net::AppendQueryParameter(url, kGroupIdKey,
+                                  group_data.group_token.group_id.value());
+  url = net::AppendQueryParameter(url, kTokenBlobKey,
+                                  group_data.group_token.access_token);
+  return std::make_unique<GURL>(url);
+}
+
+DataSharingService::ParseURLResult DataSharingServiceImpl::ParseDataSharingURL(
+    const GURL& url) {
+  GURL data_sharing_url = GURL(data_sharing::features::kDataSharingURL.Get());
+  if (url.host() != data_sharing_url.host() ||
+      url.path() != data_sharing_url.path()) {
+    return base::unexpected(ParseURLStatus::kHostOrPathMismatchFailure);
+  }
+
+  std::string group_id;
+  std::string access_token;
+  net::GetValueForKeyInQuery(url, kGroupIdKey, &group_id);
+  net::GetValueForKeyInQuery(url, kTokenBlobKey, &access_token);
+
+  if (group_id.empty() || access_token.empty()) {
+    return base::unexpected(ParseURLStatus::kQueryMissingFailure);
+  }
+
+  return GroupToken(GroupId(group_id), access_token);
 }
 
 }  // namespace data_sharing

@@ -99,6 +99,11 @@ const PasswordForm* FakeFormFetcher::GetPreferredMatch() const {
   return &best_matches_[0];
 }
 
+std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+FakeFormFetcher::GetPreferredOrPotentialMatchedFormType() const {
+  return preferred_or_potential_matched_form_type_;
+}
+
 std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
   return std::make_unique<FakeFormFetcher>();
 }
@@ -140,10 +145,6 @@ FakeFormFetcher::GetProfileStoreBackendError() const {
 std::optional<PasswordStoreBackendError>
 FakeFormFetcher::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
-}
-
-bool FakeFormFetcher::WereGroupedCredentialsAvailable() const {
-  return false;
 }
 
 void FakeFormFetcher::SetProfileStoreBackendError(

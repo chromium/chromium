@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -16,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/win/object_watcher.h"
 #include "components/device_event_log/device_event_log.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/hid/hid_report_type.h"
 
 #define INITGUID
@@ -286,6 +288,15 @@ void HidConnectionWin::OnReadFeatureComplete(
     HID_PLOG(DEBUG) << "HID read failed";
     std::move(callback).Run(false, nullptr, 0);
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kHidGetFeatureReportFix) &&
+      buffer->size() > 0 && buffer->data()[0] == 0) {
+    // Devices that don't use numbered reports return a buffer containing a
+    // zero byte as the first byte. The zero byte is not counted in
+    // `bytes_transferred`. Remove the zero byte before returning the buffer.
+    buffer = base::MakeRefCounted<base::RefCountedBytes>(
+        base::span(*buffer).subspan(/*offset=*/1));
   }
 
   DCHECK_LE(bytes_transferred, buffer->size());

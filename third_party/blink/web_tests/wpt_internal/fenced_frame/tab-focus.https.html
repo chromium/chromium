@@ -51,7 +51,7 @@
     // flag BlockingFocusWithoutUserActivation for cross-origin iframes,
     // or any other frame where user activations are isolated.
     var fencedframe = document.body.getElementsByTagName('fencedframe')[0]
-    await multiClick(10, 10, fencedframe);
+    await multiClick(10, 10, fencedframe, 5);
 
     document.getElementById('input').focus();
     testRunner.setBrowserHandlesFocus(true);

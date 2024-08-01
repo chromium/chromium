@@ -1009,7 +1009,7 @@ void DevToolsUIBindings::OnAidaConversationResponse(
 void DevToolsUIBindings::OnAidaClientResponse(
     DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader->ResponseInfo() &&
       simple_url_loader->ResponseInfo()->headers) {
@@ -1018,14 +1018,14 @@ void DevToolsUIBindings::OnAidaClientResponse(
   if (response_code != net::HTTP_OK) {
     base::Value::Dict error_dict;
     error_dict.Set("error", "Got error response from AIDA");
-    error_dict.Set("detail", std::move(*response_body));
+    error_dict.Set("detail", response_body.value_or(""));
     auto error = base::Value(std::move(error_dict));
     std::move(callback).Run(&error);
     return;
   }
 
   base::Value::Dict response_dict;
-  response_dict.Set("response", std::move(*response_body));
+  response_dict.Set("response", response_body.value_or(""));
   auto response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
@@ -1536,6 +1536,8 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
 void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   base::Value::Dict response_dict;
 
+  AidaClient::BlockedReason blocked_reason = AidaClient::CanUseAida(profile_);
+
   base::Value::Dict console_insights_dict;
   console_insights_dict.Set(
       "enabled",
@@ -1546,7 +1548,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "aidaTemperature", features::kDevToolsConsoleInsightsTemperature.Get());
   console_insights_dict.Set("optIn",
                             features::kDevToolsConsoleInsightsOptIn.Get());
-  AidaClient::BlockedReason blocked_reason = AidaClient::CanUseAida(profile_);
   console_insights_dict.Set("blocked", blocked_reason.blocked);
   console_insights_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
   console_insights_dict.Set("blockedByEnterprisePolicy",
@@ -1568,6 +1569,10 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "aidaModelId", features::kDevToolsFreestylerDogfoodModelId.Get());
   freestyler_dogfood_dict.Set(
       "aidaTemperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
+  freestyler_dogfood_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
+  freestyler_dogfood_dict.Set("blockedByEnterprisePolicy",
+                              blocked_reason.blocked_by_enterprise_policy);
+  freestyler_dogfood_dict.Set("blockedByGeo", blocked_reason.blocked_by_geo);
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
 
@@ -1576,6 +1581,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "enabled", base::FeatureList::IsEnabled(::features::kDevToolsVeLogging));
   ve_logging_dict.Set("testing", ::features::kDevToolsVeLoggingTesting.Get());
   response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
+
+  response_dict.Set("isOffTheRecord", profile_->IsOffTheRecord());
 
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);

@@ -79,6 +79,7 @@
 #include "net/base/isolation_info.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -1478,6 +1479,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsKeys": ["new_key"],
 "trustedBiddingSignalsSlotSizeMode": "slot-size",
 "maxTrustedBiddingSignalsURLLength": 8000,
+"trustedBiddingSignalsCoordinator": "https://trusted-bidding-signals.coordinator-b.test",
 "userBiddingSignals": {"test":10},
 "updateURL": "%s/interest_group/new_daily_update_partial.json",
 "ads": [{"renderURL": "%s/new_ad_render_url",
@@ -1529,6 +1531,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.user_bidding_signals.emplace();
   interest_group.user_bidding_signals = "{\"test\":4}";
   interest_group.max_trusted_bidding_signals_url_length = 10000;
+  interest_group.trusted_bidding_signals_coordinator = url::Origin::Create(
+      GURL("https://trusted-bidding-signals.coordinator-a.test"));
   interest_group.ads.emplace();
   std::vector<url::Origin> allowed_reporting_origins = {kOriginF};
   blink::InterestGroup::Ad ad(
@@ -1611,6 +1615,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.trusted_bidding_signals_slot_size_mode,
             blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize);
   EXPECT_EQ(group.max_trusted_bidding_signals_url_length, 8000);
+  EXPECT_EQ(group.trusted_bidding_signals_coordinator->Serialize(),
+            "https://trusted-bidding-signals.coordinator-b.test");
   ASSERT_TRUE(group.user_bidding_signals.has_value());
   EXPECT_EQ(group.user_bidding_signals.value(), "{\"test\":10}");
 
@@ -2198,6 +2204,151 @@ TEST_F(AdAuctionServiceImplTest, UpdatePriorityVector) {
     const auto& group = groups->GetInterestGroups()[0]->interest_group;
     EXPECT_EQ(group.priority_vector, test_case.expected_priority_vector);
   }
+}
+
+TEST_F(AdAuctionServiceImplTest, AddTrustedBiddingSignalsCoordinator) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "trustedBiddingSignalsCoordinator": "https://trusted-bidding-signals.coordinator.test/"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(
+      groups->GetInterestGroups()
+          .at(0)
+          ->interest_group.trusted_bidding_signals_coordinator->Serialize(),
+      "https://trusted-bidding-signals.coordinator.test");
+}
+
+TEST_F(AdAuctionServiceImplTest, RemoveTrustedBiddingSignalsCoordinator) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "trustedBiddingSignalsCoordinator": null
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.trusted_bidding_signals_coordinator = url::Origin::Create(
+      GURL("https://trusted-bidding-signals.coordinator.test/"));
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_coordinator,
+            std::nullopt);
+}
+
+TEST_F(AdAuctionServiceImplTest,
+       UppdateWithNonStringTrustedBiddingSignalsCoordinator) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "trustedBiddingSignalsCoordinator": 100,
+    "trustedBiddingSignalsSlotSizeMode": "slot-size"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
+      TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_coordinator,
+            std::nullopt);
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_slot_size_mode,
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                kAllSlotsRequestedSizes);
+}
+
+TEST_F(AdAuctionServiceImplTest,
+       UppdateWithInvalidGURLTrustedBiddingSignalsCoordinator) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "trustedBiddingSignalsCoordinator": "100",
+    "trustedBiddingSignalsSlotSizeMode": "slot-size"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
+      TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_coordinator,
+            std::nullopt);
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_slot_size_mode,
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                kAllSlotsRequestedSizes);
+}
+
+TEST_F(AdAuctionServiceImplTest,
+       UppdateWithNonHTTPSTrustedBiddingSignalsCoordinator) {
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "trustedBiddingSignalsCoordinator": "http://trusted-bidding-signals.coordinator.test/",
+    "trustedBiddingSignalsSlotSizeMode": "slot-size"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
+      TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_coordinator,
+            std::nullopt);
+  EXPECT_EQ(groups->GetInterestGroups()
+                .at(0)
+                ->interest_group.trusted_bidding_signals_slot_size_mode,
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                kAllSlotsRequestedSizes);
 }
 
 TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
@@ -14826,10 +14977,9 @@ function scoreAd(
       kTrustedBiddingSignalsUrlPath,
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) {
-            std::string got_label;
-            EXPECT_TRUE(params->url_request.headers.GetHeader(
-                "Sec-Cookie-Deprecation", &got_label));
-            EXPECT_EQ("LabelForTesting", got_label);
+            EXPECT_THAT(
+                params->url_request.headers.GetHeader("Sec-Cookie-Deprecation"),
+                testing::Optional(std::string("LabelForTesting")));
             bidding_kv_called = true;
             URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders, "{}",
                                                 params->client.get());
@@ -14838,10 +14988,9 @@ function scoreAd(
       kTrustedScoringSignalsUrlPath,
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) {
-            std::string got_label;
-            EXPECT_TRUE(params->url_request.headers.GetHeader(
-                "Sec-Cookie-Deprecation", &got_label));
-            EXPECT_EQ("LabelForTesting", got_label);
+            EXPECT_THAT(
+                params->url_request.headers.GetHeader("Sec-Cookie-Deprecation"),
+                testing::Optional(std::string("LabelForTesting")));
             scoring_kv_called = true;
             URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders, "{}",
                                                 params->client.get());

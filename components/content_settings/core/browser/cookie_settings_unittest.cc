@@ -1980,20 +1980,6 @@ TEST_P(CookieSettingsTest, PreservesBlockingStateFrom3pcdOnOffboarding) {
             static_cast<int>(CookieControlsMode::kBlockThirdParty));
 }
 
-// iOS always returns false
-#if !BUILDFLAG(IS_IOS)
-TEST_P(CookieSettingsTest,
-       ShouldBlockThirdPartyCookiesFalseForAllowedEnterprisePolicyIn3pcd) {
-  // Returns true by default in 3PCD.
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(cookie_settings_->ShouldBlockThirdPartyCookies());
-
-  // Returns false when pref for enterprise policy is set to true.
-  prefs_.SetBoolean(prefs::kAllowAll3pcToggleEnabled, true);
-  EXPECT_FALSE(cookie_settings_->ShouldBlockThirdPartyCookies());
-}
-#endif
-
 TEST_P(CookieSettingsTest, LegacyCookieAccessAllowAll) {
   settings_map_->SetDefaultContentSetting(
       ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW);

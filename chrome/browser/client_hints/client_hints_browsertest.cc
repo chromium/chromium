@@ -4291,10 +4291,9 @@ class SameOriginUaReductionBrowserTest : public UaReductionBrowserTest {
   }
 
   const std::optional<std::string>& GetLastUserAgentHeaderValue() override {
-    std::string user_agent;
-    CHECK(url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
-        "user-agent", &user_agent));
-    last_user_agent_ = user_agent;
+    last_user_agent_ = url_loader_interceptor_->GetLastRequestHeaders()
+                           .GetHeader("user-agent")
+                           .value();
     return last_user_agent_;
   }
 

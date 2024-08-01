@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"

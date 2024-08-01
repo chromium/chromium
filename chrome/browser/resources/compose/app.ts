@@ -1053,7 +1053,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private screenReaderAnnounce_(message: string, wait: number = 0) {
     setTimeout(() => {
       const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
-      announcer.announceWithTimeout(message, wait);
+      announcer.announce(message, wait);
     });
   }
 

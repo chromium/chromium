@@ -72,8 +72,10 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
     constexpr bool kAllowEncrypted = true;
     if ((codec == VideoCodec::kVP8 && device_info->IsVp8DecoderAvailable()) ||
         (codec == VideoCodec::kVP9 && device_info->IsVp9DecoderAvailable()) ||
-        (codec == VideoCodec::kAV1 && device_info->IsAv1DecoderAvailable())) {
-      // Don't allow software decoding since we bundle VP8, VP9, AV1 decoders.
+        (codec == VideoCodec::kAV1 && device_info->IsAv1DecoderAvailable()) ||
+        (codec == VideoCodec::kH264 && IsBuiltInVideoCodec(codec))) {
+      // Don't allow OS software decoding for bundled software decoders unless
+      // the content is encrypted.
       const bool can_use_builtin_software_decoder =
           info.profile != VP9PROFILE_PROFILE2 &&
           info.profile != VP9PROFILE_PROFILE3 &&
@@ -89,10 +91,12 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
         continue;
       }
 
-      // Require a minimum of 360p even for hardware decoding of VP8, VP9.
+      // Require a minimum of 360p even for hardware decoding of VP8+VP9 and
+      // H.264 (if built-in support is available).
       auto coded_size_min = info.coded_size_min;
       if (!info.is_software_codec && can_use_builtin_software_decoder &&
-          (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9)) {
+          (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9 ||
+           codec == VideoCodec::kH264)) {
         coded_size_min.SetToMax(gfx::Size(360, 360));
       }
 

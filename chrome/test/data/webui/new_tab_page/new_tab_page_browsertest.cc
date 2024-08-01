@@ -19,10 +19,6 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
 
 using NewTabPageTest = NewTabPageBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, Utils) {
-  RunTest("new_tab_page/utils_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, MetricsUtils) {
   RunTest("new_tab_page/metrics_utils_test.js", "mocha.run()");
 }
@@ -132,10 +128,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModule) {
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestionModule) {
   RunTest("new_tab_page/modules/v2/file_suggestion/module_test.js",
           "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FeedModule) {
-  RunTest("new_tab_page/modules/feed/module_test.js", "mocha.run()");
 }
 
 using NewTabPageAppTest = NewTabPageBrowserTest;

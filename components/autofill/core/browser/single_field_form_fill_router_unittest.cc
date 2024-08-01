@@ -191,8 +191,8 @@ TEST_F(SingleFieldFormFillRouterTest,
        RouteToAutocompleteHistoryManager_OnSingleFieldSuggestionSelected) {
   EXPECT_CALL(autocomplete_history_manager_, OnSingleFieldSuggestionSelected);
 
-  single_field_form_fill_router_.OnSingleFieldSuggestionSelected(
-      /*value=*/u"Value", SuggestionType::kAutocompleteEntry);
+  Suggestion suggestion(u"Value", SuggestionType::kAutocompleteEntry);
+  single_field_form_fill_router_.OnSingleFieldSuggestionSelected(suggestion);
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -278,8 +278,8 @@ TEST_F(SingleFieldFormFillRouterTest,
        RouteToMerchantPromoCodeManager_OnSingleFieldSuggestionSelected) {
   EXPECT_CALL(merchant_promo_code_manager_, OnSingleFieldSuggestionSelected);
 
-  single_field_form_fill_router_.OnSingleFieldSuggestionSelected(
-      /*value=*/u"Value", SuggestionType::kMerchantPromoCodeEntry);
+  Suggestion suggestion(u"Value", SuggestionType::kMerchantPromoCodeEntry);
+  single_field_form_fill_router_.OnSingleFieldSuggestionSelected(suggestion);
 }
 
 // Ensure that SingleFieldFormFillRouter::OnGetSingleFieldSuggestions() returns

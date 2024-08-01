@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
@@ -22,6 +21,7 @@
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "partition_alloc/partition_alloc_constants.h"
 
 namespace {
 

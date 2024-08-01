@@ -52,7 +52,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     std::unique_ptr<TestChromeBrowserState> chrome_browser_state =
-        test_cbs_builder.Build();
+        std::move(test_cbs_builder).Build();
 
     FakeStartupInformation* startup_information =
         [[FakeStartupInformation alloc] init];
@@ -112,7 +112,7 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   raw_ptr<web::FakeWebState> test_web_state_;
   raw_ptr<Browser> browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;

@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.ArrayList;
 
@@ -126,7 +125,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
 
     @Override
     public void showPasswordEntryEditingView(
-            Context context, SettingsLauncher launcher, int index, boolean isBlockedCredential) {
+            Context context, int index, boolean isBlockedCredential) {
         assert false : "Define this method before starting to use it in tests.";
     }
 

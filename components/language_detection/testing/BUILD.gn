@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("testing") {
+  testonly = true
+  sources = [
+    "language_detection_test_utils.cc",
+    "language_detection_test_utils.h",
+  ]
+
+  deps = [
+    ":unit_tests_bundle_data",
+    "//base",
+    "//base/test:test_support",
+    "//components/language_detection/core:core",
+  ]
+}
+
+bundle_data("unit_tests_bundle_data") {
+  testonly = true
+  sources = [ "//components/test/data/translate/valid_model.tflite" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}

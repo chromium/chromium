@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/flags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "partition_alloc/flags.h"
+#include "partition_alloc/partition_alloc.h"
 
 namespace gwp_asan {
 namespace internal {

@@ -230,6 +230,7 @@ suite('ExperimentalAdvancedPage', function() {
     assertSeparatorsVisible([false, true]);
 
     // Case7: Rows 0-3 hidden.
+    // History search always shows separator.
     loadTimeData.overrideValues({
       showComposeControl: false,
       showTabOrganizationControl: false,
@@ -237,6 +238,6 @@ suite('ExperimentalAdvancedPage', function() {
       showHistorySearchControl: true,
     });
     createPage();
-    assertSeparatorsVisible([false]);
+    assertSeparatorsVisible([true]);
   });
 });

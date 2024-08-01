@@ -46,32 +46,32 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   ASSERT_EQ(vertical_scrollbar, mock_scrollable_area->VerticalScrollbar());
   ASSERT_EQ(horizontal_scrollbar, mock_scrollable_area->HorizontalScrollbar());
 
-  vertical_scrollbar->ClearTrackNeedsRepaint();
+  vertical_scrollbar->ClearTrackAndButtonsNeedRepaint();
   vertical_scrollbar->ClearThumbNeedsRepaint();
-  horizontal_scrollbar->ClearTrackNeedsRepaint();
+  horizontal_scrollbar->ClearTrackAndButtonsNeedRepaint();
   horizontal_scrollbar->ClearThumbNeedsRepaint();
   mock_scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
 
   ASSERT_FALSE(vertical_scrollbar->ThumbNeedsRepaint());
-  ASSERT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
+  ASSERT_FALSE(vertical_scrollbar->TrackAndButtonsNeedRepaint());
   ASSERT_FALSE(mock_scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
   ASSERT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  ASSERT_FALSE(horizontal_scrollbar->TrackNeedsRepaint());
+  ASSERT_FALSE(horizontal_scrollbar->TrackAndButtonsNeedRepaint());
   ASSERT_FALSE(
       mock_scrollable_area->HorizontalScrollbarNeedsPaintInvalidation());
 
-  // Changing the scroll offset shouldn't invalid the thumb nor track, but it
-  // should cause a "general" invalidation for non-composited scrollbars.
+  // Changing the scroll offset shouldn't invalid the thumb nor background, but
+  // it should cause a "general" invalidation for non-composited scrollbars.
   // Ensure the horizontal scrollbar is unaffected.
   mock_scrollable_area->UpdateScrollOffset(ScrollOffset(0, 5),
                                            mojom::blink::ScrollType::kUser);
   vertical_scrollbar->OffsetDidChange(mojom::blink::ScrollType::kUser);
   horizontal_scrollbar->OffsetDidChange(mojom::blink::ScrollType::kUser);
   EXPECT_FALSE(vertical_scrollbar->ThumbNeedsRepaint());
-  EXPECT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(vertical_scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_TRUE(mock_scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
   EXPECT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  EXPECT_FALSE(horizontal_scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(horizontal_scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_FALSE(
       mock_scrollable_area->HorizontalScrollbarNeedsPaintInvalidation());
 
@@ -82,10 +82,10 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   horizontal_scrollbar->OffsetDidChange(mojom::blink::ScrollType::kUser);
   vertical_scrollbar->OffsetDidChange(mojom::blink::ScrollType::kUser);
   EXPECT_FALSE(vertical_scrollbar->ThumbNeedsRepaint());
-  EXPECT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(vertical_scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_FALSE(mock_scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
   EXPECT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  EXPECT_FALSE(horizontal_scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(horizontal_scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_TRUE(
       mock_scrollable_area->HorizontalScrollbarNeedsPaintInvalidation());
 

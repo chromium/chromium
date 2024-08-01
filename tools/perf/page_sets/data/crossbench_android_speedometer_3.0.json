@@ -1,0 +1,9 @@
+{
+    "archives": {
+        "file://index.html": {
+            "DEFAULT": "crossbench_android_speedometer_3.0_000.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for the Speedometer 3.0 story set.",
+    "platform_specific": true
+}

@@ -1,5 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/bubble/ui_bundled",
-  "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/tab_switcher",
-]

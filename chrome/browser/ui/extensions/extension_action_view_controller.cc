@@ -176,10 +176,7 @@ ExtensionActionViewController::ExtensionActionViewController(
       popup_host_(nullptr),
       view_delegate_(nullptr),
       platform_delegate_(ExtensionActionPlatformDelegate::Create(this)),
-      icon_factory_(browser->profile(),
-                    extension_.get(),
-                    extension_action,
-                    this),
+      icon_factory_(extension_.get(), extension_action, this),
       extension_registry_(extension_registry) {}
 
 ExtensionActionViewController::~ExtensionActionViewController() {

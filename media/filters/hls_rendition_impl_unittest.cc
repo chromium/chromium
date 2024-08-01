@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/hls_rendition_impl.h"
+
 #include <string_view>
 
-#include "media/filters/hls_rendition_impl.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/test_helpers.h"
+#include "media/filters/hls_network_access_impl.h"
 #include "media/filters/hls_test_helpers.h"
 
 namespace media {
@@ -66,6 +68,54 @@ const std::string kSecondFetchLivePlaylist =
     "#EXTINF:2.00000,\n"
     "playlist_4500Kb_14551358.ts\n";
 
+const std::string kAESContent =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:2\n"
+    "#EXT-X-MEDIA-SEQUENCE:0\n"
+    "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD\n"
+    "#EXT-X-KEY:METHOD=AES-128,URI=\"key1.enc\",IV="
+    "0x66666666666666666666666666666666\n"
+    "#EXTINF:2.00000,\n"
+    "media_0.ts\n"
+    "#EXTINF:2.00000,\n"
+    "media_1.ts\n"
+    "#EXT-X-KEY:METHOD=AES-128,URI=\"key2.enc\",IV="
+    "0x67676767676767676767676767676767\n"
+    "#EXTINF:2.00000,\n"
+    "media_2.ts\n"
+    "#EXTINF:2.00000,\n"
+    "media_3.ts\n"
+    "#EXTINF:2.00000,\n"
+    "media_4.ts\n"
+    "#EXTINF:2.00000,\n"
+    "media_5.ts\n"
+    "#EXT-X-ENDLIST\n";
+
+const std::string kAESContentReplacement =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:2\n"
+    "#EXT-X-MEDIA-SEQUENCE:0\n"
+    "#EXT-X-MEDIA-PLAYLIST-TYPE:VOD\n"
+    "#EXT-X-KEY:METHOD=AES-128,URI=\"keyx1.enc\",IV="
+    "0x66666666666666666666666666666666\n"
+    "#EXTINF:2.00000,\n"
+    "mediax_0.ts\n"
+    "#EXTINF:2.00000,\n"
+    "mediax_1.ts\n"
+    "#EXT-X-KEY:METHOD=AES-128,URI=\"keyx2.enc\",IV="
+    "0x68686868686868686868686868686868\n"
+    "#EXTINF:2.00000,\n"
+    "mediax_2.ts\n"
+    "#EXTINF:2.00000,\n"
+    "mediax_3.ts\n"
+    "#EXTINF:2.00000,\n"
+    "mediax_4.ts\n"
+    "#EXTINF:2.00000,\n"
+    "mediax_5.ts\n"
+    "#EXT-X-ENDLIST\n";
+
 }  // namespace
 
 using testing::_;
@@ -85,7 +135,7 @@ class HlsRenditionImplUnittest : public testing::Test {
 
   std::unique_ptr<HlsRenditionImpl> MakeVodRendition(std::string_view content) {
     constexpr hls::types::DecimalInteger version = 3;
-    auto uri = GURL("https://example.m3u8");
+    auto uri = GURL("https://example.com/manifest.m3u8");
     auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
     if (!parsed.has_value()) {
       LOG(ERROR) << MediaSerialize(std::move(parsed).error());
@@ -187,13 +237,48 @@ class HlsRenditionImplUnittest : public testing::Test {
   }
 
   void RespondToUrl(std::string uri, std::string content) {
+    EXPECT_CALL(*mock_hrh_, UpdateNetworkSpeed(_));
     EXPECT_CALL(*mock_hrh_, ReadMediaSegment(MediaSegmentHasUrl(uri), _, _, _))
         .WillOnce([content = std::move(content), host = mock_hrh_.get()](
-                      const hls::MediaSegment&, bool, bool,
+                      const hls::MediaSegment& segment, bool, bool,
                       HlsDataSourceProvider::ReadCb cb) {
+          if (auto enc_data = segment.GetEncryptionData()) {
+            ASSERT_FALSE(enc_data->NeedsKeyFetch());
+          }
           auto stream = StringHlsDataSourceStreamFactory::CreateStream(content);
           std::move(cb).Run(std::move(stream));
         });
+  }
+
+  void InterceptEncDataOnFetch(
+      std::string uri,
+      std::string content,
+      base::OnceCallback<void(hls::MediaSegment::EncryptionData*)> intercept) {
+    EXPECT_CALL(*mock_hrh_, UpdateNetworkSpeed(_));
+    EXPECT_CALL(*mock_hrh_, ReadMediaSegment(MediaSegmentHasUrl(uri), _, _, _))
+        .WillOnce([content = std::move(content), host = mock_hrh_.get(),
+                   intercept = std::move(intercept)](
+                      const hls::MediaSegment& segment, bool, bool,
+                      HlsDataSourceProvider::ReadCb cb) mutable {
+          if (auto enc_data = segment.GetEncryptionData()) {
+            ASSERT_TRUE(enc_data->NeedsKeyFetch());
+            std::move(intercept).Run(enc_data.get());
+          }
+          auto stream = StringHlsDataSourceStreamFactory::CreateStream(content);
+          std::move(cb).Run(std::move(stream));
+        });
+  }
+
+  std::tuple<std::string, std::unique_ptr<crypto::SymmetricKey>> Encrypt(
+      std::string cleartext,
+      std::string ivstr) {
+    std::string ciphertext;
+    auto mode = crypto::SymmetricKey::AES;
+    auto key = crypto::SymmetricKey::GenerateRandomKey(mode, 128);
+    auto encryptor = std::make_unique<crypto::Encryptor>();
+    encryptor->Init(key.get(), crypto::Encryptor::Mode::CBC, ivstr);
+    encryptor->Encrypt(cleartext, &ciphertext);
+    return std::make_tuple(ciphertext, std::move(key));
   }
 
  public:
@@ -516,6 +601,145 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(198)));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(17)));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
+  auto rendition = MakeVodRendition(kAESContent);
+
+  ASSERT_NE(rendition, nullptr);
+  ASSERT_EQ(rendition->GetDuration(), base::Seconds(12));
+
+  ON_CALL(*mock_mdeh_, OnError(_)).WillByDefault([](PipelineStatus st) {
+    LOG(ERROR) << MediaSerialize(st);
+  });
+
+  std::string cleartext = "some kind of ts content.";
+  std::string ciphertext;
+  std::unique_ptr<crypto::SymmetricKey> key;
+  std::tie(ciphertext, key) = Encrypt(cleartext, "ffffffffffffffff");
+
+  /* START CHECK 1 */
+  // CheckState will start the paused player, query BufferedRanges, get 0-0,
+  // which will trigger an attempt to fetch.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+
+  // The fetch will request the segment at "media_0.ts", which has an encryption
+  // data attached. We need to populate that here so we can use the same key to
+  // encrypt our plaintext.
+  InterceptEncDataOnFetch("https://example.com/media_0.ts", ciphertext,
+                          base::BindOnce(
+                              [](crypto::SymmetricKey* key,
+                                 hls::MediaSegment::EncryptionData* enc_data) {
+                                enc_data->ImportKey(key->key());
+                              },
+                              key.get()));
+
+  // The cleartext will get appended, and the network speed will be updated
+  // to some massive number.
+  RequireAppend(base::as_byte_span(cleartext));
+
+  // Ranges will be checked again, and we claim that it was data from 0-2.
+  // Because our time (0) is within the range 0-2, CheckState will request a 0
+  // second delay.
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  /* START CHECK 2 */
+
+  // On the second fetch, the encryption data should remain the same,
+  // so we can just use new text.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
+                        base::Seconds(4));
+  RespondToUrl("https://example.com/media_1.ts", ciphertext);
+  RequireAppend(base::as_byte_span(cleartext));
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  /* START CHECK 3 */
+
+  // There's a new key, and a new IV.
+  std::string ciphertext2;
+  std::tie(ciphertext2, key) = Encrypt(cleartext, "gggggggggggggggg");
+
+  // CheckState will start the paused player, query BufferedRanges, get 0-4
+  // which will trigger an attempt to fetch.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(4), base::Seconds(0),
+                        base::Seconds(6));
+
+  // The fetch will request the segment at "media_2.ts", which has a new
+  // encryption data.
+  InterceptEncDataOnFetch("https://example.com/media_2.ts", ciphertext2,
+                          base::BindOnce(
+                              [](crypto::SymmetricKey* key,
+                                 hls::MediaSegment::EncryptionData* enc_data) {
+                                enc_data->ImportKey(key->key());
+                              },
+                              key.get()));
+
+  RequireAppend(base::as_byte_span(cleartext));
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  /* START CHECK 4 */
+
+  // Update the playlist. The segment stream should keep around media_3.ts,
+  // but follow it up with mediax_4.ts
+  auto parsed = hls::MediaPlaylist::Parse(
+      kAESContentReplacement, GURL("https://example.com/manifest.m3u8"), 3,
+      nullptr);
+  CHECK(parsed.has_value());
+  rendition->UpdatePlaylist(std::move(parsed).value(), std::nullopt);
+
+  // The encryption data is the same for segment 3, since it didn't change.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
+                        base::Seconds(4));
+  RespondToUrl("https://example.com/media_3.ts", ciphertext2);
+  RequireAppend(base::as_byte_span(cleartext));
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  /* START CHECK 5 */
+
+  // This time mediax_4 doesn't have a new encryption segment, but it does need
+  // a key fetch.
+
+  std::string ciphertext3;
+  std::tie(ciphertext3, key) = Encrypt(cleartext, "hhhhhhhhhhhhhhhh");
+
+  // CheckState will start the paused player, query BufferedRanges, get 0-4
+  // which will trigger an attempt to fetch.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(4), base::Seconds(0),
+                        base::Seconds(6));
+
+  // The fetch will request the segment at "mediax_4.ts", for which the
+  // encryption data has not been fetched.
+  InterceptEncDataOnFetch("https://example.com/mediax_4.ts", ciphertext3,
+                          base::BindOnce(
+                              [](crypto::SymmetricKey* key,
+                                 hls::MediaSegment::EncryptionData* enc_data) {
+                                enc_data->ImportKey(key->key());
+                              },
+                              key.get()));
+  RequireAppend(base::as_byte_span(cleartext));
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
+  task_environment_.RunUntilIdle();
+
+  /* START CHECK 6 */
+
+  // The encryption data is the same for segment 5, since it didn't change.
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
+                        base::Seconds(4));
+  RespondToUrl("https://example.com/mediax_5.ts", ciphertext3);
+  RequireAppend(base::as_byte_span(cleartext));
+  rendition->CheckState(base::Seconds(0), 0.0,
+                        BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();
 }
 

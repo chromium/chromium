@@ -229,6 +229,8 @@ class GL_EXPORT DCLayerTree {
   bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const;
 #endif  // DCHECK_IS_ON()
 
+  void SetFrameRate(float frame_rate);
+
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
     return hdr_metadata_helper_;
   }
@@ -321,7 +323,8 @@ class GL_EXPORT DCLayerTree {
           const gfx::Transform& quad_to_root_transform,
           const gfx::RRectF& rounded_corner_bounds,
           float opacity,
-          const std::optional<gfx::Rect>& clip_rect_in_root);
+          const std::optional<gfx::Rect>& clip_rect_in_root,
+          bool allow_antialiasing);
 
       IDCompositionVisual2* container_visual() const {
         return clip_visual_.Get();
@@ -422,6 +425,9 @@ class GL_EXPORT DCLayerTree {
       // The size of overlay image in |dcomp_visual_content_| which is in
       // pixels.
       gfx::Size image_size_;
+
+      // If false, force |transform_visual_| to use the hard border mode.
+      bool allow_antialiasing_ = true;
 
       // The order relative to the root surface. Positive values means the
       // visual appears in front of the root surface (i.e. overlay) and negative
@@ -533,6 +539,9 @@ class GL_EXPORT DCLayerTree {
   // A tree that owns all DCOMP visuals for overlays along with attributes
   // required to build DCOMP tree. It's updated for each frame.
   std::unique_ptr<VisualTree> visual_tree_;
+
+  // Number of frames per second.
+  float frame_rate_ = 0.f;
 
   // dealing with hdr metadata
   std::unique_ptr<HDRMetadataHelperWin> hdr_metadata_helper_;

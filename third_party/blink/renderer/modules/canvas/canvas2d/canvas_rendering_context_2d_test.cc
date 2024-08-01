@@ -21,7 +21,6 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
@@ -427,7 +426,7 @@ void CanvasRenderingContext2DTest::TearDown() {
 
   // Must be torn down after WebViewHelper since its destructor can create a
   // fresh context provider otherwise.
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
 
   // Prevent CanvasPerformanceMonitor state from leaking between tests.
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();

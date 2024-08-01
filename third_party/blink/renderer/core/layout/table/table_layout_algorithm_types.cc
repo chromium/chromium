@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
@@ -161,8 +162,8 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
       const auto space = builder.ToConstraintSpace();
 
       cached_min_max_sizes =
-          node.ComputeMinMaxSizes(table_writing_mode,
-                                  MinMaxSizesType::kIntrinsic, space)
+          node.ComputeMinMaxSizes(table_writing_mode, SizeType::kIntrinsic,
+                                  space)
               .sizes;
     }
 

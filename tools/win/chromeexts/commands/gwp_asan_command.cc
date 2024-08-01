@@ -237,7 +237,7 @@ HRESULT GwpAsanCommand::GetBaseAddress(ULONG64* base_address) {
 
 HRESULT GwpAsanCommand::UseWinDbgSymbolize(uint64_t* stack_address,
                                            int stack_trace_size) {
-  int METHOD_SIZE = 1024;
+  constexpr ULONG METHOD_SIZE = 1024;
   char method_name[METHOD_SIZE], file_name[METHOD_SIZE];
   std::string file_name_str;
   ULONG line;

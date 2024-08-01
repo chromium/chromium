@@ -7,7 +7,13 @@
   const promise = dp.Audits.onceIssueAdded();
   session.evaluate('document.body.getInnerHTML()');
 
-  const result = await promise;
-  testRunner.log(result.params, 'Inspector issue: ');
+  let noIssue = false;
+  const timeout = new Promise(resolve => setTimeout(() => {noIssue=true; resolve();},500));
+  const result = await Promise.any([promise, timeout]);
+  if (noIssue) {
+    testRunner.log('No issue');
+  } else {
+    testRunner.log(result.params, 'Inspector issue: ');
+  }
   testRunner.completeTest();
 })

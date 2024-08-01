@@ -4,7 +4,7 @@
 
 import {DataDir} from './data_dir.js';
 import {computed, ReadonlySignal, signal} from './reactive/signal.js';
-import {concatTextTokens, TextToken, textTokenSchema} from './soda/soda.js';
+import {Transcription, transcriptionSchema} from './soda/soda.js';
 import {
   ExportAudioFormat,
   ExportSettings,
@@ -37,8 +37,6 @@ type BaseRecordingMetadata = Infer<typeof baseRecordingMetadataSchema>;
 
 const MAX_POWER_AVERAGES = 512;
 
-const MAX_DESCRIPTION_LENGTH = 512;
-
 /**
  * The recording metadata that are derived from other data.
  *
@@ -58,7 +56,7 @@ const derivedRecordingMetadataSchema = z.object({
 const recordingMetadataSchema = z.intersection([
   baseRecordingMetadataSchema,
   derivedRecordingMetadataSchema,
-] as const);
+]);
 
 export type RecordingMetadata = Infer<typeof recordingMetadataSchema>;
 
@@ -72,26 +70,12 @@ const audioPowerSchema = z.object({
 
 type AudioPower = Infer<typeof audioPowerSchema>;
 
-const transcriptionSchema = z.object({
-  // Transcriptions in form of text tokens.
-  //
-  // Since transcription can be enabled / disabled during the recording, the
-  // `textTokens` might only contain part of the transcription when
-  // transcription is enabled.
-  //
-  // If the transcription is never enabled while recording, `textTokens` will
-  // be null (to show a different state in playback view).
-  textTokens: z.nullable(z.array(textTokenSchema)),
-});
-
-type Transcription = Infer<typeof transcriptionSchema>;
-
 /**
  * The recording create parameters without id field, used for creating new
  * recordings.
  */
-export type RecordingCreateParams =
-  Omit<AudioPower&BaseRecordingMetadata&Transcription, 'id'>;
+export type RecordingCreateParams = Omit<
+  AudioPower&BaseRecordingMetadata&{transcription: Transcription | null}, 'id'>;
 
 // TODO(pihsun): Type-safe wrapper for reading / writing specific type of file?
 function metadataName(id: string) {
@@ -108,17 +92,6 @@ function transcriptionName(id: string) {
 
 function audioName(id: string) {
   return `${id}.webm`;
-}
-
-function calculateDescription(textTokens: TextToken[]|null): string {
-  if (textTokens === null) {
-    return '';
-  }
-  const transcription = concatTextTokens(textTokens);
-  if (transcription.length <= MAX_DESCRIPTION_LENGTH - 3) {
-    return transcription;
-  }
-  return transcription.substring(0, MAX_DESCRIPTION_LENGTH - 3) + '...';
 }
 
 function calculatePowerAverages(powers: number[]): number[] {
@@ -231,11 +204,11 @@ export class RecordingDataManager {
    * @return The created recording id.
    */
   async createRecording(
-    {textTokens, powers, ...meta}: RecordingCreateParams,
+    {transcription, powers, ...meta}: RecordingCreateParams,
     audio: Blob,
   ): Promise<string> {
     const id = ulid();
-    const description = calculateDescription(textTokens);
+    const description = transcription?.toShortDescription() ?? '';
     const powerAverages = calculatePowerAverages(powers);
     const fullMeta = {id, description, powerAverages, ...meta};
     this.setMetadata(id, fullMeta);
@@ -246,7 +219,7 @@ export class RecordingDataManager {
       ),
       this.dataDir.write(
         transcriptionName(id),
-        transcriptionSchema.stringifyJson({textTokens}),
+        transcriptionSchema.stringifyJson(transcription),
       ),
       this.dataDir.write(audioName(id), audio),
     ]);
@@ -286,7 +259,18 @@ export class RecordingDataManager {
     return file;
   }
 
-  async getTranscription(id: string): Promise<Transcription> {
+  /**
+   * Gets the transcription of the given recording.
+   *
+   * Since transcription can be enabled / disabled during the recording, the
+   * transcription might only contain part of the transcription when
+   * transcription is enabled.
+   *
+   * If the transcription is never enabled while recording, the function will
+   * return null, which is different from returning an empty transcription
+   * (transcription was enabled but no speech is detected).
+   */
+  async getTranscription(id: string): Promise<Transcription|null> {
     const name = transcriptionName(id);
     const file = await this.dataDir.read(name);
     const text = await file.text();
@@ -349,16 +333,14 @@ export class RecordingDataManager {
     if (metadata === null) {
       return;
     }
-    const {textTokens} = await this.getTranscription(id);
-    // TODO(pihsun): This "transcription available" logic exists at multiple
-    // places, consolidate them.
-    if (textTokens === null || textTokens.length === 0) {
+    const transcription = await this.getTranscription(id);
+    if (transcription === null || transcription.isEmpty()) {
       return;
     }
 
     switch (format) {
       case ExportTranscriptionFormat.TXT: {
-        const text = concatTextTokens(textTokens);
+        const text = transcription.toPlainText();
         const blob = new Blob([text], {type: 'text/plain'});
         const filename = getDefaultFileNameWithoutExtension(metadata) + '.txt';
         downloadFile(filename, blob);

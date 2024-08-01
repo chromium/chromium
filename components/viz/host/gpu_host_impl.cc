@@ -435,32 +435,7 @@ void GpuHostImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
 
   TRACE_EVENT1("gpu", "GpuHostImpl::LoadedBlob", "handle_type",
                GetHandleType(handle));
-
-  // If cache key prefix is being generated in service side, we don't need to
-  // generate it here.
-  if (base::FeatureList::IsEnabled(
-          features::kGenGpuDiskCacheKeyPrefixInGpuService)) {
-    gpu_service_remote_->LoadedBlob(handle, key, data);
-  } else {
-    switch (gpu::GetHandleType(handle)) {
-      case gpu::GpuDiskCacheType::kGlShaders: {
-        std::string prefix = GetShaderPrefixKey();
-        bool prefix_ok = !key.compare(0, prefix.length(), prefix);
-        UMA_HISTOGRAM_BOOLEAN("GPU.ShaderLoadPrefixOK", prefix_ok);
-        if (prefix_ok) {
-          // Remove the prefix from the key before load.
-          std::string key_no_prefix = key.substr(prefix.length() + 1);
-          gpu_service_remote_->LoadedBlob(handle, key_no_prefix, data);
-        }
-        break;
-      }
-      case gpu::GpuDiskCacheType::kDawnWebGPU:
-      case gpu::GpuDiskCacheType::kDawnGraphite: {
-        gpu_service_remote_->LoadedBlob(handle, key, data);
-        break;
-      }
-    }
-  }
+  gpu_service_remote_->LoadedBlob(handle, key, data);
 }
 
 void GpuHostImpl::OnDiskCacheHandleDestoyed(
@@ -677,26 +652,7 @@ void GpuHostImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
 
   TRACE_EVENT1("gpu", "GpuHostImpl::StoreBlobToDisk", "handle_type",
                GetHandleType(handle));
-
-  // If cache key prefix is being generated in service side, we don't need to
-  // generate it here.
-  if (base::FeatureList::IsEnabled(
-          features::kGenGpuDiskCacheKeyPrefixInGpuService)) {
-    cache->Cache(key, blob);
-  } else {
-    switch (GetHandleType(handle)) {
-      case gpu::GpuDiskCacheType::kGlShaders: {
-        std::string prefix = GetShaderPrefixKey();
-        cache->Cache(base::StrCat({prefix, ":", key}), blob);
-        break;
-      }
-      case gpu::GpuDiskCacheType::kDawnWebGPU:
-      case gpu::GpuDiskCacheType::kDawnGraphite: {
-        cache->Cache(key, blob);
-        break;
-      }
-    }
-  }
+  cache->Cache(key, blob);
 }
 
 void GpuHostImpl::RecordLogMessage(int32_t severity,

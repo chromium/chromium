@@ -55,6 +55,11 @@ found in the LICENSE file.
       </webview>
     </template>
   </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton" on-click="onBackClicked"
+        hidden="[[!canGoBack(currentPerk)]]">
+    </oobe-back-button>
+  </div>
   <div slot="bottom-buttons">
     <oobe-text-button  on-click="onNotInterestedClicked"
             id="perk-skip-button">

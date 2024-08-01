@@ -122,8 +122,9 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFact
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
-import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
+import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -144,7 +145,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -349,7 +350,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Whether or not a PolicyChangeListener was added. */
     private boolean mDidAddPolicyChangeListener;
 
-    private ActivityTabStartupMetricsTracker mActivityTabStartupMetricsTracker;
+    private LegacyTabStartupMetricsTracker mLegacyTabStartupMetricsTracker;
+
+    private StartupMetricsTracker mStartupMetricsTracker;
 
     /** A means of providing the foreground tab of the activity to different features. */
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
@@ -431,8 +434,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onPreCreate() {
         // The startup metrics tracker should be created as early as possible in the Activity
         // lifetime.
-        mActivityTabStartupMetricsTracker =
-                new ActivityTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
+        mLegacyTabStartupMetricsTracker =
+                new LegacyTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
+        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         super.onPreCreate();
         initializeBackPressHandling();
@@ -607,7 +611,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 ScreenOrientationProvider.getInstance(),
                                 this::getNotificationManagerProxy,
                                 getTabContentManagerSupplier(),
-                                this::getActivityTabStartupMetricsTracker,
+                                this::getLegacyTabStartupMetricsTracker,
+                                this::getStartupMetricsTracker,
                                 /* compositorViewHolderInitializer= */ this,
                                 /* chromeActivityNativeDelegate= */ this,
                                 getModalDialogManagerSupplier(),
@@ -640,7 +645,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 ScreenOrientationProvider.getInstance(),
                                 this::getNotificationManagerProxy,
                                 getTabContentManagerSupplier(),
-                                this::getActivityTabStartupMetricsTracker,
+                                this::getLegacyTabStartupMetricsTracker,
+                                this::getStartupMetricsTracker,
                                 /* CompositorViewHolder.Initializer */ this,
                                 /* ChromeActivityNativeDelegate */ this,
                                 getModalDialogManagerSupplier(),
@@ -767,8 +773,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeActivitySessionTracker.getInstance();
     }
 
-    public ActivityTabStartupMetricsTracker getActivityTabStartupMetricsTracker() {
-        return mActivityTabStartupMetricsTracker;
+    public LegacyTabStartupMetricsTracker getLegacyTabStartupMetricsTracker() {
+        return mLegacyTabStartupMetricsTracker;
+    }
+
+    public StartupMetricsTracker getStartupMetricsTracker() {
+        return mStartupMetricsTracker;
     }
 
     @Override
@@ -1672,9 +1682,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
         mBrowserControlsManagerSupplier.destroy();
 
-        if (mActivityTabStartupMetricsTracker != null) {
-            mActivityTabStartupMetricsTracker.destroy();
-            mActivityTabStartupMetricsTracker = null;
+        if (mLegacyTabStartupMetricsTracker != null) {
+            mLegacyTabStartupMetricsTracker.destroy();
+            mLegacyTabStartupMetricsTracker = null;
+        }
+
+        if (mStartupMetricsTracker != null) {
+            mStartupMetricsTracker.destroy();
+            mStartupMetricsTracker = null;
         }
 
         destroyTabModels();
@@ -2376,17 +2391,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 () -> UiUtils.isGestureNavigationMode(getWindow()));
         mBackPressManager.setIsFirstVisibleContentDrawnSupplier(
                 () -> {
-                    if (mActivityTabStartupMetricsTracker == null) return false;
-                    return mActivityTabStartupMetricsTracker.isFirstVisibleContentRecorded();
+                    if (mLegacyTabStartupMetricsTracker == null) return false;
+                    return mLegacyTabStartupMetricsTracker.isFirstVisibleContentRecorded();
                 });
-        final Runnable callbackForActivityTabStartupMetricsTracker =
+        final Runnable callbackForLegacyTabStartupMetricsTracker =
                 () -> {
-                    if (mActivityTabStartupMetricsTracker != null) {
-                        mActivityTabStartupMetricsTracker.onBackPressed();
+                    if (mLegacyTabStartupMetricsTracker != null) {
+                        mLegacyTabStartupMetricsTracker.onBackPressed();
                     }
                 };
         if (BackPressManager.isEnabled()) {
-            mBackPressManager.setOnBackPressedListener(callbackForActivityTabStartupMetricsTracker);
+            mBackPressManager.setOnBackPressedListener(callbackForLegacyTabStartupMetricsTracker);
             getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
             // TODO(crbug.com/40208738): consider move to RootUiCoordinator.
             mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
@@ -2435,7 +2450,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         @Override
                         public void handleOnBackPressed() {
                             mBackPressManager.recordSystemBackCountIfBeforeFirstVisibleContent();
-                            callbackForActivityTabStartupMetricsTracker.run();
+                            callbackForLegacyTabStartupMetricsTracker.run();
                             if (!ChromeActivity.this.handleOnBackPressed()) {
                                 if (BackPressManager.shouldMoveToBackDuringStartup()) {
                                     moveTaskToBack(true);
@@ -2513,7 +2528,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
 
         if (id == R.id.preferences_id) {
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
             settingsLauncher.launchSettingsActivity(this);
             RecordUserAction.record("MobileMenuSettings");
             RecordHistogram.recordEnumeratedHistogram(
@@ -2714,12 +2729,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // disabling through the app menu for the nth time (determined by feature engagement).
             if (isEnabled) {
                 WebContentsDarkModeMessageController.attemptToShowDialog(
-                        this,
-                        profile,
-                        url.getSpec(),
-                        getModalDialogManager(),
-                        new SettingsLauncherImpl(),
-                        HelpAndFeedbackLauncherImpl.getForProfile(profile));
+                        this, profile, url.getSpec(), getModalDialogManager());
             }
 
             return true;

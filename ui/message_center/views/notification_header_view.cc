@@ -133,7 +133,6 @@ void ExpandButton::OnThemeChanged() {
 
 void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(GetTooltipText(gfx::Point()));
 
   if (GetTooltipText().empty())
     node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
@@ -236,6 +235,14 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   UpdateExpandedCollapsedAccessibleState();
+
+  if (app_name_view_->GetText().empty()) {
+    GetViewAccessibility().SetName(
+        app_name_view_->GetText(),
+        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(app_name_view_->GetText());
+  }
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
@@ -268,6 +275,12 @@ void NotificationHeaderView::ClearAppIcon() {
 
 void NotificationHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
+  if (name.empty()) {
+    GetViewAccessibility().SetName(
+        name, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(name);
+  }
 }
 
 void NotificationHeaderView::SetAppNameElideBehavior(
@@ -299,7 +312,6 @@ void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
 
   node_data->role = ax::mojom::Role::kGenericContainer;
-  node_data->SetName(app_name_view_->GetText());
   node_data->SetDescription(summary_text_view_->GetText() + u" " +
                             timestamp_view_->GetText());
 }

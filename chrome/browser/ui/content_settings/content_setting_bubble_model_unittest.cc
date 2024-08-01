@@ -21,6 +21,8 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
@@ -56,12 +58,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
-#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
-#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -75,6 +71,7 @@ using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
 using custom_handlers::ProtocolHandler;
 using testing::Pair;
+using testing::Return;
 using testing::UnorderedElementsAre;
 using ContentSettingBubbleAction =
     ContentSettingBubbleModel::ContentSettingBubbleAction;
@@ -554,15 +551,23 @@ class ContentSettingGeolocationBubbleModelTest
 };
 
 TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  auto fake_geolocation_system_permission_manager =
-      std::make_unique<device::FakeGeolocationSystemPermissionManager>();
-  device::FakeGeolocationSystemPermissionManager*
-      geolocation_system_permission_manager =
-          fake_geolocation_system_permission_manager.get();
-  device::GeolocationSystemPermissionManager::SetInstance(
-      std::move(fake_geolocation_system_permission_manager));
-#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+
+  // This parameter is meaningful only on Windows, where geolocation permissions
+  // are controlled by the 'features::kWinSystemLocationPermission' feature.
+  // If the feature is disabled (GetParam() returns false), the location system
+  // permission is expected to be always allowed.
+  const bool is_os_level_geolocation_permission_support_enabled = GetParam();
+  if (is_os_level_geolocation_permission_support_enabled) {
+    EXPECT_CALL(mock_platform_handle,
+                IsAllowed(ContentSettingsType::GEOLOCATION))
+        .WillRepeatedly(Return(false));
+  } else {
+    EXPECT_CALL(mock_platform_handle,
+                IsAllowed(ContentSettingsType::GEOLOCATION))
+        .WillRepeatedly(Return(true));
+  }
 
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
@@ -579,7 +584,6 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   // System-level geolocation permission is blocked.
-  const bool is_os_level_geolocation_permission_support_enabled = GetParam();
   if (is_os_level_geolocation_permission_support_enabled) {
     auto content_setting_bubble_model =
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
@@ -615,8 +619,9 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-    geolocation_system_permission_manager->SetSystemPermission(
-        device::LocationSystemPermissionStatus::kAllowed);
+    EXPECT_CALL(mock_platform_handle,
+                IsAllowed(ContentSettingsType::GEOLOCATION))
+        .WillRepeatedly(Return(true));
 
 #if BUILDFLAG(IS_MAC)
     EXPECT_EQ(bubble_content.title,

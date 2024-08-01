@@ -1229,9 +1229,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
       "a keyboard.");
 
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
-  if (!ash::features::IsOverviewNewFocusEnabled()) {
-    sm_.ExpectSpeechPattern(", window");
-  }
   sm_.ExpectSpeechPattern(
       "*data:text slash html;charset equal utf-8, percent 0A less than "
       "button autofocus greater than Click me less than slash button greater "
@@ -2433,13 +2430,9 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   // The first item in the tab order is the template card, which is a button. It
   // has the same name as the desk it was created from, in this case the default
-  // desk name is "Desk 1". With new focus enabled, we focus the name view
-  // first. Then we can go backwards to the template card, which is a button.
-  if (ash::features::IsOverviewNewFocusEnabled()) {
-    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-  } else {
-    sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
-  }
+  // desk name is "Desk 1". The name view will be focused first, then we can go
+  // backwards to the template card, which is a button.
+  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
   sm_.ExpectSpeechPattern("Template, Desk 1");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Press Ctrl plus W to delete");

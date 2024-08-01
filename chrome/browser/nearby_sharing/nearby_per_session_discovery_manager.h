@@ -20,6 +20,7 @@
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 // Handles a single nearby device discovery session. Holds all discovered share
 // targets for the user to choose from and provides callbacks for when they are

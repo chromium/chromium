@@ -451,6 +451,17 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
       sanitize_fragment_(options & kSanitizeFragment),
       should_merge_end_(false) {}
 
+String ReplaceSelectionCommand::TextDataForInputEvent() const {
+  // As per spec https://www.w3.org/TR/input-events-1/#overview
+  // input event data should be set for certain input types.
+  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled() &&
+      (input_type_ == InputEvent::InputType::kInsertFromDrop ||
+       input_type_ == InputEvent::InputType::kInsertFromPaste ||
+       input_type_ == InputEvent::InputType::kInsertReplacementText)) {
+    return input_event_data_;
+  }
+  return g_null_atom;
+}
 static bool HasMatchingQuoteLevel(VisiblePosition end_of_existing_content,
                                   VisiblePosition end_of_inserted_content) {
   Position existing = end_of_existing_content.DeepEquivalent();
@@ -2114,6 +2125,11 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
     RemoveNodeAndPruneAncestors(node_after_insertion_pos, editing_state);
     if (editing_state->IsAborted())
       return false;
+  }
+
+  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
+    // Save the text to set event data for input events.
+    input_event_data_ = text_node->data();
   }
 
   start_of_inserted_range_ = start;

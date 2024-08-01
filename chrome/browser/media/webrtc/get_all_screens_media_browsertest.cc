@@ -835,10 +835,10 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
 
 class MultiScreenCaptureInIsolatedWebAppBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   MultiScreenCaptureInIsolatedWebAppBrowserTest()
-      : with_strict_csp_(GetParam()) {
+      : with_strict_csp_(std::get<0>(GetParam())) {
     scoped_feature_list_.InitFromCommandLine(
         /*enable_features=*/
         "GetAllScreensMedia",
@@ -884,8 +884,14 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> CreateIsolatedWebApp(
       const std::string html_text) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto builder = web_app::IsolatedWebAppBuilder(
-        web_app::ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4"));
+    auto manifest_builder =
+        web_app::ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4");
+    if (IsPermissionPolicySet()) {
+      manifest_builder.AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kAllScreensCapture,
+          /*self=*/true, /*origins=*/{});
+    }
+    auto builder = web_app::IsolatedWebAppBuilder(std::move(manifest_builder));
 
     std::string csp;
     if (with_strict_csp_) {
@@ -924,6 +930,8 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
     return app;
   }
 
+  bool IsPermissionPolicySet() { return std::get<1>(GetParam()); }
+
   base::FilePath GetSourceDir() {
     base::FilePath source_dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir);
@@ -957,10 +965,15 @@ class MultiScreenCaptureInIsolatedWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         MultiScreenCaptureInIsolatedWebAppBrowserTest,
-                         // Determines whether the IWA uses explicit strict CSP.
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MultiScreenCaptureInIsolatedWebAppBrowserTest,
+    ::testing::Combine(
+        // Determines whether the IWA uses explicit strict CSP.
+        ::testing::Bool(),
+        // Determines whether the `all-screens-capture` permission policy is
+        // defined in the manifest.
+        ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
                        GetAllScreensMediaSuccessful) {
@@ -969,12 +982,14 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(mock_multi_capture_service_,
-              IsMultiCaptureAllowed(url_info.origin().GetURL(), testing::_))
-      .WillOnce(testing::Invoke(
-          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(true);
-          }));
+  if (IsPermissionPolicySet()) {
+    EXPECT_CALL(mock_multi_capture_service_,
+                IsMultiCaptureAllowed(url_info.origin().GetURL(), testing::_))
+        .WillOnce(testing::Invoke(
+            [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            }));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::set<std::string> stream_ids;
@@ -983,8 +998,14 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   const bool result = RunGetAllScreensMediaAndGetIds(
       content::WebContents::FromRenderFrameHost(app_frame), stream_ids,
       track_ids, &error_name);
-  EXPECT_TRUE(result);
-  EXPECT_EQ(1u, track_ids.size());
+
+  if (IsPermissionPolicySet()) {
+    EXPECT_TRUE(result);
+    EXPECT_EQ(1u, track_ids.size());
+  } else {
+    EXPECT_FALSE(result);
+    EXPECT_EQ(0u, track_ids.size());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
@@ -998,12 +1019,14 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(mock_multi_capture_service_,
-              IsMultiCaptureAllowed(url_info.origin().GetURL(), testing::_))
-      .WillOnce(testing::Invoke(
-          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
-          }));
+  if (IsPermissionPolicySet()) {
+    EXPECT_CALL(mock_multi_capture_service_,
+                IsMultiCaptureAllowed(url_info.origin().GetURL(), testing::_))
+        .WillOnce(testing::Invoke(
+            [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(false);
+            }));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::set<std::string> stream_ids;

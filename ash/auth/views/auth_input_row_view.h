@@ -30,7 +30,7 @@ class ToggleImageButton;
 namespace ash {
 
 class ASH_EXPORT AuthInputRowView : public views::View,
-                                    public ImeControllerImpl::Observer,
+                                    public ImeController::Observer,
                                     public ui::ImplicitAnimationObserver,
                                     public AuthTextfield::Observer {
   METADATA_HEADER(AuthInputRowView, views::View)
@@ -99,7 +99,7 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   // Invert the textfield type and toggle the display password button.
   void ToggleTextDisplayingState();
 
-  // ImeControllerImpl::Observer:
+  // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 
@@ -115,6 +115,15 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   void Submit();
 
   void SetAccessibleNameOnTextfield(const std::u16string& new_name);
+
+  // Enables or disables the following UI elements:
+  // - View
+  // - Auth textfield
+  // - Submit button
+  // - Display text button
+  // No "Get" function is needed since the state is the same as
+  // the GetEnabled return value.
+  void SetInputEnabled(bool enabled);
 
   // Clear the textfield and set the display text button to hide state.
   void ResetState();
@@ -157,7 +166,7 @@ class ASH_EXPORT AuthInputRowView : public views::View,
 
   const AuthType auth_type_;
 
-  base::ScopedObservation<ImeControllerImpl, ImeControllerImpl::Observer>
+  base::ScopedObservation<ImeController, ImeController::Observer>
       input_methods_observer_{this};
 
   base::ObserverList<Observer> observers_;

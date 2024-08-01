@@ -237,8 +237,14 @@ export class RangeAutomationHandler extends BaseAutomationHandler
     // Rather than trying to figure out if the current range falls somewhere
     // in |evt.target|, just update it if our cached bounds don't match.
     const oldFocusBounds = FocusBounds.get();
-    const startRect = cur.start.node.location;
-    const endRect = cur.end.node.location;
+    let startRect = cur.start.node.location;
+    let endRect = cur.end.node.location;
+    if (cur.start.node.activeDescendant) {
+      startRect = cur.start.node.activeDescendant.location;
+    }
+    if (cur.end.node.activeDescendant) {
+      endRect = cur.end.node.activeDescendant.location;
+    }
     const found =
         oldFocusBounds.some(
             (rect: Rect) => this.areRectsEqual_(rect, startRect)) &&
@@ -248,7 +254,17 @@ export class RangeAutomationHandler extends BaseAutomationHandler
       return;
     }
 
-    new Output().withLocation(cur, undefined, evt.type).go();
+    // Currently only considers if there's an active descendant on the
+    // start node.
+    const activeDescendant = cur.start.node.activeDescendant;
+    if (activeDescendant) {
+      new Output()
+          .withLocation(
+              CursorRange.fromNode(activeDescendant), undefined, evt.type)
+          .go();
+    } else {
+      new Output().withLocation(cur, undefined, evt.type).go();
+    }
   }
 
   /** Called when an image frame is received on a node. */

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1044891598689252897">වෙබ් අඩවි සාමාන්‍යයෙන් ක්‍රියා කරයි</translation>
 <translation id="1073417869336441572">ඔබ තෙවන පාර්ශ්ව කුකීවලට ඉඩ දුන් හේතුව අපට පවසා Chrome දියුණු කිරීමට අපට උදවු කරන්න. <ph name="BEGIN_LINK" />ප්‍රතිපෝෂණය යවන්න<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">මිල පහත වැටීමේ කාඩ්පත සඟවන්න</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1192844206376121885">මෙය <ph name="ORIGIN" /> මගින් ගබඩා කර ඇති සියලු දත්ත සහ කුකීස් මකනු ඇත.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">උදවු සහ ප්‍රතිපෝෂණය</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
-<translation id="2550801787432930915">මිල පහත වැටීමේ කාඩ්පත</translation>
 <translation id="2570922361219980984">මෙම උපාංගය සඳහා ස්ථාන ප්‍රවේශයත් ක්‍රියා විරහිතයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="257931822824936280">පුඵල් කරන ලදි - හැකිලීමට ක්ලික් කරන්න</translation>
 <translation id="2586657967955657006">පසුරු පුවරුව</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3859306556332390985">ඉදිරියට සොයන්න</translation>
 <translation id="3895926599014793903">විශාලනය සක්‍රිය කිරීම බල කරන්න</translation>
+<translation id="3905475044299942653">වැඩිපුර දැනුම්දීම් නවත්වන්න</translation>
 <translation id="3908288065506437185">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">සමහර විශේෂාංග ක්‍රියා නොකරනු ඇත. අදාළ අඩවිවලට තවමත් තෙවන පාර්ශ්ව කුකීස් භාවිතා කළ හැක.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">ආරක්ෂිත අන්තර්ගතය</translation>
 <translation id="662080504995468778">සිටින්න</translation>
 <translation id="6653342741369270081">පූර්ණ තිරයෙන් ඉවත් වීමට ආපසු බොත්තම ඔබන්න.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{මෙම පටිත්ත සමග ඉදිරියට යන්න සඟවන්න}one{මෙම පටිති සමග ඉදිරියට යන්න සඟවන්න}other{මෙම පටිති සමග ඉදිරියට යන්න සඟවන්න}}</translation>
 <translation id="6689172468748959065">පැතිකඩ ඡායාරූප</translation>
 <translation id="6697925417670533197">ක්‍රියාත්මක බාගැනීම්</translation>
 <translation id="6722828510648505498">අනන්‍යතා සේවාවලින් පිරීමේ ප්‍රේරක අවහිර කරන්න.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> සඳහා විකල්පයක් තෝරන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6818926723028410516">අයිතම තෝරන්න</translation>
+<translation id="6840760312327750441">පටිති කණ්ඩායම් කිරීමට, පටිත්තක් ස්පර්ශ කර අල්ලා සිටින්න. පසුව, එය වෙනත් පටිත්තකට අදින්න.</translation>
 <translation id="6864395892908308021">මෙම උපාංගය NFC කියවිය නොහැක</translation>
 <translation id="6912998170423641340">පසුරු පුවරුවෙන් පෙළ සහ රූප කියවීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">මෙම පිටුව අනතුරුදායකයි</translation>
 <translation id="930525582205581608">මෙම අඩවිය අමතක කරන්නද?</translation>
 <translation id="947156494302904893">ඔබ පිවිසෙන අඩවිවලට ඔබ සැබෑ පුද්ගලයෙක් මිස බොට් කෙනෙක් නොවන බව සත්‍යාපනය කළ හැක</translation>
+<translation id="959682366969460160">සංවිධාන වන්න</translation>
 <translation id="967624055006145463">දත්ත ගබඩා කර ඇත</translation>
 </translationbundle>

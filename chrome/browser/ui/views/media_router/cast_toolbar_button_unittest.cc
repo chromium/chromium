@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
-#include "chrome/browser/ui/toolbar/media_router/mock_media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/cast/mock_cast_toolbar_button_controller.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -47,7 +47,7 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto controller = std::make_unique<MockMediaRouterActionController>(profile);
+  auto controller = std::make_unique<MockCastToolbarButtonController>(profile);
   return std::make_unique<media_router::MediaRouterUIService>(
       profile, std::move(controller));
 }
@@ -62,7 +62,7 @@ MediaRoute CreateNonLocalDisplayRoute() {
                     "description", false);
 }
 
-class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
+class MockContextMenuObserver : public CastContextualMenu::Observer {
  public:
   MOCK_METHOD(void, OnContextMenuShown, (), (override));
   MOCK_METHOD(void, OnContextMenuHidden, (), (override));
@@ -105,7 +105,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     ON_CALL(*media_router_, GetMirroringMediaControllerHost(_))
         .WillByDefault(testing::Return(mirroring_controller_host_.get()));
 
-    auto context_menu = std::make_unique<MediaRouterContextualMenu>(
+    auto context_menu = std::make_unique<CastContextualMenu>(
         browser_.get(), false, &context_menu_observer_);
 
     // Button needs to be in a widget to be able to access ColorProvider.

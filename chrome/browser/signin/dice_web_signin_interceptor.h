@@ -70,6 +70,19 @@ enum class ShouldShowChromeSigninBubbleWithReason {
   kMaxValue = kShouldNotShowUserChoice,
 };
 
+// Supervision state of the user who is shown the sign-in intercept bubble.
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SinginInterceptSupervisionState)
+enum class SinginInterceptSupervisionState {
+  kRegularUser = 0,
+  kSupervisedUser = 1,
+  kUnknownSupervision = 2,
+  kMaxValue = kUnknownSupervision,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SinginInterceptSupervisionState)
+
 // Called after web signed in, after a successful token exchange through Dice.
 // The DiceWebSigninInterceptor may offer the user to create a new profile or
 // switch to another existing profile.

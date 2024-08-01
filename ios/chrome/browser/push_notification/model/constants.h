@@ -46,17 +46,23 @@ typedef NS_ENUM(NSInteger, SettingsToggleType) {
 };
 
 // Key of commerce notification used in pref
-// kFeaturePushNotificationPermissions.
+// `kFeaturePushNotificationPermissions`.
 extern const char kCommerceNotificationKey[];
 
-// Key of content notification used in pref kFeaturePushNotificationPermissions.
+// Key of content notification used in pref
+// `kFeaturePushNotificationPermissions`.
 extern const char kContentNotificationKey[];
 
-// Key of sports notification used in pref kFeaturePushNotificationPermissions.
+// Key of sports notification used in pref
+// `kFeaturePushNotificationPermissions`.
 extern const char kSportsNotificationKey[];
 
-// Key of tips notification used in pref kFeaturePushNotificationPermissions.
+// Key of tips notification used in pref `kFeaturePushNotificationPermissions`.
 extern const char kTipsNotificationKey[];
+
+// Key of Safety Check notification used in pref
+// `kFeaturePushNotificationPermissions`.
+extern const char kSafetyCheckNotificationKey[];
 
 // Action identifier for the Content Notifications Feedback action.
 extern NSString* const kContentNotificationFeedbackActionIdentifier;

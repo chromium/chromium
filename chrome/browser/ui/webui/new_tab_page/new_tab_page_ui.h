@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
@@ -24,14 +23,12 @@
 #endif
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
-#include "components/feed/buildflags.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -56,10 +53,6 @@ class NavigationHandle;
 class WebUI;
 }  // namespace content
 
-namespace ntp {
-class FeedHandler;
-}  // namespace ntp
-
 namespace page_image_service {
 class ImageServiceHandler;
 }  // namespace page_image_service
@@ -78,6 +71,7 @@ class GURL;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
+class NtpCustomBackgroundService;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -158,11 +152,6 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
           pending_receiver);
-
-  // Instantiates the implementor of ntp::feed::mojom::FeedHandler mojo
-  // interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ntp::feed::mojom::FeedHandler> pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
@@ -275,9 +264,6 @@ class NewTabPageUI
   // Mojo implementations for modules:
   std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
   std::unique_ptr<FileSuggestionHandler> file_handler_;
-#if BUILDFLAG(ENABLE_FEED_V2)
-  std::unique_ptr<ntp::FeedHandler> feed_handler_;
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
   PrefChangeRegistrar pref_change_registrar_;
 
   // Holds subscriptions for TabInterface callbacks.

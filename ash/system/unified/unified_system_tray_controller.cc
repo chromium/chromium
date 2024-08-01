@@ -164,10 +164,11 @@ void UnifiedSystemTrayController::HandleSignOutAction() {
   if (ShouldShowDeferredUpdateDialog()) {
     DeferredUpdateDialog::CreateDialog(
         DeferredUpdateDialog::Action::kSignOut,
-        base::BindOnce(&SessionControllerImpl::RequestSignOut,
-                       base::Unretained(Shell::Get()->session_controller())));
+        base::BindOnce(
+            &LockStateController::RequestSignOut,
+            base::Unretained(Shell::Get()->lock_state_controller())));
   } else {
-    Shell::Get()->session_controller()->RequestSignOut();
+    Shell::Get()->lock_state_controller()->RequestSignOut();
   }
 }
 

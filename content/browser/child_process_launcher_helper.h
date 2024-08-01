@@ -358,6 +358,10 @@ class ChildProcessLauncherHelper
 
   // Startup tracing config shared memory region.
   base::ReadOnlySharedMemoryRegion tracing_config_memory_region_;
+
+  // Creation time of the helper, used for metrics.
+  // TODO(crbug.com/40287847): Remove when parallel launching is finished.
+  base::TimeTicks init_start_time_;
 };
 
 }  // namespace internal

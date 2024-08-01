@@ -79,10 +79,10 @@ void SMILInstanceTimeList::Append(SMILTime time, SMILTimeOrigin origin) {
 void SMILInstanceTimeList::InsertSortedAndUnique(SMILTime time,
                                                  SMILTimeOrigin origin) {
   SMILTimeWithOrigin time_with_origin(time, origin);
-  auto* position = std::lower_bound(instance_times_.begin(),
-                                    instance_times_.end(), time_with_origin);
+  auto position = std::lower_bound(instance_times_.begin(),
+                                   instance_times_.end(), time_with_origin);
   // Don't add it if we already have one of those.
-  for (auto* it = position; it != instance_times_.end(); ++it) {
+  for (auto it = position; it != instance_times_.end(); ++it) {
     if (position->Time() != time)
       break;
     // If they share both time and origin, we don't need to add it,
@@ -100,11 +100,10 @@ void SMILInstanceTimeList::RemoveWithOrigin(SMILTimeOrigin origin) {
   if (!time_origins_.Has(origin)) {
     return;
   }
-  auto* tail =
-      std::remove_if(instance_times_.begin(), instance_times_.end(),
-                     [origin](const SMILTimeWithOrigin& instance_time) {
-                       return instance_time.Origin() == origin;
-                     });
+  auto tail = std::remove_if(instance_times_.begin(), instance_times_.end(),
+                             [origin](const SMILTimeWithOrigin& instance_time) {
+                               return instance_time.Origin() == origin;
+                             });
   instance_times_.Shrink(
       static_cast<wtf_size_t>(tail - instance_times_.begin()));
   time_origins_.Remove(origin);
@@ -116,7 +115,7 @@ void SMILInstanceTimeList::Sort() {
 
 SMILTime SMILInstanceTimeList::NextAfter(SMILTime time) const {
   // Find the value in |list| that is strictly greater than |time|.
-  auto* next_item = std::lower_bound(
+  auto next_item = std::lower_bound(
       instance_times_.begin(), instance_times_.end(), time,
       [](const SMILTimeWithOrigin& instance_time, const SMILTime& time) {
         return instance_time.Time() <= time;
@@ -800,11 +799,11 @@ SMILInterval SVGSMILElement::ResolveInterval(SMILTime begin_after,
   // http://www.w3.org/TR/SMIL3/smil-timing.html#q90.
   const size_t kMaxIterations = std::max(begin_times_.size() * 4, 1000000u);
   size_t current_iteration = 0;
-  for (auto* search_start = begin_times_.begin();
+  for (auto search_start = begin_times_.begin();
        search_start != begin_times_.end(); ++search_start) {
     // Find the (next) instance time in the 'begin' list that is greater or
     // equal to |begin_after|.
-    auto* begin_item = std::lower_bound(
+    auto begin_item = std::lower_bound(
         search_start, begin_times_.end(), begin_after,
         [](const SMILTimeWithOrigin& instance_time, const SMILTime& time) {
           return instance_time.Time() < time;

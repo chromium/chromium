@@ -83,15 +83,6 @@ class GURL;
 // via the WebStateList.
 - (void)closeCurrentTab;
 
-// Shows what's new.
-- (void)showWhatsNew;
-
-// Dismisses what's new.
-- (void)dismissWhatsNew;
-
-// Shows what's new IPH.
-- (void)showWhatsNewIPH;
-
 // Shows the spotlight debugger.
 - (void)showSpotlightDebugger;
 

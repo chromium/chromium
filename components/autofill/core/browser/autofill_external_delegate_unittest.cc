@@ -1153,10 +1153,12 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  iban.value(), SuggestionType::kIbanEntry,
                                  std::optional(IBAN_VALUE)));
+  Suggestion suggestion(iban.GetIdentifierStringForAutofillDisplay(),
+                        SuggestionType::kIbanEntry);
+  suggestion.payload = Suggestion::Guid(iban.guid());
+  suggestion.labels = {{Suggestion::Text(u"My doctor's IBAN")}};
   EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetIbanManager(),
-              OnSingleFieldSuggestionSelected(
-                  iban.GetIdentifierStringForAutofillDisplay(),
-                  SuggestionType::kIbanEntry));
+              OnSingleFieldSuggestionSelected(suggestion));
   ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
           FetchValue)
       .WillByDefault([iban](const Suggestion::BackendId& backend_id,
@@ -2504,16 +2506,16 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   base::HistogramTester histogram_tester;
   std::u16string dummy_autocomplete_string(u"autocomplete");
+  Suggestion suggestion(SuggestionType::kAutocompleteEntry);
+  suggestion.main_text.value = dummy_autocomplete_string;
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(), dummy_autocomplete_string,
           SuggestionType::kAutocompleteEntry, std::optional<FieldType>()));
-  EXPECT_CALL(
-      *client().GetMockAutocompleteHistoryManager(),
-      OnSingleFieldSuggestionSelected(dummy_autocomplete_string,
-                                      SuggestionType::kAutocompleteEntry));
+  EXPECT_CALL(*client().GetMockAutocompleteHistoryManager(),
+              OnSingleFieldSuggestionSelected(suggestion));
 
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry,
@@ -2531,6 +2533,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery();
 
   std::u16string dummy_promo_code_string(u"merchant promo");
+  Suggestion suggestion(SuggestionType::kMerchantPromoCodeEntry);
+  suggestion.main_text.value = dummy_promo_code_string;
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::FieldActionType::kReplaceAll,
@@ -2540,8 +2544,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  std::optional(MERCHANT_PROMO_CODE)));
   EXPECT_CALL(
       *client().GetPaymentsAutofillClient()->GetMockMerchantPromoCodeManager(),
-      OnSingleFieldSuggestionSelected(dummy_promo_code_string,
-                                      SuggestionType::kMerchantPromoCodeEntry));
+      OnSingleFieldSuggestionSelected(suggestion));
 
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(SuggestionType::kMerchantPromoCodeEntry,
@@ -2556,6 +2559,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery();
 
   Iban iban = test::GetLocalIban();
+  Suggestion suggestion(SuggestionType::kIbanEntry);
+  suggestion.main_text.value = iban.GetIdentifierStringForAutofillDisplay();
+  suggestion.payload = Suggestion::Guid(iban.guid());
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
                                  mojom::FieldActionType::kReplaceAll,
@@ -2563,9 +2569,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  iban.value(), SuggestionType::kIbanEntry,
                                  std::optional(IBAN_VALUE)));
   EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetIbanManager(),
-              OnSingleFieldSuggestionSelected(
-                  iban.GetIdentifierStringForAutofillDisplay(),
-                  SuggestionType::kIbanEntry));
+              OnSingleFieldSuggestionSelected(suggestion));
+
   ON_CALL(*client().GetPaymentsAutofillClient()->GetIbanAccessManager(),
           FetchValue)
       .WillByDefault([iban](const Suggestion::BackendId& backend_id,

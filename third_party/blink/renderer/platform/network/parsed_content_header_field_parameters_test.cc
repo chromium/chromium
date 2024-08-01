@@ -130,7 +130,7 @@ TEST(ParsedContentHeaderFieldParametersTest, BeginEnd) {
   EXPECT_TRUE(t->HasDuplicatedNames());
   EXPECT_EQ(3u, t->ParameterCount());
 
-  auto* i = t->begin();
+  auto i = t->begin();
   ASSERT_NE(i, t->end());
   EXPECT_EQ(i->name, "a");
   EXPECT_EQ(i->value, "b");

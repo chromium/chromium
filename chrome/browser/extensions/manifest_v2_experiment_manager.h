@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -101,6 +103,21 @@ class ManifestV2ExperimentManager : public KeyedService,
   // the current MV2 deprecation `experiment_stage_`..
   void MarkNoticeAsAcknowledgedGlobally();
 
+  // Registers `callback` to run when this has finished its initialization
+  // steps. `is_manager_ready_` must be false for this to be called.
+  base::CallbackListSubscription RegisterOnManagerReadyCallback(
+      base::RepeatingClosure callback);
+
+  // Whether the disabled dialog has been triggered for this `browser_context_`.
+  bool has_triggered_disabled_dialog() {
+    return has_triggered_disabled_dialog_;
+  }
+  // This should be called when a new window is opened for `browser_context_`.
+  void SetHasTriggeredDisabledDialog(bool has_triggered);
+
+  // Returns whether this has finished its initialization steps.
+  bool is_manager_ready() { return is_manager_ready_; }
+
   bool DidUserReEnableExtensionForTesting(const ExtensionId& extension_id);
 
   // Helpers to call internal methods directly for testing purposes. These are
@@ -170,6 +187,15 @@ class ManifestV2ExperimentManager : public KeyedService,
   raw_ptr<content::BrowserContext> browser_context_;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Whether the disabled dialog has been triggered for this `browser_context_`.
+  bool has_triggered_disabled_dialog_ = false;
+
+  // Whether this class has finished its initialization steps.
+  bool is_manager_ready_ = false;
+
+  // Callback to be run when this has finished its initialization steps.
+  base::RepeatingCallbackList<void()> on_manager_ready_callback_list_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

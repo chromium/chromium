@@ -32,14 +32,16 @@ bool TarExtractor::IsTarFile(const base::FilePath& image_path) {
                                       base::File::FLAG_READ |
                                       base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                       base::File::FLAG_WIN_SHARE_DELETE);
-  if (!src_file.IsValid())
+  if (!src_file.IsValid()) {
     return false;
+  }
 
   // Tar header record is always 512 bytes, so if the file is shorter than that,
   // it's not tar.
   char header[512] = {};
-  if (src_file.ReadAtCurrentPos(header, sizeof(header)) != sizeof(header))
+  if (src_file.ReadAtCurrentPos(header, sizeof(header)) != sizeof(header)) {
     return false;
+  }
 
   return std::equal(kExpectedMagic, kExpectedMagic + sizeof(kExpectedMagic),
                     header + kMagicOffset);

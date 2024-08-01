@@ -18,6 +18,9 @@
 
 namespace {
 
+// Alpha for the disabled passkey cell.
+const CGFloat kBackgroundDisabledAlpha = 0.4;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierCredentials = kSectionIdentifierEnumZero,
 };
@@ -111,16 +114,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  BOOL isPassword = _credentials[indexPath.row].passkey_credential_id.empty();
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.userInteractionEnabled = YES;
+  cell.userInteractionEnabled = isPassword;
   cell.textLabel.numberOfLines = 1;
   cell.detailTextLabel.numberOfLines = 1;
   if (indexPath.row == tableView.indexPathForSelectedRow.row) {
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
   } else {
     cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  if (!isPassword) {
+    cell.contentView.alpha = kBackgroundDisabledAlpha;
   }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
@@ -141,6 +149,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setCredentials:
     (const std::vector<password_manager::CredentialUIEntry>&)credentials {
+  // TODO(crbug.com/355048091): The credentials should already be sorted so that
+  // passwords are before passkeys, but ensure that here as well in case sth
+  // changes in the CredentialUIEntry operator<.
   _credentials = credentials;
 
   [self loadModel];
@@ -155,6 +166,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewURLItem alloc] initWithType:ItemTypeCredential];
   item.title = base::SysUTF16ToNSString(credential.username);
   item.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
+  if (!credential.passkey_credential_id.empty()) {
+    item.detailText = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SHARING_PASSWORD_PICKER_PASSKEY_INFO);
+  }
   return item;
 }
 

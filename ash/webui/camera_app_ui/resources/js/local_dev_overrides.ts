@@ -160,6 +160,11 @@ export class ChromeHelperFake extends ChromeHelper {
     return LidState.kNotPresent;
   }
 
+  override async initSWPrivacySwitchMonitor(
+      _onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean> {
+    return false;
+  }
+
   override async getEventsSender(): Promise<EventsSenderRemote> {
     return fakeEndpoint();
   }

@@ -32,6 +32,10 @@ struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
 
+namespace version_info {
+enum class Channel;
+}
+
 class GoogleServiceAuthError;
 class GURL;
 
@@ -91,7 +95,7 @@ class EndpointFetcher {
       const std::vector<std::string>& headers,
       const std::vector<std::string>& cors_exempt_headers,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
-      bool is_stable_channel);
+      version_info::Channel channel);
 
   // Constructor if no authentication is needed.
   EndpointFetcher(
@@ -181,7 +185,7 @@ class EndpointFetcher {
   // null if `identity_manager_` is null.
   const std::optional<signin::ConsentLevel> consent_level_;
   bool sanitize_response_;
-  bool is_stable_channel_;
+  version_info::Channel channel_;
 
   // Members set in Fetch
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>

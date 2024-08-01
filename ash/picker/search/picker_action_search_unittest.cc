@@ -146,16 +146,6 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_results = {PickerSearchResult::CaseTransform(
                 CaseTransformType::kLowerCase)},
         },
-        // Sentence case
-        TestCase{
-            .options =
-                {
-                    .search_case_transforms = true,
-                },
-            .query = u"sentence",
-            .expected_results = {PickerSearchResult::CaseTransform(
-                CaseTransformType::kSentenceCase)},
-        },
         // Title case
         TestCase{
             .options =

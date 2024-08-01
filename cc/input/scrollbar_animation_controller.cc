@@ -355,14 +355,13 @@ bool ScrollbarAnimationController::MouseIsNearScrollbarThumb(
 bool ScrollbarAnimationController::MouseIsNearScrollbar(
     ScrollbarOrientation orientation) const {
   DCHECK(need_thinning_animation_);
-  return GetScrollbarAnimationController(orientation)
-      .mouse_is_near_scrollbar_track();
+  return GetScrollbarAnimationController(orientation).mouse_is_near_scrollbar();
 }
 
 bool ScrollbarAnimationController::MouseIsNearAnyScrollbar() const {
   DCHECK(need_thinning_animation_);
-  return vertical_controller_->mouse_is_near_scrollbar_track() ||
-         horizontal_controller_->mouse_is_near_scrollbar_track();
+  return vertical_controller_->mouse_is_near_scrollbar() ||
+         horizontal_controller_->mouse_is_near_scrollbar();
 }
 
 bool ScrollbarAnimationController::ScrollbarsHidden() const {

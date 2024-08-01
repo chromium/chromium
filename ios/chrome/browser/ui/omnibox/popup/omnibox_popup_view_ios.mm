@@ -127,3 +127,7 @@ void OmniboxPopupViewIOS::OnMatchSelectedForDeletion(
 void OmniboxPopupViewIOS::OnScroll() {
   delegate_->OnPopupDidScroll();
 }
+
+void OmniboxPopupViewIOS::OnCallActionTap() {
+  delegate_->OnCallActionTap();
+}

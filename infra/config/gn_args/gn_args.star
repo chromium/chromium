@@ -825,6 +825,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "lld",
+    args = {
+        "use_lld": True,
+    },
+)
+
+gn_args.config(
     name = "lsan",
     args = {
         "is_lsan": True,

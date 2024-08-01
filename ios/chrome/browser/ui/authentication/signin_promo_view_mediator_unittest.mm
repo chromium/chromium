@@ -72,7 +72,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
     // Set up the test browser and attach the browser agents.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -146,7 +146,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     fake_system_identity_manager()->AddIdentity(identity_);
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   // Tests the mediator with a new created configurator when no accounts are on
   // the device.
@@ -613,7 +615,8 @@ TEST_F(SigninPromoViewMediatorTest,
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      std::move(builder).Build();
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
   EXPECT_FALSE([SigninPromoViewMediator
@@ -764,7 +767,8 @@ TEST_F(SigninPromoViewMediatorTest,
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      std::move(builder).Build();
   browser_state->GetPrefs()->SetBoolean(
       prefs::kIosBookmarkSettingsPromoAlreadySeen, true);
   EXPECT_FALSE([SigninPromoViewMediator

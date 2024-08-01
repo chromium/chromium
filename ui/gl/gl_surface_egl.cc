@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gl/gl_surface_egl.h"
 
 #include <stddef.h>
@@ -339,7 +344,10 @@ GLDisplayEGL* GLSurfaceEGL::GetGLDisplayEGL() {
       GpuPreference::kDefault);
 }
 
-GLSurfaceEGL::~GLSurfaceEGL() = default;
+GLSurfaceEGL::~GLSurfaceEGL() {
+  // InvalidateWeakPtrs should be called from the concrete dtors.
+  CHECK(!HasWeakPtrs());
+}
 
 #if BUILDFLAG(IS_ANDROID)
 NativeViewGLSurfaceEGL::NativeViewGLSurfaceEGL(
@@ -981,6 +989,7 @@ void NativeViewGLSurfaceEGL::SetVSyncEnabled(bool enabled) {
 }
 
 NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 
@@ -1132,6 +1141,7 @@ void* PbufferGLSurfaceEGL::GetShareHandle() {
 }
 
 PbufferGLSurfaceEGL::~PbufferGLSurfaceEGL() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 
@@ -1181,6 +1191,7 @@ void* SurfacelessEGL::GetShareHandle() {
 }
 
 SurfacelessEGL::~SurfacelessEGL() {
+  InvalidateWeakPtrs();
 }
 
 }  // namespace gl

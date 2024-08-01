@@ -144,13 +144,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadPreInstalledComponent);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
 
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const char kPrivacySandboxProactiveTopicsBlockingIncludeModeBName[];
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool>
-    kPrivacySandboxProactiveTopicsBlockingIncludeModeB;
-
 #if BUILDFLAG(IS_ANDROID)
 // Triggers Tracking Protection Onboarding notice for 100% launch.
 // TODO(b/341975190): This flag is for testing only and will be replaced by
@@ -182,30 +175,26 @@ BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionSetting);
 
-// Enables displaying fingerprinting protection status in User Bypass and Page
-// Info.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kUserBypassFingerprintingProtection;
-
 // Enables fingerprinting protection setting UX.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionUx);
+
+// Enables displaying fingerprinting protection status in User Bypass and Page
+// Info.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kFingerprintingProtectionUserBypass);
 
 // Enables IP Protection setting behavior.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionV1);
 
-// Enables displaying IP protection status in User Bypass and Page Info.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kUserBypassIpProtection;
-
 // Enables showing IP Protection toggle on the settings page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUx);
 
-// Enables IP Protection by default. For use in dogfood.
+// Enables displaying IP protection status in User Bypass and Page Info.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kIpProtectionDogfoodDefaultOn);
+BASE_DECLARE_FEATURE(kIpProtectionUserBypass);
 
 // Enables showing new RWS UI.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -240,14 +229,6 @@ BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
 // Enables visibility for toggles on the top-level Ad Privacy page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPsRedesignAdPrivacyPage);
-
-// Enabled Tracking Protection Onboarding for the full 3PCD rollout.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionOnboarding);
-
-// Enables Blocking Third Party Cookies as part of the full 3PCD rollout.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kTrackingProtectionBlock3PC;
 
 // Enables setting the toggles on the top-level Ad Privacy page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

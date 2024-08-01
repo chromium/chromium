@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_COMMON_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -13,14 +14,17 @@
 
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
-#include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "components/download/public/common/download_danger_type.h"
+
 namespace download {
 class DownloadItem;
 }  // namespace download
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace enterprise_connectors {
 
@@ -209,14 +213,21 @@ ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
 CreateSampleCustomRuleMessage(const std::u16string& msg,
                               const std::string& url);
 
+#if !BUILDFLAG(IS_IOS)
 // Extracts the custom rule message from `download_item`. The rule for that
 // message needs to have an action (WARN, BLOCK) corresponding to `danger_type`.
 std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
 GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
                               download::DownloadDangerType danger_type);
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);
+
+enum EnterpriseRealTimeUrlCheckMode {
+  REAL_TIME_CHECK_DISABLED = 0,
+  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
+};
 
 }  // namespace enterprise_connectors
 

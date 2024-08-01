@@ -30,7 +30,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -127,6 +127,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -627,13 +628,13 @@ void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
                             extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnServiceWorkerRegistered(
+void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
                             worker_id.extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnServiceWorkerUnregistered(
+void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
                             worker_id.extension_id);
@@ -1270,6 +1271,14 @@ void DeveloperPrivateReloadFunction::ClearObservers() {
 
 DeveloperPrivateLoadUnpackedFunction::DeveloperPrivateLoadUnpackedFunction() {}
 
+DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {
+  // There may be pending file dialogs, we need to tell them that we've gone
+  // away so they don't try and call back to us.
+  if (select_file_dialog_.get()) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
 ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
   std::optional<developer::LoadUnpacked::Params> params =
       developer::LoadUnpacked::Params::Create(args());
@@ -1306,10 +1315,12 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
     DeveloperPrivateAPI* api = DeveloperPrivateAPI::Get(browser_context());
     base::FilePath path =
         api->GetUnpackedPath(web_contents, *params->options->retry_guid);
-    if (path.empty())
+    if (path.empty()) {
       return RespondNow(Error("Invalid retry id"));
-    AddRef();  // Balanced in FileSelected.
-    FileSelected(path);
+    }
+
+    AddRef();  // Balanced in Finish.
+    StartFileLoad(path);
     return RespondLater();
   }
 
@@ -1317,53 +1328,94 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
       *params->options->use_dragged_path) {
     DeveloperPrivateAPI* api = DeveloperPrivateAPI::Get(browser_context());
     base::FilePath path = api->GetDraggedPath(web_contents);
-    if (path.empty())
+    if (path.empty()) {
       return RespondNow(Error("No dragged path"));
-    AddRef();  // Balanced in FileSelected.
-    FileSelected(path);
+    }
+
+    AddRef();  // Balanced in Finish.
+    StartFileLoad(path);
     return RespondLater();
   }
 
-  if (!ShowPicker(ui::SelectFileDialog::SELECT_EXISTING_FOLDER,
-                  l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY),
-                  ui::SelectFileDialog::FileTypeInfo(),
-                  0 /* file_type_index */)) {
-    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
-  }
-
-  AddRef();  // Balanced in FileSelected / FileSelectionCanceled.
+  ShowSelectFileDialog();
+  AddRef();  // Balanced in Finish.
   return RespondLater();
 }
 
+void DeveloperPrivateLoadUnpackedFunction::ShowSelectFileDialog() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Start or cancel the file load without showing the select file dialog for
+  // tests that require it.
+  if (accept_dialog_for_testing_.has_value()) {
+    if (accept_dialog_for_testing_.value()) {
+      CHECK(selected_file_for_testing_.has_value());
+      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
+    } else {
+      FileSelectionCanceled();
+    }
+    return;
+  }
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  CHECK(web_contents);
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+
+  ui::SelectFileDialog::Type file_type =
+      ui::SelectFileDialog::SELECT_EXISTING_FOLDER;
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY);
+  const base::FilePath last_directory =
+      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
+  auto file_type_info = ui::SelectFileDialog::FileTypeInfo();
+  int file_type_index = 0;
+  gfx::NativeWindow owning_window =
+      platform_util::GetTopLevel(web_contents->GetNativeView());
+
+  select_file_dialog_->SelectFile(file_type, title, last_directory,
+                                  &file_type_info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
+}
+
 void DeveloperPrivateLoadUnpackedFunction::FileSelected(
-    const base::FilePath& path) {
+    const ui::SelectedFileInfo& file,
+    int index) {
+  select_file_dialog_.reset();
+  StartFileLoad(file.path());
+}
+
+void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
+  select_file_dialog_.reset();
+  // This isn't really an error, but we should keep it like this for
+  // backward compatibility.
+  Finish(Error(kFileSelectionCanceled));
+}
+
+void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
+    const base::FilePath file_path) {
   scoped_refptr<UnpackedInstaller> installer(
       UnpackedInstaller::Create(GetExtensionService(browser_context())));
   installer->set_be_noisy_on_failure(!fail_quietly_);
   installer->set_completion_callback(base::BindOnce(
       &DeveloperPrivateLoadUnpackedFunction::OnLoadComplete, this));
-  installer->Load(path);
+  installer->Load(file_path);
 
   retry_guid_ = DeveloperPrivateAPI::Get(browser_context())
-                  ->AddUnpackedPath(GetSenderWebContents(), path);
-
-  Release();  // Balanced in Run().
-}
-
-void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
-  // This isn't really an error, but we should keep it like this for
-  // backward compatability.
-  Respond(Error(kFileSelectionCanceled));
-  // TODO(crbug.com/353743644): Test needed to verify that it's safe to Release.
-  Release();  // Balanced in Run().
+                    ->AddUnpackedPath(GetSenderWebContents(), file_path);
 }
 
 void DeveloperPrivateLoadUnpackedFunction::OnLoadComplete(
     const Extension* extension,
     const base::FilePath& file_path,
     const std::string& error) {
-  if (extension || !populate_error_) {
-    Respond(extension ? NoArguments() : Error(error));
+  if (extension) {
+    Finish(NoArguments());
+    return;
+  }
+
+  if (!populate_error_) {
+    Finish(Error(error));
     return;
   }
 
@@ -1379,9 +1431,15 @@ void DeveloperPrivateLoadUnpackedFunction::OnGotManifestError(
     size_t line_number,
     const std::string& manifest) {
   DCHECK(!retry_guid_.empty());
-  Respond(WithArguments(
+  Finish(WithArguments(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid_)
           .ToValue()));
+}
+
+void DeveloperPrivateLoadUnpackedFunction::Finish(
+    ResponseValue response_value) {
+  Respond(std::move(response_value));
+  Release();  // Balanced in Run().
 }
 
 DeveloperPrivateInstallDroppedFileFunction::
@@ -1479,32 +1537,6 @@ void DeveloperPrivateNotifyDragInstallInProgressFunction::SetDropPathForTesting(
   g_drop_path_for_testing = file_path;
 }
 
-bool DeveloperPrivateChooseEntryFunction::ShowPicker(
-    ui::SelectFileDialog::Type picker_type,
-    const std::u16string& select_title,
-    const ui::SelectFileDialog::FileTypeInfo& info,
-    int file_type_index) {
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents)
-    return false;
-
-  // The entry picker will hold a reference to this function instance,
-  // and subsequent sending of the function response) until the user has
-  // selected a file or cancelled the picker. At that point, the picker will
-  // delete itself.
-  // TODO(crbug.com/353743644): This causes a dangling pointer when file dialog
-  // is cancelled and DeveloperPrivateLoadUnpackedFunction() is destructed
-  // before EntryPicker is destructed, which still holds a pointer to this
-  // function instance.
-  new EntryPicker(
-      this, web_contents, picker_type,
-      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory(),
-      select_title, info, file_type_index);
-  return true;
-}
-
-DeveloperPrivateChooseEntryFunction::~DeveloperPrivateChooseEntryFunction() {}
-
 void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
     const base::FilePath& crx_file,
     const base::FilePath& pem_file) {
@@ -1582,8 +1614,6 @@ DeveloperPrivatePackDirectoryFunction::DeveloperPrivatePackDirectoryFunction() {
 
 DeveloperPrivatePackDirectoryFunction::
 ~DeveloperPrivatePackDirectoryFunction() {}
-
-DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
   // In theory `extension()` can be null when an ExtensionFunction is invoked
@@ -1817,18 +1847,47 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 DeveloperPrivateLoadDirectoryFunction::~DeveloperPrivateLoadDirectoryFunction()
     {}
 
+DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() {}
+
+DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {
+  // There may be pending file dialogs, we need to tell them that we've gone
+  // away so they don't try and call back to us.
+  if (select_file_dialog_.get()) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
 ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   std::optional<developer::ChoosePath::Params> params =
       developer::ChoosePath::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_FOLDER;
-  ui::SelectFileDialog::FileTypeInfo info;
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
+  }
+
+  // Start or cancel the file selection without showing the select file dialog
+  // for tests that require it.
+  if (accept_dialog_for_testing_.has_value()) {
+    AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
+    if (accept_dialog_for_testing_.value()) {
+      CHECK(selected_file_for_testing_.has_value());
+      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
+    } else {
+      FileSelectionCanceled();
+    }
+    CHECK(did_respond());
+    return AlreadyResponded();
+  }
+
+  ui::SelectFileDialog::Type file_type = ui::SelectFileDialog::SELECT_FOLDER;
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  std::u16string select_title;
 
   if (params->select_type == developer::SelectType::kFile) {
-    type = ui::SelectFileDialog::SELECT_OPEN_FILE;
+    file_type = ui::SelectFileDialog::SELECT_OPEN_FILE;
   }
-  std::u16string select_title;
 
   int file_type_index = 0;
   if (params->file_type == developer::FileType::kLoad) {
@@ -1836,32 +1895,35 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   } else if (params->file_type == developer::FileType::kPem) {
     select_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_PACK_DIALOG_SELECT_KEY);
-    info.extensions.push_back(std::vector<base::FilePath::StringType>(
-        1, FILE_PATH_LITERAL("pem")));
-    info.extension_description_overrides.push_back(
+    file_type_info.extensions.emplace_back(1, FILE_PATH_LITERAL("pem"));
+    file_type_info.extension_description_overrides.push_back(
         l10n_util::GetStringUTF16(
             IDS_EXTENSION_PACK_DIALOG_KEY_FILE_TYPE_DESCRIPTION));
-    info.include_all_files = true;
+    file_type_info.include_all_files = true;
     file_type_index = 1;
   } else {
     NOTREACHED_IN_MIGRATION();
   }
 
-  if (!ShowPicker(
-           type,
-           select_title,
-           info,
-           file_type_index)) {
-    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
-  }
+  const base::FilePath last_directory =
+      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
+  gfx::NativeWindow owning_window =
+      platform_util::GetTopLevel(web_contents->GetNativeView());
 
-  AddRef();  // Balanced by FileSelected / FileSelectionCanceled.
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+  select_file_dialog_->SelectFile(file_type, select_title, last_directory,
+                                  &file_type_info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
+
+  AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
   return RespondLater();
 }
 
 void DeveloperPrivateChoosePathFunction::FileSelected(
-    const base::FilePath& path) {
-  Respond(WithArguments(path.LossyDisplayName()));
+    const ui::SelectedFileInfo& file,
+    int index) {
+  Respond(WithArguments(file.path().LossyDisplayName()));
   Release();
 }
 
@@ -1871,8 +1933,6 @@ void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
   Respond(Error(kFileSelectionCanceled));
   Release();
 }
-
-DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {

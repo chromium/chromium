@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_PRESENTER_H_
 
 #import <UIKit/UIKit.h>
+
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 
 @protocol BubblePresenterDelegate;
@@ -13,6 +15,7 @@
 @class CommandDispatcher;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
+class OverlayPresenter;
 @class SceneState;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
@@ -55,6 +58,12 @@ class DeviceSwitcherResultDispatcher;
 @property(nonatomic, weak) UIViewController* rootViewController;
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 @property(nonatomic, weak) id<ToolbarCommands> toolbarCommandsHandler;
+
+// Overlay observers.
+@property(nonatomic, assign) raw_ptr<OverlayPresenter>
+    webContentOverlayPresenter;
+@property(nonatomic, assign) raw_ptr<OverlayPresenter> infobarBannerPresenter;
+@property(nonatomic, assign) raw_ptr<OverlayPresenter> infobarModalPresenter;
 
 // Stops this presenter.
 - (void)stop;

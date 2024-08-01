@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALL_COMMAND_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALL_COMMAND_HELPER_H_
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -44,6 +45,8 @@ class IwaSourceWithMode;
 class IwaSourceWithModeAndFileOp;
 class UnusableSwbnFileError;
 class WebAppDataRetriever;
+class WebAppRegistrar;
+
 // Copies the file being installed to the profile directory.
 // On success returns a new owned location in the callback.
 void UpdateBundlePathAndCreateStorageLocation(
@@ -57,6 +60,13 @@ void UpdateBundlePathAndCreateStorageLocation(
 void CleanupLocationIfOwned(const base::FilePath& profile_dir,
                             const IsolatedWebAppStorageLocation& location,
                             base::OnceClosure closure);
+
+// Gets a web app from `registrar` for the given `iwa_id` and validates that
+// it's a valid IWA (i.e. features `isolation_data`). Returns an error if
+// there's no web app or `isolation_data` is missing.
+base::expected<std::reference_wrapper<const WebApp>, std::string>
+GetIsolatedWebAppById(const WebAppRegistrar& registrar,
+                      const webapps::AppId& iwa_id);
 
 // This is a helper class that contains methods which are shared between both
 // install and update commands.

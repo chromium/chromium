@@ -92,9 +92,13 @@ void OAuth2MintAccessTokenFetcherAdapter::
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     const OAuth2MintTokenFlow::MintTokenResult& result) {
   std::string decrypted_token;
-  if (!token_decryptor_.is_null()) {
-    // Non-null decryptor indicates that the access token should be encrypted.
-    // TODO(b/353199749): rely on an explicit server indicator instead.
+  if (result.is_token_encrypted) {
+    if (token_decryptor_.is_null()) {
+      FireOnGetTokenFailure(
+          GoogleServiceAuthError::FromUnexpectedServiceResponse(
+              "Unexpectedly received an encrypted token"));
+      return;
+    }
     std::string decryption_result = token_decryptor_.Run(result.access_token);
     if (decryption_result.empty()) {
       FireOnGetTokenFailure(

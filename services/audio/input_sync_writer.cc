@@ -148,8 +148,12 @@ void InputSyncWriter::Write(const media::AudioBus* data,
                             bool key_pressed,
                             base::TimeTicks capture_time,
                             const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT1("audio", "InputSyncWriter::Write", "capture time (ms)",
-               (capture_time - base::TimeTicks()).InMillisecondsF());
+  TRACE_EVENT("audio", "InputSyncWriter::Write", "capture_time (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF());
+  glitch_info.MaybeAddTraceEvent();
+
   CheckTimeSinceLastWrite();
 
   pending_glitch_info_ += glitch_info;
@@ -268,8 +272,13 @@ bool InputSyncWriter::PushDataToFifo(
     bool key_pressed,
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT1("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
-               (capture_time - base::TimeTicks()).InMillisecondsF());
+  TRACE_EVENT("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF(),
+              "fifo delay (ms)",
+              (number_of_filled_segments_ + overflow_data_.size()) *
+                  dropped_buffer_glitch_.duration);
   if (overflow_data_.size() == kMaxOverflowBusesSize) {
     TRACE_EVENT_INSTANT0(
         "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data",
@@ -311,8 +320,15 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
   CHECK(number_of_filled_segments_ < audio_buses_.size());
-  TRACE_EVENT1("audio", "WriteDataToCurrentSegment", "capture time (ms)",
-               (capture_time - base::TimeTicks()).InMillisecondsF());
+
+  TRACE_EVENT("audio", "WriteDataToCurrentSegment", "glitches",
+              glitch_info.count, "glitch_duration (ms)",
+              glitch_info.duration.InMillisecondsF(), "capture_time (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF(),
+              "fifo delay (ms)",
+              number_of_filled_segments_ * dropped_buffer_glitch_.duration);
   media::AudioInputBuffer* buffer = GetSharedInputBuffer(current_segment_id_);
   buffer->params.volume = volume;
   buffer->params.size = audio_bus_memory_size_;

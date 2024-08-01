@@ -219,7 +219,7 @@ bool AutofillProfileSyncDifferenceTracker::
 
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!table_->GetAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable,
-                                   &entries)) {
+                                   entries)) {
     return false;
   }
 

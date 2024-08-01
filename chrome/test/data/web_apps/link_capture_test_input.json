@@ -1,258 +1,3075 @@
-{"expectations": [
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP SAME_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP SAME_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP SAME_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP SAME_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP SAME_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP SAME_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP SAME_BROWSER IN_IFRAME"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "APP", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_A->B", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "LINK", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "LEFT", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "SELF", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "BLANK", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"},
-{"start": "TAB", "scope": "A_TO_B->A", "element": "BTN", "click": "MIDDLE", "opener": "NO_OPENER", "target": "NO_FRAME", "expect": "TYPE_APP OTHER_BROWSER IN_MAIN"}
-]}
+{
+   "expectations": [ {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "LEFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "MIDDLE",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_A->B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "LINK",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "OPENER",
+      "scope": "A_TO_B->A",
+      "start": "TAB",
+      "target": "SELF"
+   } ]
+}

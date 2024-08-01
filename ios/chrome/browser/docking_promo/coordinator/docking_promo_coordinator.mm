@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -128,8 +128,8 @@
 
 #pragma mark - DockingPromoCommands
 
-- (void)showDockingPromo {
-  if (![self.mediator canShowDockingPromo] ||
+- (void)showDockingPromo:(BOOL)forced {
+  if ((!forced && ![self.mediator canShowDockingPromo]) ||
       [self.viewController isBeingPresented]) {
     return;
   }

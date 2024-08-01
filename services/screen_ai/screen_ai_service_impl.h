@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,7 +36,7 @@ class UkmRecorder;
 
 namespace screen_ai {
 
-class PreloadedModelData;
+class ModelDataHolder;
 
 // Uses a local machine intelligence library to augment the accessibility
 // tree. Functionalities include running OCR on images and extracting the main
@@ -102,6 +104,9 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
       InitializeOCRCallback callback) override;
 
+  // mojom::ScreenAIServiceFactory:
+  void ShutDownIfNoClients() override;
+
   // mojom::OCRService:
   void BindAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) override;
@@ -111,21 +116,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  void InitializeMainContentExtractionInternal(
-      mojo::PendingReceiver<mojom::MainContentExtractionService>
-          main_content_extractor_service_receiver,
-      InitializeMainContentExtractionCallback callback,
-      std::unique_ptr<PreloadedModelData> model_data);
-
-  void InitializeOCRInternal(
-      mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
-      InitializeOCRCallback callback,
-      std::unique_ptr<PreloadedModelData> model_data);
-
-  // Takes as input an AXTreeUpdate and references to an empty AXTree and
-  // vector of ints. Unseriazes |snapshot| into |tree|. Runs the libary
-  // ExtractMainContent function whose return value sets |content_node_ids|.
-  // If |content_node_ids| is empty; returns false; otherwise, returns true.
+  // Takes as input as `AXTreeUpdate` and references to an empty AXTree and
+  // vector of ints. Unserializes `snapshot` into `tree`. Runs the library
+  // `ExtractMainContent` function whose return value sets `content_node_ids`.
+  // If `content_node_ids` is empty; returns false; otherwise, returns true.
   bool ExtractMainContentInternal(
       const ui::AXTreeUpdate& snapshot,
       ui::AXTree& tree,
@@ -138,10 +132,25 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   void ReceiverDisconnected();
 
+  // Last time the feature is used. A null value means never, it is set when the
+  // feature is initialized, and each time it is used.
+  base::TimeTicks ocr_last_used_;
+  base::TimeTicks main_content_extraction_last_used_;
+
+  // Whether idle state for each feature is reported or not. Idle state is
+  // reported only once per feature during the lifetime of the service.
+  bool ocr_idle_reported_ = false;
+  bool main_content_extraction_idle_reported_ = false;
+
+  std::unique_ptr<base::RepeatingTimer> idle_checking_timer_;
+
   mojo::Receiver<mojom::ScreenAIServiceFactory> factory_receiver_;
   mojo::Receiver<mojom::OCRService> ocr_receiver_;
   mojo::Receiver<mojom::MainContentExtractionService>
       main_content_extraction_receiver_;
+
+  // Keeps handles for all model data files.
+  std::unique_ptr<ModelDataHolder> model_data_holder_;
 
   // Client type for each OCR receiver.
   std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;

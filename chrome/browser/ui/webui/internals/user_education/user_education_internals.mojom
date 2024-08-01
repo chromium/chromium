@@ -39,6 +39,34 @@ struct FeaturePromoDemoPageInfo {
   array<FeaturePromoDemoPageData> data;
 };
 
+// What's New Module data.
+struct WhatsNewModuleDemoPageInfo {
+  // The name of the module, to be presented to the user.
+  string display_title;
+  // The actual module name.
+  string module_name;
+  // Whether the module has an attached browser command.
+  bool has_browser_command;
+  // Whether the features associated with this module is enabled.
+  bool is_feature_enabled;
+  // The position of the modules in the enabled-queue.
+  int32 queue_position;
+};
+
+// What's New Edition data.
+struct WhatsNewEditionDemoPageInfo {
+  // The name of the edition, to be presented to the user.
+  string display_title;
+  // The actual edition name.
+  string edition_name;
+  // Whether the features associated with this edition is enabled.
+  bool is_feature_enabled;
+  // Whether this edition has been shown to the user.
+  bool has_been_used;
+  // The major version of chrome this edition was shown.
+  int32 version_used;
+};
+
 // Provides access to browser-side user education data for
 // chrome://internals/user-education
 interface UserEducationInternalsPageHandler {
@@ -72,7 +100,18 @@ interface UserEducationInternalsPageHandler {
   // Retrieves "New" Badge data.
   GetNewBadges() => (array<FeaturePromoDemoPageInfo> new_badges);
 
+  // Retrieves What's New module data.
+  GetWhatsNewModules() => (array<WhatsNewModuleDemoPageInfo> whats_new_modules);
+
+  // Retrieves What's New edition data.
+  GetWhatsNewEditions() =>
+    (array<WhatsNewEditionDemoPageInfo> whats_new_editions);
+
   // Clears "New" Badge data associated with a particular feature.
   // Returns an error message if the operation fails; empty string on success.
   ClearNewBadgeData(string feature_name) => (string error_message);
+
+  // Clears What's New data.
+  // Returns an error message if the operation fails; empty string on success.
+  ClearWhatsNewData() => (string error_message);
 };

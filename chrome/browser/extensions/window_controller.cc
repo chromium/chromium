@@ -45,11 +45,13 @@ WindowController::TypeFilter WindowController::GetFilterFromWindowTypes(
 WindowController::TypeFilter WindowController::GetFilterFromWindowTypesValues(
     const base::Value::List* types) {
   WindowController::TypeFilter filter = WindowController::kNoWindowFilter;
-  if (!types)
+  if (!types) {
     return filter;
+  }
   for (const base::Value& type : *types) {
-    if (!type.is_string())
+    if (!type.is_string()) {
       continue;
+    }
     filter |= 1 << base::to_underlying(
                   api::windows::ParseWindowType(type.GetString()));
   }

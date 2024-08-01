@@ -62,16 +62,17 @@
 
   <!-- VPN -->
   <template is="dom-if" if="[[showVpn_]]" restamp>
-    <network-config-input label="[[i18n('OncName')]]"
+    <network-config-input id="vpn-name-input" label="[[i18n('OncName')]]"
         value="{{configProperties_.name}}"
         readonly="[[hasGuid_(guid)]]">
     </network-config-input>
-    <network-config-select id="outer" label="[[i18n('OncVPN-Type')]]"
+    <network-config-select id="vpn-type-select" label="[[i18n('OncVPN-Type')]]"
         value="{{vpnType_}}" items="[[vpnTypeItems_]]"
         onc-prefix="VPN.Type" disabled="[[hasGuid_(guid)]]">
     </network-config-select>
     <template is="dom-if" if="[[!showVpn_.WireGuard]]">
-      <network-config-input label="[[i18n('OncVPN-Host')]]"
+      <network-config-input id="vpn-host-input"
+          label="[[i18n('OncVPN-Host')]]"
           value="{{configProperties_.typeConfig.vpn.host}}"
           property="[[managedProperties_.typeProperties.vpn.host]]">
       </network-config-input>
@@ -140,11 +141,13 @@
           property="[[managedProperties_.typeProperties.vpn.openVpn.username]]">
       </network-config-input>
       <network-password-input label="[[i18n('OncVPN-OpenVPN-Password')]]"
+          id="openvpn-password-input"
           value="{{configProperties_.typeConfig.vpn.openVpn.password}}"
           managed-properties="[[managedProperties_]]"
           property="[[managedProperties_.typeProperties.vpn.openVpn.password]]">
       </network-password-input>
       <network-config-input label="[[i18n('OncVPN-OpenVPN-OTP')]]"
+          id="openvpn-otp-input"
           value="{{configProperties_.typeConfig.vpn.openVpn.otp}}"
           property="[[managedProperties_.typeProperties.vpn.openVpn.otp]]">
       </network-config-input>
@@ -209,6 +212,7 @@
     </template>
     <template is="dom-if" if="[[!showVpn_.WireGuard]]">
       <network-config-toggle label="[[i18n('networkConfigSaveCredentials')]]"
+          id="vpn-save-credentials-toggle"
           checked="{{vpnSaveCredentials_}}"
           property="[[getManagedVpnSaveCredentials_(managedProperties_)]]">
       </network-config-toggle>

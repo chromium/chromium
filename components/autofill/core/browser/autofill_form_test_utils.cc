@@ -118,6 +118,12 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   if (fd.name) {
     ff.set_name(*fd.name);
   }
+  if (fd.name_attribute) {
+    ff.set_name_attribute(*fd.name_attribute);
+  }
+  if (fd.id_attribute) {
+    ff.set_id_attribute(*fd.id_attribute);
+  }
   if (fd.value) {
     ff.set_value(*fd.value);
   }

@@ -41,12 +41,23 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
                     const JavaParamRef<jstring>& group_id,
                     const JavaParamRef<jstring>& invitee_email,
                     const JavaParamRef<jobject>& j_callback);
+  void AddMember(JNIEnv* env,
+                 const JavaParamRef<jstring>& group_id,
+                 const JavaParamRef<jstring>& access_token,
+                 const JavaParamRef<jobject>& j_callback);
   void RemoveMember(JNIEnv* env,
                     const JavaParamRef<jstring>& group_id,
                     const JavaParamRef<jstring>& member_email,
                     const JavaParamRef<jobject>& j_callback);
   bool IsEmptyService(JNIEnv* env, const JavaParamRef<jobject>& j_caller);
   ScopedJavaLocalRef<jobject> GetNetworkLoader(JNIEnv* env);
+  ScopedJavaLocalRef<jobject> GetDataSharingURL(
+      JNIEnv* env,
+      const JavaParamRef<jstring>& group_id,
+      const JavaParamRef<jstring>& access_token);
+  ScopedJavaLocalRef<jobject> ParseDataSharingURL(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_url);
 
   // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();

@@ -120,6 +120,13 @@ extern const char kIOSDockingPromoOldUserInactiveThreshold[];
 // Feature flag to enable the Docking Promo.
 BASE_DECLARE_FEATURE(kIOSDockingPromo);
 
+// Feature flag to enable the Docking Promo feature exclusively for users who
+// first meet the promo's eligibility criteria.
+//
+// NOTE: This feature flag exists to improve metrics logging to better
+// understand the feature's impact on user engagement and conversion rates.
+BASE_DECLARE_FEATURE(kIOSDockingPromoForEligibleUsersOnly);
+
 // Killswitch to enable the fixed Docking Promo trigger logic.
 BASE_DECLARE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch);
 
@@ -134,8 +141,12 @@ enum class DockingPromoDisplayTriggerArm {
   kDuringFRE = 2,
 };
 
-// Helper function to check if kIOSDockingPromo is enabled.
+// Helper function to check if `kIOSDockingPromo` is enabled.
 bool IsDockingPromoEnabled();
+
+// Helper function to check if `kIOSDockingPromoForEligibleUsersOnly` is
+// enabled.
+bool IsDockingPromoForEligibleUsersOnlyEnabled();
 
 // Returns the experiment type for the Docking Promo feature.
 DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled();
@@ -588,6 +599,9 @@ extern const char kTR15SeeMoreButtonParam[];
 // Feature that enables tab resumption 2.0.
 BASE_DECLARE_FEATURE(kTabResumption2);
 
+// The parameter to enable Tab resumption 2 bubble.
+extern const char kTabResumption2BubbleParam[];
+
 // A parameter to indicate whether the Most Visited Tiles should be in the Magic
 // Stack.
 extern const char kMagicStackMostVisitedModuleParam[];
@@ -625,6 +639,9 @@ bool IsTabResumptionEnabled();
 // Whether the tab resumption feature is enabled in 2.0 version. Implies
 // `IsTabResumptionEnabled`.
 bool IsTabResumption2_0Enabled();
+
+// Whether to show the reason bubble for Tab resumption.
+bool IsTabResumption2BubbleEnabled();
 
 // Whether the tab resumption feature is enabled for most recent tab only.
 bool IsTabResumptionEnabledForMostRecentTabOnly();
@@ -748,5 +765,19 @@ bool IsHomeMemoryImprovementsEnabled();
 BASE_DECLARE_FEATURE(kRichBubbleWithoutImage);
 
 bool IsRichBubbleWithoutImageEnabled();
+
+// Feature flag to enable account confirmation snackbar on startup.
+BASE_DECLARE_FEATURE(kIdentityConfirmationSnackbar);
+
+// Feature param to specify how much time between identity confirmation snackbar
+// triggers to avoid over-prompting. Overridable through Finch.
+extern const base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval;
+
+// Feature param to specify how much time to keep between the identity
+// confirmation snackbar and the last sign-in to avoid over-prompting.
+// Overridable through Finch.
+extern const base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinTimeSinceSignin;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

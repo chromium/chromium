@@ -888,16 +888,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.FocusToEditTime" units="ms" expires_after="2022-06-30">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The length of time between when a user focused on the omnibox and first
-    modifies the omnibox.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.FocusToOpenTimeAnyPopupState3" units="ms"
     expires_after="2025-01-05">
   <owner>jdonnelly@chromium.org</owner>
@@ -1001,18 +991,6 @@ chromium-metrics-reviews@google.com.
     Context: Fuzzy match conversion produces modified matches from other
     synchronous autocomplete providers (sub-providers) using alternative inputs:
     what the user might have typed, the automatic corrections.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.HoverTime" units="ms" expires_after="2021-10-31">
-  <owner>estark@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <summary>
-    The time duration that the user hovers the mouse over the omnibox before
-    exiting the hover or focusing the omnibox. Whenever the user's mouse enters
-    the omnibox, this histogram is recorded when the mouse next exits or the
-    omnibox is focused, whichever comes first. The recorded value is a delta
-    from a timestamp noted when the user's mouse first entered the omnibox.
   </summary>
 </histogram>
 
@@ -1328,26 +1306,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.OnDeviceHeadSuggest.AsyncQueryTime" units="ms"
-    expires_after="2021-12-12">
-  <owner>cch@chromium.org</owner>
-  <owner>suggest-2g@google.com</owner>
-  <summary>
-    Time it takes for omnibox on device head provider to fulfill the
-    asynchronous suggest request.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.OnDeviceHeadSuggest.ResultCount" units="count"
-    expires_after="2021-12-12">
-  <owner>cch@chromium.org</owner>
-  <owner>suggest-2g@google.com</owner>
-  <summary>
-    The number of results returned by the on device head model which matches the
-    user input. Note all numbers greater than 5 are recorded in bucket 5.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.PaintTime" units="ms" expires_after="2025-01-05">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -1657,7 +1615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SearchSuggest.Requests"
-    enum="SearchSuggestRequestEvent" expires_after="2024-11-17">
+    enum="SearchSuggestRequestEvent" expires_after="2025-01-26">
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>cch@chromium.org</owner>
@@ -2015,7 +1973,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.Experimental.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2024-11-24">
+    units="ms" expires_after="2025-01-26">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2250,20 +2208,6 @@ chromium-metrics-reviews@google.com.
     Recorded once per unexpanded parameter for every TemplateUrl expansion.
     Values reported by this histogram should be zero for mobile devices,
     possibly also for Desktop and ChromeOS (unconfirmed).
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.TimeSpentBeforeDismissLens" units="ms"
-    expires_after="2022-06-26">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Logs the elapsed time between the time when user enters the Google Lens and
-    the time when user dismisses Lens and returns to Chrome. Only logged on
-    Android.
   </summary>
 </histogram>
 

@@ -31,6 +31,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositingLimitToUi);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassDrawnRect);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseFrameIntervalDecider);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVideoDetectorIgnoreNonVideos);
@@ -43,6 +44,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseRealBuffersForPageFlipTest);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSkiaOutputDeviceBufferQueue);
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcLogCapturePipeline);
+#if BUILDFLAG(IS_WIN)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSetPresentDuration);
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkanIntermediateBuffer);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
@@ -105,6 +109,7 @@ VIZ_COMMON_EXPORT extern const char kPredictorLinear2[];
 VIZ_COMMON_EXPORT extern const char kPredictorLsq[];
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawImmediatelyWhenInteractive);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAckOnSurfaceActivationWhenInteractive);
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSnapshotEvictedRootSurface);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
@@ -118,6 +123,9 @@ VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
+#if BUILDFLAG(IS_WIN)
+VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT std::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool UseWebViewNewInvalidateHeuristic();
@@ -134,6 +142,11 @@ VIZ_COMMON_EXPORT bool IsCVDisplayLinkBeginFrameSourceEnabled();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
 VIZ_COMMON_EXPORT int NumPendingFrameSupported();
 VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
+VIZ_COMMON_EXPORT std::optional<uint64_t>
+NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
+    kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction;
+VIZ_COMMON_EXPORT bool ShouldAckOnSurfaceActivationWhenInteractive();
 
 }  // namespace features
 

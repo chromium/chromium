@@ -26,19 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AutomaticLazyFrameLoadReason">
-  <int value="0" label="Not eligible"/>
-  <int value="1" label="Eligible for LazyEmbeds"/>
-  <int value="2" label="Eligible for LazyAds"/>
-  <int value="3" label="Eligible for both"/>
-</enum>
-
-<enum name="AutomaticLazyLoadFrameState">
-  <int value="0" label="Feature is not enabled"/>
-  <int value="1" label="Target frames not found"/>
-  <int value="2" label="Target frames found"/>
-</enum>
-
 <enum name="AVIFCleanApertureType">
   <int value="0" label="kInvalid"/>
   <int value="1" label="kNonzeroOrigin"/>
@@ -243,6 +230,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Cancel button clicked"/>
   <int value="2" label="Use other account button clicked"/>
   <int value="3" label="Tab or window is closed or refreshed"/>
+  <int value="4" label="Bottom sheet swiped down on Android"/>
+  <int value="5" label="Bottom sheet swiped back on Android"/>
+  <int value="6" label="Tap scrim on Android"/>
 </enum>
 
 <enum name="FedCmAccountsResponseInvalidReason">
@@ -272,6 +262,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="FailedPathButPassedOrigin"/>
   <int value="2" label="FailedOrigin"/>
+</enum>
+
+<enum name="FedCmDialogType">
+  <int value="0" label="None"/>
+  <int value="1" label="SelectAccount"/>
+  <int value="2" label="AutoReauth"/>
+  <int value="3" label="ConfirmIdpLogin"/>
+  <int value="4" label="Error"/>
+  <int value="5" label="LoginToIdpPopup"/>
+  <int value="6" label="ContinueOnPopup"/>
+  <int value="7" label="ErrorUrlPopup"/>
 </enum>
 
 <enum name="FedCmIdpSigninMatchStatus">

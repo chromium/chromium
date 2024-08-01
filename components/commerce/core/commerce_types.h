@@ -26,7 +26,8 @@ namespace commerce {
 enum class DiscountClusterType {
   kUnspecified = 0,
   kOfferLevel = 1,
-  kMaxValue = kOfferLevel,
+  kPageLevel = 2,
+  kMaxValue = kPageLevel,
 };
 
 // Discount types.

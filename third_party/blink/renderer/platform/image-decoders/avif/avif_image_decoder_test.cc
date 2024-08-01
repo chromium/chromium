@@ -1060,9 +1060,7 @@ TEST(StaticAVIFTests, GetAdobeGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
-TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
+TEST(StaticAVIFTests, GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1109,6 +1107,8 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
   EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(1.4427), kEpsilon);
 
+  EXPECT_EQ(gainmap_info.fBaseImageType, SkGainmapInfo::BaseImageType::kSDR);
+
   EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
 
   // Check that the gainmap can be decoded.
@@ -1118,9 +1118,7 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
-TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
+TEST(StaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1128,7 +1126,7 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
       /*disabled_features=*/{});
 
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
-      "/images/resources/avif/small-with-gainmap-iso-hdrbase-forward.avif");
+      "/images/resources/avif/small-with-gainmap-iso-hdrbase.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
   SkGainmapInfo gainmap_info;
@@ -1139,14 +1137,14 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
 
   // Check gainmap metadata.
   constexpr double kEpsilon = 0.00001;
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[0], std::exp2(-1.536), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[1], std::exp2(-1.488), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[2], std::exp2(-1.548), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[0], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[1], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[2], 1.0, kEpsilon);
   EXPECT_NEAR(gainmap_info.fGainmapRatioMin[3], 1.0, kEpsilon);
 
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[0], std::exp2(0.372), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[1], std::exp2(0.396), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[2], std::exp2(0.444), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[0], std::exp2(1.4427), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[1], std::exp2(1.4427), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[2], std::exp2(1.4427), kEpsilon);
   EXPECT_NEAR(gainmap_info.fGainmapRatioMax[3], 1.0, kEpsilon);
 
   EXPECT_NEAR(gainmap_info.fGainmapGamma[0], 1.0, kEpsilon);
@@ -1165,7 +1163,9 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_NEAR(gainmap_info.fEpsilonHdr[3], 1.0, kEpsilon);
 
   EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(2.0), kEpsilon);
+  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(1.4427), kEpsilon);
+
+  EXPECT_EQ(gainmap_info.fBaseImageType, SkGainmapInfo::BaseImageType::kHDR);
 
   // Check that the gainmap can be decoded.
   std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
@@ -1174,9 +1174,7 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
-TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceSameICC) {
+TEST(StaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1209,9 +1207,7 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
   }
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
-TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
+TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1242,9 +1238,7 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
   ExpectMatrixNear(matrix, SkNamedGamut::kDisplayP3, 0.001);
 }
 
-// TODO(b/338342146): Re-enable this test once libavif and the test images are
-// updated to the ISO specification.
-TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentCICP) {
+TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,

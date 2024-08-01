@@ -386,19 +386,45 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
                                    ? pps->scaling_list_data
                                    : sps->scaling_list_data;
 
-    memcpy(v4l2_scaling_matrix.scaling_list_4x4, scaling_list.scaling_list_4x4,
-           sizeof(v4l2_scaling_matrix.scaling_list_4x4));
-    memcpy(v4l2_scaling_matrix.scaling_list_8x8, scaling_list.scaling_list_8x8,
-           sizeof(v4l2_scaling_matrix.scaling_list_8x8));
-    memcpy(v4l2_scaling_matrix.scaling_list_16x16,
-           scaling_list.scaling_list_16x16,
-           sizeof(v4l2_scaling_matrix.scaling_list_16x16));
-    memcpy(v4l2_scaling_matrix.scaling_list_32x32[0],
-           scaling_list.scaling_list_32x32[0],
-           sizeof(v4l2_scaling_matrix.scaling_list_32x32[0]));
-    memcpy(v4l2_scaling_matrix.scaling_list_32x32[1],
-           scaling_list.scaling_list_32x32[3],
-           sizeof(v4l2_scaling_matrix.scaling_list_32x32[1]));
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId0Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_4x4[i][j] =
+            scaling_list.GetScalingList4x4EntryInRasterOrder(/*matrix_id=*/i,
+                                                             /*raster_idx=*/j);
+      }
+    }
+
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_8x8[i][j] =
+            scaling_list.GetScalingList8x8EntryInRasterOrder(/*matrix_id=*/i,
+                                                             /*raster_idx=*/j);
+      }
+    }
+
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_16x16[i][j] =
+            scaling_list.GetScalingList16x16EntryInRasterOrder(
+                /*matrix_id=*/i,
+                /*raster_idx=*/j);
+      }
+    }
+
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices;
+         i += 3) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_32x32[i / 3][j] =
+            scaling_list.GetScalingList32x32EntryInRasterOrder(
+                /*matrix_id=*/i,
+                /*raster_idx=*/j);
+      }
+    }
+
     memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
            scaling_list.scaling_list_dc_coef_16x16,
            sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));

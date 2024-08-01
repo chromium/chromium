@@ -345,9 +345,7 @@ std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
 class StableVideoDecoderServiceTest : public testing::Test {
  public:
   StableVideoDecoderServiceTest()
-      : stable_video_decoder_factory_service_(
-            gpu::GpuFeatureInfo(),
-            /*enable_direct_video_decoder=*/true) {
+      : stable_video_decoder_factory_service_(gpu::GpuFeatureInfo()) {
     stable_video_decoder_factory_service_
         .SetVideoDecoderCreationCallbackForTesting(
             video_decoder_creation_cb_.Get());

@@ -43,7 +43,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   static constexpr int kElementBorderPadding = 1;
 
   // Default list of the preferred popup sides adjacent to the target element.
-  // The sides are tried one-by-one until a side with enough space is found.
   static constexpr std::array<views::BubbleArrowSide, 4>
       kDefaultPreferredPopupSides = {
           views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
@@ -68,8 +67,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
                 views::Widget* parent_widget,
                 views::Widget::InitParams::Activatable new_widget_activatable =
                     views::Widget::InitParams::Activatable::kDefault,
-                base::span<const views::BubbleArrowSide> preferred_popup_sides =
-                    kDefaultPreferredPopupSides,
                 bool show_arrow_pointer = true);
   ~PopupBaseView() override;
 
@@ -95,13 +92,17 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // testing).
   virtual bool DoUpdateBoundsAndRedrawPopup();
 
-  // Returns the optimal bounds to place the popup with |preferred_size| and
-  // places an arrow on the popup border to point towards |element_bounds|
-  // within |max_bounds_for_popup|.
-  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+  // Returns the optimal bounds to place the popup with `preferred_size` and
+  // places an arrow on the popup border to point towards `element_bounds`
+  // within `max_bounds_for_popup`. The `preferred_popup_sides` are tried
+  // one-by-one until a side with enough space is found.
+  // TODO(crbug.com/324242001): Rename to
+  // GetOptimalPositionAndPlaceArrowOnPopup().
+  virtual gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
-      const gfx::Size& preferred_size);
+      const gfx::Size& preferred_size,
+      base::span<const views::BubbleArrowSide> preferred_popup_sides);
 
  private:
   friend class PopupBaseViewBrowsertest;
@@ -142,8 +143,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // The corresponding parameter for newly created widget (in `DoShow()`).
   const views::Widget::InitParams::Activatable new_widget_activatable_;
-
-  const std::vector<views::BubbleArrowSide> preferred_popup_sides_;
 
   const bool show_arrow_pointer_;
 

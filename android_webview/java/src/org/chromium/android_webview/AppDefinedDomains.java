@@ -286,6 +286,9 @@ public class AppDefinedDomains {
         } catch (NameNotFoundException e) {
             return new ArrayList<>();
         }
+        if (userState == null) {
+          return new ArrayList<>();
+        }
         Map<String, Integer> hostToStateMap = userState.getHostToStateMap();
         if (needsVerification) {
             hostToStateMap

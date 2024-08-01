@@ -545,6 +545,10 @@ BOOL AreCredentialsAtIndicesConnected(
   [self.contentInjector autofillFormWithSuggestion:formSuggestion];
 }
 
+- (BOOL)isActiveFormAPasswordForm {
+  return [self.contentInjector isActiveFormAPasswordForm];
+}
+
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL

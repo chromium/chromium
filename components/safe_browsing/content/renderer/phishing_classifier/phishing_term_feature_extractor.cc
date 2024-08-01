@@ -148,7 +148,7 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
     if (state_->iterator->IsWord()) {
       const size_t start = state_->iterator->prev();
       const size_t length = state_->iterator->pos() - start;
-      HandleWord(std::u16string_view(page_text_->data() + start, length));
+      HandleWord(std::u16string_view(*page_text_).substr(start, length));
       ++num_words;
     }
 

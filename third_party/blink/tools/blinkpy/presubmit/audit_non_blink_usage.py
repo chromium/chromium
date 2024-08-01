@@ -2172,6 +2172,14 @@ _CONFIG = [
             'url::Origin',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h',
+        ],
+        'allowed': [
+            'gpu::SharedImageInterface',
+        ]
+    },
 ]
 
 

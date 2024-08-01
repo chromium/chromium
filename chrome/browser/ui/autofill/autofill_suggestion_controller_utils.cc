@@ -75,6 +75,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillExistingPlusAddress:

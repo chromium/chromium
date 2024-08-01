@@ -228,9 +228,8 @@ class IndexedDBTest
     : public testing::Test,
       // The first boolean toggles the Storage Partitioning feature. The second
       // boolean controls the type of StorageKey to run the test on (first or
-      // third party). The third boolean controls whether to enable backing
-      // store sharding.
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      // third party).
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   blink::StorageKey kNormalFirstPartyStorageKey;
   BucketLocator kNormalFirstPartyBucketLocator;
@@ -272,8 +271,7 @@ class IndexedDBTest
             base::SequencedTaskRunner::GetCurrentDefault())) {
     scoped_feature_list_.InitWithFeatureStates(
         {{net::features::kThirdPartyStoragePartitioning,
-          IsThirdPartyStoragePartitioningEnabled()},
-         {features::kIndexedDBShardBackingStores, BackingStoresSharded()}});
+          IsThirdPartyStoragePartitioningEnabled()}});
 
     kNormalFirstPartyStorageKey =
         blink::StorageKey::CreateFromStringForTesting("http://normal.com/");
@@ -406,8 +404,6 @@ class IndexedDBTest
   bool IsThirdPartyStoragePartitioningEnabled() {
     return std::get<0>(GetParam());
   }
-
-  bool BackingStoresSharded() { return std::get<2>(GetParam()); }
 
   bool DeleteBucket(const storage::BucketInfo* bucket_info) {
     base::test::TestFuture<blink::mojom::QuotaStatusCode> result_code;
@@ -571,13 +567,10 @@ INSTANTIATE_TEST_SUITE_P(
     IndexedDBTest,
     testing::Combine(
         /*enable third party storage partitioning*/ testing::Bool(),
-        testing::Values(true),
-        /*enable backing store sharding*/ testing::Bool()),
+        testing::Values(true)),
     [](const testing::TestParamInfo<IndexedDBTest::ParamType>& info) {
       std::string name = std::get<0>(info.param) ? "WithStoragePartitioning_"
                                                  : "NoStoragePartitioning_";
-      name += std::get<2>(info.param) ? "WithBackingStoredSharding"
-                                      : "NoBackingStoreSharding";
       return name;
     });
 
@@ -1507,8 +1500,7 @@ INSTANTIATE_TEST_SUITE_P(
     IndexedDBTestFirstOrThirdParty,
     testing::Combine(
         /*enable third party storage partitioning*/ testing::Bool(),
-        /*test with third party storage key*/ testing::Bool(),
-        /*enable backing store sharding*/ testing::Bool()));
+        /*test with third party storage key*/ testing::Bool()));
 
 // Verifies that the IDB connection is force closed and the directory is deleted
 // when the bucket is deleted.

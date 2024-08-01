@@ -555,7 +555,11 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   StaticDeps().InitializeNetworkThread();
   StaticDeps().InitializeSignalingThread();
 
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
+// should be detangled such that software decoding can be enabled without
+// software encoding.
+#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
+    BUILDFLAG(ENABLE_OPENH264)
   // Building /w |rtc_use_h264|, is the corresponding run-time feature enabled?
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
@@ -564,7 +568,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   }
 #else
   webrtc::DisableRtcUseH264();
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
+        // BUILDFLAG(ENABLE_OPENH264)
 
   EnsureWebRtcAudioDeviceImpl();
 

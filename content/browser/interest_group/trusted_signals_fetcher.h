@@ -63,6 +63,34 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     base::Value::Dict additional_params;
   };
 
+  // All the data needed to request a particular scoring signals partition.
+  //
+  // TODO(https://crbug.com/333445540): Consider making some of these fields
+  // pointers to reduce copies. Since tests use this class to store arguments,
+  // would need to rework that as well.
+  struct CONTENT_EXPORT ScoringPartition {
+    ScoringPartition();
+    ScoringPartition(ScoringPartition&&);
+
+    ~ScoringPartition();
+
+    ScoringPartition& operator=(ScoringPartition&&);
+
+    int partition_id;
+
+    // Currently, TrustedSignalsCacheImpl puts the values from each bid in its
+    // own partition, so there will always be only one `render_url`.
+    GURL render_url;
+
+    std::set<GURL> component_render_urls;
+    std::string hostname;
+
+    // At the moment, valid keys are "experimentGroupId", "slotSize", and
+    // "allSlotsRequestedSizes". We could take them separately, but seems better
+    // to take one field rather than several?
+    base::Value::Dict additional_params;
+  };
+
   // While buying and scoring signals partitions need different structs when
   // sending requests, the responses use the same format.
 
@@ -116,6 +144,13 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   virtual void FetchBiddingSignals(
       const GURL& trusted_bidding_signals_url,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
+      Callback callback);
+
+  // `partitions` is a map of all partitions in the request, indexed by
+  // compression group id. Virtual for tests.
+  virtual void FetchScoringSignals(
+      const GURL& trusted_scoring_signals_url,
+      const std::map<int, std::vector<ScoringPartition>>& compression_groups,
       Callback callback);
 
  private:

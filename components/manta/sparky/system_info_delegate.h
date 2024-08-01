@@ -13,13 +13,13 @@
 
 namespace manta {
 
-enum class Diagnostics { kBattery, kCpu, kStorage, kMemory };
+enum class Diagnostics { kBattery = 0, kCpu = 1, kStorage = 2, kMemory = 3 };
 
 struct COMPONENT_EXPORT(MANTA) StorageData {
-  std::string in_use_bytes;
+  std::string free_bytes;
   std::string total_bytes;
 
-  StorageData(const std::string& in_use_bytes, const std::string& total_bytes);
+  StorageData(const std::string& free_bytes, const std::string& total_bytes);
   ~StorageData();
 
   StorageData(const StorageData&);
@@ -73,10 +73,12 @@ struct COMPONENT_EXPORT(MANTA) DiagnosticsData {
   std::optional<BatteryData> battery_data;
   std::optional<CpuData> cpu_data;
   std::optional<MemoryData> memory_data;
+  std::optional<StorageData> storage_data;
 
   DiagnosticsData(std::optional<BatteryData> battery_data,
                   std::optional<CpuData> cpu_data,
-                  std::optional<MemoryData> memory_data);
+                  std::optional<MemoryData> memory_data,
+                  std::optional<StorageData> storage_data);
 
   ~DiagnosticsData();
 

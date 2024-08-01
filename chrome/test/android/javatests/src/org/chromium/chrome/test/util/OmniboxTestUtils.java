@@ -695,7 +695,8 @@ public class OmniboxTestUtils {
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
                     conn.setComposingRegion(composingRegionStart, composingRegionEnd);
-                    conn.setComposingText(composingText, /* newCursorPosition= */ 0);
+                    conn.setComposingText(
+                            composingText, /* newCursorPosition= */ composingText.length());
                 });
     }
 

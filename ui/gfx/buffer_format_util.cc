@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/buffer_format_util.h"
 
 #include "base/check_op.h"
@@ -362,26 +367,6 @@ const char* BufferFormatToString(BufferFormat format) {
   NOTREACHED_IN_MIGRATION()
       << "Invalid BufferFormat: " << base::to_underlying(format);
   return "Invalid Format";
-}
-
-const char* BufferPlaneToString(BufferPlane format) {
-  switch (format) {
-    case BufferPlane::DEFAULT:
-      return "DEFAULT";
-    case BufferPlane::Y:
-      return "Y";
-    case BufferPlane::UV:
-      return "UV";
-    case BufferPlane::U:
-      return "U";
-    case BufferPlane::V:
-      return "V";
-    case BufferPlane::A:
-      return "A";
-  }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid BufferPlane: " << base::to_underlying(format);
-  return "Invalid Plane";
 }
 
 bool IsOddHeightMultiPlanarBuffersAllowed() {

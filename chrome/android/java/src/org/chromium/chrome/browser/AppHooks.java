@@ -6,6 +6,9 @@ package org.chromium.chrome.browser;
 
 import androidx.annotation.Nullable;
 
+import android.content.Context;
+import android.view.View;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -25,6 +28,7 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
+import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
@@ -193,6 +197,11 @@ public abstract class AppHooks {
     }
 
     public void registerProtoExtensions() {}
+
+    /** Returns the view of the line chart given the price insights info.  */
+    public View getLineChartForPriceInsightsInfo(Context context, PriceInsightsInfo info) {
+        return null;
+    }
 
     // Stop! Do not add new methods to AppHooks anymore. Follow go/apphooks-migration instead.
 }

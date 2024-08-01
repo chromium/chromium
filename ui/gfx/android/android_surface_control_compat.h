@@ -47,7 +47,7 @@ class GFX_EXPORT SurfaceControl {
   static bool ColorSpaceToADataSpace(
       const gfx::ColorSpace& color_space,
       float desired_brightness_ratio,
-      uint64_t& out_dataspace,
+      ADataSpace& out_dataspace,
       float& out_extended_range_brightness_ratio);
 
   // Returns the usage flags required for using an AHardwareBuffer with the

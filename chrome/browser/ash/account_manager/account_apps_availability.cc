@@ -143,7 +143,8 @@ void RemoveAccountFromPrefs(PrefService* prefs, const std::string& gaia_id) {
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
   const bool success = update->Remove(gaia_id);
-  DCHECK(success);
+  if (!success)
+    LOG(ERROR) << "Account apps availability pref not found";
 }
 
 void AddAccountToPrefs(PrefService* prefs,

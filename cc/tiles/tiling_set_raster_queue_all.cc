@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/tiles/tiling_set_raster_queue_all.h"
 
 #include <stddef.h>
@@ -30,9 +35,10 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
       is_drawing_layer_(is_drawing_layer) {
   DCHECK(tiling_set_);
 
-  // Early out if the tiling set has no tilings.
-  if (!tiling_set_->num_tilings())
+  // Early out if the tiling set has no tiles needing raster.
+  if (tiling_set_->all_tiles_done()) {
     return;
+  }
 
   const PictureLayerTilingClient* client = tiling_set->client();
   WhichTree tree = tiling_set->tree();

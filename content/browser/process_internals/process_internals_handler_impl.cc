@@ -219,6 +219,23 @@ void ProcessInternalsHandlerImpl::GetIsolationMode(
                                         : base::JoinString(modes, ", "));
 }
 
+void ProcessInternalsHandlerImpl::GetProcessPerSiteMode(
+    GetProcessPerSiteModeCallback callback) {
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldAllowProcessPerSiteForMultipleMainFrames(browser_context_)) {
+    std::move(callback).Run("off (ContentClient policy)");
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kProcessPerSiteUpToMainFrameThreshold)) {
+    std::move(callback).Run("off (feature setting)");
+    return;
+  }
+  std::move(callback).Run(base::StringPrintf(
+      "on (limit %d)", features::kProcessPerSiteMainFrameThreshold.Get()));
+}
+
 void ProcessInternalsHandlerImpl::GetUserTriggeredIsolatedOrigins(
     GetUserTriggeredIsolatedOriginsCallback callback) {
   // Retrieve serialized user-triggered isolated origins for the current

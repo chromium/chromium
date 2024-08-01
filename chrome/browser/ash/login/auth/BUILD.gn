@@ -16,6 +16,7 @@ static_library("auth") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/login/osauth",
     "//chromeos/ash/components/early_prefs:reader",
     "//chromeos/ash/components/login/auth",
@@ -30,6 +31,7 @@ static_library("auth") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/login",
     "//chrome/browser/ash/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/userdataauth",

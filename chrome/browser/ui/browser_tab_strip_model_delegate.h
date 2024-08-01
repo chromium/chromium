@@ -66,10 +66,9 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanGoBack(content::WebContents* web_contents) override;
   bool IsNormalWindow() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  bool ConfirmDestroyingGroups(
-      const std::vector<tab_groups::TabGroupId>& group_ids,
-      base::OnceCallback<void()> callback) override;
-  bool ConfirmRemovingAllTabsFromGroups(
+  void OnGroupsDestruction(const std::vector<tab_groups::TabGroupId>& group_ids,
+                           base::OnceCallback<void()> callback) override;
+  void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) override;
 

@@ -31,4 +31,18 @@ public interface BackActionDelegate {
 
     /** Performs an action upon back gesture. */
     void onBackGesture();
+
+    /**
+     * Called when user performs a gesture but nothing is expected to occur, like trying to forward
+     * a page which has empty forward history stack.
+     */
+    default void onGestureUnhandled() {}
+
+    /**
+     * Called when user is performing a gesture and then an action is waiting to occur later, like
+     * the user is swiping and the page is expected to be navigated back if the gesture is finished.
+     * This function does not guarantee the action will occur since the user might cancel the action
+     * right after this method is called.
+     */
+    default void onGestureHandled() {}
 }

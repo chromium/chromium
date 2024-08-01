@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"

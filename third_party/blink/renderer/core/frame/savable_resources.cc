@@ -24,10 +24,8 @@ namespace {
 // Returns |true| if |frame| contains (or should be assumed to contain)
 // a html document.
 bool DoesFrameContainHtmlDocument(Frame* frame, Element* element) {
-  if (frame->IsLocalFrame()) {
-    Document* document = LocalFrame::FromFrameToken(
-                             frame->GetFrameToken().GetAs<LocalFrameToken>())
-                             ->GetDocument();
+  if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+    Document* document = local_frame->GetDocument();
     return document->IsHTMLDocument() || document->IsXHTMLDocument();
   }
 

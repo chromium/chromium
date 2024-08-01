@@ -26,7 +26,7 @@ suite('find-shortcut', () => {
   }
 
   function pressSlash() {
-    pressAndReleaseKeyOn(document.documentElement, 191, undefined, '/');
+    pressAndReleaseKeyOn(document.documentElement, 191, [], '/');
   }
 
   /**

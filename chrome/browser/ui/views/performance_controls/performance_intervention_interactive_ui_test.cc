@@ -665,7 +665,8 @@ class PerformanceInterventionNonUiMetricsTest
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceIntervention}, {});
+        {performance_manager::features::kPerformanceIntervention},
+        {performance_manager::features::kPerformanceInterventionUI});
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -673,6 +674,8 @@ class PerformanceInterventionNonUiMetricsTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/355466439): Fix test to work with UI after performance
+// intervention rolls out.
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionNonUiMetricsTest,
                        TriggerMetricsRecorded) {
   base::HistogramTester histogram_tester;

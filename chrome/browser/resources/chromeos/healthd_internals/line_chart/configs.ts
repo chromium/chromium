@@ -6,17 +6,17 @@
  * The default scale of the line chart. The scale means how many milliseconds
  * per pixel.
  */
-export const DEFAULT_SCALE: number = 100;
+export const DEFAULT_TIME_SCALE: number = 100;
 
 /**
  * The minimum scale of the line chart.
  */
-export const MIN_SCALE: number = 10;
+export const MIN_TIME_SCALE: number = 5;
 
 /**
  * The maximum scale of the line chart.
  */
-export const MAX_SCALE: number = 1000 * 60 * 3;
+export const MAX_TIME_SCALE: number = 1000 * 60 * 3;
 
 /**
  * How far does the mouse wheeling to be counted as 1 unit.
@@ -46,7 +46,7 @@ export const DRAG_RATE: number = 3;
 
 /**
  * The sample rate of the line chart, in pixels. To reduce the cpu usage, we
- * only draw data points at the position which are exact multiple of this value.
+ * only draw one data point per `SAMPLE_RATE` pixel.
  */
 export const SAMPLE_RATE: number = 15;
 

@@ -4,11 +4,16 @@
 
 #include "net/http/http_stream_pool_group.h"
 
+#include "net/base/completion_once_callback.h"
+#include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_basic_stream.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/log/net_log_event_type.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
 
@@ -51,45 +56,88 @@ HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
 
 HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 
-HttpStreamPool::Group::Group(HttpStreamPool* pool, HttpStreamKey stream_key)
-    : pool_(pool), stream_key_(std::move(stream_key)) {}
+HttpStreamPool::Group::Group(HttpStreamPool* pool,
+                             HttpStreamKey stream_key,
+                             SpdySessionKey spdy_session_key)
+    : pool_(pool),
+      stream_key_(std::move(stream_key)),
+      spdy_session_key_(std::move(spdy_session_key)),
+      net_log_(
+          NetLogWithSource::Make(http_network_session()->net_log(),
+                                 NetLogSourceType::HTTP_STREAM_POOL_GROUP)) {
+  net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE, [&] {
+    base::Value::Dict dict;
+    dict.Set("stream_key", stream_key_.ToValue());
+    return dict;
+  });
+}
 
 HttpStreamPool::Group::~Group() {
   // TODO(crbug.com/346835898): Ensure `pool_`'s total active stream counts
   // are consistent.
+  net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE);
 }
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
-  if (!in_flight_job_) {
-    in_flight_job_ = std::make_unique<Job>(this, net_log.net_log());
-  }
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_STREAM, [&] {
+        base::Value::Dict dict;
+        dict.Set("priority", priority);
+        base::Value::List allowed_bad_certs_list;
+        for (const auto& cert_and_status : allowed_bad_certs) {
+          allowed_bad_certs_list.Append(
+              cert_and_status.cert->subject().GetDisplayName());
+        }
+        dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
+        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling);
+        net_log.source().AddToEventParameters(dict);
+        return dict;
+      });
+  net_log.AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_BOUND, net_log_.source());
 
+  EnsureInFlightJob();
   return in_flight_job_->RequestStream(delegate, priority, allowed_bad_certs,
-                                       net_log);
+                                       enable_ip_based_pooling, net_log);
 }
 
-std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
-    std::unique_ptr<StreamSocket> socket) {
-  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
+int HttpStreamPool::Group::Preconnect(size_t num_streams,
+                                      CompletionOnceCallback callback) {
+  EnsureInFlightJob();
+  return in_flight_job_->Preconnect(num_streams, std::move(callback));
+}
+
+std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
+    std::unique_ptr<StreamSocket> socket,
+    LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
-  auto stream_handle = std::make_unique<HttpStreamPoolHandle>(
-      this, std::move(socket), generation_);
-  return std::make_unique<HttpBasicStream>(std::move(stream_handle),
-                                           /*is_for_get_to_http_proxy=*/false);
+  auto handle = std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
+                                                       generation_);
+  handle->set_connect_timing(connect_timing);
+  return handle;
+}
+
+std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
+    std::unique_ptr<StreamSocket> socket,
+    LoadTimingInfo::ConnectTiming connect_timing) {
+  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
+  return std::make_unique<HttpBasicStream>(
+      CreateHandle(std::move(socket), std::move(connect_timing)),
+      /*is_for_get_to_http_proxy=*/false);
 }
 
 void HttpStreamPool::Group::ReleaseStreamSocket(
     std::unique_ptr<StreamSocket> socket,
     int64_t generation) {
-  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   CHECK_GT(handed_out_stream_count_, 0u);
   --handed_out_stream_count_;
   pool_->DecrementTotalHandedOutStreamCount();
@@ -180,15 +228,13 @@ bool HttpStreamPool::Group::ReachedMaxStreamLimit() const {
 
 std::optional<RequestPriority>
 HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
-  if (ReachedMaxStreamLimit()) {
+  if (!in_flight_job_) {
     return std::nullopt;
   }
 
-  if (!in_flight_job_ || in_flight_job_->PendingRequestCount() == 0) {
-    return std::nullopt;
-  }
-
-  return in_flight_job_->GetPriority();
+  return in_flight_job_->IsStalledByPoolLimit()
+             ? std::make_optional(in_flight_job_->GetPriority())
+             : std::nullopt;
 }
 
 void HttpStreamPool::Group::Refresh() {
@@ -203,6 +249,12 @@ void HttpStreamPool::Group::CancelRequests(int error) {
   if (in_flight_job_) {
     in_flight_job_->CancelRequests(error);
   }
+}
+
+void HttpStreamPool::Group::OnJobComplete() {
+  CHECK(in_flight_job_);
+  in_flight_job_.reset();
+  MaybeComplete();
 }
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
@@ -234,6 +286,23 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
       ++it;
     }
   }
+}
+
+void HttpStreamPool::Group::EnsureInFlightJob() {
+  if (in_flight_job_) {
+    return;
+  }
+  in_flight_job_ =
+      std::make_unique<Job>(this, http_network_session()->net_log());
+}
+
+void HttpStreamPool::Group::MaybeComplete() {
+  if (ActiveStreamSocketCount() > 0) {
+    return;
+  }
+
+  pool_->OnGroupComplete(this);
+  // `this` is deleted.
 }
 
 }  // namespace net

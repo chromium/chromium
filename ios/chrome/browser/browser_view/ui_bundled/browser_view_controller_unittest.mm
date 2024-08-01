@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -59,15 +60,14 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
+#import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
-#import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -77,7 +77,6 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -130,11 +129,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
 
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),
@@ -335,17 +331,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     BlockCleanupTest::TearDown();
   }
 
-  ChromeBrowserState* GetBrowserState() {
-    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
-  }
-
-  TestChromeBrowserState* GetTestBrowserState() {
-    TestChromeBrowserState* test_chrome_browser_state =
-        static_cast<TestChromeBrowserState*>(GetBrowserState());
-    EXPECT_NE(test_chrome_browser_state, nullptr);
-
-    return test_chrome_browser_state;
-  }
+  TestChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
 
   web::WebState* ActiveWebState() {
     return browser_->GetWebStateList()->GetActiveWebState();
@@ -367,7 +353,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
     web::WebState::CreateParams params(
-        GetTestBrowserState()
+        GetBrowserState()
             ->CreateOffTheRecordBrowserStateWithTestingFactories());
     auto web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
@@ -414,7 +400,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   MOCK_METHOD0(OnCompletionCalled, void());
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   KeyCommandsProvider* key_commands_provider_;
   BubblePresenter* bubble_presenter_;

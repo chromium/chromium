@@ -7,13 +7,17 @@ package org.chromium.ui.util;
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.Rect;
+import android.util.Size;
 
 import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.List;
 
 /** Unit test for {@link WindowInsetsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,5 +61,22 @@ public class WindowInsetsUtilsUnitTest {
 
         insets = Insets.of(0, 0, 0, 0);
         assertEquals(new Rect(), WindowInsetsUtils.toRectInWindow(WINDOW_RECT, insets));
+    }
+
+    @Test
+    public void getFrame_NullInsets() {
+        assertEquals(
+                "Frame size is incorrect.",
+                new Size(0, 0),
+                WindowInsetsUtils.getFrameFromInsets(null));
+    }
+
+    @Test
+    public void getBoundingRects_NullInsets() {
+        assertEquals(
+                "Bounding rects list is incorrect.",
+                List.of(),
+                WindowInsetsUtils.getBoundingRectsFromInsets(
+                        null, WindowInsetsCompat.Type.captionBar()));
     }
 }

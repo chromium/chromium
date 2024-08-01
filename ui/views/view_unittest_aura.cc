@@ -22,20 +22,22 @@ namespace {
 
 // Creates a widget of TYPE_CONTROL.
 // The caller takes ownership of the returned widget.
-Widget* CreateControlWidget(aura::Window* parent, const gfx::Rect& bounds) {
-  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+std::unique_ptr<Widget> CreateControlWidget(aura::Window* parent,
+                                            const gfx::Rect& bounds) {
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_CONTROL);
   params.parent = parent;
   params.bounds = bounds;
-  Widget* widget = new Widget();
+  auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
   return widget;
 }
 
 // Returns a view with a layer with the passed in |bounds| and |layer_name|.
 // The caller takes ownership of the returned view.
-View* CreateViewWithLayer(const gfx::Rect& bounds, const char* layer_name) {
-  View* view = new View();
+std::unique_ptr<View> CreateViewWithLayer(const gfx::Rect& bounds,
+                                          const char* layer_name) {
+  auto view = std::make_unique<View>();
   view->SetBoundsRect(bounds);
   view->SetPaintToLayer();
   view->layer()->SetName(layer_name);
@@ -74,47 +76,44 @@ class ViewAuraTest : public ViewsTestBase {
 //     +-- v8
 //     +-- v9
 TEST_F(ViewAuraTest, RecreateLayersWithWindows) {
-  Widget* w1 = CreateControlWidget(GetContext(), gfx::Rect(0, 0, 100, 100));
+  std::unique_ptr<Widget> w1 =
+      CreateControlWidget(GetContext(), gfx::Rect(0, 0, 100, 100));
   w1->GetNativeView()->layer()->SetName("w1");
 
-  View* v2 = new View();
-  v2->SetBounds(0, 1, 100, 101);
-  View* v3 = new View();
-  v3->SetBounds(0, 2, 100, 102);
-  View* w2_host_view = new View();
-
-  View* v1 = CreateViewWithLayer(gfx::Rect(0, 3, 100, 103), "v1");
+  auto* v1 = w1->GetRootView()->AddChildView(
+      CreateViewWithLayer(gfx::Rect(0, 3, 100, 103), "v1"));
   ui::Layer* v1_layer = v1->layer();
-  w1->GetRootView()->AddChildView(v1);
-  w1->GetRootView()->AddChildView(v2);
-  v2->AddChildView(v3);
-  View* v4 = CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v4");
+  auto* v2 = w1->GetRootView()->AddChildView(std::make_unique<View>());
+  v2->SetBounds(0, 1, 100, 101);
+  v2->AddChildView(std::make_unique<View>())->SetBounds(0, 2, 100, 102);
+  auto* v4 =
+      v2->AddChildView(CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v4"));
   ui::Layer* v4_layer = v4->layer();
-  v2->AddChildView(v4);
 
-  w1->GetRootView()->AddChildView(w2_host_view);
-  View* v7 = CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v7");
+  auto* w2_host_view =
+      w1->GetRootView()->AddChildView(std::make_unique<View>());
+  auto* v7 = w1->GetRootView()->AddChildView(
+      CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v7"));
   ui::Layer* v7_layer = v7->layer();
-  w1->GetRootView()->AddChildView(v7);
 
-  View* v8 = CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v8");
+  auto* v8 =
+      v7->AddChildView(CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v8"));
   ui::Layer* v8_layer = v8->layer();
-  v7->AddChildView(v8);
 
-  View* v9 = CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v9");
+  auto* v9 =
+      v7->AddChildView(CreateViewWithLayer(gfx::Rect(0, 4, 100, 104), "v9"));
   ui::Layer* v9_layer = v9->layer();
-  v7->AddChildView(v9);
 
-  Widget* w2 =
+  std::unique_ptr<Widget> w2 =
       CreateControlWidget(w1->GetNativeView(), gfx::Rect(0, 5, 100, 105));
   w2->GetNativeView()->layer()->SetName("w2");
   w2->GetNativeView()->SetProperty(kHostViewKey, w2_host_view);
 
-  View* v5 = CreateViewWithLayer(gfx::Rect(0, 6, 100, 106), "v5");
-  w2->GetRootView()->AddChildView(v5);
-  View* v6 = CreateViewWithLayer(gfx::Rect(0, 7, 100, 107), "v6");
+  auto* v5 = w2->GetRootView()->AddChildView(
+      CreateViewWithLayer(gfx::Rect(0, 6, 100, 106), "v5"));
+  auto* v6 =
+      v5->AddChildView(CreateViewWithLayer(gfx::Rect(0, 7, 100, 107), "v6"));
   ui::Layer* v6_layer = v6->layer();
-  v5->AddChildView(v6);
 
   // Test the initial order of the layers.
   ui::Layer* w1_layer = w1->GetNativeView()->layer();
@@ -127,7 +126,7 @@ TEST_F(ViewAuraTest, RecreateLayersWithWindows) {
 
   // Verify the value of Widget::GetRootLayers(). It should only include layers
   // from layer-backed Views descended from the Widget's root View.
-  View::Views old_w1_views_with_layers = GetViewsWithLayers(w1);
+  View::Views old_w1_views_with_layers = GetViewsWithLayers(w1.get());
   ASSERT_EQ(3u, old_w1_views_with_layers.size());
   EXPECT_EQ(v1, old_w1_views_with_layers[0]);
   EXPECT_EQ(v4, old_w1_views_with_layers[1]);
@@ -183,7 +182,7 @@ TEST_F(ViewAuraTest, RecreateLayersWithWindows) {
     EXPECT_NE(v7_layer, v7_new_layer);
 
     // Ensure Widget::GetViewsWithLayers() is correctly updated.
-    View::Views new_w1_views_with_layers = GetViewsWithLayers(w1);
+    View::Views new_w1_views_with_layers = GetViewsWithLayers(w1.get());
     ASSERT_EQ(3u, new_w1_views_with_layers.size());
     EXPECT_EQ(v1, new_w1_views_with_layers[0]);
     EXPECT_EQ(v4, new_w1_views_with_layers[1]);

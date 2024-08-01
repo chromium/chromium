@@ -154,9 +154,6 @@ TEST_F(ContentScriptsManifestTest, MatchOriginAsFallback) {
 }
 
 TEST_F(ContentScriptsManifestTest, MatchOriginAsFallback_InvalidCases) {
-  LoadAndExpectWarning(
-      "content_script_match_origin_as_fallback_warning_for_mv2.json",
-      errors::kMatchOriginAsFallbackRestrictedToMV3);
   LoadAndExpectError(
       "content_script_match_origin_as_fallback_invalid_with_paths.json",
       errors::kMatchOriginAsFallbackCantHavePaths);

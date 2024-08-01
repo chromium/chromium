@@ -82,11 +82,11 @@ std::vector<FooterCommand> CreateManageAddressesFooter() {
     commands.emplace_back(FooterCommand(
         l10n_util::GetStringUTF16(
             IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-        AccessoryAction::CREATE_PLUS_ADDRESS));
+        AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
     commands.emplace_back(
         FooterCommand(l10n_util::GetStringUTF16(
                           IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
-                      AccessoryAction::SELECT_PLUS_ADDRESS));
+                      AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
   }
   return commands;
 }
@@ -145,20 +145,21 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
     case AccessoryAction::MANAGE_ADDRESSES:
       autofill::ShowAutofillProfileSettings(&GetWebContents());
       return;
-    case AccessoryAction::CREATE_PLUS_ADDRESS: {
-      auto* client = ContentAutofillClient::FromWebContents(&GetWebContents());
-      client->OfferPlusAddressCreation(
-          client->GetLastCommittedPrimaryMainFrameOrigin(),
-          base::BindOnce(
-              &AddressAccessoryControllerImpl::OnPlusAddressCreated,
-              weak_ptr_factory_.GetWeakPtr(),
-              GetManualFillingController()->GetLastFocusedFieldId()));
-      // TODO: crbug.com/327838324 - Confirm with the UX that the manual filling
-      // sheet should be closed after the bottom sheet is closed.
-      GetManualFillingController()->Hide();
+    case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
+      if (auto* client =
+              ContentAutofillClient::FromWebContents(&GetWebContents())) {
+        client->OfferPlusAddressCreation(
+            client->GetLastCommittedPrimaryMainFrameOrigin(),
+            base::BindOnce(
+                &AddressAccessoryControllerImpl::OnPlusAddressCreated,
+                weak_ptr_factory_.GetWeakPtr(),
+                GetManualFillingController()->GetLastFocusedFieldId()));
+        GetManualFillingController()->Hide();
+      }
+
       return;
     }
-    case AccessoryAction::SELECT_PLUS_ADDRESS: {
+    case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
       if (!all_plus_addresses_bottom_sheet_controller_) {
         all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
             plus_addresses::AllPlusAddressesBottomSheetController>(
@@ -167,6 +168,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
             &AddressAccessoryControllerImpl::OnPlusAddressSelected,
             weak_ptr_factory_.GetWeakPtr(),
             GetManualFillingController()->GetLastFocusedFieldId()));
+        GetManualFillingController()->Hide();
       }
       return;
     }

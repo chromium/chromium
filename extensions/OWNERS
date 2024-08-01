@@ -16,8 +16,5 @@ emiliapaz@chromium.org
 finnur@chromium.org
 reillyg@chromium.org
 
-# Mechanical or apps-in-extensions changes only:
-ortuno@chromium.org
-
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

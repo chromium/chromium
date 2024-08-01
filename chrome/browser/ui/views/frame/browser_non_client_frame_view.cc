@@ -202,7 +202,8 @@ void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
     OnProfileAvatarChanged(base::FilePath());
 }
 
-gfx::Insets BrowserNonClientFrameView::MirroredFrameBorderInsets() const {
+gfx::Insets BrowserNonClientFrameView::RestoredMirroredFrameBorderInsets()
+    const {
   NOTREACHED_NORETURN();
 }
 

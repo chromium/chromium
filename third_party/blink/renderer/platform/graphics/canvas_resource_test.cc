@@ -24,9 +24,11 @@ namespace blink {
 TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
   test::TaskEnvironment task_environment;
   scoped_refptr<CanvasResource> canvas_resource =
-      CanvasResourceSharedBitmap::Create(SkImageInfo::MakeN32Premul(10, 10),
-                                         nullptr,  // CanvasResourceProvider
-                                         cc::PaintFlags::FilterQuality::kLow);
+      CanvasResourceSharedBitmap::Create(
+          SkImageInfo::MakeN32Premul(10, 10),
+          /*CanvasResourceProvider=*/nullptr,
+          /*shared_image_interface_provider=*/nullptr,
+          cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;

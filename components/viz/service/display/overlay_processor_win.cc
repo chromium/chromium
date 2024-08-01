@@ -4,7 +4,6 @@
 
 #include "components/viz/service/display/overlay_processor_win.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -27,7 +26,6 @@
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/overlay_processor_delegated_support.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gl/gl_switches.h"
 
 namespace viz {
 namespace {
@@ -120,8 +118,6 @@ OverlayCandidateFactory::OverlayContext WindowsDelegatedOverlayContext() {
   context.supports_rounded_display_masks = true;
   context.supports_mask_filter = true;
   context.transform_and_clip_rpdq = true;
-  context.allow_non_overlay_resources = base::FeatureList::IsEnabled(
-      features::kCopyNonOverlayResourcesToDCompSurfaces);
   return context;
 }
 

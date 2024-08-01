@@ -8,9 +8,10 @@ interface AI
     method canCreateTextSession
     method constructor
     method createTextSession
-    method defaultTextSessionOptions
+    method textModelInfo
 interface AITextSession
     attribute @@toStringTag
+    method clone
     method constructor
     method destroy
     method prompt
@@ -2597,7 +2598,6 @@ interface Element : Node
     method getElementsByTagName
     method getElementsByTagNameNS
     method getHTML
-    method getInnerHTML
     method hasAttribute
     method hasAttributeNS
     method hasAttributes
@@ -9437,6 +9437,7 @@ interface Selection
     method deleteFromDocument
     method empty
     method extend
+    method getComposedRanges
     method getRangeAt
     method modify
     method removeAllRanges
@@ -9563,7 +9564,6 @@ interface ShadowRoot : DocumentFragment
     method elementsFromPoint
     method getAnimations
     method getHTML
-    method getInnerHTML
     method getSelection
     method setHTMLUnsafe
     setter adoptedStyleSheets

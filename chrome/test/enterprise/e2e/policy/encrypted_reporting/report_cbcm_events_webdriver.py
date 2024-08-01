@@ -7,6 +7,8 @@ from absl import app
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
 
 from test_util import create_chrome_webdriver
 from test_util import getElementFromShadowRoot
@@ -31,6 +33,12 @@ def main(argv):
     # Give the page 2 seconds to render the legend
     time.sleep(2)
     driver.find_element(By.ID, 'reload-policies').click
+    time.sleep(2)
+    wait = WebDriverWait(driver, 10)
+    # Wait for the status box to appear after policy reload
+    wait.until(
+        expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "status-box"))
+    )
     status_box = driver.find_element(By.CSS_SELECTOR, "status-box")
     el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
 

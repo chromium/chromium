@@ -5,13 +5,13 @@
 #ifndef GIN_PUBLIC_V8_PLATFORM_H_
 #define GIN_PUBLIC_V8_PLATFORM_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "gin/gin_export.h"
 #include "gin/time_clamper.h"
 #include "gin/v8_platform_page_allocator.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"
+#include "partition_alloc/buildflags.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {

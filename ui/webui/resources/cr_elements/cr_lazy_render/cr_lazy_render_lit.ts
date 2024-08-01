@@ -6,14 +6,17 @@
  * @fileoverview
  * cr-lazy-render-lit helps with lazy rendering elements only when they are
  * actually needed (requested to be shown by the user). The lazy rendered
- * element is placed on the light DOM of cr-lazy-render-lit, such that it can
- * be fully styled by the parent, or use Lit bindings referring to the parent's
- * reactive properties.
+ * node is rendered right before the cr-lazy-render-lit node itself, such that
+ * it can be fully styled by the parent, or use Lit bindings referring to the
+ * parent's reactive properties.
  *
  * Example usage:
  *   <cr-lazy-render-lit id="menu"
  *       .template="${() => html`<heavy-menu></heavy-menu>`}">
  *   </cr-lazy-render-lit>
+ *
+ * Note that the provided template should create exactly one top-level DOM node,
+ * otherwise the result of this.get() will not be correct.
  *
  *   this.$.menu.get().show();
  */
@@ -46,13 +49,16 @@ export class CrLazyRenderLitElement<T extends HTMLElement> extends
 
   override render() {
     if (this.rendered_) {
-      // Render items into light DOM using the client provided template
-      render(this.template(), this, {
+      // Render items into the parent's DOM using the client provided template.
+      render(this.template(), this.parentNode as DocumentFragment, {
         host: (this.getRootNode() as ShadowRoot).host,
+        // Specify 'renderBefore', so that the lazy rendered node can be
+        // easily located in get() later on.
+        renderBefore: this,
       });
     }
 
-    return html`<slot></slot>`;
+    return html``;
   }
 
   /**
@@ -63,11 +69,7 @@ export class CrLazyRenderLitElement<T extends HTMLElement> extends
     if (!this.rendered_) {
       this.rendered_ = true;
       this.performUpdate();
-      const slot = this.shadowRoot!.querySelector('slot');
-      assert(slot);
-      const slotted = slot.assignedElements();
-      assert(slotted.length === 1);
-      this.child_ = slotted[0] as T;
+      this.child_ = this.previousElementSibling as T;
     }
 
     assert(this.child_);

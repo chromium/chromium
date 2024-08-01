@@ -21,6 +21,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
@@ -122,18 +123,11 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
     base::OnceClosure next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const WebApp* installed_app =
-      lock_->registrar().GetAppById(url_info_.app_id());
-  if (installed_app == nullptr) {
-    ReportFailure("App is no longer installed.");
-    return;
-  }
-  if (!installed_app->isolation_data().has_value()) {
-    ReportFailure("Installed app is not an Isolated Web App.");
-    return;
-  }
-  const WebApp::IsolationData& isolation_data =
-      *installed_app->isolation_data();
+  ASSIGN_OR_RETURN(
+      const WebApp& iwa,
+      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
+      [&](const std::string& error) { ReportFailure(error); });
+  const WebApp::IsolationData& isolation_data = *iwa.isolation_data();
 
   if (!isolation_data.pending_update_info().has_value()) {
     ReportFailure("Installed app does not have a pending update.");

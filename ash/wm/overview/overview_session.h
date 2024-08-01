@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/snap_group/snap_group_observer.h"
@@ -53,8 +54,6 @@ namespace ash {
 class BirchBarController;
 class OverviewDelegate;
 class OverviewGrid;
-class OverviewFocusCycler;
-class OverviewFocusCyclerOld;
 class OverviewItem;
 class OverviewItemBase;
 class OverviewWindowDragController;
@@ -254,7 +253,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Returns the window associated with the focused item. Returns null if no
   // item has focus (i.e. desk mini view is focused, or nothing is focused).
-  aura::Window* GetFocusedWindow() const;
+  aura::Window* GetFocusedWindow();
 
   // Suspends/Resumes window re-positiong in overview.
   void SuspendReposition();
@@ -410,8 +409,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return hide_windows_for_saved_desks_grid_.get();
   }
 
-  OverviewFocusCyclerOld* focus_cycler_old() { return focus_cycler_old_.get(); }
-  OverviewFocusCycler* focus_cycler() { return focus_cycler_.get(); }
+  OverviewFocusCycler* focus_cycler() { return &focus_cycler_; }
 
   SavedDeskPresenter* saved_desk_presenter() {
     return saved_desk_presenter_.get();
@@ -534,10 +532,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // windows are not shown via other events for saved desks grid.
   std::unique_ptr<ScopedOverviewHideWindows> hide_windows_for_saved_desks_grid_;
 
-  // A refactor on the focus cycler is underway. See http://b/325335020 for more
-  // details.
-  std::unique_ptr<OverviewFocusCycler> focus_cycler_;
-  std::unique_ptr<OverviewFocusCyclerOld> focus_cycler_old_;
+  OverviewFocusCycler focus_cycler_{this};
 
   // The object responsible to talking to the desk model.
   std::unique_ptr<SavedDeskPresenter> saved_desk_presenter_;

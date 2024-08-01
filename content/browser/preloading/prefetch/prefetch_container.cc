@@ -140,11 +140,11 @@ std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return PreloadingTriggeringOutcome::kFailure;
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchNotStarted:
-    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return std::nullopt;
   }
   return std::nullopt;
@@ -1529,11 +1529,13 @@ void PrefetchContainer::AddClientHintsHeaders(
     request_headers->MergeFrom(client_hints_headers);
   } else if (cross_site_behavior ==
              features::PrefetchClientHintsCrossSiteBehavior::kLowEntropy) {
-    std::string header_value;
     for (const auto& [ch, header] : network::GetClientHintToNameMap()) {
-      if (blink::IsClientHintSentByDefault(ch) &&
-          client_hints_headers.GetHeader(header, &header_value)) {
-        request_headers->SetHeader(header, std::move(header_value));
+      if (blink::IsClientHintSentByDefault(ch)) {
+        std::optional<std::string> header_value =
+            client_hints_headers.GetHeader(header);
+        if (header_value) {
+          request_headers->SetHeader(header, std::move(header_value).value());
+        }
       }
     }
   }

@@ -11,8 +11,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"
@@ -335,17 +333,6 @@ void OverviewGroupItem::EnsureVisible() {
   }
 }
 
-std::vector<OverviewFocusableView*> OverviewGroupItem::GetFocusableViews()
-    const {
-  std::vector<OverviewFocusableView*> focusable_views;
-  for (const auto& overview_item : overview_items_) {
-    if (auto* overview_item_view = overview_item->overview_item_view()) {
-      focusable_views.push_back(overview_item_view);
-    }
-  }
-  return focusable_views;
-}
-
 std::vector<views::Widget*> OverviewGroupItem::GetFocusableWidgets() {
   std::vector<views::Widget*> focusable_widgets;
   for (const auto& overview_item : overview_items_) {
@@ -514,25 +501,6 @@ void OverviewGroupItem::UpdateOverviewItemFillMode() {
   }
 }
 
-gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
-  CHECK(!overview_items_.empty());
-
-  OverviewSession* overview_session =
-      OverviewController::Get()->overview_session();
-  CHECK(overview_session);
-  OverviewFocusCyclerOld* focus_cycler_old =
-      overview_session->focus_cycler_old();
-  for (const auto& overview_item : overview_items_) {
-    if (overview_item->overview_item_view() ==
-        focus_cycler_old->focused_view()) {
-      return overview_item->GetMagnifierFocusPointInScreen();
-    }
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Point();
-}
-
 const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {
   auto& item0 = overview_items_.front();
   const gfx::RoundedCornersF& primary_rounded_corners =
@@ -553,8 +521,6 @@ const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {
 void OverviewGroupItem::OnOverviewItemWindowDestroying(
     OverviewItem* overview_item,
     bool reposition) {
-  RefreshFocusedViewOnItemDestroying(overview_item->overview_item_view());
-
   // We use 2-step removal to ensure that the `overview_item` gets removed from
   // the vector before been destroyed so that all the overview items in
   // `overview_items_` are valid.
@@ -604,18 +570,6 @@ void OverviewGroupItem::CreateItemWidget() {
       std::make_unique<OverviewGroupContainerView>(this));
   item_widget_->Show();
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
-}
-
-void OverviewGroupItem::RefreshFocusedViewOnItemDestroying(
-    OverviewItemView* item_view) {
-  OverviewController* overview_controller = OverviewController::Get();
-  OverviewSession* overview_session = overview_controller->overview_session();
-  if (overview_session) {
-    if (OverviewFocusCyclerOld* focus_cycler_old =
-            overview_session->focus_cycler_old()) {
-      focus_cycler_old->OnViewDestroyingOrDisabling(item_view);
-    }
-  }
 }
 
 }  // namespace ash

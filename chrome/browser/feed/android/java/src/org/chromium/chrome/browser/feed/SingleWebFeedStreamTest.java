@@ -159,13 +159,13 @@ public class SingleWebFeedStreamTest {
         mFeedStream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
                         mWindowAndroid,
                         /* shareSupplier= */ mShareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null,
                         /* streamsMediator= */ null,
                         new SingleWebFeedParameters(

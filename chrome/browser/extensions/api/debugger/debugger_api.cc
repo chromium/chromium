@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -314,7 +315,8 @@ base::LazyInstance<AttachedClientHosts>::Leaky g_attached_client_hosts =
     LAZY_INSTANCE_INITIALIZER;
 
 class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
-                                    public ExtensionRegistryObserver {
+                                    public ExtensionRegistryObserver,
+                                    public ProfileObserver {
  public:
   ExtensionDevToolsClientHost(
       Profile* profile,
@@ -368,6 +370,8 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
+  // ProfileObserver implementation
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   raw_ptr<Profile> profile_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
@@ -392,6 +396,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
@@ -411,6 +416,7 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
   // ExtensionRegistryObserver listen extension unloaded and detach debugger
   // from there.
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+  profile_observation_.Observe(profile_);
 
   // RVH-based agents disconnect from their clients when the app is terminating
   // but shared worker-based agents do not.
@@ -535,6 +541,12 @@ void ExtensionDevToolsClientHost::SendDetachedEvent() {
                               std::move(args), profile_);
   EventRouter::Get(profile_)->DispatchEventToExtension(extension_id(),
                                                        std::move(event));
+}
+
+void ExtensionDevToolsClientHost::OnProfileWillBeDestroyed(Profile* profile) {
+  if (profile == profile_) {
+    Close();
+  }
 }
 
 void ExtensionDevToolsClientHost::OnExtensionUnloaded(

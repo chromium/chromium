@@ -5,7 +5,6 @@
 #ifndef ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_QUICK_PAIR_FEATURE_STATUS_TRACKER_H_
 #define ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_QUICK_PAIR_FEATURE_STATUS_TRACKER_H_
 
-#include "ash/quick_pair/feature_status_tracker/fast_pair_enabled_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"

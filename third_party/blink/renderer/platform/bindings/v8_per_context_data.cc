@@ -88,6 +88,7 @@ void V8PerContextData::Trace(Visitor* visitor) const {
 }
 
 v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
+    v8::Isolate* isolate,
     const WrapperTypeInfo* type) {
   DCHECK(!wrapper_boilerplates_.Contains(type));
   v8::Context::Scope scope(GetContext());
@@ -106,7 +107,7 @@ v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
   wrapper_boilerplates_.insert(
       type, TraceWrapperV8Reference<v8::Object>(isolate_, instance_template));
 
-  return instance_template->Clone();
+  return instance_template->Clone(isolate);
 }
 
 v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(

@@ -51,6 +51,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardViewUnitTest.ShadowSysUtils;
@@ -89,6 +90,7 @@ public class StripTabHoverCardViewUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabContentManager mTabContentManager;
+    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
 
     private static final float STRIP_STACK_HEIGHT = 500.f;
     private static final float TAB_WIDTH = 100f;
@@ -120,6 +122,7 @@ public class StripTabHoverCardViewUnitTest {
         mContext.getResources().getDisplayMetrics().density = 1f;
 
         when(mTabContentManagerSupplier.get()).thenReturn(mTabContentManager);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
         mBitmap = Bitmap.createBitmap(100, 200, Bitmap.Config.RGB_565);
 
@@ -442,25 +445,25 @@ public class StripTabHoverCardViewUnitTest {
     }
 
     @Test
-    public void tabModelSelectorObserver_OnTabModelSelected() {
+    public void currentTabModelObserver_OnTabModelSelected() {
         var standardTabModel = mock(TabModel.class);
         var incognitoTabModel = mock(TabModel.class);
-        when(standardTabModel.isIncognito()).thenReturn(false);
-        when(incognitoTabModel.isIncognito()).thenReturn(true);
+        when(standardTabModel.isIncognitoBranded()).thenReturn(false);
+        when(incognitoTabModel.isIncognitoBranded()).thenReturn(true);
 
         // Assume standard tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
-        // TabModelSelectorObserver should be added after the view is inflated.
+        // TabModelObserver should be added after the view is inflated.
         mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        var tabModelSelectorObserver = mTabHoverCardView.getTabModelSelectorObserverForTesting();
-        assertNotNull("TabModelSelectorObserver should be set.", tabModelSelectorObserver);
+        var tabModelObserver = mTabHoverCardView.getCurrentTabModelObserverForTesting();
+        assertNotNull("TabModelSelectorObserver should be set.", tabModelObserver);
 
         // Switch to the incognito tab model.
-        tabModelSelectorObserver.onTabModelSelected(incognitoTabModel, standardTabModel);
+        tabModelObserver.onResult(incognitoTabModel);
         verify(mTabHoverCardView).updateHoverCardColors(true);
 
         // Switch to the standard tab model.
-        tabModelSelectorObserver.onTabModelSelected(standardTabModel, incognitoTabModel);
+        tabModelObserver.onResult(standardTabModel);
         // Invoked in #initialize() in setup and in test, and in #onTabModelSelected().
         verify(mTabHoverCardView, times(3)).updateHoverCardColors(false);
     }

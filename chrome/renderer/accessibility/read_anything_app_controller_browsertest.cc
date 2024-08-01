@@ -26,7 +26,7 @@
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
   explicit MockAXTreeDistiller(content::RenderFrame* render_frame)
-      : AXTreeDistiller(base::NullCallback()) {}
+      : AXTreeDistiller(render_frame, base::NullCallback()) {}
   MOCK_METHOD(void,
               Distill,
               (const ui::AXTree& tree,
@@ -249,6 +249,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   std::vector<ui::AXNodeID> GetCurrentText() {
     return controller_->GetCurrentText();
   }
+
+  void PreprocessTextForSpeech() { controller_->PreprocessTextForSpeech(); }
   void MovePositionToNextGranularity() {
     return controller_->MovePositionToNextGranularity();
   }
@@ -422,7 +424,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnCollapseSelection() { controller_->OnCollapseSelection(); }
 
-  void OnRestartReadAloud() { controller_->OnRestartReadAloud(); }
+  void ResetGranularityIndex() { controller_->ResetGranularityIndex(); }
 
   bool HasTree(ui::AXTreeID tree_id) {
     return controller_->model_.ContainsTree(tree_id);
@@ -514,6 +516,18 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids) {
     controller_->model_.Reset(content_node_ids);
+  }
+
+  ui::AXNodeData TextNode(int id, std::u16string text_content) {
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(text_content);
+    return node;
+  }
+
+  ui::AXNodeData TextNode(int id) {
+    return TextNode(id, base::NumberToString16(id));
   }
 
   ui::AXTreeID tree_id_;
@@ -1138,53 +1152,31 @@ TEST_F(ReadAnythingAppControllerTest, GetImageDataUrl_Unset) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
-  std::string text_content = "Hello";
-  std::string more_text_content = " world";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
-  node1.SetNameChecked(text_content);
+  ui::AXNodeData node1 = TextNode(/* id= */ 2, u"Hello");
 
   ui::AXNodeData node2;
   node2.id = 3;
   node2.role = ax::mojom::Role::kStaticText;
   node2.SetNameExplicitlyEmpty();
 
-  ui::AXNodeData node3;
-  node3.id = 4;
-  node3.role = ax::mojom::Role::kStaticText;
-  node3.SetNameChecked(more_text_content);
+  ui::AXNodeData node3 = TextNode(/* id = */ 4, u" world");
   update.nodes = {node1, node2, node3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ(text_content, GetTextContent(2));
+  EXPECT_EQ("Hello", GetTextContent(2));
   EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ(more_text_content, GetTextContent(4));
+  EXPECT_EQ(" world", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
-  std::string text_content_1 = "Hello";
-  std::string text_content_2 = " world";
-  std::string text_content_3 = " friend";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
-  node1.SetNameChecked(text_content_1);
-
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
-  node2.SetNameChecked(text_content_2);
-
-  ui::AXNodeData node3;
-  node3.id = 4;
-  node3.role = ax::mojom::Role::kStaticText;
-  node3.SetNameChecked(text_content_3);
+  ui::AXNodeData node1 = TextNode(/* id= */ 2, u"Hello");
+  ui::AXNodeData node2 = TextNode(/* id= */ 3, u" world");
+  ui::AXNodeData node3 = TextNode(/* id= */ 4, u" friend");
   update.nodes = {node1, node2, node3};
 
   // Create selection from node 2-3.
@@ -1203,15 +1195,10 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
 
 TEST_F(ReadAnythingAppControllerTest,
        GetTextContent_IgoreStaticTextIfGoogleDocs) {
-  std::string text_content = "Hello";
-  std::string more_text_content = "world";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
-  node1.SetNameChecked(text_content);
+  ui::AXNodeData node1 = TextNode(/* id= */ 2, u"Hello");
 
   ui::AXNodeData node2;
   node2.id = 3;
@@ -1586,10 +1573,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   // Send a new update which settings the text content of node 2.
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1);
-  ui::AXNodeData node;
-  node.id = 2;
-  node.role = ax::mojom::Role::kStaticText;
-  node.SetNameChecked("Hello world");
+  ui::AXNodeData node = TextNode(/* id= */ 2, u"Hello world");
   update_1.nodes = {node};
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -1602,10 +1586,9 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   for (int i = 2; i < 5; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    ui::AXNodeData static_text_node;
-    static_text_node.id = i;
-    static_text_node.role = ax::mojom::Role::kStaticText;
-    static_text_node.SetNameChecked("Node " + base::NumberToString(i));
+
+    ui::AXNodeData static_text_node =
+        TextNode(/* id= */ i, u"Node " + base::NumberToString16(i));
     update.nodes = {static_text_node};
     batch_updates.push_back(update);
   }
@@ -1638,10 +1621,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // Send a new update which settings the text content of node 2.
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1);
-  ui::AXNodeData start_node;
-  start_node.id = 2;
-  start_node.role = ax::mojom::Role::kStaticText;
-  start_node.SetNameChecked("Hello world");
+  ui::AXNodeData start_node = TextNode(/* id= */ 2, u"Hello world");
   update_1.nodes = {start_node};
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -1655,10 +1635,8 @@ TEST_F(ReadAnythingAppControllerTest,
   for (int i = 2; i < 5; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    ui::AXNodeData node;
-    node.id = i;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked("Node " + base::NumberToString(i));
+    ui::AXNodeData node =
+        TextNode(/* id= */ i, u"Node " + base::NumberToString16(i));
     update.nodes = {node};
     batch_updates.push_back(update);
   }
@@ -1674,10 +1652,7 @@ TEST_F(ReadAnythingAppControllerTest,
   SetDistillationInProgress(false);
   ui::AXTreeUpdate update_2;
   SetUpdateTreeID(&update_2);
-  ui::AXNodeData final_node;
-  final_node.id = 2;
-  final_node.role = ax::mojom::Role::kStaticText;
-  final_node.SetNameChecked("Final update");
+  ui::AXNodeData final_node = TextNode(/* id= */ 2, u"Final update");
   update_2.nodes = {final_node};
   AccessibilityEventReceived({update_2});
 
@@ -1697,10 +1672,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   // Send a new update which settings the text content of node 2.
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1);
-  ui::AXNodeData start_node;
-  start_node.id = 2;
-  start_node.role = ax::mojom::Role::kStaticText;
-  start_node.SetNameChecked("Hello world");
+  ui::AXNodeData start_node = TextNode(/* id= */ 2, u"Hello world");
   update_1.nodes = {start_node};
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -1714,10 +1686,8 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   for (int i = 2; i < 5; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    ui::AXNodeData node;
-    node.id = i;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked("Node " + base::NumberToString(i));
+    ui::AXNodeData node =
+        TextNode(/* id= */ i, u"Node " + base::NumberToString16(i));
     update.nodes = {node};
     batch_updates.push_back(update);
   }
@@ -1733,10 +1703,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   OnSpeechPlayingStateChanged(/* is_speech_active= */ false);
   ui::AXTreeUpdate update_2;
   SetUpdateTreeID(&update_2);
-  ui::AXNodeData final_node;
-  final_node.id = 2;
-  final_node.role = ax::mojom::Role::kStaticText;
-  final_node.SetNameChecked("Final update");
+  ui::AXNodeData final_node = TextNode(/* id= */ 2, u"Final update");
   update_2.nodes = {final_node};
   AccessibilityEventReceived({update_2});
 
@@ -1755,10 +1722,8 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   for (int i = 0; i < 3; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update, tree_ids[i]);
-    ui::AXNodeData node;
-    node.id = 1;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked("Tree " + base::NumberToString(i));
+    ui::AXNodeData node =
+        TextNode(/* id= */ 1, u"Tree " + base::NumberToString16(i));
     update.root_id = node.id;
     update.nodes = {node};
     updates.push_back(update);
@@ -1908,10 +1873,7 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node;
-    node.id = id;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData node = TextNode(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -1967,10 +1929,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node;
-    node.id = id;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData node = TextNode(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2040,10 +1999,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node;
-    node.id = id;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData node = TextNode(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2127,10 +2083,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node;
-    node.id = id;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData node = TextNode(id);
     update.root_id = root.id;
     update.nodes = {root, node};
 
@@ -2173,10 +2126,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node;
-    node.id = id;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData node = TextNode(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2247,10 +2197,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node;
-    node.id = id;
-    node.role = ax::mojom::Role::kStaticText;
-    node.SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData node = TextNode(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2547,10 +2494,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.root_id = 1;
-  ui::AXNodeData text_node;
-  text_node.id = 3;
-  text_node.role = ax::mojom::Role::kStaticText;
-  text_node.SetNameChecked("Hello");
+  ui::AXNodeData text_node = TextNode(/* id= */ 3, u"Hello");
 
   ui::AXNodeData ignored_node;
   ignored_node.id = 4;
@@ -2688,15 +2632,8 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence2 = u"This is another sentence. ";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
-
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
 
   update.nodes = {static_text1, static_text2};
   AccessibilityEventReceived({update});
@@ -2731,20 +2668,10 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_ReturnsExpectedNodes) {
   std::u16string sentence3 = u"And this is yet another sentence. ";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
-
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -2779,7 +2706,207 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_ReturnsExpectedNodes) {
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       PreprocessNodes_DoesNotImpactCurrentNodes) {
+  std::u16string sentence1 = u"Life was a chore. ";
+  std::u16string sentence2 = u"So she set sail. ";
+  std::u16string sentence3 = u"Fifteen twenty-two, came straight to the UK. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  PreprocessTextForSpeech();
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Move to the next node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Move backwards
+  next_node_ids = MoveToPreviousGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node again.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       PreprocessNodes_CalledMultipleTimes_DoesNotImpactCurrentNodes) {
+  std::u16string sentence1 = u"Keep a grip and take a deep breath. ";
+  std::u16string sentence2 = u"And soon we'll know what's what. ";
+  std::u16string sentence3 =
+      u"Put on a show, rewards will flow, and we'll go from there. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
+
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Preprocess is called again.
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  // But nothing changes with what's returned by GetCurrentText
+  next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Move to the next node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Preprocess is called again.
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  // And nothing has changed with the current text.
+  next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Move backwards
+  next_node_ids = MoveToPreviousGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Preprocess is called again.
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  // And nothing has changed with the current text.
+  next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node again.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        GetCurrentText_AfterRestartReadAloud_StartsOver) {
+  std::u16string sentence1 = u"I've got the wind in my hair. ";
+  std::u16string sentence2 = u"And a gleam in my eyes. ";
+  std::u16string sentence3 = u"And an endless horizon. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+
+  ui::AXNodeData static_text1 = TextNode(/*id = */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/*id = */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/*id = */ 4, sentence3);
+
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+
+  // Move to the next sentence.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+
+  // If we init without restarting we should just go to the next sentence.
+  InitAXPosition(update.nodes[0].id);
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+
+  // After reset and before an init, the current text should be empty.
+  ResetReadAloudState();
+  std::vector<ui::AXNodeID> after_reset_ids = GetCurrentText();
+  EXPECT_EQ((int)after_reset_ids.size(), 0);
+
+  // After an init, we should get the first sentence again.
+  InitAXPosition(update.nodes[0].id);
+  after_reset_ids = GetCurrentText();
+  EXPECT_EQ((int)after_reset_ids.size(), 1);
+  EXPECT_EQ(after_reset_ids[0], static_text1.id);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetCurrentText_AfterResetGranularityIndex_StartsOver) {
   std::u16string sentence1 = u"I've got the wind in my hair. ";
   std::u16string sentence2 = u"And a gleam in my eyes. ";
   std::u16string sentence3 = u"And an endless horizon. ";
@@ -2819,9 +2946,8 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ((int)next_node_ids.size(), 1);
   EXPECT_EQ(next_node_ids[0], static_text3.id);
 
-  // After reset and then init, we should get the first sentence again.
-  OnRestartReadAloud();
-  InitAXPosition(update.nodes[0].id);
+  // After reset, we should get the first sentence again.
+  ResetGranularityIndex();
   std::vector<ui::AXNodeID> after_reset_ids = GetCurrentText();
   EXPECT_EQ((int)after_reset_ids.size(), 1);
   EXPECT_EQ(after_reset_ids[0], static_text1.id);
@@ -2833,20 +2959,11 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id = */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id = */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id = */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -2872,20 +2989,9 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
   ui::AXNodeData root;
   root.id = 1;
 
-  ui::AXNodeData new_static_text1;
-  new_static_text1.id = 10;
-  new_static_text1.role = ax::mojom::Role::kStaticText;
-  new_static_text1.SetNameChecked(new_sentence_1);
-
-  ui::AXNodeData new_static_text2;
-  new_static_text2.id = 12;
-  new_static_text2.role = ax::mojom::Role::kStaticText;
-  new_static_text2.SetNameChecked(new_sentence_2);
-
-  ui::AXNodeData new_static_text3;
-  new_static_text3.id = 16;
-  new_static_text3.role = ax::mojom::Role::kStaticText;
-  new_static_text3.SetNameChecked(new_sentence_3);
+  ui::AXNodeData new_static_text1 = TextNode(/* id= */ 10, new_sentence_1);
+  ui::AXNodeData new_static_text2 = TextNode(/* id= */ 12, new_sentence_2);
+  ui::AXNodeData new_static_text3 = TextNode(/* id= */ 16, new_sentence_3);
 
   root.child_ids = {new_static_text1.id, new_static_text2.id,
                     new_static_text3.id};
@@ -2932,20 +3038,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"inside.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/*id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/*id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/*id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -2980,20 +3077,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"I am almost there.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -3030,15 +3118,8 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence2 = u"[2]";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
-
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
 
   update.nodes = {static_text1, static_text2};
   AccessibilityEventReceived({update});
@@ -3077,25 +3158,10 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
 
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
-
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
-
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
-
-  ui::AXNodeData static_text4;
-  static_text4.id = 12;
-  static_text4.role = ax::mojom::Role::kStaticText;
-  static_text4.SetNameChecked(sentence4);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
+  ui::AXNodeData static_text4 = TextNode(/* id= */ 12, sentence4);
 
   ui::AXNodeData superscript;
   superscript.id = 13;
@@ -3151,16 +3217,9 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence2 = u"2";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
-
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
   static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text2.SetNameChecked(sentence2);
 
   update.nodes = {static_text1, static_text2};
   AccessibilityEventReceived({update});
@@ -3191,16 +3250,9 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence2 = u"[2]";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
-
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
   static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text2.SetNameChecked(sentence2);
 
   update.nodes = {static_text1, static_text2};
   AccessibilityEventReceived({update});
@@ -3236,28 +3288,16 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
 
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
   static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text2.SetNameChecked(sentence2);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
   static_text3.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text3.SetNameChecked(sentence3);
 
-  ui::AXNodeData static_text4;
-  static_text4.id = 12;
+  ui::AXNodeData static_text4 = TextNode(/* id= */ 12, sentence4);
   static_text4.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text4.role = ax::mojom::Role::kStaticText;
-  static_text4.SetNameChecked(sentence4);
 
   ui::AXNodeData superscript;
   superscript.id = 13;
@@ -3314,38 +3354,23 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
 
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
   static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text2.SetNameChecked(sentence2);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
   static_text3.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text3.SetNameChecked(sentence3);
 
-  ui::AXNodeData static_text4;
-  static_text4.id = 12;
-  static_text4.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text4 = TextNode(/* id= */ 12, sentence4);
   static_text4.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-  static_text4.SetNameChecked(sentence4);
 
   ui::AXNodeData superscript;
   superscript.id = 13;
   superscript.role = ax::mojom::Role::kSuperscript;
   superscript.child_ids = {static_text2.id, static_text3.id, static_text4.id};
 
-  ui::AXNodeData static_text5;
-  static_text5.id = 100;
-  static_text5.role = ax::mojom::Role::kStaticText;
-  static_text5.SetNameChecked(sentence5);
+  ui::AXNodeData static_text5 = TextNode(/* id= */ 100, sentence5);
 
   ui::AXNodeData root;
   root.id = 10;
@@ -3411,10 +3436,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
   list_marker1.SetName(bullet1);
   list_marker1.SetNameFrom(ax::mojom::NameFrom::kContents);
 
-  ui::AXNodeData static_text1;
-  static_text1.id = 3;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 3, sentence1);
 
   ui::AXNodeData list_marker2;
   list_marker2.id = 4;
@@ -3424,10 +3446,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
   list_marker2.SetName(bullet2);
   list_marker2.SetNameFrom(ax::mojom::NameFrom::kContents);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 12;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 12, sentence2);
 
   ui::AXNodeData root;
   root.id = 10;
@@ -3487,20 +3506,9 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
 
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(header_text);
-
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(paragraph_text1);
-
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(paragraph_text2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, header_text);
+  ui::AXNodeData static_text2 = TextNode(/*id= */ 3, paragraph_text1);
+  ui::AXNodeData static_text3 = TextNode(/*id= */ 4, paragraph_text2);
 
   ui::AXNodeData header_node;
   header_node.id = 5;
@@ -3574,20 +3582,9 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
 
-  ui::AXNodeData header_node;
-  header_node.id = 2;
-  header_node.role = ax::mojom::Role::kStaticText;
-  header_node.SetNameChecked(header_text);
-
-  ui::AXNodeData paragraph_node1;
-  paragraph_node1.id = 3;
-  paragraph_node1.role = ax::mojom::Role::kStaticText;
-  paragraph_node1.SetNameChecked(paragraph_text1);
-
-  ui::AXNodeData paragraph_node2;
-  paragraph_node2.id = 4;
-  paragraph_node2.role = ax::mojom::Role::kStaticText;
-  paragraph_node2.SetNameChecked(paragraph_text2);
+  ui::AXNodeData header_node = TextNode(/* id= */ 2, header_text);
+  ui::AXNodeData paragraph_node1 = TextNode(/* id= */ 3, paragraph_text1);
+  ui::AXNodeData paragraph_node2 = TextNode(/* id= */ 4, paragraph_text2);
 
   update.nodes = {header_node, paragraph_node1, paragraph_node2};
   AccessibilityEventReceived({update});
@@ -3632,20 +3629,11 @@ TEST_F(ReadAnythingAppControllerTest,
       u"You coast past it all. The obstacles just disappear.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id = */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -3739,20 +3727,11 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -3776,20 +3755,9 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
   ui::AXNodeData root;
   root.id = 1;
 
-  ui::AXNodeData new_static_text1;
-  new_static_text1.id = 10;
-  new_static_text1.role = ax::mojom::Role::kStaticText;
-  new_static_text1.SetNameChecked(new_sentence1);
-
-  ui::AXNodeData new_static_text2;
-  new_static_text2.id = 12;
-  new_static_text2.role = ax::mojom::Role::kStaticText;
-  new_static_text2.SetNameChecked(new_sentence2);
-
-  ui::AXNodeData new_static_text3;
-  new_static_text3.id = 16;
-  new_static_text3.role = ax::mojom::Role::kStaticText;
-  new_static_text3.SetNameChecked(new_sentence3);
+  ui::AXNodeData new_static_text1 = TextNode(/* id= */ 10, new_sentence1);
+  ui::AXNodeData new_static_text2 = TextNode(/* id= */ 12, new_sentence2);
+  ui::AXNodeData new_static_text3 = TextNode(/* id= */ 16, new_sentence3);
 
   root.child_ids = {new_static_text1.id, new_static_text2.id,
                     new_static_text3.id};
@@ -3858,20 +3826,11 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_ReturnsExpectedNodes) {
   std::u16string sentence3 = u"And no one knows how far it goes.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -3946,15 +3905,9 @@ TEST_F(
   std::u16string sentence2 = u"This is another sentence. ";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
 
   update.nodes = {static_text1, static_text2};
   AccessibilityEventReceived({update});
@@ -3979,20 +3932,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"And no one knows how far it goes.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -4018,20 +3962,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"inside.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
@@ -4071,20 +4006,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"I am almost there.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/*id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/*id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/*id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
 
   AccessibilityEventReceived({update});
@@ -4161,20 +4087,11 @@ TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition) {
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/*id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/*id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/*id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4194,18 +4111,13 @@ TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition_SkipsNonTextNode) {
   std::u16string sentence2 = u"This is another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text1 = TextNode(/*id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/*id= */ 4, sentence2);
 
   ui::AXNodeData empty_node;
   empty_node.id = 3;
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 4;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
   update.nodes = {static_text1, empty_node, static_text2};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, empty_node.id, static_text2.id});
@@ -4222,20 +4134,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetName(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   // Don't distill the node with id 3.
@@ -4253,21 +4156,14 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
   static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
-  static_text2.SetNameChecked(sentence2);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
+
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4282,10 +4178,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence1 = u"This is a sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text;
-  static_text.id = 2;
-  static_text.role = ax::mojom::Role::kStaticText;
-  static_text.SetNameChecked(sentence1);
+  ui::AXNodeData static_text = TextNode(/* id= */ 2, sentence1);
   ui::AXNodeData empty_node1;
   empty_node1.id = 3;
   ui::AXNodeData empty_node2;
@@ -4308,20 +4201,11 @@ TEST_F(
       u"You coast past it all. The obstacles just disappear.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4360,20 +4244,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"Sleep my darling safe and sound. ";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4410,10 +4285,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence = u"I\'m crossing the line!";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text;
-  static_text.id = 2;
-  static_text.role = ax::mojom::Role::kStaticText;
-  static_text.SetNameChecked(sentence);
+  ui::AXNodeData static_text = TextNode(/*id= */ 2, sentence);
 
   update.nodes = {static_text};
   AccessibilityEventReceived({update});
@@ -4447,20 +4319,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"turn.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4530,15 +4393,9 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string node2_text = u"line.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(node1_text);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(node2_text);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, node1_text);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, node2_text);
 
   update.nodes = {static_text1, static_text2};
   AccessibilityEventReceived({update});
@@ -4649,20 +4506,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"no worries or doubts interfere.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4723,20 +4571,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"interfere.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4789,20 +4628,11 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence3 = u"Stretch out with the wind behind you.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence1);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 3;
-  static_text2.role = ax::mojom::Role::kStaticText;
-  static_text2.SetNameChecked(sentence2);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = TextNode(/* id= */ 4, sentence3);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 4;
-  static_text3.role = ax::mojom::Role::kStaticText;
-  static_text3.SetNameChecked(sentence3);
   update.nodes = {static_text1, static_text2, static_text3};
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
@@ -4864,10 +4694,7 @@ TEST_F(ReadAnythingAppControllerTest,
       word1 + word2 + word3 + word4 + word5 + word6 + word7;
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData static_text1;
-  static_text1.id = 2;
-  static_text1.role = ax::mojom::Role::kStaticText;
-  static_text1.SetNameChecked(sentence);
+  ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence);
 
   update.nodes = {static_text1};
   AccessibilityEventReceived({update});

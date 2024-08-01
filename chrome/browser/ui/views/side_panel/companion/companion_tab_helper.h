@@ -115,6 +115,7 @@ class CompanionTabHelper
   // Starts the region search controller with the specified parameters.
   void StartRegionSearch(content::WebContents* web_contents,
                          bool use_fullscreen_capture,
+                         bool force_open_in_new_tab = false,
                          lens::AmbientSearchEntryPoint entry_point =
                              lens::AmbientSearchEntryPoint::
                                  CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS);

@@ -122,7 +122,8 @@ void TouchToFillPasswordGenerationController::
   if (frame_driver_) {
     frame_driver_->render_frame_host()
         ->GetRenderWidgetHost()
-        ->RemoveSuppressShowingImeCallback(suppress_showing_ime_callback_);
+        ->RemoveSuppressShowingImeCallback(suppress_showing_ime_callback_,
+                                           /*trigger_ime=*/false);
   }
   suppress_showing_ime_callback_added_ = false;
 }

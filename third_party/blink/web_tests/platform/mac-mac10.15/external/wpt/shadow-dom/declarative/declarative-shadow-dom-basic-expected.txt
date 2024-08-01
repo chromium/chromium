@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Shadowrootmode reflection
-  assert_equals: Invalid values map to empty string expected (string) "" but got (object) null
-Harness: the test ran to completion.
-

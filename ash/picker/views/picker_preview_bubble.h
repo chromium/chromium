@@ -47,6 +47,7 @@ class ASH_EXPORT PickerPreviewBubbleView
 
   // BubbleDialogDelegateView overrides
   void OnThemeChanged() override;
+  gfx::Rect GetAnchorRect() const override;
 
   void Close();
 

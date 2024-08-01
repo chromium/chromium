@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
+#import "base/check_deref.h"
 #import "base/containers/contains.h"
 #import "base/containers/to_vector.h"
 #import "base/memory/ptr_util.h"
@@ -88,21 +89,27 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
     }
   }
 
-  // TODO: crbug.com/40269979 - Call AutofillManager::Reset() when necessary.
-  // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
-  // the factory after construction is finished. That's required by the contract
-  // of AutofillManager::LifecycleState.
-  manager_->SetLifecycleState(AutofillManager::LifecycleState::kActive, {});
+  // TODO: crbug.com/355907668 - Move to AutofillDriverIOSFactory.
+  auto& factory =
+      CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+  for (auto& observer : factory.observers(/*pass_key=*/{})) {
+    observer.OnAutofillDriverCreated(factory, *this);
+  }
+  // This must be called as last statement of the constructor because
+  // according to the contract it mustn't be called during construction.
+  factory.SetLifecycleStateAndNotifyObservers(*this, LifecycleState::kActive,
+                                              /*pass_key=*/{});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
-  // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
-  // the factory before destruction starts. That's required by the contract of
-  // AutofillManager::LifecycleState.
-  manager_->SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion,
-                              {});
-
-  router_->UnregisterDriver(*this, /*driver_is_dying=*/true);
+  // TODO: crbug.com/355907668 - Move to AutofillDriverIOSFactory.
+  auto& factory =
+      CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+  // This must be called as first statement of the destructor because
+  // according to the contract it mustn't be called during destruction.
+  factory.SetLifecycleStateAndNotifyObservers(
+      *this, LifecycleState::kPendingDeletion, /*pass_key=*/{});
+  Unregister();
 }
 
 LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
@@ -369,7 +376,6 @@ void AutofillDriverIOS::FormsSeen(
         }
       }
     }
-    // TODO(crbug.com/40184363): Notify about deleted fields.
     router_->FormsSeen(callback, *this, updated_forms, removed_forms);
   } else {
     callback(*this, updated_forms, removed_forms);
@@ -424,6 +430,13 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
 }
 
 void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {
+  if (unregistered_) {
+    // Do not set parent if the driver was unregistered to avoid any risk
+    // of connecting it back into a form tree, where it has to be kept alone as
+    // a standalone node.
+    return;
+  }
+
   parent_ = std::move(parent);
 }
 
@@ -461,8 +474,22 @@ void AutofillDriverIOS::ClearLastInteractedForm() {
   last_interacted_form_.reset();
 }
 
-void AutofillDriverIOS::OnAutofillManagerDestroyed(AutofillManager& manager) {
-  manager_observation_.Reset();
+// TODO: crbug.com/354043640 - The flow of the event is strange here: it goes
+// factory -> driver -> manager -> driver. We should probably handle it coming
+// from the factory directly.
+void AutofillDriverIOS::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    LifecycleState old_state,
+    LifecycleState new_state) {
+  switch (new_state) {
+    case LifecycleState::kInactive:
+    case LifecycleState::kActive:
+    case LifecycleState::kPendingReset:
+      break;
+    case LifecycleState::kPendingDeletion:
+      manager_observation_.Reset();
+      break;
+  }
 }
 
 void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,
@@ -565,6 +592,11 @@ bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(
   // Check if the last interacted formless field was removed.
   return removed_unowned_fields.find(last_formless_field_id) !=
          removed_unowned_fields.end();
+}
+
+void AutofillDriverIOS::Unregister() {
+  router_->UnregisterDriver(*this, /*driver_is_dying=*/true);
+  unregistered_ = true;
 }
 
 void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {

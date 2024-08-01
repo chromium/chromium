@@ -69,7 +69,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
     // a GpuServiceImpl must be initialized to obtain a SharedContextState.
     // Instead, we just enumerate the first DXGI adapter.
     CHECK_IS_TEST();
-    return dml::Adapter::GetInstanceForTesting(dml::kMinDMLFeatureLevelForGpu);
+    return dml::Adapter::GetGpuInstanceForTesting();
   }
 
   // At the current stage, all `ContextImplDml` share this instance.
@@ -90,8 +90,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
   ComPtr<IDXGIAdapter> dxgi_adapter;
   // Asking for an adapter from IDXGIDevice is always expected to succeed.
   CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
-  return dml::Adapter::GetGpuInstance(dml::kMinDMLFeatureLevelForGpu,
-                                      std::move(dxgi_adapter));
+  return dml::Adapter::GetGpuInstance(std::move(dxgi_adapter));
 }
 #endif
 
@@ -207,8 +206,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     return;
   }
 
-  base::UnguessableToken context_handle = base::UnguessableToken::Create();
-
   WebNNContextImpl* context_impl = nullptr;
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
@@ -237,8 +234,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
             GetDmlGpuAdapter(shared_context_state_.get(), gpu_feature_info_);
         break;
       case mojom::CreateContextOptions::Device::kNpu:
-        adapter_creation_result = dml::Adapter::GetNpuInstance(
-            dml::kMinDMLFeatureLevelForNpu, gpu_feature_info_, gpu_info_);
+        adapter_creation_result =
+            dml::Adapter::GetNpuInstance(gpu_feature_info_, gpu_info_);
         break;
     }
     if (!adapter_creation_result.has_value()) {
@@ -263,7 +260,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
     context_impl = new dml::ContextImplDml(
         std::move(adapter), std::move(receiver), this, std::move(options),
-        std::move(command_recorder), gpu_feature_info_, context_handle);
+        std::move(command_recorder), gpu_feature_info_);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -271,8 +268,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // TODO: crbug.com/325612086 - Consider using supporting older Macs either
   // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
-    context_impl = new coreml::ContextImplCoreml(
-        std::move(receiver), this, std::move(options), context_handle);
+    context_impl = new coreml::ContextImplCoreml(std::move(receiver), this,
+                                                 std::move(options));
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -280,11 +277,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   if (!context_impl) {
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
-    context_impl = new tflite::ContextImplCrOS(
-        std::move(receiver), this, std::move(options), context_handle);
+    context_impl = new tflite::ContextImplCrOS(std::move(receiver), this,
+                                               std::move(options));
 #else
-    context_impl = new tflite::ContextImplTflite(
-        std::move(receiver), this, std::move(options), context_handle);
+    context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
+                                                 std::move(options));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
@@ -299,6 +296,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 
   ContextProperties context_properties = context_impl->properties();
+  const base::UnguessableToken& context_handle = context_impl->handle();
   impls_.emplace(base::WrapUnique<WebNNContextImpl>(context_impl));
 
   auto success = mojom::CreateContextSuccess::New(std::move(remote),

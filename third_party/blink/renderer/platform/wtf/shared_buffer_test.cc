@@ -170,7 +170,7 @@ TEST(SharedBufferTest, constructorWithFlatData) {
 
   while (data.size() < 10000ul) {
     data.Append("FooBarBaz", 9ul);
-    auto shared_buffer = SharedBuffer::Create(data.begin(), data.size());
+    auto shared_buffer = SharedBuffer::Create(base::span(data));
 
     Vector<Vector<char>> segments;
     for (const auto& span : *shared_buffer) {
@@ -181,7 +181,7 @@ TEST(SharedBufferTest, constructorWithFlatData) {
     // Shared buffers constructed from flat data should stay flat.
     ASSERT_EQ(segments.size(), 1ul);
     ASSERT_EQ(segments.front().size(), data.size());
-    EXPECT_EQ(memcmp(segments.front().begin(), data.begin(), data.size()), 0);
+    EXPECT_EQ(memcmp(segments.front().data(), data.data(), data.size()), 0);
   }
 }
 

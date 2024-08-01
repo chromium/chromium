@@ -341,10 +341,7 @@ class EgtestsApp(GTestsApp):
 
   def _additional_inserted_libs(self):
     """Returns additional libraries to add to inserted_libs."""
-    libs = [
-        '__PLATFORMS__/iPhoneSimulator.platform/Developer/'
-        'usr/lib/libXCTestBundleInject.dylib'
-    ]
+    libs = []
     for child in os.listdir(self.test_app_path):
       if child.startswith('libclang_rt.asan'):
         libs.append(os.path.join('@executable_path', child))

@@ -26,7 +26,8 @@ sale, use or other dealings in this Software without prior written
 authorization from the authors.
 -->
 <xcb header="dpms" extension-xname="DPMS" extension-name="DPMS"
-    major-version="0" minor-version="0">
+    major-version="1" minor-version="2">
+  <import>xproto</import>
   <request name="GetVersion" opcode="0">
     <field type="CARD16" name="client_major_version" />
     <field type="CARD16" name="client_minor_version" />
@@ -84,4 +85,20 @@ authorization from the authors.
       <pad bytes="21" />
     </reply>
   </request>
+
+  <enum name="EventMask" >
+    <item name="InfoNotify"> <bit>0</bit> </item>
+  </enum>
+
+  <request name="SelectInput" opcode="8">
+    <field type="CARD32" name="event_mask" mask="EventMask"/>
+  </request>
+
+  <event name="InfoNotify" number="0" xge="true">
+    <pad bytes="2" />
+    <field type="TIMESTAMP" name="timestamp"/>
+    <field type="CARD16" name="power_level" enum="DPMSMode" />
+    <field type="BOOL" name="state" />
+    <pad bytes="21"/>
+  </event>
 </xcb>

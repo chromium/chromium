@@ -22,12 +22,14 @@ using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 namespace video_capture {
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
 
 // Tests that an answer arrives from the service when calling
 // GetSourceInfos().
 TEST_F(VideoCaptureServiceTest, GetSourceInfosCallbackArrives) {
   base::RunLoop wait_loop;
-  EXPECT_CALL(device_info_receiver_, Run(_))
+  EXPECT_CALL(device_info_receiver_, Run)
       .Times(Exactly(1))
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
 
@@ -38,11 +40,13 @@ TEST_F(VideoCaptureServiceTest, GetSourceInfosCallbackArrives) {
 TEST_F(VideoCaptureServiceTest, FakeDeviceFactoryEnumeratesThreeDevices) {
   base::RunLoop wait_loop;
   size_t num_devices_enumerated = 0;
-  EXPECT_CALL(device_info_receiver_, Run(_))
+  EXPECT_CALL(device_info_receiver_, Run)
       .Times(Exactly(1))
       .WillOnce(
           Invoke([&wait_loop, &num_devices_enumerated](
+                     GetSourceInfosResult result,
                      const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+            EXPECT_EQ(result, GetSourceInfosResult::kSuccess);
             num_devices_enumerated = infos.size();
             wait_loop.Quit();
           }));
@@ -59,11 +63,13 @@ TEST_F(VideoCaptureServiceTest, VirtualDeviceEnumeratedAfterAdd) {
   auto device_context = AddSharedMemoryVirtualDevice(virtual_device_id);
 
   base::RunLoop wait_loop;
-  EXPECT_CALL(device_info_receiver_, Run(_))
+  EXPECT_CALL(device_info_receiver_, Run)
       .Times(Exactly(1))
       .WillOnce(
           Invoke([&wait_loop, virtual_device_id](
+                     GetSourceInfosResult result,
                      const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+            EXPECT_EQ(result, GetSourceInfosResult::kSuccess);
             bool virtual_device_enumerated = false;
             for (const auto& info : infos) {
               if (info.descriptor.device_id == virtual_device_id) {
@@ -160,7 +166,7 @@ TEST_F(VideoCaptureServiceTest,
   base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
       create_push_subscription_remote_callback;
 
-  EXPECT_CALL(create_push_subscription_remote_callback, Run(_, _))
+  EXPECT_CALL(create_push_subscription_remote_callback, Run)
       .Times(1)
       .WillOnce(Invoke(
           [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,
@@ -203,7 +209,7 @@ TEST_F(VideoCaptureServiceTest, CreateDeviceSuccessForVirtualDevice) {
   base::MockCallback<mojom::VideoSource::CreatePushSubscriptionCallback>
       create_push_subscription_remote_callback;
 
-  EXPECT_CALL(create_push_subscription_remote_callback, Run(_, _))
+  EXPECT_CALL(create_push_subscription_remote_callback, Run)
       .Times(1)
       .WillOnce(Invoke(
           [&wait_loop](mojom::CreatePushSubscriptionResultCodePtr result_code,

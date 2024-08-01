@@ -18,8 +18,11 @@ import org.chromium.base.Token;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -64,6 +67,14 @@ public class TabGroupModelFilter extends TabModelFilter {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
                     SKIP_TAB_GROUP_CREATION_DIALOG_PARAM,
+                    false);
+
+    public static final String SHOW_TAB_GROUP_CREATION_DIALOG_SETTING_PARAM =
+            "show_tab_group_creation_dialog_setting";
+    public static final BooleanCachedFieldTrialParameter SHOW_TAB_GROUP_CREATION_DIALOG_SETTING =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
+                    SHOW_TAB_GROUP_CREATION_DIALOG_SETTING_PARAM,
                     false);
 
     /**
@@ -206,7 +217,8 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                && !shouldSkipGroupCreationDialog()) {
+                && !shouldSkipGroupCreationDialog(
+                        shouldShowGroupCreationDialogViaSettingsSwitch())) {
             notify = false;
         }
 
@@ -349,7 +361,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                     // If this is a new tab group creation that will show a dialog, do not trigger a
                     // snackbar.
                     if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && !shouldSkipGroupCreationDialog()) {
+                            && !shouldSkipGroupCreationDialog(
+                                    shouldShowGroupCreationDialogViaSettingsSwitch())) {
                         continue;
                     }
                 }
@@ -494,7 +507,8 @@ public class TabGroupModelFilter extends TabModelFilter {
             boolean skipSnackbarForCreation =
                     willMergingCreateNewGroup
                             && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && !shouldSkipGroupCreationDialog();
+                            && !shouldSkipGroupCreationDialog(
+                                    shouldShowGroupCreationDialogViaSettingsSwitch());
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
@@ -1743,11 +1757,26 @@ public class TabGroupModelFilter extends TabModelFilter {
         tabStateAttributes.endBatchEdit();
     }
 
-    private static boolean shouldSkipGroupCreationDialog() {
+    private static boolean shouldSkipGroupCreationDialog(boolean shouldShow) {
         if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
-            return false;
+            return !shouldShow;
         } else {
             return SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
+        }
+    }
+
+    /**
+     * Returns whether the group creation dialog should be shown based on the setting switch for
+     * auto showing under tab settings. If it is not enabled, return true since that is the default
+     * case for all callsites.
+     */
+    public static boolean shouldShowGroupCreationDialogViaSettingsSwitch() {
+        if (SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.getValue()) {
+            SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+            return prefsManager.readBoolean(
+                    ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true);
+        } else {
+            return true;
         }
     }
 }

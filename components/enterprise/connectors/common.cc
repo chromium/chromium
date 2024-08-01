@@ -5,11 +5,15 @@
 #include "components/enterprise/connectors/common.h"
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/download/public/common/download_item.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "components/download/public/common/download_item.h"
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace enterprise_connectors {
 
@@ -267,6 +271,7 @@ CreateSampleCustomRuleMessage(const std::u16string& msg,
   return custom_message;
 }
 
+#if !BUILDFLAG(IS_IOS)
 std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
 GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
                               download::DownloadDangerType danger_type) {
@@ -303,6 +308,7 @@ GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
   }
   return std::nullopt;
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
   return base::ranges::any_of(response.results(), [](const auto& result) {

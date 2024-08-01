@@ -235,7 +235,7 @@ void ProxyImpl::SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) {
 void ProxyImpl::SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect) {
   DCHECK(IsImplThread());
   host_impl_->SetViewportDamage(damage_rect);
-  SetNeedsRedrawOnImplThread();
+  SetNeedsRedrawOnImplThread(RedrawReason::kUntracked);
 }
 
 void ProxyImpl::SetNeedsCommitOnImpl() {
@@ -463,10 +463,10 @@ void ProxyImpl::NotifyReadyToDraw() {
   scheduler_->NotifyReadyToDraw();
 }
 
-void ProxyImpl::SetNeedsRedrawOnImplThread() {
+void ProxyImpl::SetNeedsRedrawOnImplThread(RedrawReason reason) {
   TRACE_EVENT0("cc", "ProxyImpl::SetNeedsRedrawOnImplThread");
   DCHECK(IsImplThread());
-  scheduler_->SetNeedsRedraw();
+  scheduler_->SetNeedsRedraw(reason);
 }
 
 void ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread() {
@@ -601,9 +601,11 @@ void ProxyImpl::OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
 }
 
 void ProxyImpl::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation) {
+    bool needs_first_draw_on_activation,
+    RedrawReason reason) {
   DCHECK(IsImplThread());
-  scheduler_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  scheduler_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                           reason);
 }
 
 void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
@@ -805,7 +807,8 @@ void ProxyImpl::ScheduledActionUpdateDisplayTree() {
   // The tile visibility/priority of the pending tree needs to be updated so
   // that it doesn't get activated before the raster is complete.
   if (host_impl_->pending_tree()) {
-    host_impl_->pending_tree()->UpdateDrawProperties();
+    host_impl_->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
   }
 }
 
@@ -980,8 +983,10 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   // The tile visibility/priority of the pending tree needs to be updated so
   // that it doesn't get activated before the raster is complete. But this needs
   // to happen after the draw, off of the critical path to draw.
-  if (host_impl_->pending_tree())
-    host_impl_->pending_tree()->UpdateDrawProperties();
+  if (host_impl_->pending_tree()) {
+    host_impl_->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
+  }
 
   DCHECK_NE(DrawResult::kInvalidResult, result);
   return result;

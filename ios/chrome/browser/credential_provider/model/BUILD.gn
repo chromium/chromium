@@ -16,8 +16,6 @@ buildflag_header("buildflags") {
 if (ios_enable_credential_provider_extension) {
   source_set("model") {
     sources = [
-      "archivable_credential+passkey.h",
-      "archivable_credential+passkey.mm",
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
       "credential_provider_migrator.h",

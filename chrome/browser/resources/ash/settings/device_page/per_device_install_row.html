@@ -1,4 +1,18 @@
 <style include="settings-shared input-device-settings-shared">
+  .app-info-container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
 </style>
 <div class="app-info-container">
+  <div class="app-info">
+      <span id="appName">[[installAppLabel]]</span>
+    </div>
+    <cr-button id="installButton"
+        on-click="onInstallCompanionAppButtonClicked"
+        aria-labelledby="appName">
+      $i18n{installAppButton}
+    </cr-button>
+  </div>
 </div>

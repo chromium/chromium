@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="1073417869336441572">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Nascondi scheda sul calo di prezzo</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1192844206376121885">Verranno eliminati tutti i dati e i cookie memorizzati da <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Guida e feedback</translation>
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
-<translation id="2550801787432930915">Scheda sul calo di prezzo</translation>
 <translation id="2570922361219980984">L'accesso alla posizione è disattivato anche per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
 <translation id="2586657967955657006">Appunti</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3859306556332390985">Posiziona avanti</translation>
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
+<translation id="3905475044299942653">Interrompi notifiche eccessive</translation>
 <translation id="3908288065506437185">Blocca i cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Alcune funzionalità potrebbero non essere disponibili. I siti correlati possono comunque utilizzare i cookie di terze parti.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Contenuti protetti</translation>
 <translation id="662080504995468778">Rimani</translation>
 <translation id="6653342741369270081">Premi il pulsante Indietro per uscire dalla modalità a schermo intero.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Nascondi Continua con questa scheda}other{Nascondi Continua con queste schede}}</translation>
 <translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6697925417670533197">Download attivi</translation>
 <translation id="6722828510648505498">Blocca le richieste di accesso da servizi di identità.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Seleziona un'opzione per <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
+<translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
 <translation id="6912998170423641340">Impedisci ai siti di leggere testo e immagini negli appunti</translation>
 <translation id="6945221475159498467">Seleziona</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Questa pagina è pericolosa</translation>
 <translation id="930525582205581608">Vuoi eliminare questo sito?</translation>
 <translation id="947156494302904893">I siti che visiti possono verificare che sei una persona reale e non un bot</translation>
+<translation id="959682366969460160">Organizzazione</translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 </translationbundle>

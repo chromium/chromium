@@ -23,5 +23,10 @@
         <part file="growth_framework_resources.grdp" />
       </if>
     </includes>
+    <structures>
+      <if expr="is_chrome_branded">
+        <part file="picker_resources.grdp" />
+      </if>
+    </structures>
   </release>
 </grit>

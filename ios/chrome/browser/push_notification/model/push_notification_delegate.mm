@@ -321,12 +321,11 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
         [defaults setObject:nil forKey:kContentNotificationContentArrayKey];
       }
     }
-    // Send an NAU every time the OS authorization status changes.
+    // Send an NAU on every foreground to report the OS Auth Settings.
     [PushNotificationUtil
         getPermissionSettings:^(UNNotificationSettings* settings) {
           UNAuthorizationStatus previousAuthStatus =
               [PushNotificationUtil getSavedPermissionSettings];
-          if (previousAuthStatus != settings.authorizationStatus) {
             ContentNotificationNAUConfiguration* config =
                 [[ContentNotificationNAUConfiguration alloc] init];
             ContentNotificationSettingsAction* settingsAction =
@@ -336,7 +335,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
                 settings.authorizationStatus;
             config.settingsAction = settingsAction;
             contentNotificationService->SendNAUForConfiguration(config);
-          }
         }];
   }
   [PushNotificationUtil

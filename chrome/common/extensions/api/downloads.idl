@@ -431,7 +431,7 @@ namespace downloads {
     // size * size pixels. The default and largest size for the icon is 32x32
     // pixels. The only supported sizes are 16 and 32. It is an error to specify
     // any other size.
-    [legalValues=(16,32)] long? size;
+    long? size;
   };
 
   // Encapsulates a change in the download UI.

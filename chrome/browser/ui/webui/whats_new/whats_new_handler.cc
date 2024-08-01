@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -27,6 +28,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/webui/whats_new_registry.h"
 #include "components/variations/service/variations_service.h"
 #include "url/gurl.h"
 
@@ -61,6 +63,11 @@ void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {
 
 void WhatsNewHandler::RecordEditionPageLoaded(const std::string& page_uid,
                                               bool is_auto_open) {
+  if (user_education::features::IsWhatsNewV2()) {
+    g_browser_process->GetFeatures()->whats_new_registry()->SetEditionUsed(
+        page_uid);
+  }
+
   base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
 
   base::RecordAction(

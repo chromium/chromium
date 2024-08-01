@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SafetyHubDashboardModuleType">
+  <variant name="BrowserState"/>
+  <variant name="NotificationReview"/>
+  <variant name="Passwords"/>
+  <variant name="RevokedPermissions"/>
+  <variant name="SafeBrowsing"/>
+  <variant name="UpdateCheck"/>
+</variants>
+
+<variants name="SafetyHubLifecycleEvent">
+  <variant name="OnExit"/>
+  <variant name="OnImpression"/>
+</variants>
+
 <!-- LINT.IfChange(AllPermissionTypes) -->
 
 <variants name="SettingsAllPermissionTypes">
@@ -329,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
-    enum="BooleanEnabled" expires_after="2024-11-24">
+    enum="BooleanEnabled" expires_after="2025-01-26">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -388,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -581,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsMigrationFail"
-    units="type" expires_after="2024-11-03">
+    units="type" expires_after="2025-01-26">
   <owner>alimariam@google.com</owner>
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -679,6 +693,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.Changed"
+    enum="BooleanEnabled" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures the state of the unused site permissions auto-revocation pref.
+    Recorded when the user changes the preference via the toggle on the Site
+    Settings page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.Dashboard.Interactions"
+    enum="SafetyHubDashboardInteractions" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures actions taken on the Safety Hub dashboard, except those taken on
+    the notifications review and revoked permissions module. Emitted for all
+    relevant click events on the Safety Hub dashboard.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.DashboardWarning"
     enum="SafetyHubModuleType" expires_after="2025-01-12">
   <owner>sideyilmaz@chromium.org</owner>
@@ -708,6 +746,17 @@ chromium-metrics-reviews@google.com.
     Captures the interaction with an entry point of Safety Hub, that will
     eventually lead to the Safety Check page, password manager checkup page or
     the extensions page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.ExternalInteractions"
+    enum="SafetyHubExternalInteractions" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures the interaction with an entry point of Safety Hub. Emitted when the
+    user click on the entry point.
   </summary>
 </histogram>
 
@@ -812,14 +861,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked"
-    enum="SafetyHubPermissionType" expires_after="2024-11-14">
+<histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2"
+    enum="ContentType" expires_after="2024-11-14">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The type of permission auto-revoked by the unused site permissions module of
     Safety Hub. Recorded during the auto-revocation run.
+
+    Updated to use the default content settings enum in M128.
   </summary>
 </histogram>
 
@@ -856,6 +907,18 @@ chromium-metrics-reviews@google.com.
     Version Card is located on Safety Check page in settings and can be in one
     of the multiple states. This is the Version Card state recorded on click.
   </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.{ModuleType}.{LifecycleEvent}"
+    enum="SafetyHubModuleState" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures the state of Safety Hub dashboard modules on impression or exit.
+  </summary>
+  <token key="ModuleType" variants="SafetyHubDashboardModuleType"/>
+  <token key="LifecycleEvent" variants="SafetyHubLifecycleEvent"/>
 </histogram>
 
 <histogram name="Settings.SearchEngines.Interactions"
@@ -910,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings2" enum="SessionStartupPref"
-    expires_after="2024-11-03">
+    expires_after="2025-01-26">
   <owner>mpearson@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -933,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1012,16 +1075,6 @@ chromium-metrics-reviews@google.com.
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
-</histogram>
-
-<histogram name="Settings.TrackedPreferencesNoEnforcementOnDomain"
-    enum="BooleanEnabled" expires_after="2018-08-30">
-  <owner>gab@chromium.org</owner>
-  <summary>
-    Whether settings enforcement was cancelled for a machine joined to a domain.
-    Reported once per session on browser startup (note: this histogram was
-    disabled for part of M40).
-  </summary>
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceTrustedInitialized"

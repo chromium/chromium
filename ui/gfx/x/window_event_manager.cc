@@ -69,7 +69,7 @@ void ScopedEventSelector::Reset() {
 
 class WindowEventManager::MultiMask {
  public:
-  MultiMask() { memset(mask_bits_, 0, sizeof(mask_bits_)); }
+  MultiMask() {}
 
   MultiMask(const MultiMask&) = delete;
   MultiMask& operator=(const MultiMask&) = delete;
@@ -77,7 +77,7 @@ class WindowEventManager::MultiMask {
   ~MultiMask() = default;
 
   void AddMask(EventMask mask) {
-    for (int i = 0; i < kMaskSize; i++) {
+    for (size_t i = 0; i < mask_bits_.size(); i++) {
       if (static_cast<uint32_t>(mask) & (1 << i)) {
         mask_bits_[i]++;
       }
@@ -85,7 +85,7 @@ class WindowEventManager::MultiMask {
   }
 
   void RemoveMask(EventMask mask) {
-    for (int i = 0; i < kMaskSize; i++) {
+    for (size_t i = 0; i < mask_bits_.size(); i++) {
       if (static_cast<uint32_t>(mask) & (1 << i)) {
         CHECK(mask_bits_[i]);
         mask_bits_[i]--;
@@ -95,7 +95,7 @@ class WindowEventManager::MultiMask {
 
   EventMask ToMask() const {
     EventMask mask = EventMask::NoEvent;
-    for (int i = 0; i < kMaskSize; i++) {
+    for (size_t i = 0; i < mask_bits_.size(); i++) {
       if (mask_bits_[i]) {
         mask = mask | static_cast<EventMask>(1 << i);
       }
@@ -104,9 +104,9 @@ class WindowEventManager::MultiMask {
   }
 
  private:
-  static constexpr auto kMaskSize = 25;
-
-  int mask_bits_[kMaskSize];
+  // The array size here must match the number of different event mask bits
+  // defined in X11/X.h and the events described in the libX11 protocol docs.
+  std::array<int, 25> mask_bits_{};
 };
 
 WindowEventManager::WindowEventManager(Connection* connection)

@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">সাজেশন: সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং</translation>
 <translation id="266935134738038806">সাইট দেখুন</translation>
+<translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ঘণ্টা আগে তৈরি করা হয়েছে}one{<ph name="NUM_HOURS_MANY" /> ঘণ্টা আগে তৈরি করা হয়েছে}other{<ph name="NUM_HOURS_MANY" /> ঘণ্টা আগে তৈরি করা হয়েছে}}</translation>
 <translation id="2801787514987684416">স্টোর সংক্রান্ত তথ্য দেখতে চান?</translation>
 <translation id="2928243913527329289">Google | এই স্টোর সম্পর্কে</translation>
 <translation id="2977480621796371840">গ্রুপ থেকে সরান</translation>
 <translation id="3008554597174452548">প্রোডাক্ট আর ট্র্যাক করতে চাই না</translation>
 <translation id="3026391124054406831">আপনার ট্যাব সাজাতে গ্রুপ তৈরি করুন।</translation>
+<translation id="3051031624272448591">আপনি যেকোনও সময় ইতিহাস থেকে সেগুলি ফিরিয়ে আনতে পারবেন</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
 <translation id="3078350928901129212">ট্যাব গ্রুপ রঙের আইকন <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">রেটিং</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="427987768447457592">নতুন ট্যাব গ্রুপ</translation>
-<translation id="4338724047016295066">ইনঅ্যাক্টিভ ট্যাব অটোমেটিক বন্ধ হয়ে যাবে। আপনি সব সময় এগুলি ইতিহাসে দেখতে পাবেন।</translation>
 <translation id="4371591986692297148">চালু নেই</translation>
 <translation id="4460014764210899310">আলাদা করুন</translation>
+<translation id="4590027107044272416">আপনি এখানে একটি নতুন ট্যাব খুলতে পারবেন</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{১টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}one{<ph name="TAB_COUNT_MANY" />টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}other{<ph name="TAB_COUNT_MANY" />টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}}</translation>
 <translation id="4648718555153979859">আপনার ট্যাবগুলি এখানে একসাথে গ্রুপ করা আছে</translation>
 <translation id="4686942373615810936">এইমাত্র তৈরি করা হয়েছে</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{১ দিন পরে বন্ধ হয়ে যাবে}one{<ph name="DAY_COUNT_MANY" /> দিন পরে বন্ধ হয়ে যাবে}other{<ph name="DAY_COUNT_MANY" /> দিন পরে বন্ধ হয়ে যাবে}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />টি রিভিউ)}one{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}other{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}}</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4870911314065352661">সব ট্যাব বন্ধ করবেন?</translation>
+<translation id="4871719318659334896">গ্রুপ বন্ধ করুন</translation>
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ট্যাব বন্ধ করুন}one{ট্যাব বন্ধ করুন}other{ট্যাব বন্ধ করুন}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> গ্রুপ সেভ করা হয়েছে (ট্যাব বন্ধ হয়ে যাবে ও গ্রুপ মুছে যাবে)</translation>
@@ -100,6 +104,7 @@
 <translation id="5972844218283131174">সবগুলি অনির্বাচন করুন</translation>
 <translation id="6017514345406065928">সবুজ</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
+<translation id="6051432659151380973">আপনার ট্যাব গ্রুপ অটোমেটিক সেভ হবে</translation>
 <translation id="6054741997831917303">এই আইটেমের দাম সম্প্রতি <ph name="PREVIOUS_PRICE" /> থেকে কমে <ph name="NEW_PRICE" /> হয়েছে</translation>
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
@@ -115,7 +120,6 @@
 <translation id="6562820390860419811">বাঁদিকে ট্যাব সরান</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
 <translation id="6744956528665271406">গ্রুপের রঙ এডিট করুন</translation>
-<translation id="6840760312327750441">ট্যাব গ্রুপ করতে সেটি টাচ করে ধরে থাকুন। তারপর, সেটি টেনে অন্য ট্যাবে নিয়ে আসুন।</translation>
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ট্যাব শেয়ার করুন}one{ট্যাব শেয়ার করুন}other{ট্যাব শেয়ার করুন}}</translation>
 <translation id="7129458170538955174">অর্ধেক খোলা স্টোরের বিষয়ে তথ্য</translation>
@@ -152,12 +156,14 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব বন্ধ আছে}one{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}other{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}}</translation>
 <translation id="8398929769197326728">নতুন ফোল্ডার - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">সেটিংস</translation>
+<translation id="870736955561925754">ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?</translation>
 <translation id="8714939927607906138">খুব কম দামে</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8730999928494395583">এইসব 'ছদ্মবেশী' ট্যাবে আপনার করা অ্যাক্টিভিটি এই ডিভাইস থেকে সরানো হবে</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাস আগে তৈরি করা হয়েছে}one{<ph name="NUM_MONTHS_MANY" /> মাস আগে তৈরি করা হয়েছে}other{<ph name="NUM_MONTHS_MANY" /> মাস আগে তৈরি করা হয়েছে}}</translation>
 <translation id="8820741577754260431">ট্যাবে দাম কমার তথ্য দেখুন</translation>
 <translation id="8887921976452567404">'সাম্প্রতিক ট্যাব' এবং 'ট্যাব গ্রুপ' বিভাগ থেকে, আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ আবার খোলা যেতে পারে।</translation>
+<translation id="8915916167043355778">সবকটি বন্ধ করুন</translation>
 <translation id="8926389886865778422">আর জিজ্ঞাসা করবেন না</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{সেই ট্যাব গ্রুপ বড় করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{সেই ট্যাব গ্রুপ বড় করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপ বড় করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="9090098097337832354">বন্ধ হওয়া এই স্টোরের বিষয়ে তথ্য</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="9216898458513705996">এই ডিভাইসে ট্যাব খোলা থাকবে কিন্তু <ph name="USER_EMAIL" /> ব্যবহার করে সাইন-ইন করা হয়েছে এমন সবকটি ডিভাইস থেকে গ্রুপ মুছে ফেলা হবে</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}}</translation>
-<translation id="959682366969460160">সবকিছু গুছিয়ে রাখুন</translation>
 <translation id="992256792861109788">গোলাপী</translation>
 </translationbundle>

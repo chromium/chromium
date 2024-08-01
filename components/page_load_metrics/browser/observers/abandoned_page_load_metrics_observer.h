@@ -7,6 +7,7 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace internal {
 // Exposed for tests.
@@ -44,15 +45,22 @@ class AbandonedPageLoadMetricsObserver
     kNonRedirectResponseStart = 6,
     kNonRedirectResponseLoaderCallback = 7,
     kCommitSent = 8,
-    kDidCommit = 9,
-    kParseStart = 10,
-    kFirstContentfulPaint = 11,
-    kDOMContentLoaded = 12,
-    kLoadEventStarted = 13,
-    kLargestContentfulPaint = 14,
-    kMaxValue = kLargestContentfulPaint,
+    kCommitReceived = 9,
+    kDidCommit = 10,
+    kParseStart = 11,
+    kFirstContentfulPaint = 12,
+    kDOMContentLoaded = 13,
+    kLoadEventStarted = 14,
+    kLargestContentfulPaint = 15,
+    kAFTStart = 16,
+    kAFTEnd = 17,
+    kHeaderChunkStart = 18,
+    kHeaderChunkEnd = 19,
+    kBodyChunkStart = 20,
+    kBodyChunkEnd = 21,
+    kMaxValue = kBodyChunkEnd,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum2)
 
   // The different abandonment reasons that the tracked page load can encounter.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -123,6 +131,9 @@ class AbandonedPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnCustomUserTimingMarkObserved(
+      const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
+          timings) override;
 
   // Signals that the navigation is abandoned: backgrounded, hidden, or failed.
   ObservePolicy FlushMetricsOnAppEnterBackground(
@@ -185,14 +196,20 @@ class AbandonedPageLoadMetricsObserver
   virtual ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
+  virtual const base::flat_map<std::string, NavigationMilestone>&
+  GetCustomUserTimingMarkNames() const;
+  virtual bool IsAllowedToLogUKM() const;
+  virtual void AddSRPMetricsToUKMIfNeeded(
+      ukm::builders::AbandonedSRPNavigation& builder) {}
 
   // Gets LCP and records UMA if it's valid. This is called from `OnComplete()`
   // and `FlushMetricsOnAppEnterBackground()` because LCP is finalized when the
   // page load is complete (or navigate away from the page).
   void FinalizeLCP();
 
-  // The ID of the navigation being tracked.
+  // The ID and start time of the navigation being tracked.
   int64_t navigation_id_ = 0;
+  base::TimeTicks navigation_start_time_;
 
   base::TimeTicks renderer_process_init_time_;
 

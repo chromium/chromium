@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"

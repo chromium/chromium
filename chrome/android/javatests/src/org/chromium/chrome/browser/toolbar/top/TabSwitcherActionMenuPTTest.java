@@ -82,8 +82,7 @@ public class TabSwitcherActionMenuPTTest {
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        RegularTabSwitcherStation tabSwitcher =
-                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         assertEquals(0, getCurrentTabModel().getCount());
         assertFinalDestination(tabSwitcher);
@@ -108,12 +107,11 @@ public class TabSwitcherActionMenuPTTest {
 
         // Close second regular tab opened.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        page = actionMenu.selectCloseTab(PageStation.class);
+        page = actionMenu.selectCloseTabAndDisplayAnotherTab();
 
         // Close first regular tab opened.
         actionMenu = page.openTabSwitcherActionMenu();
-        RegularTabSwitcherStation tabSwitcher =
-                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         // Only the incognito tab should still remain.
         assertEquals(0, regularTabModel.getCount());

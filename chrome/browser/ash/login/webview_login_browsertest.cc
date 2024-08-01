@@ -1012,6 +1012,10 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
                    ->GetHandler<GaiaScreenHandler>()
                    ->GetAutoReloadManagerForTesting()
                    .IsTimerActiveForTesting());
+
+  std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
+  test::OobeJS().ExpectTrue(frame_url +
+                            ".search('auto_reload_attempts') == -1");
 }
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
@@ -1023,9 +1027,16 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
 
   WaitForGaiaPageReload();
 
+  std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
+  test::OobeJS().ExpectTrue(frame_url +
+                            ".search('auto_reload_attempts=1') != -1");
+
   AdvanceTime(base::Minutes(10));
 
   WaitForGaiaPageReload();
+
+  test::OobeJS().ExpectTrue(frame_url +
+                            ".search('auto_reload_attempts=2') != -1");
 }
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,

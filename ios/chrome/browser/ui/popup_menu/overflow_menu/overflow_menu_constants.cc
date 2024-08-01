@@ -112,6 +112,8 @@ ActionType ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::ShareChrome;
   } else if (action == "EditActions") {
     return overflow_menu::ActionType::EditActions;
+  } else if (action == "LensOverlay") {
+    return overflow_menu::ActionType::LensOverlay;
   } else {
     NOTREACHED_NORETURN();
   }
@@ -153,6 +155,8 @@ std::string StringNameForActionType(ActionType action) {
       return "ShareChrome";
     case overflow_menu::ActionType::EditActions:
       return "EditActions";
+    case overflow_menu::ActionType::LensOverlay:
+      return "LensOverlay";
   }
 }
 // LINT.ThenChange(:stringToActionType)

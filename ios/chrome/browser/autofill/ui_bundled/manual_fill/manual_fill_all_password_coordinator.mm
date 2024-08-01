@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 
 @interface ManualFillAllPasswordCoordinator () <
@@ -80,15 +79,16 @@
   // Initialize `passwordMediator` with a nil `profilePasswordStore` and
   // 'accountPasswordStore` as these arguments are only used to create a
   // PasswordCounterObserver, which is not needed in this case.
-  self.passwordMediator =
-      [[ManualFillPasswordMediator alloc] initWithFaviconLoader:faviconLoader
-                                                       webState:webState
-                                                    syncService:syncService
-                                                            URL:GURL()
-                                       invokedOnObfuscatedField:NO
-                                           profilePasswordStore:nil
-                                           accountPasswordStore:nil
-                                         showAutofillFormButton:YES];
+  self.passwordMediator = [[ManualFillPasswordMediator alloc]
+         initWithFaviconLoader:faviconLoader
+                      webState:webState
+                   syncService:syncService
+                           URL:GURL()
+      invokedOnObfuscatedField:NO
+          profilePasswordStore:nil
+          accountPasswordStore:nil
+        showAutofillFormButton:[self.injectionHandler
+                                       isActiveFormAPasswordForm]];
   [self.passwordMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
   [self.passwordMediator fetchAllPasswords];
@@ -111,10 +111,7 @@
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
-
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinator];
-  }
+  [self startReauthCoordinator];
 }
 
 - (void)stop {

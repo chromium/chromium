@@ -44,7 +44,7 @@ namespace blink {
 
 class KURL;
 class ExecutionContext;
-class StorageAccessHandle;
+class GlobalStorageAccessHandle;
 class URLRegistry;
 class URLRegistrable;
 
@@ -54,7 +54,7 @@ class CORE_EXPORT PublicURLManager final
  public:
   explicit PublicURLManager(ExecutionContext*);
   explicit PublicURLManager(
-      base::PassKey<StorageAccessHandle>,
+      base::PassKey<GlobalStorageAccessHandle>,
       ExecutionContext*,
       mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>);
 

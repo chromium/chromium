@@ -37,13 +37,12 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync/test/fake_model_type_controller.h"
-#include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/fake_sync_engine.h"
+#include "components/sync/test/fake_sync_engine_factory.h"
 #include "components/sync/test/mock_model_type_local_data_batch_uploader.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
@@ -190,8 +189,6 @@ class SyncServiceImplTest : public ::testing::Test {
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
-    ON_CALL(*sync_client, CreateModelTypeControllers)
-        .WillByDefault(Return(ByMove(std::move(controllers))));
     ON_CALL(*sync_client, IsPasswordSyncAllowed).WillByDefault(Return(true));
     ON_CALL(*sync_client, GetIdentityManager)
         .WillByDefault(Return(identity_manager()));
@@ -199,7 +196,7 @@ class SyncServiceImplTest : public ::testing::Test {
     service_ = std::make_unique<SyncServiceImpl>(
         sync_service_impl_bundle_.CreateBasicInitParams(
             std::move(sync_client)));
-    service_->Initialize();
+    service_->Initialize(std::move(controllers));
   }
 
   void InitializeServiceWithLocalSyncBackend() {
@@ -214,8 +211,6 @@ class SyncServiceImplTest : public ::testing::Test {
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
-    ON_CALL(*sync_client, CreateModelTypeControllers)
-        .WillByDefault(Return(ByMove(std::move(controllers))));
     ON_CALL(*sync_client, GetIdentityManager)
         .WillByDefault(Return(identity_manager()));
 
@@ -225,7 +220,7 @@ class SyncServiceImplTest : public ::testing::Test {
     prefs()->SetBoolean(prefs::kEnableLocalSyncBackend, true);
 
     service_ = std::make_unique<SyncServiceImpl>(std::move(init_params));
-    service_->Initialize();
+    service_->Initialize(std::move(controllers));
   }
 
   std::unique_ptr<SyncServiceImpl> ShutdownAndReleaseService() {
@@ -237,7 +232,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
   void PopulatePrefsForInitialSyncFeatureSetupComplete() {
     CHECK(!service_);
-    component_factory()->set_first_time_sync_configure_done(true);
+    engine_factory()->set_first_time_sync_configure_done(true);
     // Set first sync time before initialize to simulate a complete sync setup.
     SyncPrefs sync_prefs(prefs());
     sync_prefs.SetSelectedTypesForSyncingUser(
@@ -279,17 +274,11 @@ class SyncServiceImplTest : public ::testing::Test {
     return sync_service_impl_bundle_.pref_service();
   }
 
-  FakeSyncApiComponentFactory* component_factory() {
-    return sync_service_impl_bundle_.component_factory();
+  FakeSyncEngineFactory* engine_factory() {
+    return sync_service_impl_bundle_.engine_factory();
   }
 
-  DataTypeManagerImpl* data_type_manager() {
-    return component_factory()->last_created_data_type_manager();
-  }
-
-  FakeSyncEngine* engine() {
-    return component_factory()->last_created_engine();
-  }
+  FakeSyncEngine* engine() { return engine_factory()->last_created_engine(); }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
     return sync_service_impl_bundle_.sync_invalidations_service();
@@ -305,8 +294,6 @@ class SyncServiceImplTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncEnableModelTypeLocalDataBatchUploaders};
   SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
   raw_ptr<SyncClientMock, DanglingUntriaged> sync_client_ =
@@ -520,7 +507,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
 // Exercises the SyncServiceImpl's code paths related to getting shut down
 // before the backend initialize call returns.
 TEST_F(SyncServiceImplTest, AbortedByShutdown) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -538,7 +525,7 @@ TEST_F(SyncServiceImplTest, AbortedByShutdown) {
 // Test the user signing out before the backend's initialization completes.
 TEST_F(SyncServiceImplTest, EarlySignOut) {
   // Set up a fake sync engine that will not immediately finish initialization.
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -605,7 +592,7 @@ TEST_F(SyncServiceImplTest,
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   ASSERT_TRUE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Sign-out.
   signin::PrimaryAccountMutator* account_mutator =
@@ -621,7 +608,7 @@ TEST_F(SyncServiceImplTest,
                 {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
             service()->GetDisableReasons());
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 
 TEST_F(SyncServiceImplTest,
@@ -648,7 +635,7 @@ TEST_F(SyncServiceImplTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -958,12 +945,12 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   ASSERT_TRUE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   service()->StopAndClear();
 
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Even though Sync-the-feature is disabled, there's still an (unconsented)
   // signed-in account, so Sync-the-transport should still be running.
@@ -1000,13 +987,13 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
   identity_test_env()->WaitForRefreshTokensLoaded();
 
   ASSERT_TRUE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Don't sign-in before creating the service.
   InitializeService();
 
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1533,15 +1520,14 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT,
-            data_type_manager()->last_configure_reason_for_test());
+  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT, engine()->last_configure_reason());
 
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
   service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
-            data_type_manager()->last_configure_reason_for_test());
+            engine()->last_configure_reason());
   ShutdownAndReleaseService();
 
   // Nth sync.
@@ -1552,14 +1538,14 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_EQ(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
-            data_type_manager()->last_configure_reason_for_test());
+            engine()->last_configure_reason());
 
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
   service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
-            data_type_manager()->last_configure_reason_for_test());
+            engine()->last_configure_reason());
   ShutdownAndReleaseService();
 }
 
@@ -1860,10 +1846,8 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {
   InitializeService();
   base::RunLoop().RunUntilIdle();
 
-  data_type_manager()->OnSingleDataTypeWillStop(
-      syncer::BOOKMARKS,
-      SyncError(FROM_HERE, SyncError::ErrorType::DATATYPE_ERROR,
-                "Data type failure", syncer::BOOKMARKS));
+  get_controller(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Model error"));
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kError);
 }
@@ -1890,12 +1874,12 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
   bool met_configuring_data_type_manager = false;
   testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
   ON_CALL(mock_sync_service_observer, OnStateChanged)
-      .WillByDefault(Invoke([this, &met_configuring_data_type_manager](
+      .WillByDefault(Invoke([&met_configuring_data_type_manager](
                                 SyncService* service) {
         EXPECT_NE(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                   SyncService::ModelTypeDownloadStatus::kError);
-        if (data_type_manager()->state() ==
-            DataTypeManager::State::CONFIGURING) {
+        if (service->GetTransportState() ==
+            SyncService::TransportState::CONFIGURING) {
           met_configuring_data_type_manager = true;
           EXPECT_EQ(service->GetDownloadStatusFor(syncer::BOOKMARKS),
                     SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
@@ -2031,7 +2015,7 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
 TEST_F(
     SyncServiceImplTest,
     GetTypesWithPendingDownloadForInitialSyncDuringFirstSyncInTransportMode) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
@@ -2060,7 +2044,7 @@ TEST_F(
 
 TEST_F(SyncServiceImplTest,
        GetTypesWithPendingDownloadForInitialSyncDuringFirstSync) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService();
   base::RunLoop().RunUntilIdle();
   SignInWithSyncConsent();
@@ -2089,7 +2073,7 @@ TEST_F(SyncServiceImplTest,
 
 TEST_F(SyncServiceImplTest,
        GetTypesWithPendingDownloadForInitialSyncDuringNthSync) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
 
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
@@ -2430,7 +2414,7 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
   const int kTestCohort1 = 11;
   const int kTestCohort2 = 22;
 
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService();
   base::RunLoop().RunUntilIdle();
   SignInWithSyncConsent();

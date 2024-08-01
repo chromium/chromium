@@ -28,6 +28,8 @@ static_library("handlers") {
     "device_name_policy_handler_impl.h",
     "device_name_policy_handler_name_generator.cc",
     "device_name_policy_handler_name_generator.h",
+    "device_restriction_schedule_policy_handler.cc",
+    "device_restriction_schedule_policy_handler.h",
     "device_wifi_allowed_handler.cc",
     "device_wifi_allowed_handler.h",
     "lacros_availability_policy_handler.cc",
@@ -50,6 +52,8 @@ static_library("handlers") {
     "tpm_auto_update_mode_policy_handler.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc:prefs",
@@ -66,7 +70,9 @@ static_library("handlers") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -113,6 +119,7 @@ static_library("handlers") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/settings",
   ]
 }
 
@@ -178,6 +185,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/handlers:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",

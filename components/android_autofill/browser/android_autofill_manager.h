@@ -71,7 +71,7 @@ class AndroidAutofillManager : public AutofillManager,
                          const url::Origin& triggered_origin);
 
  protected:
-  void ResetImpl() override;
+  void Reset() override;
 
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,

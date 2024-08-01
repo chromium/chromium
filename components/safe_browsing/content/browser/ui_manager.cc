@@ -43,6 +43,8 @@ using safe_browsing::SBThreatType;
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 SafeBrowsingUIManager::SafeBrowsingUIManager(
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
@@ -322,7 +324,6 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case SB_THREAT_TYPE_SAFE:
     case SB_THREAT_TYPE_URL_BINARY_MALWARE:
     case SB_THREAT_TYPE_EXTENSION:
-    case SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
     case SB_THREAT_TYPE_API_ABUSE:
     case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
     case SB_THREAT_TYPE_CSD_ALLOWLIST:

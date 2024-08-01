@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
@@ -72,11 +71,6 @@ abstract class QuickDeleteDelegate {
      */
     abstract void performQuickDelete(
             @NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod);
-
-    /**
-     * @return {@link SettingsLauncher} used to launch the Clear browsing data settings fragment.
-     */
-    abstract SettingsLauncher getSettingsLauncher();
 
     /**
      * Show the Quick Delete animation on the tab list.

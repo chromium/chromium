@@ -16,6 +16,8 @@
 #include "google_apis/youtube_music/youtube_music_api_request_types.h"
 #include "google_apis/youtube_music/youtube_music_api_requests.h"
 #include "google_apis/youtube_music/youtube_music_api_response_types.h"
+#include "net/base/network_change_notifier.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::youtube_music {
 
@@ -56,6 +58,101 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
     )");
+
+google_apis::youtube_music::ReportPlaybackRequestPayload::PlaybackState
+GetPayloadPlaybackState(const PlaybackState player_state) {
+  switch (player_state) {
+    case PlaybackState::kPlaying:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kPlaying;
+    case PlaybackState::kPaused:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kPaused;
+    case PlaybackState::kSwitchedToNext:
+    case PlaybackState::kEnded:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kCompleted;
+    default:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          PlaybackState::kUnspecified;
+  }
+}
+
+// Returns connection type to report to the YouTube Music API server.
+// Definitions can be found at:
+//   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/reports/playback#connectiontype
+google_apis::youtube_music::ReportPlaybackRequestPayload::ConnectionType
+GetNetworkConnectionType() {
+  switch (net::NetworkChangeNotifier::GetConnectionType()) {
+    case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kUnspecified;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kWired;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
+      if (net::NetworkChangeNotifier::GetConnectionCost() ==
+          net::NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED) {
+        return google_apis::youtube_music::ReportPlaybackRequestPayload::
+            ConnectionType::kWifiMetered;
+      } else {
+        return google_apis::youtube_music::ReportPlaybackRequestPayload::
+            ConnectionType::kWifi;
+      }
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kCellular2g;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kCellular3g;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kCellular4g;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kNone;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kDisco;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
+      // TODO(yongshun): ChromeOS does not detect 5G sub types yet (standalone
+      // cellular connection or non-standalone cellular connection). Update to
+      // use `kCellular5gSa` or `kCellular5gNsa` once it can differentiate.
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kActiveUncategorized;
+  }
+}
+
+std::unique_ptr<google_apis::youtube_music::ReportPlaybackRequestPayload>
+CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
+                                   const PlaybackData& playback_data) {
+  base::Time current_time = base::Time::Now();
+  std::optional<google_apis::youtube_music::ReportPlaybackRequestPayload::
+                    WatchTimeSegment>
+      watch_time_segment = std::nullopt;
+  if (!playback_data.initial_playback &&
+      playback_data.media_start.has_value() &&
+      playback_data.media_end.has_value()) {
+    watch_time_segment = google_apis::youtube_music::
+        ReportPlaybackRequestPayload::WatchTimeSegment(
+            base::Seconds(playback_data.media_start.value()),
+            base::Seconds(playback_data.media_end.value()), current_time);
+  }
+  google_apis::youtube_music::ReportPlaybackRequestPayload::Params param(
+      playback_reporting_token, current_time, base::TimeDelta(),
+      base::TimeDelta(), GetNetworkConnectionType(),
+      GetPayloadPlaybackState(playback_data.state), watch_time_segment);
+  return std::make_unique<
+      google_apis::youtube_music::ReportPlaybackRequestPayload>(param);
+}
 
 }  // namespace
 
@@ -126,6 +223,23 @@ void YouTubeMusicClient::PlaybackQueueNext(
           base::BindOnce(&YouTubeMusicClient::OnPlaybackQueueNextRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now()),
           playback_queue_id));
+}
+
+void YouTubeMusicClient::ReportPlayback(
+    const std::string& playback_reporting_token,
+    const PlaybackData& playback_data,
+    ReportPlaybackCallback callback) {
+  CHECK(callback);
+  report_playback_callback_ = std::move(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<google_apis::youtube_music::ReportPlaybackRequest>(
+          request_sender,
+          CreateReportPlaybackRequestPayload(playback_reporting_token,
+                                             playback_data),
+          base::BindOnce(&YouTubeMusicClient::OnReportPlaybackRequestDone,
+                         weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
 
 google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
@@ -237,6 +351,31 @@ void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
   std::move(playback_context_next_callback_)
       .Run(google_apis::HTTP_SUCCESS,
            GetPlaybackContextFromApiQueue(&result.value()->queue()));
+}
+
+void YouTubeMusicClient::OnReportPlaybackRequestDone(
+    const base::Time& request_start_time,
+    base::expected<
+        std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
+        google_apis::ApiErrorCode> result) {
+  if (!report_playback_callback_) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    std::move(report_playback_callback_).Run(result.error(), std::nullopt);
+    return;
+  }
+
+  if (!result.value()) {
+    std::move(report_playback_callback_)
+        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    return;
+  }
+
+  std::move(report_playback_callback_)
+      .Run(google_apis::HTTP_SUCCESS,
+           result.value()->playback_reporting_token());
 }
 
 }  // namespace ash::youtube_music

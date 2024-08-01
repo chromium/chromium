@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -66,10 +67,11 @@ TEST_P(MouseEventLayerPositionTest, LayerPositionAsExpected) {
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   mouse_event_init.setClientX(input_layer_location.x());
   mouse_event_init.setClientY(input_layer_location.y());
-  MouseEvent mouse_event(event_type_names::kMousedown, &mouse_event_init);
+  MouseEvent* mouse_event = MakeGarbageCollected<MouseEvent>(
+      event_type_names::kMousedown, &mouse_event_init);
 
-  ASSERT_EQ(mouse_event.layerX(), expected_layer_location.x());
-  ASSERT_EQ(mouse_event.layerY(), expected_layer_location.y());
+  ASSERT_EQ(mouse_event->layerX(), expected_layer_location.x());
+  ASSERT_EQ(mouse_event->layerY(), expected_layer_location.y());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -106,10 +108,11 @@ TEST_F(MouseEventTest, LayerXY) {
   Node* target = GetDocument().getElementById(AtomicString("target"));
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
-  MouseEvent mouse_event(event_type_names::kMousedown, &mouse_event_init);
-  mouse_event.SetTarget(target);
-  EXPECT_EQ(mouse_event.layerX(), 0);
-  EXPECT_EQ(mouse_event.layerY(), 0);
+  MouseEvent* mouse_event = MakeGarbageCollected<MouseEvent>(
+      event_type_names::kMousedown, &mouse_event_init);
+  mouse_event->SetTarget(target);
+  EXPECT_EQ(mouse_event->layerX(), 0);
+  EXPECT_EQ(mouse_event->layerY(), 0);
 }
 
 }  // namespace blink

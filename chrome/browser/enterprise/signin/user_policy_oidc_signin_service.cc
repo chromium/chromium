@@ -357,4 +357,8 @@ void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
   }
 }
 
+std::string_view UserPolicyOidcSigninService::name() const {
+  return "UserPolicyOidcSigninService";
+}
+
 }  // namespace policy

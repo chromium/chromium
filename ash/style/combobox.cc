@@ -411,7 +411,7 @@ void Combobox::SetSelectedIndex(std::optional<size_t> index) {
   // Update selected item on menu if the menu is opening.
   if (menu_view_) {
     menu_view_->SelectItem(selected_index_.value());
-    NotifyAccessibilityEvent(ax::mojom::Event::kActiveDescendantChanged, true);
+    UpdateAccessibleAccessibleActiveDescendantId();
   }
 }
 
@@ -473,14 +473,6 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   node_data->SetValue(title_->GetText());
-
-  const OptionButtonBase* selected_button =
-      menu_view_ ? menu_view_->GetSelectedItemView() : nullptr;
-  if (selected_button) {
-    node_data->AddIntAttribute(
-        ax::mojom::IntAttribute::kActivedescendantId,
-        selected_button->GetViewAccessibility().GetUniqueId());
-  }
 }
 
 void Combobox::AddedToWidget() {
@@ -604,6 +596,7 @@ void Combobox::ShowDropDownMenu() {
   menu_->Show();
   menu_view_->ScrollToSelectedView();
   UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleAccessibleActiveDescendantId();
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       kComboboxActiveColorId, kComboboxRoundedCorners));
@@ -618,6 +611,7 @@ void Combobox::CloseDropDownMenu() {
   menu_view_ = nullptr;
   menu_.reset();
   UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleAccessibleActiveDescendantId();
 
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
@@ -674,7 +668,7 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 
   if (menu_view_) {
     menu_view_->UpdateMenuContent();
-    NotifyAccessibilityEvent(ax::mojom::Event::kActiveDescendantChanged, true);
+    UpdateAccessibleAccessibleActiveDescendantId();
   }
 }
 
@@ -809,6 +803,16 @@ void Combobox::UpdateExpandedCollapsedAccessibleState() const {
     GetViewAccessibility().SetIsExpanded();
   } else {
     GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+void Combobox::UpdateAccessibleAccessibleActiveDescendantId() {
+  OptionButtonBase* selected_button =
+      menu_view_ ? menu_view_->GetSelectedItemView() : nullptr;
+  if (selected_button) {
+    GetViewAccessibility().SetActiveDescendant(*selected_button);
+  } else {
+    GetViewAccessibility().ClearActiveDescendant();
   }
 }
 

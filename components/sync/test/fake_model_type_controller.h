@@ -11,6 +11,10 @@
 #include "components/sync/service/model_type_controller.h"
 #include "components/sync/test/fake_model_type_controller_delegate.h"
 
+namespace base {
+class Location;
+}  // namespace base
+
 namespace syncer {
 
 // Fake ModelTypeController implementation that simulates the state machine of a
@@ -30,6 +34,12 @@ class FakeModelTypeController : public ModelTypeController {
   FakeModelTypeControllerDelegate* model(SyncMode sync_mode = SyncMode::kFull);
 
   int activate_call_count() const { return activate_call_count_; }
+
+  // Mimics the advanced/hypothetical scenario where a custom controller
+  // (subclass of ModelTypeController) issues an error. Prefer using
+  // model()->SimulateModelError() unless you know what you are doing, as the
+  // most common source for errors is the actual model itself (e.g. I/O error).
+  void SimulateControllerError(const base::Location& location);
 
   // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;

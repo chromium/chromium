@@ -520,7 +520,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 #endif
 
   // Used to ensure the button remains anchored while this dialog is open.
-  std::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
+  std::optional<Button::ScopedAnchorHighlight> button_anchor_highlight_;
 
   // The helper class that logs common bubble metrics.
   BubbleUmaLogger bubble_uma_logger_;

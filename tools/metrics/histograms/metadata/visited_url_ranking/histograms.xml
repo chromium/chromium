@@ -112,6 +112,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Latency"
+    units="ms" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the time elapsed in milliseconds (i.e. latency) when executing a
+    given transformation. Logged every time a transformer succeeded and there
+    were URL visit aggregates passed as input to the transform. Only logged if
+    the visited url ranking service feature is enabled. Only logged when the
+    tranform had data to process and when the transform was successful.
+  </summary>
+</histogram>
+
+<histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Success"
     enum="BooleanSuccess" expires_after="2025-03-22">
   <owner>romanarora@chromium.org</owner>

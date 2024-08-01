@@ -50,7 +50,11 @@ component("views") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash" ]
+    deps += [
+      "//ash",
+      "//ash/components/arc",
+      "//components/arc",
+    ]
   }
 }
 
@@ -62,6 +66,7 @@ source_set("test_support") {
     ":views",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support_ui",
     "//components/global_media_controls:global_media_controls",
     "//components/media_message_center:media_message_center",

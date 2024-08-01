@@ -29,6 +29,6 @@ export {LogoElement} from './logo.js';
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
-export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';
+export {$$} from './utils.js';
 export {Action as VoiceAction, Error as VoiceError} from './voice_search_overlay.js';
 export {WindowProxy} from './window_proxy.js';

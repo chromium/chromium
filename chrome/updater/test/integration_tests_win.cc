@@ -1622,7 +1622,10 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
 #if BUILDFLAG(CHROMIUM_BRANDING)
-#if defined(ARCH_CPU_X86_64)
+#if defined(ARCH_CPU_ARM64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_arm64"));
+#elif defined(ARCH_CPU_X86_64)
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86_64"));
 #elif defined(ARCH_CPU_X86)
@@ -1630,7 +1633,10 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
       old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86"));
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(ARCH_CPU_X86_64)
+#if defined(ARCH_CPU_ARM64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_arm64"));
+#elif defined(ARCH_CPU_X86_64)
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86_64"));
 #elif defined(ARCH_CPU_X86)

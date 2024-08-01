@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
@@ -968,6 +969,11 @@ bool ViewTransition::MaybeCrossFrameSink() const {
   // content::ViewTransitionCommitDeferringCondition, the browser process
   // doesn't issue a snapshot request for such navigations.
   return document_->GetFrame()->IsLocalRoot();
+}
+
+bool ViewTransition::IsGeneratingPseudo(
+    const ViewTransitionPseudoElementBase& pseudo_element) const {
+  return pseudo_element.IsBoundTo(style_tracker_.Get());
 }
 
 }  // namespace blink

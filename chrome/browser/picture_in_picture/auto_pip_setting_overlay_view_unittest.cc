@@ -85,6 +85,10 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     return setting_overlay_->get_background_for_testing();
   }
 
+  views::View* blur_view() const {
+    return setting_overlay_->get_blur_view_for_testing();
+  }
+
   const views::Widget* widget() const { return widget_.get(); }
 
   using UiResult = AutoPipSettingView::UiResult;
@@ -120,19 +124,21 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
 
 TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
   EXPECT_TRUE(widget()->IsVisible());
-  EXPECT_EQ(background()->GetColorProvider()->GetColor(ui::kColorSysStateScrim),
-            background()->GetBackground()->get_color());
+  EXPECT_EQ(
+      background()->GetColorProvider()->GetColor(kColorPipWindowBackground),
+      background()->GetBackground()->get_color());
+  EXPECT_EQ(4.0f, blur_view()->layer()->background_blur());
 }
 
 TEST_F(AutoPipSettingOverlayViewTest, TestBackgroundLayerAnimation) {
-  // Background layer opacity should start at 0.0f and end at 0.99f.
+  // Background layer opacity should start at 0.0f and end at 0.60f.
   EXPECT_EQ(0.0f, background()->layer()->opacity());
-  EXPECT_EQ(0.99f, background()->layer()->GetTargetOpacity());
+  EXPECT_EQ(0.60f, background()->layer()->GetTargetOpacity());
 
   // Progress animation to its end position. Background layer should fade in to
-  // a 0.99f opacity.
+  // a 0.60f opacity.
   background()->layer()->GetAnimator()->StopAnimating();
-  EXPECT_EQ(0.99f, background()->layer()->opacity());
+  EXPECT_EQ(0.60f, background()->layer()->opacity());
 }
 
 TEST_F(AutoPipSettingOverlayViewTest, TestWantsEvent) {

@@ -15,11 +15,39 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage();
 // The "more options" / "three dots" button on the network details page.
 WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
 
-// The title of a settings subpage.
-WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle();
+// The title of a internet settings subpage.
+WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle();
 
 // The network state shown on a settings subpage.
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState();
+
+// The network state shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpagePropertyList();
+
+// The "Configure" button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageConfigureButton();
+
+// The "Forget" button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageForgetButton();
+
+// The "Connect" / "Disconnect" button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery
+SettingsSubpageConnectDisconnectButton();
+
+// The "Add connection" expand button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton();
+
+// The "Add Wi-Fi" row in the expansion of "Add connection".
+WebContentsInteractionTestUtil::DeepQuery AddWiFiRow();
+
+// The "Add built-in VPN" row in the expansion of "Add connection".
+WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow();
+
+// The network config dialog.
+WebContentsInteractionTestUtil::DeepQuery InternetConfigDialog();
+
+// The title of the network config dialog.
+WebContentsInteractionTestUtil::DeepQuery InternetConfigDialogTitle();
 
 namespace cellular {
 
@@ -31,6 +59,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnDialog();
 
 // The "Advanced Settings" button in APN details dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsButton();
+
+// The expandable group items under the "Advanced Settings" in APN details
+// dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsGroup();
 
 // The "Attach" checkbox of APN types in APN details dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAttachCheckbox();
@@ -53,17 +85,41 @@ WebContentsInteractionTestUtil::DeepQuery ApnDialogUsernameInput();
 // The password input in APN details dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnDialogPasswordInput();
 
-// The first apn item in APN list.
+// The first APN item in APN list.
 WebContentsInteractionTestUtil::DeepQuery ApnListFirstItem();
 
-// The first apn item name in APN list.
+// The first APN item name in APN list.
 WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemName();
+
+// The first APN item sublabel in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemSublabel();
+
+// The n-th APN item in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItem(int n);
+
+// The n-th APN item in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemName(int n);
+
+// The confirm button in the APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton();
+
+// The APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionDialog();
+
+// The first APN in the APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItem();
+
+// The first APN in the APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItemName();
 
 // The action menu button in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton();
 
 // The "Create new APN" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton();
+
+// The "Show known APNs" button in the action menu in APN subpage.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton();
 
 // The "Zero" state banner in APN subpage when there're no APNs.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent();
@@ -204,9 +260,96 @@ WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();
 }  // namespace wifi
 
 namespace vpn {
+
+// The Service name input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogServiceNameInput();
+
+// The provider select button in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogProviderTypeSelect();
+
+// The provider type option under the dropdown menu in the "Join VPN network"
+// dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogProviderTypeOptions();
+
+// The VPN host name input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogHostnameInput();
+
+// The OpenVPN user name input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnUsernameInput();
+
+// The OpenVPN password input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnPasswordInput();
+
+// The OpenVPN OTP input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnOtpInput();
+
+// The save credentails toggle in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogSaveCredentialsToggle();
+
+// The "Connect" button in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogConnectButton();
+
+// The network list under the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnNetworksList();
+
+// The first VPN item in built-in VPN list.
+WebContentsInteractionTestUtil::DeepQuery VpnNetworksListFirstItem();
+
+// The VPN provider type in the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageProviderType();
+
+// The VPN host name input in the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageHostnameInput();
+
+// The VPN username input in the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageUsernameInput();
+
 // The vpn "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery VpnSummaryItem();
+
 }  // namespace vpn
+
+namespace bluetooth {
+
+// The top level Bluetooth page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothPage();
+
+// The pair new device button in top level Bluetooth page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairNewDeviceButton();
+
+// The Bluetooth pairing dialog.
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairingDialog();
+
+// The Bluetooth device list page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList();
+
+// The Bluetooth device details subpage.
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage();
+
+// The change name button in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton();
+
+// The forget device button in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton();
+
+// The Bluetooth name label in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceName();
+
+// The Bluetooth rename dialog.
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialog();
+
+// The Bluetooth rename dialog text input field.
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogInputField();
+
+// The Bluetooth rename dialog done button.
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogDoneButton();
+
+// The Bluetooth forget device dialog.
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialog();
+
+// The Bluetooth forget device dialog done button.
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialogDoneButton();
+}  // namespace bluetooth
 
 }  // namespace ash::settings
 

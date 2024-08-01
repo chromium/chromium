@@ -287,4 +287,9 @@ std::optional<std::vector<uint8_t>> GenerateEcSignature(
   return signature;
 }
 
+bool IsSupportedAlgorithm(int32_t algorithm) {
+  return algorithm ==
+         base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256);
+}
+
 }  // namespace webauthn::passkey_model_utils

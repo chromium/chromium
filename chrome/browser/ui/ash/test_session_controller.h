@@ -53,6 +53,8 @@ class TestSessionController : public ash::SessionController {
     existing_users_count_ = existing_users_count;
   }
 
+  int first_session_ready_count() const { return first_session_ready_count_; }
+
   void SetScreenLocked(bool locked);
 
   // ash::SessionController:
@@ -85,6 +87,7 @@ class TestSessionController : public ash::SessionController {
   void RemoveObserver(ash::SessionObserver* observer) override;
   bool IsScreenLocked() const override;
   std::optional<int> GetExistingUsersCount() const override;
+  void NotifyFirstSessionReady() override;
 
  private:
   std::optional<ash::SessionInfo> last_session_info_;
@@ -97,6 +100,7 @@ class TestSessionController : public ash::SessionController {
   bool is_screen_locked_ = false;
   base::ObserverList<ash::SessionObserver> observers_;
   int existing_users_count_ = 0;
+  int first_session_ready_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_

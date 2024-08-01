@@ -10,6 +10,7 @@
 #include "ash/auth/views/auth_textfield.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/public/cpp/ime_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield_controller.h"
@@ -204,7 +205,7 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
     : dispatcher_(dispatcher) {
   auth_factor_store_subscription_ = store->Subscribe(base::BindRepeating(
       &PasswordAuthView::OnStateChanged, weak_ptr_factory_.GetWeakPtr()));
-  input_methods_observer_.Observe(Shell::Get()->ime_controller());
+  input_methods_observer_.Observe(ImeController::Get());
 
   ConfigureRootLayout();
   CreateAndConfigurePasswordRow();

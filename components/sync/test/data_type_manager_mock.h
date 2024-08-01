@@ -15,6 +15,11 @@ class DataTypeManagerMock : public DataTypeManager {
  public:
   DataTypeManagerMock();
   ~DataTypeManagerMock() override;
+
+  MOCK_METHOD(void,
+              ClearMetadataWhileStoppedExceptFor,
+              (ModelTypeSet),
+              (override));
   MOCK_METHOD(void, SetConfigurer, (ModelTypeConfigurer*), (override));
   MOCK_METHOD(void,
               Configure,
@@ -24,6 +29,11 @@ class DataTypeManagerMock : public DataTypeManager {
   MOCK_METHOD(void, ResetDataTypeErrors, (), (override));
   MOCK_METHOD(void, PurgeForMigration, (ModelTypeSet), (override));
   MOCK_METHOD(void, Stop, (SyncStopMetadataFate), (override));
+  MOCK_METHOD(ModelTypeSet, GetRegisteredDataTypes, (), (const override));
+  MOCK_METHOD(ModelTypeSet,
+              GetDataTypesForTransportOnlyMode,
+              (),
+              (const override));
   MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetPurgedDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetActiveProxyDataTypes, (), (const override));
@@ -36,6 +46,10 @@ class DataTypeManagerMock : public DataTypeManager {
               (),
               (const override));
   MOCK_METHOD(State, state, (), (const override));
+  MOCK_METHOD(const ModelTypeController::TypeMap&,
+              GetControllerMap,
+              (),
+              (const override));
 
  private:
   DataTypeManager::ConfigureResult result_;

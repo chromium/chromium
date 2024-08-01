@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/follow/model/follow_action_state.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -50,6 +52,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -274,6 +277,10 @@ using base::UserMetricsAction;
     mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
     mediator.bookmarksHandler =
         HandlerForProtocol(dispatcher, BookmarksCommands);
+    if (IsLensOverlayAvailable()) {
+      mediator.lensOverlayHandler =
+          HandlerForProtocol(dispatcher, LensOverlayCommands);
+    }
     mediator.browserCoordinatorHandler =
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     mediator.findInPageHandler =
@@ -288,6 +295,7 @@ using base::UserMetricsAction;
     mediator.textZoomHandler = HandlerForProtocol(dispatcher, TextZoomCommands);
     mediator.quickDeleteHandler =
         HandlerForProtocol(dispatcher, QuickDeleteCommands);
+    mediator.whatsNewHandler = HandlerForProtocol(dispatcher, WhatsNewCommands);
 
     mediator.webStateList = self.browser->GetWebStateList();
     mediator.navigationAgent =

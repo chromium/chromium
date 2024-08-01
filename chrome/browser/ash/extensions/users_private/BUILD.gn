@@ -16,6 +16,8 @@ static_library("users_private") {
     "users_private_delegate_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",
@@ -49,6 +51,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/settings",

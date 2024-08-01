@@ -15,6 +15,10 @@
 
 class PrefService;
 
+namespace display {
+class NativeDisplayDelegate;
+}  // namespace display
+
 namespace keyboard {
 class KeyboardUIFactory;
 }

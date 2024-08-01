@@ -19,7 +19,7 @@ class ChromeAccountManagerServiceObserverBridgeTest : public PlatformTest {
     PlatformTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());

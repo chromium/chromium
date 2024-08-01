@@ -65,10 +65,13 @@ build_webui("build") {
       "certificate_info_dialog.ts",
       "certificate_password_dialog.html.ts",
       "certificate_password_dialog.ts",
+      "navigation_v2.ts",
     ]
 
     mojo_files_deps = [ ":mojom_ts__generator" ]
     mojo_files = [ "$target_gen_dir/certificate_manager_v2.mojom-webui.ts" ]
+
+    icons_html_files = [ "certificate_manager_v2_icons.html" ]
   }
 
   if (is_chromeos) {

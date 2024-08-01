@@ -37,6 +37,27 @@ using tab_groups::TabGroupVisualData;
 
 namespace {
 
+// Reentrancy observer to help checking the state of the tab closer during the
+// operations.
+class ReentrancyObserver : public WebStateListObserver {
+ public:
+  ReentrancyObserver(TabsCloser& tabs_closer) : tabs_closer_(&tabs_closer) {}
+
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) final {
+    can_undo_ = tabs_closer_->CanUndoCloseTabs();
+  }
+
+  bool CheckThatUndoCloseTabsWasNotPossible() {
+    return can_undo_.has_value() && !can_undo_.value();
+  }
+
+ private:
+  raw_ptr<TabsCloser> tabs_closer_;
+  std::optional<bool> can_undo_ = std::nullopt;
+};
+
 // Controls whether the WebState is inserted as pinned or regular.
 enum class InsertionPolicy {
   kPinned,
@@ -105,7 +126,7 @@ class TabsCloserTest : public PlatformTest {
         TestSessionRestorationService::GetTestingFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     // Initialize the AuthenticationService.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -159,7 +180,7 @@ class TabsCloserTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
@@ -537,129 +558,6 @@ TEST_F(TabsCloserTest, BrowserWithRegularAndPinnedTabs_ClosePolicyRegularTabs) {
   EXPECT_EQ(restore_service()->entries().size(), 3u);
 }
 
-// Tests that TabsCloser mark the original Browser as performing a batch
-// operation when confirming the "close all tabs" operation.
-//
-// Variants: ClosePolicy::kAllTabs
-TEST_F(TabsCloserTest,
-       BrowserInBatchOperationDuringConfirmation_ClosePolicyAllTabs) {
-  WebStateList* web_state_list = browser()->GetWebStateList();
-
-  web::WebState* web_state0 =
-      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
-  web::WebState* web_state1 =
-      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
-  web::WebState* web_state2 =
-      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
-  web::WebState* web_state3 =
-      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
-  web::WebState* web_state4 =
-      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
-
-  ASSERT_EQ(web_state_list->count(), 5);
-  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
-  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
-  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state2);
-  ASSERT_EQ(web_state_list->GetWebStateAt(3), web_state3);
-  ASSERT_EQ(web_state_list->GetWebStateAt(4), web_state4);
-
-  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
-
-  // Check that some tabs can be closed.
-  EXPECT_TRUE(tabs_closer.CanCloseTabs());
-  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-
-  // Check that calling CloseTabs() closes all the tabs registered, allows to
-  // undo the operation, and leaves the WebStateList empty.
-  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
-  EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
-  EXPECT_TRUE(web_state_list->empty());
-
-  // Check that the TabRestoreService has not been informed of the close
-  // operation yet (as it has not been confirmed).
-  EXPECT_EQ(restore_service()->entries().size(), 0u);
-
-  // Check that calling ConfirmDeletion() correctly closes the tabs and does
-  // this while the original Browser is in a batch operation.
-  ASSERT_TRUE(tabs_closer.CanUndoCloseTabs());
-
-  ScopedTestWebStateListObserver web_state_list_observer;
-  web_state_list_observer.Observe(browser()->GetWebStateList());
-
-  ASSERT_FALSE(web_state_list_observer.BatchOperationCompleted());
-  EXPECT_EQ(tabs_closer.ConfirmDeletion(), 5);
-  ASSERT_TRUE(web_state_list_observer.BatchOperationCompleted());
-
-  EXPECT_FALSE(tabs_closer.CanCloseTabs());
-  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-
-  // Check that the TabRestoreService has now been informed of the
-  // close operation which has been confirmed.
-  EXPECT_EQ(restore_service()->entries().size(), 5u);
-}
-
-// Tests that TabsCloser mark the original Browser as performing a batch
-// operation when confirming the "close all tabs" operation.
-//
-// Variants: ClosePolicy::kRegularTabs
-TEST_F(TabsCloserTest,
-       BrowserInBatchOperationDuringConfirmation_ClosePolicyRegularTabs) {
-  WebStateList* web_state_list = browser()->GetWebStateList();
-
-  web::WebState* web_state0 =
-      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{});
-  web::WebState* web_state1 =
-      AppendWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
-  web::WebState* web_state2 =
-      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{});
-  web::WebState* web_state3 =
-      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
-  web::WebState* web_state4 =
-      AppendWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
-
-  ASSERT_EQ(web_state_list->count(), 5);
-  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
-  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
-  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state2);
-  ASSERT_EQ(web_state_list->GetWebStateAt(3), web_state3);
-  ASSERT_EQ(web_state_list->GetWebStateAt(4), web_state4);
-
-  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kRegularTabs);
-
-  // Check that some tabs can be closed.
-  EXPECT_TRUE(tabs_closer.CanCloseTabs());
-  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-
-  // Check that calling CloseTabs() closes all the tabs registered, allows to
-  // undo the operation, and leaves the WebStateList empty.
-  EXPECT_EQ(tabs_closer.CloseTabs(), 3);
-  EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
-  EXPECT_EQ(web_state_list->count(), 2);
-  EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
-
-  // Check that the TabRestoreService has not been informed of the close
-  // operation yet (as it has not been confirmed).
-  EXPECT_EQ(restore_service()->entries().size(), 0u);
-
-  // Check that calling ConfirmDeletion() correctly closes the tabs and does
-  // this while the original Browser is in a batch operation.
-  ASSERT_TRUE(tabs_closer.CanUndoCloseTabs());
-
-  ScopedTestWebStateListObserver web_state_list_observer;
-  web_state_list_observer.Observe(browser()->GetWebStateList());
-
-  ASSERT_FALSE(web_state_list_observer.BatchOperationCompleted());
-  EXPECT_EQ(tabs_closer.ConfirmDeletion(), 3);
-  ASSERT_TRUE(web_state_list_observer.BatchOperationCompleted());
-
-  EXPECT_FALSE(tabs_closer.CanCloseTabs());
-  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-
-  // Check that the TabRestoreService has now been informed of the
-  // close operation which has been confirmed.
-  EXPECT_EQ(restore_service()->entries().size(), 3u);
-}
-
 // Tests that TabsCloser reinstates the groups when undoing.
 //
 // Variants: ClosePolicy::kAllTabs
@@ -798,4 +696,25 @@ TEST_F(TabsCloserTest, GroupedTabs_ClosePolicyRegularTabs) {
   // Check that the TabRestoreService has now been informed of the
   // close operation which has been confirmed.
   EXPECT_EQ(restore_service()->entries().size(), 8u);
+}
+
+// Check that TabsCloser returns that there it is not possible to undo a close
+// operation while undo is in progress.
+TEST_F(TabsCloserTest, UndoCloseTabs_Reentrancy) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c d e", browser()->GetBrowserState()));
+
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
+
+  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
+
+  ReentrancyObserver observer(tabs_closer);
+  base::ScopedObservation<WebStateList, WebStateListObserver> scoped_observer(
+      &observer);
+  scoped_observer.Observe(web_state_list);
+
+  tabs_closer.UndoCloseTabs();
+  EXPECT_TRUE(observer.CheckThatUndoCloseTabsWasNotPossible());
 }

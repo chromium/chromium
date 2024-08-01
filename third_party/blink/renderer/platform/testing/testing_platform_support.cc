@@ -33,11 +33,13 @@
 #include <memory>
 #include <string>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/test/test_suite_helper.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "gin/public/v8_platform.h"
@@ -212,6 +214,11 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
       std::make_unique<base::TestDiscardableMemoryAllocator>();
   base::DiscardableMemoryAllocator::SetInstance(
       discardable_memory_allocator_.get());
+
+  // FeatureList must be initialized before WTF::Partitions::Initialize(),
+  // because WTF::Partitions::Initialize() uses base::FeatureList to obtain
+  // PartitionOptions.
+  base::test::InitScopedFeatureListForTesting(scoped_feature_list_);
 
   // TODO(yutak): The initialization steps below are essentially a subset of
   // Platform::Initialize() steps with a few modifications for tests.

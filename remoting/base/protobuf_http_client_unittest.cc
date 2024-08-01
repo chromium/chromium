@@ -192,10 +192,9 @@ TEST_F(ProtobufHttpClientTest, SendRequestAndDecodeResponse) {
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-  std::string auth_header;
-  ASSERT_TRUE(pending_request->request.headers.GetHeader(
-      kAuthorizationHeaderKey, &auth_header));
-  ASSERT_EQ(kFakeAccessTokenHeaderValue, auth_header);
+  ASSERT_THAT(
+      pending_request->request.headers.GetHeader(kAuthorizationHeaderKey),
+      testing::Optional(std::string(kFakeAccessTokenHeaderValue)));
   const auto& data_element =
       pending_request->request.request_body->elements()->front();
   ASSERT_EQ(data_element.type(), network::DataElement::Tag::kBytes);

@@ -71,6 +71,8 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support_ui",

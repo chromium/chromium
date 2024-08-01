@@ -31,6 +31,7 @@
 #include "media/base/media_util.h"
 #include "media/base/overlay_info.h"
 #include "media/base/platform_features.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -108,7 +109,11 @@ bool HasSoftwareFallback(media::VideoCodec video_codec) {
   if (video_codec == media::VideoCodec::kHEVC) {
     return false;
   }
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
+// should be detangled such that software decoding can be enabled without
+// software encoding.
+#if BUILDFLAG(IS_ANDROID) && \
+    (!BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || !BUILDFLAG(ENABLE_OPENH264))
   return video_codec != media::VideoCodec::kH264;
 #else
   return true;

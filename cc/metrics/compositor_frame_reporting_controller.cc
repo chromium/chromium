@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
@@ -27,7 +30,6 @@ using SmoothThread = CompositorFrameReporter::SmoothThread;
 using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 
-constexpr char kTraceCategory[] = "cc,benchmark";
 constexpr int kNumOfCompositorStages =
     static_cast<int>(StageType::kStageTypeCount) - 1;
 constexpr int kNumDispatchStages =
@@ -137,8 +139,6 @@ void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
 void CompositorFrameReportingController::WillBeginImplFrame(
     const viz::BeginFrameArgs& args) {
   ProcessSkippedFramesIfNecessary(args);
-  ReportMultipleSwaps(args.frame_time, last_interval_);
-  last_interval_ = args.interval;
 
   base::TimeTicks begin_time = Now();
   if (reporters_[PipelineStage::kBeginImplFrame]) {
@@ -443,46 +443,6 @@ void CompositorFrameReportingController::
   }
 }
 
-void CompositorFrameReportingController::TrackSwapTiming(
-    const viz::FrameTimingDetails& details) {
-  if (last_started_compositor_frame_.args.IsValid() &&
-      details.swap_timings.swap_start != base::TimeTicks() &&
-      details.swap_timings.swap_start >
-          last_started_compositor_frame_.args.frame_time) {
-    if (latest_swap_times_.empty() ||
-        latest_swap_times_.back() < details.swap_timings.swap_start)
-      latest_swap_times_.push(details.swap_timings.swap_start);
-  }
-}
-
-void CompositorFrameReportingController::ReportMultipleSwaps(
-    base::TimeTicks begin_frame_time,
-    base::TimeDelta interval) {
-  while (!latest_swap_times_.empty() &&
-         latest_swap_times_.front() <= begin_frame_time - interval) {
-    latest_swap_times_.pop();
-  }
-
-  if (latest_swap_times_.empty())
-    return;
-
-  if (latest_swap_times_.size() > 1) {
-    base::TimeDelta swap_delta =
-        latest_swap_times_.back() - latest_swap_times_.front();
-
-    if (swap_delta < interval) {
-      UMA_HISTOGRAM_PERCENTAGE("GPU.MultipleSwapsDelta",
-                               swap_delta * 100.0 / interval);
-
-      const auto trace_track =
-          perfetto::Track(base::trace_event::GetNextGlobalTraceId());
-      TRACE_EVENT_BEGIN(kTraceCategory, "MultipleSwaps", trace_track,
-                        latest_swap_times_.front());
-      TRACE_EVENT_END(kTraceCategory, trace_track, latest_swap_times_.back());
-    }
-  }
-}
-
 void CompositorFrameReportingController::OnFinishImplFrame(
     const viz::BeginFrameId& id) {
   for (auto& reporter : reporters_) {
@@ -579,9 +539,6 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
   bool feedback_failed = details.presentation_feedback.failed();
-
-  if (!feedback_failed)
-    TrackSwapTiming(details);
 
   for (auto submitted_frame = submitted_compositor_frames_.begin();
        submitted_frame != submitted_compositor_frames_.end() &&
@@ -722,7 +679,6 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
     }
   }
   last_started_compositor_frame_ = {};
-  latest_swap_times_ = {};
 }
 
 void CompositorFrameReportingController::NotifyReadyToCommit(

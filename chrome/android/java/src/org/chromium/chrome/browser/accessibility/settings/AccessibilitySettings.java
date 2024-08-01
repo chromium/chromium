@@ -15,7 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
@@ -167,7 +167,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                         initialArguments.putString(
                                 SingleCategorySettings.EXTRA_CATEGORY,
                                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
-                        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                        SettingsLauncher settingsLauncher =
+                                SettingsLauncherFactory.createSettingsLauncher();
                         settingsLauncher.launchSettingsActivity(
                                 ContextUtils.getApplicationContext(),
                                 AllSiteSettings.class,

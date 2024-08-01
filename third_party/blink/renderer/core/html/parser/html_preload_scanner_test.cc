@@ -1845,6 +1845,8 @@ TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
 
   switch (GetParam()) {
     case LcppPreloadLazyLoadImageType::kNativeLazyLoad:
+      CachedDocumentParameters::SetLcppPreloadLazyLoadImageTypeForTesting(
+          features::LcppPreloadLazyLoadImageType::kNativeLazyLoading);
       Test(TokenStreamMatcherTestCase{locator, R"HTML(
         <div>
           <img src="not-interesting.jpg">
@@ -1855,6 +1857,8 @@ TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
                                       "super-interesting.jpg", true});
       break;
     case LcppPreloadLazyLoadImageType::kCustomLazyLoad:
+      CachedDocumentParameters::SetLcppPreloadLazyLoadImageTypeForTesting(
+          features::LcppPreloadLazyLoadImageType::kCustomLazyLoading);
       Test(TokenStreamMatcherTestCase{locator, R"HTML(
         <div>
           <img src="not-interesting.jpg">
@@ -1865,6 +1869,8 @@ TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
                                       "super-interesting.jpg", true});
       break;
     case LcppPreloadLazyLoadImageType::kAll:
+      CachedDocumentParameters::SetLcppPreloadLazyLoadImageTypeForTesting(
+          features::LcppPreloadLazyLoadImageType::kAll);
       Test(TokenStreamMatcherTestCase{locator, R"HTML(
         <div>
           <img src="not-interesting.jpg">
@@ -1883,6 +1889,9 @@ TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
                                       "super-interesting.jpg", true});
       break;
   }
+
+  CachedDocumentParameters::SetLcppPreloadLazyLoadImageTypeForTesting(
+      std::nullopt);
 }
 
 TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,

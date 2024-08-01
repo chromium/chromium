@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
-import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.transit.ViewElement.Scope;
 
@@ -19,20 +18,17 @@ import org.chromium.base.test.transit.ViewElement.Scope;
  * Represents a ViewElement added to a ConditionState.
  *
  * <p>ViewElements should be declared as constants, while ViewElementInStates are created by calling
- * {@link Elements.Builder#declareView(ViewElement)} or {@link
- * Elements.Builder#declareViewIf(ViewElement, Condition)}.
+ * {@link Elements.Builder#declareView(ViewElement)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
  */
 public class ViewElementInState extends ElementInState<View> {
     private final ViewElement mViewElement;
-    private final @Nullable Condition mGate;
 
-    ViewElementInState(ViewElement viewElement, @Nullable Condition gate) {
+    ViewElementInState(ViewElement viewElement) {
         super(viewElement.getId());
         mViewElement = viewElement;
-        mGate = gate;
     }
 
     @Override
@@ -44,16 +40,7 @@ public class ViewElementInState extends ElementInState<View> {
                         .withExpectEnabled(elementOptions.mExpectEnabled)
                         .withDisplayingAtLeast(elementOptions.mDisplayedPercentageRequired)
                         .build();
-        if (mGate != null) {
-            GatedDisplayedCondition gatedDisplayedCondition =
-                    new GatedDisplayedCondition(
-                            mViewElement.getViewMatcher(), mGate, conditionOptions);
-            return gatedDisplayedCondition;
-        } else {
-            DisplayedCondition displayedCondition =
-                    new DisplayedCondition(viewMatcher, conditionOptions);
-            return displayedCondition;
-        }
+        return new DisplayedCondition(viewMatcher, conditionOptions);
     }
 
     @Override

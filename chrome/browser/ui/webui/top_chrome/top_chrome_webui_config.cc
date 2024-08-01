@@ -7,7 +7,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
-#include "base/logging.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/webui_config_map.h"
@@ -42,4 +42,12 @@ TopChromeWebUIConfig* TopChromeWebUIConfig::From(
   return GetTopChromeWebUIConfigSet().contains(config)
              ? static_cast<TopChromeWebUIConfig*>(config)
              : nullptr;
+}
+
+// static
+void TopChromeWebUIConfig::ForEachConfig(
+    base::FunctionRef<void(TopChromeWebUIConfig*)> on_config) {
+  for (content::WebUIConfig* config : GetTopChromeWebUIConfigSet()) {
+    on_config(static_cast<TopChromeWebUIConfig*>(config));
+  }
 }

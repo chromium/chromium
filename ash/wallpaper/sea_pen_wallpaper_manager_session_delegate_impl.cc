@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/files/file_path.h"

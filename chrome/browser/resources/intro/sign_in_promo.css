@@ -1,0 +1,303 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://intro/tangible_sync_style_shared_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit cr-hidden-style-lit tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-button-height: 36px;
+  --btn-container-height: calc(2 * var(--btn-margin) + var(--cr-button-height));
+  --btn-margin: 24px;
+  --card-background-color: var(--google-grey-50);
+  --card-bottom-padding: 28px;
+  --card-description-color: var(--cr-secondary-text-color);
+  --card-description-font-size: 0.81rem;
+  --card-horizontal-padding: 24px;
+  --card-title-font-size: 0.94rem;
+  --card-top-padding: 24px;
+  --card-width: 188px;
+  --disclaimer-border-color: var(--google-grey-200);
+  --disclaimer-color: var(--google-grey-700);
+  --gap-between-cards: 12px;
+  --icon-color: var(--google-blue-600);
+  --icon-container-color: var(--google-grey-100);
+  --left-background-image-url: url(images/left_illustration.svg);
+  --product-logo-margin-top: 50px;
+  --product-logo-size: 90px;
+  --right-background-image-url: url(images/right_illustration.svg);
+  /* This is a dummy value, we set the actual one in javascript using
+  "setTranslationHeightToAlignLogoAndAnimation" */
+  --safe-zone-animation-translation-height: 0;
+  <if expr="not _google_chrome">
+  --security-icon-path: url(images/security.svg);
+  </if>
+  <if expr="_google_chrome">
+  --security-icon-path: url(images/gshield.svg);
+  </if>
+  color: var(--cr-primary-text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --card-background-color: var(--google-grey-800);
+    --card-description-color: white;
+    --icon-color: var(--google-blue-300);
+    --icon-container-color: var(--google-grey-700);
+    --disclaimer-border-color: var(--google-grey-600);
+    --disclaimer-color: var(--google-grey-100);
+    --left-background-image-url: url(images/left_illustration_dark.svg);
+    --right-background-image-url: url(images/right_illustration_dark.svg);
+  }
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  :host {
+    --card-description-font-size: 0.75rem;
+    --card-title-font-size: 0.81rem;
+    --card-width: 152px;
+    --product-logo-size: 60px;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  :host {
+    --card-horizontal-padding: 8px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  :host {
+    --card-bottom-padding: 12px;
+    --card-top-padding: 15px;
+  }
+}
+
+@keyframes left-background-slide-animation {
+  0% {
+    transform: translateX(calc(-1 * var(--tangible-sync-style-banner-width)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes right-background-slide-animation {
+  0% {
+    transform: translateX(var(--tangible-sync-style-banner-width));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
+@keyframes safe-zone-transition-animation {
+  0% {
+    top: 50%;
+    transform: translateY(calc(-1 * var(--safe-zone-animation-translation-height)));
+  }
+  100% {
+    top: 0;
+    transform: translateY(0);
+  }
+}
+
+p {
+  margin: 0;
+}
+
+h2 {
+  font-size: var(--card-title-font-size);
+  font-weight: 500;
+  line-height: 22px;
+  margin: 0 0 4px;
+}
+
+.fade-in {
+  animation: fade-in-animation 500ms ease-in-out;
+}
+
+.fast-fade-in {
+  animation: fade-in-animation 300ms ease-in-out;
+}
+
+#contentArea {
+  --card-horizontal-size: calc(var(--card-width) + 2 * var(--card-horizontal-padding));
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: auto var(--gap-between-cards);
+  text-align: center ;
+  width: calc(3 * var(--card-horizontal-size) + 2 * var(--gap-between-cards));
+}
+
+#product-logo {
+  height: var(--product-logo-size);
+  margin-top: var(--product-logo-margin-top);
+  width: var(--product-logo-size);
+}
+
+#benefit-cards-container {
+  display: flex;
+  flex-direction: row;
+  gap: var(--gap-between-cards);
+}
+
+.benefit-card {
+  align-items: center;
+  background: var(--card-background-color);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--card-top-padding) var(--card-horizontal-padding) var(--card-bottom-padding);
+  width: var(--card-width);
+}
+
+.benefit-card-description {
+  color: var(--card-description-color);
+  font-size: var(--card-description-font-size);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+#buttonRow {
+  bottom: 0;
+  display: flex;
+  height: var(--btn-container-height);
+  justify-content: flex-end;
+  position: fixed;
+  width: 100vw;
+}
+
+#buttonContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 0 var(--btn-margin);
+}
+
+<if expr="is_win">
+#buttonContainer {
+  flex-flow: row-reverse;
+}
+</if>
+
+#buttonContainer > cr-button {
+  margin-top: var(--btn-margin);
+}
+
+.subtitle {
+  margin: 0 0 32px;
+}
+
+.tangible-sync-style-left-banner {
+  animation-name: left-background-slide-animation, fade-in-animation;
+  content: var(--left-background-image-url);
+}
+
+.tangible-sync-style-right-banner {
+  animation-name: right-background-slide-animation, fade-in-animation;
+  content: var(--right-background-image-url);
+}
+
+.tangible-sync-style-left-banner,
+.tangible-sync-style-right-banner {
+  animation-duration: 500ms;
+  position: fixed;
+  transition-timing-function: ease-in-out;
+}
+
+#safeZone {
+  animation: safe-zone-transition-animation 500ms ease-in-out;
+  box-sizing: border-box;
+  display: flex;
+  height: calc(100% - var(--btn-container-height));
+  justify-content: center;
+  overflow-y: auto;
+  position: fixed;
+  width: 100vw;
+}
+
+#buttonRow.division-line {
+  border-top: var(--cr-separator-line);
+}
+
+#managedDeviceDisclaimer {
+  align-items: center;
+  border: 1px solid var(--disclaimer-border-color);
+  border-radius: 8px;
+  color: var(--disclaimer-color);
+  display: inline-flex;
+  flex-direction: row;
+  margin-inline: auto;
+  margin-top: 32px;
+  max-width: 780px;
+  padding-block: 12px;
+  padding-inline-end: 18px;
+}
+
+#managedDeviceDisclaimer.temporarily-hidden {
+  visibility: hidden;
+}
+
+#managedDeviceDisclaimer > p {
+  flex-grow: 1;
+  margin-block: 0;
+  text-align: start;
+}
+
+#icon-container {
+  --icon-container-size: 28px;
+  background-color: var(--icon-container-color);
+  border-radius: 50%;
+  height: var(--icon-container-size);
+  margin-inline: 16px;
+  width: var(--icon-container-size);
+}
+
+#icon-container cr-icon {
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#security {
+  --cr-icon-image: var(--security-icon-path);
+}
+
+#devices {
+  --cr-icon-image: url(images/devices.svg);
+}
+
+#cloud-upload {
+  --cr-icon-image: url(images/cloud_upload.svg);
+}
+
+.cr-icon {
+  --cr-icon-color: var(--icon-color);
+  --cr-icon-size: 36px;
+  margin: 0 0 16px;
+}
+
+/* Prevent the icons from being flipped in RTL mode. */
+:host-context([dir=rtl]) .cr-icon {
+  transform: scaleX(1);
+}

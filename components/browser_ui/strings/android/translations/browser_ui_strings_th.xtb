@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1044891598689252897">เว็บไซต์จะทำงานตามปกติ</translation>
 <translation id="1073417869336441572">ช่วยปรับปรุง Chrome โดยแจ้งให้เราทราบถึงเหตุผลที่คุณอนุญาตคุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">ซ่อนการ์ดราคาต่ำลง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1192844206376121885">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> จัดเก็บไว้</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
+<translation id="1500473259453106018">ซ่อนการ์ด "ดูราคาที่ต่ำลงได้ในแท็บ"</translation>
 <translation id="1510341833810331442">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
 <translation id="1547123415014299762">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="1568470248891039841">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เว็บไซต์อื่นๆ เหล่านี้สามารถขอสิทธิ์ใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณขณะที่เรียกดูเว็บไซต์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเนื้อหาที่ฝัง<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">ความช่วยเหลือและความคิดเห็น</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
-<translation id="2550801787432930915">การ์ดราคาต่ำลง</translation>
 <translation id="2570922361219980984">การเข้าถึงตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดการเข้าถึงได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="257931822824936280">ขยาย - คลิกเพื่อยุบ</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3232293466644486101">ลบข้อมูลการท่องเว็บ…</translation>
 <translation id="3242646949159196181">เมื่อเปิด เว็บไซต์จะเล่นเสียงได้ เมื่อปิด เว็บไซต์จะเล่นเสียงไม่ได้</translation>
+<translation id="3273479183583863618">ดูราคาที่ต่ำลงได้ในแท็บ</translation>
 <translation id="3277252321222022663">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ (แนะนำ)</translation>
 <translation id="3285500645985761267">อนุญาตให้เว็บไซต์ที่เกี่ยวข้องดูกิจกรรมของคุณในกลุ่ม</translation>
 <translation id="3295019059349372795">บทที่ 11: เมืองมรกตมหัศจรรย์แห่งออซ</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3859306556332390985">ไปข้างหน้า</translation>
 <translation id="3895926599014793903">บังคับให้เปิดใช้การซูม</translation>
+<translation id="3905475044299942653">หยุดการแจ้งเตือนจำนวนมาก</translation>
 <translation id="3908288065506437185">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ฟีเจอร์บางอย่างอาจใช้งานไม่ได้ เว็บไซต์ที่เกี่ยวข้องจะยังคงใช้คุกกี้ของบุคคลที่สามได้</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="662080504995468778">อยู่ต่อ</translation>
 <translation id="6653342741369270081">กดปุ่มย้อนกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{ซ่อน "ดำเนินการต่อโดยใช้แท็บนี้"}other{ซ่อน "ดำเนินการต่อโดยใช้แท็บเหล่านี้"}}</translation>
 <translation id="6689172468748959065">รูปโปรไฟล์</translation>
 <translation id="6697925417670533197">การดาวน์โหลดที่ทำงานอยู่</translation>
 <translation id="6722828510648505498">บล็อกข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตน</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">เลือกตัวเลือกสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
+<translation id="6840760312327750441">หากต้องการจัดกลุ่มแท็บ ให้แตะแท็บหนึ่งค้างไว้ แล้วลากไปที่อีกแท็บ</translation>
 <translation id="6864395892908308021">อุปกรณ์นี้อ่าน NFC ไม่ได้</translation>
+<translation id="6870169401250095575">ซ่อนการ์ด "การตรวจสอบความปลอดภัย"</translation>
 <translation id="6912998170423641340">บล็อกเว็บไซต์ไม่ให้อ่านข้อความและดูรูปภาพจากคลิปบอร์ด</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6950072572526089586">เว็บไซต์ที่คุณเข้าชมสามารถบันทึกข้อมูลเกี่ยวกับสิ่งที่คุณทำอยู่เพื่อให้ใช้งานได้ตามที่ต้องการ เช่น ให้คุณลงชื่อเข้าใช้เว็บไซต์ค้างไว้หรือบันทึกสินค้าไว้ในรถเข็นช็อปปิ้ง เว็บไซต์ต่างๆ มักจะบันทึกข้อมูลนี้ไว้ชั่วคราวบนอุปกรณ์</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{ซ่อนการ์ด "ดำเนินการต่อโดยใช้แท็บนี้"}other{ซ่อนการ์ด "ดำเนินการต่อโดยใช้แท็บเหล่านี้"}}</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8042586301629853791">จัดเรียงตาม</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">หน้านี้อันตราย</translation>
 <translation id="930525582205581608">เลิกจำเว็บไซต์นี้ใช่ไหม</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
+<translation id="959682366969460160">จัดระเบียบ</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>
 </translationbundle>

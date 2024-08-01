@@ -72,7 +72,7 @@ bool LoadFromFile(base::FilePath file_path,
     return false;
   }
 
-  name_table_region->mapping.GetMemoryAsSpan<uint8_t>().copy_from(proto);
+  base::span(name_table_region->mapping).copy_from(proto);
 
   return true;
 }
@@ -90,11 +90,9 @@ bool PersistToFile(const base::MappedReadOnlyRegion& name_table_region,
   }
 
   base::Pickle pickle;
-  uint32_t checksum = base::PersistentHash(
-      name_table_region.mapping.GetMemoryAsSpan<const uint8_t>());
+  uint32_t checksum = base::PersistentHash(name_table_region.mapping);
   pickle.WriteUInt32(checksum);
-  pickle.WriteData(static_cast<char*>(name_table_region.mapping.memory()),
-                   name_table_region.mapping.size());
+  pickle.WriteData(name_table_region.mapping);
   DCHECK(pickle.size());
   {
     base::ScopedBlockingCall scoped_blocking_call(

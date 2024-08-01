@@ -29,8 +29,14 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
 namespace policy::local_user_files {
@@ -96,24 +102,25 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
 
 }  // namespace
 
-// static
-LocalFilesMigrationManager
-LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
-    content::BrowserContext* context,
-    std::unique_ptr<MigrationNotificationManager> notification_manager,
-    std::unique_ptr<MigrationCoordinator> coordinator) {
-  CHECK_IS_TEST();
-  return LocalFilesMigrationManager(context, std::move(notification_manager),
-                                    std::move(coordinator));
-}
-
 LocalFilesMigrationManager::LocalFilesMigrationManager(
     content::BrowserContext* context)
-    : LocalFilesMigrationManager(context,
-                                 std::make_unique<MigrationNotificationManager>(
-                                     Profile::FromBrowserContext(context)),
-                                 std::make_unique<MigrationCoordinator>(
-                                     Profile::FromBrowserContext(context))) {}
+    : context_(context),
+      coordinator_(std::make_unique<MigrationCoordinator>(
+          Profile::FromBrowserContext(context))),
+      scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
+  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+
+  notification_manager_ =
+      MigrationNotificationManagerFactory::GetForBrowserContext(context);
+  CHECK(notification_manager_);
+
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Add(
+      prefs::kLocalUserFilesMigrationDestination,
+      base::BindRepeating(
+          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
+          base::Unretained(this)));
+}
 
 LocalFilesMigrationManager::~LocalFilesMigrationManager() {
   pref_change_registrar_.RemoveAll();
@@ -121,8 +128,6 @@ LocalFilesMigrationManager::~LocalFilesMigrationManager() {
 
 void LocalFilesMigrationManager::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
-
-  notification_manager_.reset();
 }
 
 void LocalFilesMigrationManager::AddObserver(Observer* observer) {
@@ -135,22 +140,16 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-LocalFilesMigrationManager::LocalFilesMigrationManager(
-    content::BrowserContext* context,
-    std::unique_ptr<MigrationNotificationManager> notification_manager,
-    std::unique_ptr<MigrationCoordinator> coordinator)
-    : context_(context),
-      notification_manager_(std::move(notification_manager)),
-      coordinator_(std::move(coordinator)),
-      scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
-  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+void LocalFilesMigrationManager::SetNotificationManagerForTesting(
+    MigrationNotificationManager* notification_manager) {
+  CHECK_IS_TEST();
+  notification_manager_ = notification_manager;
+}
 
-  pref_change_registrar_.Init(g_browser_process->local_state());
-  pref_change_registrar_.Add(
-      prefs::kLocalUserFilesMigrationDestination,
-      base::BindRepeating(
-          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
-          base::Unretained(this)));
+void LocalFilesMigrationManager::SetCoordinatorForTesting(
+    std::unique_ptr<MigrationCoordinator> coordinator) {
+  CHECK_IS_TEST();
+  coordinator_ = std::move(coordinator);
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
@@ -171,6 +170,9 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   // migration or timers if any.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     MaybeStopMigration();
+    if (local_user_files_allowed_) {
+      SetLocalUserFilesWriteEnabled(/*enabled=*/true);
+    }
     return;
   }
 
@@ -178,6 +180,18 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   if (IsMigrationEnabled(cloud_provider_) &&
       cloud_provider_ != cloud_provider_old) {
     MaybeStopMigration();
+  }
+
+  // TODO(b/354716629): Confirm under which conditions we fail here.
+  Profile* profile = Profile::FromBrowserContext(context_);
+  const bool google_drive_disabled =
+      !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
+           ->is_enabled();
+  // TODO(b/354716629): Confirm conditions. Add OneDrive.
+  if ((cloud_provider_ == CloudProvider::kGoogleDrive &&
+       google_drive_disabled)) {
+    notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
+    return;
   }
 
   // Local files are disabled and migration destination is set - initiate
@@ -266,10 +280,12 @@ void LocalFilesMigrationManager::StartMigration(
 void LocalFilesMigrationManager::OnMigrationDone(
     std::map<base::FilePath, MigrationUploadError> errors) {
   in_progress_ = false;
+  // TODO(aidazolic): Get destination folder path in drive.
+  const base::FilePath destination_path = base::FilePath();
   if (!errors.empty()) {
     // TODO(aidazolic): Use error message; add on-click action.
-    notification_manager_->ShowMigrationErrorNotification(cloud_provider_,
-                                                          std::move(errors));
+    notification_manager_->ShowMigrationErrorNotification(
+        cloud_provider_, destination_path, std::move(errors));
 
     LOG(ERROR) << "Local files migration failed.";
   } else {
@@ -277,8 +293,52 @@ void LocalFilesMigrationManager::OnMigrationDone(
       observer.OnMigrationSucceeded();
     }
     notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
-                                                              base::FilePath());
+                                                              destination_path);
     VLOG(1) << "Local files migration done";
+  }
+  if (cleanup_in_progress_) {
+    LOG(ERROR) << "Local files cleanup is already running";
+    return;
+  }
+  cleanup_in_progress_ = true;
+  std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler =
+      std::make_unique<chromeos::FilesCleanupHandler>();
+  chromeos::FilesCleanupHandler* cleanup_handler_ptr = cleanup_handler.get();
+  cleanup_handler_ptr->Cleanup(
+      base::BindOnce(&LocalFilesMigrationManager::OnCleanupDone,
+                     weak_factory_.GetWeakPtr(), std::move(cleanup_handler)));
+}
+
+void LocalFilesMigrationManager::OnCleanupDone(
+    std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler,
+    const std::optional<std::string>& error_message) {
+  cleanup_in_progress_ = false;
+  if (error_message.has_value()) {
+    LOG(ERROR) << "Local files cleanup failed: " << error_message.value();
+  } else {
+    VLOG(1) << "Local files cleanup done";
+  }
+  SetLocalUserFilesWriteEnabled(/*enabled=*/false);
+}
+
+void LocalFilesMigrationManager::SetLocalUserFilesWriteEnabled(bool enabled) {
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_);
+  user_data_auth::SetUserDataStorageWriteEnabledRequest request;
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId());
+  request.set_enabled(enabled);
+  ash::UserDataAuthClient::Get()->SetUserDataStorageWriteEnabled(
+      request,
+      base::BindOnce(&LocalFilesMigrationManager::OnFilesWriteRestricted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LocalFilesMigrationManager::OnFilesWriteRestricted(
+    std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply) {
+  if (!reply.has_value() ||
+      reply->error() != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOG(ERROR) << "Could not restrict write access";
   }
 }
 
@@ -318,7 +378,10 @@ LocalFilesMigrationManagerFactory::LocalFilesMigrationManagerFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(policy::local_user_files::MigrationNotificationManagerFactory::
+                GetInstance());
+}
 
 LocalFilesMigrationManagerFactory::~LocalFilesMigrationManagerFactory() =
     default;

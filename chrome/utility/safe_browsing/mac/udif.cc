@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/utility/safe_browsing/mac/udif.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -10,6 +15,7 @@
 #include <uuid/uuid.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -40,7 +46,7 @@ namespace dmg {
 struct UDIFChecksum {
   uint32_t type;
   uint32_t size;
-  uint32_t data[32];
+  std::array<uint32_t, 32> data;
 };
 
 static void ConvertBigEndian(UDIFChecksum* checksum) {

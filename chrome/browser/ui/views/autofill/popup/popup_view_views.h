@@ -208,10 +208,14 @@ class PopupViewViews : public PopupBaseView,
 
   // AutofillPopupView:
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
-  void OnSuggestionsChanged() override;
+  void OnSuggestionsChanged(bool prefer_prev_arrow_side) override;
 
   // PopupBaseView:
   bool DoUpdateBoundsAndRedrawPopup() override;
+
+  // If `prefer_prev_arrow_side` is `true`, the view takes prev arrow side as
+  // the first preferred when recalculating the popup position.
+  bool DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side);
 
   // ExpandablePopupParentView:
   void OnMouseEnteredInChildren() override;

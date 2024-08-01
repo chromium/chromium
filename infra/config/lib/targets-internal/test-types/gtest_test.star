@@ -10,7 +10,10 @@ load("../common.star", _targets_common = "common")
 load("../nodes.star", _targets_nodes = "nodes")
 
 def _gtest_test_spec_init(node, settings):
-    return _targets_common.spec_init(node, settings, use_isolated_scripts_api = None)
+    spec_value = _targets_common.spec_init(node, settings, additional_fields = dict(
+        use_isolated_scripts_api = None,
+    ))
+    return spec_value
 
 def _gtest_test_spec_finalize(name, settings, spec_value):
     use_isolated_scripts_api = spec_value["use_isolated_scripts_api"]

@@ -388,7 +388,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      constraint_space, Style(), BorderPadding(), intrinsic_block_size,
+      constraint_space, Node(), BorderPadding(), intrinsic_block_size,
       border_box_size.inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);

@@ -308,10 +308,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
   const gfx::VectorIcon* toast_icon = GetToastIconForOrder(*new_order);
   const std::u16string a11y_text_on_undo_button =
       GetA11yTextOnUndoButtonFromOrder(*new_order);
-  const ui::ColorId toast_icon_color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary;
+  const ui::ColorId toast_icon_color_id = cros_tokens::kCrosSysOnSurface;
 
   if (toast_view_) {
     // If the reorder undo toast is showing, updates the title and icon of the

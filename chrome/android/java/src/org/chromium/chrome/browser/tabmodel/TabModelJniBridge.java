@@ -30,8 +30,8 @@ public abstract class TabModelJniBridge implements TabModel {
     /** The type of the Activity for which this tab model works. */
     private final @ActivityType int mActivityType;
 
-    /** Whether the model should be tracked in native. */
-    private final boolean mTrackInNativeModelList;
+    /** Whether the model is for archvied tabs. */
+    private final boolean mIsArchivedTabModel;
 
     /** Native TabModelJniBridge pointer, which will be set by {@link #initializeNative()}. */
     private long mNativeTabModelJniBridge;
@@ -39,17 +39,14 @@ public abstract class TabModelJniBridge implements TabModel {
     /**
      * @param profile The profile this TabModel belongs to.
      * @param activityType The type of activity this TabModel was created in.
-     * @param trackInNativeModelList Whether this TabModel should be tracked in the native
-     *     TabModelList. TabModelList is used to track tabs for sync (e.g. sessions, send tab to
-     *     self).
+     * @param isArchivedTabModel Whether this tab model is for archived tabs. When true, excludes
+     *     the model from broadcasting sync updates.
      */
     public TabModelJniBridge(
-            @NonNull Profile profile,
-            @ActivityType int activityType,
-            boolean trackInNativeModelList) {
+            @NonNull Profile profile, @ActivityType int activityType, boolean isArchivedTabModel) {
         mProfile = profile;
         mActivityType = activityType;
-        mTrackInNativeModelList = trackInNativeModelList;
+        mIsArchivedTabModel = isArchivedTabModel;
     }
 
     /** Initializes the native-side counterpart to this class. */
@@ -57,11 +54,7 @@ public abstract class TabModelJniBridge implements TabModel {
         assert mNativeTabModelJniBridge == 0;
         mNativeTabModelJniBridge =
                 TabModelJniBridgeJni.get()
-                        .init(
-                                TabModelJniBridge.this,
-                                profile,
-                                mActivityType,
-                                mTrackInNativeModelList);
+                        .init(TabModelJniBridge.this, profile, mActivityType, mIsArchivedTabModel);
     }
 
     /** Returns whether the native-side pointer has been initialized. */
@@ -155,11 +148,12 @@ public abstract class TabModelJniBridge implements TabModel {
      * @param parent      The parent tab that creates the new tab.
      * @param profile     The profile for which to create the new tab.
      * @param webContents A {@link WebContents} object.
+     * @param select      Select the created tab.
      * @return Whether or not the Tab was successfully created.
      */
     @CalledByNative
     protected abstract boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents);
+            Tab parent, Profile profile, WebContents webContents, boolean select);
 
     @CalledByNative
     protected abstract void openNewTab(

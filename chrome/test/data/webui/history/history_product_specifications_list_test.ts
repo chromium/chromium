@@ -8,8 +8,8 @@ import {ensureLazyLoaded, ShoppingBrowserProxyImpl} from 'chrome://history/histo
 import type {CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
 import {ShoppingPageCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

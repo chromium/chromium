@@ -1094,9 +1094,7 @@ void GpuServiceImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
                                      const std::string& key,
                                      const std::string& shader) {
   std::string prefix_key = key;
-  if (base::FeatureList::IsEnabled(
-          features::kGenGpuDiskCacheKeyPrefixInGpuService) &&
-      GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
+  if (GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
     std::string prefix = GetShaderPrefixKey();
     prefix_key = prefix + ":" + key;
   }
@@ -1117,9 +1115,7 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
   const bool clear_shader_cache = base::FeatureList::IsEnabled(
       features::kClearGrShaderDiskCacheOnInvalidPrefix);
 
-  if (base::FeatureList::IsEnabled(
-          features::kGenGpuDiskCacheKeyPrefixInGpuService) &&
-      GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
+  if (GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
     std::string prefix = GetShaderPrefixKey();
     bool prefix_ok = !key.compare(0, prefix.length(), prefix);
     UMA_HISTOGRAM_BOOLEAN("GPU.ShaderLoadPrefixOK", prefix_ok);

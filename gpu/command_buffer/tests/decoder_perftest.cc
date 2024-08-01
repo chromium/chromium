@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -170,8 +175,10 @@ class RecordReplayContext : public GpuControl {
       context_ = context_stub;
     } else {
       gl::GLContextAttribs attribs;
-      if (gpu_preferences_.use_passthrough_cmd_decoder)
+      if (gpu_preferences_.use_passthrough_cmd_decoder) {
         attribs.bind_generates_resource = bind_generates_resource;
+        attribs.allow_client_arrays = false;
+      }
       surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                                     gfx::Size());
       context_ = gl::init::CreateGLContext(share_group_.get(), surface_.get(),

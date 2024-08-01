@@ -402,6 +402,12 @@ constexpr ModelTypeSet SharedTypes() {
 // unsynced data. The warning offers the user to either save the data locally or
 // abort sign-out, depending on the platform.
 constexpr ModelTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
+  static_assert(
+      53 == GetNumModelTypes(),
+      "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
+      "should be a warning when the user signs out and the types have unsynced "
+      "data. The warning offers the user to either save the data locally or "
+      "abort sign-out, depending on the platform");
   return {syncer::BOOKMARKS, syncer::CONTACT_INFO, syncer::PASSWORDS,
           syncer::READING_LIST, syncer::SAVED_TAB_GROUP};
 }

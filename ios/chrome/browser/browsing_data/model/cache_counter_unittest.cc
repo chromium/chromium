@@ -39,7 +39,7 @@ class CacheCounterTest : public PlatformTest {
  public:
   CacheCounterTest() {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     context_getter_ = browser_state_->GetRequestContext();
   }
 

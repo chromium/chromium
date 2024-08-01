@@ -8,11 +8,12 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_consumer.h"
+#import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -52,8 +53,12 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
     DisableCredentialProviderExtension();
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
  protected:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   CredentialProviderPromoMediator* mediator_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -147,8 +152,7 @@ TEST_F(CredentialProviderPromoMediatorTest,
 // promo and selected "No Thanks".
 TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoNoThanksSelected) {
-  local_state_.Get()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo,
-                                 true);
+  local_state()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo, true);
 
   EXPECT_FALSE([mediator_
       canShowCredentialProviderPromoWithTrigger:
@@ -169,8 +173,7 @@ TEST_F(CredentialProviderPromoMediatorTest,
 // Tests that the promo will always be displayed when the trigger is SetUpList.
 TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoSetUpListTrigger) {
-  local_state_.Get()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo,
-                                 true);
+  local_state()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo, true);
   EXPECT_TRUE([mediator_ canShowCredentialProviderPromoWithTrigger:
                              CredentialProviderPromoTrigger::SetUpList
                                                          promoSeen:YES]);

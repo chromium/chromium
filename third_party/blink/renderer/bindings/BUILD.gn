@@ -108,7 +108,10 @@ collect_idl_files("web_idl_in_modules_for_testing") {
 }
 
 action_with_pydeps("web_idl_database") {
-  visibility += [ "//tools/privacy_budget/blink_apis:*" ]
+  visibility += [
+    "//testing/libfuzzer/research/fuzzilli_idl_fuzzing:*",
+    "//tools/privacy_budget/blink_apis:*",
+  ]
 
   script = "scripts/build_web_idl_database.py"
 

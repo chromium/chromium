@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUiTest,
       Log("Waiting for OS Settings to navigate to cellular subpage"),
 
       WaitForElementTextContains(
-          kOSSettingsId, settings::SettingsSubpageTitle(),
+          kOSSettingsId, settings::InternetSettingsSubpageTitle(),
           /*text=*/l10n_util::GetStringUTF8(IDS_NETWORK_TYPE_MOBILE_DATA)),
 
       Log("Waiting for 'add eSIM' dialog to open"),

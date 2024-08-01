@@ -40,11 +40,23 @@ AutofillPreferenceSetter GetAutofillPreferenceSetter(
 // Emits UMA metric `Autofill.Address.DisabledReason.{PageLoad, Startup}`.
 void LogAutofillProfileDisabledReason(const PrefService& pref_service,
                                       std::string_view suffix) {
-  DCHECK(!prefs::IsAutofillProfileEnabled(&pref_service));
+  CHECK(!prefs::IsAutofillProfileEnabled(&pref_service));
   if (const PrefService::Preference* pref =
           pref_service.FindPreference(prefs::kAutofillProfileEnabled)) {
     base::UmaHistogramEnumeration(
         base::StrCat({"Autofill.Address.DisabledReason.", suffix}),
+        GetAutofillPreferenceSetter(pref));
+  }
+}
+
+// Emits UMA metric `Autofill.CreditCard.DisabledReason.{PageLoad, Startup}`.
+void LogAutofillPaymentMethodsDisabledReason(const PrefService& pref_service,
+                                             std::string_view suffix) {
+  CHECK(!prefs::IsAutofillPaymentMethodsEnabled(&pref_service));
+  if (const PrefService::Preference* pref =
+          pref_service.FindPreference(prefs::kAutofillCreditCardEnabled)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Autofill.CreditCard.DisabledReason.", suffix}),
         GetAutofillPreferenceSetter(pref));
   }
 }
@@ -59,7 +71,7 @@ void LogIsAutofillProfileEnabledAtStartup(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.Address.IsEnabled.Startup", enabled);
 }
 
-void LogIsAutofillCreditCardEnabledAtStartup(bool enabled) {
+void LogIsAutofillPaymentMethodsEnabledAtStartup(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.CreditCard.IsEnabled.Startup", enabled);
 }
 
@@ -85,7 +97,7 @@ void LogIsAutofillProfileEnabledAtPageLoad(
       enabled);
 }
 
-void LogIsAutofillCreditCardEnabledAtPageLoad(
+void LogIsAutofillPaymentMethodsEnabledAtPageLoad(
     bool enabled,
     AutofillMetrics::PaymentsSigninState sync_state) {
   std::string name = "Autofill.CreditCard.IsEnabled.PageLoad";
@@ -104,6 +116,16 @@ void LogAutofillProfileDisabledReasonAtStartup(
 void LogAutofillProfileDisabledReasonAtPageLoad(
     const PrefService& pref_service) {
   LogAutofillProfileDisabledReason(pref_service, "PageLoad");
+}
+
+void LogAutofillPaymentMethodsDisabledReasonAtStartup(
+    const PrefService& pref_service) {
+  LogAutofillPaymentMethodsDisabledReason(pref_service, "Startup");
+}
+
+void LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
+    const PrefService& pref_service) {
+  LogAutofillPaymentMethodsDisabledReason(pref_service, "PageLoad");
 }
 
 void MaybeLogAutofillProfileDisabled(const PrefService& pref_service) {

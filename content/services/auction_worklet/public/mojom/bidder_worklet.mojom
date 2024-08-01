@@ -190,6 +190,12 @@ struct GenerateBidDependencyLatencies {
 
   // Download of TrustedBiddingSignals
   mojo_base.mojom.TimeDelta? trusted_bidding_signals_latency;
+
+  // Times of each step of the GenerateBid flow, used to compute start and end
+  // times for latency phase UKMs.
+  mojo_base.mojom.TimeTicks deps_wait_start_time;
+  mojo_base.mojom.TimeTicks generate_bid_start_time;
+  mojo_base.mojom.TimeTicks generate_bid_finish_time;
 };
 
 // Single use client for each GenerateBid() call. Allows deferring generating

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -79,11 +80,12 @@ TEST_F(MediaValuesTest, Basic) {
     data.viewport_width = test_cases[i].viewport_width;
     data.viewport_height = test_cases[i].viewport_height;
     data.line_height = 20;
-    MediaValuesCached media_values(data);
+    MediaValuesCached* media_values =
+        MakeGarbageCollected<MediaValuesCached>(data);
 
     double output = 0;
-    bool success = media_values.ComputeLength(test_cases[i].value,
-                                              test_cases[i].type, output);
+    bool success = media_values->ComputeLength(test_cases[i].value,
+                                               test_cases[i].type, output);
     EXPECT_EQ(test_cases[i].success, success);
     if (success) {
       EXPECT_FLOAT_EQ(test_cases[i].output, output);

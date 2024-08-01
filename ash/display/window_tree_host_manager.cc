@@ -35,6 +35,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -77,10 +78,16 @@ namespace {
 int64_t primary_display_id = -1;
 
 // The compositor memory limit when display size is larger than a threshold.
-constexpr int kUICompositorLargeMemoryLimitMB = 1024;
-// The display size threshold, above which the larger memory limit is used.
+constexpr int kUICompositorLargeDisplayMemoryLimitMB = 1024;
+// The compositor memory limit when both the display size and device memory
+// are greater than some thresholds.
+constexpr int kUICompositorLargeDisplayandRamMemoryLimitMB = 2048;
+// The display size threshold, above which the larger memory limits are used.
 // Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
 constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
+// The RAM capacity threshold in MB. When the device has a 4k+ display and
+// 16GB+ of memory, configure the compositor to use a higher memory limit.
+constexpr int kUICompositorMemoryLimitRamCapacityThreshold = 16 * 1024;
 
 // An UMA signal for the current effective resolution/dpi is sent at this rate.
 // This keeps track of the effective resolution/dpi most used on
@@ -1045,7 +1052,10 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
                display.GetSizeInPixel().height()) >
       kUICompositorMemoryLimitDisplaySizeThreshold) {
     params_with_bounds.compositor_memory_limit_mb =
-        kUICompositorLargeMemoryLimitMB;
+        base::SysInfo::AmountOfPhysicalMemoryMB() >=
+                kUICompositorMemoryLimitRamCapacityThreshold
+            ? kUICompositorLargeDisplayandRamMemoryLimitMB
+            : kUICompositorLargeDisplayMemoryLimitMB;
   }
 
   // The AshWindowTreeHost ends up owned by the RootWindowControllers created

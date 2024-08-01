@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/surrounding_text_tracker.h"
@@ -42,7 +43,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   ~WaylandInputMethodContext() override;
 
   void Init(bool initialize_for_testing = false,
-            std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing = nullptr);
+            std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing = nullptr,
+            std::optional<base::nix::DesktopEnvironment> desktop_for_testing =
+                std::nullopt);
 
   // LinuxInputMethodContext overrides:
   bool DispatchKeyEvent(const KeyEvent& key_event) override;
@@ -105,6 +108,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   }
 
  private:
+  void CreateTextInputWrapper();
   void Focus(bool skip_virtual_keyboard_update,
              TextInputClient::FocusReason reason);
   void Blur(bool skip_virtual_keyboard_update);
@@ -160,6 +164,13 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // Caches VirtualKeyboard visibility.
   bool virtual_keyboard_visible_ = false;
+
+  // Cached desktop environment obtained from env.
+  base::nix::DesktopEnvironment desktop_environment_;
+
+  // Stores whether an invalid cursor end is sent by compositor, in which
+  // case cursor end values should be ignored in preedit string.
+  bool compositor_sends_invalid_cursor_end_ = false;
 
   // Keeps track of past text input clients to forward virtual keyboard changes
   // to, since unfocusing text inputs will detach clients immediately, but the

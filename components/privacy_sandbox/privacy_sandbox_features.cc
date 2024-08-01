@@ -115,15 +115,7 @@ BASE_FEATURE(kPrivacySandboxAttestationsLoadPreInstalledComponent,
 
 BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kPrivacySandboxProactiveTopicsBlockingIncludeModeBName[] =
-    "include-mode-b";
-
-const base::FeatureParam<bool>
-    kPrivacySandboxProactiveTopicsBlockingIncludeModeB{
-        &kPrivacySandboxProactiveTopicsBlocking,
-        kPrivacySandboxProactiveTopicsBlockingIncludeModeBName, false};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger,
@@ -155,8 +147,9 @@ BASE_FEATURE(kFingerprintingProtectionUx,
              "FingerprintingProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kUserBypassFingerprintingProtection{
-    &kFingerprintingProtectionUx, "include-in-user-bypass", false};
+BASE_FEATURE(kFingerprintingProtectionUserBypass,
+             "FingerprintingProtectionUserBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIpProtectionV1,
              "IpProtectionV1",
@@ -166,11 +159,8 @@ BASE_FEATURE(kIpProtectionUx,
              "IpProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kUserBypassIpProtection{
-    &kIpProtectionUx, "include-in-user-bypass", false};
-
-BASE_FEATURE(kIpProtectionDogfoodDefaultOn,
-             "IpProtectionDogfoodDefaultOn",
+BASE_FEATURE(kIpProtectionUserBypass,
+             "IpProtectionUserBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtectionSettingsLaunch,
@@ -208,13 +198,6 @@ BASE_FEATURE(kPsRedesignAdPrivacyPage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles{
     &kPsRedesignAdPrivacyPage, "enable-toggles", false};
-
-BASE_FEATURE(kTrackingProtectionOnboarding,
-             "TrackingProtectionOnboarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kTrackingProtectionBlock3PC{
-    &kTrackingProtectionOnboarding, "block-3pc", false};
 
 BASE_FEATURE(kTrackingProtectionReminder,
              "TrackingProtectionReminder",

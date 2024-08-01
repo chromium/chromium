@@ -344,7 +344,7 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
   }
 
   return static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView())
-      ->MirroredFrameBorderInsets();
+      ->RestoredMirroredFrameBorderInsets();
 }
 
 void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(

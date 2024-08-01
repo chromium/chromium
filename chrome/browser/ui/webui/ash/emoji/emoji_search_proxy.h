@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_EMOJI_SEARCH_PROXY_H_
 
 #include <memory>
+#include <vector>
 
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "chromeos/ash/components/emoji/emoji_search.mojom.h"
@@ -21,10 +22,11 @@ class EmojiSearchProxy : public emoji_search::mojom::EmojiSearch {
   ~EmojiSearchProxy() override;
 
   void SearchEmoji(const std::string& query,
+                   const std::vector<std::string>& language_codes,
                    SearchEmojiCallback callback) override;
 
-  void SetEmojiLanguage(const std::string& language_code,
-                        SetEmojiLanguageCallback callback) override;
+  void LoadEmojiLanguages(
+      const std::vector<std::string>& language_codes) override;
 
  private:
   mojo::Receiver<emoji_search::mojom::EmojiSearch> receiver_;

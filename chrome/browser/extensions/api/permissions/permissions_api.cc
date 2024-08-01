@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -65,6 +66,8 @@ constexpr char kExtensionRequestCannotBeRemovedError[] =
 
 PermissionsRequestFunction::DialogAction g_dialog_action =
     PermissionsRequestFunction::DialogAction::kDefault;
+PermissionsRequestFunction::ShowDialogCallback* g_show_dialog_callback =
+    nullptr;
 PermissionsRequestFunction* g_pending_request_function = nullptr;
 bool ignore_user_gesture_for_tests = false;
 
@@ -254,13 +257,24 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
 base::AutoReset<PermissionsRequestFunction::DialogAction>
 PermissionsRequestFunction::SetDialogActionForTests(
     DialogAction dialog_action) {
+  CHECK_IS_TEST();
   return base::AutoReset<PermissionsRequestFunction::DialogAction>(
       &g_dialog_action, dialog_action);
 }
 
 // static
+base::AutoReset<PermissionsRequestFunction::ShowDialogCallback*>
+PermissionsRequestFunction::SetShowDialogCallbackForTests(
+    ShowDialogCallback* callback) {
+  CHECK_IS_TEST();
+  return base::AutoReset<ShowDialogCallback*>(&g_show_dialog_callback,
+                                              callback);
+}
+
+// static
 void PermissionsRequestFunction::ResolvePendingDialogForTests(
     bool accept_dialog) {
+  CHECK_IS_TEST();
   CHECK(g_pending_request_function);
   PermissionsRequestFunction* pending_function = g_pending_request_function;
   // Clear out the pending function now. After Release() below, it's unsafe to
@@ -277,6 +291,7 @@ void PermissionsRequestFunction::ResolvePendingDialogForTests(
 // static
 void PermissionsRequestFunction::SetIgnoreUserGestureForTests(
     bool ignore) {
+  CHECK_IS_TEST();
   ignore_user_gesture_for_tests = ignore;
 }
 
@@ -432,6 +447,9 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
       // A test will let us know when to resolve the prompt. Add a reference to
       // wait.
       AddRef();  // Balanced in ResolvePendingDialogForTests().
+      if (g_show_dialog_callback) {
+        g_show_dialog_callback->Run(native_window);
+      }
       g_pending_request_function = this;
     }
     return did_respond() ? AlreadyResponded() : RespondLater();

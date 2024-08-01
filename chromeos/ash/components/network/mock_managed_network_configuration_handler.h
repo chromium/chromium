@@ -84,6 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                      const base::Value::Dict*(const std::string userhash,
                                               const std::string& guid,
                                               ::onc::ONCSource* onc_source));
+  MOCK_METHOD1(ResetDNSProperties, void(const std::string& service_path));
   MOCK_CONST_METHOD1(HasAnyPolicyNetwork, bool(const std::string& userhash));
   MOCK_CONST_METHOD1(GetGlobalConfigFromPolicy,
                      const base::Value::Dict*(const std::string& userhash));

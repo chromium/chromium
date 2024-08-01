@@ -99,7 +99,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(&::TestSendTabToSelfSyncService::Build));
 
-    chrome_browser_state_ = test_browser_state_builder.Build();
+    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = SendTabToSelfBrowserAgent::FromBrowser(browser_.get());

@@ -48,6 +48,10 @@ bool ReadAloudAppModel::IsHighlightOn() {
          static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
 }
 
+void ReadAloudAppModel::ResetGranularityIndex() {
+  processed_granularity_index_ = 0;
+}
+
 void ReadAloudAppModel::InitAXPositionWithNode(ui::AXNode* ax_node) {
   // If instance is Null or Empty, create the next AxPosition
   if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {
@@ -88,6 +92,19 @@ std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
 
   return processed_granularities_on_current_page_[processed_granularity_index_]
       .node_ids;
+}
+
+void ReadAloudAppModel::PreprocessTextForSpeech(
+    bool is_pdf,
+    bool is_docs,
+    const std::set<ui::AXNodeID>* current_nodes) {
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      GetNextNodes(is_pdf, is_docs, current_nodes);
+
+  while (current_granularity.node_ids.size() > 0) {
+    processed_granularities_on_current_page_.push_back(current_granularity);
+    current_granularity = GetNextNodes(is_pdf, is_docs, current_nodes);
+  }
 }
 
 // TODO(crbug.com/40927698): Update to use AXRange to better handle multiple

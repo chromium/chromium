@@ -12,6 +12,8 @@ static_library("kcer") {
     "kcer_factory_ash.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",
@@ -22,6 +24,7 @@ static_library("kcer") {
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -62,6 +65,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",

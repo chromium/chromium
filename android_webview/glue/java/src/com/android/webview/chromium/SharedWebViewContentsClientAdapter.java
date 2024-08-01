@@ -21,7 +21,6 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_callback_glue.SupportLibWebViewContentsClientAdapter;
@@ -114,7 +113,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
                 mSupportLibClient.onPageCommitVisible(mWebView, url);
             } else {
-                ApiHelperForM.onPageCommitVisible(mWebViewClient, mWebView, url);
+                mWebViewClient.onPageCommitVisible(mWebView, url);
             }
 
             // Record UMA for onPageCommitVisible.

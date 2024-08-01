@@ -17,7 +17,6 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.TextViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -158,7 +157,7 @@ public class TabListEditorMenuItem {
 
     public void setTextAppearance(@StyleRes int textAppearanceId) {
         if (mActionView != null) {
-            ApiCompatibilityUtils.setTextAppearance(mActionView, textAppearanceId);
+            mActionView.setTextAppearance(textAppearanceId);
         }
     }
 

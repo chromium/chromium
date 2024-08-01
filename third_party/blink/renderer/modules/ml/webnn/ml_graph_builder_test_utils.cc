@@ -18,26 +18,6 @@
 
 namespace blink {
 
-MLGraphBuilder* CreateMLGraphBuilder(ExecutionContext* execution_context,
-                                     ScriptState* script_state,
-                                     ExceptionState& exception_state,
-                                     MLContextOptions* options) {
-  ML* ml = MakeGarbageCollected<ML>(execution_context);
-
-  ScriptPromise<MLContext> promise =
-      ml->createContext(script_state, options, exception_state);
-  ScriptPromiseTester tester(script_state, promise);
-  tester.WaitUntilSettled();
-  if (tester.IsRejected()) {
-    return nullptr;
-  }
-
-  MLContext* ml_context = V8MLContext::ToWrappable(tester.Value().GetIsolate(),
-                                                   tester.Value().V8Value());
-  CHECK(ml_context);
-  return MLGraphBuilder::Create(ml_context);
-}
-
 MLOperand* BuildInput(MLGraphBuilder* builder,
                       const String& name,
                       const Vector<uint32_t>& dimensions,

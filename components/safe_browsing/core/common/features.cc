@@ -125,13 +125,13 @@ BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
              "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryForEnteprise,
-             "SafeBrowsingExtensionTelemetryForEnteprise",
+BASE_FEATURE(kExtensionTelemetryForEnterprise,
+             "SafeBrowsingExtensionTelemetryForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
     kExtensionTelemetryEnterpriseReportingIntervalSeconds{
-        &kExtensionTelemetryForEnteprise, "EnterpriseReportingIntervalSeconds",
+        &kExtensionTelemetryForEnterprise, "EnterpriseReportingIntervalSeconds",
         /*default_value=*/300};
 
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
@@ -189,13 +189,7 @@ BASE_FEATURE(kGooglePlayProtectReducesWarnings,
 
 BASE_FEATURE(kHashPrefixRealTimeLookups,
              "SafeBrowsingHashPrefixRealTimeLookups",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     &kHashPrefixRealTimeLookups,
@@ -397,7 +391,7 @@ base::Value::List GetFeatureStatusList() {
       &kEnhancedSafeBrowsingPromo,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryDisableOffstoreExtensions,
-      &kExtensionTelemetryForEnteprise,
+      &kExtensionTelemetryForEnterprise,
       &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
       &kExtensionTelemetryPotentialPasswordTheft,
       &kExtensionTelemetryReportContactedHosts,

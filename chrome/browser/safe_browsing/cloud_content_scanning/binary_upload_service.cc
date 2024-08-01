@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "components/enterprise/common/strings.h"
-#include "components/enterprise/connectors/analysis/analysis_settings.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

@@ -20,6 +20,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
+#include "components/search/ntp_features.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/test/test_web_contents_factory.h"
 

@@ -147,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   delegate_->SetAccountSelectedCallback(base::BindOnce(
       &FedCmAccountSelectionViewBrowserTest::ResetAccountSelectionView,
       base::Unretained(this)));
-  account_selection_view_->ShowModalDialog(GURL("https://example.test/"));
+  account_selection_view_->ShowModalDialog(GURL("https://example.test/"),
+                                           blink::mojom::RpMode::kWidget);
   // Because a modal dialog is up, this should save the accounts for later.
   ShowAccounts(Account::SignInMode::kAuto);
   // This should trigger auto re-authn without crashing or UAF.

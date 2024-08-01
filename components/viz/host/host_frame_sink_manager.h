@@ -249,13 +249,23 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
-  // Starts the frame counting in Viz.
+  // Starts the frame counting in viz.
   void StartFrameCountingForTest(base::TimeTicks start_time,
                                  base::TimeDelta bucket_size);
 
-  // Ends the frame counting in Viz thread and returns data to the client.
+  // Ends the frame counting in viz and returns data to the client.
   void StopFrameCountingForTest(
       mojom::FrameSinkManager::StopFrameCountingForTestCallback callback);
+
+  // Starts overdraw tacking for a root frame sink in viz.
+  void StartOverdrawTrackingForTest(const FrameSinkId& root_frame_sink_id,
+                                    base::TimeDelta bucket_size);
+
+  // Ends overdraw tracking in viz and returns data to the client via the
+  // `callback`.
+  void StopOverdrawTrackingForTest(
+      const FrameSinkId& root_frame_sink_id,
+      mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback);
 
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token);

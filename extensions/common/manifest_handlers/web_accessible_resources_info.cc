@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -18,6 +19,7 @@
 #include "extensions/common/api/web_accessible_resources_mv2.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -168,6 +170,8 @@ bool IsResourceWebAccessibleImpl(
     const GURL& upstream_url,
     const GURL& target_url) {
   std::string relative_path = target_url.path();
+
+  // Set the intiator_url.
   GURL initiator_url;
   if (initiator_origin) {
     if (initiator_origin->opaque()) {
@@ -183,6 +187,9 @@ bool IsResourceWebAccessibleImpl(
     return false;
   }
 
+  bool using_dynamic_url_extension_feature = base::FeatureList::IsEnabled(
+      extensions_features::kExtensionDynamicURLRedirection);
+
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
     if (extension.ResourceMatches(entry.resources, relative_path)) {
@@ -194,13 +201,19 @@ bool IsResourceWebAccessibleImpl(
         return result;
       }
 
-      // If the manifest declares `use_dynamic_url`, then only load the resource
-      // if the dynamic url is used.
-      if (entry.use_dynamic_url) {
-        std::string_view upstream_or_target_url =
-            !upstream_url.is_empty() ? upstream_url.host_piece()
-                                     : target_url.host_piece();
-        result = extension.guid() == upstream_or_target_url;
+      // If the manifest declares `use_dynamic_url` and the extension feature is
+      // enabled, then only load the resource if the dynamic url is used. The
+      // dynamic url should be ok to accept if it's a `host_piece` of either the
+      // `upstream_url` or the `target_url` because the goal if this feature is
+      // to ensure that the dynamic url was used for fetching the resource.
+      if (using_dynamic_url_extension_feature && entry.use_dynamic_url) {
+        bool is_guid_target_url = extension.guid() == target_url.host_piece();
+        if (upstream_url.is_empty()) {
+          result = is_guid_target_url;
+        } else {
+          result = extension.guid() == upstream_url.host_piece() ||
+                   is_guid_target_url;
+        }
         if (!result) {
           continue;
         }

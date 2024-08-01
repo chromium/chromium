@@ -6,6 +6,7 @@
 #define ASH_PICKER_PICKER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,25 +15,27 @@
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
+#include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
+class PickerActionOnNextFocusRequest;
 class PickerAssetFetcher;
 class PickerCapsLockStateView;
 class PickerClient;
 class PickerEmojiHistoryModel;
 class PickerEmojiSuggester;
-class PickerInsertMediaRequest;
 class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
@@ -41,7 +44,7 @@ class PickerSuggestionsController;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
-                                    public views::WidgetObserver,
+                                    public views::ViewObserver,
                                     public PickerAssetFetcherImplDelegate {
  public:
   PickerController();
@@ -51,6 +54,12 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Whether the provided feature key for Picker can enable the feature.
   static bool IsFeatureKeyMatched();
+
+  // Maximum time to wait for focus to be regained after completing the feature
+  // tour. If this timeout is reached, we stop waiting for focus and show the
+  // Picker widget regardless of the focus state.
+  static constexpr base::TimeDelta kShowWidgetPostFeatureTourTimeout =
+      base::Seconds(2);
 
   // Time from when the insert is issued and when we give up inserting.
   static constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
@@ -108,9 +117,10 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
       const PickerSearchResult& result) override;
   std::vector<PickerSearchResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
+  PickerModeType GetMode() override;
 
-  // views:WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  // views:ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
 
   // PickerAssetFetcherImplDelegate:
   void FetchFileThumbnail(const base::FilePath& path,
@@ -123,8 +133,14 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
  private:
   void ShowWidget(base::TimeTicks trigger_event_timestamp);
   void CloseWidget();
-  void OnFeatureTourCompleted();
+  void OnFeatureTourLearnMore();
+  void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
+  void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
+  void OnInsertCompleted(const PickerRichMedia& media,
+                         PickerInsertMediaRequest::Result result);
+
+  std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 
   PickerFeatureTour feature_tour_;
   std::unique_ptr<PickerModel> model_;
@@ -132,6 +148,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
+  std::unique_ptr<PickerActionOnNextFocusRequest> action_on_next_focus_request_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
   std::unique_ptr<PickerSuggestionsController> suggestions_controller_;
@@ -151,8 +168,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Records metrics related to a session.
   std::unique_ptr<PickerSessionMetrics> session_metrics_;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 
   // Closes CapsLock state view after some time.
   base::OneShotTimer caps_lock_state_view_close_timer_;

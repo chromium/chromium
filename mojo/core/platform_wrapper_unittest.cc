@@ -134,7 +134,7 @@ TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformSharedMemoryRegion) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kMessage.size());
   base::WritableSharedMemoryMapping buffer = region.Map();
   CHECK(buffer.IsValid());
-  memcpy(buffer.memory(), kMessage.data(), kMessage.size());
+  base::as_writable_chars(base::span(buffer)).copy_from(kMessage);
 
   RunTestClient("ReadPlatformSharedBuffer", [&](MojoHandle h) {
     // Wrap the shared memory handle and send it to the child along with the
@@ -229,9 +229,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   ASSERT_TRUE(region.IsValid());
 
   base::WritableSharedMemoryMapping mapping = region.Map();
-  ASSERT_TRUE(mapping.memory());
-  EXPECT_TRUE(std::equal(message.begin(), message.end(),
-                         static_cast<const char*>(mapping.memory())));
+  EXPECT_EQ(base::as_byte_span(message), base::span(mapping));
 
   // Verify that the received buffer's internal GUID was preserved in transit.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE));

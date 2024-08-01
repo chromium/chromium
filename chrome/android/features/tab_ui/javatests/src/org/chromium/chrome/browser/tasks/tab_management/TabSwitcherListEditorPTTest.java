@@ -47,7 +47,7 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testLeaveEditorViaBackPress() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        RegularTabSwitcherStation tabSwitcher = firstPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor.pressBackToExit();
 
@@ -61,7 +61,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        RegularTabSwitcherStation tabSwitcher = firstPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
 
@@ -79,7 +79,7 @@ public class TabSwitcherListEditorPTTest {
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         int secondTabId = secondPage.getLoadedTab().getId();
-        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
@@ -98,7 +98,7 @@ public class TabSwitcherListEditorPTTest {
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         int secondTabId = secondPage.getLoadedTab().getId();
-        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
@@ -123,7 +123,7 @@ public class TabSwitcherListEditorPTTest {
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         int secondTabId = secondPage.getLoadedTab().getId();
-        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);

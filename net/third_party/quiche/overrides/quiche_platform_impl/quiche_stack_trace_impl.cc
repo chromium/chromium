@@ -4,25 +4,26 @@
 
 #include "net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl.h"
 
+#include "base/containers/to_vector.h"
+
 namespace quiche {
 namespace {
 static constexpr size_t kMaxStackSize = 256;
 }  // namespace
 
 std::vector<void*> CurrentStackTraceImpl() {
-  std::vector<void*> stacktrace(kMaxStackSize, nullptr);
-  size_t frame_count = base::debug::CollectStackTrace(
-      const_cast<const void**>(stacktrace.data()), stacktrace.size());
+  std::vector<const void*> stacktrace(kMaxStackSize);
+  size_t frame_count = base::debug::CollectStackTrace(stacktrace);
   if (frame_count <= 0) {
     return {};
   }
   stacktrace.resize(frame_count);
-  return stacktrace;
+  return base::ToVector(stacktrace,
+                        [](const void* p) { return const_cast<void*>(p); });
 }
 
-std::string SymbolizeStackTraceImpl(absl::Span<void* const> stacktrace) {
-  return base::debug::StackTrace(stacktrace.data(), stacktrace.size())
-      .ToString();
+std::string SymbolizeStackTraceImpl(base::span<const void* const> stacktrace) {
+  return base::debug::StackTrace(stacktrace).ToString();
 }
 
 std::string QuicheStackTraceImpl() {

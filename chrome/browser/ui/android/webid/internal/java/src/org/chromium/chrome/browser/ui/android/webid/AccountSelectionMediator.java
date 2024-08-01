@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -91,12 +92,43 @@ class AccountSelectionMediator {
         int NUM_ENTRIES = 6;
     }
 
+    /**
+     * The following integers are used for histograms. Do not remove or modify existing values, but
+     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
+     * with AccountChooserResult in
+     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
+     * FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({
+        AccountChooserResult.ACCOUNT_ROW,
+        AccountChooserResult.CANCEL_BUTTON,
+        AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON,
+        AccountChooserResult.TAB_CLOSED,
+        AccountChooserResult.SWIPE,
+        AccountChooserResult.BACK_PRESS,
+        AccountChooserResult.TAP_SCRIM,
+        AccountChooserResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface AccountChooserResult {
+        int ACCOUNT_ROW = 0;
+        int CANCEL_BUTTON = 1;
+        int USE_OTHER_ACCOUNT_BUTTON = 2;
+        int TAB_CLOSED = 3;
+        int SWIPE = 4;
+        int BACK_PRESS = 5;
+        int TAP_SCRIM = 6;
+
+        int NUM_ENTRIES = 7;
+    }
+
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
     // sheet state change affects the BottomSheet owned by this object or not.
     private BottomSheetContent mLastSheetSeen;
-    private final Tab mTab;
+    @VisibleForTesting private final Tab mTab;
     private final AccountSelectionComponent.Delegate mDelegate;
     private final PropertyModel mModel;
     private final ModelList mSheetAccountItems;
@@ -138,6 +170,13 @@ class AccountSelectionMediator {
     // Whether there is an open modal dialog. When a modal dialog is opened, this
     // mediator should not display any accounts until such dialog is closed.
     private boolean mIsModalDialogOpen;
+
+    // View to explicitly focus on for screen reader accessibility purposes.
+    private View mFocusView;
+
+    // The current state of the account chooser if opened for metrics purposes. Histogram is only
+    // recorded for button mode.
+    private @Nullable Integer mAccountChooserState;
 
     private KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
@@ -187,17 +226,21 @@ class AccountSelectionMediator {
 
                         boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
                         View focusView =
-                                continueButton != null
-                                                && continueButton.isShown()
-                                                && !isSingleAccountChooser
-                                                && getSheetType() == SheetType.ACCOUNT_SELECTION
-                                        ? continueButton
-                                        : contentView.findViewById(R.id.header);
+                                mFocusView != null
+                                        ? mFocusView
+                                        : continueButton != null
+                                                        && continueButton.isShown()
+                                                        && !isSingleAccountChooser
+                                                        && getSheetType()
+                                                                == SheetType.ACCOUNT_SELECTION
+                                                ? continueButton
+                                                : contentView.findViewById(R.id.header);
 
                         if (focusView == null) return;
 
                         focusView.requestFocus();
                         focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                        mFocusView = null;
                     }
 
                     @Override
@@ -214,10 +257,37 @@ class AccountSelectionMediator {
                             } else {
                                 super.onSheetClosed(reason);
                                 @IdentityRequestDialogDismissReason
-                                int dismissReason =
-                                        (reason == BottomSheetController.StateChangeReason.SWIPE)
-                                                ? IdentityRequestDialogDismissReason.SWIPE
-                                                : IdentityRequestDialogDismissReason.OTHER;
+                                int dismissReason = IdentityRequestDialogDismissReason.OTHER;
+                                if (reason == BottomSheetController.StateChangeReason.SWIPE) {
+                                    dismissReason = IdentityRequestDialogDismissReason.SWIPE;
+                                    // mAccountChooserState is not null only if we want to record
+                                    // this metric, that is, a button mode explicit sign-in account
+                                    // chooser was shown.
+                                    mAccountChooserState =
+                                            mAccountChooserState != null
+                                                    ? AccountChooserResult.SWIPE
+                                                    : null;
+                                } else if (reason
+                                        == BottomSheetController.StateChangeReason.BACK_PRESS) {
+                                    dismissReason = IdentityRequestDialogDismissReason.BACK_PRESS;
+                                    // mAccountChooserState is not null only if we want to record
+                                    // this metric, that is, a button mode explicit sign-in account
+                                    // chooser was shown.
+                                    mAccountChooserState =
+                                            mAccountChooserState != null
+                                                    ? AccountChooserResult.BACK_PRESS
+                                                    : null;
+                                } else if (reason
+                                        == BottomSheetController.StateChangeReason.TAP_SCRIM) {
+                                    dismissReason = IdentityRequestDialogDismissReason.TAP_SCRIM;
+                                    // mAccountChooserState is not null only if we want to record
+                                    // this metric, that is, a button mode explicit sign-in account
+                                    // chooser was shown.
+                                    mAccountChooserState =
+                                            mAccountChooserState != null
+                                                    ? AccountChooserResult.TAP_SCRIM
+                                                    : null;
+                                }
                                 onDismissed(dismissReason);
                             }
                             return;
@@ -267,6 +337,15 @@ class AccountSelectionMediator {
                         }
                     }
                 };
+    }
+
+    private void setFocusView(View focusView) {
+        // If focus view has already been set, we do not override it. This is because we bind views
+        // in order of most important to least important for accessibility so the first call to this
+        // method should be from the most important element that should take focus.
+        if (mFocusView != null) return;
+
+        mFocusView = focusView;
     }
 
     private void updateBackPressBehavior() {
@@ -323,6 +402,7 @@ class AccountSelectionMediator {
                 .with(
                         HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER,
                         mSelectedAccount == null && mAccounts != null && mAccounts.size() > 1)
+                .with(HeaderProperties.SET_FOCUS_VIEW_CALLBACK, this::setFocusView)
                 .build();
     }
 
@@ -431,6 +511,14 @@ class AccountSelectionMediator {
         updateHeader();
     }
 
+    private void maybeRecordAccountChooserResult(int result) {
+        if (mAccountChooserState == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.NUM_ENTRIES);
+        mAccountChooserState = null;
+    }
+
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
             mHeaderType = HeaderType.VERIFY;
@@ -463,7 +551,11 @@ class AccountSelectionMediator {
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
             boolean requestPermission) {
-        showPlaceholderIcon(idpMetadata);
+        // On widget mode, show placeholder icon to preserve header text wrapping when icon is
+        // fetched.
+        if (mRpMode == RpMode.WIDGET) {
+            showPlaceholderIcon(idpMetadata);
+        }
         mSelectedAccount = null;
         if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
             mSelectedAccount = accounts.get(0);
@@ -483,6 +575,15 @@ class AccountSelectionMediator {
         // RP brand icon is fetched here, but not shown until the request permission dialog.
         if (mRpMode == RpMode.BUTTON) {
             fetchBrandIcon(clientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
+        }
+
+        // This is a placeholder assuming the tab containing the account chooser will be closed.
+        // This will be updated upon user action i.e. clicking on account row, use
+        // other account button or swiped down. If we do not receive any of these actions by time
+        // onDismissed() is called, it means our placeholder assumption is true i.e. the user has
+        // closed the tab.
+        if (mRpMode == RpMode.BUTTON && !isAutoReauthn) {
+            mAccountChooserState = AccountChooserResult.TAB_CLOSED;
         }
     }
 
@@ -608,6 +709,10 @@ class AccountSelectionMediator {
                 accounts,
                 areAccountsClickable,
                 supportsAddAccount && !isSingleAccountChooser);
+        // If there is a change in the header, setFocusView() will be called and focus will land on
+        // the header when screen reader is on. Since the header is updated before any item is
+        // created, the header will always take precedence for focus. Do not reorder this
+        // updateHeader() call to happen after item creation.
         updateHeader();
 
         boolean isDataSharingConsentVisible = false;
@@ -653,17 +758,34 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onClickAccountSelected;
         }
 
+        // On button mode since the disclosure text is above the continue button, create the
+        // disclosure text before creating the continue button so setFocusView() will focus
+        // in logical linear reading order. Keep the order in mind when adding an item that calls
+        // setFocusView() because the first item which calls it will get the focus.
+        if (mRpMode == RpMode.BUTTON) {
+            mModel.set(
+                    ItemProperties.DATA_SHARING_CONSENT,
+                    isDataSharingConsentVisible
+                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            : null);
+        }
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
                 (continueButtonCallback != null)
                         ? createContinueBtnItem(
                                 mSelectedAccount, mIdpMetadata, continueButtonCallback)
                         : null);
-        mModel.set(
-                ItemProperties.DATA_SHARING_CONSENT,
-                isDataSharingConsentVisible
-                        ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
-                        : null);
+        // On widget mode since the disclosure text is below the continue button, create the
+        // disclosure text after creating the continue button so setFocusView() will focus
+        // in logical linear reading order. Keep the order in mind when adding an item that calls
+        // setFocusView() because the first item which calls it will get the focus.
+        if (mRpMode == RpMode.WIDGET) {
+            mModel.set(
+                    ItemProperties.DATA_SHARING_CONSENT,
+                    isDataSharingConsentVisible
+                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            : null);
+        }
         mModel.set(
                 ItemProperties.IDP_SIGNIN,
                 mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
@@ -770,6 +892,7 @@ class AccountSelectionMediator {
         // This method only has an Account to match the type of the event listener.
         assert account == null;
         if (!shouldInputBeProcessed()) return;
+        maybeRecordAccountChooserResult(AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON);
         mDelegate.onLoginToIdP(mIdpMetadata.getConfigUrl(), mIdpMetadata.getLoginUrl());
     }
 
@@ -785,11 +908,11 @@ class AccountSelectionMediator {
      * bottomsheet.
      *
      * @param selectedAccount is the account that the user tapped on. If the user instead tapped on
-     *         the continue button, it is the account displayed if this was the single account
-     *         chooser.
+     *     the continue button, it is the account displayed if this was the single account chooser.
      */
     void onClickAccountSelected(Account selectedAccount) {
         if (!shouldInputBeProcessed()) return;
+        maybeRecordAccountChooserResult(AccountChooserResult.ACCOUNT_ROW);
         onAccountSelected(selectedAccount);
     }
 
@@ -845,6 +968,9 @@ class AccountSelectionMediator {
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
+        if (mAccountChooserState != null) {
+            maybeRecordAccountChooserResult(mAccountChooserState);
+        }
         dismissContent();
         mDelegate.onDismissed(dismissReason);
     }
@@ -875,6 +1001,7 @@ class AccountSelectionMediator {
         properties.mIdpMetadata = idpMetadata;
         properties.mOnClickListener = onClickListener;
         properties.mHeaderType = mHeaderType;
+        properties.mSetFocusViewCallback = this::setFocusView;
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.PROPERTIES, properties)
                 .build();
@@ -911,6 +1038,7 @@ class AccountSelectionMediator {
                             IdentityRequestDialogLinkType.PRIVACY_POLICY,
                             metadata.getPrivacyPolicyUrl());
                 };
+        properties.mSetFocusViewCallback = this::setFocusView;
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

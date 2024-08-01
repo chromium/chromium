@@ -6,8 +6,9 @@
 
 #include "base/check.h"
 #include "base/hash/hash.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "url/gurl.h"
@@ -108,14 +109,15 @@ int RulesetIndexer::GetChecksum() const {
 
 // static
 bool IndexedRulesetMatcher::Verify(base::span<const uint8_t> buffer,
-                                   int expected_checksum) {
+                                   int expected_checksum,
+                                   std::string_view uma_tag) {
   TRACE_EVENT_BEGIN1(TRACE_DISABLED_BY_DEFAULT("loading"),
                      "IndexedRulesetMatcher::Verify", "size", buffer.size());
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "SubresourceFilter.IndexRuleset.Verify2.WallDuration");
+  base::ScopedUmaHistogramTimer scoped_timer(
+      base::StrCat({uma_tag, ".IndexRuleset.Verify2.WallDuration"}));
   VerifyStatus status = GetVerifyStatus(buffer, expected_checksum);
-  UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.IndexRuleset.Verify.Status",
-                            status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({uma_tag, ".IndexRuleset.Verify.Status"}), status);
   TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("loading"),
                    "IndexedRulesetMatcher::Verify", "status",
                    static_cast<int>(status));

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
@@ -183,60 +185,11 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-  if (params.open_pwa_window_if_possible) {
-    std::optional<webapps::AppId> app_id =
-        web_app::FindInstalledAppWithUrlInScope(profile, params.url,
-                                                /*window_only=*/true);
-    if (!app_id && params.force_open_pwa_window) {
-      // In theory |force_open_pwa_window| should only be set if we know a
-      // matching PWA is installed. However, we can reach here if
-      // WebAppRegistrary hasn't finished loading yet, which can happen if
-      // Chrome is launched with the URL of an isolated app as an argument.
-      // This isn't a supported way to launch isolated apps, so we can cancel
-      // the navigation, but if we want to support it in the future we'll need
-      // to block until WebAppRegistrar is loaded.
-      return {nullptr, -1};
-    }
-    if (app_id) {
-      // Reuse the existing browser for in-app same window navigations.
-      bool navigating_same_app =
-          params.browser &&
-          web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
-      if (navigating_same_app) {
-        if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-          return {params.browser, -1};
-        }
-
-        // If the browser window does not yet have any tabs, and we are
-        // attempting to add the first tab to it, allow for it to be reused.
-        bool navigating_new_tab =
-            params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-            params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
-        bool browser_has_no_tabs =
-            params.browser && params.browser->tab_strip_model()->empty();
-        if (navigating_new_tab && browser_has_no_tabs) {
-          return {params.browser, -1};
-        }
-      }
-      // App popups are handled in the switch statement below.
-      if (params.disposition != WindowOpenDisposition::NEW_POPUP) {
-        // Open a new app window.
-        std::string app_name =
-            web_app::GenerateApplicationNameFromAppId(*app_id);
-        Browser* browser = nullptr;
-        if (Browser::GetCreationStatusForProfile(profile) ==
-            Browser::CreationStatus::kOk) {
-          // Installed PWAs are considered trusted.
-          Browser::CreateParams browser_params =
-              Browser::CreateParams::CreateForApp(
-                  app_name, /*trusted_source=*/true,
-                  params.window_features.bounds, profile, params.user_gesture);
-          browser_params.initial_origin_specified = GetOriginSpecified(params);
-          browser = Browser::Create(browser_params);
-        }
-        return {browser, -1};
-      }
-    }
+  // TODO(crbug.com/351775835): Flesh out for various link click use-cases.
+  std::optional<std::pair<Browser*, int>> navigation_result =
+      web_app::MaybeHandleAppNavigation(profile, params);
+  if (navigation_result.has_value()) {
+    return *navigation_result;
   }
 
   switch (params.disposition) {

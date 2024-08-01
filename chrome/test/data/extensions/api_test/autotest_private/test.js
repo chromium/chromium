@@ -1150,6 +1150,139 @@ var defaultTests = [
         chrome.test.callbackFail('No frame counting data'));
   },
 
+  async function startOverdrawTracking() {
+    let browserWindow;
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1);
+
+      // Perform a UI action to generate compositor frames so that overdraw
+      // of those frames can be tracked.
+      await new Promise(resolve => {
+        browserWindow = window.open('about:blank');
+        resolve();
+      });
+
+      const data = await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+
+      chrome.test.assertTrue(!!data);
+      chrome.test.assertTrue(data.averageOverdraws.length > 0);
+      browserWindow.close();
+
+      chrome.test.succeed();
+    } catch (error) {
+      if (browserWindow) {
+        browserWindow.close();
+      }
+      chrome.test.fail();
+    }
+  },
+
+  async function collectOverdrawDataWithExplicitDisplayId() {
+    const displaysInfo = await promisify(chrome.system.display.getInfo);
+    const displayId = displaysInfo[0].id;
+
+    let browserWindow;
+
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1),
+          displayId;
+
+      // Perform a UI action to generate compositor frames so that overdraw
+      // of those frames can be tracked.
+      await new Promise(resolve => {
+        browserWindow = window.open('about:blank');
+        resolve();
+      });
+
+      const data = await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+
+      chrome.test.assertTrue(!!data);
+      chrome.test.assertTrue(data.averageOverdraws.length > 0);
+      browserWindow.close();
+
+      chrome.test.succeed();
+    } catch (error) {
+      if (browserWindow) {
+        browserWindow.close();
+      }
+      chrome.test.fail();
+    }
+  },
+
+  async function noOverdrawDataCollectedBetweenStartAndStopCalls() {
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1);
+
+      // No data since no compositor frame was submitted to viz in between start
+      // and stop calls. (No overdraw data is treated as an error)
+      await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'No overdraw data; maybe forgot to call startOverdrawTracking or ' +
+              'no UI changes between start and stop calls');
+      chrome.test.succeed();
+    }
+  },
+
+  async function stopCollectingOverdrawDataWithoutStart() {
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'No overdraw data; maybe forgot to call startOverdrawTracking or ' +
+              'no UI changes between start and stop calls');
+      chrome.test.succeed();
+    }
+  },
+
+  async function startCollectingOverdrawDataForInvalidDisplay() {
+    const badDisplayId = '-1';
+    try {
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1, badDisplayId);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'Invalid displayId; no display found for the display id -1');
+      chrome.test.succeed();
+    }
+  },
+
+  async function stopCollectingOverdrawDataForInvalidDisplay() {
+    const badDisplayId = '-1';
+    try {
+      await promisify(
+          chrome.autotestPrivate.stopOverdrawTracking, badDisplayId);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'Invalid displayId; no display found for the display id -1');
+      chrome.test.succeed();
+    }
+  },
+
   // KEEP |lockScreen()| TESTS AT THE BOTTOM OF THE defaultTests AS IT WILL
   // CHANGE THE SESSION STATE TO LOCKED STATE.
   function lockScreen() {

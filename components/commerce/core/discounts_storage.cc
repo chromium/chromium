@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
@@ -53,8 +54,25 @@ void DiscountsStorage::HandleServerDiscounts(
     DiscountInfoCallback callback) {
   // Update local database with server-fetched results.
   for (const auto& result : server_results) {
-    CHECK(result.second.size() > 0);
-    SaveDiscounts(result.first, result.second);
+    const GURL& url = result.first;
+    const std::vector<DiscountInfo>& discount_infos = result.second;
+
+    CHECK(discount_infos.size() > 0);
+
+    std::vector<DiscountInfo> offer_level_discount_infos;
+    for (const auto& discount_info : discount_infos) {
+      if (discount_info.cluster_type == DiscountClusterType::kOfferLevel) {
+        offer_level_discount_infos.emplace_back(discount_info);
+      }
+    }
+
+    if (!offer_level_discount_infos.empty()) {
+      SaveDiscounts(url, offer_level_discount_infos);
+    }
+
+    if (!commerce::kDiscountOnShoppyPage.Get()) {
+      server_results[url] = offer_level_discount_infos;
+    }
   }
 
   if (urls_to_check.size() == 0) {

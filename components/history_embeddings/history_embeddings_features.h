@@ -54,6 +54,10 @@ extern const base::FeatureParam<double> kContentVisibilityThreshold;
 // and result inclusion.
 extern const base::FeatureParam<double> kSearchScoreThreshold;
 
+// Specifies whether to answer queries using an answerer (mock or ML). This
+// can be considered a toggle for v2 functionality.
+extern const base::FeatureParam<bool> kEnableAnswers;
+
 // Specifies whether to use the ML Answerer (if false, the mock is used).
 extern const base::FeatureParam<bool> kUseMlAnswerer;
 
@@ -104,6 +108,10 @@ extern const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder;
 
 // Whether to enable the URL filter to skip blocked URLs to improve performance.
 extern const base::FeatureParam<bool> kUseUrlFilter;
+
+// The amount of time in seconds that the passage embeddings service will idle
+// for before being torn down to reduce memory usage.
+extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.

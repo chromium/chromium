@@ -17,6 +17,7 @@ static_library("usb") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/common",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/dbus/concierge",

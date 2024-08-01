@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.base;
 
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
+import android.os.Process;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
@@ -17,7 +18,6 @@ import dalvik.system.DexFile;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -115,7 +115,7 @@ public class DexFixer {
 
     private static String odexPathFromApkPath(String apkPath) {
         // Based on https://cs.android.com/search?q=OatFileAssistant::DexLocationToOdexNames
-        boolean is64Bit = ApiHelperForM.isProcess64Bit();
+        boolean is64Bit = Process.is64Bit();
         String isaName;
         if (NativeLibraries.sCpuFamily == NativeLibraries.CPU_FAMILY_ARM) {
             isaName = is64Bit ? "arm64" : "arm";

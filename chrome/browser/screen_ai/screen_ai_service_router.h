@@ -55,6 +55,15 @@ class ScreenAIServiceRouter : public KeyedService,
   // Returns true if the connection for `service` is bound.
   bool IsConnectionBoundForTesting(Service service);
 
+  // Returns true if sandboxed process is running.
+  bool IsProcessRunningForTesting();
+
+  void ShutDownIfNoClientsForTesting() {
+    if (screen_ai_service_factory_.is_bound()) {
+      screen_ai_service_factory_->ShutDownIfNoClients();
+    }
+  }
+
  private:
   friend class ScreenAIServiceRouterFactory;
 

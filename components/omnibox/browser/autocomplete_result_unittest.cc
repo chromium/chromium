@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/omnibox/browser/autocomplete_result.h"
 
 #include <stddef.h>
@@ -144,6 +149,8 @@ class AutocompleteResultTest : public testing::Test {
 
     // Inline autocompletion.
     std::string inline_autocompletion;
+
+    IphType iph_type = IphType::kNone;
   };
 
   AutocompleteResultTest() {
@@ -251,6 +258,7 @@ AutocompleteMatch AutocompleteResultTest::PopulateAutocompleteMatch(
     match.suggestion_group_id = data.suggestion_group_id.value();
   }
   match.inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
+  match.iph_type = data.iph_type;
   return match;
 }
 
@@ -2653,7 +2661,9 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
        false,
        {},
        AutocompleteMatchType::NULL_RESULT_MESSAGE,
-       group2},
+       group2,
+       "",
+       IphType::kFeaturedEnterpriseSearch},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);

@@ -24,8 +24,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -37,12 +39,10 @@ import androidx.core.text.BidiFormatter;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
@@ -246,7 +246,7 @@ public class UrlBar extends AutocompleteEditText {
                             }
                         });
 
-        ApiCompatibilityUtils.disableSmartSelectionTextClassifier(this);
+        setTextClassifier(TextClassifier.NO_OP);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setIsHandwritingDelegate(true);
         }
@@ -456,7 +456,10 @@ public class UrlBar extends AutocompleteEditText {
             // the domain changes. We restore this behavior by mimicking the relevant part of
             // TextView.notifyListeningManagersAfterTextChanged().
             // https://cs.android.com/android/platform/superproject/+/5d123b67756dffcfdebdb936ab2de2b29c799321:frameworks/base/core/java/android/widget/TextView.java;l=10618;drc=master;bpv=0
-            ApiHelperForO.notifyValueChangedForAutofill(this);
+            final AutofillManager afm = getContext().getSystemService(AutofillManager.class);
+            if (afm != null) {
+                afm.notifyValueChanged(this);
+            }
         }
 
         limitDisplayableLength();

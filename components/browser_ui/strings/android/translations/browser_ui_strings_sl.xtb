@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1044891598689252897">Spletna mesta bodo delovala normalno</translation>
 <translation id="1073417869336441572">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Skrij kartico z znižano ceno</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1192844206376121885">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Pomoč in povratne inform.</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
-<translation id="2550801787432930915">Kartica z znižano ceno</translation>
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Razširjeno – kliknite, če želite strniti.</translation>
 <translation id="2586657967955657006">Odložišče</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3859306556332390985">Išči naprej</translation>
 <translation id="3895926599014793903">Vsili povečavo</translation>
+<translation id="3905475044299942653">Ustavitev veliko obvestil</translation>
 <translation id="3908288065506437185">Blokiranje piškotkov tretjih oseb v anonimnem načinu.</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" />, <ph name="SEPARATOR1" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Nekatere funkcije morda ne bodo delovale. Povezana spletna mesta lahko še vedno uporabljajo piškotke tretjih oseb.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite gumb za nazaj, če želite zapreti celozaslonski način.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Skrij »Nadaljuj s tem zavihkom«}one{Skrij »Nadaljuj s temi zavihki«}two{Skrij »Nadaljuj s temi zavihki«}few{Skrij »Nadaljuj s temi zavihki«}other{Skrij »Nadaljuj s temi zavihki«}}</translation>
 <translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>
 <translation id="6722828510648505498">Blokiranje poskusov prijav storitev za identiteto.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Izberite možnost za spletno mesto <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6818926723028410516">Izberite elemente</translation>
+<translation id="6840760312327750441">Če želite združiti zavihke v skupino, pridržite zavihek. Nato ga povlecite na drug zavihek.</translation>
 <translation id="6864395892908308021">Ta naprava ne podpira NFC-ja</translation>
 <translation id="6912998170423641340">Spletnim mestom prepreči branje besedila in slik v odložišču</translation>
 <translation id="6945221475159498467">Izberi</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Ta stran je nevarna.</translation>
 <translation id="930525582205581608">Želite, da se to spletno mesto pozabi?</translation>
 <translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
+<translation id="959682366969460160">Postanite bolj organizirani</translation>
 <translation id="967624055006145463">Shranjeni podatki</translation>
 </translationbundle>

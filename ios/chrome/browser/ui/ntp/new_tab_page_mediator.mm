@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
@@ -73,7 +74,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @interface NewTabPageMediator () <ChromeAccountManagerServiceObserver,
                                   IdentityManagerObserverBridgeDelegate,
                                   PrefObserverDelegate,
-                                  SearchEngineObserving>
+                                  SearchEngineObserving,
+                                  SyncObserverModelBridge>
 
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // TemplateURL used to get the search engine.
@@ -107,6 +109,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // The current default search engine.
   raw_ptr<const TemplateURL> _defaultSearchEngine;
+  // Sync Service.
+  raw_ptr<syncer::SyncService> _syncService;
+  // Observer to keep track of the syncing status.
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -123,6 +129,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                    isIncognito:(BOOL)isIncognito
            discoverFeedService:(DiscoverFeedService*)discoverFeedService
                    prefService:(PrefService*)prefService
+                   syncService:(syncer::SyncService*)syncService
                     isSafeMode:(BOOL)isSafeMode {
   self = [super init];
   if (self) {
@@ -140,6 +147,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     // Listen for default search engine changes.
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
+    _syncService = syncService;
+    _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _imageUpdater = imageUpdater;
     _isIncognito = isIncognito;
     _discoverFeedService = discoverFeedService;
@@ -158,6 +167,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
   [self updateAccountImage];
+  [self updateAccountErrorBadge];
   [self startObservingPrefs];
 }
 
@@ -170,6 +180,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
   _prefService = nullptr;
+  _syncObserver.reset();
+  _syncService = nullptr;
   self.feedControlDelegate = nil;
 }
 
@@ -231,6 +243,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
   [self updateAccountImage];
+  [self updateAccountErrorBadge];
 }
 
 #pragma mark - SearchEngineObserving
@@ -256,6 +269,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       [self updateAccountImage];
+      [self updateAccountErrorBadge];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -273,6 +287,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
   }
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  [self updateAccountErrorBadge];
 }
 
 #pragma mark - Private
@@ -352,6 +372,18 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
       prefs::kHomeCustomizationMagicStackEnabled, _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kHomeCustomizationDiscoverEnabled, _prefChangeRegistrar.get());
+}
+
+- (void)updateAccountErrorBadge {
+  if (!base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    return;
+  }
+  id<SystemIdentity> identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  BOOL primaryIdentityHasError =
+      identity && _syncService->GetUserActionableError() !=
+                      syncer::SyncService::UserActionableError::kNone;
+  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError];
 }
 
 @end

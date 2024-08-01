@@ -54,7 +54,7 @@ class FakeSafeBrowsingUrlCheckerImpl
       const std::string& method,
       safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback
           callback) override {
-    if (url.host() == FakeSafeBrowsingService::kUnsafeHost) {
+    if (IsUrlUnsafe(url)) {
       std::move(callback).Run(
           /*proceed=*/false,
           /*showed_interstitial=*/true,
@@ -71,12 +71,40 @@ class FakeSafeBrowsingUrlCheckerImpl
                             safe_browsing::SafeBrowsingUrlCheckerImpl::
                                 PerformedCheck::kHashDatabaseCheck);
   }
+
+ protected:
+  // Returns true if the given `url` should be deemed unsafe.
+  virtual bool IsUrlUnsafe(const GURL& url) {
+    return url.host() == FakeSafeBrowsingService::kUnsafeHost;
+  }
 };
+
+// A SafeBrowsingUrlCheckerImpl that treats all URLs as safe, unless they have
+// host safe.browsing.unsafe.chromium.test or
+// safe.browsing.async.unsafe.chromium.test.
+class FakeAsyncSafeBrowsingUrlCheckerImpl
+    : public FakeSafeBrowsingUrlCheckerImpl {
+ public:
+  explicit FakeAsyncSafeBrowsingUrlCheckerImpl(
+      network::mojom::RequestDestination request_destination)
+      : FakeSafeBrowsingUrlCheckerImpl(request_destination) {}
+
+ protected:
+  bool IsUrlUnsafe(const GURL& url) override {
+    if (url.host() == FakeSafeBrowsingService::kAsyncUnsafeHost) {
+      return true;
+    }
+    return FakeSafeBrowsingUrlCheckerImpl::IsUrlUnsafe(url);
+  }
+};
+
 }  // namespace
 
 // static
 const std::string FakeSafeBrowsingService::kUnsafeHost =
     "safe.browsing.unsafe.chromium.test";
+const std::string FakeSafeBrowsingService::kAsyncUnsafeHost =
+    "safe.browsing.async.unsafe.chromium.test";
 
 FakeSafeBrowsingService::FakeSafeBrowsingService() = default;
 
@@ -115,7 +143,8 @@ FakeSafeBrowsingService::CreateAsyncChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state,
     SafeBrowsingClient* client) {
-  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
+  return std::make_unique<FakeAsyncSafeBrowsingUrlCheckerImpl>(
+      request_destination);
 }
 
 bool FakeSafeBrowsingService::ShouldCreateAsyncChecker(

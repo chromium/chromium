@@ -235,9 +235,9 @@ bool EnableInProcessStackDumping() {
   return true;
 }
 
-size_t CollectStackTrace(const void** trace, size_t count) {
+size_t CollectStackTrace(span<const void*> trace) {
   size_t frame_count = 0;
-  BacktraceData data = {trace, &frame_count, count};
+  BacktraceData data = {trace.data(), &frame_count, trace.size()};
   _Unwind_Backtrace(&UnwindStore, &data);
   return frame_count;
 }

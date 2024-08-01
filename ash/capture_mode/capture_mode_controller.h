@@ -185,7 +185,7 @@ class ASH_EXPORT CaptureModeController
   void StartForGameDashboard(aura::Window* game_window);
 
   // Starts recording a pre-selected game window as soon as possible without
-  // starting a countdown by using a null session.
+  // starting a countdown by using a null session. Currently unused.
   void StartRecordingInstantlyForGameDashboard(aura::Window* game_window);
 
   // Stops an existing capture session.
@@ -597,7 +597,8 @@ class ASH_EXPORT CaptureModeController
   // Encapsulates the policy check and calls into DLP manager to do DLP check.
   // `instant_screenshot_callback` will be moved and invoked in
   // `OnDlpRestrictionCheckedAtCaptureScreenshot()` to perform the instant
-  // screenshot.
+  // screenshot. This is invoked via the screenshot accelerator commands and
+  // will end capture mode session if it is active.
   void CaptureInstantScreenshot(CaptureModeEntryType entry_type,
                                 CaptureModeSource source,
                                 base::OnceClosure instant_screenshot_callback,
@@ -749,7 +750,12 @@ class ASH_EXPORT CaptureModeController
   // to false, ensuring that this is an opt-in feature.
   bool enable_demo_tools_ = false;
 
-  // Maps an instance of the `CaptureModeBehavior` by `BehaviorType`.
+  // Maps an instance of the `CaptureModeBehavior` by `BehaviorType`. This is a
+  // map because a user session may start multiple different behaviors, during
+  // which we don't need to instantiate the behavior again. We also want to keep
+  // the behavior alive for the rest of the session until the user signs out or
+  // shuts down. This is because the behaviors are the ones that cache the
+  // settings.
   base::flat_map<BehaviorType, std::unique_ptr<CaptureModeBehavior>>
       behaviors_map_;
 

@@ -1,7 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/ui/location_bar",
+  "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
-  "+ios/chrome/browser/ui/orchestrator",
+  "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
   "+ios/chrome/browser/ui/toolbar/public",
 ]

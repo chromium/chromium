@@ -122,7 +122,8 @@ TEST_F(SupervisedUserServiceFactoryTest,
 
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(std::move(testing_prefs));
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      std::move(builder).Build();
 
   ASSERT_FALSE(supervised_user::ShouldShowFirstTimeBanner(browser_state.get()));
 }

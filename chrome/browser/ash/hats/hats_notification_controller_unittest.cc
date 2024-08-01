@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -26,6 +31,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/url_util.h"
@@ -54,7 +61,31 @@ const char kPsdValue1[] = "psdValue1";
 const char kPsdValue2[] = "psdValue2 =%^*$#&";
 const char kLocaleValue1[] = "locale1";
 const char kBrowserValue1[] = "browser1";
-const char kTestTimePref[] = "survey_last_interaction_timestamp_pref_name";
+
+const ash::HatsConfig kNonPrioritizedTestConfig{
+    ::features::kHappinessTrackingSystem,
+    base::Days(7),
+    prefs::kHatsDeviceIsSelected,
+    prefs::kHatsSurveyCycleEndTimestamp,
+};
+const char kFeatureNonPrioritizedCommandLine[] =
+    "HappinessTrackingSystem:"
+    "prob/1/survey_cycle_length/9/"
+    "survey_start_date_ms/1600000000000/"
+    "trigger_id/random_trigger_id_non_prio";
+
+const ash::HatsConfig kPrioritizedTestConfig{
+    ::features::kHappinessTrackingGeneralCameraPrioritized,
+    base::Days(7),
+    prefs::kHatsGeneralCameraPrioritizedIsSelected,
+    prefs::kHatsGeneralCameraPrioritizedSurveyCycleEndTs,
+    prefs::kHatsGeneralCameraPrioritizedLastInteractionTimestamp,
+    base::Days(120)};
+const char kFeaturePrioritizedCommandLine[] =
+    "HappinessTrackingGeneralCameraPrioritized:"
+    "prob/1/survey_cycle_length/9/"
+    "survey_start_date_ms/1600000000000/"
+    "trigger_id/random_trigger_id_prio";
 
 bool GetQueryParameter(const std::string& query,
                        const std::string& key,
@@ -69,9 +100,32 @@ bool GetQueryParameter(const std::string& query,
 
 namespace ash {
 
-class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
+struct HatsScenario {
+  // If true, |kPrioritizedTestConfig| will be used.
+  // Otherwise |kNonPrioritizedTestConfig| will be used.
+  bool prioritized;
+
+  // How long since the previous prio HaTS was shown.
+  base::TimeDelta prev_prio_hats;
+
+  // How long since the previous non prio HaTS was shown.
+  base::TimeDelta prev_non_prio_hats;
+
+  // Whether the test (prio) HaTS was shown recently or not.
+  // If true, then the |pref.survey_last_interaction_timestamp_pref_name|
+  // will be set to |today's timestamp| - | pref.threshold_time| + | 1 day |.
+  bool this_hats_recent = false;
+
+  // Expected return value of
+  // HatsNotificationController::ShouldShowSurveyToProfile.
+  bool should_be_selected;
+};
+
+class HatsNotificationControllerTest
+    : public BrowserWithTestWindowTest,
+      public testing::WithParamInterface<HatsScenario> {
  public:
-  HatsNotificationControllerTest() {}
+  HatsNotificationControllerTest() = default;
 
   HatsNotificationControllerTest(const HatsNotificationControllerTest&) =
       delete;
@@ -88,14 +142,16 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
         std::make_unique<NotificationDisplayServiceTester>(profile());
     helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
-    scoped_feature_list_.InitAndEnableFeature(kHatsGeneralSurvey.feature);
+    std::string feature_list = kFeatureNonPrioritizedCommandLine;
+    feature_list += ",";
+    feature_list += kFeaturePrioritizedCommandLine;
+
+    scoped_feature_list_.InitFromCommandLine(feature_list, "");
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     sync_preferences::PrefServiceMockFactory factory;
     auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
-    int64_t now_timestamp = base::Time::Now().ToInternalValue();
-    registry.get()->RegisterInt64Pref(kTestTimePref, now_timestamp);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
     RegisterUserProfilePrefs(registry.get());
@@ -103,6 +159,8 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
         profile_name, std::move(prefs), std::u16string(), 0,
         TestingProfile::TestingFactories());
     OnUserProfileCreated(profile_name, profile);
+    user_manager()->SetOwnerId(
+        ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
     return profile;
   }
 
@@ -146,6 +204,12 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     NetworkState network_state("");
     controller->PortalStateChanged(&network_state, portal_state);
     base::RunLoop().RunUntilIdle();
+  }
+
+  const raw_ref<const HatsConfig> GetHatsConfig() const {
+    return GetParam().prioritized
+               ? raw_ref<const HatsConfig>(kPrioritizedTestConfig)
+               : raw_ref<const HatsConfig>(kNonPrioritizedTestConfig);
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
@@ -260,22 +324,14 @@ TEST_F(HatsNotificationControllerTest,
   // Make sure time has actually advanced
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
-  const HatsConfig kTestSurvey = {
-      ::features::kHappinessTrackingSystem,
-      base::Days(7),
-      prefs::kHatsDeviceIsSelected,
-      prefs::kHatsSurveyCycleEndTimestamp,
-      kTestTimePref,
-      base::Days(7),
-  };
-
   auto hats_notification_controller =
-      InstantiateHatsControllerWithConfig(&kTestSurvey);
+      InstantiateHatsControllerWithConfig(&kPrioritizedTestConfig);
 
   // Simulate closing notification via user interaction.
   hats_notification_controller->Close(true);
 
-  base::Time survey_timestamp = pref_service->GetTime(kTestTimePref);
+  base::Time survey_timestamp = pref_service->GetTime(
+      kPrioritizedTestConfig.survey_last_interaction_timestamp_pref_name);
   // The flag should be updated to a new timestamp.
   EXPECT_GT(survey_timestamp, now_timestamp);
 
@@ -317,5 +373,112 @@ TEST_F(HatsNotificationControllerTest,
       NotificationHandler::Type::TRANSIENT,
       HatsNotificationController::kNotificationId, /*by_user=*/true);
 }
+
+TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
+  // Insert the time values into prefs
+  PrefService* pref_service = profile()->GetPrefs();
+  pref_service->SetTime(prefs::kHatsPrioritizedLastInteractionTimestamp,
+                        base::Time::Now() - GetParam().prev_prio_hats);
+  pref_service->SetTime(prefs::kHatsLastInteractionTimestamp,
+                        base::Time::Now() - GetParam().prev_non_prio_hats);
+
+  // Explanation by example:
+  // Given HaTS config -> threshold_time: 90 days
+  // If param |this_hats_recent| is true, then the timestamp of
+  // |survey_last_interaction_timestamp_pref_name| will be 89 days ago,
+  // otherwise the timestamp will be 91 days ago.
+  if (GetParam().prioritized) {
+    pref_service->SetTime(
+        GetHatsConfig()->survey_last_interaction_timestamp_pref_name,
+        base::Time::Now() - GetHatsConfig()->threshold_time +
+            (GetParam().this_hats_recent ? base::Days(1) : -base::Days(1)));
+  }
+
+  EXPECT_EQ(HatsNotificationController::ShouldShowSurveyToProfile(
+                profile(), *GetHatsConfig()),
+            GetParam().should_be_selected);
+}
+
+const std::vector<HatsScenario> kHatsScenario{
+    // Prio HaTS, any other HaTS was shown very long time ago.
+    {.prioritized = true,
+     .prev_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .should_be_selected = true},
+    // Prio HaTS, but another prio HaTS was shown quite recently: within the
+    // non prio HaTS cooldown period, but already outside the prio HaTS
+    // cooldown.
+    {.prioritized = true,
+     .prev_prio_hats =
+         HatsNotificationController::kPrioritizedHatsThreshold + base::Days(1),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(1),
+     .should_be_selected = true},
+    // Prio HaTS, but a non prio HaTS was shown recently, though should not be
+    // affected.
+    {.prioritized = true,
+     .prev_prio_hats = HatsNotificationController::kPrioritizedHatsThreshold +
+                       base::Days(100),
+     .prev_non_prio_hats =
+         HatsNotificationController::kMinimumHatsThreshold + base::Days(1),
+     .should_be_selected = true},
+    // Prio HaTS, any other HaTS was shown very long time ago, but this prio
+    // HaTS itself is still within its own threshold.
+    {.prioritized = true,
+     .prev_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .this_hats_recent = true,
+     .should_be_selected = false},
+    // Prio HaTS, but another prio HaTS was shown recently.
+    {.prioritized = true,
+     .prev_prio_hats =
+         HatsNotificationController::kPrioritizedHatsThreshold - base::Days(1),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .should_be_selected = false},
+    // Prio HaTS, but a non prio HaTS was shown just few hours ago.
+    {.prioritized = true,
+     .prev_prio_hats = HatsNotificationController::kPrioritizedHatsThreshold +
+                       base::Days(100),
+     .prev_non_prio_hats =
+         HatsNotificationController::kMinimumHatsThreshold - base::Hours(3),
+     .should_be_selected = false},
+    // Non prio HaTS, any other HaTS was shown very long time ago.
+    {.prioritized = false,
+     .prev_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .should_be_selected = true},
+    // Non prio HaTS, but a prio HaTS was shown quite recently.
+    {.prioritized = false,
+     .prev_prio_hats =
+         HatsNotificationController::kMinimumHatsThreshold + base::Days(1),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(1),
+     .should_be_selected = true},
+    // Non prio HaTS, but another non prio HaTS was shown recently.
+    {.prioritized = true,
+     .prev_prio_hats = HatsNotificationController::kPrioritizedHatsThreshold +
+                       base::Days(100),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold - base::Days(1),
+     .should_be_selected = true},
+    // Non prio HaTS, but a prio HaTS was shown just few hours ago.
+    {.prioritized = true,
+     .prev_prio_hats =
+         HatsNotificationController::kMinimumHatsThreshold - base::Hours(1),
+     .prev_non_prio_hats =
+         HatsNotificationController::kHatsThreshold + base::Days(100),
+     .should_be_selected = false},
+};
+
+INSTANTIATE_TEST_SUITE_P(HatsAllScenario,
+                         HatsNotificationControllerTest,
+                         testing::ValuesIn(kHatsScenario));
 
 }  // namespace ash

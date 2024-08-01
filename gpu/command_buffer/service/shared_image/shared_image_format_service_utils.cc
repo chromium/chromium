@@ -19,6 +19,10 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ui/gl/gl_version_info.h"
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
+#endif
+
 namespace gpu {
 
 using PlaneConfig = viz::SharedImageFormat::PlaneConfig;

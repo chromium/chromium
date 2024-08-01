@@ -814,6 +814,20 @@ class ChromeDriver(object):
     params = {'vendorId': vendorId}
     return self.ExecuteCommand(Command.GET_CAST_SINKS, params)
 
+  def CreateVirtualPressureSource(self, type, metadata=None):
+    params = {'type': type}
+    if metadata is not None:
+      params.update(metadata)
+    return self.ExecuteCommand(Command.CREATE_VIRTUAL_PRESSURE_SOURCE, params)
+
+  def UpdateVirtualPressureSource(self, type, sample):
+    params = {'type': type, 'sample': sample}
+    return self.ExecuteCommand(Command.UPDATE_VIRTUAL_PRESSURE_SOURCE, params)
+
+  def RemoveVirtualPressureSource(self, type):
+    params = {'type': type}
+    return self.ExecuteCommand(Command.REMOVE_VIRTUAL_PRESSURE_SOURCE, params)
+
   def __enter__(self):
     return self
 

@@ -58,6 +58,7 @@ static_library("child_accounts") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/app_list/arc",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/dbus/power",
@@ -81,7 +82,9 @@ static_library("child_accounts") {
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/uploading",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profiles",
     "//chrome/common",

@@ -9,7 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -23,6 +27,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * jackpot url links of the product.
  */
 public class PriceInsightsBottomSheetCoordinator {
+
+    /** Delegate interface for price insights feature. */
+    public interface PriceInsightsDelegate {
+        /**
+         * @param tab Tab whose current URL is checked against.
+         * @return BookmarkId or {@link null} if bookmark backend is not loaded.
+         */
+        @Nullable
+        BookmarkId getBookmarkIdForTab(Tab tab);
+    }
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
@@ -41,34 +55,41 @@ public class PriceInsightsBottomSheetCoordinator {
     public PriceInsightsBottomSheetCoordinator(
             @NonNull Context context,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull ShoppingService shoppingService) {
+            @NonNull Tab tab,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull ShoppingService shoppingService,
+            @NonNull PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         PropertyModel propertyModel =
                 new PropertyModel(PriceInsightsBottomSheetProperties.ALL_KEYS);
+        mPriceInsightsView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.price_insights_container, /* root= */ null);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         propertyModel,
                         mPriceInsightsView,
                         PriceInsightsBottomSheetViewBinder::bind);
-        mPriceInsightsView =
-                LayoutInflater.from(mContext)
-                        .inflate(R.layout.price_insights_container, /* root= */ null);
         mBottomSheetMediator =
-                new PriceInsightsBottomSheetMediator(mContext, shoppingService, propertyModel);
+                new PriceInsightsBottomSheetMediator(
+                        mContext,
+                        tab,
+                        tabModelSelector,
+                        shoppingService,
+                        priceInsightsDelegate,
+                        propertyModel);
     }
 
+    /** Request to show the price insights bottom sheet. */
     public void requestShowContent() {
         mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView);
         mBottomSheetMediator.requestShowContent();
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }
 
+    /** Close the price insights bottom sheet. */
     public void closeContent() {
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
-    }
-
-    void setMediatorForTesting(PriceInsightsBottomSheetMediator mockMediator) {
-        mBottomSheetMediator = mockMediator;
     }
 }

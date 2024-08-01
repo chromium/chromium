@@ -21,21 +21,26 @@ namespace net {
 
 // Identifies an endpoint group.
 struct NET_EXPORT ReportingEndpointGroupKey {
+  // Constructs a default ReportingEndpointGroupKey.
   ReportingEndpointGroupKey();
 
+  // Constructs a ReportingEndpointGroupKey with a null `reporting_source`.
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
-      const url::Origin& origin,
+      const std::optional<url::Origin>& origin,
       const std::string& group_name,
       ReportingTargetType target_type);
 
+  // Constructs a ReportingEndpointGroupKey with the given parameters.
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
       std::optional<base::UnguessableToken> reporting_source,
-      const url::Origin& origin,
+      const std::optional<url::Origin>& origin,
       const std::string& group_name,
       ReportingTargetType target_type);
 
+  // Constructs a ReportingEndpointGroupKey with the given `reporting_source`
+  // and all other members from `other`.
   ReportingEndpointGroupKey(
       const ReportingEndpointGroupKey& other,
       const std::optional<base::UnguessableToken>& reporting_source);
@@ -70,8 +75,9 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // this will be nullopt.
   std::optional<base::UnguessableToken> reporting_source;
 
-  // Origin that configured this endpoint group.
-  url::Origin origin;
+  // Origin that configured this endpoint group. For enterprise endpoint groups,
+  // this will be nullopt.
+  std::optional<url::Origin> origin;
 
   // Name of the endpoint group (defaults to "default" during header parsing).
   std::string group_name;
@@ -81,9 +87,8 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // reports aren’t sent to enterprise endpoints.
   ReportingTargetType target_type = ReportingTargetType::kDeveloper;
 
-  NET_EXPORT friend bool operator==(const ReportingEndpointGroupKey& lhs,
-                                    const ReportingEndpointGroupKey& rhs) =
-      default;
+  friend bool operator==(const ReportingEndpointGroupKey& lhs,
+                         const ReportingEndpointGroupKey& rhs) = default;
 };
 
 NET_EXPORT bool operator!=(const ReportingEndpointGroupKey& lhs,
@@ -112,6 +117,9 @@ struct NET_EXPORT ReportingEndpoint {
     // priority; among those with the same priority, each endpoint has a chance
     // of being chosen that is proportional to its weight.
     int weight = kDefaultWeight;
+
+    friend bool operator==(const EndpointInfo& lhs,
+                           const EndpointInfo& rhs) = default;
   };
 
   struct Statistics {
@@ -126,6 +134,9 @@ struct NET_EXPORT ReportingEndpoint {
     // The number of individual reports that we've successfully uploaded for
     // this endpoint.
     int successful_reports = 0;
+
+    friend bool operator==(const Statistics& lhs,
+                           const Statistics& rhs) = default;
   };
 
   // Constructs an invalid ReportingEndpoint.
@@ -139,6 +150,9 @@ struct NET_EXPORT ReportingEndpoint {
 
   ReportingEndpoint& operator=(const ReportingEndpoint&);
   ReportingEndpoint& operator=(ReportingEndpoint&&);
+
+  friend bool operator==(const ReportingEndpoint& lhs,
+                         const ReportingEndpoint& rhs) = default;
 
   ~ReportingEndpoint();
 

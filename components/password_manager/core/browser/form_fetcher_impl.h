@@ -59,12 +59,13 @@ class FormFetcherImpl : public FormFetcher,
   base::span<const PasswordForm> GetAllRelevantMatches() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
+  std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+  GetPreferredOrPotentialMatchedFormType() const override;
   std::unique_ptr<FormFetcher> Clone() override;
   std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
       const override;
   std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
-  bool WereGroupedCredentialsAvailable() const override;
 
   inline void set_filter_grouped_credentials(bool filter_grouped_credentials) {
     filter_grouped_credentials_ = filter_grouped_credentials;
@@ -161,9 +162,12 @@ class FormFetcherImpl : public FormFetcher,
   std::optional<PasswordStoreBackendError> profile_store_backend_error_;
   std::optional<PasswordStoreBackendError> account_store_backend_error_;
 
-  // Stores information whether grouped credentials were available, but were
-  // filtered out.
-  bool were_grouped_credentials_availible_ = false;
+  // If any grouped credentials were available, stores the form type of the
+  // first such credential returned by the password store. If grouped
+  // credentials are configured to not be ignored, this member variable won't
+  // be store any data.
+  std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+      grouped_credentials_form_type_;
 
   base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
 };

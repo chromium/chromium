@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/windows/d3d11_vp9_accelerator.h"
 
 #include <string>
@@ -215,7 +220,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   bool ok =
       client_->GetWrapper()
           ->AppendBitstreamAndSliceDataWithStartCode<DXVA_Slice_VPx_Short>(
-              pic.frame_hdr->data);
+              {pic.frame_hdr->data, pic.frame_hdr->frame_size});
 
   return ok && client_->GetWrapper()->SubmitSlice();
 }

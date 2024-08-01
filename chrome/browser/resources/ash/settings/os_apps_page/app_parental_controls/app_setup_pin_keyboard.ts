@@ -149,12 +149,12 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
   private async canGoToConfirmStep_(newPin: string): Promise<boolean> {
     this.problemMessage_ = '';
 
-    if (this.isConfirmStep) {
-      return true;
-    }
-
     if (newPin.length === 0) {
       return false;
+    }
+
+    if (this.isConfirmStep) {
+      return true;
     }
 
     // Check if a valid PIN is entered before going to confirm step.

@@ -53,12 +53,14 @@ source_set("permissions") {
     "quiet_notification_permission_ui_config.h",
     "quiet_notification_permission_ui_state.cc",
     "quiet_notification_permission_ui_state.h",
+    "system/platform_handle.h",
     "system/system_permission_settings.cc",
     "system/system_permission_settings.h",
   ]
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
   ]
 
@@ -183,6 +185,8 @@ source_set("unit_tests") {
     "permission_revocation_request_unittests.cc",
     "prediction_based_permission_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
+    "system/mock_platform_handle.cc",
+    "system/mock_platform_handle.h",
   ]
 
   deps = [
@@ -236,6 +240,7 @@ if (!is_android) {
     ]
     deps = [
       ":permissions",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test:test_support",

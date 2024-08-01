@@ -111,7 +111,7 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<ChromeBrowserState> otr_browser_state_;

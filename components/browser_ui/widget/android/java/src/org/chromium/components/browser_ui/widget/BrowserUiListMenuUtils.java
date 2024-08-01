@@ -169,15 +169,19 @@ public class BrowserUiListMenuUtils {
      *
      * @param titleId The text on the menu item.
      * @param menuId Id of the menu item.
+     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.
+     * @param iconTintColorStateList The appearance of the icon in incognito mode.
      * @param textAppearanceStyle The appearance of the text in the menu item in incognito mode.
      * @param isIncognito Whether the current menu item will be displayed in incognito mode.
      * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
+     * @return ListItem Representing an item with text and maybe an icon.
      */
     @NonNull
-    public static ListItem buildMenuListItemWithIncognitoText(
+    public static ListItem buildMenuListItemWithIncognitoBranding(
             @StringRes int titleId,
             @IdRes int menuId,
+            @DrawableRes int startIconId,
+            @ColorRes int iconTintColorStateList,
             @StyleRes int textAppearanceStyle,
             boolean isIncognito,
             boolean enabled) {
@@ -185,10 +189,13 @@ public class BrowserUiListMenuUtils {
                 getListItemPropertyBuilder()
                         .with(ListMenuItemProperties.TITLE_ID, titleId)
                         .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.ENABLED, enabled);
+                        .with(ListMenuItemProperties.ENABLED, enabled)
+                        .with(ListMenuItemProperties.START_ICON_ID, startIconId);
 
         if (isIncognito) {
             builder.with(ListMenuItemProperties.TEXT_APPEARANCE_ID, textAppearanceStyle);
+            builder.with(
+                    ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, iconTintColorStateList);
         }
         return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
     }

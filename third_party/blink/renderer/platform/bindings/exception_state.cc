@@ -231,56 +231,6 @@ void ExceptionState::PopContextScope() {
   context_stack_top_ = context_stack_top_->GetParent();
 }
 
-namespace {
-
-String AddContextToMessage(const String& message,
-                           const ExceptionContext& context) {
-  const char* c = context.GetClassName();
-  const String& p = context.GetPropertyName();
-  const String& m = message;
-
-  switch (context.GetType()) {
-    case ExceptionContextType::kConstructorOperationInvoke:
-      return ExceptionMessages::FailedToConstruct(c, m);
-    case ExceptionContextType::kOperationInvoke:
-      return ExceptionMessages::FailedToExecute(p, c, m);
-    case ExceptionContextType::kAttributeGet:
-      return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionContextType::kAttributeSet:
-      return ExceptionMessages::FailedToSet(p, c, m);
-    case ExceptionContextType::kNamedPropertyEnumerator:
-      return ExceptionMessages::FailedToEnumerate(c, m);
-    case ExceptionContextType::kNamedPropertyQuery:
-      break;
-    case ExceptionContextType::kIndexedPropertyGetter:
-    case ExceptionContextType::kIndexedPropertyDescriptor:
-      return ExceptionMessages::FailedToGetIndexed(p, c, m);
-    case ExceptionContextType::kIndexedPropertySetter:
-    case ExceptionContextType::kIndexedPropertyDefiner:
-      return ExceptionMessages::FailedToSetIndexed(p, c, m);
-    case ExceptionContextType::kIndexedPropertyDeleter:
-      return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
-    case ExceptionContextType::kNamedPropertyGetter:
-    case ExceptionContextType::kNamedPropertyDescriptor:
-      return ExceptionMessages::FailedToGetNamed(p, c, m);
-    case ExceptionContextType::kNamedPropertySetter:
-    case ExceptionContextType::kNamedPropertyDefiner:
-      return ExceptionMessages::FailedToSetNamed(p, c, m);
-    case ExceptionContextType::kNamedPropertyDeleter:
-      return ExceptionMessages::FailedToDeleteNamed(p, c, m);
-    case ExceptionContextType::kDictionaryMemberGet:
-      return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionContextType::kUnknown:
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
-  }
-  return m;
-}
-
-}  // namespace
-
 String ExceptionState::AddExceptionContext(
     const String& original_message) const {
   if (original_message.empty())
@@ -289,9 +239,10 @@ String ExceptionState::AddExceptionContext(
   String message = original_message;
   for (const ContextScope* scope = context_stack_top_; scope;
        scope = scope->GetParent()) {
-    message = AddContextToMessage(message, scope->GetContext());
+    message =
+        ExceptionMessages::AddContextToMessage(scope->GetContext(), message);
   }
-  message = AddContextToMessage(message, main_context_);
+  message = ExceptionMessages::AddContextToMessage(main_context_, message);
   return message;
 }
 

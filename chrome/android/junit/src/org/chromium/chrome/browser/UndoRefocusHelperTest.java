@@ -6,16 +6,20 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -40,24 +44,30 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UndoRefocusHelperTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock TabModelSelector mTabModelSelector;
     @Mock ObservableSupplier<LayoutManagerImpl> mLayoutManagerObservableSupplier;
 
     private static final String UNDO_CLOSE_TAB_USER_ACTION = "TabletTabStrip.UndoCloseTab";
     private final TestTabModel mModel = new TestTabModel();
-    private final Tab mTab0 = getMockedTab(0);
-    private final Tab mTab1 = getMockedTab(1);
-    private final Tab mTab2 = getMockedTab(2);
-    private final Tab mTab3 = getMockedTab(3);
+    private Tab mTab0;
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
 
     private UserActionTester mUserActionTester;
     private UndoRefocusHelper mUndoRefocusHelper;
 
     @Before
     public void setUp() throws TimeoutException {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(mTabModelSelector.getCurrentModel()).thenReturn(mModel);
-        Mockito.when(mTabModelSelector.getModel(false)).thenReturn(mModel);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(mModel);
+
+        mTab0 = getMockedTab(0);
+        mTab1 = getMockedTab(1);
+        mTab2 = getMockedTab(2);
+        mTab3 = getMockedTab(3);
 
         mUserActionTester = new UserActionTester();
 
@@ -379,17 +389,18 @@ public class UndoRefocusHelperTest {
         // Assert
         Callback<LayoutManagerImpl> supplierCallback =
                 mUndoRefocusHelper.getLayoutManagerSupplierCallbackForTests();
-        Mockito.verify(mLayoutManagerObservableSupplier).removeObserver(supplierCallback);
-        Mockito.verify(mTabModelSelector).removeObserver(Mockito.any());
-        Mockito.verify(layoutManager).removeObserver(Mockito.any());
+        verify(mLayoutManagerObservableSupplier).removeObserver(supplierCallback);
+        verify(mTabModelSelector).removeObserver(Mockito.any());
+        verify(layoutManager).removeObserver(Mockito.any());
     }
 
     private Tab getMockedTab(int id) {
-        Tab tab1 = Mockito.mock(Tab.class);
-        Mockito.when(tab1.isIncognito()).thenReturn(false);
-        Mockito.when(tab1.getId()).thenReturn(id);
+        Tab tab = Mockito.mock(Tab.class);
+        when(tab.isIncognito()).thenReturn(false);
+        when(tab.getId()).thenReturn(id);
+        when(mTabModelSelector.getModelForTabId(id)).thenReturn(mModel);
 
-        return tab1;
+        return tab;
     }
 
     private void cancelTabsClosure(

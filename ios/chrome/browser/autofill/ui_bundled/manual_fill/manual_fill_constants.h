@@ -35,6 +35,7 @@ enum class ManualFillDataType {
   kPassword = 0,
   kPaymentMethod,
   kAddress,
+  kOther,
 };
 
 // Possible payment field types when manually filling a form.

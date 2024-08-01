@@ -4,13 +4,59 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import android.view.View.OnClickListener;
+
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for price insights bottom sheet. */
 public class PriceInsightsBottomSheetProperties {
+    public static final WritableObjectPropertyKey<String> PRICE_TRACKING_TITLE =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> PRICE_TRACKING_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> PRICE_TRACKING_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableIntPropertyKey PRICE_TRACKING_BUTTON_ICON =
+            new WritableIntPropertyKey();
+
+    public static final WritableIntPropertyKey PRICE_TRACKING_BUTTON_FOREGROUND_COLOR =
+            new WritableIntPropertyKey();
+
+    public static final WritableIntPropertyKey PRICE_TRACKING_BUTTON_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+
+    public static final WritableBooleanPropertyKey PRICE_TRACKING_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<String> PRICE_HISTORY_TITLE =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRICE_HISTORY_TITLE};
+    public static final WritableObjectPropertyKey<String> OPEN_URL_TITLE =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableIntPropertyKey OPEN_URL_BUTTON_ICON = new WritableIntPropertyKey();
+
+    public static final WritableObjectPropertyKey<OnClickListener>
+            OPEN_URL_BUTTON_ON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                PRICE_TRACKING_TITLE,
+                PRICE_TRACKING_DESCRIPTION,
+                PRICE_TRACKING_BUTTON_TEXT,
+                PRICE_TRACKING_BUTTON_ICON,
+                PRICE_TRACKING_BUTTON_FOREGROUND_COLOR,
+                PRICE_TRACKING_BUTTON_BACKGROUND_COLOR,
+                PRICE_TRACKING_BUTTON_ENABLED,
+                PRICE_HISTORY_TITLE,
+                OPEN_URL_TITLE,
+                OPEN_URL_BUTTON_ICON,
+                OPEN_URL_BUTTON_ON_CLICK_LISTENER
+            };
 }

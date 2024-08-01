@@ -49,12 +49,12 @@ public class RichAnswerTextTest {
                 new TextAppearanceSpan(
                         mContext,
                         org.chromium.chrome.browser.omnibox.test.R.style
-                                .TextAppearance_OmniboxAnswerDescriptionPositiveSmall);
+                                .TextAppearance_OmniboxAnswerDescriptionPositive);
         mRedText =
                 new TextAppearanceSpan(
                         mContext,
                         org.chromium.chrome.browser.omnibox.test.R.style
-                                .TextAppearance_OmniboxAnswerDescriptionNegativeSmall);
+                                .TextAppearance_OmniboxAnswerDescriptionNegative);
         mPrimaryText =
                 new TextAppearanceSpan(
                         mContext,

@@ -36,6 +36,22 @@ URLVisitAggregate::URLVisitAggregate(URLVisitAggregate&& other) = default;
 URLVisitAggregate& URLVisitAggregate::operator=(URLVisitAggregate&& other) =
     default;
 
+std::set<std::u16string_view> URLVisitAggregate::GetAssociatedTitles() const {
+  std::set<std::u16string_view> titles = {};
+  for (const auto& fetcher_entry : fetcher_data_map) {
+    std::visit(
+        URLVisitVariantHelper{
+            [&titles](const URLVisitAggregate::TabData& tab_data) {
+              titles.insert(tab_data.last_active_tab.visit.title);
+            },
+            [&titles](const URLVisitAggregate::HistoryData& history_data) {
+              titles.insert(history_data.last_visited.url_row.title());
+            }},
+        fetcher_entry.second);
+  }
+  return titles;
+}
+
 std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
   std::set<const GURL*> urls = {};
   for (const auto& fetcher_entry : fetcher_data_map) {

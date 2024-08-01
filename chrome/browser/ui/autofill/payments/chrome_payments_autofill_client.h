@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
@@ -36,6 +38,7 @@ class AutofillErrorDialogControllerImpl;
 class AutofillMessageController;
 #endif
 class AutofillOfferData;
+class AutofillOfferManager;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 #if BUILDFLAG(IS_ANDROID)
@@ -54,6 +57,7 @@ class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
+class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
@@ -185,6 +189,11 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void DismissOfferNotification() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
+  AutofillOfferManager* GetAutofillOfferManager() override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilities) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification

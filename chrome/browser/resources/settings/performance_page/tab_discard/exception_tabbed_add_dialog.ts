@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './exception_add_input.js';
 import './exception_current_sites_list.js';
 
@@ -78,6 +78,14 @@ export class ExceptionTabbedAddDialogElement extends
   private tabNames_: string[];
   private submitDisabledList_: boolean;
   private submitDisabledManual_: boolean;
+
+  private onSelectedTabChanged_() {
+    // Asynchronously notify the list that its visibility has changed. This is
+    // necessary because the list has an iron-list child that needs to be
+    // manually notified of visibility changes that are triggered by any element
+    // that does not implement iron-resizable-behavior.
+    setTimeout(() => this.$.list.notifyResize(), 0);
+  }
 
   private onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {

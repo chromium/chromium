@@ -152,6 +152,8 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsQuicklyComparePagesFeature,
                        "IPH_TabGroupsQuicklyComparePages");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsTapToSeeAnotherTabFeature,
                        "IPH_TabGroupsTapToSeeAnotherTab");
+DEFINE_VARIATION_PARAM(kIPHTabGroupCreationDialogSyncTextFeature,
+                       "IPH_TabGroupCreationDialogSyncText");
 DEFINE_VARIATION_PARAM(kIPHTabGroupSyncOnStripFeature,
                        "IPH_TabGroupSyncOnStrip");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsYourTabsAreTogetherFeature,
@@ -164,6 +166,8 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceFeature, "IPH_TabGroupsSurface");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceOnHideFeature,
                        "IPH_TabGroupsSurfaceOnHide");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonFeature, "IPH_TabSwitcherButton");
+DEFINE_VARIATION_PARAM(kIPHTabSwitcherFloatingActionButtonFeature,
+                       "IPH_TabSwitcherFloatingActionButton");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,
                        "IPH_TranslateMenuButton");
 DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPChromeIntroFeature,
@@ -363,8 +367,6 @@ DEFINE_VARIATION_PARAM(kIPHTabOrganizationSuccessFeature,
 DEFINE_VARIATION_PARAM(kIPHTabSearchFeature, "IPH_TabSearch");
 DEFINE_VARIATION_PARAM(kIPHTrackingProtectionOnboardingFeature,
                        "IPH_TrackingProtectionOnboarding");
-DEFINE_VARIATION_PARAM(kIPHTrackingProtectionFullOnboardingFeature,
-                       "IPH_TrackingProtectionFullOnboarding");
 DEFINE_VARIATION_PARAM(kIPHTrackingProtectionReminderFeature,
                        "IPH_TrackingProtectionReminder");
 DEFINE_VARIATION_PARAM(kIPHWebUITabStripFeature, "IPH_WebUITabStrip");
@@ -559,6 +561,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHRequestDesktopSiteWindowSettingFeature),
         VARIATION_ENTRY(kIPHShoppingListMenuItemFeature),
         VARIATION_ENTRY(kIPHShoppingListSaveFlowFeature),
+        VARIATION_ENTRY(kIPHTabGroupCreationDialogSyncTextFeature),
         VARIATION_ENTRY(kIPHTabGroupsQuicklyComparePagesFeature),
         VARIATION_ENTRY(kIPHTabGroupsTapToSeeAnotherTabFeature),
         VARIATION_ENTRY(kIPHTabGroupsYourTabsAreTogetherFeature),
@@ -567,6 +570,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabGroupsSurfaceFeature),
         VARIATION_ENTRY(kIPHTabGroupsSurfaceOnHideFeature),
         VARIATION_ENTRY(kIPHTabSwitcherButtonFeature),
+        VARIATION_ENTRY(kIPHTabSwitcherFloatingActionButtonFeature),
         VARIATION_ENTRY(kIPHTranslateMenuButtonFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPChromeIntroFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPDownloadFeature),
@@ -677,7 +681,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabSearchFeature),
         VARIATION_ENTRY(kIPHTabOrganizationSuccessFeature),
         VARIATION_ENTRY(kIPHTrackingProtectionOnboardingFeature),
-        VARIATION_ENTRY(kIPHTrackingProtectionFullOnboardingFeature),
         VARIATION_ENTRY(kIPHTrackingProtectionReminderFeature),
         VARIATION_ENTRY(kIPHWebUITabStripFeature),
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),

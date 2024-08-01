@@ -79,21 +79,14 @@ LayoutUnit ResolveInlineLengthInternal(
         value += border_padding.InlineSum();
       return value;
     }
-    case Length::kMinContent:
+    case Length::kContent:
     case Length::kMaxContent:
+      return min_max_sizes_func(SizeType::kContent).sizes.max_size;
+    case Length::kMinContent:
+      return min_max_sizes_func(SizeType::kContent).sizes.min_size;
     case Length::kMinIntrinsic:
+      return min_max_sizes_func(SizeType::kIntrinsic).sizes.min_size;
     case Length::kFitContent: {
-      MinMaxSizes min_max_sizes =
-          min_max_sizes_func(length.IsMinIntrinsic()
-                                 ? MinMaxSizesType::kIntrinsic
-                                 : MinMaxSizesType::kContent)
-              .sizes;
-
-      if (length.IsMinContent() || length.IsMinIntrinsic())
-        return min_max_sizes.min_size;
-      if (length.IsMaxContent())
-        return min_max_sizes.max_size;
-
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
               ? constraint_space.AvailableSize().inline_size
@@ -102,24 +95,23 @@ LayoutUnit ResolveInlineLengthInternal(
         return unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
-      BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
-      LayoutUnit fill_available =
+      const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      const LayoutUnit fill_available =
           (available_size - margins.InlineSum()).ClampNegativeToZero();
-      return min_max_sizes.ShrinkToFit(fill_available);
+      return min_max_sizes_func(SizeType::kContent)
+          .sizes.ShrinkToFit(fill_available);
     }
-    case Length::kContent:
-      return min_max_sizes_func(MinMaxSizesType::kContent).sizes.max_size;
     case Length::kAuto:
     case Length::kNone:
+      return unresolvable_length_result;
+    case Length::kFlex:
+      NOTREACHED_IN_MIGRATION() << "Should only be used for grid.";
       return unresolvable_length_result;
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED_IN_MIGRATION()
-          << "These should only be used for viewport definitions";
-      [[fallthrough]];
-    default:
-      NOTREACHED_IN_MIGRATION();
+          << "Should only be used for viewport definitions.";
       return unresolvable_length_result;
   }
 }
@@ -132,7 +124,8 @@ LayoutUnit ResolveBlockLengthInternal(
     const Length* auto_length,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    IntrinsicBlockSizeFunctionRef unresolvable_block_size_func) {
+    BlockSizeFunctionRef block_size_func,
+    LayoutUnit unresolvable_length_result) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   CHECK(!original_length.IsAuto() || auto_length);
@@ -147,7 +140,9 @@ LayoutUnit ResolveBlockLengthInternal(
               ? constraint_space.AvailableSize().block_size
               : override_available_size;
       if (available_size == kIndefiniteSize) {
-        return unresolvable_block_size_func();
+        return unresolvable_length_result == kIndefiniteSize
+                   ? block_size_func(SizeType::kContent)
+                   : unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
@@ -163,7 +158,9 @@ LayoutUnit ResolveBlockLengthInternal(
               : constraint_space.PercentageResolutionBlockSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return unresolvable_block_size_func();
+        return unresolvable_length_result == kIndefiniteSize
+                   ? block_size_func(SizeType::kContent)
+                   : unresolvable_length_result;
       }
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
@@ -171,8 +168,8 @@ LayoutUnit ResolveBlockLengthInternal(
             return ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
                 auto_length, override_available_size,
-                override_percentage_resolution_size,
-                unresolvable_block_size_func);
+                override_percentage_resolution_size, block_size_func,
+                unresolvable_length_result);
           }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
@@ -181,11 +178,13 @@ LayoutUnit ResolveBlockLengthInternal(
         value += border_padding.BlockSum();
       return value;
     }
+    case Length::kContent:
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
     case Length::kFitContent: {
-      LayoutUnit intrinsic_size = unresolvable_block_size_func();
+      const LayoutUnit intrinsic_size = block_size_func(
+          length.IsMinIntrinsic() ? SizeType::kIntrinsic : SizeType::kContent);
 #if DCHECK_IS_ON()
       // Due to how intrinsic_size is calculated, it should always include
       // border and padding. We cannot check for this if we are
@@ -195,21 +194,21 @@ LayoutUnit ResolveBlockLengthInternal(
           !constraint_space.HasBlockFragmentation())
         DCHECK_GE(intrinsic_size, border_padding.BlockSum());
 #endif  // DCHECK_IS_ON()
-      return intrinsic_size;
+      return intrinsic_size == kIndefiniteSize ? unresolvable_length_result
+                                               : intrinsic_size;
     }
     case Length::kAuto:
-    case Length::kContent:
     case Length::kNone:
-      return unresolvable_block_size_func();
+      return unresolvable_length_result;
+    case Length::kFlex:
+      NOTREACHED_IN_MIGRATION() << "Should only be used for grid.";
+      return unresolvable_length_result;
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED_IN_MIGRATION()
-          << "These should only be used for viewport definitions";
-      [[fallthrough]];
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return border_padding.BlockSum();
+          << "Should only be used for viewport definitions.";
+      return unresolvable_length_result;
   }
 }
 
@@ -263,7 +262,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
     // transferred through the aspect-ratio (if available).
     result.min_size = ResolveMinInlineLength(
         space, child_style, border_padding,
-        [&](MinMaxSizesType) -> MinMaxSizesResult {
+        [&](SizeType) -> MinMaxSizesResult {
           // Behave the same as if we couldn't resolve the min-inline size.
           MinMaxSizes sizes;
           sizes = border_padding.InlineSum();
@@ -311,7 +310,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   // together to handle calc-size() correctly.
   if (inline_size.HasAuto() || inline_size.HasPercent() ||
       inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
-    result = min_max_sizes_func(MinMaxSizesType::kContent);
+    result = min_max_sizes_func(SizeType::kContent);
   } else {
     const auto size =
         is_parallel_with_parent
@@ -320,11 +319,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
                                       /* auto_length */ nullptr)
             : ResolveMainBlockLength(
                   space, style, border_padding, inline_size,
-                  /* auto_length */ nullptr, [&]() -> LayoutUnit {
-                    return min_max_sizes_func(inline_size.IsMinIntrinsic()
-                                                  ? MinMaxSizesType::kIntrinsic
-                                                  : MinMaxSizesType::kContent)
-                        .sizes.max_size;
+                  /* auto_length */ nullptr, [&](SizeType type) -> LayoutUnit {
+                    return min_max_sizes_func(type).sizes.max_size;
                   });
 
     // This child's contribution size is not dependent on the available size, so
@@ -336,7 +332,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       is_parallel_with_parent
           ? ComputeMinMaxInlineSizes(space, child, border_padding,
                                      min_max_sizes_func)
-          : ComputeMinMaxBlockSizes(space, style, border_padding);
+          : ComputeMinMaxBlockSizesDeprecated(space, child, border_padding);
 
   result.sizes.Constrain(min_max_sizes.max_size);
   result.sizes.Encompass(min_max_sizes.min_size);
@@ -345,7 +341,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   // below their min-intrinsic size (even if they have an inline-size, etc).
   if (child.IsTable()) {
     result.sizes.Encompass(
-        min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size);
+        min_max_sizes_func(SizeType::kIntrinsic).sizes.min_size);
   }
   return result;
 }
@@ -364,7 +360,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
       return ComputeMinAndMaxContentContributionForReplaced(child, space);
   }
 
-  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     return child.ComputeMinMaxSizes(parent_writing_mode, type, space,
                                     float_input);
   };
@@ -384,7 +380,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
   if (child.IsReplaced())
     return ComputeMinAndMaxContentContributionForReplaced(child, space);
 
-  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     return child.ComputeMinMaxSizes(writing_mode, type, space);
   };
 
@@ -397,7 +393,7 @@ MinMaxSizes ComputeMinAndMaxContentContributionForTest(
     const BlockNode& child,
     const ConstraintSpace& space,
     const MinMaxSizes& min_max_sizes) {
-  auto MinMaxSizesFunc = [&](MinMaxSizesType) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType) -> MinMaxSizesResult {
     return MinMaxSizesResult(min_max_sizes,
                              /* depends_on_block_constraints */ false);
   };
@@ -407,8 +403,9 @@ MinMaxSizes ComputeMinAndMaxContentContributionForTest(
 }
 
 LayoutUnit ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
-                                            const ComputedStyle& style,
+                                            const BlockNode& node,
                                             const BoxStrut& border_padding) {
+  const ComputedStyle& style = node.Style();
   DCHECK(!style.AspectRatio().IsAuto());
 
   // Even though an implicit stretch will resolve - we return an indefinite
@@ -419,7 +416,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
   }
 
   const auto block_size = ComputeBlockSizeForFragment(
-      space, style, border_padding, /* intrinsic_size */ kIndefiniteSize,
+      space, node, border_padding, /* intrinsic_size */ kIndefiniteSize,
       /* inline_size */ kIndefiniteSize);
 
   if (block_size == kIndefiniteSize)
@@ -447,7 +444,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
       ((logical_width.HasAuto() &&
         space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) ||
        logical_width.HasMinContent() || logical_width.HasMaxContent())) {
-    extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
+    extent = ComputeInlineSizeFromAspectRatio(space, node, border_padding);
 
     if (extent != kIndefiniteSize) {
       // This means we successfully applied aspect-ratio and now need to check
@@ -509,7 +506,7 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
   DCHECK(!space.IsFixedInlineSize());
 
   auto MinMaxSizesFunc =
-      [&table_grid_min_max_sizes](MinMaxSizesType type) -> MinMaxSizesResult {
+      [&table_grid_min_max_sizes](SizeType type) -> MinMaxSizesResult {
     return MinMaxSizesResult(table_grid_min_max_sizes,
                              /* depends_on_block_constraints */ false);
   };
@@ -518,17 +515,54 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
                                               MinMaxSizesFunc);
 }
 
+MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace& space,
+                                           const BlockNode& node,
+                                           const BoxStrut& border_padding) {
+  const ComputedStyle& style = node.Style();
+  MinMaxSizes sizes = {
+      ResolveInitialMinBlockLength(space, style, border_padding,
+                                   style.LogicalMinHeight()),
+      ResolveInitialMaxBlockLength(space, style, border_padding,
+                                   style.LogicalMaxHeight())};
+  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
+  return sizes;
+}
+
 MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
-                                    const ComputedStyle& style,
+                                    const BlockNode& node,
                                     const BoxStrut& border_padding,
+                                    BlockSizeFunctionRef block_size_func,
                                     LayoutUnit override_available_size) {
+  const ComputedStyle& style = node.Style();
   MinMaxSizes sizes = {
       ResolveMinBlockLength(space, style, border_padding,
-                            style.LogicalMinHeight(), override_available_size,
-                            /* override_percentage_resolution_size */ nullptr),
+                            style.LogicalMinHeight(), block_size_func,
+                            override_available_size),
       ResolveMaxBlockLength(space, style, border_padding,
-                            style.LogicalMaxHeight(), override_available_size,
-                            /* override_percentage_resolution_size */ nullptr)};
+                            style.LogicalMaxHeight(), block_size_func,
+                            override_available_size)};
+
+  // Tables can't shrink below their min-intrinsic size.
+  if (node.IsTable()) {
+    sizes.Encompass(block_size_func(SizeType::kIntrinsic));
+  }
+
+  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
+  return sizes;
+}
+
+MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
+    const ConstraintSpace& space,
+    const BlockNode& node,
+    const BoxStrut& border_padding,
+    LayoutUnit override_available_size) {
+  const ComputedStyle& style = node.Style();
+  MinMaxSizes sizes = {ResolveMinBlockLengthDeprecated(
+                           space, style, border_padding,
+                           style.LogicalMinHeight(), override_available_size),
+                       ResolveMaxBlockLengthDeprecated(
+                           space, style, border_padding,
+                           style.LogicalMaxHeight(), override_available_size)};
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
   return sizes;
 }
@@ -575,10 +609,8 @@ MinMaxSizes ComputeTransferredMinMaxBlockSizes(
 
 MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const ConstraintSpace& constraint_space,
-    const ComputedStyle& style,
+    const BlockNode& node,
     const BoxStrut& border_padding) {
-  DCHECK(!style.AspectRatio().IsAuto());
-
   // The spec requires us to clamp these by the specified size (it calls it the
   // preferred size). However, we actually don't need to worry about that,
   // because we only use this if the width is indefinite.
@@ -586,12 +618,14 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
   // We do not need to compute the min/max inline sizes; as long as we always
   // apply the transferred min/max size before the explicit min/max size, the
   // result will be identical.
+  const ComputedStyle& style = node.Style();
+  DCHECK(!style.AspectRatio().IsAuto());
 
-  LogicalSize ratio = style.LogicalAspectRatio();
-  MinMaxSizes block_min_max =
-      ComputeMinMaxBlockSizes(constraint_space, style, border_padding);
-  return ComputeTransferredMinMaxInlineSizes(
-      ratio, block_min_max, border_padding, style.BoxSizingForAspectRatio());
+  const MinMaxSizes block_min_max =
+      ComputeInitialMinMaxBlockSizes(constraint_space, node, border_padding);
+  return ComputeTransferredMinMaxInlineSizes(style.LogicalAspectRatio(),
+                                             block_min_max, border_padding,
+                                             style.BoxSizingForAspectRatio());
 }
 
 MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
@@ -614,16 +648,15 @@ MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
   if (!style.AspectRatio().IsAuto() && style.LogicalWidth().HasAuto() &&
       space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
     MinMaxSizes transferred_sizes =
-        ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
+        ComputeMinMaxInlineSizesFromAspectRatio(space, node, border_padding);
     sizes.min_size = std::max(
         sizes.min_size, std::min(transferred_sizes.min_size, sizes.max_size));
     sizes.max_size = std::min(sizes.max_size, transferred_sizes.max_size);
   }
 
+  // Tables can't shrink below their min-intrinsic size.
   if (node.IsTable()) {
-    // Tables can't shrink below their inline min-content size.
-    sizes.Encompass(
-        min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size);
+    sizes.Encompass(min_max_sizes_func(SizeType::kIntrinsic).sizes.min_size);
   }
 
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
@@ -635,24 +668,29 @@ namespace {
 // Computes the block-size for a fragment, ignoring the fixed block-size if set.
 LayoutUnit ComputeBlockSizeForFragmentInternal(
     const ConstraintSpace& space,
-    const ComputedStyle& style,
+    const BlockNode& node,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  MinMaxSizes min_max = ComputeMinMaxBlockSizes(space, style, border_padding,
-                                                override_available_size);
-
-  if (space.MinBlockSizeShouldEncompassIntrinsicSize()) {
-    // Encompass intrinsic block-size, but not beyond computed max-block-size.
-    min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
-  }
+  const ComputedStyle& style = node.Style();
 
   // Scrollable percentage-sized children of table cells (sometimes) are sized
-  // to their min-size.
+  // to their initial min-size.
   // See: https://drafts.csswg.org/css-tables-3/#row-layout
-  if (space.IsRestrictedBlockSizeTableCellChild())
-    return min_max.min_size;
+  if (space.IsRestrictedBlockSizeTableCellChild()) {
+    return ResolveInitialMinBlockLength(space, style, border_padding,
+                                        style.LogicalMinHeight(),
+                                        override_available_size);
+  }
+
+  MinMaxSizes min_max = ComputeMinMaxBlockSizesDeprecated(
+      space, node, border_padding, override_available_size);
+
+  // Encompass intrinsic block-size, but not beyond computed max-block-size.
+  if (space.MinBlockSizeShouldEncompassIntrinsicSize()) {
+    min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
+  }
 
   const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   const Length& logical_height = style.LogicalHeight();
@@ -715,14 +753,13 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
 }  // namespace
 
 LayoutUnit ComputeBlockSizeForFragment(const ConstraintSpace& constraint_space,
-                                       const ComputedStyle& style,
+                                       const BlockNode& node,
                                        const BoxStrut& border_padding,
                                        LayoutUnit intrinsic_size,
                                        LayoutUnit inline_size,
                                        LayoutUnit override_available_size) {
   // The |override_available_size| should only be used for <table>s.
-  DCHECK(override_available_size == kIndefiniteSize ||
-         style.IsDisplayTableBox());
+  DCHECK(override_available_size == kIndefiniteSize || node.IsTable());
 
   if (constraint_space.IsFixedBlockSize()) {
     LayoutUnit block_size = override_available_size == kIndefiniteSize
@@ -740,20 +777,20 @@ LayoutUnit ComputeBlockSizeForFragment(const ConstraintSpace& constraint_space,
     return intrinsic_size;
 
   return ComputeBlockSizeForFragmentInternal(
-      constraint_space, style, border_padding, intrinsic_size, inline_size,
+      constraint_space, node, border_padding, intrinsic_size, inline_size,
       override_available_size);
 }
 
 LayoutUnit ComputeInitialBlockSizeForFragment(
     const ConstraintSpace& space,
-    const ComputedStyle& style,
+    const BlockNode& node,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     LayoutUnit inline_size,
     LayoutUnit override_available_size) {
   if (space.IsInitialBlockSizeIndefinite())
     return intrinsic_size;
-  return ComputeBlockSizeForFragment(space, style, border_padding,
+  return ComputeBlockSizeForFragment(space, node, border_padding,
                                      intrinsic_size, inline_size,
                                      override_available_size);
 }
@@ -833,7 +870,24 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
+  const LogicalSize aspect_ratio = node.GetAspectRatio();
+  const std::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
+      node, border_padding, box_sizing, aspect_ratio);
+
   const Length& block_length = style.LogicalHeight();
+
+  auto BlockSizeFunc = [&](SizeType) -> LayoutUnit {
+    if (aspect_ratio.IsEmpty()) {
+      DCHECK(natural_size);
+      return natural_size->block_size;
+    }
+    if (mode == ReplacedSizeMode::kNormal) {
+      return ComputeReplacedSize(node, space, border_padding,
+                                 ReplacedSizeMode::kIgnoreBlockLengths)
+          .block_size;
+    }
+    return kIndefiniteSize;
+  };
 
   MinMaxSizes block_min_max_sizes;
   std::optional<LayoutUnit> replaced_block;
@@ -854,11 +908,11 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
     block_min_max_sizes = {
         ResolveMinBlockLength(space, style, border_padding,
-                              style.LogicalMinHeight(),
+                              style.LogicalMinHeight(), BlockSizeFunc,
                               /* override_available_size */ kIndefiniteSize,
                               &min_max_percentage_resolution_size),
         ResolveMaxBlockLength(space, style, border_padding,
-                              style.LogicalMaxHeight(),
+                              style.LogicalMaxHeight(), BlockSizeFunc,
                               /* override_available_size */ kIndefiniteSize,
                               &min_max_percentage_resolution_size)};
 
@@ -886,9 +940,6 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     }
   }
 
-  const LogicalSize aspect_ratio = node.GetAspectRatio();
-  const std::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
-      node, border_padding, box_sizing, aspect_ratio);
   const Length& inline_length = style.LogicalWidth();
 
   auto StretchFit = [&]() -> LayoutUnit {
@@ -908,7 +959,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       // Stretch to the available-size if it is definite.
       size = ResolveMainInlineLength(
           space, style, border_padding,
-          [](MinMaxSizesType) -> MinMaxSizesResult {
+          [](SizeType) -> MinMaxSizesResult {
             NOTREACHED_IN_MIGRATION();
             return MinMaxSizesResult();
           },
@@ -928,7 +979,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     return size;
   };
 
-  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType) -> MinMaxSizesResult {
     LayoutUnit size;
     if (aspect_ratio.IsEmpty()) {
       DCHECK(natural_size);
@@ -1501,7 +1552,7 @@ FragmentGeometry CalculateInitialFragmentGeometry(
   const auto default_block_size = CalculateDefaultBlockSize(
       space, node, break_token, border_scrollbar_padding);
   const auto block_size = ComputeInitialBlockSizeForFragment(
-      space, style, border_padding, default_block_size, inline_size);
+      space, node, border_padding, default_block_size, inline_size);
 
   return {LogicalSize(inline_size, block_size), border, scrollbar, padding};
 }
@@ -1511,7 +1562,7 @@ FragmentGeometry CalculateInitialFragmentGeometry(
     const BlockNode& node,
     const BlockBreakToken* break_token,
     bool is_intrinsic) {
-  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space);
   };
 
@@ -1613,10 +1664,9 @@ LogicalSize CalculateReplacedChildPercentageSize(
   //
   // This ensures that between the table-cell "measure" and "layout" passes
   // the replaced descendants remain the same size.
-  const ComputedStyle& style = node.Style();
-  if (space.IsTableCell() && style.LogicalHeight().IsFixed()) {
+  if (space.IsTableCell() && node.Style().LogicalHeight().IsFixed()) {
     LayoutUnit block_size = ComputeBlockSizeForFragmentInternal(
-        space, style, border_padding, kIndefiniteSize /* intrinsic_size */,
+        space, node, border_padding, kIndefiniteSize /* intrinsic_size */,
         kIndefiniteSize /* inline_size */);
     DCHECK_NE(block_size, kIndefiniteSize);
     return {child_available_size.inline_size,

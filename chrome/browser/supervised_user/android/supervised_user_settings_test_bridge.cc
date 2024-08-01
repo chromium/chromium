@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/stringprintf.h"
-#include "chrome/browser/profiles/profile.h"
-
 #include "base/android/jni_string.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -108,7 +107,8 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
-          identity_manager, shared_url_loader_factory, "");
+          identity_manager, shared_url_loader_factory, /*country=*/"",
+          version_info::Channel::UNKNOWN);
   supervised_user_service->GetURLFilter()->SetURLCheckerClientForTesting(
       std::move(url_checker_client));
 }

@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(GetProfile()));
   auto* second_tab = contents.release();
-  tab_model->CreateTab(current_tab, second_tab);
+  tab_model->CreateTab(current_tab, second_tab, /*select=*/true);
   ASSERT_TRUE(content::NavigateToURL(second_tab, url));
 #endif
   DCHECK_NE(first_tab, second_tab);

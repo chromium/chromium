@@ -142,6 +142,9 @@ bool Scrollbar::IsLeftSideVerticalScrollbar() const {
 }
 
 int Scrollbar::Maximum() const {
+  if (!scrollable_area_) {
+    return 0;
+  }
   gfx::Vector2d max_offset = scrollable_area_->MaximumScrollOffsetInt() -
                              scrollable_area_->MinimumScrollOffsetInt();
   return orientation_ == kHorizontalScrollbar ? max_offset.x() : max_offset.y();
@@ -705,6 +708,7 @@ void Scrollbar::InjectScrollGesture(WebInputEvent::Type gesture_type,
 }
 
 bool Scrollbar::DeltaWillScroll(ScrollOffset delta) const {
+  CHECK(scrollable_area_);
   ScrollOffset current_offset = scrollable_area_->GetScrollOffset();
   ScrollOffset target_offset = current_offset + delta;
   ScrollOffset clamped_offset =
@@ -770,6 +774,7 @@ bool Scrollbar::UsesNinePatchTrackAndCanSkipRepaint(
 }
 
 bool Scrollbar::ShouldParticipateInHitTesting() {
+  CHECK(scrollable_area_);
   // Non-overlay scrollbars should always participate in hit testing.
   if (!IsOverlayScrollbar())
     return true;
@@ -854,14 +859,18 @@ float Scrollbar::ScrollableAreaTargetPos() const {
 
 void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
   needs_update_display_ = true;
-  if (theme_.ShouldRepaintAllPartsOnInvalidation())
+  if (theme_.ShouldRepaintAllPartsOnInvalidation()) {
     invalid_parts = kAllParts;
-  if (invalid_parts & ~kThumbPart)
-    track_needs_repaint_ = true;
-  if (invalid_parts & kThumbPart)
+  }
+  if (invalid_parts & ~kThumbPart) {
+    track_and_buttons_need_repaint_ = true;
+  }
+  if (invalid_parts & kThumbPart) {
     thumb_needs_repaint_ = true;
-  if (scrollable_area_)
+  }
+  if (scrollable_area_) {
     scrollable_area_->SetScrollbarNeedsPaintInvalidation(Orientation());
+  }
 }
 
 CompositorElementId Scrollbar::GetElementId() const {
@@ -933,6 +942,9 @@ bool Scrollbar::IsOpaque() const {
 }
 
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
+  if (!scrollable_area_) {
+    return mojom::blink::ColorScheme::kLight;
+  }
   return IsOverlayScrollbar()
              ? scrollable_area_->GetOverlayScrollbarColorScheme()
              : scrollable_area_->UsedColorSchemeScrollbars();

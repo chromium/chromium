@@ -50,6 +50,7 @@
 }
 
 - (void)saveAndCloseAllItems {
+  [self.inactiveTabsGridCommands saveAndCloseAllItems];
   if (![self canCloseTabs]) {
     return;
   }
@@ -61,6 +62,7 @@
 }
 
 - (void)undoCloseAllItems {
+  [self.inactiveTabsGridCommands undoCloseAllItems];
   if (![self canUndoCloseTabs]) {
     return;
   }
@@ -71,10 +73,12 @@
 }
 
 - (void)discardSavedClosedItems {
+  [self.inactiveTabsGridCommands discardSavedClosedItems];
   if (![self canUndoCloseTabs]) {
     return;
   }
   _tabsCloser->ConfirmDeletion();
+  [self configureToolbarsButtons];
 }
 
 #pragma mark - TabGridPageMutator
@@ -90,6 +94,10 @@
   }
 }
 
+- (void)setPageAsActive {
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+}
+
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
@@ -98,23 +106,13 @@
   // inactive tabs, then the active tabs. So undo in the reverse order: first
   // undo the active tabs, then the inactive tabs.
   if ([self canUndoCloseRegularOrInactiveTabs]) {
-    if ([self.consumer respondsToSelector:@selector(willUndoCloseAll)]) {
-      [self.consumer willUndoCloseAll];
-    }
+    [self.consumer willUndoCloseAll];
     [self undoCloseAllItems];
-    [self.inactiveTabsGridCommands undoCloseAllItems];
-    if ([self.consumer respondsToSelector:@selector(didUndoCloseAll)]) {
-      [self.consumer didUndoCloseAll];
-    }
+    [self.consumer didUndoCloseAll];
   } else {
-    if ([self.consumer respondsToSelector:@selector(willCloseAll)]) {
-      [self.consumer willCloseAll];
-    }
-    [self.inactiveTabsGridCommands saveAndCloseAllItems];
+    [self.consumer willCloseAll];
     [self saveAndCloseAllItems];
-    if ([self.consumer respondsToSelector:@selector(didCloseAll)]) {
-      [self.consumer didCloseAll];
-    }
+    [self.consumer didCloseAll];
   }
   // This is needed because configure button is called (web state list observer
   // in base grid mediator) when regular tabs are modified but not when inactive
@@ -193,6 +191,12 @@
   [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
   [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
                                        focusOmnibox:NO];
+}
+
+- (void)updateForTabInserted {
+  if (!self.webStateList->empty()) {
+    [self discardSavedClosedItems];
+  }
 }
 
 #pragma mark - Private

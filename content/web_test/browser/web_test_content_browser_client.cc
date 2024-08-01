@@ -57,6 +57,7 @@
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
+#include "content/web_test/browser/web_test_pressure_manager.h"
 #include "content/web_test/browser/web_test_sensor_provider_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
@@ -558,6 +559,10 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::WebSensorProviderAutomation>(base::BindRepeating(
       &WebTestContentBrowserClient::BindWebSensorProviderAutomation,
       base::Unretained(this)));
+  map->Add<blink::test::mojom::WebPressureManagerAutomation>(
+      base::BindRepeating(
+          &WebTestContentBrowserClient::BindWebPressureManagerAutomation,
+          base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -637,6 +642,15 @@ void WebTestContentBrowserClient::BindWebSensorProviderAutomation(
 
 void WebTestContentBrowserClient::ResetWebSensorProviderAutomation() {
   sensor_provider_manager_.reset();
+}
+
+void WebTestContentBrowserClient::BindWebPressureManagerAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::WebPressureManagerAutomation>
+        receiver) {
+  WebTestPressureManager::GetOrCreate(
+      WebContents::FromRenderFrameHost(render_frame_host))
+      ->Bind(std::move(receiver));
 }
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(

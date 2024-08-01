@@ -59,6 +59,10 @@ inline constexpr char kBrowserStatesLastActive[] =
 // browser states directories.
 inline constexpr char kBrowserStatesNumCreated[] = "profile.profiles_created";
 
+// A map of a scene and a browser state.
+inline constexpr char kBrowserStateForScene[] =
+    "ios.multiprofile.profile_for_scene";
+
 // A string of NSUUID used to access the WebKit storage per BrowserState.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 
@@ -74,6 +78,17 @@ inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
 // stored in BrowserState prefs.
 inline constexpr char kContentNotificationsEnrollmentEligibility[] =
     "ios.content_notification.enrollment_eligibility";
+
+// String indicating the content notification enrollment type.
+// "" - undecided (feature unchecked because the user is not eligible)
+// "promo_enabled" - top of feed promo is enabled
+// "promo_registered" - top of feed promo is registered
+// "provisional_enabled" - provisional is enabled
+// "provisional_registered" - provisional is registered
+// "setuplist_enabled" - set up list is enabled
+// "setuplist_registered" - set up list is registered
+inline constexpr char kContentNotificationsEnrollmentType[] =
+    "ios.content_notification.enrollment_type";
 
 // String indicating the Contextual Search enabled state.
 // "false" - opt-out (disabled)
@@ -232,6 +247,12 @@ inline constexpr char kIosDiscoverFeedLastRefreshTime[] =
 // visible to the user.
 inline constexpr char kIosDiscoverFeedLastUnseenRefreshTime[] =
     "ios.discover_feed.last_unseen_refresh_time";
+
+// Boolean to represent if the user has ever met the criteria to be shown the
+// Docking Promo. Once true, remains true permanently. Used only when
+// `kIOSDockingPromoForEligibleUsersOnly` is enabled.
+inline constexpr char kIosDockingPromoEligibilityMet[] =
+    "ios.docking_promo.eligibility_met";
 
 // A list of the latest fetched Most Visited Sites.
 inline constexpr char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";

@@ -19,3 +19,9 @@ and [Isolated Web Apps Explainer](https://github.com/WICG/isolated-web-apps/blob
 for more details.
 
 Design doc (internal only): [go/controlled-frame-design](go/controlled-frame-design)
+
+## Maintenance
+
+For active maintainers of different components of Controlled Frame, see [this
+document](https://docs.google.com/document/d/1FkMBFPR2kU2v_ZcWuLy-6HICc9FT9027tGa-zGsnIRE/edit?tab=t.0#heading=h.ol3o006x0l7i).
+(Sorry, internal only.)

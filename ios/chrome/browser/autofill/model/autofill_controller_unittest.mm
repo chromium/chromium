@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -256,7 +257,7 @@ class AutofillControllerTest : public PlatformTest {
     // default.
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
@@ -336,12 +337,16 @@ class AutofillControllerTest : public PlatformTest {
                 ->GetAutofillManager();
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
  protected:
   web::WebState* web_state() { return web_state_.get(); }
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   bool processed_a_task_ = false;
@@ -389,7 +394,7 @@ void AutofillControllerTest::SetUp() {
   autofill_client_->GetPersonalDataManager()
       ->address_data_manager()
       .get_alternative_state_name_map_updater_for_testing()
-      ->set_local_state_for_testing(local_state_.Get());
+      ->set_local_state_for_testing(local_state());
 
   std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(

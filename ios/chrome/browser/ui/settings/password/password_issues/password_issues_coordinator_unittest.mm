@@ -58,7 +58,7 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
@@ -156,17 +156,6 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
-
-// Tests that Password Issues is presented without authentication required.
-TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithoutAuth) {
-  CheckPasswordIssuesVisitMetricsCount(0);
-
-  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/YES);
-
-  CheckPasswordIssuesIsPresented();
-
-  CheckPasswordIssuesVisitMetricsCount(1);
-}
 
 // Tests that Password Issues is presented only after passing authentication
 TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {

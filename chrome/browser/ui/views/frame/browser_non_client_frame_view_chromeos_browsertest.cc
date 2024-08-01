@@ -836,12 +836,12 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   ASSERT_TRUE(WaitForFocus(true, web_app_menu_button_));
 }
 
-// PWAs should show the app icon, but not the title.
+// Tests the app icon and title are not shown.
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
                        IconShownAndTitleNotShown) {
   SetUpWebApp();
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
-  EXPECT_TRUE(browser_view->ShouldShowWindowIcon());
+  EXPECT_FALSE(browser_view->ShouldShowWindowIcon());
   EXPECT_FALSE(browser_view->ShouldShowWindowTitle());
 }
 

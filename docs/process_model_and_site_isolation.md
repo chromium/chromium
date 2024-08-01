@@ -448,9 +448,14 @@ affect invariants or how features are designed.
     for more info.
 * **Sandboxed iframes**: Documents with the sandbox attribute and without
     `allow-same-origin` (either iframes or popups) may be same-site with their
-    parent or opener but use an opaque origin. Chromium currently keeps these
-    documents in the same process as their parent or opener, but this may
-    change in bug [510122](https://crbug.com/510122).
+    parent or opener but use an opaque origin. Since 127.0.6483.0, Desktop
+    Chromium moves these documents into a separate process from their
+    parent or opener. On Android, these documents will only be in a separate
+    process if their parent/opener uses
+    [Partial Site Isolation](#partial-site-isolation). Sandboxed frames embedded
+    in extension pages are in a separate process if they are listed in the
+    "sandbox" section of the extension's manifest, otherwise they are in the
+    same process as the parent.
 * **`data:` URLs**: Chromium generally keeps documents with `data:` URLs in the
     same process as the site that created them, since that site has control
     over their content. The exception is when restoring a previous session, in

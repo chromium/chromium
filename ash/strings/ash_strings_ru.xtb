@@ -46,6 +46,7 @@
 <translation id="1163437384438183174">Убрать функцию "Управление телефоном" с панели запуска</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Возможно, кабель USB-C неправильно подключен к экрану.</translation>
+<translation id="1173268871892601910">Менеджер паролей ChromeOS запрашивает подтверждение вашей личности</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1175944128323889279">Текущий уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %. Оставшееся время работы: <ph name="TIME" />.</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -113,6 +114,7 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1350494136075914725">Идет видеовстреча · Перейти</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
+<translation id="1352537790882153971">Его можно настроить с помощью проводных наушников. Чтобы остановить прослушивание, закройте панель.</translation>
 <translation id="1360220746312242196">Перейти к предыдущему результату поиска по странице</translation>
 <translation id="1360788414852622716">Отключение профиля… Это может занять несколько минут.</translation>
 <translation id="1364382257761975320">Чтобы разблокировать Chromebook, используйте отпечаток пальца.</translation>
@@ -134,6 +136,7 @@
 <translation id="1420408895951708260">Включить или отключить ночную подсветку (<ph name="STATE_TEXT" />)</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Невозможно начать голосовой ввод. Микрофон отключен.</translation>
+<translation id="1445031758921122223">Файлы для функции отслеживания лица скачаны</translation>
 <translation id="1447907279406111651">Проходит сейчас · Окончание: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Ваши устройства с точкой доступа</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
@@ -199,6 +202,7 @@
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
 <translation id="1677582821739292812">На ваш экран смотрит другой человек</translation>
 <translation id="1679841710523778799">Увеличить яркость</translation>
+<translation id="1680659827022803830">Управление видеовызовом</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адрес IPv6: <ph name="ADDRESS" /></translation>
@@ -246,7 +250,7 @@
 <translation id="1862077610023398675">Скрыть элементы управления</translation>
 <translation id="1862380676329487333">Обновить и выйти</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
-<translation id="1869497990620230175">Быстрый доступ к файлам</translation>
+<translation id="1867566089293859645">Изменения будут применены при следующем входе в систему. Вы можете в любое время изменить этот параметр. Для этого откройте "Настройки &gt; Системные настройки &gt; Запуск".</translation>
 <translation id="1871023081802165724">Воспроизвести медиаконтент</translation>
 <translation id="1871915835366697861">Недоступно для этой игры</translation>
 <translation id="1879018240766558464">Окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
@@ -254,6 +258,7 @@
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
 <translation id="1894024878080591367">Измените настройки, чтобы играть с помощью клавиатуры.</translation>
+<translation id="1896383923047738322">Настройте клавиатуру</translation>
 <translation id="1904997243703671177">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будет отключено несколько внешних устройств (<ph name="DEVICE_COUNT" />), в том числе:</translation>
 <translation id="1908992311423394684">Недавно установленное приложение</translation>
 <translation id="1915307458270490472">Закрыть</translation>
@@ -289,6 +294,7 @@
 <translation id="2018630726571919839">Расскажи анекдот</translation>
 <translation id="2021864487439853900">Нажать, чтобы разблокировать</translation>
 <translation id="2034971124472263449">Все равно сохранить</translation>
+<translation id="2041220428661959602">Уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="204259843076055848">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" отключено</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Вертикальная</translation>
@@ -388,6 +394,7 @@
 <translation id="2453860139492968684">Завершить</translation>
 <translation id="2455994958736234930">Добавить "www." и ".com" к тексту в адресной строке и открыть сайт</translation>
 <translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="246052086404491029">Подробности</translation>
 <translation id="2465145153332031561">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Количество циклов: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Разрешение экрана было изменено</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
@@ -484,6 +491,7 @@
 <translation id="2825619548187458965">Полка</translation>
 <translation id="2831035692318564937">Вкл. до рассвета</translation>
 <translation id="2834813915651407382">Недавно открыто</translation>
+<translation id="2838589015763961627">Чтобы изменить размер, выйдите из полноэкранного режима</translation>
 <translation id="2840766858109427815">Перейти на следующую страницу</translation>
 <translation id="2841907151129139818">Вы перешли в режим планшета.</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
@@ -625,11 +633,11 @@
 <translation id="3369111525500416043">К сдаче</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
 <translation id="3375634426936648815">Подключено</translation>
-<translation id="3378438761594387761">Здесь будут появляться новые записи экрана и скачанные файлы</translation>
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Включить голосовой ввод?</translation>
 <translation id="3394432020929931914">, развернуто</translation>
+<translation id="3401474642070997151">Чтобы настроить подсказку, нажмите на нее и удерживайте или откройте меню правой кнопкой мыши</translation>
 <translation id="3405101454990027959">Предоставить доступ к микрофону</translation>
 <translation id="3409584356742878290">Показать или скрыть инспектор инструментов разработчика</translation>
 <translation id="3410336247007142655">Показать настройки тёмной темы</translation>
@@ -692,6 +700,7 @@
 <translation id="3593646411856133110">Чтобы увидеть открытые приложения, проведите по экрану вверх и удерживайте палец.</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
 <translation id="3596012367874587041">Настройки приложений</translation>
+<translation id="3597890697379254532">Только горизонтальная ориентация экрана</translation>
 <translation id="3598452309062311481">Поиск + H</translation>
 <translation id="3600061223661453002">Отключено</translation>
 <translation id="3604801046548457007">Создан рабочий стол "<ph name="DESK_TITILE" />".</translation>
@@ -749,6 +758,7 @@
 <translation id="3756485814916578707">Трансляция экрана…</translation>
 <translation id="3765841382945324995">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" изменено с <ph name="OLD_SHORTCUT" /> на <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Изменено сегодня</translation>
+<translation id="3772109172035555611">Настройте TrackPoint</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
 <translation id="3779139509281456663">Подключение к устройству "<ph name="NAME" />"</translation>
 <translation id="3781910048497807059">Перейти к предыдущей панели</translation>
@@ -796,11 +806,13 @@
 <translation id="3953130726459169782">Нет выполненных заданий.</translation>
 <translation id="3958714870339660776">Весь день</translation>
 <translation id="3962859241508114581">Предыдущий трек</translation>
+<translation id="3963124517343721543">Легко продолжайте с того места, где остановились, в ранее открытых окнах и вкладках. Вы также увидите персональные советы о том, что можно сделать.</translation>
 <translation id="3969043077941541451">Отключен</translation>
 <translation id="3970324493235864154">Просматривайте уведомления с телефона.</translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="397726367135689299">Возможны проблемы при зарядке.</translation>
 <translation id="3977512764614765090">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания.</translation>
+<translation id="397808938113646171">Время вышло. Отличная работа!</translation>
 <translation id="3982013579989864579">Переключиться на другой аудиовыход?</translation>
 <translation id="3984536049089846927">Следующая страница</translation>
 <translation id="3986082989454912832">Ответить</translation>
@@ -825,10 +837,13 @@
 <translation id="404437169852192935">Обновления больше не будут выпускаться</translation>
 <translation id="4049230407053723315">Быстрые настройки</translation>
 <translation id="4057003836560082631">Вкладка <ph name="INDEX" /> из <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
+<translation id="4059696795118403455">Чтобы посмотреть персональные советы, нажмите клавишу обзора.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4066027111132117168">Включен, <ph name="REMAINING_TIME" /></translation>
+<translation id="4067635609339702874">Настройки ChromeOS запрашивают подтверждение вашей личности</translation>
 <translation id="4069532248403319695">Показать скачанные файлы</translation>
 <translation id="4072264167173457037">сигнал средней мощности</translation>
+<translation id="4072805772816336153">Повторите попытку позже.</translation>
 <translation id="4086921558679520050">Переключите физический выключатель микрофона на устройстве</translation>
 <translation id="4101772068965291327">Открытие главной страницы</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
@@ -955,6 +970,7 @@
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4518404433291145981">Чтобы разблокировать Chromebook, сначала разблокируйте телефон.</translation>
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
+<translation id="4531536770443562276">Только полноэкранный режим</translation>
 <translation id="4533343294786968049">Включен режим, продлевающий срок службы батареи. Она полностью зарядится к <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
 <translation id="4538824937723742295">Сделать снимок всего экрана</translation>
@@ -963,6 +979,7 @@
 <translation id="4544483149666270818">Выберите окно для записи</translation>
 <translation id="4545950850562423083">Добавить текущую страницу в закладки</translation>
 <translation id="4548482551627849548">Переместить активное окно на рабочий стол слева</translation>
+<translation id="4552748006424994716">Чтобы избежать эха, слушайте микрофон только через них.</translation>
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
@@ -990,6 +1007,7 @@
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендуемое приложение</translation>
 <translation id="4649019912155580914">Вы изменили файл</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок установлен.</translation>
+<translation id="465686131535918331">Вы можете персонализировать настройки для устройства "<ph name="PERIPHERAL_NAME" />".</translation>
 <translation id="4657775630156561295">Эта подсказка будет навсегда удалена из истории вашего аккаунта:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1049,7 @@
 <translation id="4778095205580009397">Google Ассистент в демонстрационном сеансе недоступен</translation>
 <translation id="4789348252524569426">Невозможно установить файлы для распознавания речи. Обновите операционную систему и перезапустите устройство, затем повторите попытку.</translation>
 <translation id="478959186716341421">Трансляция...</translation>
+<translation id="4798403412327076414">При следующем входе в систему вы увидите ранее открытые окна и приложения.</translation>
 <translation id="4798622944000246716">В вашей мобильной сети использовать телефон в качестве точки доступа нельзя</translation>
 <translation id="4798888871844665150">Скопированный объект уже в буфере обмена. Нажмите <ph name="SHORTCUT_KEY_NAME" /> + V для просмотра.</translation>
 <translation id="479989351350248267">поиск</translation>
@@ -1204,6 +1223,7 @@
 <translation id="5361524080961918551"><ph name="LANGUAGE" />: файлы для распознавания речи частично скачаны</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на эту вкладку</translation>
 <translation id="5364693579536176785">хранилище</translation>
+<translation id="5369573834963677938">Функция отслеживания лица будет доступна другим пользователям устройства</translation>
 <translation id="5369717264580061086">Посмотреть файл в приложении "Файлы"</translation>
 <translation id="5377367976106153749">Разрешить доступ к камере?</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
@@ -1380,6 +1400,7 @@
 <translation id="5982119059638483922">Для отмены нажмите Fn + Search или Shift.</translation>
 <translation id="5983567367406220847">Точка доступа отключена из-за бездействия.</translation>
 <translation id="598407983968395253">Использовать шаблон</translation>
+<translation id="5986723678596105470">Присоединиться в Google Meet</translation>
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
 <translation id="5998374579424866922">Отключить элементы управления</translation>
 <translation id="6000279412553873020">Клавиши, кнопки и прочее</translation>
@@ -1392,9 +1413,11 @@
 <translation id="6020147141355393792">Настроить просмотр уведомлений и приложений с телефона</translation>
 <translation id="6022924867608035986">Удалить текст из окна поиска</translation>
 <translation id="602472752137106327">Показ окон всех рабочих столов. Выбран переключатель.</translation>
+<translation id="6024768346262692989">Не удалось скачать файлы для функции отслеживания лица</translation>
 <translation id="6025324406281560198">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6027518778343897451">Мероприятий <ph name="CURRENT_MONTH_DAY" /> нет. Нажмите Ввод, чтобы открыть Google Календарь в браузере.</translation>
 <translation id="6030495522958826102">Меню перемещено в левый нижний угол экрана.</translation>
+<translation id="6030608926359652298">Настройте сенсорную панель</translation>
 <translation id="6032620807120418574">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
 <translation id="6040071906258664830">Запись микрофона <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -1449,6 +1472,7 @@
 <translation id="6185696379715117369">На страницу вверх</translation>
 <translation id="619335566042889110">Зарядить до конца сейчас</translation>
 <translation id="6193431488227440296">Версия для разработчиков</translation>
+<translation id="6196214354688969799">Студийное изображение</translation>
 <translation id="6199775032047436064">Обновление страницы</translation>
 <translation id="6200515304866777730">Не поддерживается приложением</translation>
 <translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
@@ -1511,6 +1535,7 @@
 <translation id="6450245544201845082">Сочетание клавиш для действия "нажать правой кнопкой мыши" отключено</translation>
 <translation id="6452181791372256707">Отклонить</translation>
 <translation id="6453179446719226835">Язык изменен</translation>
+<translation id="6456096448804832585">Только вертикальная ориентация экрана</translation>
 <translation id="6459472438155181876">Расширение экрана на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">изображения</translation>
 <translation id="6467290994038932560">Включено для игры "<ph name="GAME_APP_NAME" />"</translation>
@@ -2057,6 +2082,7 @@
 <translation id="8443879455002739353">"Копировать"</translation>
 <translation id="8444246603146515890">Рабочий стол "<ph name="DESK_TITILE" />" активирован.</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
+<translation id="8452090802952003258">Послушайте звук микрофона</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Остановить озвучивание при нажатии</translation>
 <translation id="8468806060683421065">срок сдачи: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2115,6 +2141,7 @@
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
 <translation id="8703634754197148428">Начать запись. Чтобы найти кнопку остановки записи, перейдите к панели запуска, используя сочетание клавиш Alt + Shift + L.</translation>
 <translation id="8704155109538237473">Переключиться на окно "Картинка в картинке"</translation>
+<translation id="8708657523363087260">Включить или отключить проверку микрофона</translation>
 <translation id="870917907284186124">Включить или отключить голосовой ввод</translation>
 <translation id="8711169534266271368">Настройки игровой панели</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -2146,6 +2173,7 @@
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" />.</translation>
 <translation id="880709030178078220">"Справка"</translation>
+<translation id="8813531681893371930">Подключите проводные наушники</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8815390544836110344">Нажмите сочетание клавиш для создания скриншота, Ctrl + Shift + Клавиша режима обзора</translation>
 <translation id="881757059229893486">Настройки способов ввода</translation>
@@ -2243,6 +2271,7 @@
 <translation id="9192133205265227850">Используйте устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="9193626018745640770">Трансляция на неизвестное устройство</translation>
 <translation id="9194617393863864469">Войти в другой аккаунт...</translation>
+<translation id="9195857219954068558">Устройство Chromebook обновлено. Вы можете открыть предыдущие окна и приложения.</translation>
 <translation id="9195990613383871904">Завтра</translation>
 <translation id="9198992156681343238">У экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Подключите устройство "<ph name="NAME" />" к Chromebook</translation>

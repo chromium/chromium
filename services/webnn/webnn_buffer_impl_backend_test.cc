@@ -72,6 +72,11 @@ struct CreateContextSuccess {
   base::UnguessableToken webnn_context_handle;
 };
 
+struct CreateBufferSuccess {
+  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
+  base::UnguessableToken webnn_buffer_handle;
+};
+
 #if BUILDFLAG(IS_WIN)
 class WebNNBufferImplBackendTest : public dml::TestBase {
  public:
@@ -95,7 +100,7 @@ void WebNNBufferImplBackendTest::SetUp() {
   SKIP_TEST_IF(!dml::UseGPUInTests());
 
   dml::Adapter::EnableDebugLayerForTesting();
-  auto adapter_creation_result = dml::Adapter::GetInstanceForTesting();
+  auto adapter_creation_result = dml::Adapter::GetGpuInstanceForTesting();
   // If the adapter creation result has no value, it's most likely because
   // platform functions were not properly loaded.
   SKIP_TEST_IF(!adapter_creation_result.has_value());
@@ -197,6 +202,26 @@ WebNNBufferImplBackendTest::CreateWebNNContext() {
   }
 }
 
+base::expected<CreateBufferSuccess, webnn::mojom::Error::Code>
+CreateWebNNBuffer(mojo::Remote<mojom::WebNNContext>& webnn_context_remote,
+                  mojom::BufferInfoPtr buffer_info) {
+  base::test::TestFuture<mojom::CreateBufferResultPtr> create_buffer_future;
+  webnn_context_remote->CreateBuffer(std::move(buffer_info),
+                                     create_buffer_future.GetCallback());
+  mojom::CreateBufferResultPtr create_buffer_result =
+      create_buffer_future.Take();
+  if (create_buffer_result->is_success()) {
+    mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
+    webnn_buffer_remote.Bind(
+        std::move(create_buffer_result->get_success()->buffer_remote));
+    return CreateBufferSuccess{
+        std::move(webnn_buffer_remote),
+        std::move(create_buffer_result->get_success()->buffer_handle)};
+  } else {
+    return base::unexpected(create_buffer_result->get_error()->code);
+  }
+}
+
 bool IsBufferDataEqual(const mojo_base::BigBuffer& a,
                        const mojo_base::BigBuffer& b) {
   return base::span(a) == base::span(b);
@@ -218,16 +243,13 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
 
   ASSERT_TRUE(webnn_context_remote.is_bound());
 
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(
-          *OperandDescriptor::Create(OperandDataType::kFloat32,
-                                     std::array<uint32_t, 2>{3, 4}),
-          MLBufferUsage()),
-      base::UnguessableToken::Create());
-
-  EXPECT_TRUE(webnn_buffer_remote.is_bound());
+  EXPECT_TRUE(CreateWebNNBuffer(
+                  webnn_context_remote,
+                  mojom::BufferInfo::New(
+                      *OperandDescriptor::Create(OperandDataType::kFloat32,
+                                                 std::array<uint32_t, 2>{3, 4}),
+                      MLBufferUsage()))
+                  .has_value());
 
   webnn_context_remote.FlushForTesting();
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
@@ -254,108 +276,14 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
                                  std::array<uint32_t, 2>{4, 3}),
       MLBufferUsage());
 
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_1;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_1.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), base::UnguessableToken::Create());
+  EXPECT_TRUE(CreateWebNNBuffer(webnn_context_remote, buffer_info->Clone())
+                  .has_value());
 
-  EXPECT_TRUE(webnn_buffer_remote_1.is_bound());
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_2;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_2.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), base::UnguessableToken::Create());
-
-  EXPECT_TRUE(webnn_buffer_remote_2.is_bound());
+  EXPECT_TRUE(CreateWebNNBuffer(webnn_context_remote, buffer_info->Clone())
+                  .has_value());
 
   webnn_context_remote.FlushForTesting();
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
-}
-
-// Creating two or more WebNNBuffer(s) with the same token should always fail.
-TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManySameTokenTest) {
-  BadMessageTestHelper bad_message_helper;
-
-  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-      context_result = CreateWebNNContext();
-  if (!context_result.has_value() &&
-      context_result.error() == mojom::Error::Code::kNotSupportedError) {
-    GTEST_SKIP() << "WebNN not supported on this platform.";
-  } else {
-    webnn_context_remote =
-        std::move(context_result.value().webnn_context_remote);
-  }
-
-  const auto buffer_info = mojom::BufferInfo::New(
-      *OperandDescriptor::Create(OperandDataType::kFloat16,
-                                 std::array<uint32_t, 2>{2, 3}),
-      MLBufferUsage());
-
-  const base::UnguessableToken& buffer_handle =
-      base::UnguessableToken::Create();
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_1;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_1.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), buffer_handle);
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_2;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_2.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), buffer_handle);
-
-  webnn_context_remote.FlushForTesting();
-  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
-}
-
-// Disconnecting a WebNNBuffer should allow another buffer to be created with
-// the same token.
-TEST_F(WebNNBufferImplBackendTest,
-       CreateBufferImplManyReuseTokenAfterDisconnectTest) {
-  BadMessageTestHelper bad_message_helper;
-
-  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-      context_result = CreateWebNNContext();
-  if (!context_result.has_value() &&
-      context_result.error() == mojom::Error::Code::kNotSupportedError) {
-    GTEST_SKIP() << "WebNN not supported on this platform.";
-  } else {
-    webnn_context_remote =
-        std::move(context_result.value().webnn_context_remote);
-  }
-
-  const auto buffer_info = mojom::BufferInfo::New(
-      *OperandDescriptor::Create(OperandDataType::kFloat32,
-                                 std::array<uint32_t, 3>{2, 2, 3}),
-      MLBufferUsage());
-
-  const base::UnguessableToken& buffer_handle =
-      base::UnguessableToken::Create();
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_1;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_1.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), buffer_handle);
-
-  webnn_buffer_remote_1.reset();
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_2;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_2.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), buffer_handle);
-
-  webnn_context_remote.FlushForTesting();
-  EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote_3;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote_3.BindNewEndpointAndPassReceiver(),
-      buffer_info->Clone(), buffer_handle);
-
-  webnn_context_remote.FlushForTesting();
-  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
 }
 
 // TODO(https://crbug.com/40278771): Test the buffer gets destroyed.
@@ -375,13 +303,18 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
   }
 
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(
-          *OperandDescriptor::Create(OperandDataType::kUint8,
-                                     std::array<uint32_t, 2>{2, 2}),
-          MLBufferUsage()),
-      base::UnguessableToken::Create());
+  base::expected<CreateBufferSuccess, webnn::mojom::Error::Code> buffer_result =
+      CreateWebNNBuffer(
+          webnn_context_remote,
+          mojom::BufferInfo::New(
+              *OperandDescriptor::Create(OperandDataType::kUint8,
+                                         std::array<uint32_t, 2>{2, 2}),
+              MLBufferUsage()));
+  if (buffer_result.has_value()) {
+    webnn_buffer_remote = std::move(buffer_result.value().webnn_buffer_remote);
+  }
+
+  EXPECT_TRUE(webnn_buffer_remote.is_bound());
 
   const std::array<const uint8_t, 4> input_data{0xAA, 0xAA, 0xAA, 0xAA};
   webnn_buffer_remote->WriteBuffer(mojo_base::BigBuffer(input_data));
@@ -413,13 +346,18 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
   }
 
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(
-          *OperandDescriptor::Create(OperandDataType::kUint8,
-                                     std::array<uint32_t, 2>{2, 2}),
-          MLBufferUsage()),
-      base::UnguessableToken::Create());
+  base::expected<CreateBufferSuccess, webnn::mojom::Error::Code> buffer_result =
+      CreateWebNNBuffer(
+          webnn_context_remote,
+          mojom::BufferInfo::New(
+              *OperandDescriptor::Create(OperandDataType::kUint8,
+                                         std::array<uint32_t, 2>{2, 2}),
+              MLBufferUsage()));
+  if (buffer_result.has_value()) {
+    webnn_buffer_remote = std::move(buffer_result.value().webnn_buffer_remote);
+  }
+
+  EXPECT_TRUE(webnn_buffer_remote.is_bound());
 
   webnn_buffer_remote->WriteBuffer(mojo_base::BigBuffer(
       std::array<const uint8_t, 5>({0xBB, 0xBB, 0xBB, 0xBB, 0xBB})));

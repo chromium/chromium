@@ -288,7 +288,7 @@ CSSValue* ConsumeLinear(CSSParserTokenStream& stream,
     for (wtf_size_t i = 1; i < points.size(); ++i) {
       if (std::isnan(points[i].input)) {
         if (i > upper_index) {
-          const auto* it = std::find_if(
+          const auto it = std::find_if(
               std::next(points.begin(), i + 1), points.end(),
               [](const auto& point) { return !std::isnan(point.input); });
           upper_index = static_cast<wtf_size_t>(it - points.begin());
@@ -1535,6 +1535,9 @@ CSSPrimitiveValue* ConsumeLengthOrPercentInternal(
   }
   Flags parsing_flags({AllowPercent});
   switch (allow_calc_size) {
+    case AllowCalcSize::kAllowWithAutoAndContent:
+      parsing_flags.Put(AllowContentInCalcSize);
+      [[fallthrough]];
     case AllowCalcSize::kAllowWithAuto:
       parsing_flags.Put(AllowAutoInCalcSize);
       [[fallthrough]];
@@ -7381,6 +7384,9 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
   // The keywords supported here should be kept in sync with
   // CalculationExpressionSizingKeywordNode::Keyword and the things that use
   // it.
+  // TODO(https://crbug.com/353538495): This should also be kept in sync with
+  // FlexBasis::ParseSingleValue, although we should eventually make it use
+  // this function instead.
   if (id == CSSValueID::kWebkitMinContent ||
       id == CSSValueID::kWebkitMaxContent ||
       id == CSSValueID::kWebkitFillAvailable ||

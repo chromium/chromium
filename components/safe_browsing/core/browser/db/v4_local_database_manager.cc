@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -104,9 +105,6 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_URL_BINARY_MALWARE),
       ListInfo(kSyncOnDesktopBuilds, "ChromeExtMalware.store",
                GetChromeExtMalwareId(), SB_THREAT_TYPE_EXTENSION),
-      ListInfo(kSyncOnChromeDesktopBuilds, "ChromeUrlClientIncident.store",
-               GetChromeUrlClientIncidentId(),
-               SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
       ListInfo(kSyncOnDesktopBuilds, "UrlCsdDownloadAllowlist.store",
@@ -134,7 +132,7 @@ base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
       kCommandLineSwitchAndThreatType[] = {
           {"mark_as_allowlisted_for_phish_guard", CSD_ALLOWLIST},
           {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
-          {"mark_as_phishing", SOCIAL_ENGINEERING},
+          {switches::kMarkAsPhishing, SOCIAL_ENGINEERING},
           {"mark_as_malware", MALWARE_THREAT},
           {"mark_as_uws", UNWANTED_SOFTWARE}};
   return kCommandLineSwitchAndThreatType;
@@ -151,7 +149,6 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
     case UNWANTED_SOFTWARE:
       return 1;
     case API_ABUSE:
-    case CLIENT_INCIDENT:
     case SUBRESOURCE_FILTER:
       return 2;
     case CSD_ALLOWLIST:
@@ -161,6 +158,7 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
       return 4;
     case BILLING:
       return 15;
+    case CLIENT_INCIDENT:
     case CSD_DOWNLOAD_ALLOWLIST:
     case POTENTIALLY_HARMFUL_APPLICATION:
     case SOCIAL_ENGINEERING_PUBLIC:
@@ -439,27 +437,6 @@ bool V4LocalDatabaseManager::CheckExtensionIDs(
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_EXTENSION_IDS,
       StoresToCheck({GetChromeExtMalwareId()}), extension_ids);
-
-  return HandleCheck(std::move(check));
-}
-
-bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
-  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-
-  StoresToCheck stores_to_check({GetChromeUrlClientIncidentId()});
-
-  if (!CanCheckUrl(url) || !AreAllStoresAvailableNow(stores_to_check)) {
-    // Fail open: Mark resource as safe immediately.
-    // TODO(nparker): This should queue the request if the DB isn't yet
-    // loaded, and later decide if this store is available.
-    // Currently this is the only store that requires full-hash-checks
-    // AND isn't supported on Chromium, so it's unique.
-    return true;
-  }
-
-  std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
-      client, ClientCallbackType::CHECK_RESOURCE_URL, stores_to_check,
-      std::vector<GURL>(1, url));
 
   return HandleCheck(std::move(check));
 }
@@ -744,8 +721,7 @@ void V4LocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
     const std::vector<FullHashStr>& full_hashes,
     std::vector<SBThreatType>* full_hash_threat_types,
     SBThreatType* most_severe_threat_type,
-    ThreatMetadata* metadata,
-    FullHashStr* matching_full_hash) {
+    ThreatMetadata* metadata) {
   UMA_HISTOGRAM_COUNTS_100("SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
                            full_hash_infos.size());
   ThreatSeverity most_severe_yet = kLeastSeverity;
@@ -761,7 +737,6 @@ void V4LocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
       most_severe_yet = severity;
       *most_severe_threat_type = threat_type;
       *metadata = fhi.metadata;
-      *matching_full_hash = fhi.full_hash;
     }
   }
 }
@@ -1049,8 +1024,7 @@ void V4LocalDatabaseManager::OnFullHashResponse(
   // Find out the most severe threat, if any, to report to the client.
   GetSeverestThreatTypeAndMetadata(
       full_hash_infos, check->full_hashes, &check->full_hash_threat_types,
-      &check->most_severe_threat_type, &check->url_metadata,
-      &check->matching_full_hash);
+      &check->most_severe_threat_type, &check->url_metadata);
   RemovePendingCheck(it);
   RespondToClient(std::move(check));
 }
@@ -1185,13 +1159,6 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
     case ClientCallbackType::CHECK_DOWNLOAD_URLS:
       client->OnCheckDownloadUrlResult(check->urls,
                                        check->most_severe_threat_type);
-      break;
-
-    case ClientCallbackType::CHECK_RESOURCE_URL:
-      DCHECK_EQ(1u, check->urls.size());
-      client->OnCheckResourceUrlResult(check->urls[0],
-                                       check->most_severe_threat_type,
-                                       check->matching_full_hash);
       break;
 
     case ClientCallbackType::CHECK_CSD_ALLOWLIST: {

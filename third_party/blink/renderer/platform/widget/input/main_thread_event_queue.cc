@@ -212,7 +212,8 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
           event_->Event(),
           ack_result == mojom::blink::InputEventResultState::kConsumed
               ? WebInputEventResult::kHandledApplication
-              : WebInputEventResult::kNotHandled);
+              : WebInputEventResult::kNotHandled,
+          queue->client_ ? queue->client_->RequestedMainFramePending() : false);
     }
 
     queue->UnblockQueuedBlockingTouchMovesIfNeeded(event_->Event(), ack_result);

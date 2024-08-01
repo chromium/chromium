@@ -817,7 +817,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
 
 // Tests that __gCrWeb.findElementAtPoint reports "never" as the referrer
 // policy for pages that have an unsupported policy in a meta tag.
-TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
+// TODO(crbug.com/351951385): Fix the flakiness in this test and re-enable.
+TEST_F(ContextMenuJsFindElementAtPointTest,
+       DISABLED_UnsupportedReferrerPolicy) {
   // A page with an unsupported referrer meta tag and an image.
   NSString* const head =
       @"<meta name=\"referrer\" content=\"unsupported-value\">";

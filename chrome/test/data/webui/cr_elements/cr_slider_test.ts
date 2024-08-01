@@ -8,10 +8,8 @@ import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue, assertNotReached} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
 suite('cr-slider', function() {
@@ -31,7 +29,7 @@ suite('cr-slider', function() {
 
     crSlider = document.body.querySelector('cr-slider')!;
     crSlider.value = 0;
-    return flushTasks();
+    return microtasksFinished();
   });
 
   function checkDisabled(expected: boolean) {
@@ -238,7 +236,6 @@ suite('cr-slider', function() {
     crSlider.markerCount = 10;
     await microtasksFinished();
     assertFalse(markersElement.hidden);
-    flush();
     const markers =
         Array.from(crSlider.shadowRoot!.querySelectorAll('#markers div'));
     assertEquals(9, markers.length);
@@ -535,12 +532,12 @@ suite('cr-slider', function() {
         assertEquals(100, crSlider.value);
 
         crSlider.max = 25;
-        await flushTasks();
+        await microtasksFinished();
         assertEquals(25, crSlider.value);
 
         crSlider.min = 50;
         crSlider.max = 100;
-        await flushTasks();
+        await microtasksFinished();
         assertEquals(50, crSlider.value);
       });
 

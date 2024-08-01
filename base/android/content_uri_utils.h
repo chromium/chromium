@@ -14,9 +14,18 @@
 
 namespace base {
 
-// Opens a content URI for read and returns the file descriptor to the caller.
+// Translates base::File::FLAG_* `open_flags` bitset to Java mode from
+// ParcelFileDescriptor#parseMode(): ("r", "w", "wt", "wa", "rw" or "rwt").
+// Disallows "w" which has been the source of android security issues.
+// Returns nullopt if `open_flags` are not supported.
+BASE_EXPORT std::optional<std::string> TranslateOpenFlagsToJavaMode(
+    uint32_t open_flags);
+
+// Opens a content URI and returns the file descriptor to the caller.
+// `open_flags` is a bitmap of base::File::FLAG_* values.
 // Returns -1 if the URI is invalid.
-BASE_EXPORT File OpenContentUriForRead(const FilePath& content_uri);
+BASE_EXPORT File OpenContentUri(const FilePath& content_uri,
+                                uint32_t open_flags);
 
 // Gets file size, or -1 if file is unknown length.
 BASE_EXPORT int64_t GetContentUriFileSize(const FilePath& content_uri);

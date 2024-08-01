@@ -54,6 +54,8 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_gpu_transfer_option.h"
@@ -97,6 +99,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/cached_color.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
@@ -157,7 +160,6 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -1613,8 +1615,15 @@ static SkPathFillType ParseWinding(const String& winding_rule_string) {
   return SkPathFillType::kEvenOdd;
 }
 
-void BaseRenderingContext2D::fill(const String& winding_rule_string) {
-  const SkPathFillType winding_rule = ParseWinding(winding_rule_string);
+void BaseRenderingContext2D::fill() {
+  FillImpl(SkPathFillType::kWinding);
+}
+
+void BaseRenderingContext2D::fill(const String& winding) {
+  FillImpl(ParseWinding(winding));
+}
+
+void BaseRenderingContext2D::FillImpl(SkPathFillType winding_rule) {
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kFill, winding_rule);
   }
@@ -1622,9 +1631,16 @@ void BaseRenderingContext2D::fill(const String& winding_rule_string) {
                    winding_rule, UsePaintCache::kDisabled);
 }
 
-void BaseRenderingContext2D::fill(Path2D* dom_path,
-                                  const String& winding_rule_string) {
-  const SkPathFillType winding_rule = ParseWinding(winding_rule_string);
+void BaseRenderingContext2D::fill(Path2D* dom_path) {
+  FillPathImpl(dom_path, SkPathFillType::kWinding);
+}
+
+void BaseRenderingContext2D::fill(Path2D* dom_path, const String& winding) {
+  FillPathImpl(dom_path, ParseWinding(winding));
+}
+
+void BaseRenderingContext2D::FillPathImpl(Path2D* dom_path,
+                                          SkPathFillType winding_rule) {
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);

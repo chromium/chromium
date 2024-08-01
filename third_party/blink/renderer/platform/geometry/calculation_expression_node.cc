@@ -76,6 +76,9 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
     case Keyword::kAuto:
       intrinsic_type = Length::Type::kAuto;
       break;
+    case Keyword::kContent:
+      intrinsic_type = Length::Type::kContent;
+      break;
     case Keyword::kMinContent:
     case Keyword::kWebkitMinContent:
       intrinsic_type = Length::Type::kMinContent;

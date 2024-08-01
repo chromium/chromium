@@ -12,11 +12,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #endif
 
 namespace OnDisplayStateChanged =
@@ -76,8 +76,9 @@ void BrailleDisplayPrivateAPI::OnBrailleDisplayStateChanged(
 
 void BrailleDisplayPrivateAPI::OnBrailleKeyEvent(const KeyEvent& key_event) {
   // Key events only go to extensions of the active profile.
-  if (!IsProfileActive())
+  if (!IsProfileActive()) {
     return;
+  }
   std::unique_ptr<Event> event(
       new Event(events::BRAILLE_DISPLAY_PRIVATE_ON_KEY_EVENT,
                 OnKeyEvent::kEventName, OnKeyEvent::Create(key_event)));
@@ -103,8 +104,9 @@ void BrailleDisplayPrivateAPI::SetEventDelegateForTest(
 void BrailleDisplayPrivateAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
-  if (!scoped_observation_.IsObservingSource(braille_controller))
+  if (!scoped_observation_.IsObservingSource(braille_controller)) {
     scoped_observation_.Observe(braille_controller);
+  }
 }
 
 void BrailleDisplayPrivateAPI::OnListenerRemoved(

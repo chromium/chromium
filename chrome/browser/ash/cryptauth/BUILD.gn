@@ -17,6 +17,9 @@ static_library("cryptauth") {
     "gcm_device_info_provider_impl.cc",
     "gcm_device_info_provider_impl.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

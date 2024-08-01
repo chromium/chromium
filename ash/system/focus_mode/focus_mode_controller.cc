@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -31,6 +32,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -86,7 +88,9 @@ FocusModeTray* GetFocusModeTrayInActiveWindow() {
   return status_area_widget->focus_mode_tray();
 }
 
-void ShowEndingMomentNudge() {
+void ShowEndingMomentNudge(
+    const size_t congratulatory_index,
+    const std::optional<FocusModeSession>& current_session) {
   auto* tray = GetFocusModeTrayInActiveWindow();
   if (!tray) {
     return;
@@ -95,7 +99,7 @@ void ShowEndingMomentNudge() {
   // NOTE: we anchor to `tray->image_view()` in order to center the nudge
   // properly because there is extra spacing on the actual `FocusModeTray` view.
   const auto& title_and_emoji =
-      focus_mode_util::GetCongratulatoryTextAndEmoji();
+      focus_mode_util::GetCongratulatoryTextAndEmoji(congratulatory_index);
   AnchoredNudgeData nudge_data(focus_mode_util::kFocusModeEndingMomentNudgeId,
                                NudgeCatalogName::kFocusModeEndingMomentNudge,
                                title_and_emoji, tray->image_view());
@@ -107,7 +111,6 @@ void ShowEndingMomentNudge() {
       base::BindRepeating(&FocusModeTray::ShowBubble, base::Unretained(tray));
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
-  auto current_session = FocusModeController::Get()->current_session();
   CHECK(current_session);
   const std::u16string duration_string =
       focus_mode_util::GetDurationString(current_session->session_duration(),
@@ -486,7 +489,7 @@ void FocusModeController::MaybeShowEndingMomentNudge() {
     return;
   }
 
-  ShowEndingMomentNudge();
+  ShowEndingMomentNudge(congratulatory_index_, current_session_);
 }
 
 void FocusModeController::TriggerEndingMomentImmediately() {
@@ -591,6 +594,8 @@ void FocusModeController::OnTimerTick() {
       return;
     case FocusModeSession::State::kEnding:
       timer_.Stop();
+      congratulatory_index_ = base::RandInt(
+          /*min=*/0, /*max=*/focus_mode_util::kCongratulatoryTitleNum - 1);
 
       if (media_widget_) {
         CloseMediaWidget();

@@ -14,6 +14,9 @@
   <message name="IDS_JAVASCRIPT_MESSAGEBOX_TITLE_NONSTANDARD_URL_IFRAME" desc="Title for JavaScript prompt and confirm originating from an iframe inside the webpage with a non-standard URL such as |data:|">
     An embedded page on this page says
   </message>
+  <message name="IDS_JAVASCRIPT_MESSAGEBOX_TITLE_EXTENSION" desc="Title for JavaScript prompt and confirm originating from an extension page">
+    The extension <ph name="EXTENSION_NAME">$1<ex>Emojis for Gmail</ex></ph> says
+  </message>
 
   <message name="IDS_JAVASCRIPT_MESSAGEBOX_SUPPRESS_OPTION" desc="Optional UI shown on the message box, in the form of a checkbox, allowing the user to suppress additional message boxes from the page.">
     Prevent this page from creating additional dialogs

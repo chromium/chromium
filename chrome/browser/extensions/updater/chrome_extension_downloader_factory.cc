@@ -38,8 +38,9 @@ ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string brand;
   google_brand::GetBrand(&brand);
-  if (!google_brand::IsOrganic(brand))
+  if (!google_brand::IsOrganic(brand)) {
     downloader->set_brand_code(brand);
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string manifest_query_params =
       UpdateQueryParams::Get(UpdateQueryParams::CRX);

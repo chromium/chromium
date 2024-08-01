@@ -17,6 +17,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class Profile;
+
 namespace plus_addresses {
 
 class AllPlusAddressesBottomSheetView;
@@ -51,6 +53,7 @@ class AllPlusAddressesBottomSheetController final {
   void OnBottomSheetDismissed();
 
   gfx::NativeView GetNativeView();
+  Profile* GetProfile();
 
  private:
   const raw_ref<content::WebContents> web_contents_;

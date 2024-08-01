@@ -612,6 +612,8 @@ flatbuffer("weight_cache_schema_generated") {
 # tflite version.
 tflite_static_library("tflite") {
   sources = [
+    "src/tensorflow/compiler/mlir/lite/core/model_builder_base.cc",
+    "src/tensorflow/compiler/mlir/lite/core/model_builder_base.h",
     "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.cc",
     "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.h",
     "src/tensorflow/compiler/mlir/lite/schema/schema_utils.cc",
@@ -648,7 +650,6 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/core/interpreter.cc",
     "src/tensorflow/lite/core/interpreter_builder.cc",
     "src/tensorflow/lite/core/interpreter_experimental.cc",
-    "src/tensorflow/lite/core/model_builder.cc",
     "src/tensorflow/lite/core/model_builder.h",
     "src/tensorflow/lite/core/signature_runner.cc",
     "src/tensorflow/lite/core/signature_runner.h",

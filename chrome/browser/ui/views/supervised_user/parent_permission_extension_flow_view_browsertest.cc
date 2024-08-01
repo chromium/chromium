@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path.h"
-#include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
-
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +16,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_test_delegate.h"
+#include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/common/chrome_paths.h"
@@ -185,6 +185,10 @@ class ExtensionEnableFlowTestSupervised
   scoped_refptr<const extensions::Extension> test_extension_;
 
   std::optional<NextDialogAction> next_dialog_action_;
+
+  // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
+  // extensions.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 // Tests launching an app that requires parent approval from the launcher.

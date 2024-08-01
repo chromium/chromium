@@ -216,7 +216,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PartitionExcessiveAllocationSize(raw_size);
   }
 
-  PartitionDirectMapExtent* map_extent = nullptr;
+  ReadOnlyPartitionDirectMapExtent* map_extent = nullptr;
+  WritablePartitionDirectMapExtent* writable_map_extent = nullptr;
   PartitionPageMetadata* page_metadata = nullptr;
 
   {
@@ -353,7 +354,12 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
           page_metadata - first_page_metadata;
     }
     auto* direct_map_metadata =
-        reinterpret_cast<PartitionDirectMapMetadata*>(page_metadata);
+        reinterpret_cast<ReadOnlyPartitionDirectMapMetadata*>(page_metadata);
+    // TODO(crbug.com/40238514): |page_metadata| will be
+    // |writable_page_metadata|, because |page_metadata| points to a readonly
+    // metadata inside the giga cage.
+    auto* writable_direct_map_metadata =
+        reinterpret_cast<WritablePartitionDirectMapMetadata*>(page_metadata);
     // Since direct map metadata is larger than PartitionPageMetadata, make sure
     // the first and the last bytes are on the same system page, i.e. within the
     // super page metadata region.
@@ -361,7 +367,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
         base::bits::AlignDown(reinterpret_cast<uintptr_t>(direct_map_metadata),
                               SystemPageSize()) ==
         base::bits::AlignDown(reinterpret_cast<uintptr_t>(direct_map_metadata) +
-                                  sizeof(PartitionDirectMapMetadata) - 1,
+                                  sizeof(ReadOnlyPartitionDirectMapMetadata) -
+                                  1,
                               SystemPageSize()));
     PA_DCHECK(page_metadata == &direct_map_metadata->page_metadata);
     page_metadata->is_valid = true;
@@ -376,7 +383,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!direct_map_metadata->second_page_metadata
                    .subsequent_page_metadata.raw_size);
     // Raw size is set later, by the caller.
-    direct_map_metadata->second_page_metadata.slot_span_metadata_offset = 1;
+    writable_direct_map_metadata->second_page_metadata
+        .slot_span_metadata_offset = 1;
 
     PA_DCHECK(!direct_map_metadata->bucket.active_slot_spans_head);
     PA_DCHECK(!direct_map_metadata->bucket.empty_slot_spans_head);
@@ -384,11 +392,12 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!direct_map_metadata->bucket.num_system_pages_per_slot_span);
     PA_DCHECK(!direct_map_metadata->bucket.num_full_slot_spans);
 
-    direct_map_metadata->bucket.slot_size = slot_size;
-    direct_map_metadata->bucket.can_store_raw_size = true;
+    writable_direct_map_metadata->bucket.slot_size = slot_size;
+    writable_direct_map_metadata->bucket.can_store_raw_size = true;
 
-    new (&page_metadata->slot_span_metadata)
-        SlotSpanMetadata(&direct_map_metadata->bucket);
+    // SlotSpanMetadata must point to the bucket inside the giga cage.
+    new (&page_metadata->slot_span_metadata) SlotSpanMetadata(
+        const_cast<PartitionBucket*>(&direct_map_metadata->bucket));
 
     // It is typically possible to map a large range of inaccessible pages, and
     // this is leveraged in multiple places, including the pools. However,
@@ -432,20 +441,23 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
 
     page_metadata->slot_span_metadata.SetFreelistHead(next_entry);
 
+    writable_map_extent = &writable_direct_map_metadata->direct_map_extent;
+    writable_map_extent->reservation_size = reservation_size;
+    writable_map_extent->padding_for_alignment = padding_for_alignment;
+    // Point to read-only bucket.
+    writable_map_extent->bucket = &direct_map_metadata->bucket;
     map_extent = &direct_map_metadata->direct_map_extent;
-    map_extent->reservation_size = reservation_size;
-    map_extent->padding_for_alignment = padding_for_alignment;
-    map_extent->bucket = &direct_map_metadata->bucket;
   }
 
   PartitionRootLock(root).AssertAcquired();
 
   // Maintain the doubly-linked list of all direct mappings.
-  map_extent->next_extent = root->direct_map_list;
+  writable_map_extent->next_extent = root->direct_map_list;
   if (map_extent->next_extent) {
-    map_extent->next_extent->prev_extent = map_extent;
+    map_extent->next_extent->ToWritable(root->ShadowPoolOffset())->prev_extent =
+        map_extent;
   }
-  map_extent->prev_extent = nullptr;
+  writable_map_extent->prev_extent = nullptr;
   root->direct_map_list = map_extent;
 
   return &page_metadata->slot_span_metadata;

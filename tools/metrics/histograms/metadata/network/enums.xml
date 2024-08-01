@@ -1093,17 +1093,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="NoInternet"/>
 </enum>
 
-<enum name="NetworkPortalStatus">
-  <summary>
-    DEPRECATED. Remove with Network.NetworkPortalDetectorResult 2024-07-21.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Offline"/>
-  <int value="2" label="Online"/>
-  <int value="3" label="Portal"/>
-  <int value="4" label="ProxyAuthRequired"/>
-</enum>
-
 <enum name="NetworkProblemType">
   <int value="0" label="Congested TCP Queue"/>
   <int value="1" label="DNS Failure"/>

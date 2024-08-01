@@ -17,6 +17,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
@@ -35,8 +37,10 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -46,6 +50,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager_base.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
@@ -215,9 +220,12 @@ class UserManagerTest : public testing::Test {
       user_manager_.reset();
     }
     user_manager_ = ChromeUserManagerImpl::CreateChromeUserManager();
-    user_manager_->Initialize();
     user_image_manager_registry_ =
         std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
+    // Initialize `UserManager` after `UserImageManagerRegistry` creation to
+    // follow initialization order in
+    // `BrowserProcessPlatformPart::InitializeUserManager()`
+    user_manager_->Initialize();
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
@@ -237,15 +245,14 @@ class UserManagerTest : public testing::Test {
 
   void SetKioskAccountPrefs(
       policy::DeviceLocalAccount::EphemeralMode ephemeral_mode,
-      const std::string& account_id = kDeviceLocalAccountId) {
+      const std::string& account_id = kDeviceLocalAccountId,
+      int type = static_cast<int>(policy::DeviceLocalAccountType::kKioskApp)) {
     settings_helper_.Set(
         kAccountsPrefDeviceLocalAccounts,
         base::Value(base::Value::List().Append(
             base::Value::Dict()
                 .Set(kAccountsPrefDeviceLocalAccountsKeyId, account_id)
-                .Set(
-                    kAccountsPrefDeviceLocalAccountsKeyType,
-                    static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
+                .Set(kAccountsPrefDeviceLocalAccountsKeyType, type)
                 .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                      static_cast<int>(ephemeral_mode))
                 .Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId, ""))));
@@ -265,6 +272,31 @@ class UserManagerTest : public testing::Test {
                      static_cast<int>(type))
                 .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                      static_cast<int>(ephemeral_mode)))));
+  }
+
+  void SetUpArcKioskAccountPersistentPrefs() {
+    const std::string email =
+        std::string("test@") + user_manager::kArcKioskDomain;
+
+    SetKioskAccountPrefs(policy::DeviceLocalAccount::EphemeralMode::kDisable,
+                         /* account_id= */ email, /* type=kArcKiosk */ 2);
+    local_state_->Get()->Set(
+        user_manager::prefs::kDeviceLocalAccountsWithSavedData,
+        base::Value(base::Value::List().Append(email)));
+    user_manager::KnownUser(local_state_->Get())
+        .SaveKnownUser(AccountId::FromUserEmailGaiaId(email, "fake_gaia_id"));
+  }
+
+  size_t GetArcKioskAccountsWithSavedDataCount() {
+    return local_state_->Get()
+        ->GetList(user_manager::prefs::kDeviceLocalAccountsWithSavedData)
+        .size();
+  }
+
+  size_t GetKnownUsersCount() {
+    return user_manager::KnownUser(local_state_->Get())
+        .GetKnownAccountIds()
+        .size();
   }
 
   void RetrieveTrustedDevicePolicies() {
@@ -681,6 +713,44 @@ TEST_F(UserManagerTest, RecordOwner) {
   owner = user_manager::UserManager::Get()->GetOwnerEmail();
   ASSERT_TRUE(owner.has_value());
   EXPECT_EQ(owner.value(), kOwnerAccountId.GetUserEmail());
+}
+
+TEST_F(UserManagerTest, RemoveDeprecatedArcKioskAccountOnStartUpByDefault) {
+  base::HistogramTester histogram_tester;
+  SetUpArcKioskAccountPersistentPrefs();
+
+  ResetUserManager();
+
+  EXPECT_EQ(0U, GetArcKioskAccountsWithSavedDataCount());
+  EXPECT_EQ(0U, GetKnownUsersCount());
+  histogram_tester.ExpectTotalCount(
+      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName,
+      user_manager::UserManagerBase::DeprecatedArcKioskUserStatus::kDeleted,
+      /* expected_count= */ 1);
+}
+
+TEST_F(UserManagerTest,
+       HideDeprecatedArcKioskAccountOnStartUpWhenTheFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      user_manager::kRemoveDeprecatedArcKioskUsersOnStartup);
+
+  base::HistogramTester histogram_tester;
+  SetUpArcKioskAccountPersistentPrefs();
+
+  ResetUserManager();
+
+  EXPECT_EQ(0U, GetArcKioskAccountsWithSavedDataCount());
+  // The ARC kiosk user has not been removed, just hidden.
+  EXPECT_EQ(1U, GetKnownUsersCount());
+  histogram_tester.ExpectTotalCount(
+      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName,
+      user_manager::UserManagerBase::DeprecatedArcKioskUserStatus::kHidden,
+      /* expected_count= */ 1);
 }
 
 }  // namespace ash

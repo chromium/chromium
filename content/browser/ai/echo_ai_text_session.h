@@ -26,6 +26,8 @@ class EchoAITextSession : public blink::mojom::AITextSession {
   void Prompt(const std::string& input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
+  void Fork(mojo::PendingReceiver<blink::mojom::AITextSession> session,
+            ForkCallback callback) override;
   void Destroy() override;
 
  private:

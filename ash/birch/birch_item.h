@@ -20,6 +20,9 @@ class PrefRegistrySimple;
 namespace ash {
 
 // These values are used in metrics and should not be reordered or deleted.
+// If you are adding to this enum, please keep in sync with
+// tools/metrics/histograms/metadata/ash/enums.xml as well as metrics in
+// tools/metrics/histograms/metadata/ash/histograms.xml
 enum class BirchItemType {
   kTest = 0,          // Internal type used for testing.
   kCalendar = 1,      // Calendar event.
@@ -33,6 +36,19 @@ enum class BirchItemType {
   kLastActive = 9,    // Last active URL.
   kLostMedia = 10,
   kMaxValue = kLostMedia,
+};
+
+// These values are used to determine which secondary icon to load for the items
+// that contain secondary icons.
+enum class SecondaryIconType {
+  kTabFromDesktop,            // Type that links to desktop icon.
+  kTabFromPhone,              // Type that links to phone/portrait icon.
+  kTabFromTablet,             // Type that links to tablet/landscape icon.
+  kLostMediaAudio,            // Type that links to audio icon.
+  kLostMediaVideo,            // Type that links to media icon.
+  kLostMediaVideoConference,  // Type that links to video conference icon.
+  kUnknown,  // An unknown type where we will not load a secondary icon.
+  kMaxValue = kUnknown,
 };
 
 // The base item which is stored by the birch model.
@@ -65,6 +81,7 @@ class ASH_EXPORT BirchItem {
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
   // The bool is true if the icon load was successful.
+  // TODO(jamescook): Eliminate the bool for success; it is not used.
   using LoadIconCallback =
       base::OnceCallback<void(const ui::ImageModel&, bool)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
@@ -215,6 +232,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
 class ASH_EXPORT BirchFileItem : public BirchItem {
  public:
   BirchFileItem(const base::FilePath& file_path,
+                const std::optional<std::string>& title,
                 const std::u16string& justification,
                 base::Time timestamp,
                 const std::string& file_id,
@@ -238,7 +256,8 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
-  static std::u16string GetTitle(const base::FilePath& file_path);
+  static std::u16string GetTitle(const base::FilePath& file_path,
+                                 const std::optional<std::string>& title);
 
   // A unique file id which is used to identify file type items, specifically
   // BirchFileItem and BirchAttachmentItem.
@@ -358,6 +377,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const base::Time& shared_time,
                      const std::u16string& device_name,
                      const ui::ImageModel& backup_icon,
+                     const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
   BirchSelfShareItem(const BirchSelfShareItem&);
@@ -375,6 +395,9 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   const std::u16string& guid() const { return guid_; }
   const base::Time& shared_time() const { return shared_time_; }
   const GURL& url() const { return url_; }
+  const SecondaryIconType& secondary_icon_type() const {
+    return secondary_icon_type_;
+  }
 
  private:
   static std::u16string GetSubtitle(const std::u16string& device_name,
@@ -384,6 +407,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   GURL url_;
   base::Time shared_time_;
   ui::ImageModel backup_icon_;
+  SecondaryIconType secondary_icon_type_;
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
   // corresponding `SendTabToSelfEntry` as opened.
@@ -398,6 +422,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
                      const std::u16string& media_title,
                      bool is_video_conference_tab,
                      const ui::ImageModel& backup_icon,
+                     const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
   BirchLostMediaItem(const BirchLostMediaItem&);
@@ -415,6 +440,9 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   const GURL& source_url() const { return source_url_; }
   const std::u16string& media_title() const { return media_title_; }
   bool is_video_conference_tab() const { return is_video_conference_tab_; }
+  const SecondaryIconType& secondary_icon_type() const {
+    return secondary_icon_type_;
+  }
 
  private:
   static std::u16string GetSubtitle(bool is_video_conference_tab);
@@ -423,6 +451,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   std::u16string media_title_;
   bool is_video_conference_tab_;
   ui::ImageModel backup_icon_;
+  SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
 };
 

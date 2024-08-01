@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
@@ -22,6 +21,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
@@ -29,7 +29,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_label_widget.h"
-#include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
@@ -55,8 +54,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
@@ -75,7 +72,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_setup_view.h"
-#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
@@ -98,8 +94,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "overview_focus_cycler_old.h"
-#include "overview_session.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -157,14 +151,6 @@ constexpr int kScrollingLayoutRow = 2;
 constexpr int kMinimumItemsForScrollingLayout = 6;
 
 constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
-
-// The horizontal and vertical distance from the bottom left corner of the grid
-// area to the origin of the `feedback_widget_`.
-constexpr int kFeedbackCornerSpacing = 8;
-
-// The minimum height of the grid area in order for the feedback button to be
-// visible.
-constexpr int kFeedbackGridMinHeight = 100;
 
 // The bottom padding applied to the bottom of the birch bar.
 constexpr int kBirchBarBottomPadding = 16;
@@ -321,13 +307,7 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
-  // If Chromevox is on, let the widget be activatable.
-  const bool spoken_feedback_enabled =
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
-  params.activatable =
-      (spoken_feedback_enabled || features::IsOverviewNewFocusEnabled())
-          ? views::Widget::InitParams::Activatable::kYes
-          : views::Widget::InitParams::Activatable::kNo;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "SaveDeskButtonContainerWidget";
   params.accept_events = true;
@@ -825,12 +805,6 @@ void OverviewGrid::PositionWindows(
     return;
   }
 
-  // Create a feedback button that shows even when no items are present (e.g.,
-  // for Pine).
-  if (features::IsForestFeatureEnabled()) {
-    UpdateFeedbackButton();
-  }
-
   if (item_list_.empty()) {
     return;
   }
@@ -1023,18 +997,6 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
 
   UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindows(),
                                        /*increment=*/false);
-
-  // This can also be called when shutting down `this`, at which point the item
-  // will be cleaned up and its associated view may be nullptr. `overview_item`
-  // still needs to be in `item_list_` to compute the corresponding index.
-  if (overview_session_) {
-    if (OverviewFocusCyclerOld* focus_cycler_old =
-            overview_session_->focus_cycler_old()) {
-      for (auto* focusable_view : overview_item->GetFocusableViews()) {
-        focus_cycler_old->OnViewDestroyingOrDisabling(focusable_view);
-      }
-    }
-  }
 
   // Erase from the list first because deleting OverviewItem can lead to
   // iterating through the `item_list_`.
@@ -2343,10 +2305,6 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
         ScopedOverviewWallpaperClipper::AnimationType::kNone,
         base::DoNothing());
   }
-
-  if (features::IsForestFeatureEnabled()) {
-    UpdateFeedbackButton();
-  }
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
@@ -2571,13 +2529,6 @@ OverviewGrid::GetSaveDeskButtonContainer() const {
   return save_desk_button_container_widget_
              ? views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
                    save_desk_button_container_widget_->GetContentsView())
-             : nullptr;
-}
-
-SplitViewSetupViewOld* OverviewGrid::GetSplitViewSetupViewOld() {
-  return split_view_setup_widget_
-             ? views::AsViewClass<SplitViewSetupViewOld>(
-                   split_view_setup_widget_->GetContentsView())
              : nullptr;
 }
 
@@ -3308,7 +3259,12 @@ void OverviewGrid::OnBirchBarLayoutChanged(
     return;
   }
 
-  if (MaybeUpdateBirchBarWidgetBounds() && scoped_overview_wallpaper_clipper_) {
+  if (!MaybeUpdateBirchBarWidgetBounds()) {
+    return;
+  }
+
+  // Animate wallpaper clipping.
+  if (scoped_overview_wallpaper_clipper_) {
     // Perform wallpaper clipping animations according to relayout reason.
     using AnimationType = ScopedOverviewWallpaperClipper::AnimationType;
     using RelayoutReason = BirchBarView::RelayoutReason;
@@ -3351,7 +3307,6 @@ void OverviewGrid::OnBirchBarLayoutChanged(
 
   // A relayout means the bar's accessibility may have changed.
   overview_session_->UpdateAccessibilityFocus();
-  UpdateFeedbackButton();
 }
 
 void OverviewGrid::RefreshDesksWidgets(bool visible) {
@@ -3467,13 +3422,6 @@ void OverviewGrid::OnSettingsButtonPressed() {
 void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   if (!SplitViewController::Get(root_window_)->InClamshellSplitViewMode()) {
     // If we aren't in split view, don't show the widget.
-    if (auto* split_view_setup_view = GetSplitViewSetupViewOld()) {
-      auto* focus_cycler_old = overview_session_->focus_cycler_old();
-      focus_cycler_old->OnViewDestroyingOrDisabling(
-          split_view_setup_view->GetToast());
-      focus_cycler_old->OnViewDestroyingOrDisabling(
-          split_view_setup_view->settings_button());
-    }
     split_view_setup_widget_.reset();
     return;
   }
@@ -3482,9 +3430,7 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
-    params.activatable = features::IsOverviewNewFocusEnabled()
-                             ? views::Widget::InitParams::Activatable::kYes
-                             : views::Widget::InitParams::Activatable::kNo;
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
     params.name = "SplitViewSetupViewWidget";
     params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
@@ -3492,21 +3438,12 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
     split_view_setup_widget_ =
         std::make_unique<views::Widget>(std::move(params));
     split_view_setup_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
-    if (features::IsOverviewNewFocusEnabled()) {
-      split_view_setup_widget_->SetContentsView(
-          std::make_unique<SplitViewSetupView>(
-              base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr()),
-              base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr())));
-    } else {
-      split_view_setup_widget_->SetContentsView(
-          std::make_unique<SplitViewSetupViewOld>(
-              base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr()),
-              base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
-                                  weak_ptr_factory_.GetWeakPtr())));
-    }
+    split_view_setup_widget_->SetContentsView(
+        std::make_unique<SplitViewSetupView>(
+            base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
+                                weak_ptr_factory_.GetWeakPtr())));
     split_view_setup_widget_->ShowInactive();
   }
 
@@ -3544,61 +3481,6 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   split_view_setup_widget_->SetBounds(centered_bounds);
 
   overview_session_->UpdateAccessibilityFocus();
-}
-
-void OverviewGrid::UpdateFeedbackButton() {
-  CHECK(features::IsForestFeatureEnabled());
-
-  // Only show the feedback button on the primary display.
-  if (SplitViewController::Get(root_window_)->InSplitViewMode() ||
-      root_window_ != Shell::GetPrimaryRootWindow()) {
-    feedback_widget_.reset();
-    return;
-  }
-
-  // We don't want the feedback button to overlap the desk bar and birch bar.
-  gfx::Rect wallpaper_clip_bounds = GetWallpaperClipBounds();
-  if (wallpaper_clip_bounds.height() < kFeedbackGridMinHeight) {
-    return;
-  }
-
-  if (!feedback_widget_) {
-    auto contents_view = std::make_unique<PillButton>(
-        base::BindRepeating(&OverviewGrid::ShowFeedbackPage,
-                            base::Unretained(this)),
-        u"Send Feedback", PillButton::Type::kDefaultElevatedWithIconLeading,
-        &kFeedbackIcon);
-
-    views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-        views::Widget::InitParams::TYPE_POPUP);
-    params.activatable = features::IsOverviewNewFocusEnabled()
-                             ? views::Widget::InitParams::Activatable::kYes
-                             : views::Widget::InitParams::Activatable::kNo;
-    params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-    params.init_properties_container.SetProperty(kOverviewUiKey, true);
-    params.name = "PineFeedbackButton";
-    params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
-
-    feedback_widget_ = std::make_unique<views::Widget>(std::move(params));
-    feedback_widget_->SetContentsView(std::move(contents_view));
-    feedback_widget_->ShowInactive();
-  }
-
-  const gfx::Size contents_size =
-      feedback_widget_->GetContentsView()->GetPreferredSize();
-  feedback_widget_->SetBounds(gfx::Rect(
-      wallpaper_clip_bounds.bottom_left().x() + kFeedbackCornerSpacing,
-      wallpaper_clip_bounds.bottom_left().y() - kFeedbackCornerSpacing -
-          contents_size.height(),
-      contents_size.width(), contents_size.height()));
-}
-
-void OverviewGrid::ShowFeedbackPage() {
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kOverview,
-      /*description_template=*/std::string(),
-      /*category_tag=*/"FromForest");
 }
 
 bool OverviewGrid::ShouldInitDesksWidget() const {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 
 #include "base/command_line.h"
@@ -24,7 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
-#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -192,7 +197,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kExtensionTelemetryDisableOffstoreExtensions,
                             kExtensionTelemetryFileDataForCommandLineExtensions,
-                            kExtensionTelemetryForEnteprise},
+                            kExtensionTelemetryForEnterprise},
       /*disabled_features=*/{});
 
   // Create extension prefs and registry instances.

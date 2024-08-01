@@ -16,6 +16,7 @@
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
@@ -85,22 +86,59 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
     return;
   }
 
-  switch (resolved_token->type()) {
+  FileSystemAccessPermissionContext::HandleType handle_type =
+      resolved_token->type();
+  absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                std::unique_ptr<FileSystemAccessFileHandleImpl>>
+      handle;
+  switch (handle_type) {
     case FileSystemAccessPermissionContext::HandleType::kDirectory:
-      watcher_manager()->GetDirectoryObservation(
-          resolved_token->url(), is_recursive,
-          base::BindOnce(
-              &FileSystemAccessObserverHost::GotObservation,
-              weak_factory_.GetWeakPtr(),
-              resolved_token->CreateDirectoryHandle(binding_context()),
-              std::move(callback)));
+      handle = resolved_token->CreateDirectoryHandle(binding_context());
       break;
     case FileSystemAccessPermissionContext::HandleType::kFile:
-      watcher_manager()->GetFileObservation(
-          resolved_token->url(),
+      handle = resolved_token->CreateFileHandle(binding_context());
+      break;
+  }
+
+  manager_->DoFileSystemOperation(
+      FROM_HERE,
+      handle_type == FileSystemAccessPermissionContext::HandleType::kDirectory
+          ? &storage::FileSystemOperationRunner::DirectoryExists
+          : &storage::FileSystemOperationRunner::FileExists,
+      base::BindOnce(&FileSystemAccessObserverHost::DidCheckItemExists,
+                     weak_factory_.GetWeakPtr(), std::move(handle),
+                     std::move(callback), resolved_token->url(), is_recursive),
+      resolved_token->url());
+}
+
+void FileSystemAccessObserverHost::DidCheckItemExists(
+    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+    ObserveCallback callback,
+    storage::FileSystemURL url,
+    bool is_recursive,
+    base::File::Error result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result != base::File::FILE_OK) {
+    std::move(callback).Run(file_system_access_error::FromFileError(result),
+                            mojo::NullReceiver());
+    return;
+  }
+
+  switch (handle.index()) {
+    case 0u:
+      watcher_manager()->GetDirectoryObservation(
+          std::move(url), is_recursive,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
-                         weak_factory_.GetWeakPtr(),
-                         resolved_token->CreateFileHandle(binding_context()),
+                         weak_factory_.GetWeakPtr(), std::move(handle),
+                         std::move(callback)));
+      break;
+    case 1u:
+      watcher_manager()->GetFileObservation(
+          std::move(url),
+          base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
+                         weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
       break;
   }

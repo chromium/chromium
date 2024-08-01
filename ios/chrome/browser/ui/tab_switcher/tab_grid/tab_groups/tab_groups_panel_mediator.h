@@ -11,9 +11,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
+class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGroupsPanelConsumer;
+@protocol TabGroupsPanelMediatorDelegate;
 class WebStateList;
 
 namespace tab_groups {
@@ -32,12 +34,16 @@ class TabGroupSyncService;
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
                         regularWebStateList:(WebStateList*)regularWebStateList
+                              faviconLoader:(FaviconLoader*)faviconLoader
                            disabledByPolicy:(BOOL)disabled
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<TabGroupsPanelConsumer> consumer;
+
+// Delegate.
+@property(nonatomic, weak) id<TabGroupsPanelMediatorDelegate> delegate;
 
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;

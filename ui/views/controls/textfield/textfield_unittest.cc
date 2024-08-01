@@ -965,6 +965,39 @@ TEST_F(TextfieldTest, Scroll) {
   EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), -100);
 }
 
+TEST_F(TextfieldTest, ScrollUpdatesScrollXAccessibilityAttribute) {
+  InitTextfield();
+  // Size the textfield wide enough to hold 10 characters.
+  gfx::test::RenderTextTestApi render_text_test_api(
+      GetTextfieldTestApi().GetRenderText());
+  constexpr int kGlyphWidth = 10;
+  render_text_test_api.SetGlyphWidth(kGlyphWidth);
+  constexpr int kCursorWidth = 1;
+  GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
+      gfx::Rect(kGlyphWidth * 10 + kCursorWidth, 20));
+  textfield_->SetTextWithoutCaretBoundsChangeNotification(
+      u"0123456789_123456789_123456789", 0);
+  GetTextfieldTestApi().SetDisplayOffsetX(0);
+
+  ui::AXNodeData textfield_node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &textfield_node_data);
+  int scroll_x =
+      textfield_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), scroll_x);
+
+  textfield_->SetSelectedRange({0, 20});
+  textfield_->Scroll({20});
+  textfield_node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &textfield_node_data);
+  EXPECT_EQ(
+      GetTextfieldTestApi().GetDisplayOffsetX(),
+      textfield_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
+  EXPECT_NE(scroll_x, textfield_node_data.GetIntAttribute(
+                          ax::mojom::IntAttribute::kScrollX));
+}
+
 TEST_F(TextfieldTest,
        SetTextWithoutCaretBoundsChangeNotification_ModelEditHistory) {
   InitTextfield();
@@ -4219,6 +4252,75 @@ TEST_F(TextfieldTest, AccessiblePlaceholderTest) {
             u"Updated placeholder");
 }
 
+TEST_F(TextfieldTest, AccessibleTextSelectBound) {
+  InitTextfield();
+  ui::AXNodeData data;
+  gfx::Range range(4, 8);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 11);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 11);
+
+  textfield_->SetSelectedRange(range);
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 8);
+
+  textfield_->ExtendSelectionAndDelete(2, 1);
+  textfield_->SelectAll(false);
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->SetSelectedRange(range);
+  SendAlternateCut();
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->SetSelectedRange(range);
+  SendAlternateCopy();
+  SendAlternatePaste();
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
+
+  textfield_->SetText(u"Setting text for test");
+  textfield_->SetEditableSelectionRange(gfx::Range(0));
+  textfield_->SelectWord();
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Setting", textfield_->GetSelectedText());
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 7);
+
+  textfield_->DeleteRange(textfield_->GetSelectedRange());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
+
+  textfield_->SetText(u"SettingText : ");
+  ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
+      0x5A, ui::VKEY_Z, ui::DomCode::NONE, ui::EF_NONE);
+  textfield_->InsertChar(key_event);
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 15);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 15);
+
+  textfield_->SetText(u"0123456789");
+  textfield_->SetSelectedRange(gfx::Range(3, 5));
+  textfield_->AddSecondarySelectedRange(gfx::Range(7, 9));
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 3);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 5);
+}
+
 TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   InitTextfield();
 
@@ -5287,6 +5389,26 @@ TEST_F(TextfieldTest, AccessibleTextDirectionRTL) {
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
             static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
+}
+
+TEST_F(TextfieldTest, AccessibleDefaultActionVerb) {
+  InitTextfield();
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
+
+  data = ui::AXNodeData();
+  textfield_->SetEnabled(false);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  data = ui::AXNodeData();
+  textfield_->SetEnabled(true);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
 }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)

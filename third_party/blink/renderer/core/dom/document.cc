@@ -326,7 +326,6 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
-#include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -3033,19 +3032,6 @@ void Document::Shutdown() {
   if (num_canvases_ > 0)
     UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
 
-  if (!data_->already_sent_automatic_lazy_load_frame_ukm_) {
-    data_->already_sent_automatic_lazy_load_frame_ukm_ = true;
-    if (data_->lazy_ads_frame_count_ > 0 ||
-        data_->lazy_embeds_frame_count_ > 0) {
-      ukm::builders::Blink_AutomaticLazyLoadFrame(UkmSourceID())
-          .SetLazyAdsFrameCount(ukm::GetExponentialBucketMinForCounts1000(
-              data_->lazy_ads_frame_count_))
-          .SetLazyEmbedsFrameCount(ukm::GetExponentialBucketMinForCounts1000(
-              data_->lazy_embeds_frame_count_))
-          .Record(UkmRecorder());
-    }
-  }
-
   if (font_matching_metrics_) {
     font_matching_metrics_->PublishAllMetrics();
   }
@@ -3082,8 +3068,6 @@ void Document::Shutdown() {
           AnchorElementMetricsSender::GetForFrame(GetFrame())) {
     sender->DocumentDetached(*this);
   }
-
-  scripted_idle_task_controller_.Clear();
 
   if (SvgExtensions())
     AccessSVGExtensions().PauseAnimations();
@@ -3287,7 +3271,7 @@ void Document::AXContextModeChanged() {
 }
 
 void Document::RemoveAXContext(AXContext* context) {
-  auto** iter = base::ranges::find(ax_contexts_, context);
+  auto iter = base::ranges::find(ax_contexts_, context);
   if (iter != ax_contexts_.end())
     ax_contexts_.erase(iter);
   if (ax_contexts_.size() == 0) {
@@ -4633,6 +4617,11 @@ void Document::UpdateBaseURL() {
     for (HTMLAnchorElement& anchor :
          Traversal<HTMLAnchorElement>::StartsAfter(*this))
       anchor.InvalidateCachedVisitedLinkHash();
+  }
+
+  for (Element* element : *scripts()) {
+    auto* script = To<HTMLScriptElement>(element);
+    script->Loader()->DocumentBaseURLChanged();
   }
 
   if (auto* document_rules = DocumentSpeculationRules::FromIfExists(*this)) {
@@ -7306,14 +7295,6 @@ HTMLCollection* Document::DocumentAllNamedItems(const AtomicString& name) {
       kDocumentAllNamedItems, name);
 }
 
-void Document::IncrementLazyAdsFrameCount() {
-  data_->lazy_ads_frame_count_++;
-}
-
-void Document::IncrementLazyEmbedsFrameCount() {
-  data_->lazy_embeds_frame_count_++;
-}
-
 void Document::IncrementImmediateChildFrameCreationCount() {
   data_->immediate_child_frame_creation_count_++;
 }
@@ -8176,31 +8157,6 @@ void Document::CancelAnimationFrame(int id) {
   scripted_animation_controller_->CancelFrameCallback(id);
 }
 
-ScriptedIdleTaskController& Document::EnsureScriptedIdleTaskController() {
-  if (!scripted_idle_task_controller_) {
-    scripted_idle_task_controller_ =
-        ScriptedIdleTaskController::Create(domWindow());
-    // We need to make sure that we don't start up if we're detached.
-    if (!domWindow() || domWindow()->IsContextDestroyed()) {
-      scripted_idle_task_controller_->ContextLifecycleStateChanged(
-          mojom::FrameLifecycleState::kFrozen);
-    }
-  }
-  return *scripted_idle_task_controller_;
-}
-
-int Document::RequestIdleCallback(IdleTask* idle_task,
-                                  const IdleRequestOptions* options) {
-  return EnsureScriptedIdleTaskController().RegisterCallback(idle_task,
-                                                             options);
-}
-
-void Document::CancelIdleCallback(int id) {
-  if (!scripted_idle_task_controller_)
-    return;
-  scripted_idle_task_controller_->CancelCallback(id);
-}
-
 DocumentLoader* Document::Loader() const {
   return GetFrame() ? GetFrame()->Loader().GetDocumentLoader() : nullptr;
 }
@@ -8860,7 +8816,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(document_timing_);
   visitor->Trace(media_query_matcher_);
   visitor->Trace(scripted_animation_controller_);
-  visitor->Trace(scripted_idle_task_controller_);
   visitor->Trace(text_autosizer_);
   visitor->Trace(element_data_cache_clear_timer_);
   visitor->Trace(element_data_cache_);

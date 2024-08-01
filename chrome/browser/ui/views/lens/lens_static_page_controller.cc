@@ -73,6 +73,7 @@ void LensStaticPageController::StartRegionSearch(
   lens_region_search_controller_->Start(
       contents,
       /*use_fullscreen_capture=*/false,
+      /*force_open_in_new_tab=*/false,
       /*is_google_default_search_provider=*/true,
       lens::AmbientSearchEntryPoint::
           CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS);

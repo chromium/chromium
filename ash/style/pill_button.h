@@ -210,6 +210,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetEnableBackgroundBlur(bool enable);
 
   void SetTextWithStringId(int message_id);
+  void SetUseLabelAsDefaultTooltip(bool use_label_as_default_tooltip);
 
  private:
   // Initializes the button layout, focus ring and background according to the
@@ -241,6 +242,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   bool enable_background_blur_ = false;
   std::unique_ptr<BlurredBackgroundShield> blurred_background_;
 
+  // Indicates if we are going to use the label contents for tooltip as default.
+  bool use_label_as_default_tooltip_ = true;
+
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;
 };
@@ -255,6 +259,7 @@ VIEW_BUILDER_PROPERTY(ui::ColorId, IconColorId)
 VIEW_BUILDER_PROPERTY(PillButton::Type, PillButtonType)
 VIEW_BUILDER_PROPERTY(bool, EnableBackgroundBlur)
 VIEW_BUILDER_PROPERTY(int, TextWithStringId)
+VIEW_BUILDER_PROPERTY(bool, UseLabelAsDefaultTooltip)
 END_VIEW_BUILDER
 
 }  // namespace ash

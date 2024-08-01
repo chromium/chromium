@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -148,11 +149,11 @@ TEST_F(NavigatorShareTest, ShareText) {
   const String message = "Body";
   const String url = "https://example.com/path?query#fragment";
 
-  ShareData share_data;
-  share_data.setTitle(title);
-  share_data.setText(message);
-  share_data.setUrl(url);
-  Share(share_data);
+  ShareData* share_data = MakeGarbageCollected<ShareData>();
+  share_data->setTitle(title);
+  share_data->setText(message);
+  share_data->setUrl(url);
+  Share(*share_data);
 
   EXPECT_EQ(mock_share_service().title(), title);
   EXPECT_EQ(mock_share_service().text(), message);
@@ -172,9 +173,9 @@ File* CreateSampleFile(ExecutionContext* context,
   HeapVector<Member<V8BlobPart>> blob_parts;
   blob_parts.push_back(MakeGarbageCollected<V8BlobPart>(file_contents));
 
-  FilePropertyBag file_property_bag;
-  file_property_bag.setType(content_type);
-  return File::Create(context, blob_parts, file_name, &file_property_bag);
+  FilePropertyBag* file_property_bag = MakeGarbageCollected<FilePropertyBag>();
+  file_property_bag->setType(content_type);
+  return File::Create(context, blob_parts, file_name, file_property_bag);
 }
 
 TEST_F(NavigatorShareTest, ShareFile) {
@@ -186,9 +187,9 @@ TEST_F(NavigatorShareTest, ShareFile) {
   files.push_back(CreateSampleFile(ExecutionContext::From(GetScriptState()),
                                    file_name, content_type, file_contents));
 
-  ShareData share_data;
-  share_data.setFiles(files);
-  Share(share_data);
+  ShareData* share_data = MakeGarbageCollected<ShareData>();
+  share_data->setFiles(files);
+  Share(*share_data);
 
   EXPECT_EQ(mock_share_service().files().size(), 1U);
   EXPECT_EQ(mock_share_service().files()[0]->name.path(),
@@ -203,11 +204,11 @@ TEST_F(NavigatorShareTest, ShareFile) {
 
 TEST_F(NavigatorShareTest, CancelShare) {
   const String title = "Subject";
-  ShareData share_data;
-  share_data.setTitle(title);
+  ShareData* share_data = MakeGarbageCollected<ShareData>();
+  share_data->setTitle(title);
 
   mock_share_service().set_error(mojom::blink::ShareError::CANCELED);
-  Share(share_data);
+  Share(*share_data);
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingTitle));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareUnsuccessfulWithoutFiles));
@@ -224,12 +225,12 @@ TEST_F(NavigatorShareTest, CancelShareWithFile) {
   files.push_back(CreateSampleFile(ExecutionContext::From(GetScriptState()),
                                    file_name, content_type, file_contents));
 
-  ShareData share_data;
-  share_data.setFiles(files);
-  share_data.setUrl(url);
+  ShareData* share_data = MakeGarbageCollected<ShareData>();
+  share_data->setFiles(files);
+  share_data->setUrl(url);
 
   mock_share_service().set_error(mojom::blink::ShareError::CANCELED);
-  Share(share_data);
+  Share(*share_data);
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingFiles));
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingUrl));
   EXPECT_TRUE(GetDocument().IsUseCounted(

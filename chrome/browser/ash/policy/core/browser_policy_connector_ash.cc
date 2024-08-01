@@ -375,12 +375,11 @@ void BrowserPolicyConnectorAsh::PreShutdown() {
   //
   // TODO(b/308427142) The comment above is hard to grok, as is the code it
   // describes. We should clean this up.
-  if (std::holds_alternative<
-          std::unique_ptr<AffiliatedInvalidationServiceProvider>>(
-          invalidation_service_provider_or_listener_)) {
-    std::get<std::unique_ptr<AffiliatedInvalidationServiceProvider>>(
-        invalidation_service_provider_or_listener_)
-        ->Shutdown();
+  if (auto* provider =
+          std::get_if<std::unique_ptr<AffiliatedInvalidationServiceProvider>>(
+              &invalidation_service_provider_or_listener_);
+      provider && *provider) {
+    (*provider)->Shutdown();
   }
 
   // This controller depends on the `SecurityCurtainController` which will be
@@ -410,23 +409,18 @@ void BrowserPolicyConnectorAsh::Shutdown() {
     device_cloud_policy_manager_->RemoveDeviceCloudPolicyManagerObserver(this);
   }
 
-  std::visit(base::Overloaded{[](AffiliatedCloudPolicyInvalidator*) {
-                                // Do nothing.
-                              },
-                              [](CloudPolicyInvalidator* invalidator) {
-                                invalidator->Shutdown();
-                              }},
-             invalidation::UniquePointerVariantToPointer(
-                 device_cloud_policy_invalidator_));
+  if (auto* invalidator = std::get_if<std::unique_ptr<CloudPolicyInvalidator>>(
+          &device_cloud_policy_invalidator_);
+      invalidator && *invalidator) {
+    (*invalidator)->Shutdown();
+  }
 
-  std::visit(base::Overloaded{[](AffiliatedRemoteCommandsInvalidator*) {
-                                // Do nothing.
-                              },
-                              [](RemoteCommandsInvalidator* invalidator) {
-                                invalidator->Shutdown();
-                              }},
-             invalidation::UniquePointerVariantToPointer(
-                 device_remote_commands_invalidator_));
+  if (auto* invalidator =
+          std::get_if<std::unique_ptr<RemoteCommandsInvalidator>>(
+              &device_remote_commands_invalidator_);
+      invalidator && *invalidator) {
+    (*invalidator)->Shutdown();
+  }
 
   device_fm_registration_token_uploader_.reset();
 
@@ -436,12 +430,11 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   // `device_remote_commands_invalidator_`, and
   // `device_fm_registration_token_uploader_`) but before it's dependencies
   // (`GCMDriver`).
-  if (std::holds_alternative<
-          std::unique_ptr<invalidation::InvalidationListener>>(
-          invalidation_service_provider_or_listener_)) {
-    std::get<std::unique_ptr<invalidation::InvalidationListener>>(
-        invalidation_service_provider_or_listener_)
-        .reset();
+  if (auto* listener =
+          std::get_if<std::unique_ptr<invalidation::InvalidationListener>>(
+              &invalidation_service_provider_or_listener_);
+      listener && *listener) {
+    listener->reset();
   }
 
   device_scheduled_update_checker_.reset();

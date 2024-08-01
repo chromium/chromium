@@ -15,11 +15,15 @@ build_webui("build") {
     "svg/card_settings.svg",
     "svg/extension_off_32.svg",
     "svg/finished_32.svg",
+    "svg/illo.svg",
   ]
 
   css_files = [ "sanitize_shared.css" ]
 
-  web_component_files = [ "sanitize_done.ts" ]
+  web_component_files = [
+    "sanitize_done.ts",
+    "sanitize_initial.ts",
+  ]
 
   ts_composite = true
   ts_deps = [

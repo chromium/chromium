@@ -5,15 +5,24 @@
 /**
  * @fileoverview A simple schema utility to validate the JSON data in a
  * type-safe manner. The API is intentionally designed to work like a minimal
- * version of https://github.com/colinhacks/zod, focusing on JSON validation.
+ * version of mix of https://github.com/gcanti/io-ts and
+ * https://github.com/colinhacks/zod, focusing on JSON validation and encode.
  */
 
-import {assertInstanceof, checkEnumVariant} from './assert.js';
+import {assertNotReached, checkEnumVariant} from './assert.js';
 
 type KeyPath = string[];
 
+// Used as a base schema type to accept any Schema. We can't use `unknown`
+// here because of the type of Schema (encode use the `Output` type as
+// argument).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySchema = Schema<any, unknown>;
+
 interface Issue {
-  schema: Schema<unknown>;
+  // The schema is only used to do identity comparison on which parse failed
+  // in global error handler.
+  schema: AnySchema;
   path: KeyPath;
   message: string;
 }
@@ -47,28 +56,59 @@ class Context {
   setIssue(msg: string) {
     this.issue = {path: this.path.slice(), message: msg};
   }
-
-  check(cond: boolean, msg: string): boolean {
-    if (!cond) {
-      // TODO(shik): Support passing a message creator function for expensive
-      // messages.
-      this.setIssue(msg);
-    }
-    return cond;
-  }
 }
+
+const DECODE_ERROR = Symbol('SCHEMA_DECODE_ERROR');
+type Maybe<T> = T|typeof DECODE_ERROR;
 
 /**
  * A schema is a type-safe class that can be used to validate the JSON data.
  * It can be used to validate the data in a type-safe manner.
+ *
+ * The schema represents a value of type `Output`, that can check and decode
+ * from a value of type `Input`, and be encoded back to type `Input`.
  */
-export class Schema<T> {
-  constructor(readonly test: (input: unknown, ctx: Context) => input is T) {}
+export class Schema<Output, Input = Output> {
+  /**
+   * Tests if the input is of type `Output`.
+   */
+  readonly test: (input: unknown) => input is Output;
 
-  parse(input: unknown): T {
+  /**
+   * Decodes an value to type `Output`.
+   *
+   * Decoding would success only when the input is of type `Input`, otherwise
+   * returns `DECODE_ERROR`.
+   */
+  readonly decode: (input: unknown, ctx: Context) => Maybe<Output>;
+
+  /**
+   * Encodes the value to type `Input`.
+   *
+   * This should be the inverse of decode, so `decode(encode(val))` should
+   * always be the same as `val`.
+   */
+  readonly encode: (val: Output) => Input;
+
+  constructor({
+    test,
+    decode,
+    encode,
+  }: {
+    test: (input: unknown) => input is Output,
+    decode: (input: unknown, ctx: Context) => Maybe<Output>,
+    encode: (val: Output) => Input,
+  }) {
+    this.test = test;
+    this.decode = decode;
+    this.encode = encode;
+  }
+
+  parse(input: unknown): Output {
     const ctx = new Context();
-    if (this.test(input, ctx)) {
-      return input;
+    const val = this.decode(input, ctx);
+    if (val !== DECODE_ERROR) {
+      return val;
     }
     // If the test failed, ctx.issue should be non-null. Adding a default value
     // in case it's missing.
@@ -78,13 +118,13 @@ export class Schema<T> {
     });
   }
 
-  parseJson(input: string): T {
+  parseJson(input: string): Output {
     const data = JSON.parse(input);
     return this.parse(data);
   }
 
-  stringifyJson(val: T): string {
-    return JSON.stringify(val);
+  stringifyJson(val: Output): string {
+    return JSON.stringify(this.encode(val));
   }
 }
 
@@ -93,177 +133,484 @@ export class Schema<T> {
  * TODO(shik): Find a way to export it as z.infer<T> instead of Infer<T> without
  * using namespace or extra files.
  */
-export type Infer<T> = T extends Schema<infer U>? U : never;
+export type Infer<T> = T extends Schema<infer U, unknown>? U : never;
+// `any` is used here since the first type parameter is invariant due to it
+// being used in argument of `encode`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type InferInput<T> = T extends Schema<any, infer U>? U : never;
 
-function isNull(input: unknown, ctx: Context): input is null {
-  return ctx.check(input === null, 'expect null');
+function identity<T>(val: T): T {
+  return val;
 }
 
-function isBoolean(input: unknown, ctx: Context): input is boolean {
-  return ctx.check(typeof input === 'boolean', 'expect boolean');
-}
-
-function isNumber(input: unknown, ctx: Context): input is number {
-  return ctx.check(typeof input === 'number', 'expect number');
-}
-
-function isBigint(input: unknown, ctx: Context): input is bigint {
-  return ctx.check(typeof input === 'bigint', 'expect bigint');
-}
-
-function isString(input: unknown, ctx: Context): input is string {
-  return ctx.check(typeof input === 'string', 'expect string');
-}
-
-function isLiteral<T>(literal: T) {
-  return (input: unknown, ctx: Context): input is T => {
-    return ctx.check(input === literal, `expect ${literal}`);
-  };
-}
-
-function isArray<T>(elem: Schema<T>) {
-  return (input: unknown, ctx: Context): input is T[] => {
-    if (!Array.isArray(input)) {
-      ctx.setIssue('expect array');
-      return false;
-    }
-
-    for (let i = 0; i < input.length; i++) {
-      ctx.pushKey(`${i}`);
-      if (!elem.test(input[i], ctx)) {
-        return false;
+function createPrimitiveSchema<T>(
+  test: (input: unknown) => input is T,
+  error: string,
+) {
+  return new Schema<T>({
+    test,
+    decode(input, ctx) {
+      if (test(input)) {
+        return input;
       }
-      ctx.popKey();
-    }
-
-    return true;
-  };
+      ctx.setIssue(error);
+      return DECODE_ERROR;
+    },
+    encode: identity,
+  });
 }
 
-// Used to expand the type from ObjectOutput<T> to make the type hint from
-// language server more human-friendly.
-type Expand<T> = T extends infer O ? {[K in keyof O]: O[K]} : never;
-type ObjectSpec<T> = {
-  [K in keyof T]: T[K] extends Schema<unknown>? T[K] : never;
-};
+const nullSchema = createPrimitiveSchema(
+  (input) => input === null,
+  'expect null',
+);
 
-// Mark all fields that accept undefined as optional. Note that there is no
-// explicit `undefined` in JSON, so it's technically correct for JSON.
-type IfOptional<T, Y, N> = undefined extends Infer<T>? Y : N;
-type ObjectOutput<T> = {
-  [K in keyof T as IfOptional<T[K], K, never>] +?: Infer<T[K]>;
-}&{
-  [K in keyof T as IfOptional<T[K], never, K>]: Infer<T[K]>;
-};
+const booleanSchema = createPrimitiveSchema(
+  (input) => typeof input === 'boolean',
+  'expect boolean',
+);
 
-function isObject<T>(spec: ObjectSpec<T>) {
-  return (input: unknown, ctx: Context): input is Expand<ObjectOutput<T>> => {
-    if (typeof input !== 'object') {
-      ctx.setIssue('expect object');
-      return false;
-    }
+const numberSchema = createPrimitiveSchema(
+  (input) => typeof input === 'number',
+  'expect number',
+);
 
-    if (input === null) {
-      ctx.setIssue('expect non-null object');
-      return false;
-    }
+const bigintSchema = createPrimitiveSchema(
+  (input) => typeof input === 'bigint',
+  'expect bigint',
+);
 
-    for (const [key, schema] of Object.entries(spec)) {
-      ctx.pushKey(key);
-      // We're deliberately casting to access arbitrary key of the object.
-      /* eslint-disable @typescript-eslint/consistent-type-assertions */
-      const value = Object.hasOwn(input, key) ?
-        (input as Record<string, unknown>)[key] :
-        undefined;
-      /* eslint-enable @typescript-eslint/consistent-type-assertions */
-      if (!assertInstanceof(schema, Schema<unknown>).test(value, ctx)) {
-        return false;
-      }
-      ctx.popKey();
-    }
+const stringSchema = createPrimitiveSchema(
+  (input) => typeof input === 'string',
+  'expect string',
+);
 
-    return true;
-  };
-}
-
-function isOptional<T>(schema: Schema<T>) {
-  return (input: unknown, ctx: Context): input is T|undefined => {
-    return input === undefined || schema.test(input, ctx);
-  };
-}
-
-function isNullable<T>(schema: Schema<T>) {
-  return (input: unknown, ctx: Context): input is T|null => {
-    return input === null || schema.test(input, ctx);
-  };
-}
-
-type SchemaArray = Array<Schema<unknown>>;
-
-function isUnion<T extends SchemaArray>(schemas: T) {
-  return (input: unknown, ctx: Context): input is Infer<T[number]> => {
-    // TODO(shik): Expose the issues found in alternatives.
-    const altCtx = new Context();
-    if (!schemas.some((s) => s.test(input, altCtx))) {
-      ctx.setIssue('expect union but all alternatives failed');
-      return false;
-    }
-    return true;
-  };
-}
-
-type SchemaListToIntersection<S> =
-  S extends [Schema<infer Head>, ...infer Tail] ?
-  Head&SchemaListToIntersection<Tail>:
-  unknown;
-
-function isIntersection<T extends SchemaArray>(schemas: T) {
-  function cond(
-    input: unknown,
-    ctx: Context,
-  ): input is SchemaListToIntersection<T> {
-    // TODO(shik): Expose the issues found in alternatives.
-    const altCtx = new Context();
-    if (!schemas.every((s) => s.test(input, altCtx))) {
-      ctx.setIssue('expect intersection but some alternatives failed');
-      return false;
-    }
-    return true;
-  }
-  return cond;
+function createLiteralSchema<const T>(literal: T): Schema<T> {
+  return createPrimitiveSchema<T>(
+    (input): input is T => input === literal,
+    `expect ${literal}`,
+  );
 }
 
 type EnumObj = Record<string, string>;
 
 // TODO(shik): Support numerical enums with bidirection mapping.
-function isNativeEnum<T extends EnumObj>(enumObj: T) {
-  return (input: unknown, ctx: Context): input is T[keyof T] => {
-    return ctx.check(checkEnumVariant(enumObj, input) !== null, 'expect enum');
-  };
+function createNativeEnumSchema<T extends EnumObj>(
+  enumObj: T,
+): Schema<T[keyof T]> {
+  return createPrimitiveSchema<T[keyof T]>(
+    (input): input is T[keyof T] => checkEnumVariant(enumObj, input) !== null,
+    'expect enum',
+  );
+}
+
+function createOptionalSchema<T, I>(
+  schema: Schema<T, I>,
+): Schema<T|undefined, I|undefined> {
+  return new Schema({
+    // clang-format formats `T | null` to multiple lines, which is hard to
+    // understand.
+    // clang-format off
+    test(input): input is T | undefined {
+      if (input === undefined) {
+        return true;
+      }
+      return schema.test(input);
+    },
+    // clang-format on
+    decode(input, ctx) {
+      if (input === undefined) {
+        return undefined;
+      }
+      return schema.decode(input, ctx);
+    },
+    encode(val) {
+      if (val === undefined) {
+        return undefined;
+      }
+      return schema.encode(val);
+    },
+  });
+}
+
+function createNullableSchema<T, I>(
+  schema: Schema<T, I>,
+): Schema<T|null, I|null> {
+  return new Schema({
+    // clang-format formats `T | null` to multiple lines, which is hard to
+    // understand.
+    // clang-format off
+    test(input): input is T | null {
+      if (input === null) {
+        return true;
+      }
+      return schema.test(input);
+    },
+    // clang-format on
+    decode(input, ctx) {
+      if (input === null) {
+        return null;
+      }
+      return schema.decode(input, ctx);
+    },
+    encode(val) {
+      if (val === null) {
+        return null;
+      }
+      return schema.encode(val);
+    },
+  });
+}
+
+/**
+ * Decodes undefined and null to null, and encodes null to null.
+ *
+ * This is useful to have backward compatible field, but still use `null` in
+ * code.
+ */
+function createAutoNullOptionalSchema<T, I>(
+  schema: Schema<T, I>,
+): Schema<T|null, I|null|undefined> {
+  return new Schema({
+    // clang-format formats `T | null` to multiple lines, which is hard to
+    // understand.
+    // clang-format off
+    test(input): input is T | null {
+      if (input === null) {
+        return true;
+      }
+      return schema.test(input);
+    },
+    // clang-format on
+    decode(input, ctx) {
+      if (input === null || input === undefined) {
+        return null;
+      }
+      return schema.decode(input, ctx);
+    },
+    encode(val) {
+      if (val === null) {
+        return null;
+      }
+      return schema.encode(val);
+    },
+  });
+}
+
+function createArraySchema<T, I>(elem: Schema<T, I>): Schema<T[], I[]> {
+  return new Schema({
+    test(input): input is T[] {
+      if (!Array.isArray(input)) {
+        return false;
+      }
+      return input.every((v) => elem.test(v));
+    },
+    decode(input, ctx) {
+      if (!Array.isArray(input)) {
+        ctx.setIssue('expect array');
+        return DECODE_ERROR;
+      }
+
+      const ret: T[] = [];
+      for (let i = 0; i < input.length; i++) {
+        ctx.pushKey(`${i}`);
+        const val = elem.decode(input[i], ctx);
+        if (val === DECODE_ERROR) {
+          return DECODE_ERROR;
+        }
+        ret.push(val);
+        ctx.popKey();
+      }
+
+      return ret;
+    },
+    encode(val) {
+      return val.map((v) => elem.encode(v));
+    },
+  });
+}
+
+type SchemaObject = Record<string, AnySchema>;
+
+// Used to expand the type from ObjectOutput<T> to make the type hint from
+// language server more human-friendly.
+type Expand<T> = T extends infer O ? {[K in keyof O]: O[K]} : never;
+
+// Mark all fields that accept undefined as optional. Note that there is no
+// explicit `undefined` in JSON, so it's technically correct for JSON.
+type IfOptional<T, Y, N> = undefined extends T ? Y : N;
+
+type InferObjectOutput<T> = {
+  [K in keyof T as IfOptional<Infer<T[K]>, K, never>] +?: Infer<T[K]>;
+}&{
+  [K in keyof T as IfOptional<Infer<T[K]>, never, K>]: Infer<T[K]>;
+};
+
+type InferObjectInput<T> = {
+  [K in keyof T as IfOptional<InferInput<T[K]>, K, never>] +?: InferInput<T[K]>;
+}&{
+  [K in keyof T as IfOptional<InferInput<T[K]>, never, K>]: InferInput<T[K]>;
+};
+
+type InferObjectSchema<T> =
+  Schema<Expand<InferObjectOutput<T>>, Expand<InferObjectInput<T>>>;
+
+function createObjectSchema<T extends SchemaObject>(
+  spec: T,
+): InferObjectSchema<T> {
+  return new Schema({
+    test(input): input is Expand<InferObjectOutput<T>> {
+      if (typeof input !== 'object' || input === null) {
+        return false;
+      }
+      for (const [key, schema] of Object.entries(spec)) {
+        // We're deliberately casting to access arbitrary key of the object.
+        /* eslint-disable @typescript-eslint/consistent-type-assertions */
+        const value = Object.hasOwn(input, key) ?
+          (input as Record<string, unknown>)[key] :
+          undefined;
+        /* eslint-enable @typescript-eslint/consistent-type-assertions */
+        if (!schema.test(value)) {
+          return false;
+        }
+      }
+      return true;
+    },
+    decode(input, ctx): Maybe<Expand<InferObjectOutput<T>>> {
+      if (typeof input !== 'object') {
+        ctx.setIssue('expect object');
+        return DECODE_ERROR;
+      }
+
+      if (input === null) {
+        ctx.setIssue('expect non-null object');
+        return DECODE_ERROR;
+      }
+
+      const obj: Record<string, unknown> = {};
+      for (const [key, schema] of Object.entries(spec)) {
+        ctx.pushKey(key);
+        // We're deliberately casting to access arbitrary key of the object.
+        /* eslint-disable @typescript-eslint/consistent-type-assertions */
+        const value = Object.hasOwn(input, key) ?
+          (input as Record<string, unknown>)[key] :
+          undefined;
+        /* eslint-enable @typescript-eslint/consistent-type-assertions */
+        const decodedValue = schema.decode(value, ctx);
+        if (decodedValue === DECODE_ERROR) {
+          return DECODE_ERROR;
+        }
+        obj[key] = decodedValue;
+        ctx.popKey();
+      }
+
+      // The keys and values are derived from the spec, so the `obj` should
+      // always follow the type.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return obj as Expand<InferObjectOutput<T>>;
+    },
+    encode(val) {
+      const ret: Record<string, unknown> = {};
+      for (const [key, schema] of Object.entries(spec)) {
+        // We're deliberately casting to access arbitrary key of the object.
+        /* eslint-disable @typescript-eslint/consistent-type-assertions */
+        const value = Object.hasOwn(val, key) ?
+          (val as Record<string, unknown>)[key] :
+          undefined;
+        /* eslint-enable @typescript-eslint/consistent-type-assertions */
+        ret[key] = schema.encode(value);
+      }
+
+      // The keys and values are derived from the spec, so the `obj` should
+      // always follow the type.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return ret as Expand<InferObjectInput<T>>;
+    },
+  });
+}
+
+type SchemaArray = AnySchema[];
+
+type InferUnionOutput<S> = S extends [infer Head, ...infer Tail] ?
+  Infer<Head>|InferUnionOutput<Tail>:
+  never;
+
+type InferUnionInput<S> = S extends [infer Head, ...infer Tail] ?
+  InferInput<Head>|InferUnionInput<Tail>:
+  never;
+
+function createUnionSchema<const T extends SchemaArray>(
+  schemas: T,
+): Schema<InferUnionOutput<T>, InferUnionInput<T>> {
+  return new Schema({
+    test(input): input is InferUnionOutput<T> {
+      // TODO(shik): Expose the issues found in alternatives.
+      return schemas.some((s) => s.test(input));
+    },
+    decode(input, ctx): Maybe<InferUnionOutput<T>> {
+      // TODO(shik): Expose the issues found in alternatives.
+      const altCtx = new Context();
+      for (const schema of schemas) {
+        const val = schema.decode(input, altCtx);
+        if (val !== DECODE_ERROR) {
+          // One of the alternative decodes the input correctly, so the returned
+          // value type would be the alternative.
+          /* eslint-disable @typescript-eslint/consistent-type-assertions */
+          return val as InferUnionOutput<T>;
+          /* eslint-enable @typescript-eslint/consistent-type-assertions */
+        }
+      }
+      ctx.setIssue('expect union but all alternatives failed');
+      return DECODE_ERROR;
+    },
+    encode(val): InferUnionInput<T> {
+      for (const schema of schemas) {
+        if (schema.test(val)) {
+          // One of the alternative validates the value correctly, so it should
+          // be able to encode the value.
+          /* eslint-disable @typescript-eslint/consistent-type-assertions */
+          return schema.encode(val) as InferUnionInput<T>;
+          /* eslint-enable @typescript-eslint/consistent-type-assertions */
+        }
+      }
+      assertNotReached(
+        'union schema encode value with no alternatives matched',
+      );
+    },
+  });
+}
+
+type InferIntersectionOutput<S> = S extends [infer Head, ...infer Tail] ?
+  Infer<Head>&InferIntersectionOutput<Tail>:
+  unknown;
+
+type InferIntersectionInput<S> = S extends [infer Head, ...infer Tail] ?
+  InferInput<Head>&InferIntersectionInput<Tail>:
+  unknown;
+
+// Note that intersection only supports intersection of several record types,
+// and only does a shallow merge of the decoded value, since it's the most
+// useful case and it's a bit clearer what encode should do in this case.
+function createIntersectionSchema<const T extends SchemaArray>(
+  schemas: T,
+):
+  Schema<
+    Expand<InferIntersectionOutput<T>>, Expand<InferIntersectionInput<T>>> {
+  return new Schema({
+    test(input): input is Expand<InferIntersectionOutput<T>> {
+      return !schemas.some((s) => !s.test(input));
+    },
+    decode(input, ctx): Maybe<Expand<InferIntersectionOutput<T>>> {
+      const obj: Record<string, unknown> = {};
+      for (const schema of schemas) {
+        const decodedValue = schema.decode(input, ctx);
+        if (decodedValue === DECODE_ERROR) {
+          return DECODE_ERROR;
+        }
+        if (typeof decodedValue !== 'object' || decodedValue === null) {
+          ctx.setIssue('decoded value in intersection is not object');
+          return DECODE_ERROR;
+        }
+        for (const [key, val] of Object.entries(decodedValue)) {
+          if (Object.hasOwn(obj, key)) {
+            ctx.setIssue('duplicate key in intersection alternatives');
+            return DECODE_ERROR;
+          }
+          obj[key] = val;
+        }
+      }
+
+      // The values are derived from the spec, so the `obj` should always
+      // follow the type.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return obj as Expand<InferIntersectionOutput<T>>;
+    },
+    encode(val): Expand<InferIntersectionInput<T>> {
+      const obj: Record<string, unknown> = {};
+      for (const schema of schemas) {
+        const encodedValue = schema.encode(val);
+        if (typeof encodedValue !== 'object' || encodedValue === null) {
+          throw new Error('encoded value in intersection is not object');
+        }
+        for (const [key, val] of Object.entries(encodedValue)) {
+          if (Object.hasOwn(obj, key)) {
+            throw new Error('duplicate key in intersection alternatives');
+          }
+          obj[key] = val;
+        }
+      }
+
+      // The values are derived from the spec, so the `obj` should always
+      // follow the type.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return obj as Expand<InferIntersectionInput<T>>;
+    },
+  });
+}
+
+function createTransformSchema<T, I, NewT>(
+  schema: Schema<T, I>,
+  {
+    test,
+    decode,
+    encode,
+  }: {
+    test: (input: unknown) => input is NewT,
+    decode: (val: T) => NewT,
+    encode: (val: NewT) => T,
+  },
+): Schema<NewT, I> {
+  return new Schema({
+    test,
+    decode(input, ctx) {
+      const val = schema.decode(input, ctx);
+      if (val === DECODE_ERROR) {
+        return DECODE_ERROR;
+      }
+      return decode(val);
+    },
+    encode(val) {
+      return schema.encode(encode(val));
+    },
+  });
+}
+
+function createWithDefaultSchema<T, I>(
+  schema: Schema<T, I>,
+  defaultValue: T,
+): Schema<T, I|undefined> {
+  return new Schema({
+    test: schema.test,
+    decode(val, ctx) {
+      if (val === undefined) {
+        return defaultValue;
+      }
+      return schema.decode(val, ctx);
+    },
+    encode(val) {
+      return schema.encode(val);
+    },
+  });
 }
 
 /**
  * A minimal Zod-like interface.
  */
 export const z = {
-  'null': (): Schema<null> => new Schema(isNull),
-  'boolean': (): Schema<boolean> => new Schema(isBoolean),
-  'number': (): Schema<number> => new Schema(isNumber),
-  'bigint': (): Schema<bigint> => new Schema(isBigint),
-  'string': (): Schema<string> => new Schema(isString),
-  'literal': <const T>(literal: T): Schema<T> => new Schema(isLiteral(literal)),
-  'array': <T>(elem: Schema<T>): Schema<T[]> => new Schema(isArray(elem)),
-  'object': <T>(spec: ObjectSpec<T>): Schema<Expand<ObjectOutput<T>>> =>
-    new Schema(isObject(spec)),
-  'optional': <T>(schema: Schema<T>): Schema<T|undefined> =>
-    new Schema(isOptional(schema)),
-  'nullable': <T>(schema: Schema<T>): Schema<T|null> =>
-    new Schema(isNullable(schema)),
-  'union': <T extends SchemaArray>(schemas: T): Schema<Infer<T[number]>> =>
-    new Schema(isUnion(schemas)),
-  'intersection': <T extends SchemaArray>(
-    schemas: T,
-  ): Schema<SchemaListToIntersection<T>> => new Schema(isIntersection(schemas)),
-  'nativeEnum': <T extends EnumObj>(enumObj: T): Schema<T[keyof T]> =>
-    new Schema(isNativeEnum(enumObj)),
+  'null': (): Schema<null> => nullSchema,
+  'boolean': (): Schema<boolean> => booleanSchema,
+  'number': (): Schema<number> => numberSchema,
+  'bigint': (): Schema<bigint> => bigintSchema,
+  'string': (): Schema<string> => stringSchema,
+  'literal': createLiteralSchema,
+  'nativeEnum': createNativeEnumSchema,
+  'optional': createOptionalSchema,
+  'nullable': createNullableSchema,
+  'autoNullOptional': createAutoNullOptionalSchema,
+  'array': createArraySchema,
+  'object': createObjectSchema,
+  'union': createUnionSchema,
+  'intersection': createIntersectionSchema,
+  'transform': createTransformSchema,
+  'withDefault': createWithDefaultSchema,
 };

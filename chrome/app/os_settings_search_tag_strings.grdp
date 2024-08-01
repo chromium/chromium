@@ -891,6 +891,16 @@
     Train Google Assistant voice model
   </message>
 
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST" desc="Text for search result item which, when clicked, navigates the user to Google AI settings, with an option to turn functionality on.">
+    Google AI
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMR" desc="Text for search result item which, when clicked, navigates the user to Help Me Read settings, with an option to turn functionality on.">
+    Help Me Read
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMW" desc="Text for search result item which, when clicked, navigates the user to Help Me Write settings, with an option to turn functionality on.">
+    Help Me Write
+  </message>
+
   <!-- Apps section. -->
   <message name="IDS_OS_SETTINGS_TAG_APPS" desc="Text for search result item which, when clicked, navigates the user to apps settings.">
     Apps

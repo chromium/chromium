@@ -442,6 +442,17 @@ TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
   EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
+TEST_F(PopupRowViewTest, SetSizePosInSetAccessibleProperties) {
+  ShowView(/*line_number=*/0,
+           {Suggestion("test_value", "test_label", Suggestion::Icon::kNoIcon,
+                       SuggestionType::kAddressEntry)});
+
+  ui::AXNodeData node_data;
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
+}
+
 TEST_F(PopupRowViewTest, ExpandChildSuggestionsIconRemainsVisible) {
   ShowView(/*line_number=*/0, /*has_control=*/true);
 
@@ -602,6 +613,13 @@ TEST_P(PopupRowPosInSetViewTest, All) {
             kTestdata.set_size);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
             kTestdata.set_index);
+
+  node_data = ui::AXNodeData();
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            kTestdata.set_index);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            kTestdata.set_size);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

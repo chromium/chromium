@@ -66,6 +66,9 @@ class BASE_EXPORT PowerMonitor {
   // Returns true if the system is on-battery.
   static bool AddPowerStateObserverAndReturnOnBatteryState(
       PowerStateObserver* observer);
+  static PowerStateObserver::BatteryPowerStatus
+  AddPowerStateObserverAndReturnBatteryPowerStatus(
+      PowerStateObserver* observer);
   // Returns the power thermal state.
   static PowerThermalObserver::DeviceThermalState
   AddPowerStateObserverAndReturnPowerThermalState(
@@ -74,6 +77,11 @@ class BASE_EXPORT PowerMonitor {
   // Is the computer currently on battery power. May only be called if the
   // PowerMonitor has been initialized.
   static bool IsOnBatteryPower();
+
+  // Returns the current state of the battery power, that can be unknown if the
+  // value isn't initialized yet. May only be called if the PowerMonitor has
+  // been initialized.
+  static PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus();
 
   // Returns the time of the last system resume. If no system suspend/resume was
   // observed, returns an empty time. If the system is currently suspended,
@@ -112,6 +120,8 @@ class BASE_EXPORT PowerMonitor {
   static PowerMonitorSource* Source();
 
   static void NotifyPowerStateChange(bool on_battery_power);
+  static void NotifyPowerStateChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status);
   static void NotifySuspend();
   static void NotifyResume();
   static void NotifyThermalStateChange(
@@ -124,8 +134,10 @@ class BASE_EXPORT PowerMonitor {
   Lock is_system_suspended_lock_;
   TimeTicks last_system_resume_time_ GUARDED_BY(is_system_suspended_lock_);
 
-  bool on_battery_power_ GUARDED_BY(on_battery_power_lock_) = false;
-  Lock on_battery_power_lock_;
+  PowerStateObserver::BatteryPowerStatus battery_power_status_
+      GUARDED_BY(battery_power_status_lock_) =
+          PowerStateObserver::BatteryPowerStatus::kExternalPower;
+  Lock battery_power_status_lock_;
 
   PowerThermalObserver::DeviceThermalState power_thermal_state_
       GUARDED_BY(power_thermal_state_lock_) =

@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AddPrinterManuallyResult" enum="BooleanSuccess"
-    expires_after="2024-08-04">
+    expires_after="2025-07-14">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2024-09-22">
+    expires_after="2025-03-22">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
-    expires_after="2024-09-01">
+    expires_after="2025-03-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -361,11 +361,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusQueryResult"
-    enum="PrinterStatusQueryResult" expires_after="2024-01-14">
+    enum="PrinterStatusQueryResult" expires_after="2025-07-14">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the success outcome of a printer status query to a local printer.
+
+    Note: Missing data from 2024-01-14 to 2024-07-29.
   </summary>
 </histogram>
 
@@ -660,7 +662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTimeFirstPrint" units="ms"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -698,14 +700,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.ManagePrinters" units="units"
-    expires_after="2020-02-23">
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    Count the number of requests received to show the manage printers dialog.
-  </summary>
-</histogram>
-
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
     expires_after="2024-12-08">
   <owner>thestig@chromium.org</owner>
@@ -738,7 +732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrinterSettingsLaunchSource"
-    enum="PrintPreviewLaunchSourceType" expires_after="2024-01-23">
+    enum="PrintPreviewLaunchSourceType" expires_after="2025-07-14">
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -749,6 +743,8 @@ chromium-metrics-reviews@google.com.
     preview-area displaying connection error on selected printer,
     destination-dialog-cros displaying destinations, and destination-dialog-cros
     displaying empty state.
+
+    Note: Missing data from 2024-01-23 to 2024-07-29.
   </summary>
 </histogram>
 
@@ -797,15 +793,6 @@ chromium-metrics-reviews@google.com.
   <owner>thestig@chromium.org</owner>
   <summary>
     Actions performed by the user interacting with print settings UI elements.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.RegeneratePreviewRequest.BeforeFirstData"
-    units="units" expires_after="2020-02-23">
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    The number of times regenerate preview requests received before the first
-    preview data is available.
   </summary>
 </histogram>
 
@@ -866,7 +853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.TransitionedToReadyState" enum="BooleanSuccess"
-    expires_after="2024-01-23">
+    expires_after="2025-07-14">
   <owner>gavinwill@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -874,6 +861,8 @@ chromium-metrics-reviews@google.com.
     state to the READY state. Records `Failure` when Print Preview transitions
     from the initial NOT_READY state to the ERROR state. This metric only
     records for non-PDF destinations.
+
+    Note: Missing data from 2024-01-23 to 2024-07-29.
   </summary>
 </histogram>
 

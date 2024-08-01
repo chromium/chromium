@@ -423,6 +423,14 @@ void AuthInputRowView::SetAccessibleNameOnTextfield(
   textfield_->SetAccessibleName(new_name);
 }
 
+void AuthInputRowView::SetInputEnabled(bool enabled) {
+  SetEnabled(enabled);
+  textfield_->SetEnabled(enabled);
+  textfield_->SetBorder(nullptr);
+  submit_button_->SetEnabled(enabled);
+  display_text_button_->SetEnabled(enabled);
+}
+
 void AuthInputRowView::InsertDigit(int digit) {
   CHECK_EQ(auth_type_, AuthType::kPin);
   textfield_->InsertDigit(digit);

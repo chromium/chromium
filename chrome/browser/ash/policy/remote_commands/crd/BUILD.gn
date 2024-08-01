@@ -30,6 +30,8 @@ static_library("crd") {
     "start_crd_session_job_delegate.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//base",
@@ -95,6 +97,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/remote_commands:test_support",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/policy/remote_commands/crd:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/services/network_config:in_process_instance",

@@ -12,6 +12,7 @@
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -26,9 +27,7 @@ class SyncableService;
 
 namespace browser_sync {
 
-class LocalDataQueryHelper;
-class LocalDataMigrationHelper;
-class SyncApiComponentFactoryImpl;
+class SyncEngineFactoryImpl;
 
 class ChromeSyncClient : public syncer::SyncClient {
  public:
@@ -39,16 +38,18 @@ class ChromeSyncClient : public syncer::SyncClient {
 
   ~ChromeSyncClient() override;
 
+  // TODO(crbug.com/335688372): Inline this in the sync_service_factory.cc.
+  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
+      syncer::SyncService* sync_service);
+
   // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
-  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
-      syncer::SyncService* sync_service) override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
+  syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
   bool IsPasswordSyncAllowed() override;
   void SetPasswordSyncAllowedChangeCb(
@@ -56,15 +57,6 @@ class ChromeSyncClient : public syncer::SyncClient {
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
-#if BUILDFLAG(IS_ANDROID)
-  void GetLocalDataDescriptions(
-      syncer::ModelTypeSet types,
-      base::OnceCallback<void(
-          std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
-      override;
-  void TriggerLocalDataMigration(syncer::ModelTypeSet types) override;
-#endif  // BUILDFLAG(IS_ANDROID)
-
  private:
   // Convenience function that exercises ModelTypeStoreServiceFactory.
   syncer::ModelTypeStoreService* GetModelTypeStoreService();
@@ -88,17 +80,13 @@ class ChromeSyncClient : public syncer::SyncClient {
 
   const raw_ptr<Profile> profile_;
 
-  // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
+  // The sync engine factory in use by this client.
+  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
-  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
-      local_data_migration_helper_;
-
   // Watches password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores.
   PrefChangeRegistrar upm_pref_change_registrar_;
 #endif  // BUILDFLAG(IS_ANDROID)

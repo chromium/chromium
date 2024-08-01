@@ -103,17 +103,32 @@ public class Elements {
         /** Declare as an element a View that matches |viewMatcher|. */
         public ViewElementInState declareView(ViewElement viewElement) {
             assertNotBuilt();
-            ViewElementInState inState = new ViewElementInState(viewElement, /* gate= */ null);
+            ViewElementInState inState = new ViewElementInState(viewElement);
             mElementsInState.add(inState);
             return inState;
         }
 
-        /** Declare an {@link ElementFactory} that is gated by a Condition. */
-        public <T extends Condition> T declareElementFactory(
-                T condition, Callback<Elements.Builder> delayedDeclarations) {
+        /**
+         * Declare an {@link ElementFactory} gated by a {@link Condition}.
+         *
+         * <p>When the Condition becomes fulfilled, |delayedDeclarations| will be run to declare new
+         * Elements.
+         */
+        public void declareElementFactory(
+                Condition condition, Callback<Elements.Builder> delayedDeclarations) {
             assertNotBuilt();
             mElementFactories.put(condition, new ElementFactory(mOwner, delayedDeclarations));
-            return condition;
+        }
+
+        /**
+         * Declare an {@link ElementFactory} gated by an {@link ElementInState}'s enter Condition.
+         *
+         * <p>When the ElementInState's enter Condition becomes fulfilled, |delayedDeclarations|
+         * will be run to declare new Elements.
+         */
+        public void declareElementFactory(
+                ElementInState<?> element, Callback<Elements.Builder> delayedDeclarations) {
+            declareElementFactory(element.getEnterCondition(), delayedDeclarations);
         }
 
         /** Declare as a Condition that a View is not displayed. */

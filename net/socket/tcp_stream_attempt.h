@@ -39,7 +39,9 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
     kConnecting,
   };
 
+  // StreamAttempt methods:
   int StartInternal() override;
+  base::Value::Dict GetNetLogStartParams() override;
 
   void HandleCompletion();
 

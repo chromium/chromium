@@ -49,7 +49,6 @@ found in the LICENSE file.
 
   <LinearLayout
       android:id="@+id/header"
-      android:descendantFocusability="afterDescendants"
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
       android:gravity="center"

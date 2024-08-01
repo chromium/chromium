@@ -280,8 +280,7 @@ suite('CertificateManagerV2Test', () => {
     const linkRow = customSection!.querySelector('cr-link-row');
     linkRow!.click();
     await microtasksFinished();
-    assertTrue(
-        certManager.$.adminCertsSection.classList.contains('iron-selected'));
+    assertTrue(certManager.$.adminCertsSection.classList.contains('selected'));
   });
 
   test('navigate back from admin certs', async () => {
@@ -301,25 +300,22 @@ suite('CertificateManagerV2Test', () => {
     const linkRow = customSection!.querySelector('cr-link-row');
     linkRow!.click();
     await microtasksFinished();
-    assertTrue(
-        certManager.$.adminCertsSection.classList.contains('iron-selected'));
+    assertTrue(certManager.$.adminCertsSection.classList.contains('selected'));
     certManager.$.adminCertsSection.$.backButton.click();
     await microtasksFinished();
-    assertFalse(
-        certManager.$.adminCertsSection.classList.contains('iron-selected'));
-    assertTrue(
-        certManager.$.localCertSection.classList.contains('iron-selected'));
+    assertFalse(certManager.$.adminCertsSection.classList.contains('selected'));
+    assertTrue(certManager.$.localCertSection.classList.contains('selected'));
   });
 
   test('show platform certs', async () => {
     initializeElement();
     await microtasksFinished();
     assertFalse(
-        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+        certManager.$.platformCertsSection.classList.contains('selected'));
     certManager.$.viewOsImportedCerts.click();
     await microtasksFinished();
     assertTrue(
-        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+        certManager.$.platformCertsSection.classList.contains('selected'));
   });
 
   test('navigate back from platform certs', async () => {
@@ -328,38 +324,60 @@ suite('CertificateManagerV2Test', () => {
     certManager.$.viewOsImportedCerts.click();
     await microtasksFinished();
     assertTrue(
-        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+        certManager.$.platformCertsSection.classList.contains('selected'));
     certManager.$.platformCertsSection.$.backButton.click();
     await microtasksFinished();
     assertFalse(
-        certManager.$.platformCertsSection.classList.contains('iron-selected'));
-    assertTrue(
-        certManager.$.localCertSection.classList.contains('iron-selected'));
+        certManager.$.platformCertsSection.classList.contains('selected'));
+    assertTrue(certManager.$.localCertSection.classList.contains('selected'));
   });
 
+  test('show platform client certs then navigate back', async () => {
+    initializeElement();
+    // Go to client section.
+    certManager.$.clientMenuItem.click();
+    await microtasksFinished();
+    assertTrue(certManager.$.clientCertSection.classList.contains('selected'));
+    assertFalse(certManager.$.platformClientCertsSection.classList.contains(
+        'selected'));
+
+    // Click into client platform certs section.
+    certManager.$.viewOsImportedClientCerts.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.platformClientCertsSection.classList.contains('selected'),
+        'not visible after click');
+
+    // Go back to client certs.
+    certManager.$.platformClientCertsSection.$.backButton.click();
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.platformClientCertsSection.classList.contains('selected'),
+        'visible after click');
+    assertTrue(
+        certManager.$.clientCertSection.classList.contains('selected'),
+        'main pane not visible');
+  });
 
   test('click local certs section', async () => {
     initializeElement();
     certManager.$.localMenuItem.click();
     await microtasksFinished();
-    assertTrue(
-        certManager.$.localCertSection.classList.contains('iron-selected'));
+    assertTrue(certManager.$.localCertSection.classList.contains('selected'));
   });
 
   test('click client certs section', async () => {
     initializeElement();
     certManager.$.clientMenuItem.click();
     await microtasksFinished();
-    assertTrue(
-        certManager.$.clientCertSection.classList.contains('iron-selected'));
+    assertTrue(certManager.$.clientCertSection.classList.contains('selected'));
   });
 
   test('click crs certs section', async () => {
     initializeElement();
     certManager.$.crsMenuItem.click();
     await microtasksFinished();
-    assertTrue(
-        certManager.$.crsCertSection.classList.contains('iron-selected'));
+    assertTrue(certManager.$.crsCertSection.classList.contains('selected'));
   });
 
   // Tests opening the password dialog through the mojo interface and

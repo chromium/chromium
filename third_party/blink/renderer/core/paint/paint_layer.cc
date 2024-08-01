@@ -46,10 +46,10 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "cc/input/scroll_snap_data.h"
+#include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -2157,17 +2157,8 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     MarkAncestorChainForFlagsUpdate();
   }
 
-  // If the (current)color changes and a filter is applied that uses it, the
-  // filter needs to be updated.
-  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
-  if (diff.TextDecorationOrColorChanged()) {
-    if (new_style.HasFilter() && new_style.Filter().UsesCurrentColor()) {
-      GetLayoutObject().SetNeedsPaintPropertyUpdate();
-      SetFilterOnEffectNodeDirty();
-    }
-  }
-
   // HasNonContainedAbsolutePositionDescendant depends on position changes.
+  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
 

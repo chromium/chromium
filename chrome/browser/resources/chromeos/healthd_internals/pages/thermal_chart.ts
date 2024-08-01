@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './thermal_chart.html.js';
+import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsThermalChartElement {
   $: {
@@ -32,7 +33,14 @@ export class HealthdInternalsThermalChartElement extends PolymerElement {
     const UNITBASE_NO_CARRY: number = 1;
     const UNIT_CELSIUS: string[] = ['C'];
     this.$.lineChart.initCanvasDrawer(UNIT_CELSIUS, UNITBASE_NO_CARRY);
+
+    this.updateHelper = new UiUpdateHelper(() => {
+      this.$.lineChart.updateEndTime(Date.now());
+    });
   }
+
+  // Helper for updating UI regularly. Init in `connectedCallback`.
+  private updateHelper: UiUpdateHelper;
 
   addDataSeries(thermalDataSeries: DataSeries[]) {
     for (const dataSeries of thermalDataSeries) {
@@ -40,12 +48,13 @@ export class HealthdInternalsThermalChartElement extends PolymerElement {
     }
   }
 
-  updateEndTime(timestamp: number) {
-    this.$.lineChart.updateEndTime(timestamp);
+  updateVisibility(isVisible: boolean) {
+    this.$.lineChart.updateVisibility(isVisible);
+    this.updateHelper.updateVisibility(isVisible);
   }
 
-  updateVisibility(isVisble: boolean) {
-    this.$.lineChart.updateVisibility(isVisble);
+  updateUiUpdateInterval(intervalSeconds: number) {
+    this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 }
 

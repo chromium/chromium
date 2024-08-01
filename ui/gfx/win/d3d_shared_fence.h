@@ -32,6 +32,15 @@ class GFX_EXPORT D3DSharedFence
   static scoped_refptr<D3DSharedFence> CreateForD3D11(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device);
 
+  // Create from an existing ID3D11Fence with a specified value to wait on. The
+  // |d3d11_signal_device| is passed explicitly in the case that the device
+  // signaling the fence is different than the device that created it.
+  // |fence_value| is the initial value this fence will wait on.
+  static scoped_refptr<D3DSharedFence> CreateFromD3D11Fence(
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device,
+      Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
+      uint64_t fence_value);
+
   // Create from existing scoped shared handle e.g. from IPC. The ID3D11Fence
   // is lazily created on Wait or Signal for the device provided to those calls.
   static scoped_refptr<D3DSharedFence> CreateFromScopedHandle(
@@ -100,7 +109,8 @@ class GFX_EXPORT D3DSharedFence
   DXGIHandleToken dxgi_token_;
 
   // If present, this is the D3D11 device that the fence was created on, and
-  // used to signal |d3d11_signal_fence_|.
+  // used to signal |d3d11_signal_fence_|. Can be null if the fence will be
+  // signaled externally.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device_;
 
   // If present, this is the D3D11 fence object this fence was created with and

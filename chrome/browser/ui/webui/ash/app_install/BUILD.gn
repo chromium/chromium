@@ -17,3 +17,104 @@ mojom("mojo_bindings") {
   ]
   webui_module_path = "/"
 }
+
+static_library("app_install") {
+  sources = [
+    "app_install_dialog.cc",
+    "app_install_dialog.h",
+    "app_install_dialog_args.cc",
+    "app_install_dialog_args.h",
+    "app_install_page_handler.cc",
+    "app_install_page_handler.h",
+    "app_install_ui.cc",
+    "app_install_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_service/app_install",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash",
+    "//components/services/app_service",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+    "//ui/views",
+    "//ui/web_dialogs",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/resources/chromeos/app_install:resources",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/constants",
+    "//components/metrics/structured:events",
+    "//components/metrics/structured:structured_events",
+    "//components/strings:components_strings",
+    "//components/webapps/common",
+    "//content/public/common",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx",
+    "//ui/webui",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "app_install_dialog_browsertest.cc" ]
+
+  deps = [
+    ":app_install",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/app_service/app_install",
+    "//chrome/browser/apps/app_service/app_install:proto",
+    "//chrome/browser/apps/app_service/app_install:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/constants",
+    "//components/services/app_service",
+    "//components/webapps/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "app_install_dialog_test_helpers.cc",
+    "app_install_dialog_test_helpers.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//content/test:test_support",
+  ]
+}

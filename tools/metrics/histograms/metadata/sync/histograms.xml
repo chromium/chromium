@@ -40,6 +40,8 @@ chromium-metrics-reviews@google.com.
       summary="UPM backend outdated error for passwords."/>
 </variants>
 
+<!-- LINT.IfChange(ModelTypeHistogramSuffix) -->
+
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
@@ -54,7 +56,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".AUTOFILL_WALLET_USAGE" summary="AUTOFILL_WALLET_USAGE"/>
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
   <variant name=".COLLABORATION_GROUP" summary="COLLABORATION_GROUP"/>
-  <variant name=".COMPARE" summary="COMPARE"/>
   <variant name=".CONTACT_INFO" summary="CONTACT_INFO"/>
   <variant name=".COOKIE" summary="COOKIE"/>
   <variant name=".DEVICE_INFO" summary="DEVICE_INFO"/>
@@ -76,13 +77,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".PLUS_ADDRESS_SETTING" summary="PLUS_ADDRESS_SETTING"/>
   <variant name=".POWER_BOOKMARK" summary="POWER_BOOKMARK"/>
   <variant name=".PREFERENCE" summary="PREFERENCE"/>
-  <variant name=".PRINTERS" summary="PRINTERS"/>
-  <variant name=".PRINTERS_AUTHORIZATION_SERVERS"
-      summary="PRINTERS_AUTHORIZATION_SERVERS"/>
+  <variant name=".PRINTER" summary="PRINTER"/>
+  <variant name=".PRINTERS_AUTHORIZATION_SERVER"
+      summary="PRINTERS_AUTHORIZATION_SERVER"/>
   <variant name=".PRIORITY_PREFERENCE" summary="PRIORITY_PREFERENCE"/>
-  <variant name=".PROXY_TABS" summary="PROXY_TABS"/>
+  <variant name=".PRODUCT_COMPARISON" summary="PRODUCT_COMPARISON"/>
   <variant name=".READING_LIST" summary="READING_LIST"/>
-  <variant name=".SAVED_TAB_GROUPS" summary="SAVED_TAB_GROUPS"/>
+  <variant name=".SAVED_TAB_GROUP" summary="SAVED_TAB_GROUP"/>
   <variant name=".SEARCH_ENGINE" summary="SEARCH_ENGINE"/>
   <variant name=".SECURITY_EVENT" summary="SECURITY_EVENT"/>
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
@@ -99,6 +100,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".WIFI_CONFIGURATION" summary="WIFI_CONFIGURATION"/>
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
+
+<!-- LINT.ThenChange(/components/sync/base/model_type.cc:ModelTypeHistogramSuffix) -->
 
 <variants name="SyncModelTypeForSyncToSigninMigration">
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
@@ -179,22 +182,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.BatchUpload.Requests2" enum="SyncModelTypes"
-    expires_after="2024-11-20">
-  <owner>ankushkush@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Logged when batch upload of local data for a data type is requested.
-
-    Note that at the time of writing, this metric only supports PASSWORDS,
-    BOOKMARKS and READING_LIST.
-
-    This is not logged when kSyncEnableModelTypeLocalDataBatchUploaders is
-    enabled and will eventually be removed in favor of
-    Sync.BatchUpload.Requests3.
-  </summary>
-</histogram>
-
 <histogram name="Sync.BatchUpload.Requests3" enum="SyncModelTypes"
     expires_after="2024-11-20">
   <owner>ankushkush@google.com</owner>
@@ -202,7 +189,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when batch upload of local data for a data type is requested via
     SyncService::TriggerLocalDataMigration() (normally by one of the UI entry
-    points), if kSyncEnableModelTypeLocalDataBatchUploaders is enabled.
+    points).
 
     Note that at the time of writing, this metric only supports PASSWORDS,
     BOOKMARKS and READING_LIST.
@@ -264,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkModelMerger.ValidInputUpdates" units="bookmarks"
-    expires_after="2024-11-19">
+    expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -427,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CrossUserSharingInvalidKeyVersion.EmptyKeyPair"
-    enum="Boolean" expires_after="2024-11-12">
+    enum="Boolean" expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
@@ -438,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CrossUserSharingInvalidKeyVersion.ExpectedVersion"
-    enum="Boolean" expires_after="2024-11-12">
+    enum="Boolean" expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
@@ -455,6 +442,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the state of cross user sharing key pair on browser startup (or
     profile load) when Nigori local data is valid.
+  </summary>
+</histogram>
+
+<histogram name="Sync.CrossUserSharingKeyPairState.DecryptPendingKeys"
+    enum="CrossUserSharingKeyPairStateOnDecryptPendingKeys"
+    expires_after="2024-11-12">
+  <owner>rushans@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <summary>
+    Records the state of the key pair whenever pendings keys are successfully
+    decrypted (e.g. on remote update, or custom passphrase or trusted vault
+    become available).
   </summary>
 </histogram>
 
@@ -586,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeRunFailures2" enum="SyncModelTypes"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -598,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeStartFailures2" enum="SyncModelTypes"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -980,7 +979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeConfigurationTime.{StorageType}{SyncModelType}"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1058,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeMemoryKB{SyncModelType}" units="KB"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1287,7 +1286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PasswordNotesStateInUpdate"
-    enum="SyncPasswordNotesStateInUpdate" expires_after="2024-09-01">
+    enum="SyncPasswordNotesStateInUpdate" expires_after="2025-03-01">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1311,7 +1310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PendingInvalidationStatus"
-    enum="PendingInvalidationStatus" expires_after="2024-11-24">
+    enum="PendingInvalidationStatus" expires_after="2025-01-26">
   <owner>shabdan@google.com</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1398,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ProblematicServerSideBookmarks"
-    enum="RemoteBookmarkUpdateError" expires_after="2024-11-25">
+    enum="RemoteBookmarkUpdateError" expires_after="2025-01-26">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1408,7 +1407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ProblematicServerSideBookmarksDuringMerge"
-    enum="RemoteBookmarkUpdateError" expires_after="2024-11-25">
+    enum="RemoteBookmarkUpdateError" expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1439,7 +1438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SelectedTypesInTransportMode" enum="SyncModelTypes"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1539,7 +1538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
-    enum="FaviconAvailabilityStatus" expires_after="2024-11-17">
+    enum="FaviconAvailabilityStatus" expires_after="2025-01-26">
   <owner>victorvianna@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1577,7 +1576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

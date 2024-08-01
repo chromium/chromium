@@ -19,6 +19,8 @@
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 class SafeBrowsingPrefsTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -108,6 +110,17 @@ TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {
   // Scout pref off, so reporting is off.
   ResetPrefs(/*scout_reporting=*/false);
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       GetSafeBrowsingExtendedReportingLevelWhenSBERDeprecated) {
+  // When enhanced protection is on and SBER deprecation flag is on, the
+  // reporting level is ENHANCED_PROTECTION.
+  prefs_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  base::test::ScopedFeatureList scoped_features_;
+  scoped_features_.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  EXPECT_EQ(SBER_LEVEL_ENHANCED_PROTECTION, GetExtendedReportingLevel(prefs_));
 }
 
 TEST_F(SafeBrowsingPrefsTest, VerifyMatchesPasswordProtectionLoginURL) {

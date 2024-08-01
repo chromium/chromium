@@ -40,7 +40,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -150,11 +149,6 @@ TestingBrowserProcess::TestingBrowserProcess()
     : app_locale_("en"),
       platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
       os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
-  // TestingBrowserProcess is used in unit_tests which sets this up through
-  // content::UnitTestTestSuite but also through other test binaries which don't
-  // use that test suite in which case we have to set it up.
-  notification_service_ =
-      content::NotificationService::CreateIfNecessaryForTesting();
 }
 
 TestingBrowserProcess::~TestingBrowserProcess() {

@@ -237,9 +237,9 @@ String MLOperator::OperatorKindToString(
 
 MLOperator::MLOperator(MLGraphBuilder* builder,
                        webnn::mojom::blink::Operation::Tag kind,
-                       OperationSubKind sub_kind,
-                       const bindings::DictionaryBase* options)
-    : builder_(builder), kind_(kind), sub_kind_(sub_kind), options_(options) {}
+                       const bindings::DictionaryBase* options,
+                       OperationSubKind sub_kind)
+    : builder_(builder), kind_(kind), options_(options), sub_kind_(sub_kind) {}
 
 MLOperator::~MLOperator() = default;
 
@@ -262,10 +262,6 @@ const bindings::DictionaryBase* MLOperator::Options() const {
   return options_.Get();
 }
 
-bool MLOperator::IsConnected() const {
-  return is_connected_;
-}
-
 const HeapVector<Member<const MLOperand>>& MLOperator::Inputs() const {
   return inputs_;
 }
@@ -276,12 +272,10 @@ const HeapVector<Member<const MLOperand>>& MLOperator::Outputs() const {
 
 void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
                          HeapVector<Member<const MLOperand>> outputs) {
-  DCHECK(!is_connected_);
   DCHECK(!inputs.empty());
   DCHECK(!outputs.empty());
   inputs_ = std::move(inputs);
   outputs_ = std::move(outputs);
-  is_connected_ = true;
 }
 
 MLArgMinMaxOperator::MLArgMinMaxOperator(
@@ -291,14 +285,18 @@ MLArgMinMaxOperator::MLArgMinMaxOperator(
     const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kArgMinMax,
-                 sub_kind,
-                 options),
+                 options,
+                 sub_kind),
       axis_(axis) {}
 
 MLArgMinMaxOperator::~MLArgMinMaxOperator() = default;
 
-MLConcatOperator::MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis)
-    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kConcat),
+MLConcatOperator::MLConcatOperator(MLGraphBuilder* builder,
+                                   const uint32_t axis,
+                                   const bindings::DictionaryBase* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kConcat,
+                 options),
       axis_(axis) {}
 
 MLConcatOperator::~MLConcatOperator() = default;
@@ -313,7 +311,6 @@ MLLstmOperator::MLLstmOperator(MLGraphBuilder* builder,
                                const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kLstm,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       steps_(steps),
       hidden_size_(hidden_size) {}
@@ -333,7 +330,6 @@ MLLstmCellOperator::MLLstmCellOperator(MLGraphBuilder* builder,
                                        const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kLstmCell,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       hidden_size_(hidden_size) {}
 
@@ -349,7 +345,6 @@ MLGruOperator::MLGruOperator(MLGraphBuilder* builder,
                              const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kGru,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       steps_(steps),
       hidden_size_(hidden_size) {}
@@ -361,7 +356,6 @@ MLGruCellOperator::MLGruCellOperator(MLGraphBuilder* builder,
                                      const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kGruCell,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       hidden_size_(hidden_size) {}
 
@@ -373,7 +367,6 @@ MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
                              const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kPad,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       beginning_padding_(beginning_padding),
       ending_padding_(ending_padding) {}
@@ -390,8 +383,9 @@ const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
 
 MLSliceOperator::MLSliceOperator(MLGraphBuilder* builder,
                                  const Vector<uint32_t>& starts,
-                                 const Vector<uint32_t>& sizes)
-    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSlice),
+                                 const Vector<uint32_t>& sizes,
+                                 const bindings::DictionaryBase* options)
+    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSlice, options),
       starts_(starts),
       sizes_(sizes) {}
 
@@ -406,8 +400,11 @@ const Vector<uint32_t>& MLSliceOperator::Sizes() const {
 }
 
 MLSoftmaxOperator::MLSoftmaxOperator(MLGraphBuilder* builder,
-                                     const uint32_t axis)
-    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSoftmax),
+                                     const uint32_t axis,
+                                     const bindings::DictionaryBase* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kSoftmax,
+                 options),
       axis_(axis) {}
 
 MLSoftmaxOperator::~MLSoftmaxOperator() = default;
@@ -417,7 +414,6 @@ MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
                                  const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kSplit,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       is_even_split_(true),
       split_number_(splits) {}
@@ -427,7 +423,6 @@ MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
                                  const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kSplit,
-                 /*sub_kind=*/absl::monostate{},
                  options),
       is_even_split_(false),
       split_sizes_(splits) {}

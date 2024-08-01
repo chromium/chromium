@@ -1,0 +1,67 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+
+selection_test(
+  [
+    '<div contenteditable>',
+      'this <a contenteditable="false">link</a> after|.',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'paragraphboundary'),
+  [
+    '<div contenteditable>',
+      '|this <a contenteditable="false">link</a> after.',
+    '</div>',
+  ]);
+
+selection_test(
+  [
+    '<div contenteditable>',
+      't|his <a contenteditable="false">link</a> after.',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'forward', 'paragraphboundary'),
+  [
+    '<div contenteditable>',
+      'this <a contenteditable="false">link</a> after.|',
+    '</div>',
+  ]);
+
+selection_test(
+  [
+    '<div>',
+      '<span contenteditable>this </span>',
+      '<a contenteditable="false">link</a>',
+      '<span contenteditable> after|.</span>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'paragraphboundary'),
+  [
+  '<div>',
+      '<span contenteditable>this </span>',
+      '<a contenteditable="false">link</a>',
+      '<span contenteditable>| after.</span>',
+    '</div>',
+  ]);
+
+selection_test(
+  [
+    '<div>',
+      '<span contenteditable>t|his </span>',
+      '<a contenteditable="false">link</a>',
+      '<span contenteditable> after.</span>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'forward', 'paragraphboundary'),
+  [
+  '<div>',
+      '<span contenteditable>this |</span>',
+      '<a contenteditable="false">link</a>',
+      '<span contenteditable> after.</span>',
+    '</div>',
+  ]);
+
+</script>

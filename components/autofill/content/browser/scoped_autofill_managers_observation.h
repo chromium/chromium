@@ -77,9 +77,11 @@ class ScopedAutofillManagersObservation final
       ContentAutofillDriverFactory& factory) override;
   void OnContentAutofillDriverCreated(ContentAutofillDriverFactory& factory,
                                       ContentAutofillDriver& driver) override;
-  void OnContentAutofillDriverWillBeDeleted(
+  void OnContentAutofillDriverStateChanged(
       ContentAutofillDriverFactory& factory,
-      ContentAutofillDriver& driver) override;
+      ContentAutofillDriver& driver,
+      AutofillDriver::LifecycleState old_state,
+      AutofillDriver::LifecycleState new_state) override;
 
   // The observation used to track driver creation and destruction.
   base::ScopedObservation<ContentAutofillDriverFactory,

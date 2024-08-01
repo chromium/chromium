@@ -118,6 +118,7 @@
 <translation id="1567064801249837505">Albymau</translation>
 <translation id="1572585716423026576">Gosod fel papur wal</translation>
 <translation id="1578784163189013834">Dewis cefndir yr arbedydd sgrîn</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Y mis hwn</translation>
 <translation id="1593528591614229756">Gwnewch yn siŵr eich bod yn dewis APNs a ddarperir gan eich darparwr ffôn symudol neu weinyddwr. Bydd dewis APN yn analluogi unrhyw APNs personol. Gall APNs annilys amharu ar eich cysylltiad symudol. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Rhagolwg o'r Llun</translation>
@@ -178,6 +179,7 @@
 <translation id="1827738518074806965">Oriel gelf</translation>
 <translation id="1836553715834333258">Lliw system</translation>
 <translation id="183675228220305365">realaeth</translation>
+<translation id="1837537071599385610">Canllaw annog</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
 <translation id="1840474674287087346">Lliw bwrdd gwaith</translation>
 <translation id="184095011128924488">creadigol</translation>
@@ -192,6 +194,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">glöynnod byw</translation>
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
+<translation id="1884794756658039602">Dysgu rhagor am labeli siaradwyr.</translation>
 <translation id="1885577615937958993">cyflymu cyfryngau</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
 <translation id="189221451253258459">gwyrdd neon</translation>
@@ -238,6 +241,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> o luniau</translation>
+<translation id="2156072344042480449">Eich 2 neges annog ddiweddaraf. Dim ond tra byddwch ar y dudalen hon y gallwch chi ddefnyddio'r negeseuon annog hyn.</translation>
 <translation id="2157660087437850958">dewisydd emoji</translation>
 <translation id="2157959690810728433">MEWN CIW</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Rhoi cynnig arall arni</translation>
@@ -318,6 +322,8 @@
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> arall</translation>
 <translation id="2561093647892030937">lemwnau</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
+<translation id="2575552334616524665">Gallwch droi hyn ymlaen yn y Gosodiadau neu'r ddewislen <ph name="THREE_DOTS_MENU_ICON" /></translation>
+<translation id="2576253868710695442">Bydd hyn yn cymryd hyd at 2GB o'r storfa</translation>
 <translation id="2584547424703650812">Disgleirwedd</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
 <translation id="2586146417912237930">glas ac indigo</translation>
@@ -334,6 +340,7 @@
 <translation id="2645380101799517405">Rheolyddion</translation>
 <translation id="2652403576514495859">galluogi neu doglo arddweud</translation>
 <translation id="2653659639078652383">Danfon</translation>
+<translation id="2653807227758181366">Disgrifiwch y papur wal rydych chi am ei greu neu defnyddiwch neges annog sampl</translation>
 <translation id="2654647726140493436">Peidiwch â diffodd eich <ph name="DEVICE_TYPE" /> na dad-blygio'r cebl pŵer <ph name="DEVICE_TYPE" /> tra bod y diweddariad ar y gweill</translation>
 <translation id="2656001153562991489">Unigryw ar gyfer Chromebook Plus</translation>
 <translation id="2665671725390405060">Gwrando ar yr ynganiad</translation>
@@ -378,6 +385,7 @@
 <translation id="3017079585324758401">Cefndir</translation>
 <translation id="3027578600144895987">Cau'r camera</translation>
 <translation id="3031560714565892478">Mae'r ddyfais yn gamera fideo.</translation>
+<translation id="3042927241478734594">Gadael y recordiad?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Diweddbwynt</translation>
 <translation id="3060579846059757016">Amlinelliadau</translation>
@@ -410,6 +418,9 @@
 <translation id="3199982728237701504">Bwydydd Dogfen (Dwy ochr)</translation>
 <translation id="3201315366910775591">Gall albymau a rennir gael eu diweddaru gan bobl eraill</translation>
 <translation id="3211671540163313381">D-pad mapio allweddi</translation>
+<translation id="3224812403568276799">Pan fyddwch yn caniatáu hyn, bydd Recorder yn defnyddio dadansoddiad sain uwch i ganfod lleisiau gwahanol yn awtomatig a rhoi label generig i bob un fel Siaradwr 1 a Siaradwr 2.
+
+Gallwch ddiffodd hwn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
 <translation id="3227186760713762082">Rhannu'r gwerth <ph name="CATEGORY_TEXT" /> â <ph name="CONVERSION_RATE" /></translation>
@@ -473,6 +484,7 @@
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="357889014807611375">Wi-Fi ar fesurydd</translation>
 <translation id="3583278742022654445">Cryfder signal gwan. Rhowch gynnig ar symud yn agosach at ffynhonnell y signal Wi-Fi.</translation>
+<translation id="3588034708467091142">Gwnewch yn siŵr eich bod wedi cysylltu â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> yw'r enw hawdd ei ddefnyddio ar gyfer <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Mae'r batri yn llawn</translation>
 <translation id="3600339377155080675">Adlewyrchu sgrîn</translation>
@@ -548,11 +560,13 @@
 <translation id="4021031199988160623">Newid i'r modd gliniadur i brofi</translation>
 <translation id="4034824040120875894">Argraffydd</translation>
 <translation id="4035877632587724847">Peidio â chaniatáu</translation>
+<translation id="4042658354407913408">Crynodeb wedi'i ddiffodd</translation>
 <translation id="4044093238444069296">Methu â chysylltu'r porth</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
 <translation id="404928562651467259">RHYBUDD</translation>
 <translation id="4050208988451295487">Ychydig o opsiynau:</translation>
 <translation id="4054683689023980771">Wrthi'n lawrlwytho llun</translation>
+<translation id="4059839844193047929">Bydd gadael y dudalen hon yn dod â'ch recordiad presennol i ben</translation>
 <translation id="4063039537646912479">glas golau</translation>
 <translation id="4070799384363688067">anime</translation>
 <translation id="4086271957099059213">Creu rheolydd arall</translation>
@@ -606,6 +620,7 @@
 <translation id="4310735698903592804">Papurau wal diweddar wedi'u pweru gan AI Google</translation>
 <translation id="4320904097188876154">pinc neon</translation>
 <translation id="4333390807948134856">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
+<translation id="4334293042716981313">Gallwch hefyd <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ysgrifennu'ch neges annog eich hun<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">bysell</translation>
 <translation id="4361257691546579041">Mae'r APN yn fath diofyn.</translation>
 <translation id="437294888293595148">Ailosod pob llwybr byr</translation>
@@ -626,6 +641,7 @@
 <translation id="4429881212383817840">Mae tocyn Kerberos yn darfod yn fuan</translation>
 <translation id="4431821876790500265">Gweld yr adroddiad</translation>
 <translation id="4443192710976771874">coch</translation>
+<translation id="4447592701292766824">Nid oes modd creu crynodeb ar gyfer y cynnwys hwn</translation>
 <translation id="4448096106102522892">ynys</translation>
 <translation id="445059817448385655">Hen gyfrinair</translation>
 <translation id="4453205916657964690">Masg is-rwydwaith</translation>
@@ -652,9 +668,11 @@
 <translation id="456077979087158257">dinaswedd</translation>
 <translation id="4561801978359312462">SIM wedi'i Ddatgloi</translation>
 <translation id="4562494484721939086">Dim gwasanaeth</translation>
+<translation id="4570558255126759859">Lawrlwytho model Gemini i grynhoi recordiadau?</translation>
 <translation id="4573777384450697571">Wedi methu - Tystysgrif wedi Darfod</translation>
 <translation id="458794348635939462">Wedi methu â datrys yr holl westeiwyr</translation>
 <translation id="4593212453765072419">Mae angen dilysu dirprwy weinydd</translation>
+<translation id="4594021849294327751">Creu trawsgrifiad</translation>
 <translation id="4609350030397390689">Disgleirdeb y bysellfwrdd i lawr</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> allan o <ph name="TOTAL_PAGE_NUMBER" />. Pwyswch Enter i ganslo'r dasg argraffu hon.</translation>
 <translation id="463791356324567266">Wrthi'n canslo sganio...</translation>
@@ -727,6 +745,7 @@
 <translation id="4981003703840817201">glas a phinc</translation>
 <translation id="498186245079027698">Gwiriwch y sganiwr a rhowch gynnig arall arni. Gwnewch yn siŵr bod digon o le lleol i gadw ffeiliau sydd wedi'u sganio.</translation>
 <translation id="4982627662315910959">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio Shift ac 1 fysell addasydd arall (ctrl, alt, neu <ph name="META_KEY" />).</translation>
+<translation id="4983216687482551672">Sain Chromebook</translation>
 <translation id="4985509611418653372">Rhedeg</translation>
 <translation id="4987769320337599931">Wal dân</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
@@ -768,6 +787,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% wedi lawrlwytho</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="522307662484862935">Peidio â chynnwys cyfeiriad e-bost</translation>
+<translation id="5223226274641517059">Bydd trawsgrifiadau byw yn cael eu dangos tra byddwch yn recordio. Gallwch ddiffodd hwn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="5226879510707344687">Allforio'r trawsgrifiad</translation>
 <translation id="5227902338748591677">Amserlen thema dywyll</translation>
 <translation id="5229344016299762883">Gadael llawn</translation>
@@ -791,6 +811,7 @@
 <translation id="5315873049536339193">Hunaniaeth</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5318334351163689047">Methiannau ceisiadau UDP</translation>
+<translation id="53196409393069519">Troi trawsgrifiad ymlaen?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Dewiswch un newydd nawr</translation>
 <translation id="5333530671332546086">Cyflwr porth anhysbys</translation>
@@ -849,6 +870,7 @@
 <translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> swreal gyda <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">ceirios</translation>
 <translation id="5691511426247308406">Teulu</translation>
+<translation id="5692395212036914927">Crynodeb recordiad a chreu enwau</translation>
 <translation id="5695599963893094957">Teipiwch unrhyw fysell ar eich bysellfwrdd. Gallwch bwyso hyd at 4 bysell ar yr un pryd.</translation>
 <translation id="5701381305118179107">Canoli</translation>
 <translation id="5703716265115423771">lleihau'r sain</translation>
@@ -891,6 +913,7 @@
 <translation id="5928411637936685857">Botwm dileu ar gyfer <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Breuddwydwedd</translation>
 <translation id="5931523347251946569">Ni chanfuwyd y ffeil</translation>
+<translation id="5938286923316838007">Methu â chreu enwau recordio ar gyfer y cynnwys hwn</translation>
 <translation id="5939518447894949180">Ailosod</translation>
 <translation id="594552776027197022">Cynhyrchu pâr o allweddi ar hap</translation>
 <translation id="5946538341867151940">Nid ydych yn gysylltiedig eto. Os yw'ch cludydd gwasanaethau symudol yn argymell APN personol, nodwch y wybodaeth APN trwy ddewis "+ APN Newydd"</translation>
@@ -929,6 +952,7 @@
 <translation id="6113701710518389813">Saeth i fyny</translation>
 <translation id="6116005346231504406">Creu rheolydd gyntaf</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> albwm arall</translation>
+<translation id="6120815036186828722">Wrthi'n gwrando am leferydd…</translation>
 <translation id="6122191549521593678">Ar-lein</translation>
 <translation id="6122277663991249694">Gwasanaeth Dull Mewnbynnu ChromeOS</translation>
 <translation id="6127426868813166163">gwyn</translation>
@@ -973,9 +997,11 @@
 <translation id="6327262166342360252">Crëwyd y papur wal hwn gydag AI gan ddefnyddio'r testun canlynol: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Thema dywyll awtomatig</translation>
 <translation id="6340526405444716530">Personoleiddio</translation>
+<translation id="6348252528297699679">Gallwch ddiffodd lleoliad yn y Gosodiadau &gt; Preifatrwydd a diogelwch &gt; Rheolyddion preifatrwydd &gt; Mynediad lleoliad. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Enw defnyddiwr a chyfrinair</translation>
 <translation id="6352210854422428614">planed wahanol</translation>
 <translation id="6359706544163531585">Analluogi'r thema olau</translation>
+<translation id="6359919876285606596">Mae'r cam gweithredu hwn yn barhaol ac ni ellir ei ddadwneud.</translation>
 <translation id="636850387210749493">Cofrestru menter</translation>
 <translation id="6373461326814131011">pwll</translation>
 <translation id="6379086450106841622">Sgrîn gyffwrdd</translation>
@@ -1084,6 +1110,7 @@
 <translation id="6910312834584889076">Mae gorchudd y sganiwr ar agor. Caewch y gorchudd a rhowch gynnig arall arni.</translation>
 <translation id="6911383237894364323">Methu â chysylltu â gweinyddion cyfryngau</translation>
 <translation id="6930597342185648547">Ynglŷn â'r cefndir</translation>
+<translation id="6939667434404433010">Chwilio enw recordiad</translation>
 <translation id="6939766318048400022">Caffi</translation>
 <translation id="6943893908656559156">Hunaniaeth o bell (dewisol)</translation>
 <translation id="6953137545147683679">aur</translation>
@@ -1156,6 +1183,7 @@
 <translation id="7212547870105584639">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Diweddariadau cadarnwedd ar gyfer dyfeisiau allanol</translation>
 <translation id="7216409898977639127">Darparwr Rhwydwaith Symudol</translation>
+<translation id="7223952304612664117">Mae hyn yn caniatáu i wasanaethau system ddefnyddio Cywirdeb Lleoliad i benderfynu ar eich lleoliad. Mae Cywirdeb Lleoliad yn defnyddio gwybodaeth am signalau a synwyryddion diwifr i amcangyfrif lleoliad dyfais.</translation>
 <translation id="7233782086689993269">Llwybr byr wedi'i adfer</translation>
 <translation id="725133483556299729">Dewis e-bost</translation>
 <translation id="7255187042098209569">pinc a phorffor</translation>
@@ -1189,6 +1217,8 @@
 <translation id="7359657277149375382">Math ffeil</translation>
 <translation id="73631062356239394">Rhannu data diagnosteg</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">Gall Recorder greu trawsgrifiadau ar gyfer recordiadau â lleferydd.
+Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</translation>
 <translation id="7384004438856720753">palas</translation>
 <translation id="7388959671917308825">Pad cyffwrdd integredig</translation>
 <translation id="7397270852490618635">Diffodd y thema olau</translation>
@@ -1204,6 +1234,7 @@
 <translation id="7487067081878637334">Technoleg</translation>
 <translation id="7490813197707563893">Cyfeiriad MAC</translation>
 <translation id="7497215489070763236">Tystysgrif CA y gweinydd</translation>
+<translation id="7500205272584643581">Caniatáu Recorder i ganfod a labelu siaradwyr?</translation>
 <translation id="7501957181231305652">neu</translation>
 <translation id="7502658306369382406">Cyfeiriad IPv6</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> disglair</translation>
@@ -1226,6 +1257,7 @@
 <translation id="7613724632293948900">Ail-leoli gyda'r llygoden neu'r bysellau saeth.</translation>
 <translation id="7618774594543487847">Niwtral</translation>
 <translation id="7620771111601174153">Dysgu rhagor yn y Ganolfan Gymorth</translation>
+<translation id="7625095758347640998">Papurau wal AI</translation>
 <translation id="763165478673169849">Amser Ailosod Diwethaf</translation>
 <translation id="7633068090678117093">Llun cefndir</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1391,6 +1423,7 @@
 <translation id="8498220429738806196">Rhifyddion Traffig</translation>
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8503836310948963452">Ychydig funudau yn rhagor...</translation>
+<translation id="8505011850330200833">Mae angen 2GB o storfa ar y model Gemini i brosesu trawsgrifiadau a chreu crynodebau</translation>
 <translation id="8508640263392900755">Manylion APN</translation>
 <translation id="8522687886059337719">Mae bellach gennych fynediad at <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bapurau wal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ac <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />arbedwr sgrîn<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1418,6 +1451,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Defnyddiwch y bysellau saeth Chwith neu Dde i reoli'r nodwedd hon.</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="871560550817059752">Wedi methu - Allan o inc</translation>
+<translation id="8721554916373590179">Negeseuon annog sampl</translation>
 <translation id="8723108084122415655">Mae cuddni'r rhwydwaith nad yw'n ddiofyn wedi mynd y tu hwnt i'r trothwy</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8726019395068607495">Wedi stopio - Mae'r drws ar agor</translation>
@@ -1427,6 +1461,7 @@
 <translation id="8749478549112817787">Cefndir Camera</translation>
 <translation id="8755946156089753497">tŵr</translation>
 <translation id="8756235582947991808">Sut i greu gydag AI ac ychydig o bethau i'w cadw mewn cof</translation>
+<translation id="8760616037557661287">Negeseuon annog blaenorol</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albwm Google Photos</translation>
 <translation id="8775713578693478175">APN Modem</translation>
@@ -1490,6 +1525,8 @@
 <translation id="9025198690966128418">Defnyddio fel dyfais bersonol</translation>
 <translation id="902638246363752736">Gosodiadau bysellfwrdd</translation>
 <translation id="9028832514430399253">Trowch y togl ymlaen i ddewis opsiynau arbedwr sgrîn</translation>
+<translation id="9030883440316693822">Dileu'r recordiad?</translation>
+<translation id="9036971622563146214">Canlyniadau</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">llyfrau</translation>
 <translation id="9049868303458988905">Mae'r botwm Cadw APN bellach wedi'i alluogi</translation>

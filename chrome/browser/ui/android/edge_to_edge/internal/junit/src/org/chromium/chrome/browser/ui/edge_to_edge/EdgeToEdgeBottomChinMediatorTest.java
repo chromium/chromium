@@ -6,10 +6,17 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
@@ -23,13 +30,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR)
 @Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinMediatorTest {
     @Mock private LayoutManager mLayoutManager;
@@ -59,6 +70,8 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         verify(mLayoutManager).addObserver(eq(mMediator));
         verify(mEdgeToEdgeController).registerObserver(eq(mMediator));
+        verify(mNavigationBarColorProvider).addObserver(eq(mMediator));
+        verify(mBottomControlsStacker).addLayer(eq(mMediator));
     }
 
     @Test
@@ -67,17 +80,25 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         verify(mLayoutManager).removeObserver(eq(mMediator));
         verify(mEdgeToEdgeController).unregisterObserver(eq(mMediator));
+        verify(mNavigationBarColorProvider).removeObserver(eq(mMediator));
+        verify(mBottomControlsStacker).removeLayer(eq(mMediator));
     }
 
     @Test
     public void testUpdateHeight() {
-        mMediator.onToEdgeChange(60);
+        onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertEquals(
-                "The height should have adjusted to 60 to match the edge-to-edge bottom inset.",
+                "The height should have adjusted to match the edge-to-edge bottom inset in pixels.",
                 60,
                 mModel.get(HEIGHT));
 
-        mMediator.onToEdgeChange(0);
+        onToEdgeChange(100, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertEquals(
+                "The height should have been increased to match the edge-to-edge bottom inset.",
+                100,
+                mModel.get(HEIGHT));
+
+        onToEdgeChange(0, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertEquals(
                 "The height should have been cleared to 0 to match the edge-to-edge bottom inset.",
                 0,
@@ -94,26 +115,137 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     @Test
-    public void testUpdateVisibility() {
+    public void testDividerColorChanges() {
+        mMediator.onNavigationBarDividerChanged(Color.WHITE);
+        assertEquals(
+                "The divider color should have been updated to WHITE.",
+                Color.WHITE,
+                mModel.get(DIVIDER_COLOR));
+
+        mMediator.onNavigationBarDividerChanged(Color.TRANSPARENT);
+        assertEquals(
+                "The divider color should have been updated to TRANSPARENT.",
+                Color.TRANSPARENT,
+                mModel.get(DIVIDER_COLOR));
+    }
+
+    @Test
+    public void testUpdateVisibility_updatesStacker() {
+        clearInvocations(mBottomControlsStacker);
+
         assertFalse(
                 "The chin should not be visible as it has just been initialized.",
                 mModel.get(IS_VISIBLE));
 
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mMediator.onStartedShowing(LayoutType.BROWSING);
-        mMediator.onToEdgeChange(0);
+        onToEdgeChange(0, /* isDrawingToEdge= */ false, /* isPageOptInToEdge= */ false);
         assertFalse(
                 "The chin should not be visible as the edge-to-edge bottom inset is still 0.",
                 mModel.get(IS_VISIBLE));
+        assertEquals(
+                BottomControlsStacker.LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
+                mMediator.getLayerVisibility());
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
 
+        doReturn(LayoutType.NONE).when(mLayoutManager).getActiveLayoutType();
         mMediator.onStartedShowing(LayoutType.NONE);
-        mMediator.onToEdgeChange(60);
+        onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertFalse(
                 "The chin should not be visible as the layout type does not support showing the"
                         + " chin.",
                 mModel.get(IS_VISIBLE));
+        assertEquals(
+                BottomControlsStacker.LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
+                mMediator.getLayerVisibility());
+        // Height was updated.
+        verify(mBottomControlsStacker, times(1)).requestLayerUpdate(anyBoolean());
 
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mMediator.onStartedShowing(LayoutType.BROWSING);
-        mMediator.onToEdgeChange(60);
+        onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(IS_VISIBLE));
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mMediator.getLayerVisibility());
+        // Visibility was updated.
+        verify(mBottomControlsStacker, times(2)).requestLayerUpdate(anyBoolean());
+
+        onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        // Duplicate height notification, no updates.
+        verifyNoMoreInteractions(mBottomControlsStacker);
+    }
+
+    @Test
+    public void testUpdateVisibility_VisibleChin() {
+        assertFalse(
+                "The chin should not be visible as it has just been initialized.",
+                mModel.get(IS_VISIBLE));
+
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertTrue("The chin should be visible as all conditions are met.", mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateVisibility_NotOptedIn() {
+        assertFalse(
+                "The chin should not be visible as it has just been initialized.",
+                mModel.get(IS_VISIBLE));
+
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
+        assertFalse(
+                "The chin should be visible as the page is opted into edge-to-edge.",
+                mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateVisibility_NoInsets() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(0, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertFalse(
+                "The chin should not be visible as the edge-to-edge bottom inset is 0.",
+                mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateVisibility_NoneLayoutType() {
+        doReturn(LayoutType.NONE).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertFalse(
+                "The chin should not be visible as the layout type does not support showing the"
+                        + " chin.",
+                mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateVisibility_NotToEdge() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        onToEdgeChange(60, /* isDrawingToEdge= */ false, /* isPageOptInToEdge= */ false);
+        assertFalse(
+                "The chin should not be visible when not drawing to edge.", mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testOnBrowserControlsOffsetUpdate() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
+        testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
+        FeatureList.setTestValues(testValues);
+
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertEquals("The y-offset should be 0.", 0, mModel.get(Y_OFFSET));
+
+        mMediator.onBrowserControlsOffsetUpdate(10);
+        assertEquals("The y-offset should be 10.", 10, mModel.get(Y_OFFSET));
+
+        mMediator.onBrowserControlsOffsetUpdate(60);
+        assertEquals("The y-offset should be 60.", 60, mModel.get(Y_OFFSET));
+    }
+
+    private void onToEdgeChange(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
+        doReturn(bottomInset).when(mEdgeToEdgeController).getBottomInsetPx();
+        mMediator.onToEdgeChange(bottomInset, isDrawingToEdge, isPageOptInToEdge);
     }
 }

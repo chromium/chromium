@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -230,7 +231,7 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
   ConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
                                  /* is_new_fc */ true);
   return BlockNode(this)
-      .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+      .ComputeMinMaxSizes(mode, SizeType::kIntrinsic,
                           builder.ToConstraintSpace())
       .sizes.min_size;
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_AGENT_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_AGENT_REGISTRY_H_
 
@@ -75,9 +70,8 @@ class CORE_EXPORT AgentRegistry {
   template <typename ForEachCallable>
   void ForEachAgent(const ForEachCallable& callable) const {
     iteration_counter_++;
-    auto* end = agents_.end();
-    for (auto* agent = agents_.begin(); agent != end; agent++) {
-      callable(agent->Get());
+    for (const Member<AgentType>& agent : agents_) {
+      callable(agent);
     }
     if (iteration_counter_ > 0)
       iteration_counter_--;

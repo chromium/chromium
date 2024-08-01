@@ -9,7 +9,12 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_pref_store_test.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -32,11 +37,15 @@ class MockFileTypePolicies : public FileTypePolicies {
 
 class FileTypePoliciesTest : public testing::Test {
  protected:
-  FileTypePoliciesTest() {}
-  ~FileTypePoliciesTest() override {}
+  FileTypePoliciesTest() = default;
+  ~FileTypePoliciesTest() override = default;
+  void SetUp() override {
+    file_type::RegisterProfilePrefs(pref_service_.registry());
+  }
 
  protected:
   NiceMock<MockFileTypePolicies> policies_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
@@ -238,6 +247,27 @@ TEST_F(FileTypePoliciesTest, ChecksInspectionTypeNotDefault) {
   EXPECT_EQ(policies_.GetMaxFileSizeToAnalyze(
                 base::FilePath(FILE_PATH_LITERAL("/path/to/test.r01"))),
             policies_.GetMaxFileSizeToAnalyze("rar"));
+}
+
+// Regression test for https://crbug.com/355016912. The policy for overriding
+// file types should only override danger level.
+TEST_F(FileTypePoliciesTest, NotDangerousOverrideShouldOnlyOverrideDangerType) {
+  policies_.PopulateFromResourceBundle();
+  base::Value::List list;
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "exe", {"http://www.example.com"}));
+  pref_service_.SetList(
+      file_type::prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
+      std::move(list));
+
+  base::FilePath exe_file(FILE_PATH_LITERAL("a/foo.exe"));
+  DownloadFileType file_type = policies_.PolicyForFile(
+      exe_file, GURL("http://www.example.com"), &pref_service_);
+  // The danger level should be overridden to NOT_DANGEROUS.
+  EXPECT_EQ(DownloadFileType::NOT_DANGEROUS,
+            file_type.platform_settings(0).danger_level());
+  // The other fields should remain unchanged.
+  EXPECT_EQ(0l, file_type.uma_value());
 }
 
 }  // namespace safe_browsing

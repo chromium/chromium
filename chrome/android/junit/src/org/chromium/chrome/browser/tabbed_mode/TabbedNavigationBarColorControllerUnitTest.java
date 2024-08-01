@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,33 +22,40 @@ import android.view.Window;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {TabbedNavigationBarColorControllerUnitTest.ShadowSemanticColorUtils.class})
+        shadows = {TabbedNavigationBarColorControllerUnitTest.ShadowSemanticColorUtils.class},
+        sdk = 28)
+@EnableFeatures(ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND)
 public class TabbedNavigationBarColorControllerUnitTest {
     @Implements(SemanticColorUtils.class)
     static class ShadowSemanticColorUtils {
@@ -72,6 +80,12 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private Tab mTab;
+    @Mock private NavigationBarColorProvider.Observer mObserver;
+    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
+
+    @Captor private ArgumentCaptor<Integer> mWindowDividerColorCaptor;
+    @Captor private ArgumentCaptor<Integer> mNavigationBarColorChangedCaptor;
+    @Captor private ArgumentCaptor<Integer> mNavigationBarDividerColorChangedCaptor;
 
     @Before
     public void setUp() {
@@ -89,6 +103,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mDecorView.getRootView()).thenReturn(mRootView);
         when(mRootView.getContext()).thenReturn(mContext);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
         mNavColorController =
                 new TabbedNavigationBarColorController(
@@ -100,83 +115,125 @@ public class TabbedNavigationBarColorControllerUnitTest {
                         mBottomAttachedUiObserver);
         mLayoutManagerSupplier.set(mLayoutManager);
         mEdgeToEdgeControllerObservableSupplier.set(mEdgeToEdgeController);
-    }
+        mNavColorController.addObserver(mObserver);
 
-    @After
-    public void teardown() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(false);
-    }
-
-    @Test
-    public void testMatchTabBackgroundColor() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
-        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
-        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
-        mNavColorController.updateActiveTabForTesting();
-
-        assertTrue(
-                "Should be using tab bg color.",
-                mNavColorController.getUseActiveTabColorForTesting());
-        assertEquals(
-                "Incorrect nav bar color.",
-                Color.BLUE,
-                mNavColorController.getNavigationBarColorForTesting());
-        assertEquals(
-                "Incorrect nav bar divider color.",
-                Color.BLUE,
-                mNavColorController.getNavigationBarDividerColor(false, false));
+        // Setup the capture after TabbedNavigationBarColorController is initialized so it does
+        // not capture value during the initializations.
+        runColorUpdateAnimation();
+        doNothing().when(mWindow).setNavigationBarDividerColor(mWindowDividerColorCaptor.capture());
+        doNothing()
+                .when(mObserver)
+                .onNavigationBarColorChanged(mNavigationBarColorChangedCaptor.capture());
+        doNothing()
+                .when(mObserver)
+                .onNavigationBarDividerChanged(mNavigationBarDividerColorChangedCaptor.capture());
     }
 
     @Test
     public void testMatchBottomAttachedColor() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
 
         mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
         assertTrue(
                 "Should be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
-        assertEquals(
-                "The nav bar color should be the bottom attached UI color.",
-                Color.RED,
-                mNavColorController.getNavigationBarColorForTesting());
-        assertEquals(
-                "The nav bar divider color should be the bottom attached UI color.",
-                Color.RED,
-                mNavColorController.getNavigationBarDividerColor(false, false));
+        assertNavBarColor(Color.RED);
+        assertNavBarDividerColor(Color.RED);
+
+        runColorUpdateAnimation();
+        assertWindowNavBarColor(Color.RED);
+        assertWindowNavBarDividerColor(Color.RED);
 
         mNavColorController.onBottomAttachedColorChanged(null, false, false);
         assertFalse(
                 "Should no longer be using the bottom attached UI color.",
                 mNavColorController.getUseBottomAttachedUiColorForTesting());
-        assertEquals(
-                "The nav bar color should match the tab background.",
-                Color.BLUE,
-                mNavColorController.getNavigationBarColorForTesting());
-        assertEquals(
-                "The nav bar divider color should match the tab background.",
-                Color.BLUE,
-                mNavColorController.getNavigationBarDividerColor(false, false));
+        assertNavBarColor(Color.BLUE);
+        assertNavBarDividerColor(Color.BLUE);
+
+        runColorUpdateAnimation();
+        assertWindowNavBarColor(Color.BLUE);
+        assertWindowNavBarDividerColor(Color.BLUE);
+    }
+
+    @Test
+    public void testMatchBottomAttachedColor_toEdge() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
+        assertTrue(
+                "Should be using the bottom attached UI color.",
+                mNavColorController.getUseBottomAttachedUiColorForTesting());
+        assertNavBarColor(Color.RED);
+        assertNavBarDividerColor(Color.RED);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.onBottomAttachedColorChanged(null, false, false);
+        assertFalse(
+                "Should no longer be using the bottom attached UI color.",
+                mNavColorController.getUseBottomAttachedUiColorForTesting());
+        assertNavBarColor(Color.BLUE);
+        assertNavBarDividerColor(Color.BLUE);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
     }
 
     @Test
     public void testMatchBottomAttachedColor_forceShowDivider() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mNavColorController.updateActiveTabForTesting();
-        Mockito.clearInvocations(mWindow);
+        runColorUpdateAnimation();
 
         mNavColorController.onBottomAttachedColorChanged(Color.RED, true, true);
-        verify(mWindow, atLeastOnce()).setNavigationBarDividerColor(eq(NAV_DIVIDER_COLOR));
+        runColorUpdateAnimation();
+        assertWindowNavBarColor(Color.RED);
+        assertWindowNavBarDividerColor(NAV_DIVIDER_COLOR);
+    }
+
+    @Test
+    public void testMatchBottomAttachedColor_forceShowDivider_toEdge() {
+        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.onBottomAttachedColorChanged(Color.RED, true, false);
+        runColorUpdateAnimation();
+        assertTrue(
+                "Should be using the bottom attached UI color.",
+                mNavColorController.getUseBottomAttachedUiColorForTesting());
+        assertNavBarColor(Color.RED);
+        assertNavBarDividerColor(NAV_DIVIDER_COLOR, true);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+
+        Mockito.clearInvocations(mWindow);
+        mNavColorController.onBottomAttachedColorChanged(null, false, false);
+        runColorUpdateAnimation();
+        assertFalse(
+                "Should no longer be using the bottom attached UI color.",
+                mNavColorController.getUseBottomAttachedUiColorForTesting());
+        assertNavBarColor(Color.BLUE);
+        assertNavBarDividerColor(Color.BLUE);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
     }
 
     @Test
     public void testGetNavigationBarDividerColor() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
         assertEquals(
                 "The nav bar divider color should be the bottom attached UI color.",
                 NAV_DIVIDER_COLOR,
@@ -188,51 +245,86 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    public void testToEdgeDoesntMatchTabBackgroundColor() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
+    public void testMatchTabBackgroundColor() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mEdgeToEdgeController.getBottomInset()).thenReturn(100);
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(false);
 
         mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
 
         assertTrue(
                 "Should be using tab background color for the navigation bar color.",
                 mNavColorController.getUseActiveTabColorForTesting());
-        assertEquals(
-                "The nav bar color should match the active tab.",
-                Color.BLUE,
-                mNavColorController.getNavigationBarColorForTesting());
-        assertEquals(
-                "The window (OS) nav bar color should match the active tab.",
-                Color.BLUE,
-                mNavColorController.getWindowNavigationBarColorForTesting());
+        assertNavBarColor(Color.BLUE);
+        assertNavBarDividerColor(Color.BLUE);
+        assertWindowNavBarColor(Color.BLUE);
+        assertWindowNavBarDividerColor(Color.BLUE);
     }
 
     @Test
-    public void testToEdgeDoesntMatchTabBackgroundColor_bottomChinEnabled() {
-        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
-        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
-
+    public void testMatchTabBackgroundColor_toEdge() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mEdgeToEdgeController.getBottomInset()).thenReturn(100);
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
 
+        Mockito.clearInvocations(mWindow);
         mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
 
         assertTrue(
                 "Should be using tab background color for the navigation bar color.",
                 mNavColorController.getUseActiveTabColorForTesting());
+        assertNavBarColor(Color.BLUE);
+        assertNavBarDividerColor(Color.BLUE);
+        assertWindowNavBarColor(Color.TRANSPARENT);
+        verify(mWindow, times(0)).setNavigationBarDividerColor(anyInt());
+    }
+
+    private void runColorUpdateAnimation() {
+        // Run the color  transition animation so color is applied to the window.
+        ShadowLooper.idleMainLooper();
+    }
+
+    private void assertNavBarColor(int color) {
         assertEquals(
                 "The nav bar color should match the active tab.",
-                Color.BLUE,
+                color,
                 mNavColorController.getNavigationBarColorForTesting());
         assertEquals(
-                "The window (OS) nav bar color should be transparent.",
-                Color.TRANSPARENT,
+                "New color is not delivered to the observer.",
+                color,
+                (int) mNavigationBarColorChangedCaptor.getValue());
+    }
+
+    private void assertWindowNavBarColor(int color) {
+        assertEquals(
+                "The window (OS) nav bar color is different.",
+                color,
                 mNavColorController.getWindowNavigationBarColorForTesting());
+    }
+
+    private void assertNavBarDividerColor(int color) {
+        assertNavBarDividerColor(color, /* forceShowDivider= */ false);
+    }
+
+    private void assertNavBarDividerColor(int color, boolean forceShowDivider) {
+        assertEquals(
+                "Incorrect nav bar divider color.",
+                color,
+                mNavColorController.getNavigationBarDividerColor(false, forceShowDivider));
+        assertEquals(
+                "New color is not delivered to the observer.",
+                color,
+                (int) mNavigationBarDividerColorChangedCaptor.getValue());
+    }
+
+    private void assertWindowNavBarDividerColor(int color) {
+        assertEquals(
+                "Incorrect divider color set to the window.",
+                color,
+                (int) mWindowDividerColorCaptor.getValue());
     }
 }

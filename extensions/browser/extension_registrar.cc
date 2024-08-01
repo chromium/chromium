@@ -550,6 +550,13 @@ void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     // TODO(crbug.com/346732739): Handle this case.
     LOG(ERROR) << "Failed to unregister service worker for extension "
                << extension_id;
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        status);
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+        "AddExtension",
+        status);
   }
 }
 
@@ -626,7 +633,8 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
 }
 
-void ExtensionRegistrar::OnServiceWorkerRegistered(const WorkerId& worker_id) {
+void ExtensionRegistrar::OnStartedTrackingServiceWorkerInstance(
+    const WorkerId& worker_id) {
   // Just release the host. We only get here when the new worker has been
   // attached and resumed by the DevTools, and all we need in case of service
   // worker-based extensions is to keep the host around for the target

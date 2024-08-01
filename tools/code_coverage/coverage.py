@@ -475,7 +475,7 @@ def _SplitCommand(command):
   # Python's subprocess does not do glob expansion, so we expand it out here.
   new_command = []
   for item in split_command:
-    if '*' in item:
+    if '*' in item and not item.startswith('--gtest_filter'):
       files = glob.glob(item)
       for file in files:
         new_command.append(file)

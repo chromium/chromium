@@ -16,6 +16,7 @@ static_library("audio") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/audio",
   ]
 

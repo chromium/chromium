@@ -10,6 +10,8 @@
 
 namespace tpcd::enterprise_reporting {
 
+namespace {
+
 constexpr char kEnterpriseErrorReportType[] =
     "enterprise-third-party-cookie-access-error";
 constexpr char kEnterpriseWarningReportType[] =
@@ -36,6 +38,8 @@ base::Value::Dict CreateReportBody(const ReportDetails& report_details) {
 
   return body;
 }
+
+}  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(EnterpriseReportingTabHelper);
 

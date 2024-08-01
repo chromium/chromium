@@ -407,8 +407,18 @@ void MimeUtil::AddSupportedMediaFormats() {
   video_3gpp_codecs.emplace(H264);
   AddContainerWithCodecs("video/3gpp", video_3gpp_codecs);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  bool can_play_hls = false;
+#endif
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kCanPlayHls)) {
+  can_play_hls |= base::FeatureList::IsEnabled(kHlsPlayer);
+#endif
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  can_play_hls |= base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  if (can_play_hls) {
     // HTTP Live Streaming (HLS).
     CodecSet hls_codecs{H264,
                         // TODO(ddorwin): Is any MP3 codec string variant
@@ -425,7 +435,7 @@ void MimeUtil::AddSupportedMediaFormats() {
     // https://crbug.com/675552 for details and examples.
     AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
@@ -948,15 +958,15 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
       case H264PROFILE_MAIN:
       case H264PROFILE_HIGH:
         break;
-// HIGH10PROFILE is supported through fallback to the ffmpeg decoder
-// which is not available on Android, or if FFMPEG is not used.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+      // Only supported on some hardware and via ffmpeg.
       case H264PROFILE_HIGH10PROFILE:
-        // FFmpeg is not generally used for encrypted videos, so we do not
-        // know whether 10-bit is supported.
-        ambiguous_platform_support = is_encrypted;
-        break;
-#endif
+        if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+          // FFmpeg is not generally used for encrypted videos, so we do not
+          // know whether 10-bit is supported.
+          ambiguous_platform_support = is_encrypted;
+          break;
+        }
+        [[fallthrough]];
       default:
         ambiguous_platform_support = true;
     }

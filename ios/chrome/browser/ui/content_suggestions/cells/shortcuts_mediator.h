@@ -22,6 +22,7 @@ enum class ContentSuggestionsModuleType;
 @protocol NewTabPageMetricsDelegate;
 class ReadingListModel;
 @class ShortcutsConfig;
+@protocol WhatsNewCommands;
 
 // Delegate used to communicate events back to the owner of
 // ShortcutsMediator.
@@ -53,8 +54,9 @@ class ReadingListModel;
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCoordinatorCommands>
-    dispatcher;
+@property(nonatomic, weak)
+    id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>
+        dispatcher;
 
 // Default initializer.
 - (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel

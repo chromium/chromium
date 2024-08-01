@@ -188,7 +188,7 @@ void IDBValueWrapper::MaybeCompress() {
   size_t compressed_length;
   snappy::RawCompress(
       reinterpret_cast<const char*>(wire_data_.data()), wire_data_size,
-      reinterpret_cast<char*>(wire_data_buffer_.begin() + kHeaderSize),
+      reinterpret_cast<char*>(wire_data_buffer_.data() + kHeaderSize),
       &compressed_length);
   if (ShouldTransmitCompressed(wire_data_size, compressed_length)) {
     // Truncate the excess space that was previously allocated.
@@ -199,7 +199,7 @@ void IDBValueWrapper::MaybeCompress() {
     // Compression wasn't very successful, but we still allocated a large chunk
     // of memory, so we can repurpose it. This copy saves us from making another
     // allocation later on in `MaybeStoreInBlob()` or `TakeWireBytes()`.
-    memcpy(wire_data_buffer_.begin(), wire_data_.data(), wire_data_size);
+    memcpy(wire_data_buffer_.data(), wire_data_.data(), wire_data_size);
     wire_data_buffer_.resize(static_cast<wtf_size_t>(wire_data_size));
   }
 

@@ -71,7 +71,7 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
   OverlayBrowserAgentBaseTest() {
     // Create the Browser and set up the browser agent.
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     FakeOverlayBrowserAgent::CreateForBrowser(browser_.get());
     // Set up the infobar OverlayPresenter.

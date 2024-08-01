@@ -24,7 +24,6 @@ class RecentFilesBubble : public HoldingSpaceTrayChildBubble {
   ~RecentFilesBubble() override;
 
   // HoldingSpaceTrayChildBubble:
-  std::unique_ptr<views::View> CreatePlaceholder() override;
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections()
       override;
 };

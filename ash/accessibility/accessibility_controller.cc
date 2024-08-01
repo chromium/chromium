@@ -295,6 +295,8 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown,
     prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2,
     prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
+    prefs::kFaceGazeDlcSuccessNotificationHasBeenShown,
+    prefs::kFaceGazeDlcFailureNotificationHasBeenShown,
 };
 
 // List of switch access accessibility prefs that are to be copied (if changed
@@ -491,6 +493,21 @@ void ShowAccessibilityNotification(
     text = l10n_util::GetStringUTF16(
         IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_SODA_DOWNLOADED_DESC);
     catalog_name = NotificationCatalogName::kDictationOnlySodaDownloaded;
+    pinned = false;
+    // Use CRITICAL_WARNING to force the notification color to red.
+    warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+  } else if (type == A11yNotificationType::kFaceGazeAssetsDownloaded) {
+    title = l10n_util::GetStringUTF16(
+        IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_TITLE);
+    text =
+        l10n_util::GetStringUTF16(IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_DESC);
+    catalog_name = NotificationCatalogName::kFaceGazeAssetsDownloaded;
+    pinned = false;
+  } else if (type == A11yNotificationType::kFaceGazeAssetsFailed) {
+    title =
+        l10n_util::GetStringUTF16(IDS_ASH_A11Y_FACEGAZE_ASSETS_FAILED_TITLE);
+    text = l10n_util::GetStringUTF16(IDS_ASH_A11Y_FACEGAZE_ASSETS_FAILED_DESC);
+    catalog_name = NotificationCatalogName::kFaceGazeAssetsFailed;
     pinned = false;
     // Use CRITICAL_WARNING to force the notification color to red.
     warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
@@ -1201,6 +1218,10 @@ void AccessibilityController::RegisterProfilePrefs(
       prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, false);
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kFaceGazeDlcSuccessNotificationHasBeenShown, false);
+  registry->RegisterBooleanPref(
+      prefs::kFaceGazeDlcFailureNotificationHasBeenShown, false);
 
   registry->RegisterBooleanPref(prefs::kAccessibilityColorCorrectionEnabled,
                                 false);
@@ -3112,6 +3133,10 @@ void AccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {
   } else {
     Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kUser);
   }
+
+  if (set_virtual_keyboard_visible_callback_) {
+    set_virtual_keyboard_visible_callback_.Run();
+  }
 }
 
 void AccessibilityController::ToggleMouseKeys() {
@@ -3245,6 +3270,33 @@ void AccessibilityController::ShowNotificationForDictation(
 
   ShowAccessibilityNotification(A11yNotificationWrapper(
       notification_type, std::vector<std::u16string>{display_language}));
+}
+
+void AccessibilityController::ShowNotificationForFaceGaze(
+    FaceGazeNotificationType type) {
+  A11yNotificationType notification_type;
+  std::string notification_shown_pref;
+  switch (type) {
+    case FaceGazeNotificationType::kDlcSucceeded:
+      notification_type = A11yNotificationType::kFaceGazeAssetsDownloaded;
+      notification_shown_pref =
+          prefs::kFaceGazeDlcSuccessNotificationHasBeenShown;
+      break;
+    case FaceGazeNotificationType::kDlcFailed:
+      notification_type = A11yNotificationType::kFaceGazeAssetsFailed;
+      notification_shown_pref =
+          prefs::kFaceGazeDlcFailureNotificationHasBeenShown;
+      break;
+  }
+
+  if (active_user_prefs_->GetBoolean(notification_shown_pref)) {
+    // Do not show notifications more than once.
+    return;
+  }
+
+  active_user_prefs_->SetBoolean(notification_shown_pref, true);
+  ShowAccessibilityNotification(A11yNotificationWrapper(
+      notification_type, std::vector<std::u16string>()));
 }
 
 AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper() =
@@ -3449,6 +3501,11 @@ void AccessibilityController::AddShowConfirmationDialogCallbackForTesting(
 
 bool AccessibilityController::VerifyFeaturesDataForTesting() {
   return VerifyFeaturesData();
+}
+
+void AccessibilityController::SetVirtualKeyboardVisibleCallbackForTesting(
+    base::RepeatingCallback<void()> callback) {
+  set_virtual_keyboard_visible_callback_ = std::move(callback);
 }
 
 }  // namespace ash

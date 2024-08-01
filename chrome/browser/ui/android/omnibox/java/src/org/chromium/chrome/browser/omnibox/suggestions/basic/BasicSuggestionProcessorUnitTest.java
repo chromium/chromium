@@ -449,4 +449,11 @@ public class BasicSuggestionProcessorUnitTest {
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", JUnitTestGURLs.URL_1);
         Assert.assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
     }
+
+    @Test
+    @SmallTest
+    public void topPaddingDefaultZero() {
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
+        Assert.assertEquals(0, mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
+    }
 }

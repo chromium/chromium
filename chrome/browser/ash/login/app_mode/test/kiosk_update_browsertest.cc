@@ -783,7 +783,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
 
   // Fake auto launch.
   ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetEnableAutoLaunch(true);
   KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
       kTestOfflineEnabledKioskAppId);
 
@@ -805,7 +804,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
 
   // Fake auto launch.
   ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetEnableAutoLaunch(true);
   KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
       kTestOfflineEnabledKioskAppId);
 
@@ -830,7 +828,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformFirstInstall) {
 
   // Fake auto launch.
   ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetEnableAutoLaunch(true);
   KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
       kTestOfflineEnabledKioskAppId);
 

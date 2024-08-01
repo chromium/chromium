@@ -243,6 +243,8 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected)
                                          : cros_tokens::kCrosSysDisabled,
                                      kIconSize));
   add_task_button_->SetFocusBehavior(View::FocusBehavior::NEVER);
+  // Ignore `add_task_button_`for accessibility purposes.
+  add_task_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
   add_task_button_->SetEnabled(is_network_connected);
 
   textfield_ =
@@ -346,8 +348,15 @@ void FocusModeTaskView::OnSelectedTaskChanged(
     textfield_->SetText(base::UTF8ToUTF16(task->title));
   }
 
+  const bool prev_radio_button_visibility = radio_button_->GetVisible();
   UpdateStyle(/*show_selected_state=*/show_selected_state,
               /*is_network_connected=*/is_network_connected_);
+
+  // Only when the `radio_button_` became visible, we request the focus for the
+  // button.
+  if (!prev_radio_button_visibility && radio_button_->GetVisible()) {
+    radio_button_->RequestFocus();
+  }
 }
 
 void FocusModeTaskView::OnTasksUpdated(

@@ -17,12 +17,12 @@ suite('HorizontalCarouselTest', () => {
   });
 
   test('CarouselResizeUpdatesButtons', async () => {
-    const carousel = carouselElement!.$.carouselContainer;
-    assertTrue(!!carousel);
-    carousel.style.width = '600px';
+    const carouselContainer = carouselElement.$.carouselContainer;
+    assertTrue(!!carouselContainer);
+    carouselContainer.style.width = '600px';
 
-    const forwardButton = carouselElement!.$.carouselForwardButton;
-    const backButton = carouselElement!.$.carouselBackButton;
+    const forwardButton = carouselElement.$.forwardButton;
+    const backButton = carouselElement.$.backButton;
 
     // Assert forward/back button does not show initially.
     assertTrue(forwardButton.hidden);
@@ -32,18 +32,18 @@ suite('HorizontalCarouselTest', () => {
     smallDiv.style.width = '80px';
     smallDiv.style.height = '50px';
     smallDiv.style.flexShrink = '0';
-    carousel.querySelector('slot')!.appendChild(smallDiv);
+    carouselContainer.querySelector('slot')!.appendChild(smallDiv);
 
     await new Promise<void>((resolve) => {
       const observer = new ResizeObserver(() => {
         /* Includes 2px padding on either side */
-        if (carousel.offsetWidth === 64) {
+        if (carouselContainer.offsetWidth === 64) {
           resolve();
-          observer.unobserve(carousel);
+          observer.unobserve(carouselContainer);
         }
       });
-      observer.observe(carousel);
-      carousel.style.width = '60px';
+      observer.observe(carouselContainer);
+      carouselContainer.style.width = '60px';
     });
 
     // Assert forward buttons shows when carousel is resized with larger
@@ -58,6 +58,5 @@ suite('HorizontalCarouselTest', () => {
       assertFalse(backButton.hidden);
       assertTrue(forwardButton.hidden);
     }, 1000);
-
   });
 });

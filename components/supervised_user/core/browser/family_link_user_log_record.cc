@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -60,25 +61,33 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
   }
 }
 
+// Returns true if there is no available supervision status or the account is
+// not subject to parental controls.
+bool IsUnsupervisedStatus(
+    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status) {
+  return !supervision_status.has_value() ||
+         supervision_status.value() ==
+             FamilyLinkUserLogRecord::Segment::kUnsupervised;
+}
+
 std::optional<WebFilterType> GetWebFilterType(
     std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
     SupervisedUserURLFilter* supervised_user_filter) {
-  if (!supervised_user_filter || !supervision_status.has_value() ||
-      supervision_status.value() ==
-          FamilyLinkUserLogRecord::Segment::kUnsupervised) {
+  if (!supervised_user_filter || IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
   }
   return supervised_user_filter->GetWebFilterType();
 }
 
 std::optional<ToggleState> GetPermissionsToggleState(
+    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map) {
 #if BUILDFLAG(IS_IOS)
   // The permissions toggle is not supported on iOS.
   return std::nullopt;
 #else
-  if (!IsSubjectToParentalControls(pref_service)) {
+  if (IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
   }
 
@@ -107,9 +116,10 @@ std::optional<ToggleState> GetPermissionsToggleState(
 }
 
 std::optional<ToggleState> GetExtensionToggleState(
+    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
     const PrefService& pref_service) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!IsSubjectToParentalControls(pref_service) ||
+  if (IsUnsupervisedStatus(supervision_status) ||
       !IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
     return std::nullopt;
   }
@@ -134,8 +144,9 @@ FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
   return FamilyLinkUserLogRecord(
       supervision_status,
       GetWebFilterType(supervision_status, supervised_user_filter),
-      GetPermissionsToggleState(pref_service, content_settings_map),
-      GetExtensionToggleState(pref_service));
+      GetPermissionsToggleState(supervision_status, pref_service,
+                                content_settings_map),
+      GetExtensionToggleState(supervision_status, pref_service));
 }
 
 FamilyLinkUserLogRecord::FamilyLinkUserLogRecord(

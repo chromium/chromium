@@ -155,11 +155,6 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
   if (feature_info->feature_flags().chromium_image_ycbcr_p010) {
     supported_formats_.insert(viz::MultiPlaneFormat::kP010);
   }
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() < 11) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_MAC)
   supported_formats_.insert(viz::MultiPlaneFormat::kNV12A);
   supported_formats_.insert(viz::MultiPlaneFormat::kNV16);
   supported_formats_.insert(viz::MultiPlaneFormat::kNV24);

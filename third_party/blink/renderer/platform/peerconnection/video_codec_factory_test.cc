@@ -10,6 +10,7 @@
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
+#include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
@@ -17,6 +18,7 @@
 #include "third_party/webrtc/api/environment/environment_factory.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
+#include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 
 using ::testing::Return;
 using ::testing::ValuesIn;
@@ -46,7 +48,7 @@ class VideoCodecFactoryTestWithSdpFormat
   }
 
  protected:
-  bool CanEncoderCreated(const webrtc::SdpVideoFormat& sdp, bool sw) {
+  bool CanCreateEncoder(const webrtc::SdpVideoFormat& sdp, bool sw) {
     std::optional<media::VideoCodecProfile> profile =
         WebRTCFormatToCodecProfile(sdp);
     if (!profile.has_value()) {
@@ -64,7 +66,8 @@ class VideoCodecFactoryTestWithSdpFormat
         base::NullCallback());
   }
 
-  media::MockGpuVideoAcceleratorFactories mock_gpu_factories_{nullptr};
+  testing::NiceMock<media::MockGpuVideoAcceleratorFactories>
+      mock_gpu_factories_{nullptr};
   scoped_refptr<media::MockMojoVideoEncoderMetricsProviderFactory>
       mock_encoder_metrics_provider_factory_;
 
@@ -77,20 +80,18 @@ TEST_P(VideoCodecFactoryTestWithSdpFormat, CreateHardwareEncoder) {
       CreateEncoderFactory();
   ASSERT_TRUE(encoder_factory);
 
-  using SupportedProfile = media::VideoEncodeAccelerator::SupportedProfile;
-  std::vector<SupportedProfile> kSupportedProfiles = {
-      SupportedProfile(media::H264PROFILE_BASELINE, gfx::Size(3840, 2160)),
-      SupportedProfile(media::VP8PROFILE_ANY, gfx::Size(3840, 2160)),
-      SupportedProfile(media::VP9PROFILE_PROFILE0, gfx::Size(3840, 2160)),
-      SupportedProfile(media::AV1PROFILE_PROFILE_MAIN, gfx::Size(3840, 2160)),
+  const media::VideoEncodeAccelerator::SupportedProfiles kSupportedProfiles = {
+      {media::H264PROFILE_BASELINE, gfx::Size(3840, 2160)},
+      {media::VP8PROFILE_ANY, gfx::Size(3840, 2160)},
+      {media::VP9PROFILE_PROFILE0, gfx::Size(3840, 2160)},
+      {media::AV1PROFILE_PROFILE_MAIN, gfx::Size(3840, 2160)},
   };
-
   EXPECT_CALL(mock_gpu_factories_, GetVideoEncodeAcceleratorSupportedProfiles())
       .WillRepeatedly(Return(kSupportedProfiles));
   webrtc::EnvironmentFactory environment_factory;
   auto encoder =
       encoder_factory->Create(environment_factory.Create(), GetParam());
-  EXPECT_EQ(encoder != nullptr, CanEncoderCreated(GetParam(), false));
+  EXPECT_EQ(encoder != nullptr, CanCreateEncoder(GetParam(), false));
   if (encoder) {
     EXPECT_TRUE(encoder->GetEncoderInfo().is_hardware_accelerated);
   }
@@ -107,23 +108,26 @@ TEST_P(VideoCodecFactoryTestWithSdpFormat, CreateSoftwareEncoder) {
   webrtc::EnvironmentFactory environment_factory;
   auto encoder =
       encoder_factory->Create(environment_factory.Create(), GetParam());
-  EXPECT_EQ(encoder != nullptr, CanEncoderCreated(GetParam(), true));
+  EXPECT_EQ(encoder != nullptr, CanCreateEncoder(GetParam(), true));
   // Don't check encoder->GetEncoderInfo().is_hardware_accelerated because
   // SimulcastEncoderAdapter doesn't set it and the default value on
   // is_hardware_accelerated is true.
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VideoCodecFactoryTestWithSdpFormat,
-                         ValuesIn({
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VideoCodecFactoryTestWithSdpFormat,
+    ValuesIn({
 #if !BUILDFLAG(IS_ANDROID)
-                             webrtc::SdpVideoFormat::H264(),
+        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline,
+                                 webrtc::H264Level::kLevel1,
+                                 /*packetization_mode=*/"1"),
 #endif
-                             webrtc::SdpVideoFormat::VP8(),
-                             webrtc::SdpVideoFormat::VP9Profile0(),
-                             webrtc::SdpVideoFormat::AV1Profile0(),
-                             // no supported profile.
-                             webrtc::SdpVideoFormat("bogus"),
-                         }));
+        webrtc::SdpVideoFormat::VP8(),
+        webrtc::SdpVideoFormat::VP9Profile0(),
+        webrtc::SdpVideoFormat::AV1Profile0(),
+        // no supported profile.
+        webrtc::SdpVideoFormat("bogus"),
+    }));
 
 }  // namespace blink

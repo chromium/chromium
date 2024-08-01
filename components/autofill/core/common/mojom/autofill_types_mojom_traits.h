@@ -617,6 +617,11 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     return r.wait_for_username;
   }
 
+  static std::vector<autofill::FieldRendererId> suggestion_banned_fields(
+      const autofill::PasswordFormFillData& r) {
+    return r.suggestion_banned_fields;
+  }
+
   static bool Read(autofill::mojom::PasswordFormFillDataDataView data,
                    autofill::PasswordFormFillData* out);
 };

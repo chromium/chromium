@@ -35,6 +35,7 @@ class NetworkAnonymizationKey;
 
 namespace content {
 
+class AuctionMetricsRecorder;
 class AuctionSharedStorageHost;
 class AuctionNetworkEventsProxy;
 class RenderFrameHostImpl;
@@ -129,7 +130,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
                const std::optional<GURL>& signals_url,
                bool needs_cors_for_additional_bid,
                std::optional<uint16_t> experiment_group_id,
-               const std::string& trusted_bidding_signals_slot_size_param);
+               const std::string& trusted_bidding_signals_slot_size_param,
+               const std::optional<url::Origin>& trusted_signals_coordinator);
     WorkletKey(const WorkletKey&);
     WorkletKey(WorkletKey&&);
     ~WorkletKey();
@@ -150,6 +152,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
     std::optional<uint16_t> experiment_group_id;
     std::string trusted_bidding_signals_slot_size_param;
+    std::optional<url::Origin> trusted_signals_coordinator;
   };
 
   // Class that tracks a request for a Worklet, and helps manage the lifetime of
@@ -244,7 +247,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const std::optional<GURL>& trusted_bidding_signals_url,
       bool needs_cors_for_additional_bid,
       std::optional<uint16_t> experiment_group_id,
-      const std::string& trusted_bidding_signals_slot_size_param);
+      const std::string& trusted_bidding_signals_slot_size_param,
+      const std::optional<url::Origin>& trusted_bidding_signals_coordinator);
 
   // Requests a worklet with the specified properties. The top frame origin and
   // debugging information are obtained from the Delegate's RenderFrameHost.
@@ -284,9 +288,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
       bool needs_cors_for_additional_bid,
       std::optional<uint16_t> experiment_group_id,
       const std::string& trusted_bidding_signals_slot_size_param,
+      const std::optional<url::Origin>& trusted_bidding_signals_coordinator,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
-      std::unique_ptr<WorkletHandle>& out_worklet_handle);
+      std::unique_ptr<WorkletHandle>& out_worklet_handle,
+      AuctionMetricsRecorder* auction_metrics_recorder);
   void RequestSellerWorklet(
       std::string devtools_auction_id,
       const GURL& decision_logic_url,
@@ -294,7 +300,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
       std::optional<uint16_t> experiment_group_id,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
-      std::unique_ptr<WorkletHandle>& out_worklet_handle);
+      std::unique_ptr<WorkletHandle>& out_worklet_handle,
+      AuctionMetricsRecorder* auction_metrics_recorder);
 
   // Requests a worklet with the specified `worklet_info`. This method handles
   // the creation of a new worklet if no existing instance matches the specified
@@ -307,7 +314,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
                            base::OnceClosure worklet_available_callback,
                            FatalErrorCallback fatal_error_callback,
                            std::unique_ptr<WorkletHandle>& out_worklet_handle,
-                           size_t number_of_bidder_threads);
+                           size_t number_of_bidder_threads,
+                           AuctionMetricsRecorder* auction_metrics_recorder);
 
  private:
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);

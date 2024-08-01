@@ -16,6 +16,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/sharing_message/pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -30,7 +31,7 @@
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/user_manager/user_manager_pref_names.h"
-#include "components/variations/service/google_groups_manager.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
 #include "ui/events/ash/pref_names.h"
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -226,7 +227,7 @@ enum {
   kProtectedContentDefault = 100169,
   kRestoreOnStartup = 100170,
   kSearchSuggestEnabled = 100171,
-  kSharingVapidKey = 100172,
+  // kSharingVapidKey = 100172, (moved to components)
   kURLsToRestoreOnStartup = 100173,
   kSpellCheckEnable = 100174,
   kProfileContentSettingsExceptionsAntiAbuse = 100175,
@@ -352,6 +353,8 @@ enum {
   kDesktopToiOSAddressPromoOptOut = 100293,
   kMahiNudgeShownCount = 100294,
   kAccessibilityMagnifierFollowsChromeVox = 100295,
+  kKeyboardHasSplitModifierKeyboard = 100296,
+  kHttpsFirstBalancedMode = 100297,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1187,6 +1190,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kMahiNudgeShownCount, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kKeyboardHasSplitModifierKeyboard,
+     {syncable_prefs_ids::kKeyboardHasSplitModifierKeyboard,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
@@ -1294,10 +1301,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kSearchSuggestEnabled,
      {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kSharingVapidKey,
-     {syncable_prefs_ids::kSharingVapidKey, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kURLsToRestoreOnStartup,
@@ -1530,6 +1533,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {promos_prefs::kDesktopToiOSAddressPromoOptOut,
      {syncable_prefs_ids::kDesktopToiOSAddressPromoOptOut, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kHttpsFirstBalancedMode,
+     {syncable_prefs_ids::kHttpsFirstBalancedMode, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 });

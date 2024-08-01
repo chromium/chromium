@@ -15,8 +15,6 @@ blink_modules_sources("ml") {
     "ml_trace.h",
     "navigator_ml.cc",
     "navigator_ml.h",
-    "webnn/ml_activation.cc",
-    "webnn/ml_activation.h",
     "webnn/ml_buffer.cc",
     "webnn/ml_buffer.h",
     "webnn/ml_constant_operand.cc",

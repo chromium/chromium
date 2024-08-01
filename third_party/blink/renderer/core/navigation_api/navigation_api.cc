@@ -50,6 +50,16 @@
 
 namespace blink {
 
+namespace {
+
+// Kill switch feature for fixing https://crbug.com/40283021.
+// TODO(domenic): clean this up after that fix has baked in stable for a few
+// milestones.
+BASE_FEATURE(kUtf8OnlyNavigationApiNavigations,
+             "Utf8OnlyNavigationApiNavigations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
+
 template <typename... DOMExceptionArgs>
 NavigationResult* EarlyErrorResult(ScriptState* script_state,
                                    DOMExceptionArgs&&... args) {
@@ -460,7 +470,10 @@ void NavigationApi::updateCurrentEntry(
 NavigationResult* NavigationApi::navigate(ScriptState* script_state,
                                           const String& url,
                                           NavigationNavigateOptions* options) {
-  KURL completed_url = window_->CompleteURL(url);
+  KURL completed_url =
+      base::FeatureList::IsEnabled(kUtf8OnlyNavigationApiNavigations)
+          ? KURL(window_->BaseURL(), url)
+          : window_->CompleteURL(url);
   if (!completed_url.IsValid()) {
     return EarlyErrorResult(script_state, DOMExceptionCode::kSyntaxError,
                             "Invalid URL '" + completed_url.GetString() + "'.");

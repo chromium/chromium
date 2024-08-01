@@ -6,18 +6,23 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/prefs/pref_service.h"
+#import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 
+@interface TabGroupsPanelCoordinator () <TabGroupsPanelMediatorDelegate>
+@end
+
 @implementation TabGroupsPanelCoordinator {
-  // Regular browser.
-  base::WeakPtr<Browser> _regularBrowser;
   // Mutator that handles toolbars changes.
   __weak id<GridToolbarsMutator> _toolbarsMutator;
   // Delegate that handles toolbars actions.
@@ -42,7 +47,6 @@
   self = [super initWithBaseViewController:baseViewController
                                    browser:regularBrowser];
   if (self) {
-    _regularBrowser = regularBrowser->AsWeakPtr();
     _toolbarsMutator = toolbarsMutator;
     _toolbarTabGridDelegate = toolbarTabGridDelegate;
     _disabledViewControllerDelegate = disabledViewControllerDelegate;
@@ -70,16 +74,21 @@
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          _regularBrowser->GetBrowserState());
-  WebStateList* regularWebStateList = _regularBrowser->GetWebStateList();
+          self.browser->GetBrowserState());
+  WebStateList* regularWebStateList = self.browser->GetWebStateList();
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   _mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
               regularWebStateList:regularWebStateList
+                    faviconLoader:faviconLoader
                  disabledByPolicy:regularModeDisabled];
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
   _mediator.consumer = _gridViewController;
+  _mediator.delegate = self;
   _gridViewController.mutator = _mediator;
   _gridViewController.itemDataSource = _mediator;
 }
@@ -96,6 +105,18 @@
   _disabledViewController = nil;
   _gridContainerViewController.containedViewController = nil;
   _gridContainerViewController = nil;
+}
+
+#pragma mark - TabGroupsPanelMediatorDelegate
+
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+           openGroupWithSyncID:(const base::Uuid&)syncID {
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tabGroupSyncService->OpenTabGroup(
+      syncID,
+      std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));
 }
 
 @end

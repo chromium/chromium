@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_context_impl.h"
@@ -208,8 +209,14 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
     ContentBrowserTest::TearDown();
   }
 
+  virtual bool EnableCompression() const { return false; }
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+
+    if (!EnableCompression()) {
+      NavigationEntryScreenshot::SetDisableCompressionForTesting(true);
+    }
 
     ASSERT_TRUE(
         base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions));
@@ -221,6 +228,13 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
 
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Explicitly limit the output size as 10% of the logical viewport size.
+    // This prevents the potential out-of-memory issue during the browsertest.
+    // OoM causes the screenshots to be purged from the cache, failing the
+    // tests.
+    NavigationTransitionUtils::SetCapturedScreenshotSizeForTesting(
+        GetScaledViewportSize());
   }
 
   static void ExpectBitmapRowsAreColor(
@@ -265,6 +279,7 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
       NavigationEntryScreenshot* screenshot,
       SkColor color,
       std::optional<gfx::Rect> compare_region = std::nullopt) {
+    ASSERT_FALSE(EnableCompression());
     EXPECT_NE(screenshot, nullptr);
     EXPECT_EQ(screenshot->GetDimensions(), GetScaledViewportSize());
 
@@ -282,8 +297,12 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
       auto* entry = controller.GetEntryAtIndex(index);
       if (expected_screenshots[index].has_value()) {
         auto* screenshot = PreviewScreenshotForEntry(entry);
-        ExpectScreenshotIsColor(screenshot, expected_screenshots[index].value(),
-                                compare_region);
+        if (EnableCompression()) {
+          EXPECT_NE(screenshot, nullptr);
+        } else {
+          ExpectScreenshotIsColor(
+              screenshot, expected_screenshots[index].value(), compare_region);
+        }
       } else {
         EXPECT_EQ(PreviewScreenshotForEntry(entry), nullptr);
       }
@@ -310,7 +329,7 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
         /*scale=*/0.1);
   }
 
-  size_t GetScaledViewportSizeInBytes() {
+  size_t GetUncompressedScreenshotSizeInBytes() {
     // 4 bytes per pixel.
     return 4 * GetScaledViewportSize().Area64();
   }
@@ -381,12 +400,6 @@ class NavigationEntryScreenshotBrowserTest
     ASSERT_EQ(GetManagerForTab(web_contents())->GetCurrentCacheSize(), 0U);
 
     ASSERT_TRUE(web_contents()->GetRenderWidgetHostView());
-    // Explicitly limit the output size as 10% of the logical viewport size.
-    // This prevents the potential out-of-memory issue during the browsertest.
-    // OoM causes the screenshots to be purged from the cache, failing the
-    // tests.
-    NavigationTransitionUtils::SetCapturedScreenshotSizeForTesting(
-        GetScaledViewportSize());
   }
 
   std::string GetNextHost() { return host_getter_->Get(); }
@@ -413,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -538,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 // Testing the back/forward history navigations that span multiple navigation
 // entries.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleEntries) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -595,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleEntries) {
 // gesture (e.g., via the back button).
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        WithoutRemovingScreenshotFromDestinationEntry) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(3 * page_size);
   auto& controller = web_contents()->GetController();
@@ -635,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 // These tabs are within the same profile.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleTabs) {
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -750,7 +763,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleTabs) {
 // from different profiles.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleProfiles) {
   // Max of two screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 2 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -831,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleProfiles) {
 // link-clicking).
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        RendererInitiatedNav) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -851,7 +864,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 
 // Capture for renderer initiated history back navigation via `history.back()`.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, HistoryDotBack) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -889,7 +902,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, HistoryDotBack) {
 // Disabled because flaky. (See b/354018428)
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        DISABLED_AboutBlankCaptured) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -927,7 +940,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, Redirect) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -966,7 +979,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, Redirect) {
 // We don't capture if we simply reload the page.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        Reload_NotCaptured) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -987,7 +1000,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 // capture.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        LocationDotReplace_NotCaptured) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1011,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 // Testing that the navigation with a 204 response won't trigger a capture.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        NavigationTo204_NotCaptured) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1061,7 +1074,7 @@ void AssertScreenshotForPageWithIFrameIs(NavigationEntry* entry,
 // TODO(crbug.com/340929354): Reenable the test.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        DISABLED_SameOriginIFrame_NotCaptured) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1141,7 +1154,7 @@ class NavigationEntryScreenshotBrowserTestWithWebUI
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithWebUI,
                        PrimaryMainFrameNavWebUI) {
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1262,7 +1275,7 @@ class NavigationEntryScreenshotBrowserTestWithPrerender
 
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithPrerender,
                        PrerenderActivation) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1383,7 +1396,7 @@ class SameDocNavigationEntryScreenshotBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(SameDocNavigationEntryScreenshotBrowserTest, Basic) {
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1460,7 +1473,7 @@ using NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest =
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
                        BasicNavigations) {
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1548,7 +1561,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
                        PurgeForMemoryPressure) {
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1600,7 +1613,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
                        CancelAndReinitiateGesture) {
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1647,7 +1660,7 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
                        CCNSMissReason) {
   // Max of three screenshots per Profile (BrowserContext).
-  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(memory_budget);
@@ -1678,5 +1691,89 @@ INSTANTIATE_TEST_SUITE_P(
     NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
     ::testing::ValuesIn(kNavTypes),
     &DescribeNavType);
+
+class NavigationEntryScreenshotCompressionBrowserTest
+    : public NavigationEntryScreenshotBrowserTestBase {
+ public:
+  NavigationEntryScreenshotCompressionBrowserTest() = default;
+  ~NavigationEntryScreenshotCompressionBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kBackForwardTransitions);
+    NavigationEntryScreenshotBrowserTestBase::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    NavigationEntryScreenshotBrowserTestBase::SetUpOnMainThread();
+
+    ASSERT_TRUE(NavigateToURL(web_contents(),
+                              embedded_test_server()->GetURL("/red.html")));
+    WaitForCopyableViewInWebContents(web_contents());
+  }
+
+  bool EnableCompression() const override { return true; }
+
+  GURL GetNextUrl(std::string_view path) const {
+    return embedded_test_server()->GetURL(path);
+  }
+
+  NavigationControllerImpl& controller() {
+    return web_contents()->GetController();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest, Basic) {
+  // Start with only 1 regular screenshot allowed.
+  const size_t screenshot_bytes = GetUncompressedScreenshotSizeInBytes();
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(screenshot_bytes);
+  size_t compressed_screenshot_bytes = 0u;
+
+  {
+    SCOPED_TRACE("[red*] -> [red&, green*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller(),
+                                          GetNextUrl("/green.html"));
+    AssertOrderedScreenshotsAre(controller(), {SK_ColorRED, std::nullopt});
+
+    compressed_screenshot_bytes =
+        NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+            controller(), controller().GetLastCommittedEntryIndex() - 1);
+    EXPECT_GT(compressed_screenshot_bytes, 0u);
+    EXPECT_LT(compressed_screenshot_bytes, screenshot_bytes);
+    ASSERT_EQ(manager->GetCurrentCacheSize(), compressed_screenshot_bytes);
+  }
+
+  // 1 regular and 1 compressed screenshot allowed.
+  manager->SetMemoryBudgetForTesting(screenshot_bytes +
+                                     compressed_screenshot_bytes);
+
+  {
+    SCOPED_TRACE("[red&, green*] -> [red&, green&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller(),
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller(),
+                                {SK_ColorRED, SK_ColorGREEN, std::nullopt});
+    EXPECT_EQ(compressed_screenshot_bytes,
+              NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+                  controller(), controller().GetLastCommittedEntryIndex() - 1));
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 2 * compressed_screenshot_bytes);
+  }
+
+  {
+    SCOPED_TRACE("[red&, green&, blue*] -> [red&, green&, blue&, red*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller(),
+                                          GetNextUrl("/red.html"));
+    AssertOrderedScreenshotsAre(controller(), {std::nullopt, SK_ColorGREEN,
+                                               SK_ColorBLUE, std::nullopt});
+    EXPECT_EQ(compressed_screenshot_bytes,
+              NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+                  controller(), controller().GetLastCommittedEntryIndex() - 1));
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 2 * compressed_screenshot_bytes);
+  }
+}
 
 }  // namespace content

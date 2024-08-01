@@ -695,15 +695,6 @@ void AuthFactorEditor::OnListAuthFactors(
     }
     auto factor = cryptohome::DeserializeAuthFactor(factor_with_status_proto,
                                                     fallback_type);
-    if (factor.ref().type() == cryptohome::AuthFactorType::kPin) {
-      bool locked =
-          factor_with_status_proto.status_info().time_available_in() > 0;
-      cryptohome::PinStatus replacement_status{locked};
-      cryptohome::AuthFactor replacement_factor{
-          factor.ref(), factor.GetCommonMetadata(), factor.GetPinMetadata(),
-          replacement_status};
-      factor = replacement_factor;
-    }
     factor_list.emplace_back(std::move(factor));
   }
   cryptohome::AuthFactorsSet supported_factors;

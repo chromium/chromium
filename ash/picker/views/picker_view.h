@@ -16,6 +16,7 @@
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_submenu_controller.h"
@@ -29,7 +30,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -58,12 +59,13 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                               public PickerSearchResultsViewDelegate,
                               public PickerEmojiBarViewDelegate,
                               public PickerPseudoFocusHandler,
-                              public views::ViewObserver {
+                              public PickerPreviewBubbleController::Observer {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
+                      const gfx::Rect& anchor_bounds,
                       PickerLayoutType layout_type,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
@@ -83,18 +85,21 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
       views::Widget* widget) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void Layout(PassKey) override;
 
   // PickerZeroStateViewDelegate:
   void SelectZeroStateCategory(PickerCategory category) override;
   void SelectZeroStateResult(const PickerSearchResult& result) override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
+  void OnZeroStateViewHeightChanged() override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
   void SelectMoreResults(PickerSectionType type) override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
+  void OnSearchResultsViewHeightChanged() override;
 
   // PickerEmojiBarViewDelegate:
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
@@ -107,8 +112,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   bool MovePseudoFocusRight() override;
   bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override;
 
-  // ViewObserver:
-  void OnViewIsDeleting(View* observed_view) override;
+  // PickerPreviewBubbleController::Observer:
+  void OnPreviewBubbleVisibilityChanged(bool visible) override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
@@ -118,6 +123,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   PickerSubmenuController& submenu_controller_for_testing() {
     return submenu_controller_;
+  }
+  PickerPreviewBubbleController& preview_controller_for_testing() {
+    return preview_controller_;
   }
 
   PickerSearchFieldView& search_field_view_for_testing() {
@@ -184,6 +192,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Sets `page_view` as the active page in `main_container_view_`.
   void SetActivePage(PickerPageView* page_view);
 
+  // Sets emoji bar visibility, or does nothing if the emoji bar is not enabled.
+  void SetEmojiBarVisibleIfEnabled(bool visible);
+
   // Moves pseudo focus between different parts of the PickerView, i.e. between
   // the emoji bar and the main container.
   void AdvanceActiveItemContainer(PickerPseudoFocusDirection direction);
@@ -192,6 +203,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // user actions that trigger `DoPseudoFocusedAction`. If `view` is null,
   // pseudo focus instead moves back to the search field.
   void SetPseudoFocusedView(views::View* view);
+
+  views::View* GetPseudoFocusedView();
 
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
@@ -203,10 +216,15 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Returns true if `view` is contained in a submenu of this PickerView.
   bool IsContainedInSubmenu(views::View* view);
 
+  // Called to indicate that the Picker widget bounds need to be be updated
+  // (e.g. to re-align the Picker search field after results have changed).
+  void SetWidgetBoundsNeedsUpdate();
+
   std::optional<PickerCategory> selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
   PickerSubmenuController submenu_controller_;
+  PickerPreviewBubbleController preview_controller_;
   PickerPerformanceMetrics performance_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
 
@@ -223,9 +241,12 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // to keyboard navigation events.
   raw_ptr<PickerTraversableItemContainer> active_item_container_ = nullptr;
 
-  // The currently pseudo focused view, which responds to user actions that
-  // trigger `DoPseudoFocusedAction`.
-  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
+  // Tracks the currently pseudo focused view, which responds to user actions
+  // that trigger `DoPseudoFocusedAction`.
+  views::ViewTracker pseudo_focused_view_tracker_;
+
+  // If true, the Widget bounds should be adjusted on the next layout.
+  bool widget_bounds_needs_update_ = true;
 
   // Clears `search_results_view_`'s old search results when a new search is
   // started - after `kClearResultsTimeout`, or when the first search results
@@ -234,8 +255,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // have not been published yet.
   base::OneShotTimer clear_results_timer_;
 
-  base::ScopedObservation<views::View, views::ViewObserver>
-      pseudo_focused_view_observation_{this};
+  base::ScopedObservation<PickerPreviewBubbleController,
+                          PickerPreviewBubbleController::Observer>
+      preview_bubble_observation_{this};
 
   base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };

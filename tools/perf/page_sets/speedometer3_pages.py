@@ -3,9 +3,12 @@
 # found in the LICENSE file.
 """Speedometer 3 Web Interaction Benchmark Pages
 """
+import os
 import re
 
+from core import path_util
 from page_sets import press_story
+from telemetry import story
 
 _SPEEDOMETER_SUITES = (
   'TodoMVC-JavaScript-ES5',
@@ -41,6 +44,8 @@ _SPEEDOMETER_SUITES = (
   'React-Stockcharts-SVG',
   'Perf-Dashboard',
 )
+_PAGE_SET_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'tools', 'perf',
+                             'page_sets')
 
 
 class _Speedometer3Story(press_story.PressStory):
@@ -51,12 +56,14 @@ class _Speedometer3Story(press_story.PressStory):
                should_filter_suites,
                filtered_suite_names=None,
                iterations=None,
-               enable_details=False):
+               enable_details=False,
+               take_memory_measurement=False):
     super(_Speedometer3Story, self).__init__(page_set)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
     self._iterations = iterations
     self._enable_details = enable_details
+    self._take_memory_measurement = take_memory_measurement
 
   @staticmethod
   def GetSuites(suite_regex):
@@ -114,6 +121,8 @@ class _Speedometer3Story(press_story.PressStory):
         }
         """)
     action_runner.WaitForJavaScriptCondition('testDone', timeout=900)
+    if self._take_memory_measurement:
+      action_runner.MeasureMemory(deterministic_mode=True)
 
   def ParseTestResults(self, action_runner):
     # Extract the timings for each suite
@@ -149,3 +158,15 @@ class Speedometer30Story(_Speedometer3Story):
 
 class Speedometer3Story(Speedometer30Story):
   NAME = 'Speedometer3'
+
+
+class Speedometer30CrossbenchStory(story.StorySet):
+  NAME = 'speedometer3.crossbench'
+
+  def __init__(self):
+    super().__init__(
+        base_dir=_PAGE_SET_DIR,
+        archive_data_file='data/crossbench_android_speedometer_3.0.json',
+        cloud_storage_bucket=story.PARTNER_BUCKET)
+
+    self.AddStory(_Speedometer3Story(self, should_filter_suites=False))

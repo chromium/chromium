@@ -5362,13 +5362,38 @@ void NavigationRequest::OnStartChecksComplete(
 
   // Try to create the speculative RFH after sending the network request
   // if DeferSpeculativeRFHCreation is enabled.
+  // Only create the speculative RFH if it is a normal loading rather than
+  // a BFCache restore or prerender activation. Otherwise `OnResponseStarted`
+  // will be called instantly and the creation of the speculative RFH is
+  // redundant.
   if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
       GetAssociatedRFHType() == AssociatedRenderFrameHostType::NONE) {
-    auto rfh_creation_result =
-        frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-            this, &browsing_context_group_swap_);
-    if (rfh_creation_result.has_value()) {
-      SetExpectedProcessIfAssociated();
+    if (features::kCreateSpeculativeRFHFilterRestore.Get() &&
+        loader_type != NavigationURLLoader::LoaderType::kRegular) {
+      return;
+    }
+    auto create_speculative_rfh_task = base::BindOnce(
+        [](base::WeakPtr<NavigationRequest> request) {
+          if (!request || request->state_ >= WILL_PROCESS_RESPONSE ||
+              request->HasRenderFrameHost()) {
+            return;
+          }
+          auto rfh_creation_result =
+              request->frame_tree_node_->render_manager()
+                  ->GetFrameHostForNavigation(
+                      request.get(), &request->browsing_context_group_swap_);
+          if (rfh_creation_result.has_value()) {
+            request->SetExpectedProcessIfAssociated();
+          }
+        },
+        weak_factory_.GetWeakPtr());
+    int delay_ms = features::kCreateSpeculativeRFHDelayMs.Get();
+    if (delay_ms > 0) {
+      GetUIThreadTaskRunner()->PostDelayedTask(
+          FROM_HERE, std::move(create_speculative_rfh_task),
+          base::Milliseconds(delay_ms));
+    } else {
+      std::move(create_speculative_rfh_task).Run();
     }
   }
 }
@@ -6221,6 +6246,37 @@ void NavigationRequest::CommitNavigation() {
     fenced_frame_properties_->SetAllowCrossOriginEventReporting();
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesSrcPermissionsPolicy)) {
+    std::optional<url::Origin> mapped_origin;
+    if (fenced_frame_properties_.has_value()) {
+      mapped_origin = url::Origin::Create(
+          fenced_frame_properties_->mapped_url()->GetValueIgnoringVisibility());
+    } else if (frame_tree_node_->HasFencedFrameProperties() &&
+               frame_tree_node_->GetFencedFrameProperties()->mapped_url()) {
+      mapped_origin =
+          url::Origin::Create(frame_tree_node_->GetFencedFrameProperties()
+                                  ->mapped_url()
+                                  ->GetValueIgnoringVisibility());
+    }
+
+    // Container policy allowlists are first calculated by the embedder where
+    // origin of the fenced frame is opaque. Now that the mapped URL is known,
+    // update the container policy allowlists so that any allowlist with
+    // "matches_opaque_src=true" points to the final mapped origin. This will be
+    // the container policy that is sent to the inner root to construct the
+    // final permissions policy.
+    if (mapped_origin.has_value()) {
+      for (auto& declaration : commit_params_->frame_policy.container_policy) {
+        if (declaration.matches_opaque_src) {
+          CHECK(!declaration.self_if_matches.has_value());
+          declaration.matches_opaque_src = false;
+          declaration.self_if_matches = mapped_origin.value();
+        }
+      }
+    }
+  }
+
   // Create a view of the fenced frame properties from the perspective of the
   // fenced frame content, which will be sent to its renderer.
   // On each navigation commit within the fenced frame tree:
@@ -6527,6 +6583,16 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
     bool is_first_response) {
   base::TimeTicks loader_callback_time = base::TimeTicks::Now();
 
+  const base::TimeDelta domain_lookup_delay =
+      response_head_->load_timing.connect_timing.domain_lookup_end -
+      response_head_->load_timing.connect_timing.domain_lookup_start;
+  const base::TimeDelta connect_delay =
+      response_head_->load_timing.connect_timing.connect_end -
+      response_head_->load_timing.connect_timing.connect_start;
+  const base::TimeDelta ssl_delay =
+      response_head_->load_timing.connect_timing.ssl_end -
+      response_head_->load_timing.connect_timing.ssl_start;
+
   if (is_first_response) {
     DCHECK(navigation_handle_timing_.first_request_start_time.is_null());
     DCHECK(navigation_handle_timing_.first_response_start_time.is_null());
@@ -6536,6 +6602,12 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
     navigation_handle_timing_.first_response_start_time =
         response_head_->load_timing.receive_headers_start;
     navigation_handle_timing_.first_loader_callback_time = loader_callback_time;
+
+    navigation_handle_timing_.first_request_domain_lookup_delay =
+        domain_lookup_delay;
+    navigation_handle_timing_.first_request_connect_delay = connect_delay;
+    navigation_handle_timing_.first_request_ssl_delay = ssl_delay;
+
     first_fetch_start_time_ = response_head_->request_start;
   }
 
@@ -6555,6 +6627,10 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   navigation_handle_timing_.final_non_informational_response_start_time =
       response_head_->load_timing.receive_non_informational_headers_start;
   navigation_handle_timing_.final_loader_callback_time = loader_callback_time;
+  navigation_handle_timing_.final_request_domain_lookup_delay =
+      domain_lookup_delay;
+  navigation_handle_timing_.final_request_connect_delay = connect_delay;
+  navigation_handle_timing_.final_request_ssl_delay = ssl_delay;
   final_receive_headers_end_time_ =
       response_head_->load_timing.receive_headers_end;
 
@@ -7606,6 +7682,9 @@ void NavigationRequest::DidCommitNavigation(
   common_params_->url = params.url;
   did_replace_entry_ = did_replace_entry;
   should_update_history_ = params.should_update_history;
+  navigation_handle_timing_.navigation_commit_received_time =
+      params.commit_navigation_start;
+  navigation_handle_timing_.navigation_did_commit_time = base::TimeTicks::Now();
   // A same document navigation with the same url, and no user-gesture is
   // typically the result of 'history.replaceState().' As the page is
   // controlling this, the user doesn't really think of this as a navigation
@@ -9057,10 +9136,7 @@ network::CrossOriginEmbedderPolicy
 NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   const auto& url = common_params_->url;
   // Fenced Frames should respect the outer frame's COEP.
-  RenderFrameHostImpl* const parent =
-      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
-          ? GetParentFrameOrOuterDocument()
-          : GetParentFrame();
+  RenderFrameHostImpl* const parent = GetParentFrameOrOuterDocument();
   bool is_fenced_frame_from_local_scheme =
       GetNavigatingFrameType() == FrameType::kFencedFrameRoot &&
       (url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme));
@@ -9118,10 +9194,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
       policy_container_builder_->FinalPolicies().cross_origin_embedder_policy;
 
   // Fenced Frames should respect the outer frame's COEP.
-  RenderFrameHostImpl* const parent =
-      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
-          ? GetParentFrameOrOuterDocument()
-          : GetParentFrame();
+  RenderFrameHostImpl* const parent = GetParentFrameOrOuterDocument();
 
   // [spec]: 1. If target is not a child browsing context, then return true.
   if (!parent)
@@ -9169,10 +9242,7 @@ NavigationRequest::EnforceCOEP() {
   // https://github.com/shivanigithub/fenced-frame/issues/11
 
   // Fenced frames should be treated as an embedded frame, thus COEP must apply.
-  RenderFrameHostImpl* const parent_frame =
-      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
-          ? GetParentFrameOrOuterDocument()
-          : GetParentFrame();
+  RenderFrameHostImpl* const parent_frame = GetParentFrameOrOuterDocument();
   if (!parent_frame) {
     return std::nullopt;
   }

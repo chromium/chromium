@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Closing a FileSystemWritableFileStream that's modified the file produces a "modified" event
+  assert_equals: A record's type didn't match the expected type expected "modified" but got "appeared"
+Harness: the test ran to completion.
+

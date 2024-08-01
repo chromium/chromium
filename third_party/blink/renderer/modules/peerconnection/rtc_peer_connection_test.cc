@@ -373,4 +373,13 @@ TEST_F(RTCPeerConnectionTest, MediaStreamTrackStopsThrottling) {
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 }
 
+TEST_F(RTCPeerConnectionTest, GettingRtpTransportEarlyFails) {
+  V8TestingScope scope;
+
+  RTCPeerConnection* pc = CreatePC(scope);
+  EXPECT_EQ(pc->rtpTransport(scope.GetExceptionState()), nullptr);
+  EXPECT_EQ("NetworkController not yet created. Try again later...",
+            GetExceptionMessage(scope));
+}
+
 }  // namespace blink

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src=resources/third-party-script-test-utils.js></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+  third_party_script_test(
+    'script-execution',
+    'https://elementor.com/wp-content/plugins/elementor/assets/lib/swiper/v8/swiper.min.js',
+    1 << 14 /*Technology::kElementor*/);
+</script>

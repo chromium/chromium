@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("boca") {
+  sources = [
+    "boca_app_client_impl.cc",
+    "boca_app_client_impl.h",
+    "boca_manager.cc",
+    "boca_manager.h",
+    "boca_manager_factory.cc",
+    "boca_manager_factory.h",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/webui/boca_ui",
+    "//base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
+  ]
+}

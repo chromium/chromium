@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefChangeRegistrar;
@@ -29,7 +29,7 @@ class MediaRouterUIService : public KeyedService {
   // Used by tests to inject an action controller.
   MediaRouterUIService(
       Profile* profile,
-      std::unique_ptr<MediaRouterActionController> action_controller);
+      std::unique_ptr<CastToolbarButtonController> action_controller);
 
   MediaRouterUIService(const MediaRouterUIService&) = delete;
   MediaRouterUIService& operator=(const MediaRouterUIService&) = delete;
@@ -41,7 +41,7 @@ class MediaRouterUIService : public KeyedService {
 
   static MediaRouterUIService* Get(Profile* profile);
 
-  virtual MediaRouterActionController* action_controller();
+  virtual CastToolbarButtonController* action_controller();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -53,7 +53,7 @@ class MediaRouterUIService : public KeyedService {
   void DisableService();
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<MediaRouterActionController> action_controller_;
+  std::unique_ptr<CastToolbarButtonController> action_controller_;
   std::unique_ptr<PrefChangeRegistrar> profile_pref_registrar_;
 
   base::ObserverList<Observer>::Unchecked observers_;

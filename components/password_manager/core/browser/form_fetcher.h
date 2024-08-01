@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/observer_list_types.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 
@@ -98,6 +99,15 @@ class FormFetcher {
   // Pointer to a preferred entry in the vector returned by GetBestMatches().
   virtual const PasswordForm* GetPreferredMatch() const = 0;
 
+  // If prefferred match exists, returns its form type. Please note, that
+  // `FormFetcher` ignored grouped credentials by default. However, if any
+  // grouped credentials are available, this function will return the form type
+  // of the potential grouped credential. `GetPreferredMatch` will still return
+  // `nullptr` in this case.
+  // Returns `std::nullopt` if no credentials were available.
+  virtual std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+  GetPreferredOrPotentialMatchedFormType() const = 0;
+
   // Creates a copy of |*this| with contains the same credentials without the
   // need for calling Fetch().
   virtual std::unique_ptr<FormFetcher> Clone() = 0;
@@ -111,9 +121,6 @@ class FormFetcher {
   // account store.
   virtual std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const = 0;
-
-  // Returns if grouped credentials were fetched but were ignored.
-  virtual bool WereGroupedCredentialsAvailable() const = 0;
 };
 
 }  // namespace password_manager

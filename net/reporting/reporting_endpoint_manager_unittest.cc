@@ -51,7 +51,10 @@ class TestReportingCache : public ReportingCache {
 
   std::vector<ReportingEndpoint> GetCandidateEndpointsForDelivery(
       const ReportingEndpointGroupKey& group_key) override {
-    EXPECT_EQ(expected_origin_, group_key.origin);
+    // Enterprise endpoints don't have an origin.
+    if (group_key.target_type == ReportingTargetType::kDeveloper) {
+      EXPECT_EQ(expected_origin_, group_key.origin);
+    }
     EXPECT_EQ(expected_group_, group_key.group_name);
     return reporting_endpoints_[group_key.network_anonymization_key];
   }
@@ -161,6 +164,10 @@ class TestReportingCache : public ReportingCache {
       std::vector<ReportingEndpoint> endpoints) override {
     NOTREACHED_IN_MIGRATION();
   }
+  void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) override {
+    NOTREACHED_NORETURN();
+  }
   std::set<url::Origin> GetAllOrigins() const override {
     NOTREACHED_IN_MIGRATION();
     return std::set<url::Origin>();
@@ -210,6 +217,10 @@ class TestReportingCache : public ReportingCache {
       const GURL& url) const override {
     NOTREACHED_IN_MIGRATION();
     return ReportingEndpoint();
+  }
+  std::vector<ReportingEndpoint> GetEnterpriseEndpointsForTesting()
+      const override {
+    NOTREACHED_NORETURN();
   }
   bool EndpointGroupExistsForTesting(const ReportingEndpointGroupKey& group_key,
                                      OriginSubdomains include_subdomains,
@@ -324,7 +335,7 @@ class ReportingEndpointManagerTest : public testing::Test {
                                 ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kEnterpriseGroupKey =
       ReportingEndpointGroupKey(kNak,
-                                kOrigin,
+                                /*origin=*/std::nullopt,
                                 kGroup,
                                 ReportingTargetType::kEnterprise);
   const GURL kEndpoint = GURL("https://endpoint/");

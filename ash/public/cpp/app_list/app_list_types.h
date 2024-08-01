@@ -580,25 +580,11 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   std::optional<std::u16string> extra_details;
 };
 
-// Data required for showing file info.
-struct ASH_PUBLIC_EXPORT FileMetadata {
-  FileMetadata();
-  FileMetadata(const FileMetadata&);
-  FileMetadata& operator=(const FileMetadata&);
-  ~FileMetadata();
-
-  base::File::Info file_info;
-  base::FilePath file_path;
-  base::FilePath file_name;
-  // The folder path that is formatted for display.
-  base::FilePath displayable_folder_path;
-};
-
 class ASH_PUBLIC_EXPORT FileMetadataLoader {
  public:
-  using MetadataLoaderCallback = base::RepeatingCallback<ash::FileMetadata()>;
+  using MetadataLoaderCallback = base::RepeatingCallback<base::File::Info()>;
   using OnMetadataLoadedCallback =
-      base::RepeatingCallback<void(ash::FileMetadata)>;
+      base::RepeatingCallback<void(base::File::Info)>;
 
   FileMetadataLoader();
   FileMetadataLoader(const FileMetadataLoader&);
@@ -861,6 +847,11 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // The file path for this search result. This is set only if the search result
   // is a file.
   base::FilePath file_path;
+
+  // The file path to display to the user as obtained from
+  // `file_manager::util::GetDisplayablePath`. This is set only if the search
+  // result is a file.
+  base::FilePath displayable_file_path;
 
   // Details for file type results.
   FileMetadataLoader file_metadata_loader;

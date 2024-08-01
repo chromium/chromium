@@ -22,6 +22,7 @@ source_set("browser") {
     "//base",
     "//components/keyed_service/core",
     "//components/language/ios/browser",
+    "//components/language_detection/core:language_detection",
     "//components/prefs",
     "//components/translate/core/browser",
     "//components/translate/core/browser:translate_model_service",

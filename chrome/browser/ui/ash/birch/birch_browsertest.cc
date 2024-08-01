@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -117,7 +118,7 @@ class TestFileSuggestProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchFileItem> items;
-    items.emplace_back(base::FilePath("test-path"), u"suggestion",
+    items.emplace_back(base::FilePath("test-path"), "title", u"suggestion",
                        base::Time::Now() - base::Minutes(30), "file_id",
                        "icon_url");
     Shell::Get()->birch_model()->SetFileSuggestItems(std::move(items));
@@ -185,7 +186,7 @@ class TestSelfShareProvider : public BirchDataProvider {
     std::vector<BirchSelfShareItem> items;
     items.emplace_back(u"guid", u"tab", GURL("http://example.com/"),
                        base::Time::Now(), u"my device", ui::ImageModel(),
-                       base::DoNothing());
+                       SecondaryIconType::kTabFromPhone, base::DoNothing());
     Shell::Get()->birch_model()->SetSelfShareItems(std::move(items));
   }
 };
@@ -199,7 +200,7 @@ class TestLostMediaProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchLostMediaItem> items;
     items.emplace_back(GURL("https://www.source.com"), u"media title", false,
-                       ui::ImageModel(),
+                       ui::ImageModel(), SecondaryIconType::kLostMediaVideo,
                        base::BindRepeating(&TestLostMediaProvider::OnActivation,
                                            weak_factory_.GetWeakPtr()));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));

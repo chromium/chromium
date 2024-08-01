@@ -162,6 +162,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
+#include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -306,6 +307,7 @@
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -409,13 +411,15 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/platform_auth/platform_auth_navigation_throttle.h"
+#endif
 #if BUILDFLAG(IS_WIN)
 #include "base/files/file_util.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/chrome_browser_main_win.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_navigation_throttle.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -437,7 +441,9 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
@@ -3050,7 +3056,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     if (const auto* heap_profiler_controller =
             heap_profiling::HeapProfilerController::GetInstance()) {
       heap_profiler_controller->AppendCommandLineSwitchForChildProcess(
-          command_line, GetProfileParamsProcess(*command_line),
+          command_line, GetProfilerProcessType(*command_line),
           child_process_id);
     }
   }
@@ -3926,6 +3932,7 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   if (force_light) {
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kLight;
+#if !BUILDFLAG(IS_ANDROID)
   } else if (content::HasWebUIScheme(url)) {
     // If color scheme is not forced, WebUI should track the color mode of the
     // ColorProvider associated with `web_contents`.
@@ -3933,6 +3940,7 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
         web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
             ? blink::mojom::PreferredColorScheme::kLight
             : blink::mojom::PreferredColorScheme::kDark;
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;
@@ -5407,9 +5415,16 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(handle),
       &throttles);
 
-  MaybeAddThrottle(
-      SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
-      &throttles);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClassifyUrlOnProcessResponseEvent)) {
+    MaybeAddThrottle(
+        supervised_user::MaybeCreateClassifyUrlNavigationThrottleFor(handle),
+        &throttles);
+  } else {
+    MaybeAddThrottle(
+        SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
+        &throttles);
+  }
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::
@@ -5632,7 +5647,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
                      &throttles);
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Don't perform platform authentication in incognito and guest profiles.
   if (profile && !profile->IsOffTheRecord()) {
     MaybeAddThrottle(
@@ -5640,7 +5655,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
             handle),
         &throttles);
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b:296844164) Handle captive portal signin properly.
@@ -6380,6 +6395,14 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
 
   if (url.DomainIs(chrome::kChromeUIUntrustedTerminalHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kTerminal);
+  }
+
+  if (url.DomainIs(ash::kChromeUIPrintManagementHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kPrintJobs);
+  }
+
+  if (url.DomainIs(ash::kChromeUIShortcutCustomizationAppHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kKeyShortcuts);
   }
 
 #endif
@@ -7149,6 +7172,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
                                  chrome::kChromeUIHelpHost);
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2) &&
+      url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kChromeUICertificateRedirectPath) {
+    *url = GURL(chrome::kChromeUICertificateManagerDialogURL);
+    return true;
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* tracking_protection_settings =
@@ -7256,16 +7289,15 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40258836): Remove this after feature is launched.
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   // No need to actually reverse-rewrite the URL, but return true to update the
-  // displayed URL when rewriting chrome://settings/passwords to
-  // chrome://password-manager.
+  // displayed URL when rewriting chrome://settings/certificates to
+  // chrome://certificate-manager
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->DomainIs(password_manager::kChromeUIPasswordManagerHost)) {
+      url->host() == chrome::kChromeUICertificateManagerHost) {
     return true;
   }
-#endif
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.
@@ -8155,13 +8187,9 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 }
 
 bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   return !is_minimal_mode_ &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableComponentUpdate);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr

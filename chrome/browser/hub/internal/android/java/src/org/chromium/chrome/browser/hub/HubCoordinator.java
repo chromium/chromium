@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -170,6 +171,17 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     @Override
     public View getPaneButton(@PaneId int paneId) {
         return mHubToolbarCoordinator.getPaneButton(paneId);
+    }
+
+    @Nullable
+    @Override
+    public View getFloatingActionButton() {
+        return mHubPaneHostCoordinator.getFloatingActionButton();
+    }
+
+    /** Returns the view group to contain the snackbar. */
+    public ViewGroup getSnackbarContainer() {
+        return mHubPaneHostCoordinator.getSnackbarContainer();
     }
 
     private @Nullable Pane getFocusedPane() {

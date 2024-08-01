@@ -116,14 +116,13 @@ TEST_F(SyncStoppedReporterTest, FetcherConfiguration) {
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
 
   // Ensure the headers are set correctly.
-  std::string header;
-  intercepted_headers.GetHeader(net::HttpRequestHeaders::kAuthorization,
-                                &header);
-  std::string auth_header(kAuthHeaderPrefix);
-  auth_header.append(kAuthToken);
-  EXPECT_EQ(auth_header, header);
-  intercepted_headers.GetHeader(net::HttpRequestHeaders::kUserAgent, &header);
-  EXPECT_EQ(user_agent(), header);
+  EXPECT_EQ(
+      base::StrCat({kAuthHeaderPrefix, kAuthToken}),
+      intercepted_headers.GetHeader(net::HttpRequestHeaders::kAuthorization)
+          .value_or(std::string()));
+  EXPECT_EQ(user_agent(),
+            intercepted_headers.GetHeader(net::HttpRequestHeaders::kUserAgent)
+                .value_or(std::string()));
 
   sync_pb::EventRequest event_request;
   event_request.ParseFromString(intercepted_body);

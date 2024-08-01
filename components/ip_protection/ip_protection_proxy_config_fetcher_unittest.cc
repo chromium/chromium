@@ -71,8 +71,8 @@ class IpProtectionProxyConfigFetcherTest : public testing::Test {
   IpProtectionProxyConfigFetcherTest() {}
 
   void SetUp() override {
-    geo_hint_ = network::mojom::GeoHint::New("US", "US-AL", "ALABASTER");
-
+    geo_hint_ = {
+        .country_code = "US", .iso_region = "US-AL", .city_name = "ALABASTER"};
     fetcher_ = std::make_unique<IpProtectionProxyConfigFetcher>(
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
         kServiceType, kApiKey);
@@ -83,11 +83,11 @@ class IpProtectionProxyConfigFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher_;
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         network::mojom::GeoHintPtr>
+                         const std::optional<network::GeoHint>&>
       proxy_list_future_;
 
   // A convenient geo hint for fake tokens.
-  network::mojom::GeoHintPtr geo_hint_;
+  network::GeoHint geo_hint_;
 };
 
 TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
@@ -101,9 +101,9 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
   chain->set_proxy_b("proxy2b");
   chain->set_chain_id(2);
 
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
   fetcher_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
@@ -126,7 +126,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyChains) {
   EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
 
   ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
+  EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
 TEST_F(IpProtectionProxyConfigFetcherTest,
@@ -143,9 +143,9 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   chain->set_proxy_b("proxy4:443");
   chain->set_chain_id(3);
 
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
   fetcher_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
@@ -176,8 +176,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
   EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
 
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
+  ASSERT_TRUE(geo_hint);  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
 TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyInvalid) {
@@ -189,9 +189,9 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyInvalid) {
   chain->set_proxy_a("valid");
   chain->set_proxy_b("valid");
 
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
   fetcher_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
@@ -210,8 +210,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest, CallGetProxyConfigProxyInvalid) {
   ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
   EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
 
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
+  ASSERT_TRUE(geo_hint);  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
 TEST_F(IpProtectionProxyConfigFetcherTest,
@@ -222,9 +222,9 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   chain->set_proxy_b("proxyb");
   chain->set_chain_id(999);
 
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
+  response.mutable_geo_hint()->set_country_code(geo_hint_.country_code);
+  response.mutable_geo_hint()->set_iso_region(geo_hint_.iso_region);
+  response.mutable_geo_hint()->set_city_name(geo_hint_.city_name);
 
   fetcher_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response));
@@ -245,8 +245,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
   EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
 
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
+  ASSERT_TRUE(geo_hint);  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
 TEST_F(IpProtectionProxyConfigFetcherTest,
@@ -279,7 +279,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
                                                           2)};
 
   // Country level geo only.
-  auto exp_geo_hint = network::mojom::GeoHint::New("US", "", "");
+  network::GeoHint exp_geo_hint;
+  exp_geo_hint.country_code = "US";
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
@@ -287,8 +288,8 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
   EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
 
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*exp_geo_hint));
+  ASSERT_TRUE(geo_hint);  // Check that GeoHint is not null.
+  EXPECT_TRUE(geo_hint == exp_geo_hint);
 }
 
 TEST_F(IpProtectionProxyConfigFetcherTest,
@@ -318,7 +319,7 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
 
   // A failure means both of these values will be null.
   EXPECT_EQ(proxy_list, std::nullopt);
-  EXPECT_TRUE(geo_hint.is_null());
+  EXPECT_FALSE(geo_hint.has_value());
 }
 
 }  // namespace ip_protection

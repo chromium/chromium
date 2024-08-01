@@ -258,11 +258,11 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesActions) {
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
                   IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-              AccessoryAction::CREATE_PLUS_ADDRESS)
+              AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
                   IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
-              AccessoryAction::SELECT_PLUS_ADDRESS)
+              AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
           .Build());
 }
 
@@ -284,7 +284,8 @@ TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
               ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                mojom::ActionPersistence::kFill, field_id,
                                base::UTF8ToUTF16(plus_address)));
-  controller()->OnOptionSelected(AccessoryAction::CREATE_PLUS_ADDRESS);
+  controller()->OnOptionSelected(
+      AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
 }
 
 }  // namespace autofill

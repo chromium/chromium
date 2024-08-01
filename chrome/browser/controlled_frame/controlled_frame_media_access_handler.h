@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_CONTROLLED_FRAME_CONTROLLED_FRAME_MEDIA_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_CONTROLLED_FRAME_CONTROLLED_FRAME_MEDIA_ACCESS_HANDLER_H_
 
+#include <map>
+#include <set>
+
 #include "chrome/browser/media/media_access_handler.h"
 
 namespace content {
@@ -14,6 +17,7 @@ class WebContents;
 
 namespace extensions {
 class Extension;
+class WebViewGuest;
 }  // namespace extensions
 
 namespace url {
@@ -52,12 +56,11 @@ class ControlledFrameMediaAccessHandler : public MediaAccessHandler {
                      const extensions::Extension* extension) override;
 
  private:
-  bool IsPermissionAllowed(content::RenderFrameHost* embedder_rfh,
-                           const url::Origin& request_origin,
-                           blink::mojom::MediaStreamType type);
+  bool IsAllowedByPermissionsPolicy(extensions::WebViewGuest* web_view,
+                                    const url::Origin& requesting_origin,
+                                    blink::mojom::MediaStreamType type);
 
-  std::map<url::Origin, std::vector<PendingMediaAccessRequestDetails>>
-      pending_requests_;
+  std::map<url::Origin, std::set<url::Origin>> requests_;
 };
 
 }  // namespace controlled_frame

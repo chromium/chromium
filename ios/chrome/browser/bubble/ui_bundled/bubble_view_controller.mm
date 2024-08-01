@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/common/material_timing.h"
 
 namespace {
@@ -36,11 +37,11 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
       break;
     case BubbleViewTypeRich:
       show_title = YES;
-      show_image = YES;
+      show_image = !IsRichBubbleWithoutImageEnabled();
       break;
     case BubbleViewTypeRichWithSnooze:
       show_title = YES;
-      show_image = YES;
+      show_image = !IsRichBubbleWithoutImageEnabled();
       show_snooze_button = YES;
       break;
   }

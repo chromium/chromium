@@ -93,12 +93,10 @@ class BASE_EXPORT SamplingHeapProfiler
   // List of strings used in the profile call stacks.
   std::vector<const char*> GetStrings();
 
-  // Captures up to |max_entries| stack frames using the buffer pointed by
-  // |frames|. Puts the number of captured frames into the |count| output
-  // parameters. Returns the pointer to the topmost frame.
-  const void** CaptureStackTrace(const void** frames,
-                                 size_t max_entries,
-                                 size_t* count);
+  // Captures stack `frames`, up to as many as the size of the `frames` span.
+  // Returns a subspan of `frames` holding the captured frames. The top-most
+  // frame is at the front of the returned span.
+  span<const void*> CaptureStackTrace(span<const void*> frames);
 
   static void Init();
   static SamplingHeapProfiler* Get();

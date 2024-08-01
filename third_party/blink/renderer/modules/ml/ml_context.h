@@ -16,9 +16,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -44,10 +42,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
  public:
   MLContext(
       ExecutionContext* execution_context,
-      const V8MLDevicePreference device_preference,
       const V8MLDeviceType device_type,
       const V8MLPowerPreference power_preference,
-      const V8MLModelFormat model_format,
       const unsigned int num_threads,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
@@ -56,10 +52,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   ~MLContext() override;
 
-  V8MLDevicePreference GetDevicePreference() const;
   V8MLDeviceType GetDeviceType() const;
   V8MLPowerPreference GetPowerPreference() const;
-  V8MLModelFormat GetModelFormat() const;
   unsigned int GetNumThreads() const;
 
   const webnn::ContextProperties& GetProperties() { return properties_; }
@@ -77,9 +71,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                          const MLNamedArrayBufferViews& outputs,
                                          ExceptionState& exception_state);
 
-  MLBuffer* createBuffer(ScriptState* script_state,
-                         const MLBufferDescriptor* descriptor,
-                         ExceptionState& exception_state);
+  ScriptPromise<MLBuffer> createBuffer(ScriptState* script_state,
+                                       const MLBufferDescriptor* descriptor,
+                                       ExceptionState& exception_state);
 
   // Writes data specified by array buffer view from offset in elements.
   void writeBuffer(ScriptState* script_state,
@@ -122,16 +116,16 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                 const MLNamedBuffers& outputs,
                 ExceptionState& exception_state);
 
-  // Creates a platform-specific compute graph described by `graph_info`.
-  void CreateWebNNGraph(
-      webnn::mojom::blink::GraphInfoPtr graph_info,
-      webnn::mojom::blink::WebNNContext::CreateGraphCallback callback);
+  void CreateWebNNGraphBuilder(
+      mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNGraphBuilder>
+          pending_receiver,
+      ExceptionState& exception_state);
 
   // Creates platform specific buffer described by `buffer_info`.
-  void CreateWebNNBuffer(mojo::PendingAssociatedReceiver<
-                             webnn::mojom::blink::WebNNBuffer> receiver,
-                         webnn::mojom::blink::BufferInfoPtr buffer_info,
-                         const base::UnguessableToken& buffer_handle);
+  void CreateWebNNBuffer(
+      webnn::mojom::blink::BufferInfoPtr buffer_info,
+      webnn::mojom::blink::WebNNContext::CreateBufferCallback callback);
+
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
 
  private:
@@ -154,10 +148,13 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                         std::optional<uint64_t> src_element_count,
                         ExceptionState& exception_state);
 
-  V8MLDevicePreference device_preference_;
+  void DidCreateWebNNBuffer(ScopedMLTrace scoped_trace,
+                            ScriptPromiseResolver<blink::MLBuffer>* resolver,
+                            webnn::OperandDescriptor validated_descriptor,
+                            webnn::mojom::blink::CreateBufferResultPtr result);
+
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;
-  V8MLModelFormat model_format_;
   unsigned int num_threads_;
 
   Member<LostProperty> lost_property_;

@@ -111,10 +111,10 @@ TEST(NetLogUtil, GetNetInfoIncludesDisabledDohProviders) {
 
     // Enable or disable the provider's feature according to `provider_enabled`.
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(provider_entry.feature,
+    scoped_feature_list.InitWithFeatureState(provider_entry.feature.get(),
                                              provider_enabled);
     EXPECT_EQ(provider_enabled,
-              base::FeatureList::IsEnabled(provider_entry.feature));
+              base::FeatureList::IsEnabled(provider_entry.feature.get()));
 
     // Verify that the provider is present in the list of disabled providers iff
     // we disabled it.

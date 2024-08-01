@@ -31,7 +31,7 @@
 #include "url/url_util.h"
 
 // Proprietary codecs require acceleration on Android.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #define REQUIRE_ACCELERATION_ON_ANDROID() \
   if (!is_accelerated())                  \
   return
@@ -53,6 +53,8 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 
   std::vector<base::test::FeatureRef> enabled_features = {
+    media::kBuiltInH264Decoder,
+
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
@@ -387,16 +389,19 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit) {
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
 // Android devices usually only support baseline, main and high.
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
   PlayVideo("bear-320x180-hi10p.mp4");
 }
 
+#endif
+
 // Android can't reliably load lots of videos on a page.
 // See http://crbug.com/749265
 // TODO(crbug.com/40774322): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_LoadManyVideos DISABLED_LoadManyVideos
 #else
 #define MAYBE_LoadManyVideos LoadManyVideos
@@ -409,8 +414,6 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_LoadManyVideos) {
   RunMediaTestPage("load_many_videos.html", query_params, media::kEndedTitle,
                    true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {

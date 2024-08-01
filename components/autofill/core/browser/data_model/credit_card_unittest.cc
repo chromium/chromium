@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/validation.h"
@@ -471,7 +471,7 @@ TEST(CreditCardTest, GetMetadata) {
   local_card.set_use_count(2);
   local_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
   local_card.set_billing_address_id("123");
-  AutofillMetadata local_metadata = local_card.GetMetadata();
+  PaymentsMetadata local_metadata = local_card.GetMetadata();
   EXPECT_EQ(local_card.guid(), local_metadata.id);
   EXPECT_EQ(local_card.billing_address_id(), local_metadata.billing_address_id);
   EXPECT_EQ(local_card.use_count(), local_metadata.use_count);
@@ -481,7 +481,7 @@ TEST(CreditCardTest, GetMetadata) {
   masked_card.set_use_count(4);
   masked_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(50));
   masked_card.set_billing_address_id("abc");
-  AutofillMetadata masked_metadata = masked_card.GetMetadata();
+  PaymentsMetadata masked_metadata = masked_card.GetMetadata();
   EXPECT_EQ(masked_card.server_id(), masked_metadata.id);
   EXPECT_EQ(masked_card.billing_address_id(),
             masked_metadata.billing_address_id);
@@ -492,7 +492,7 @@ TEST(CreditCardTest, GetMetadata) {
   full_card.set_use_count(6);
   full_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(100));
   full_card.set_billing_address_id("xyz");
-  AutofillMetadata full_metadata = full_card.GetMetadata();
+  PaymentsMetadata full_metadata = full_card.GetMetadata();
   EXPECT_EQ(full_card.server_id(), full_metadata.id);
   EXPECT_EQ(full_card.billing_address_id(), full_metadata.billing_address_id);
   EXPECT_EQ(full_card.use_count(), full_metadata.use_count);
@@ -501,7 +501,7 @@ TEST(CreditCardTest, GetMetadata) {
 
 TEST(CreditCardTest, SetMetadata_MatchingId) {
   CreditCard local_card = test::GetCreditCard();
-  AutofillMetadata local_metadata;
+  PaymentsMetadata local_metadata;
   local_metadata.id = local_card.guid();
   local_metadata.use_count = 100;
   local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -513,7 +513,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_EQ(local_metadata.use_date, local_card.use_date());
 
   CreditCard masked_card = test::GetMaskedServerCard();
-  AutofillMetadata masked_metadata;
+  PaymentsMetadata masked_metadata;
   masked_metadata.id = masked_card.server_id();
   masked_metadata.use_count = 100;
   masked_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -526,7 +526,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_EQ(masked_metadata.use_date, masked_card.use_date());
 
   CreditCard full_card = test::GetFullServerCard();
-  AutofillMetadata full_metadata;
+  PaymentsMetadata full_metadata;
   full_metadata.id = full_card.server_id();
   full_metadata.use_count = 100;
   full_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -540,7 +540,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
 
 TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   CreditCard local_card = test::GetCreditCard();
-  AutofillMetadata local_metadata;
+  PaymentsMetadata local_metadata;
   local_metadata.id = "WrongId";
   local_metadata.use_count = 100;
   local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -552,7 +552,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(local_metadata.use_date, local_card.use_date());
 
   CreditCard masked_card = test::GetMaskedServerCard();
-  AutofillMetadata masked_metadata;
+  PaymentsMetadata masked_metadata;
   masked_metadata.id = "WrongId";
   masked_metadata.use_count = 100;
   masked_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -565,7 +565,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(masked_metadata.use_date, masked_card.use_date());
 
   CreditCard full_card = test::GetFullServerCard();
-  AutofillMetadata full_metadata;
+  PaymentsMetadata full_metadata;
   full_metadata.id = "WrongId";
   full_metadata.use_count = 100;
   full_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);

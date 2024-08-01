@@ -33,7 +33,7 @@ sys.exit(
             # files show up *after* the 'ukm' files (in order for the histograms
             # directory to be added to sys.path *before* ukm), and that we run
             # the tests in a single process (jobs=1, below).
-            'ukm/codegen_test.py',
+            'common/codegen_shared_test.py',
             'ukm/gen_builders_test.py',
             'ukm/ukm_model_test.py',
             'ukm/xml_validations_test.py',

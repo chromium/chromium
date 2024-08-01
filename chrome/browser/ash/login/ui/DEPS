@@ -18,6 +18,7 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/attestation",
+  "+chrome/browser/ash/auth",
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/boot_times_recorder.h",
   "+chrome/browser/ash/customization",

@@ -26,6 +26,21 @@ namespace {
 BrowserSupport* g_instance = nullptr;
 std::optional<bool> g_cpu_supported_override_ = std::nullopt;
 
+// Returns true if Lacros is enabled for testing. This is a replacement for
+// `features::kLacrosOnly` during the in-between phase where users should not be
+// able to enable Lacros but developers should for debugging. This function
+// returning true alone does not guarantee that Lacros is actually enabled and
+// other conditions such as whether Lacros is allowed to be enabled i.e.
+// `standalone_browser::BrowserSupport::IsAllowed()` still apply.
+bool IsLacrosEnabledForTesting() {
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (!cmdline) {
+    return false;
+  }
+
+  return cmdline->HasSwitch(ash::switches::kEnableLacrosForTesting);
+}
+
 // Returns true if `kDisallowLacros` is set by command line.
 bool IsLacrosDisallowedByCommand() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
@@ -121,7 +136,8 @@ bool IsEnabledInternal(const user_manager::User* user,
       return true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kLacrosOnly)) {
+  if (base::FeatureList::IsEnabled(features::kLacrosOnly) ||
+      IsLacrosEnabledForTesting()) {
     return true;
   }
 

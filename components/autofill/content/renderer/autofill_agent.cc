@@ -238,6 +238,45 @@ bool ShowPredictions(const WebDocument& document,
           base::NumberToString(field.rank_in_host_form_signature_group),
       });
 
+      if (features::test::kAutofillShowTypePredictionsVerboseParam.Get()) {
+        std::u16string truncated_aria_label =
+            field_data.aria_label().substr(0, kMaxLabelSize);
+        base::ReplaceChars(truncated_aria_label, u"\n", u"|",
+                           &truncated_aria_label);
+
+        std::u16string truncated_aria_description =
+            field_data.aria_description().substr(0, kMaxLabelSize);
+        base::ReplaceChars(truncated_aria_description, u"\n", u"|",
+                           &truncated_aria_description);
+
+        std::string option_labels;
+        std::string option_values;
+        for (size_t option_index = 0;
+             option_index < field_data.options().size(); option_index++) {
+          const SelectOption& select_option =
+              field_data.options()[option_index];
+          const std::string delimiter = option_index > 0 ? "|" : "";
+          option_labels =
+              option_labels + delimiter + base::UTF16ToUTF8(select_option.text);
+          option_values = option_values + delimiter +
+                          base::UTF16ToUTF8(select_option.value);
+        }
+
+        title = base::StrCat({
+            title,
+            "\naria label: ",
+            base::UTF16ToUTF8(truncated_aria_label),
+            "\naria description: ",
+            base::UTF16ToUTF8(truncated_aria_description),
+            "\nplaceholder: ",
+            base::UTF16ToUTF8(field_data.placeholder()),
+            "\noption labels: ",
+            option_labels,
+            "\noption values: ",
+            option_values,
+        });
+      }
+
       WebString kAutocomplete = WebString::FromASCII("autocomplete");
       if (element.HasAttribute(kAutocomplete)) {
         title += "\nautocomplete: " +

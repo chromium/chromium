@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/profiler/process_type.h"
 #include "components/memory_system/memory_system.h"
 
 namespace memory_system {
@@ -21,7 +22,7 @@ Initializer& Initializer::SetGwpAsanParameters(bool boost_sampling,
 
 Initializer& Initializer::SetProfilingClientParameters(
     version_info::Channel channel,
-    metrics::CallStackProfileParams::Process process_type) {
+    base::ProfilerProcessType process_type) {
   profiling_client_parameters_.emplace(channel, process_type);
   return *this;
 }

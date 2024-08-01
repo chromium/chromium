@@ -26,10 +26,12 @@ BASE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40896420): Remove this flag eventually.
+// TODO(b/354661640): Temporarily disable this flag while investigating CrOS
+// file saving issue.
+//
 // When enabled, GetFile() and GetEntries() on a directory handle performs
 // the blocklist check on child file handles.
 BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
              "FileSystemAccessDirectoryIterationBlocklistCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace content::features

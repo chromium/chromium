@@ -486,7 +486,7 @@ MutableCSSPropertyValueSet::FindInsertionPointForID(CSSPropertyID property_id) {
     if (prop.IsInLogicalPropertyGroup()) {
       DCHECK(property_vector_.Contains(*to_replace));
       int to_replace_index =
-          static_cast<int>(to_replace - property_vector_.begin());
+          static_cast<int>(to_replace - property_vector_.data());
       for (int n = property_vector_.size() - 1; n > to_replace_index; --n) {
         if (prop.IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
                 PropertyAt(n).Id())) {

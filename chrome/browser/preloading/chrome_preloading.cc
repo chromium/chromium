@@ -89,3 +89,12 @@ bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
                                                 &canonical_navigation_url) &&
          (canonical_preloading_search_url == canonical_navigation_url);
 }
+
+bool IsSearchDestinationMatchWithWebUrlMatchResult(
+    const GURL& canonical_preloading_search_url,
+    content::BrowserContext* browser_context,
+    const GURL& navigation_url,
+    const std::optional<content::UrlMatchType>& default_web_url_match) {
+  return IsSearchDestinationMatch(canonical_preloading_search_url,
+                                  browser_context, navigation_url);
+}

@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -160,7 +159,7 @@ class StartSurfaceMediator
     // hiding of the Start surface and layout.
     private TabModelObserver mTabModelObserver;
 
-    @Nullable private TabModelSelectorObserver mTabModelSelectorObserver;
+    @Nullable private Callback<TabModel> mCurrentTabModelObserver;
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private ActivityStateChecker mActivityStateChecker;
@@ -238,15 +237,12 @@ class StartSurfaceMediator
 
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
 
-            mTabModelSelectorObserver =
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                            // TODO(crbug.com/40635216): Optimize to not listen for selected Tab
-                            // model
-                            // change when overview is not shown.
-                            updateIncognitoMode(newModel.isIncognito());
-                        }
+            mCurrentTabModelObserver =
+                    (tabModel) -> {
+                        // TODO(crbug.com/40635216): Optimize to not listen for selected Tab
+                        // model
+                        // change when overview is not shown.
+                        updateIncognitoMode(tabModel.isIncognitoBranded());
                     };
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
             updateBackgroundColor(mPropertyModel);
@@ -649,7 +645,7 @@ class StartSurfaceMediator
             mPendingObserver = true;
         }
 
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
         if (mBrowserControlsObserver != null) {
             mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
@@ -710,8 +706,10 @@ class StartSurfaceMediator
             } else if (mPendingObserver) {
                 mPendingObserver = false;
             }
-            if (mTabModelSelectorObserver != null) {
-                mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            if (mCurrentTabModelObserver != null) {
+                mTabModelSelector
+                        .getCurrentTabModelSupplier()
+                        .removeObserver(mCurrentTabModelObserver);
             }
             if (mBrowserControlsObserver != null) {
                 mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
@@ -1139,7 +1137,8 @@ class StartSurfaceMediator
 
     @Override
     public void customizeSettings() {
-        HomeModulesConfigManager.getInstance().onMenuClick(mContext, new SettingsLauncherImpl());
+        HomeModulesConfigManager.getInstance()
+                .onMenuClick(mContext, SettingsLauncherFactory.createSettingsLauncher());
     }
 
     @Override

@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -155,7 +154,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         }
 
         if (showCustomActions) {
-            boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
+            boolean isInMultiWindow = activity.isInMultiWindowMode();
             var actionProvider =
                     new AndroidCustomActionProvider(
                             params.getWindow().getActivity().get(),

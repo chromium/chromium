@@ -7,19 +7,15 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.content_public.browser.WebContents;
 
 /** Launches autofill settings subpages. */
 public class SettingsLauncherHelper {
-    private static SettingsLauncher sLauncherForTesting;
-
     /**
      * Tries showing the settings page for Addresses.
      *
@@ -31,7 +27,8 @@ public class SettingsLauncherHelper {
             return false;
         }
         RecordUserAction.record("AutofillAddressesViewed");
-        getLauncher().launchSettingsActivity(context, AutofillProfilesFragment.class);
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, AutofillProfilesFragment.class);
         return true;
     }
 
@@ -46,7 +43,8 @@ public class SettingsLauncherHelper {
             return false;
         }
         RecordUserAction.record("AutofillCreditCardsViewed");
-        getLauncher().launchSettingsActivity(context, AutofillPaymentMethodsFragment.class);
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, AutofillPaymentMethodsFragment.class);
         return true;
     }
 
@@ -58,14 +56,5 @@ public class SettingsLauncherHelper {
     @CalledByNative
     private static void showAutofillCreditCardSettings(WebContents webContents) {
         showAutofillCreditCardSettings(webContents.getTopLevelNativeWindow().getActivity().get());
-    }
-
-    private static SettingsLauncher getLauncher() {
-        return sLauncherForTesting != null ? sLauncherForTesting : new SettingsLauncherImpl();
-    }
-
-    @VisibleForTesting
-    static void setLauncher(SettingsLauncher launcher) {
-        sLauncherForTesting = launcher;
     }
 }

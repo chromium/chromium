@@ -119,7 +119,6 @@
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
 #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
-#include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -581,11 +580,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<OfflineInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISnippetsInternalsHost &&
       !profile->IsOffTheRecord()) {
-#if BUILDFLAG(ENABLE_FEED_V2)
     return &NewWebUI<FeedInternalsUI>;
-#else
-    return nullptr;
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
   }
   if (url.host_piece() == chrome::kChromeUIWebApksHost)
     return &NewWebUI<WebApksUI>;

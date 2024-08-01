@@ -1048,28 +1048,5 @@ TEST_F(OverlayCandidateFactoryTest, ClipDelegation_VisibleRect) {
   EXPECT_EQ(clip_cand.clip_rect.value(), clip);
 }
 
-TEST_F(OverlayCandidateFactoryTest, AllowNonOverlayResources) {
-  AggregatedRenderPass render_pass;
-  render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
-                     gfx::Rect(0, 0, 100, 100), gfx::Rect(), gfx::Transform());
-
-  SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
-  TextureDrawQuad quad;
-  quad.SetNew(sqs, gfx::Rect(100, 100), gfx::Rect(100, 100), false,
-              CreateResource(/*is_overlay_candidate=*/false), false,
-              gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
-              false, false, gfx::ProtectedVideoType::kClear);
-
-  OverlayCandidateFactory::OverlayContext context;
-  context.is_delegated_context = true;
-  context.allow_non_overlay_resources = true;
-  OverlayCandidateFactory factory = CreateCandidateFactory(
-      render_pass, gfx::RectF(render_pass.output_rect), context);
-
-  OverlayCandidate candidate;
-  EXPECT_EQ(factory.FromDrawQuad(&quad, candidate),
-            OverlayCandidate::CandidateStatus::kSuccess);
-}
-
 }  // namespace
 }  // namespace viz

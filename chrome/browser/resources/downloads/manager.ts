@@ -291,6 +291,21 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         'warningBypassInterstitialSurveyTrustSiteWithUrl', url);
   }
 
+  private computeDangerInterstitialTrustSiteAccessible_(): string {
+    const bypassItem =
+        this.items_.find(item => item.id === this.bypassPromptItemId_);
+    if (!bypassItem) {
+      return '';
+    }
+
+    const url = mojoString16ToString(bypassItem.displayReferrerUrl);
+    if (url === '') {
+      return loadTimeData.getString(
+          'warningBypassInterstitialSurveyTrustSiteWithoutUrlAccessible');
+    }
+    return loadTimeData.getStringF(
+        'warningBypassInterstitialSurveyTrustSiteWithUrlAccessible', url);
+  }
 
   private hideBypassWarningPrompt_() {
     this.bypassPromptItemId_ = '';

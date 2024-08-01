@@ -6,17 +6,15 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="google_bottom_bar_height">64dp</dimen>
-  <dimen name="google_bottom_bar_single_decker_height">62dp</dimen>
   <dimen name="google_bottom_bar_buttons_container_height">48dp</dimen>
   <dimen name="google_bottom_bar_searchbox_container_height">54dp</dimen>
-  <dimen name="google_bottom_bar_double_decker_height">110dp</dimen>
   <dimen name="google_bottom_bar_padding">16dp</dimen>
-  <dimen name="google_bottom_bar_vertical_padding">8dp</dimen>
   <dimen name="google_bottom_bar_button_padding">12dp</dimen>
   <dimen name="google_bottom_bar_button_size">48dp</dimen>
   <dimen name="google_bottom_bar_button_margin_vertical">8dp</dimen>
   <dimen name="google_bottom_bar_searchbox_top_margin">8dp</dimen>
   <dimen name="google_bottom_bar_searchbox_radius">26dp</dimen>
   <dimen name="google_bottom_bar_searchbox_horizontal_padding">16dp</dimen>
+  <dimen name="google_bottom_bar_single_decker_top_padding_large">8dp</dimen>
+  <dimen name="google_bottom_bar_single_decker_top_padding_small">4dp</dimen>
 </resources>

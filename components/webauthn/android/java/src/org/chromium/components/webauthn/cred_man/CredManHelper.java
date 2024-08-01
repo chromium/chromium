@@ -4,7 +4,7 @@
 
 package org.chromium.components.webauthn.cred_man;
 
-import static org.chromium.components.webauthn.WebauthnModeProvider.isChrome;
+import static org.chromium.components.webauthn.WebauthnModeProvider.is;
 
 import android.content.Context;
 import android.credentials.CreateCredentialException;
@@ -37,6 +37,7 @@ import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialResponseCallback;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
@@ -284,7 +285,8 @@ public class CredManHelper {
                                         ? CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS
                                         : CredManPrepareRequestEnum.SUCCESS_NO_RESULTS);
                         mMetricsHelper.recordCredmanPrepareRequestDuration(
-                                SystemClock.elapsedRealtime() - startTimeMs);
+                                SystemClock.elapsedRealtime() - startTimeMs,
+                                hasPublicKeyCredentials);
                     }
                 };
 
@@ -532,9 +534,9 @@ public class CredManHelper {
 
     boolean shouldPreferImmediatelyAvailable(PublicKeyCredentialRequestOptions options) {
         // Chrome renders its own UI when there are no credentials when using CredMan. However, this
-        // is not true for WebView - there are no other UIs. Thus WebView never asks CredMan to skip
-        // its UI.
-        if (isChrome(mAuthenticationContextProvider.getWebContents())) {
+        // is not true for WebView or Chrome 3rd party PWM mode - there are no other UIs. Thus
+        // they never ask CredMan to skip its UI.
+        if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
             return !options.isConditional;
         }
         return false;

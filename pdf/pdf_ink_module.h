@@ -149,7 +149,8 @@ class PdfInkModule {
     // The event position for the last input.  Coordinates match the
     // screen-based position that are provided during stroking from
     // `blink::WebMouseEvent` positions.  Used after stroking has already
-    // started, to support invalidation.
+    // started, for invalidation and for extrapolating where a stroke crosses
+    // the page boundary.
     std::optional<gfx::PointF> input_last_event_position;
 
     // The points that make up the current stroke, divided into
@@ -217,12 +218,12 @@ class PdfInkModule {
   // Return values have the same semantics as OnMouse()* above.
   bool StartStroke(const gfx::PointF& position);
   bool ContinueStroke(const gfx::PointF& position);
-  bool FinishStroke();
+  bool FinishStroke(const gfx::PointF& position);
 
   // Return values have the same semantics as OnMouse*() above.
   bool StartEraseStroke(const gfx::PointF& position);
   bool ContinueEraseStroke(const gfx::PointF& position);
-  bool FinishEraseStroke();
+  bool FinishEraseStroke(const gfx::PointF& position);
 
   // Shared code for the Erase methods above. Returns if stroke(s) got erased or
   // not.
@@ -264,6 +265,10 @@ class PdfInkModule {
   gfx::PointF ConvertEventPositionToCanonicalPosition(
       const gfx::PointF& position,
       int page_index);
+
+  // Helper to convert `position` to a canonical position and record it into
+  // `current_tool_state_`. Can only be called when drawing.
+  void RecordStrokePosition(const gfx::PointF& position);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
   void ApplyUndoRedoCommandsHelper(std::set<size_t> ids, bool should_draw);

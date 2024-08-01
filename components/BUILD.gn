@@ -221,6 +221,7 @@ test("components_unittests") {
     "//components/encrypted_messages:unit_tests",
     "//components/enterprise:unit_tests",
     "//components/enterprise/common:unit_tests",
+    "//components/enterprise/obfuscation/core:unit_tests",
     "//components/facilitated_payments/core/metrics:unit_tests",
     "//components/facilitated_payments/core/util:unit_tests",
     "//components/favicon/core:unit_tests",
@@ -236,11 +237,13 @@ test("components_unittests") {
     "//components/history/core/browser:unit_tests",
     "//components/history/metrics:unit_tests",
     "//components/image_fetcher/core:unit_tests",
+    "//components/ip_protection:common_unit_tests",
     "//components/ip_protection:unit_tests",
     "//components/keyed_service/core:unit_tests",
     "//components/language/core/browser:unit_tests",
     "//components/language/core/common:unit_tests",
     "//components/language/core/language_model:unit_tests",
+    "//components/language_detection/core:unit_tests",
     "//components/lens:unit_tests",
     "//components/leveldb_proto:unit_tests",
     "//components/local_state:unit_tests",
@@ -323,6 +326,7 @@ test("components_unittests") {
     "//components/services/unzip:unit_tests",
     "//components/sessions:unit_tests",
     "//components/shared_highlighting/core/common:unit_tests",
+    "//components/sharing_message:unit_tests",
     "//components/sharing_message:unit_tests",
     "//components/signin/core/browser:unit_tests",
     "//components/signin/internal/identity_manager:unit_tests",
@@ -847,7 +851,7 @@ test("components_unittests") {
     deps += [ "//components/remote_cocoa/common:unit_tests" ]
   }
 
-  if (!is_chromeos && enable_reporting) {
+  if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting:unit_tests" ]
   }
 

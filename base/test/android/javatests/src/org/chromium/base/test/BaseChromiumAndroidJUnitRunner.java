@@ -12,7 +12,6 @@ import android.content.ContextWrapper;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Looper;
-import android.system.Os;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.InstrumentationRegistry;
@@ -67,20 +66,12 @@ import java.util.concurrent.TimeoutException;
  */
 public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static final String IS_UNIT_TEST_FLAG = "BaseChromiumAndroidJUnitRunner.IsUnitTest";
-    private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
-            "BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
     private static final String EXTRA_TIMEOUT_SCALE = "BaseChromiumAndroidJUnitRunner.TimeoutScale";
     private static final String EXTRA_TRACE_FILE = "BaseChromiumAndroidJUnitRunner.TraceFile";
 
     private static final String ARGUMENT_LOG_ONLY = "log";
 
     private static final String TAG = "BaseJUnitRunner";
-
-    private static final int STATUS_CODE_BATCH_FAILURE = 1338;
-
-    // The ID of the bundle value Instrumentation uses to report the crash stack, if the test
-    // crashed.
-    private static final String BUNDLE_STACK_ID = "stack";
 
     private static final long WAIT_FOR_IDLE_TIMEOUT_MS = 10000L;
 
@@ -201,7 +192,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 sInMemorySharedPreferencesContext.getCacheDir().getPath());
         // Reduce the time Espresso waits before failing to be less than the Python test timeout.
         IdlingPolicies.setMasterPolicyTimeout(20, TimeUnit.SECONDS);
-        setClangCoverageEnvIfEnabled();
         if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
@@ -502,16 +492,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         // Leave animations in the default state.
         TestAnimations.setEnabled(true);
 
-        try {
-            writeClangCoverageProfileIfEnabled();
-        } catch (Exception e) {
-            // It's not possible (as far as I know) to update already reported test results, so we
-            // send another status update have the instrumentation test instance parse it.
-            Bundle b = new Bundle();
-            b.putString(BUNDLE_STACK_ID, Log.getStackTraceString(e));
-            InstrumentationRegistry.getInstrumentation().sendStatus(STATUS_CODE_BATCH_FAILURE, b);
-        }
-
         // This will end up force stopping the package, so code after this line will not run.
         super.finish(resultCode, results);
     }
@@ -551,29 +531,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             } else if (!FileUtils.recursivelyDeleteFile(file, FileUtils.DELETE_ALL)) {
                 throw new RuntimeException("Could not delete file: " + file.getAbsolutePath());
             }
-        }
-    }
-
-    /** Configure the required environment variable if Clang coverage argument exists. */
-    private void setClangCoverageEnvIfEnabled() {
-        String clangProfileFile =
-                InstrumentationRegistry.getArguments().getString(EXTRA_CLANG_COVERAGE_DEVICE_FILE);
-        if (clangProfileFile != null) {
-            try {
-                Os.setenv("LLVM_PROFILE_FILE", clangProfileFile, /* override= */ true);
-            } catch (Exception e) {
-                Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
-            }
-        }
-    }
-
-    /**
-     * Invoke __llvm_profile_dump() to write raw clang coverage profile to device.
-     * Noop if the required build flag is not set.
-     */
-    private void writeClangCoverageProfileIfEnabled() {
-        if (BuildConfig.WRITE_CLANG_PROFILING_DATA && LibraryLoader.getInstance().isInitialized()) {
-            ClangProfiler.writeClangProfilingProfile();
         }
     }
 }

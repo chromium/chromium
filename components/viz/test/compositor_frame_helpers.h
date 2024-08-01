@@ -242,6 +242,8 @@ class CompositorFrameBuilder {
       std::vector<SurfaceId> activation_dependencies);
   CompositorFrameBuilder& SetDeadline(const FrameDeadline& deadline);
   CompositorFrameBuilder& SetSendFrameTokenToEmbedder(bool send);
+  CompositorFrameBuilder& SetIsHandlingInteraction(
+      bool is_handling_interaction);
 
   CompositorFrameBuilder& AddDelegatedInkMetadata(
       const gfx::DelegatedInkMetadata& metadata);
@@ -273,6 +275,9 @@ CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list);
 
 // Makes an aggregated frame out of the default compositor frame.
 AggregatedFrame MakeDefaultAggregatedFrame(size_t num_render_passes = 1);
+
+CompositorFrame MakeDefaultInteractiveCompositorFrame(
+    uint64_t source_id = BeginFrameArgs::kManualSourceId);
 
 // Creates a CompositorFrame that will be valid once its render_pass_list is
 // initialized.

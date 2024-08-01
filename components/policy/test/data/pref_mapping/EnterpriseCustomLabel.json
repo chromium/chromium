@@ -12,6 +12,42 @@
         "Custom label",
         "Another label"
       ]
-    }
+    },
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnterpriseCustomLabel": "Label"
+        },
+        "policies_settings": {
+          "EnterpriseCustomLabel": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_label.custom_value": {
+            "location": "local_state",
+            "value": "Label"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseCustomLabel": "Label"
+        },
+        "policies_settings": {
+          "EnterpriseCustomLabel": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_label.custom_value": {
+            "location": "user_profile",
+            "value": "Label"
+          }
+        }
+      }
+    ]
   }
 ]

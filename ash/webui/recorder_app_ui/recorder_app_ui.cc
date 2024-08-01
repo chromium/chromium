@@ -429,6 +429,14 @@ void RecorderAppUI::LoadSpeechRecognizer(
   config->api_key = google_apis::GetSodaAPIKey();
   config->language_dlc_path = soda_language_path.value();
   config->library_dlc_path = soda_library_path.value();
+  config->enable_formatting =
+      chromeos::machine_learning::mojom::OptionalBool::kTrue;
+  // This forces to use the large model.
+  config->recognition_mode =
+      chromeos::machine_learning::mojom::SodaRecognitionMode::kIme;
+  config->speaker_diarization_mode = chromeos::machine_learning::mojom::
+      SpeakerDiarizationMode::kSpeakerLabelDetection;
+  config->max_speaker_count = 7;
 
   GetMlService()->LoadSpeechRecognizer(
       std::move(config), std::move(soda_client), std::move(soda_recognizer),

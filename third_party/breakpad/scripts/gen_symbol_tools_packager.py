@@ -39,7 +39,7 @@ def main():
     parser.add_argument("-t", required=True, help="Template file")
     parser.add_argument("-a", required=True, help="Architecture to build for")
     parser.add_argument("-go_src", nargs="+", required=True,
-                        help="Go source file for `upload_system_symbols")
+                        help="Go source dir for `upload_system_symbols")
     parser.add_argument("-extra", nargs="+", required=True,
                         help="Extra files to include in the zip")
 
@@ -51,7 +51,7 @@ def main():
 
     replacements = [
         ("@ARCH@", args.a),
-        ("@GO_SOURCES@", args.go_src),
+        ("@GO_SOURCE_DIR@", args.go_src),
         ("@EXTRA@", args.extra),
         ("@CWD@", os.getcwd())
     ]

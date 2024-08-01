@@ -31,6 +31,13 @@ public interface HubManager {
     @NonNull
     ObservableSupplier<Boolean> getHubVisibilitySupplier();
 
+    /**
+     * Returns the {@link HubShowPaneHelper} used to select a pane before opening the {@link
+     * HubLayout}.
+     */
+    @NonNull
+    HubShowPaneHelper getHubShowPaneHelper();
+
     /** Sets the status indicator height. */
     void setStatusIndicatorHeight(int height);
 

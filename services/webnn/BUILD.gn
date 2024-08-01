@@ -59,6 +59,8 @@ component("webnn_service") {
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
     "webnn_context_provider_impl.h",
+    "webnn_graph_builder_impl.cc",
+    "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
     "webnn_object_impl.cc",
@@ -193,6 +195,7 @@ source_set("tests") {
 
   sources = [
     "webnn_context_provider_impl_unittest.cc",
+    "webnn_graph_builder_impl_unittest.cc",
     "webnn_graph_impl_unittest.cc",
     "webnn_test_utils.cc",
     "webnn_test_utils.h",

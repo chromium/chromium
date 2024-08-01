@@ -3682,6 +3682,9 @@ def CheckSpamLogging(input_api, output_api):
             r"^chrome/browser/diagnostics/diagnostics_writer\.cc$",
             r"^chrome/chrome_elf/dll_hash/dll_hash_main\.cc$",
             r"^chrome/installer/setup/.*",
+            # crdmg runs as a separate binary which intentionally does
+            # not depend on base logging.
+            r"^chrome/utility/safe_browsing/mac/crdmg\.cc$",
             r"^chromecast/",
             r"^components/cast",
             r"^components/media_control/renderer/media_playback_options\.cc$",
@@ -4881,6 +4884,7 @@ def _CheckAndroidWebkitImports(input_api, output_api):
         files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS + input_api.
                        DEFAULT_FILES_TO_SKIP + (
                            r'^android_webview/glue/.*',
+                           r'^android_webview/support_library/.*',
                            r'^weblayer/.*',
                        )),
         files_to_check=[r'.*\.java$'])
@@ -5105,7 +5109,35 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
     if results:
         return results
 
-    is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
+    try:
+        parsed_args = _ParseGclientArgs()
+    except FileNotFoundError:
+        message = (
+            'build/config/gclient_args.gni not found. Please make sure your '
+            'workspace has been initialized with gclient sync.'
+        )
+        import sys
+        original_sys_path = sys.path
+        try:
+            sys.path = sys.path + [
+                input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                    'third_party', 'depot_tools')
+            ]
+            import gclient_utils
+            if gclient_utils.IsEnvCog():
+                # Users will always hit this when they run presubmits before cog
+                # workspace initialization finishes. The check shouldn't fail in
+                # this case. This is an unavoidable workaround that's needed for
+                # good presubmit UX for cog.
+                results.append(output_api.PresubmitPromptWarning(message))
+            else:
+                results.append(output_api.PresubmitError(message))
+            return results
+        finally:
+            # Restore sys.path to what it was before.
+            sys.path = original_sys_path
+
+    is_android = parsed_args.get('checkout_android', 'false') == 'true'
     checker = checker_for_tests or PydepsChecker(input_api, _ALL_PYDEPS_FILES)
     affected_pydeps = set(checker.ComputeAffectedPydeps())
     affected_android_pydeps = affected_pydeps.intersection(

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 
+#import <optional>
 #import <vector>
 
 #import "base/memory/scoped_refptr.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -45,14 +47,8 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    browser_state_manager_ =
-        std::make_unique<TestChromeBrowserStateManager>(builder.Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
-
     ChromeBrowserState* browser_state =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     pref_service_ = browser_state->GetPrefs();
 
@@ -73,7 +69,8 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
@@ -967,4 +964,49 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   EXPECT_EQ(expected_counts_with_missing_keys,
             DictToInsecurePasswordCounts(dict_with_missing_keys));
+}
+
+// Tests `CanAutomaticallyRunSafetyCheck()` correctly returns true if the Safety
+// Check has never been run before.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       AllowsAutorunWhenNoPreviousCheckExists) {
+  EXPECT_TRUE(CanAutomaticallyRunSafetyCheck(std::nullopt));
+}
+
+// Tests `CanAutomaticallyRunSafetyCheck()` correctly returns true if a previous
+// check exists and is sufficiently old.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       AllowsAutorunWhenPreviousCheckIsTooOld) {
+  base::Time sufficiently_old_previous_check_time =
+      base::Time::Now() - (kSafetyCheckAutorunDelay + base::Days(7));
+
+  EXPECT_TRUE(
+      CanAutomaticallyRunSafetyCheck(sufficiently_old_previous_check_time));
+}
+
+// Tests `CanAutomaticallyRunSafetyCheck()` correctly returns false if the
+// previous Safety Check run occurred too recently.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       PreventsAutorunWhenPreviousCheckIsTooRecent) {
+  base::Time recent_previous_check_time =
+      base::Time::Now() - (kSafetyCheckAutorunDelay - base::Minutes(30));
+
+  EXPECT_FALSE(CanAutomaticallyRunSafetyCheck(recent_previous_check_time));
+}
+
+// Tests `GetLatestSafetyCheckRunTimeAcrossAllEntrypoints()` correctly returns
+// the latest run time across all Safety Check entry points.
+TEST_F(IOSChromeSafetyCheckManagerTest, ReturnsLatestSafetyCheckRunTime) {
+  base::Time now = base::Time::Now();
+  base::Time yesterday = now - base::Days(1);
+  base::Time one_week_ago = now - base::Days(7);
+
+  local_pref_service_->SetTime(prefs::kIosSafetyCheckManagerLastRunTime,
+                               yesterday);
+  local_pref_service_->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,
+                               one_week_ago);
+
+  EXPECT_EQ(GetLatestSafetyCheckRunTimeAcrossAllEntrypoints(local_pref_service_)
+                .value(),
+            yesterday);
 }

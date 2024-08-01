@@ -40,7 +40,7 @@ class PriceAlertUtilTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    return builder.Build();
+    return std::move(builder).Build();
   }
 
   void SetMSBB(bool enabled) {

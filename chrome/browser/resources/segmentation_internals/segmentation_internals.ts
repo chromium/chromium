@@ -34,7 +34,8 @@ function addSegmentInfoToParent(
   targetDiv.textContent = 'Segment Id: ' + String(info.segmentName);
   div.appendChild(targetDiv);
   const resultDiv = document.createElement('div');
-  resultDiv.textContent = 'Result: ' + String(info.predictionResult);
+  resultDiv.textContent = 'Result: ' + String(info.predictionResult) +
+      ' Time: ' + String(info.predictionTimestamp.internalValue);
   div.appendChild(resultDiv);
   const buttonDiv = document.createElement('div');
   if (info.canExecuteSegment) {

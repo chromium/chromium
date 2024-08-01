@@ -26,7 +26,7 @@ import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polym
 
 import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
-import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
+import {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -623,10 +623,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onNextGranularityClick_() {
+    this.logger_.logSpeechControlClick(SpeechControls.NEXT);
     this.emitEvent_(ToolbarEvent.NEXT_GRANULARITY);
   }
 
   private onPreviousGranularityClick_() {
+    this.logger_.logSpeechControlClick(SpeechControls.PREVIOUS);
     this.emitEvent_(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
@@ -852,6 +854,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onPlayPauseClick_() {
+    this.logger_.logSpeechControlClick(
+        this.isSpeechActive ? SpeechControls.PAUSE : SpeechControls.PLAY);
     this.emitEvent_(ToolbarEvent.PLAY_PAUSE);
   }
 

@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.SampleBidirectionalNonProxy
 
-#ifndef org_jni_zero_SampleBidirectionalNonProxy_JNI
-#define org_jni_zero_SampleBidirectionalNonProxy_JNI
+#ifndef org_jni_1zero_SampleBidirectionalNonProxy_JNI
+#define org_jni_1zero_SampleBidirectionalNonProxy_JNI
 
 #include <jni.h>
 
@@ -221,4 +221,4 @@ static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
 }
 
 
-#endif  // org_jni_zero_SampleBidirectionalNonProxy_JNI
+#endif  // org_jni_1zero_SampleBidirectionalNonProxy_JNI

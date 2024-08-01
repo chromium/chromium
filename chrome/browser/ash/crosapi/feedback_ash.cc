@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {

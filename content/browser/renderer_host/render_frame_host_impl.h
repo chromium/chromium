@@ -181,8 +181,10 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
+#include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -313,6 +315,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public mojom::FrameHost,
       public mojom::DomAutomationControllerHost,
       public ui::AXPlatformTreeManagerDelegate,
+      public ui::AXNodeIdDelegate,
       public SiteInstanceGroup::Observer,
       public blink::mojom::AssociatedInterfaceProvider,
       public blink::mojom::BackForwardCacheControllerHost,
@@ -714,6 +717,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool AccessibilityIsRootFrame() const override;
   bool ShouldSuppressAXLoadComplete() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
+
+  // ui::AXNodeIdDelegate:
+  ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
+      ui::AXNodeID ax_node_id) override;
+  void OnAXNodeDeleted(ui::AXNodeID ax_node_id) override;
 
   // SiteInstanceGroup::Observer
   void RenderProcessGone(SiteInstanceGroup* site_instance_group,
@@ -3078,6 +3086,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     associated_registry_->GetInterfacesForTesting(out);
   }
 
+  // Returns the number of accessibility platform node identifiers maintained by
+  // this instance's AXNodeIdDelegate implementation.
+  size_t GetAxUniqueIdCountForTesting() const { return ax_unique_ids_.size(); }
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -4528,6 +4540,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The object managing the accessibility tree for this frame.
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
+
+  // A mapping of each AXNodeID managed by `browser_accessibility_manager_`,
+  // which is only unique within its renderer, to an AXUniqueId, which is unique
+  // within the scope of the web contents.
+  std::map<ui::AXNodeID, ui::AXUniqueId> ax_unique_ids_;
 
   // This is the value of the reset token expected for accessibility messages.
   // Any message with a different reset token will be dropped.

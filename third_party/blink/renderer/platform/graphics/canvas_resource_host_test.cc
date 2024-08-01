@@ -56,7 +56,7 @@ TEST(CanvasResourceHostTest, ReleaseResourcesAfterHostDestroyed) {
   EXPECT_EQ(context->TestContextGL()->NumTextures(), 1u);
   std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
   EXPECT_EQ(context->TestContextGL()->NumTextures(), 0u);
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
 }
 
 }  // namespace

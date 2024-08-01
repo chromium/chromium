@@ -101,6 +101,19 @@ double WebPerformanceMetricsForReporting::ResponseStart() const {
   return base::Milliseconds(private_->timing()->responseStart()).InSecondsF();
 }
 
+double WebPerformanceMetricsForReporting::DomainLookupStart() const {
+  return base::Milliseconds(private_->timing()->domainLookupStart())
+      .InSecondsF();
+}
+
+double WebPerformanceMetricsForReporting::DomainLookupEnd() const {
+  return base::Milliseconds(private_->timing()->domainLookupEnd()).InSecondsF();
+}
+
+double WebPerformanceMetricsForReporting::ConnectStart() const {
+  return base::Milliseconds(private_->timing()->connectStart()).InSecondsF();
+}
+
 double WebPerformanceMetricsForReporting::DomContentLoadedEventStart() const {
   return base::Milliseconds(private_->timing()->domContentLoadedEventStart())
       .InSecondsF();

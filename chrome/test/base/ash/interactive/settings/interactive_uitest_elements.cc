@@ -24,12 +24,51 @@ WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
          "cr-icon-button#moreNetworkDetail";
 }
 
-WebContentsInteractionTestUtil::DeepQuery SettingsSubpageTitle() {
+WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle() {
   return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
 }
 
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState() {
   return InternetDetailsSubpage() + "div#networkState";
+}
+
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageConfigureButton() {
+  return InternetDetailsSubpage() + "cr-button#configureButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageForgetButton() {
+  return InternetDetailsSubpage() + "cr-button#forgetButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+SettingsSubpageConnectDisconnectButton() {
+  return InternetDetailsSubpage() + "controlled-button#connectDisconnect" +
+         "cr-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageBackButton() {
+  return InternetDetailsSubpage() + "cr-button#backButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton() {
+  return InternetPage() + "cr-expand-button#expandAddConnections";
+}
+
+WebContentsInteractionTestUtil::DeepQuery AddWiFiRow() {
+  return InternetPage() + "div#add-wifi-label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow() {
+  return InternetPage() + "div#add-vpn-label";
+}
+
+WebContentsInteractionTestUtil::DeepQuery InternetConfigDialog() {
+  return InternetPage() + "internet-config#configDialog" +
+         "network-config#networkConfig";
+}
+
+WebContentsInteractionTestUtil::DeepQuery InternetConfigDialogTitle() {
+  return InternetPage() + "internet-config#configDialog" + "div#dialogTitle";
 }
 
 namespace cellular {
@@ -40,6 +79,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnDialog() {
 
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsButton() {
   return ApnDialog() + "cr-expand-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsGroup() {
+  return ApnDialog() + "iron-collapse";
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAttachCheckbox() {
@@ -68,8 +111,36 @@ WebContentsInteractionTestUtil::DeepQuery ApnListFirstItem() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemName() {
+  return ApnListFirstItem() + "div#apnName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemSublabel() {
+  return ApnListFirstItem() + "div#subLabel";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItem(int n) {
   return InternetPage() + "apn-subpage" + "apn-list" +
-         "apn-list-item:first-of-type" + "div#apnName";
+         base::StringPrintf("apn-list-item:nth-of-type(%u)", n);
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemName(int n) {
+  return ApnListNthItem(n) + "div#apnName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton() {
+  return ApnSelectionDialog() + "cr-button#apnSelectionActionBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionDialog() {
+  return InternetPage() + "apn-subpage" + "apn-list" + "apn-selection-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItem() {
+  return ApnSelectionDialog() + "apn-selection-dialog-list-item:first-of-type";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItemName() {
+  return ApnSelectionFirstItem() + "span#friendlyApnName";
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton() {
@@ -78,6 +149,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton() {
 
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
   return InternetPage() + "button#createCustomApnButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton() {
+  return InternetPage() + "button#discoverMoreApnsButton";
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent() {
@@ -279,11 +354,141 @@ WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem() {
 
 namespace vpn {
 
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogServiceNameInput() {
+  return InternetPage() + "internet-config#configDialog" +
+         "network-config#networkConfig" + "network-config-input#vpn-name-input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogProviderTypeSelect() {
+  return InternetPage() + "internet-config#configDialog" +
+         "network-config#networkConfig" +
+         "network-config-select#vpn-type-select";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogProviderTypeOptions() {
+  return InternetConfigDialog() + "network-config-select#vpn-type-select" +
+         "div#inner" + "select";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogHostnameInput() {
+  return InternetConfigDialog() + "network-config-input#vpn-host-input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnUsernameInput() {
+  return InternetConfigDialog() + "network-config-input#openvpn-username-input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnPasswordInput() {
+  return InternetConfigDialog() +
+         "network-password-input#openvpn-password-input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnOtpInput() {
+  return InternetConfigDialog() + "network-config-input#openvpn-otp-input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogSaveCredentialsToggle() {
+  return InternetConfigDialog() +
+         "network-config-toggle#vpn-save-credentials-toggle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogConnectButton() {
+  return InternetPage() + "internet-config#configDialog" +
+         "cr-button#connectButton";
+}
+
 WebContentsInteractionTestUtil::DeepQuery VpnSummaryItem() {
   return InternetPage() + "network-summary" + "network-summary-item#VPN" +
          "div#networkSummaryItemRow";
 }
 
+WebContentsInteractionTestUtil::DeepQuery VpnNetworksList() {
+  return InternetPage() + "settings-internet-subpage" + "network-list";
+}
+
+WebContentsInteractionTestUtil::DeepQuery VpnNetworksListFirstItem() {
+  return VpnNetworksList() + "network-list-item:first-of-type";
+}
+
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageProviderType() {
+  return InternetDetailsSubpage() + "network-property-list-mojo#infoFields" +
+         "div#vpn\\.type";
+}
+
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageHostnameInput() {
+  return InternetDetailsSubpage() + "network-property-list-mojo#infoFields" +
+         "cr-input#vpn\\.host" + "input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageUsernameInput() {
+  return InternetDetailsSubpage() + "network-property-list-mojo#infoFields" +
+         "cr-input#vpn\\.openVpn\\.username" + "input";
+}
+
 }  // namespace vpn
+
+namespace bluetooth {
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothPage() {
+  return WebContentsInteractionTestUtil::DeepQuery({{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "os-settings-bluetooth-page",
+  }});
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairNewDeviceButton() {
+  return BluetoothPage() + "cr-button#pairNewDevice";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairingDialog() {
+  return BluetoothPage() + "os-settings-bluetooth-pairing-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList() {
+  return BluetoothPage() + "os-settings-bluetooth-devices-subpage" +
+         "os-settings-paired-bluetooth-list";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage() {
+  return BluetoothPage() + "os-settings-bluetooth-device-detail-subpage";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton() {
+  return BluetoothDeviceDetailSubpage() + "cr-button#changeNameBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton() {
+  return BluetoothDeviceDetailSubpage() + "cr-button#forgetBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceName() {
+  return BluetoothDeviceDetailSubpage() + "div#bluetoothDeviceNameLabel";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialog() {
+  return BluetoothDeviceDetailSubpage() +
+         "os-settings-bluetooth-change-device-name-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogInputField() {
+  return BluetoothRenameDialog() + "cr-input#changeNameInput";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogDoneButton() {
+  return BluetoothRenameDialog() + "cr-button#done";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialog() {
+  return BluetoothDeviceDetailSubpage() +
+         "os-settings-bluetooth-forget-device-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialogDoneButton() {
+  return BluetoothForgetDialog() + "cr-button#forget";
+}
+
+}  // namespace bluetooth
 
 }  // namespace ash::settings

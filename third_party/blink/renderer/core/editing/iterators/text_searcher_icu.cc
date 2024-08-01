@@ -225,7 +225,7 @@ bool TextSearcherICU::IsCorrectKanaMatch(const UChar* text,
                                  normalized_match);
   return CheckOnlyKanaLettersInStrings(
       normalized_search_text_.data(), normalized_search_text_.size(),
-      normalized_match.begin(), normalized_match.size());
+      normalized_match.data(), normalized_match.size());
 }
 
 void TextSearcherICU::SetPattern(const UChar* pattern, wtf_size_t length) {

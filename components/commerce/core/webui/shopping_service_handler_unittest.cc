@@ -998,6 +998,24 @@ TEST_F(ShoppingServiceHandlerTest,
       entry_two->log_ai_data_request()->model_execution_info().execution_id());
 }
 
+TEST_F(ShoppingServiceHandlerTest, TestSetDisclosureVersion) {
+  handler_->SetProductSpecificationAcceptedDisclosureVersion(
+      shopping_service::mojom::ProductSpecificationsDisclosureVersion::kV1);
+  EXPECT_EQ(
+      static_cast<int>(
+          shopping_service::mojom::ProductSpecificationsDisclosureVersion::kV1),
+      pref_service_->GetInteger(
+          kProductSpecificationsAcceptedDisclosureVersion));
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestSetDisclosureVersion_DefaultValue) {
+  EXPECT_EQ(
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown),
+      pref_service_->GetInteger(
+          kProductSpecificationsAcceptedDisclosureVersion));
+}
+
 TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
   uint64_t cluster_id = 12345u;
 

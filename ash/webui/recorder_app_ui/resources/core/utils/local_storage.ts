@@ -26,9 +26,9 @@ export enum Key {
 /**
  * Gets a value from local storage.
  */
-export function get<T extends JsonSerializable>(
+export function get<T, I extends JsonSerializable>(
   key: Key,
-  schema: Schema<T>,
+  schema: Schema<T, I>,
   defaultValue: T,
 ): T {
   const item = window.localStorage.getItem(key);
@@ -41,8 +41,12 @@ export function get<T extends JsonSerializable>(
 /**
  * Sets a value in local storage.
  */
-export function set<T extends JsonSerializable>(key: Key, value: T): void {
-  const item = JSON.stringify(value);
+export function set<T, I extends JsonSerializable>(
+  key: Key,
+  schema: Schema<T, I>,
+  value: T,
+): void {
+  const item = schema.stringifyJson(value);
   window.localStorage.setItem(key, item);
 }
 

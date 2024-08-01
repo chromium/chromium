@@ -16,7 +16,7 @@
   padding-inline-start: var(--cr-section-indent-padding);
 }
 
-#favicon {
+.favicon {
   margin-inline-end: 20px;
 }
 

@@ -17,12 +17,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -172,5 +174,13 @@ public class MinimizedFeatureUtils {
     public static boolean isWebApp(BrowserServicesIntentDataProvider intentDataProvider) {
         return intentDataProvider.isWebappOrWebApkActivity()
                 || intentDataProvider.isTrustedWebActivity();
+    }
+
+    /** Returns whether the intent was launched by the FedCM code. */
+    public static boolean isFedCmIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+        return intentDataProvider.isTrustedIntent()
+                && IntentUtils.safeGetIntExtra(
+                                intentDataProvider.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1)
+                        != -1;
     }
 }

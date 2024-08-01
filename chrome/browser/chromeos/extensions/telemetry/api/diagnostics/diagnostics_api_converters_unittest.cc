@@ -452,6 +452,16 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionErrorWithMultipleNonnullFields) {
+  auto reply_union = cx_diag::RoutineInquiryReplyUnion();
+  reply_union.check_led_lit_up_state = cx_diag::CheckLedLitUpStateReply();
+  reply_union.check_keyboard_backlight_state =
+      cx_diag::CheckKeyboardBacklightStateReply();
+  auto result = ConvertRoutineInquiryReplyUnion(std::move(reply_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineInquiryReplyUnionAllFieldsAreNull) {
   auto result =
       ConvertRoutineInquiryReplyUnion(cx_diag::RoutineInquiryReplyUnion());

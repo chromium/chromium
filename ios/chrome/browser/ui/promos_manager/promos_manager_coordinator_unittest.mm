@@ -62,7 +62,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -111,7 +111,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   }
 
  protected:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   PromosManagerCoordinator* coordinator_;
   web::WebTaskEnvironment task_environment_;

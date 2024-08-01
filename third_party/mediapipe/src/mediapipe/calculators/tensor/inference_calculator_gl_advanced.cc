@@ -25,11 +25,13 @@
 #include "absl/strings/string_view.h"
 #include "absl/time/time.h"
 #include "mediapipe/calculators/tensor/inference_calculator.h"
+#include "mediapipe/calculators/tensor/inference_io_mapper.h"
 #include "mediapipe/calculators/tensor/tensor_span.h"
 #include "mediapipe/framework/api2/packet.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/deps/file_path.h"
 #include "mediapipe/framework/formats/tensor.h"
+#include "mediapipe/framework/mediapipe_profiling.h"
 #include "mediapipe/framework/port/file_helpers.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
@@ -99,20 +101,25 @@ class InferenceCalculatorGlAdvancedImpl
     absl::StatusOr<std::vector<Tensor>> Process(
         CalculatorContext* cc, const TensorSpan& input_tensors);
 
+    const InputOutputTensorNames& GetInputOutputTensorNames() const;
+
    private:
     absl::Status InitTFLiteGPURunner(
         CalculatorContext* cc,
         const mediapipe::InferenceCalculatorOptions::Delegate& delegate);
 
-    // TfLite requires us to keep the model alive as long as the interpreter is.
+    // TfLite requires us to keep the model alive as long as the interpreter
+    // is.
     Packet<TfLiteModelPtr> model_packet_;
 
-    std::shared_ptr<GlContext> gl_context_;
+    std::shared_ptr<GlContext> initialization_gl_context_;
     std::unique_ptr<tflite::gpu::TFLiteGPURunner> tflite_gpu_runner_;
 
     std::vector<Tensor::Shape> output_shapes_;
 
     OnDiskCacheHelper on_disk_cache_helper_;
+
+    InputOutputTensorNames input_output_tensor_names_;
   };
 
   absl::StatusOr<std::vector<Tensor>> Process(
@@ -125,10 +132,11 @@ class InferenceCalculatorGlAdvancedImpl
 };
 
 InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::~GpuInferenceRunner() {
-  const auto success = gl_context_->Run([this]() -> absl::Status {
-    tflite_gpu_runner_.reset();
-    return absl::OkStatus();
-  });
+  const auto success =
+      initialization_gl_context_->Run([this]() -> absl::Status {
+        tflite_gpu_runner_.reset();
+        return absl::OkStatus();
+      });
   if (!success.ok()) {
     ABSL_LOG(DFATAL) << "Failed to close gpu inference runner: " << success;
   }
@@ -136,7 +144,7 @@ InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::~GpuInferenceRunner() {
 
 absl::Status InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::Init(
     CalculatorContext* cc, std::shared_ptr<GlContext> gl_context) {
-  gl_context_ = gl_context;
+  initialization_gl_context_ = gl_context;
   const auto& options = cc->Options<mediapipe::InferenceCalculatorOptions>();
 
   mediapipe::InferenceCalculatorOptions::Delegate delegate = options.delegate();
@@ -154,37 +162,38 @@ absl::Status InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::Init(
 
   MP_RETURN_IF_ERROR(on_disk_cache_helper_.Init(options, delegate.gpu()));
 
-  return gl_context_->Run([this, &cc, &delegate]() -> absl::Status {
-    return InitTFLiteGPURunner(cc, delegate);
-  });
+  return initialization_gl_context_->Run(
+      [this, &cc, &delegate]() -> absl::Status {
+        return InitTFLiteGPURunner(cc, delegate);
+      });
 }
 
 absl::StatusOr<std::vector<Tensor>>
 InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::Process(
     CalculatorContext* cc, const TensorSpan& input_tensors) {
   std::vector<Tensor> output_tensors;
-
-  MP_RETURN_IF_ERROR(gl_context_->Run(
-      [this, cc, &input_tensors, &output_tensors]() -> absl::Status {
-        for (int i = 0; i < input_tensors.size(); ++i) {
-          MP_RETURN_IF_ERROR(tflite_gpu_runner_->BindSSBOToInputTensor(
-              input_tensors[i].GetOpenGlBufferReadView().name(), i));
-        }
-        output_tensors.reserve(output_shapes_.size());
-        for (int i = 0; i < output_shapes_.size(); ++i) {
-          output_tensors.emplace_back(Tensor::ElementType::kFloat32,
-                                      output_shapes_[i]);
-          MP_RETURN_IF_ERROR(tflite_gpu_runner_->BindSSBOToOutputTensor(
-              output_tensors.back().GetOpenGlBufferWriteView().name(), i));
-        }
-        // Run inference.
-        {
-          MEDIAPIPE_PROFILING(GPU_TASK_INVOKE_ADVANCED, cc);
-          return tflite_gpu_runner_->Invoke();
-        }
-      }));
-
+  for (int i = 0; i < input_tensors.size(); ++i) {
+    MP_RETURN_IF_ERROR(tflite_gpu_runner_->BindSSBOToInputTensor(
+        input_tensors[i].GetOpenGlBufferReadView().name(), i));
+  }
+  output_tensors.reserve(output_shapes_.size());
+  for (int i = 0; i < output_shapes_.size(); ++i) {
+    output_tensors.emplace_back(Tensor::ElementType::kFloat32,
+                                output_shapes_[i]);
+    MP_RETURN_IF_ERROR(tflite_gpu_runner_->BindSSBOToOutputTensor(
+        output_tensors.back().GetOpenGlBufferWriteView().name(), i));
+  }
+  // Run inference.
+  {
+    MEDIAPIPE_PROFILING(GPU_TASK_INVOKE_ADVANCED, cc);
+    MP_RETURN_IF_ERROR(tflite_gpu_runner_->Invoke());
+  }
   return output_tensors;
+}
+
+const InputOutputTensorNames& InferenceCalculatorGlAdvancedImpl::
+    GpuInferenceRunner::GetInputOutputTensorNames() const {
+  return input_output_tensor_names_;
 }
 
 absl::Status
@@ -237,12 +246,18 @@ InferenceCalculatorGlAdvancedImpl::GpuInferenceRunner::InitTFLiteGPURunner(
     const tflite::OpResolver& op_resolver = kSideInOpResolver(cc).Get();
     MP_RETURN_IF_ERROR(tflite_gpu_runner_->InitializeWithModel(
         model, op_resolver, /*allow_quant_ops=*/true));
+    MP_ASSIGN_OR_RETURN(input_output_tensor_names_,
+                        InferenceIoMapper::GetInputOutputTensorNamesFromModel(
+                            model, op_resolver));
   } else {
     tflite::ops::builtin::BuiltinOpResolver op_resolver =
         kSideInCustomOpResolver(cc).GetOr(
             tflite::ops::builtin::BuiltinOpResolverWithoutDefaultDelegates());
     MP_RETURN_IF_ERROR(tflite_gpu_runner_->InitializeWithModel(
         model, op_resolver, /*allow_quant_ops=*/true));
+    MP_ASSIGN_OR_RETURN(input_output_tensor_names_,
+                        InferenceIoMapper::GetInputOutputTensorNamesFromModel(
+                            model, op_resolver));
   }
 
   // Create and bind OpenGL buffers for outputs.
@@ -379,21 +394,28 @@ absl::Status InferenceCalculatorGlAdvancedImpl::UpdateContract(
   RET_CHECK(!options.model_path().empty() ^ kSideInModel(cc).IsConnected())
       << "Either model as side packet or model path in options is required.";
 
+  WarnFeedbackTensorsUnsupported(cc);
   MP_RETURN_IF_ERROR(mediapipe::GlCalculatorHelper::UpdateContract(cc));
   return absl::OkStatus();
 }
 
 absl::Status InferenceCalculatorGlAdvancedImpl::Open(CalculatorContext* cc) {
   MP_RETURN_IF_ERROR(gpu_helper_.Open(cc));
-
   gpu_inference_runner_ = std::make_unique<GpuInferenceRunner>();
-  return gpu_inference_runner_->Init(cc, gpu_helper_.GetSharedGlContext());
+  MP_RETURN_IF_ERROR(
+      gpu_inference_runner_->Init(cc, gpu_helper_.GetSharedGlContext()));
+  return InferenceCalculatorNodeImpl::UpdateIoMapping(
+      cc, gpu_inference_runner_->GetInputOutputTensorNames());
 }
 
 absl::StatusOr<std::vector<Tensor>> InferenceCalculatorGlAdvancedImpl::Process(
     CalculatorContext* cc, const TensorSpan& tensor_span) {
-  MP_ASSIGN_OR_RETURN(std::vector<Tensor> output_tensors,
-                      gpu_inference_runner_->Process(cc, tensor_span));
+  std::vector<Tensor> output_tensors;
+  MP_RETURN_IF_ERROR(gpu_helper_.RunInGlContext([&]() -> absl::Status {
+    MP_ASSIGN_OR_RETURN(output_tensors,
+                        gpu_inference_runner_->Process(cc, tensor_span));
+    return absl::OkStatus();
+  }));
   return output_tensors;
 }
 

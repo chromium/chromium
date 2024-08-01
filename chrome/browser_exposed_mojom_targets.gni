@@ -18,7 +18,6 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/companion/core/mojom:mojo_bindings",
   "//chrome/browser/lens/core/mojom:mojo_bindings",
   "//chrome/browser/media:mojo_bindings",
-  "//chrome/browser/new_tab_page/modules/feed:mojo_bindings",
   "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
   "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings",
   "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",

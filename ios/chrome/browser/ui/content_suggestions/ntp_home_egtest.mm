@@ -17,6 +17,7 @@
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1656,8 +1657,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Check for a toggle cell for Shortcuts, Magic Stack and Discover, and ensure
@@ -1709,8 +1710,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
   [[EarlGrey
       selectElementWithMatcher:CustomizationToggle(
@@ -1758,11 +1759,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the toggles in the main page of the customization menu can be used
 // to navigate to their respective submenus.
 - (void)testNavigateInCustomizationMenu {
-  // Customization is not yet supported on iPads.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
   [self resetCustomizationPrefs];
 
   // Enable customization and reset state so the test can run repeatedly.
@@ -1778,8 +1774,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Tap the Most Visited cell which shouldn't prompt a navigation.
@@ -1788,17 +1784,97 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                      kCustomizationToggleMostVisitedNavigableIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap the Magic Stack cell and check for a navigation to its submenu.
+  // Disable Magic Stack which should disable navigation.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMagicStackIdentifier)]
+      performAction:grey_turnSwitchOn(NO)];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kCustomizationToggleMagicStackNavigableIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Magic Stack")]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Re-enable the Magic Stack switch and tap it to check for a navigation to
+  // its submenu.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMagicStackIdentifier)]
+      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kCustomizationToggleMagicStackNavigableIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID([HomeCustomizationHelper
+              navigationBarTitleForPage:CustomizationMenuPage::kMagicStack])]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the Discover submenu of the Home customization menu.
+- (void)testCustomizationDiscoverSubmenu {
+  [self resetCustomizationPrefs];
+
+  // Enable customization and reset state so the test can run repeatedly.
+  // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kHomeCustomization);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Open the Home customization menu and expand it to view all its content.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPCustomizationMenuButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Navigate to the Discover submenu.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kCustomizationToggleDiscoverNavigableIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID([HomeCustomizationHelper
+              navigationBarTitleForPage:CustomizationMenuPage::kDiscover])]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that all 4 link cells are visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kCustomizationLinkFollowingIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kCustomizationLinkHiddenIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kCustomizationLinkActivityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kCustomizationLinkLearnMoreIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap a cell and check that the menu is no longer visible, indicating that a
+  // navigation occurred.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kCustomizationLinkHiddenIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kCustomizationLinkHiddenIdentifier)]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 #pragma mark - Helpers

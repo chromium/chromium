@@ -692,6 +692,14 @@ namespace autotestPrivate {
 
   callback StopFrameCountingCallback = void (FrameCountingPerSinkData[] data);
 
+  dictionary OverdrawData {
+    // Average overdraw as percentage of the display size grouped by
+    // `bucketSizeInSeconds` arg of `startOverdrawTracking` call.
+    double[] averageOverdraws;
+  };
+
+  callback StopOverdrawTrackingCallback = void (OverdrawData data);
+
   // Result of calling setWindowBounds, which returns the actual bounds and
   // display the window was set to. This may be different than the requested
   // bounds and display, for example if the window is showing an ARC app and
@@ -1625,6 +1633,23 @@ namespace autotestPrivate {
     // Ends frame counting in viz and return the collected data.
     static void stopFrameCounting(
         StopFrameCountingCallback  callback);
+
+    // Starts overdraw tracking for the display associated with
+    // `displayId` in viz. `bucketSizeInSeconds` decides the bucket size
+    // of the overdraw records.
+    // If it is X seconds, each record is the average overdraw of the
+    // frames presented on the display in X seconds.
+    static void startOverdrawTracking(
+      long bucketSizeInSeconds,
+      optional DOMString displayId,
+      VoidCallback callback
+    );
+
+    // Ends overdraw tracking in viz and return the collected data.
+    static void stopOverdrawTracking(
+      optional DOMString displayId,
+      StopOverdrawTrackingCallback callback
+    );
 
     // Install a bruschetta VM.
     static void installBruschetta(

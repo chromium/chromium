@@ -720,13 +720,13 @@ void WallpaperControllerImpl::SetDecodedCustomWallpaper(
   if (preview_mode) {
     DCHECK(is_active_user);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SaveAndSetWallpaper,
-        weak_factory_.GetWeakPtr(), account_id, IsEphemeralUser(account_id),
-        file_name, file_path, WallpaperType::kCustomized, layout,
+        &WallpaperControllerImpl::SaveAndSetWallpaper, base::Unretained(this),
+        account_id, IsEphemeralUser(account_id), file_name, file_path,
+        WallpaperType::kCustomized, layout,
         /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
-        &WallpaperControllerImpl::ShowWallpaperImage,
-        weak_factory_.GetWeakPtr(), image,
+        &WallpaperControllerImpl::ShowWallpaperImage, base::Unretained(this),
+        image,
         WallpaperInfo{/*in_location=*/std::string(), layout,
                       WallpaperType::kCustomized, base::Time::Now(), file_path},
         /*preview_mode=*/true, /*is_override=*/false);
@@ -1096,6 +1096,7 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
 void WallpaperControllerImpl::SetSeaPenWallpaper(
     const AccountId& account_id,
     const uint32_t image_id,
+    const bool preview_mode,
     SetWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id)) {
@@ -1114,7 +1115,7 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
       account_id, image_id,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
-                     image_id, std::move(callback)));
+                     image_id, preview_mode, std::move(callback)));
 }
 
 void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
@@ -1123,7 +1124,6 @@ void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
     return;
   }
   std::move(confirm_preview_wallpaper_callback_).Run();
-  reload_preview_wallpaper_callback_.Reset();
 
   // Ensure shield is applied after confirming the preview wallpaper.
   if (ShouldApplyShield())
@@ -1135,7 +1135,6 @@ void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
 
 void WallpaperControllerImpl::CancelPreviewWallpaper() {
   if (!confirm_preview_wallpaper_callback_) {
-    DCHECK(!reload_preview_wallpaper_callback_);
     return;
   }
   confirm_preview_wallpaper_callback_.Reset();
@@ -2078,11 +2077,11 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     DCHECK(is_active_user);
     std::move(callback).Run(/*success=*/true);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SetWallpaperImpl, weak_factory_.GetWeakPtr(),
+        &WallpaperControllerImpl::SetWallpaperImpl, base::Unretained(this),
         account_id, wallpaper_info, image, /*show_wallpaper=*/false);
     reload_preview_wallpaper_callback_ =
         base::BindRepeating(&WallpaperControllerImpl::ShowWallpaperImage,
-                            weak_factory_.GetWeakPtr(), image, wallpaper_info,
+                            base::Unretained(this), image, wallpaper_info,
                             /*preview_mode=*/true, /*is_override=*/false);
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
@@ -2293,12 +2292,12 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
   if (params.preview_mode) {
     DCHECK(is_active_user);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SetWallpaperImpl, weak_factory_.GetWeakPtr(),
+        &WallpaperControllerImpl::SetWallpaperImpl, base::Unretained(this),
         params.account_id, wallpaper_info, image,
         /*show_wallpaper=*/false);
     reload_preview_wallpaper_callback_ =
         base::BindRepeating(&WallpaperControllerImpl::ShowWallpaperImage,
-                            weak_factory_.GetWeakPtr(), image, wallpaper_info,
+                            base::Unretained(this), image, wallpaper_info,
                             /*preview_mode=*/true, /*is_override=*/false);
 
     // Show the preview wallpaper.
@@ -2430,6 +2429,7 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
 void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
     const AccountId& account_id,
     const uint32_t sea_pen_image_id,
+    const bool preview_mode,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
@@ -2449,7 +2449,8 @@ void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
             .Append(base::NumberToString(sea_pen_image_id))
             .AddExtension(".jpg");
     OnSeaPenWallpaperSavedToPublic(account_id, image_skia, sea_pen_image_id,
-                                   std::move(callback), cache_file_path);
+                                   /*preview_mode=*/false, std::move(callback),
+                                   cache_file_path);
     return;
   }
 
@@ -2463,13 +2464,15 @@ void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
       WALLPAPER_LAYOUT_CENTER_CROPPED, image_skia,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperSavedToPublic,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
-                     image_skia, sea_pen_image_id, std::move(callback)));
+                     image_skia, sea_pen_image_id, preview_mode,
+                     std::move(callback)));
 }
 
 void WallpaperControllerImpl::OnSeaPenWallpaperSavedToPublic(
     const AccountId& account_id,
     const gfx::ImageSkia& image_skia,
     const uint32_t sea_pen_image_id,
+    const bool preview_mode,
     SetWallpaperCallback callback,
     const base::FilePath& file_path) {
   if (file_path.empty()) {
@@ -2489,8 +2492,20 @@ void WallpaperControllerImpl::OnSeaPenWallpaperSavedToPublic(
                                WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kSeaPen, base::Time::Now());
 
-  SetWallpaperImpl(account_id, wallpaper_info, image_skia,
-                   /*show_wallpaper=*/IsActiveUser(account_id));
+  if (preview_mode) {
+    confirm_preview_wallpaper_callback_ = base::BindOnce(
+        &WallpaperControllerImpl::SetWallpaperImpl, base::Unretained(this),
+        account_id, wallpaper_info, image_skia, /*show_wallpaper=*/false);
+    reload_preview_wallpaper_callback_ =
+        base::BindRepeating(&WallpaperControllerImpl::ShowWallpaperImage,
+                            base::Unretained(this), image_skia, wallpaper_info,
+                            /*preview_mode=*/true, /*is_override=*/false);
+    // Show the preview wallpaper.
+    reload_preview_wallpaper_callback_.Run();
+  } else {
+    SetWallpaperImpl(account_id, wallpaper_info, image_skia,
+                     /*show_wallpaper=*/IsActiveUser(account_id));
+  }
 }
 
 void WallpaperControllerImpl::OnSeaPenFilesMigrated(const AccountId& account_id,
@@ -2520,7 +2535,8 @@ void WallpaperControllerImpl::OnSeaPenFilesMigrated(const AccountId& account_id,
     return;
   }
 
-  SetSeaPenWallpaper(account_id, sea_pen_image_id.value(), base::DoNothing());
+  SetSeaPenWallpaper(account_id, sea_pen_image_id.value(),
+                     /*preview_mode=*/false, base::DoNothing());
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaper(const AccountId& account_id,

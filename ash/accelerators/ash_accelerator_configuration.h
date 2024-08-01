@@ -76,6 +76,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   bool IsMutable() const override;
   // Return true if the accelerator is deprecated.
   bool IsDeprecated(const ui::Accelerator& accelerator) const override;
+  // Return true if the accelerator data does not allow users to modify.
+  bool IsAcceleratorLocked(const ui::Accelerator& accelerator) const override;
   mojom::AcceleratorConfigResult AddUserAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
@@ -215,6 +217,10 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
 
   // List of all observer clients.
   base::ObserverList<Observer> observer_list_;
+
+  // Set of locked accelerators key combinations from an action while the
+  // action itself may not be locked.
+  base::flat_set<ui::Accelerator> locked_accelerator_set_;
 };
 
 }  // namespace ash

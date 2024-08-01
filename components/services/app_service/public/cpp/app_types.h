@@ -52,7 +52,10 @@ ENUM(PackageType,
      kChromeApp,
      kGeForceNow,
      kSystem,
-     kWeb)
+     kWeb,
+     // A shortcut to a particular website that's intended to open in a browser,
+     // not install as an app.
+     kWebsite)
 
 // Whether an app is ready to launch, i.e. installed.
 // Note the enumeration is used in UMA histogram so entries should not be

@@ -35,7 +35,7 @@ webnn::mojom::blink::CreateContextOptions::PowerPreference
 ConvertBlinkPowerPreferenceToMojo(
     const V8MLPowerPreference& power_preference_blink) {
   switch (power_preference_blink.AsEnum()) {
-    case V8MLPowerPreference::Enum::kAuto:
+    case V8MLPowerPreference::Enum::kDefault:
       return webnn::mojom::blink::CreateContextOptions::PowerPreference::
           kDefault;
     case V8MLPowerPreference::Enum::kLowPower:
@@ -106,8 +106,7 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
             }
 
             resolver->Resolve(MakeGarbageCollected<MLContext>(
-                context, options->devicePreference(), options->deviceType(),
-                options->powerPreference(), options->modelFormat(),
+                context, options->deviceType(), options->powerPreference(),
                 options->numThreads(), std::move(result->get_success())));
           },
           WrapPersistent(this), WrapPersistent(resolver),

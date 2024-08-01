@@ -54,6 +54,7 @@ class CameraPresenceNotifier : public base::SupportsUserData::Data {
 
   // Checks for camera presence after getting video source information.
   void OnGotSourceInfos(
+      video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   // Result of the last presence check.

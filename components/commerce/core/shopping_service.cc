@@ -763,14 +763,6 @@ void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
   }
 }
 
-bool ShoppingService::HasDiscountShownBefore(uint64_t discount_id) {
-  return shown_discount_ids_.contains(discount_id);
-}
-
-void ShoppingService::ShownDiscount(uint64_t discount_id) {
-  shown_discount_ids_.insert(discount_id);
-}
-
 void ShoppingService::GetProductSpecificationsForUrls(
     const std::vector<GURL>& urls,
     ProductSpecificationsCallback callback) {
@@ -955,29 +947,41 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     // the information available, it doesn't mean the backend doesn't know. If
     // the cache wasn't populated by a page load event, we should be allowed to
     // fetch on demand (assuming the URL is referenced by some other feature).
-    if (commerce_info_cache_.IsUrlReferenced(url) && entry &&
-        entry->run_product_info_on_demand) {
-      entry->run_product_info_on_demand = false;
+    if (commerce_info_cache_.IsUrlReferenced(url) && entry) {
+      if (entry->run_product_info_on_demand) {
+        DCHECK(!base::Contains(on_demand_product_info_callbacks_, url));
+        entry->run_product_info_on_demand = false;
+        on_demand_product_info_callbacks_[url].push_back(std::move(callback));
 
-      // We're wrapping this in a repeating callback but it should only ever be
-      // called once. This is necessary because the on-demand api requires a
-      // repeating callback but we primarily use once callbacks in the shopping
-      // service.
-      RepeatingProductInfoCallback repeating = base::BindRepeating(
-          [](ProductInfoCallback& callback, const GURL& url,
-             const std::optional<const ProductInfo>& info) {
-            // THIS SHOULD ONLY EVER BE CALLED ONCE (see above).
-            CHECK(callback);
-            std::move(callback).Run(url, info);
-          },
-          base::OwnedRef(std::move(callback)));
+        // We're wrapping this in a repeating callback but it should only ever
+        // be
+        // called once. This is necessary because the on-demand api requires a
+        // repeating callback but we primarily use once callbacks in the
+        // shopping service.
+        RepeatingProductInfoCallback repeating = base::BindRepeating(
+            [](ProductInfoCallback& callback, const GURL& url,
+               const std::optional<const ProductInfo>& info) {
+              // THIS SHOULD ONLY EVER BE CALLED ONCE (see above).
+              CHECK(callback);
+              std::move(callback).Run(url, info);
+            },
+            base::OwnedRef(std::move(callback)));
 
-      opt_guide_->CanApplyOptimizationOnDemand(
-          {url}, {optimization_guide::proto::OptimizationType::PRICE_TRACKING},
-          optimization_guide::proto::RequestContext::CONTEXT_SHOPPING,
-          base::BindRepeating(
-              &ShoppingService::HandleOnDemandProductInfoResponse,
-              weak_ptr_factory_.GetWeakPtr(), std::move(repeating)));
+        opt_guide_->CanApplyOptimizationOnDemand(
+            {url},
+            {optimization_guide::proto::OptimizationType::PRICE_TRACKING},
+            optimization_guide::proto::RequestContext::CONTEXT_SHOPPING,
+            base::BindRepeating(
+                &ShoppingService::HandleOnDemandProductInfoResponse,
+                AsWeakPtr(),
+                base::BindRepeating(&ShoppingService::OnGetOnDemandProductInfo,
+                                    AsWeakPtr())));
+      } else if (base::Contains(on_demand_product_info_callbacks_, url)) {
+        // If there is a on demand call running, add callback to the queue.
+        on_demand_product_info_callbacks_[url].push_back(std::move(callback));
+      } else {
+        std::move(callback).Run(url, std::nullopt);
+      }
     } else {
       std::move(callback).Run(url, std::nullopt);
     }
@@ -1582,7 +1586,8 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
 
       if (discount.has_offer_id()) {
         info.offer_id = discount.offer_id();
-      } else {
+      } else if (!commerce::kDiscountOnShoppyPage.Get()) {
+        // If kDiscountOnShoppyPage is on, offer_id is optional.
         continue;
       }
 
@@ -1599,15 +1604,20 @@ void ShoppingService::OnGetAllDiscountsFromOptGuide(
     const std::vector<DiscountsPair>& results) {
   DiscountsMap map;
   std::vector<std::string> urls_to_check_in_db;
-  for (auto res : results) {
-    if (res.second.size() > 0) {
-      map.insert(res);
+
+  for (const auto& discount_pair : results) {
+    const GURL& url = discount_pair.first;
+    const std::vector<DiscountInfo>& discount_infos = discount_pair.second;
+
+    if (discount_infos.empty()) {
+      urls_to_check_in_db.push_back(url.spec());
+    } else {
+      map.insert(discount_pair);
       base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
                                     DiscountsFetchResult::kInfoFromOptGuide);
-    } else {
-      urls_to_check_in_db.push_back(res.first.spec());
     }
   }
+
   if (discounts_storage_) {
     discounts_storage_->HandleServerDiscounts(
         urls_to_check_in_db, std::move(map), std::move(callback));
@@ -1819,6 +1829,26 @@ ShoppingService::GetAllProductSpecificationSets() {
     return {};
   }
   return product_specifications_service_->GetAllProductSpecifications();
+}
+
+void ShoppingService::OnGetOnDemandProductInfo(
+    const GURL& url,
+    const std::optional<const ProductInfo>& info) {
+  auto it = on_demand_product_info_callbacks_.find(url);
+  if (it == on_demand_product_info_callbacks_.end()) {
+    return;
+  }
+
+  for (auto& callback : it->second) {
+    // Make a copy based on the cached value.
+    std::optional<ProductInfo> clone;
+    if (info) {
+      clone.emplace(info.value());
+    }
+    std::move(callback).Run(url, clone);
+  }
+
+  on_demand_product_info_callbacks_.erase(url);
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

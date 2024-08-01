@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_link_element.h"
@@ -642,8 +643,9 @@ LocalDOMWindow* ToLocalDOMWindow(const ScriptState* script_state) {
 }
 
 ExecutionContext* ToExecutionContext(const ScriptState* script_state) {
-  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
-                           RuntimeCallStats::CounterId::kToExecutionContext);
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
+      script_state->GetIsolate(),
+      RuntimeCallStats::CounterId::kToExecutionContext);
   return static_cast<const ScriptStateImpl*>(script_state)
       ->GetExecutionContext();
 }
@@ -742,7 +744,7 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   // TODO(crbug.com/1046282): The following bailout is a temporary fix
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
-  if (frame->IsProvisional()) {
+  if (!frame->IsDetached() && frame->IsProvisional()) {
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
@@ -963,6 +965,16 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
     return false;
 
   return true;
+}
+
+void ApplyContextToException(ScriptState* script_state,
+                             v8::Local<v8::Value> exception,
+                             const ExceptionContext& exception_context) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  auto* dom_exception = V8DOMException::ToWrappable(isolate, exception);
+  // TODO(crbug.com/328104148): Support errors besides DOMExceptions.
+  CHECK(dom_exception);
+  dom_exception->AddContextToMessages(exception_context);
 }
 
 }  // namespace blink

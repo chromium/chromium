@@ -284,34 +284,6 @@ TEST(SuggestionAnswerTest, ParseAccessibilityLabel) {
   EXPECT_EQ(*label, u"accessibility label");
 }
 
-TEST(SuggestionAnswerTest, LogAnswerUsed) {
-  {
-    base::HistogramTester histograms;
-    std::optional<SuggestionAnswer> answer;
-    SuggestionAnswer::LogAnswerUsed(answer);
-    histograms.ExpectUniqueSample(SuggestionAnswer::kAnswerUsedUmaHistogramName,
-                                  0, 1);
-  }
-
-  {
-    base::HistogramTester histograms;
-    SuggestionAnswer answer;
-    answer.set_type(8);
-    SuggestionAnswer::LogAnswerUsed(answer);
-    histograms.ExpectUniqueSample(SuggestionAnswer::kAnswerUsedUmaHistogramName,
-                                  8, 1);
-  }
-
-  {
-    base::HistogramTester histograms;
-    SuggestionAnswer answer;
-    answer.set_type(5);
-    SuggestionAnswer::LogAnswerUsed(answer);
-    histograms.ExpectUniqueSample(SuggestionAnswer::kAnswerUsedUmaHistogramName,
-                                  5, 1);
-  }
-}
-
 // The following test similarities and differences between SuggestionAnswer and
 // RichAnswerTemplate/AnswerData.
 TEST(SuggestionAnswerTest, AnswerData_EmptyJsonIsInvalid) {

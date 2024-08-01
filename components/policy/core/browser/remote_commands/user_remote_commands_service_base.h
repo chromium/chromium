@@ -42,6 +42,7 @@ class POLICY_EXPORT UserRemoteCommandsServiceBase
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
   void OnPolicyRefreshed(bool success) override;
+  std::string_view name() const override;
 
   // KeyedService
   void Shutdown() override;

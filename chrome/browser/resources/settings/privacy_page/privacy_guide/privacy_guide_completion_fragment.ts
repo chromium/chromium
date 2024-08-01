@@ -51,7 +51,7 @@ export class PrivacyGuideCompletionFragmentElement extends
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsNoLinkLayout_(shouldShowWaa_,' +
-            'shouldShowPrivacySandbox_, shouldShowTrackingProtection_)',
+            'shouldShowPrivacySandbox_)',
       },
 
       subheader_: {
@@ -63,12 +63,6 @@ export class PrivacyGuideCompletionFragmentElement extends
         type: Boolean,
         value: () => !loadTimeData.getBoolean('isPrivacySandboxRestricted') ||
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
-      },
-
-      shouldShowTrackingProtection_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableTrackingProtectionRolloutUx'),
       },
 
       shouldShowWaa_: {
@@ -90,7 +84,6 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   private shouldShowPrivacySandbox_: boolean;
-  private shouldShowTrackingProtection_: boolean;
   private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -119,10 +112,8 @@ export class PrivacyGuideCompletionFragmentElement extends
             PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);
   }
 
-  // TODO(b/333527273): Remove this + other no-link logic after TP launch.
   private computeIsNoLinkLayout_() {
-    return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_ &&
-        !this.shouldShowTrackingProtection_;
+    return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_;
   }
 
   private computeSubheader_(): string {
@@ -163,20 +154,6 @@ export class PrivacyGuideCompletionFragmentElement extends
     // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
         .dispatchEvent(new MouseEvent('click'));
-  }
-
-  private onTrackingProtectionClick_() {
-    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
-        PrivacyGuideInteractions.TRACKING_PROTECTION_COMPLETION_LINK);
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.PrivacyGuide.CompletionTrackingProtectionClick');
-    // Create a MouseEvent directly to avoid Polymer failing to synthesise a
-    // click event if this function was called in response to a touch event.
-    // See crbug.com/1253883 for details.
-    // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy call.
-    this.shadowRoot!
-        .querySelector<HTMLAnchorElement>(
-            '#trackingProtectionLink')!.dispatchEvent(new MouseEvent('click'));
   }
 
   private onWaaClick_() {

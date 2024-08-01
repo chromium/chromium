@@ -138,7 +138,11 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;
 
-  HeapMojoAssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
+  // TODO(https://crbug.com/356202294): Stop using
+  // `kForceWithoutContextObserver`.
+  HeapMojoAssociatedRemote<mojom::blink::CacheStorageCache,
+                           HeapMojoWrapperMode::kForceWithoutContextObserver>
+      cache_remote_;
 };
 
 }  // namespace blink

@@ -771,6 +771,7 @@ void CaptureModeCameraController::GetCameraDevices() {
 
 void CaptureModeCameraController::OnCameraDevicesReceived(
     RequestId request_id,
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   if (request_id < most_recent_request_id_) {
     // Ignore any out-dated requests replies, since a reply from a more recent

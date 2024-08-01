@@ -57,9 +57,8 @@
   // The URL to download from for a drag-out download.
   GURL _downloadURL;
 
-  // The file type associated with the file drag, if any. TODO(macOS 11): Change
-  // to a UTType object.
-  NSString* __strong _fileUTType;
+  // The file type associated with the file drag, if any.
+  UTType* __strong _fileType;
 }
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
@@ -138,21 +137,11 @@
     }
 
     if (!mimeType.empty()) {
-      if (@available(macOS 11, *)) {
-        UTType* type =
-            [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
-        _fileUTType = type.identifier;
-      } else {
-        base::apple::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
-            base::SysUTF8ToCFStringRef(mimeType));
-        _fileUTType = base::apple::CFToNSOwnershipCast(
-            UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
-                                                  mimeTypeCF.get(), nullptr));
-      }
+      _fileType = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
 
       // Promise both the file's contents...
       if (!_dropData.file_contents.empty()) {
-        [writableTypes addObject:_fileUTType];
+        [writableTypes addObject:_fileType.identifier];
       }
 
       // ... and materialization of the file if requested.
@@ -182,16 +171,8 @@
   //
   // (The only time that Blink fills in the DropData::file_contents is with
   // an image drop, but the MIME time is tested anyway for paranoia's sake.)
-  bool hasImageData;
-  if (@available(macOS 11, *)) {
-    hasImageData =
-        !_dropData.file_contents.empty() && _fileUTType &&
-        [[UTType typeWithIdentifier:_fileUTType] conformsToType:UTTypeImage];
-  } else {
-    hasImageData =
-        !_dropData.file_contents.empty() && _fileUTType &&
-        UTTypeConformsTo(base::apple::NSToCFPtrCast(_fileUTType), kUTTypeImage);
-  }
+  bool hasImageData = !_dropData.file_contents.empty() && _fileType &&
+                      [_fileType conformsToType:UTTypeImage];
   if (hasHTMLData) {
     if (hasImageData) {
       [writableTypes addObject:ui::kUTTypeChromiumImageAndHTML];
@@ -248,7 +229,7 @@
   }
 
   // File contents.
-  if ([type isEqualToString:_fileUTType]) {
+  if ([type isEqualToString:_fileType.identifier]) {
     return [NSData dataWithBytes:_dropData.file_contents.data()
                           length:_dropData.file_contents.length()];
   }
@@ -256,7 +237,7 @@
   // File instantiation promise.
   if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFilePromiseContent)]) {
-    return _fileUTType;
+    return _fileType.identifier;
   }
   if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFileURLPromise)]) {

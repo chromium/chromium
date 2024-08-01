@@ -301,18 +301,43 @@ WeekDay:
   - SUNDAY
   type: string
 WeeklyTime:
+  description: Use WeeklyTimeChecked in new code.
   properties:
     day_of_week:
       $ref: WeekDay
     time:
+      description: Milliseconds since midnight.
       type: integer
   type: object
 WeeklyTimeIntervals:
+  description: Use WeeklyTimeIntervalChecked in new code.
   properties:
     end:
       $ref: WeeklyTime
     start:
       $ref: WeeklyTime
+  type: object
+WeeklyTimeChecked:
+  properties:
+    day_of_week:
+      $ref: WeekDay
+    milliseconds_since_midnight:
+      minimum: 0
+      maximum: 86399999
+      type: integer
+  required:
+  - day_of_week
+  - milliseconds_since_midnight
+  type: object
+WeeklyTimeIntervalChecked:
+  properties:
+    start:
+      $ref: WeeklyTimeChecked
+    end:
+      $ref: WeeklyTimeChecked
+  required:
+  - start
+  - end
   type: object
 file_transfer_enable_disable_schema:
   items:

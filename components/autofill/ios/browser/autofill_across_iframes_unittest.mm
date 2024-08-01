@@ -45,7 +45,8 @@
 using base::test::ios::kWaitForJSCompletionTimeout;
 using ::testing::AllOf;
 using ::testing::Each;
-using testing::IsTrue;
+using ::testing::IsEmpty;
+using ::testing::IsTrue;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -254,6 +255,38 @@ class TestAutofillManager : public BrowserAutofillManager {
       {AutofillManagerEvent::kTextFieldDidChange}};
 };
 
+// Catcher that captures the latest new frame reported by `manager`.
+class NewFrameCatcher : public web::WebFramesManager::Observer {
+ public:
+  explicit NewFrameCatcher(web::WebFramesManager* manager) {
+    scoped_observer_.Observe(manager);
+  }
+
+  // Returns the latest new frame that was observed. Returns nullptr if nothing
+  // was seen.
+  web::WebFrame* latest_new_frame() { return latest_new_frame_; }
+
+ private:
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override {
+    latest_new_frame_ = web_frame;
+  }
+
+  web::WebFrame* latest_new_frame_ = nullptr;
+  base::ScopedObservation<web::WebFramesManager,
+                          web::WebFramesManager::Observer>
+      scoped_observer_{this};
+};
+
+// A mock child frame registrar observer.
+class MockRegistrarObserver : public autofill::ChildFrameRegistrarObserver {
+ public:
+  MOCK_METHOD(void,
+              OnDidDoubleRegistration,
+              (LocalFrameToken local),
+              (override));
+};
+
 class AutofillAcrossIframesTest : public AutofillTestWithWebState {
  public:
   AutofillAcrossIframesTest()
@@ -294,13 +327,21 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     __block web::WebFrame* main_frame = nullptr;
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         kWaitForJSCompletionTimeout, ^bool {
-          web::WebFramesManager* frames_manager =
-              autofill::FormUtilJavaScriptFeature::GetInstance()
-                  ->GetWebFramesManager(web_state());
-          main_frame = frames_manager->GetMainWebFrame();
+          main_frame = web_frames_manager()->GetMainWebFrame();
           return main_frame != nullptr;
         }));
     return main_frame;
+  }
+
+  // Wait for a new frame to become available.
+  web::WebFrame* WaitForNewFrame() {
+    NewFrameCatcher catcher(web_frames_manager());
+    NewFrameCatcher* catcher_ptr = &catcher;
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        kWaitForJSCompletionTimeout, ^bool {
+          return !!catcher_ptr->latest_new_frame();
+        }));
+    return catcher_ptr->latest_new_frame();
   }
 
   AutofillDriverIOS* main_frame_driver() {
@@ -311,6 +352,15 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   TestAutofillManager& main_frame_manager() {
     return static_cast<TestAutofillManager&>(
         main_frame_driver()->GetAutofillManager());
+  }
+
+  web::WebFramesManager* web_frames_manager() {
+    return autofill::FormUtilJavaScriptFeature::GetInstance()
+        ->GetWebFramesManager(web_state());
+  }
+
+  autofill::ChildFrameRegistrar* registrar() {
+    return autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state());
   }
 
   // Functions for setting up the pages to be loaded. Tests should call one or
@@ -351,12 +401,21 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
 
   // Returns the frame that corresponds to `frame_id`.
   web::WebFrame* GetFrameByID(const std::string& frame_id) {
-    web::WebFramesManager* frames_manager =
-        FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
-            web_state());
-    CHECK(frames_manager);
+    return web_frames_manager()->GetFrameWithId(frame_id);
+  }
 
-    return frames_manager->GetFrameWithId(frame_id);
+  AutofillDriverIOS* GetDriverForFrame(web::WebFrame* frame) {
+    auto* driver =
+        AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), frame);
+    return driver;
+  }
+
+  TestAutofillManager* GetManagerForFrame(web::WebFrame* frame) {
+    if (auto* driver =
+            AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), frame)) {
+      return static_cast<TestAutofillManager*>(&driver->GetAutofillManager());
+    }
+    return nullptr;
   }
 
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
@@ -388,9 +447,7 @@ TEST_F(AutofillAcrossIframesTest, NoChildFrames) {
   // without any child frames.
   LocalFrameToken token = main_frame_driver()->GetFrameToken();
   ASSERT_TRUE(token);
-  web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state());
+  web::WebFramesManager* frames_manager = web_frames_manager();
   ASSERT_TRUE(frames_manager);
   web::WebFrame* frame = frames_manager->GetFrameWithId(token.ToString());
   EXPECT_EQ(frame, main_frame_driver()->web_frame());
@@ -448,9 +505,7 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
         return local_token1.has_value() && local_token2.has_value();
       }));
 
-  web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state());
+  web::WebFramesManager* frames_manager = web_frames_manager();
   ASSERT_TRUE(frames_manager);
 
   web::WebFrame* frame1 =
@@ -579,9 +634,7 @@ TEST_F(AutofillAcrossIframesTest, Resolve) {
   std::optional<LocalFrameToken> local_token =
       main_frame_driver()->Resolve(remote_token.token);
   ASSERT_TRUE(local_token.has_value());
-  web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state());
+  web::WebFramesManager* frames_manager = web_frames_manager();
   ASSERT_TRUE(frames_manager);
   EXPECT_TRUE(frames_manager->GetFrameWithId(local_token->ToString()));
 
@@ -638,9 +691,7 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
   AddIframe("cf1", "<form><input id='address'></input></form>");
   StartTestServerAndLoad();
 
-  web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
-          web_state());
+  web::WebFramesManager* frames_manager = web_frames_manager();
   ASSERT_TRUE(frames_manager);
 
   // Wait for the main frame and the child frame to be known to the
@@ -1070,12 +1121,12 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
 
   // Attempt to fill the 2 fields in the browser form while there is actually
   // only one.
-  main_frame_driver()->ApplyFormAction(
-      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, fields,
-      form.main_frame_origin(), field_type_map);
+  ASSERT_THAT(main_frame_driver()->ApplyFormAction(
+                  mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+                  fields, form.main_frame_origin(), field_type_map),
+              SizeIs(1));
 
-  // Verify that only one form is was filled since the frame containing the
-  // other form was deleted.
+  // Wait on the fill to be done.
   ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
   ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
 
@@ -1241,6 +1292,161 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic_Partial) {
       main_frame_manager().FindCachedFormById(browser_form_global_id);
   ASSERT_TRUE(form);
   EXPECT_EQ(4u, form->field_count());
+}
+
+// Tests that double registration is correctly notified.
+TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Notify) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(form.child_frames().size(), 2u);
+  ASSERT_EQ(form.fields().size(), 2u);
+
+  main_frame_manager().ResetTestState();
+
+  // Inject the spoofy frame that will attempt double registration.
+  {
+    std::u16string script =
+        u"const doc = `<body><form>"
+        "<input type=\"text\" placeholder=\"Stolen Name\"></input>"
+        "</form></body>`;"
+        "const iframe = document.createElement('iframe');"
+        "iframe.srcdoc = doc;"
+        "document.body.appendChild(iframe); true";
+    ASSERT_TRUE(ExecuteJavaScriptInFrame(WaitForMainFrame(), script));
+  }
+
+  web::WebFrame* spoofy_frame = WaitForNewFrame();
+  ASSERT_TRUE(spoofy_frame);
+
+  TestAutofillManager* spoofy_manager = GetManagerForFrame(spoofy_frame);
+  ASSERT_TRUE(spoofy_manager);
+
+  // Wait for the spoofy frame forms to be seen so they were be ingested by the
+  // system.
+  ASSERT_TRUE(spoofy_manager->WaitForFormsSeen(1));
+  ASSERT_EQ(spoofy_manager->seen_forms().size(), 1u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form, but should be the spoofy form in this
+  // case as this is in a separate tree from the other browser form (a single
+  // node in this case).
+  FormData spoofy_form = spoofy_manager->seen_forms().back();
+  ASSERT_EQ(spoofy_form.fields().size(), 1u);
+
+  MockRegistrarObserver registrar_observer;
+  base::ScopedObservation<autofill::ChildFrameRegistrar,
+                          autofill::ChildFrameRegistrarObserver>
+      registrar_scoped_observation{&registrar_observer};
+  registrar_scoped_observation.Observe(registrar());
+
+  RemoteFrameToken stolen_remote_token =
+      absl::get<RemoteFrameToken>(form.child_frames()[0].token);
+  std::optional<LocalFrameToken> attacked_frame =
+      registrar()->LookupChildFrame(stolen_remote_token);
+  ASSERT_TRUE(attacked_frame);
+
+  // Expect that double registration is notified for the frame that was attacked
+  // which has its remote token stolen.
+  EXPECT_CALL(registrar_observer, OnDidDoubleRegistration(*attacked_frame))
+      .Times(1);
+
+  {
+    std::string unformatted_script =
+        "__gCrWeb.common.sendWebKitMessage('FormHandlersMessage', "
+        "{'command': 'registerAsChildFrame', 'local_frame_id': "
+        "__gCrWeb.frameId, 'remote_frame_id':'%s'});";
+    std::u16string script = base::ASCIIToUTF16(base::StringPrintf(
+        unformatted_script.c_str(), stolen_remote_token.ToString().c_str()));
+    ASSERT_TRUE(ExecuteJavaScriptInFrame(spoofy_frame, script));
+  }
+}
+
+// Tests that a frame can be unregistered without necessarily being deleted when
+// detecting a spoofing attempt for example.
+TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kNamePlaceholder) +
+                       "\"></input></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToASCII(kPhonePlaceholder) +
+                       "\"></input></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms to be reported as seen to the main frame that hosts
+  // the browser form (which is the flattened representation of all forms in the
+  // tree structure that share the form in the main frame as a common root).
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  FormData browser_form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(browser_form.child_frames().size(), 2u);
+  ASSERT_EQ(browser_form.fields().size(), 2u);
+
+  std::vector<FormFieldData> fields_to_fill = browser_form.fields();
+
+  FormFieldData* name_field =
+      GetFieldWithPlaceholder(kNamePlaceholder, &fields_to_fill);
+  FormFieldData* phone_field =
+      GetFieldWithPlaceholder(kPhonePlaceholder, &fields_to_fill);
+  ASSERT_TRUE(name_field && phone_field);
+
+  // Pick one non-main frame to unregister based on field, the name field in
+  // this case. Since there is only one frame per field, we know that deleting
+  // the frame will only concern that field.
+  const LocalFrameToken frame_to_unregister = name_field->host_frame();
+
+  // Unregister the frame (via the driver) of the name field.
+  {
+    auto* driver = AutofillDriverIOS::FromWebStateAndLocalFrameToken(
+        web_state(), frame_to_unregister);
+    ASSERT_TRUE(driver);
+    driver->Unregister();
+  }
+
+  base::flat_map<FieldGlobalId, FieldType> field_type_map;
+
+  // Set fill data for both fields.
+  SetFillDataForField(kFakeName, FieldType::NAME_FULL, name_field,
+                      &field_type_map);
+  SetFillDataForField(kFakePhone, FieldType::PHONE_HOME_NUMBER, phone_field,
+                      &field_type_map);
+
+  // Verify that the only the phone field will be filled, where the name field
+  // in the unregistered frame shouldn't be filled.
+  EXPECT_THAT(
+      main_frame_driver()->ApplyFormAction(
+          mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+          fields_to_fill, browser_form.main_frame_origin(), field_type_map),
+      UnorderedElementsAre(phone_field->global_id()));
+
+  main_frame_manager().ResetTestState();
 }
 
 // Ensure that disabling the feature actually disables the feature.

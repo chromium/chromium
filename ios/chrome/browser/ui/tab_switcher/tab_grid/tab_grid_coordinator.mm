@@ -26,10 +26,14 @@
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
+#import "ios/chrome/browser/history/ui_bundled/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -68,10 +72,6 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
-#import "ios/chrome/browser/ui/history/history_coordinator.h"
-#import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
@@ -372,8 +372,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)setActivePage:(TabGridPage)page {
   DCHECK(page != TabGridPageRemoteTabs);
-  [_mediator setPage:page];
-  self.baseViewController.activePage = page;
+  [_mediator setActivePage:page];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -557,12 +556,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Finally, the launch mask view should be removed.
   ProceduralBlock extendedCompletion = ^{
     [self.delegate tabGridDismissTransitionDidEnd:self];
-    if (self.baseViewController.tabGridMode == TabGridModeSearch) {
-      // In search mode, the tabgrid mode is not reset before the animation so
-      // the animation can start from the correct cell. Once the animation is
-      // complete, reset the tab grid mode.
-      [self setActiveMode:TabGridModeNormal];
-    }
+    // In search mode, the tabgrid mode is not reset before the animation so
+    // the animation can start from the correct cell. Once the animation is
+    // complete, reset the tab grid mode.
+    [self setActiveMode:TabGridModeNormal];
     Browser* browser = self.bvcContainer.incognito ? self.incognitoBrowser
                                                    : self.regularBrowser;
     if (!GetFirstResponderInWindowScene(
@@ -947,8 +944,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
     [self.inactiveTabsCoordinator start];
 
-    baseViewController.inactiveGridHandler =
-        self.inactiveTabsCoordinator.gridCommandsHandler;
     self.regularTabsMediator.containedGridToolbarsProvider =
         self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
     self.regularTabsMediator.inactiveTabsGridCommands =

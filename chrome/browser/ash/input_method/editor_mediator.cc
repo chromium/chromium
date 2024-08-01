@@ -120,10 +120,6 @@ void EditorMediator::OnFocus(int context_id) {
     ResetEditorConnections();
   }
 
-  GetTextFieldContextualInfo(
-      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   if (IsServiceConnected()) {
     service_connection_->system_actuator()->OnFocus(context_id);
   }
@@ -211,10 +207,14 @@ void EditorMediator::HandleTrigger(
                                query_context_->freeform_text}
           : EditorQueryContext{preset_query_id, freeform_text};
 
+  bool can_fallback_to_center_position =
+      base::FeatureList::IsEnabled(ash::features::kOrcaArc) &&
+      editor_context_.app_type() == chromeos::AppType::ARC_APP;
+
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(
-          profile_, MakoEditorMode::kRewrite,
+          profile_, MakoEditorMode::kRewrite, can_fallback_to_center_position,
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
@@ -222,7 +222,7 @@ void EditorMediator::HandleTrigger(
       break;
     case EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(
-          profile_, MakoEditorMode::kWrite,
+          profile_, MakoEditorMode::kWrite, can_fallback_to_center_position,
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
@@ -255,6 +255,10 @@ void EditorMediator::HandleTrigger(
 }
 
 void EditorMediator::CacheContext() {
+  GetTextFieldContextualInfo(
+      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   mako_bubble_coordinator_.CacheContextCaretBounds();
 
   size_t selected_length =

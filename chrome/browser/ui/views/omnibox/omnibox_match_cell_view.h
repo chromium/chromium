@@ -11,7 +11,8 @@
 
 namespace views {
 class ImageView;
-}
+class Link;
+}  // namespace views
 
 struct AutocompleteMatch;
 class OmniboxResultView;
@@ -58,8 +59,7 @@ class OmniboxMatchCellView : public views::View {
   OmniboxTextView* content() { return content_view_; }
   OmniboxTextView* description() { return description_view_; }
   OmniboxTextView* separator() { return separator_view_; }
-
-  static int GetTextIndent(bool is_iph_type);
+  views::Link* iph_link_view() { return iph_link_view_; }
 
   // Determines if `match` should display an answer, calculator, or entity
   // image.
@@ -87,7 +87,6 @@ class OmniboxMatchCellView : public views::View {
   // views::View:
   gfx::Insets GetInsets() const override;
   void Layout(PassKey) override;
-  bool GetCanProcessEventsWithinSubtree() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
@@ -97,9 +96,11 @@ class OmniboxMatchCellView : public views::View {
     TWO_LINE_SUGGESTION,
   };
 
+  int GetTextIndent() const;
+
   void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
-  bool is_iph_type = false;
+  bool is_iph_type_ = false;
   bool is_search_type_ = false;
   bool has_image_ = false;
   LayoutStyle layout_style_ = LayoutStyle::ONE_LINE_SUGGESTION;
@@ -113,6 +114,8 @@ class OmniboxMatchCellView : public views::View {
   raw_ptr<OmniboxTextView> content_view_;
   raw_ptr<OmniboxTextView> description_view_;
   raw_ptr<OmniboxTextView> separator_view_;
+  // Some IPH matches have a link users can click to learn more or take action.
+  raw_ptr<views::Link> iph_link_view_;
 
   // This holds the rendered width of the common prefix of a set of tail
   // suggestions so that it doesn't have to be re-calculated if the prefix

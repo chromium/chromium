@@ -7,7 +7,7 @@ import './scrollbar.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DEFAULT_SCALE, DRAG_RATE, MAX_SCALE, MIN_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, SAMPLE_RATE, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
+import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
 import {getTemplate} from './line_chart.html.js';
 import type {HealthdInternalsLineChartMenuElement} from './menu.js';
 import type {HealthdInternalsLineChartScrollbarElement} from './scrollbar.js';
@@ -73,8 +73,8 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   // The end time of the time line chart. (Unix time)
   private endTime: number;
 
-  // The scale of the line chart. Milliseconds per pixel.
-  private scale: number = DEFAULT_SCALE;
+  // Horizontal scale of line chart. Number of milliseconds between two pixels.
+  private timeScale: number = DEFAULT_TIME_SCALE;
 
   // The helper class to draw the canvas.
   private canvasDrawer: CanvasDrawer|null = null;
@@ -238,13 +238,14 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.isTouching = false;
   }
 
-  // Zoom the line chart by setting the `scale` to `rate` times.
+  // Zoom the line chart by setting the `timeScale` to `rate` times.
   private zoomChart(rate: number) {
-    const oldScale: number = this.scale;
-    const newScale: number = this.scale * rate;
-    this.scale = Math.max(MIN_SCALE, Math.min(newScale, MAX_SCALE));
+    const oldScale: number = this.timeScale;
+    const newScale: number = this.timeScale * rate;
+    this.timeScale =
+        Math.max(MIN_TIME_SCALE, Math.min(newScale, MAX_TIME_SCALE));
 
-    if (this.scale === oldScale) {
+    if (this.timeScale === oldScale) {
       return;
     }
 
@@ -258,9 +259,10 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     // To try to make the chart keep right, make the right edge of the chart
     // stop at the same position.
     const oldPosition: number = this.$.chartScrollbar.getPosition();
-    const width: number = this.$.mainCanvas.width;
-    const visibleEndTime: number = oldScale * (oldPosition + width);
-    const newPosition: number = Math.round(visibleEndTime / this.scale) - width;
+    const canvasWidth: number = this.$.mainCanvas.width;
+    const visibleEndTime: number = oldScale * (oldPosition + canvasWidth);
+    const newPosition: number =
+        Math.round(visibleEndTime / this.timeScale) - canvasWidth;
 
     this.updateScrollBar();
     this.$.chartScrollbar.setPosition(newPosition);
@@ -303,7 +305,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
         Math.max(this.getChartWidth() - this.getChartVisibleWidth(), 0);
     const isScrolledToRightEdge: boolean =
         this.$.chartScrollbar.isScrolledToRightEdge();
-    this.$.chartScrollbar.setRange(scrollRange);
+    this.$.chartScrollbar.setScrollableRange(scrollRange);
     if (isScrolledToRightEdge && !this.isDragging) {
       this.$.chartScrollbar.scrollToRightEdge();
     }
@@ -312,13 +314,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   // Get the whole line chart width, in pixel.
   private getChartWidth(): number {
     const timeRange: number = this.endTime - this.startTime;
-    const numOfPixels: number = Math.floor(timeRange / this.scale);
-
-    // To reduce CPU usage, the chart do not draw points at every pixels.
-    // Remove the last few pixels to avoid the graph showing some blank at
-    // the end of the graph.
-    const extraPixels: number = numOfPixels % SAMPLE_RATE;
-    return numOfPixels - extraPixels;
+    return Math.floor(timeRange / this.timeScale);
   }
 
   // Get the visible chart width.
@@ -350,7 +346,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     // To reduce CPU usage, the chart do not draw points at every pixels.
     // We need to know the offset of data from `scrollbarPosition`.
     let scrollbarPosition: number = this.$.chartScrollbar.getPosition();
-    if (this.$.chartScrollbar.getRange() === 0) {
+    if (this.$.chartScrollbar.getScrollableRange() === 0) {
       // If the chart width less than the visible width, make the chart align
       // right by setting the negative position.
       scrollbarPosition = this.getChartWidth() - this.$.mainCanvas.width;
@@ -360,9 +356,13 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
       return;
     }
 
+    const visibleStartTime: number =
+        this.startTime + scrollbarPosition * this.timeScale;
+    const visibleEndTime: number =
+        visibleStartTime + this.getChartVisibleWidth() * this.timeScale;
     this.canvasDrawer.renderCanvas(
         context, this.$.mainCanvas.width, this.$.mainCanvas.height,
-        scrollbarPosition, this.startTime, this.scale);
+        visibleStartTime, visibleEndTime, this.timeScale);
   }
 }
 

@@ -29,7 +29,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
@@ -41,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A model class that parses the incoming intent for incognito and ephemeral Custom Tabs specific
- * customization data.
+ * A model class that parses the incoming intent for incognito Custom Tabs specific customization
+ * data.
  *
  * <p>Lifecycle: is activity-scoped, i.e. one instance per CustomTabActivity instance. Must be
  * re-created when color scheme changes, which happens automatically since color scheme change leads
@@ -53,7 +52,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
     private final boolean mIsTrustedIntent;
-    private final boolean mIsIncognitoBranded;
     private final Bundle mAnimationBundle;
     private final ColorProvider mColorProvider;
     private final int mTitleVisibilityState;
@@ -70,26 +68,19 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final @CustomTabsUiType int mUiType;
 
     /** Constructs a {@link IncognitoCustomTabIntentDataProvider}. */
-    public IncognitoCustomTabIntentDataProvider(
-            Intent intent, Context context, int colorScheme, boolean isIncognitoBranded) {
+    public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
         assert intent != null;
         mIntent = intent;
         mUrlToLoad = resolveUrlToLoad(intent);
         mSession = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         mSendersPackageName = getClientPackageNameFromSessionOrCallingActivity(intent, mSession);
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
-        mIsIncognitoBranded = isIncognitoBranded;
         assert isOffTheRecord();
         mAnimationBundle =
                 IntentUtils.safeGetBundleExtra(
                         intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
         mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
-
-        if (mIsIncognitoBranded) {
-            mColorProvider = new IncognitoCustomTabColorProvider(context);
-        } else {
-            mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
-        }
+        mColorProvider = new IncognitoCustomTabColorProvider(context);
 
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
         mShowShareItem =
@@ -116,12 +107,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private static boolean isIncognitoRequested(Intent intent) {
         return IntentUtils.safeGetBooleanExtra(
                 intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
-    }
-
-    private static boolean isEphemeralTabRequested(Intent intent) {
-        if (!ChromeFeatureList.sCctEphemeralMode.isEnabled()) return false;
-        return IntentUtils.safeGetBooleanExtra(
-                intent, IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, false);
     }
 
     private static boolean isForReaderMode(Intent intent) {
@@ -178,11 +163,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         if (mAnimationBundle != null) {
             featureUsage.log(CustomTabsFeature.EXTRA_EXIT_ANIMATION_BUNDLE);
         }
-        if (mIsIncognitoBranded) {
-            featureUsage.log(CustomTabsFeature.EXTRA_OPEN_NEW_INCOGNITO_TAB);
-        } else {
-            featureUsage.log(CustomTabsFeature.EXTRA_OPEN_NEW_EPHEMERAL_TAB);
-        }
+        featureUsage.log(CustomTabsFeature.EXTRA_OPEN_NEW_INCOGNITO_TAB);
         if (mMenuEntries != null) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
         if (getClientPackageName() != null) featureUsage.log(CustomTabsFeature.CTF_PACKAGE_NAME);
         if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)) {
@@ -204,9 +185,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     public @IntentHandler.IncognitoCCTCallerId int getFeatureIdForMetricsCollection() {
-        if (!mIsIncognitoBranded) {
-            return IncognitoCCTCallerId.EPHEMERAL_TAB;
-        } else if (isIntentFromChrome(mIntent)) {
+        if (isIntentFromChrome(mIntent)) {
             assert mIntent.hasExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID)
                     : "Intent coming from Chrome features should add the extra "
                             + "IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID.";
@@ -246,10 +225,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         boolean isTrusted = isTrustedCustomTab(intent, session);
         RecordHistogram.recordBooleanHistogram("CustomTabs.IncognitoCCTCallerIsTrusted", isTrusted);
         return isTrusted;
-    }
-
-    public static boolean isValidEphemeralTabIntent(Intent intent) {
-        return isEphemeralTabRequested(intent);
     }
 
     private String resolveUrlToLoad(Intent intent) {
@@ -326,7 +301,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowShareMenuItem() {
-        return mShowShareItem || !mIsIncognitoBranded;
+        return mShowShareItem;
     }
 
     @Override
@@ -346,14 +321,12 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowDownloadButton() {
-        return !mIsIncognitoBranded;
+        return false;
     }
 
     @Override
     public @CustomTabProfileType int getCustomTabMode() {
-        return mIsIncognitoBranded
-                ? CustomTabProfileType.INCOGNITO
-                : CustomTabProfileType.EPHEMERAL;
+        return CustomTabProfileType.INCOGNITO;
     }
 
     @Override

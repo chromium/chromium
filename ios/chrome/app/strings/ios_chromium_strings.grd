@@ -597,6 +597,18 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY" desc="Text for the body of a Tips notification that encourages the user to set the app as their default browser">
         Use Chromium anytime you tap links in messages or other apps.
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+        Access Chromium faster from your iPad's Home Screen Dock.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPHONE" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+        Access Chromium faster from your iPhone's Home Screen Dock.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE" desc="Text for the title of a Tips notification that encourages the user to put the app into the iOS dock">
+        Chromium Tip: Move Chromium to the Dock
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE" desc="Text for the title of a Tips notification that reminds the user to set their preferred omnibox position">
+        Chromium Tip: Choose your address bar position
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_BODY" desc="Text for the body of a Tips notification that encourages the user to complete the Set Up List">
         Get the most out of Chromium by continuing setting up your browser.
       </message>
@@ -786,6 +798,9 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       </message>
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR or credit card scanner in a Split View mode, when the camera is unavailable. [Length: 140em] [iOS only]">
         Chromium can't use your camera in Split View mode
+      </message>
+      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_SHOPPER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Shoppers.">
+        Use Chromium by Default to Easily Get Price Insights
       </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved in your Account (<ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>).

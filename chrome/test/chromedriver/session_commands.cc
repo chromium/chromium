@@ -421,6 +421,19 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     if (status.IsError()) {
       return status;
     }
+
+    // Execute session.new for the newly-created mapper instance.
+    base::Value::Dict bidi_cmd;
+    bidi_cmd.Set("channel", "/init-bidi-session");
+    bidi_cmd.Set("id", 1);
+    bidi_cmd.Set("params", params.Clone());
+    bidi_cmd.Set("method", "session.new");
+    base::Value::Dict bidi_response;
+    status = web_view->SendBidiCommand(
+        std::move(bidi_cmd), Timeout(base::Seconds(20)), bidi_response);
+    if (status.IsError()) {
+      return status;
+    }
   }  // if (session->web_socket_url)
 
   return status;
@@ -1660,6 +1673,85 @@ Status ExecuteSetTimeZone(Session* session,
   web_view->SendCommandAndGetResult("Emulation.setTimezoneOverride", body,
                                     value);
   return Status(kOk);
+}
+
+Status ExecuteCreateVirtualPressureSource(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return Status(kInvalidArgument, "'type' must be a string");
+  }
+
+  base::Value::Dict body;
+  body.Set("enabled", true);
+  body.Set("source", *type);
+
+  base::Value::Dict metadata;
+  metadata.Set("available", true);
+  if (params.contains("supported")) {
+    auto supported = params.FindBool("supported");
+    if (!supported.has_value()) {
+      return Status(kInvalidArgument, "'supported' must be a boolean");
+    }
+    metadata.Set("available", *supported);
+  }
+  body.Set("metadata", std::move(metadata));
+
+  return web_view->SendCommand("Emulation.setPressureSourceOverrideEnabled",
+                               body);
+}
+
+Status ExecuteUpdateVirtualPressureSource(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return Status(kInvalidArgument, "'type' must be a string");
+  }
+
+  const std::string* sample = params.FindString("sample");
+  if (!sample) {
+    return Status(kInvalidArgument, "'sample' must be a string");
+  }
+
+  base::Value::Dict body;
+  body.Set("source", *type);
+  body.Set("state", *sample);
+  return web_view->SendCommand("Emulation.setPressureStateOverride", body);
+}
+
+Status ExecuteRemoveVirtualPressureSource(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* type = params.FindString("type");
+  if (!type) {
+    return Status(kInvalidArgument, "'type' must be a string");
+  }
+
+  base::Value::Dict body;
+  body.Set("enabled", false);
+  body.Set("source", *type);
+  return web_view->SendCommand("Emulation.setPressureSourceOverrideEnabled",
+                               body);
 }
 
 // Run a BiDi command

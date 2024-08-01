@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
@@ -580,6 +581,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
         "urlParameterToAutofillSAMLUsername",
         local_state->GetString(prefs::kUrlParameterToAutofillSAMLUsername));
   }
+
+  params.Set("autoReloadAttempts",
+             auth_flow_auto_reload_manager_.GetAttemptsCount());
 
   was_security_token_pin_canceled_ = false;
 
@@ -1229,6 +1233,7 @@ void GaiaScreenHandler::Hide() {
   hidden_ = true;
   network_state_informer_->RemoveObserver(this);
   enable_ash_httpauth_.reset();
+  auth_flow_auto_reload_manager_.Terminate();
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {

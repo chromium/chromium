@@ -7,6 +7,7 @@
 #import "base/containers/span.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/credential_provider/credential.h"
@@ -110,6 +111,12 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
   NSData* signature =
       GenerateSignature(credential.privateKey, credential.encrypted,
                         authenticatorData, clientDataHash);
+
+  // Update the credential's last used time.
+  credential.lastUsedTime =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  // TODO(crbug.com/330355124): Save the last used time of the credential to
+  //                            update it the next time Chrome syncs.
 
   return [ASPasskeyAssertionCredential
       credentialWithUserHandle:credential.userId

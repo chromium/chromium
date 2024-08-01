@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
 
 #import <AVFoundation/AVFoundation.h>
@@ -143,49 +148,46 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     return false;
   }
 
-  if (__builtin_available(macos 11.0, *)) {
-    if (io_surface_color_space ==
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::PQ,
-                            gfx::ColorSpace::MatrixID::BT2020_NCL,
-                            gfx::ColorSpace::RangeID::LIMITED) ||
-        io_surface_color_space ==
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::HLG,
-                            gfx::ColorSpace::MatrixID::BT2020_NCL,
-                            gfx::ColorSpace::RangeID::LIMITED)) {
-      CVBufferSetAttachment(cv_pixel_buffer.get(),
-                            kCVImageBufferColorPrimariesKey,
-                            kCVImageBufferColorPrimaries_ITU_R_2020,
-                            kCVAttachmentMode_ShouldPropagate);
-      CVBufferSetAttachment(cv_pixel_buffer.get(), kCVImageBufferYCbCrMatrixKey,
-                            kCVImageBufferYCbCrMatrix_ITU_R_2020,
-                            kCVAttachmentMode_ShouldPropagate);
-      switch (io_surface_color_space.GetTransferID()) {
-        case gfx::ColorSpace::TransferID::HLG:
-          CVBufferSetAttachment(cv_pixel_buffer.get(),
-                                kCVImageBufferTransferFunctionKey,
-                                kCVImageBufferTransferFunction_ITU_R_2100_HLG,
-                                kCVAttachmentMode_ShouldPropagate);
-          break;
-        case gfx::ColorSpace::TransferID::PQ:
-          CVBufferSetAttachment(cv_pixel_buffer.get(),
-                                kCVImageBufferTransferFunctionKey,
-                                kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
-                                kCVAttachmentMode_ShouldPropagate);
-          CVBufferSetAttachment(
-              cv_pixel_buffer.get(),
-              kCVImageBufferMasteringDisplayColorVolumeKey,
-              gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get(),
-              kCVAttachmentMode_ShouldPropagate);
-          CVBufferSetAttachment(
-              cv_pixel_buffer.get(), kCVImageBufferContentLightLevelInfoKey,
-              gfx::GenerateContentLightLevelInfo(hdr_metadata).get(),
-              kCVAttachmentMode_ShouldPropagate);
-          break;
-        default:
-          break;
-      }
+  if (io_surface_color_space ==
+          gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                          gfx::ColorSpace::TransferID::PQ,
+                          gfx::ColorSpace::MatrixID::BT2020_NCL,
+                          gfx::ColorSpace::RangeID::LIMITED) ||
+      io_surface_color_space ==
+          gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                          gfx::ColorSpace::TransferID::HLG,
+                          gfx::ColorSpace::MatrixID::BT2020_NCL,
+                          gfx::ColorSpace::RangeID::LIMITED)) {
+    CVBufferSetAttachment(cv_pixel_buffer.get(),
+                          kCVImageBufferColorPrimariesKey,
+                          kCVImageBufferColorPrimaries_ITU_R_2020,
+                          kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(cv_pixel_buffer.get(), kCVImageBufferYCbCrMatrixKey,
+                          kCVImageBufferYCbCrMatrix_ITU_R_2020,
+                          kCVAttachmentMode_ShouldPropagate);
+    switch (io_surface_color_space.GetTransferID()) {
+      case gfx::ColorSpace::TransferID::HLG:
+        CVBufferSetAttachment(cv_pixel_buffer.get(),
+                              kCVImageBufferTransferFunctionKey,
+                              kCVImageBufferTransferFunction_ITU_R_2100_HLG,
+                              kCVAttachmentMode_ShouldPropagate);
+        break;
+      case gfx::ColorSpace::TransferID::PQ:
+        CVBufferSetAttachment(cv_pixel_buffer.get(),
+                              kCVImageBufferTransferFunctionKey,
+                              kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
+                              kCVAttachmentMode_ShouldPropagate);
+        CVBufferSetAttachment(
+            cv_pixel_buffer.get(), kCVImageBufferMasteringDisplayColorVolumeKey,
+            gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get(),
+            kCVAttachmentMode_ShouldPropagate);
+        CVBufferSetAttachment(
+            cv_pixel_buffer.get(), kCVImageBufferContentLightLevelInfoKey,
+            gfx::GenerateContentLightLevelInfo(hdr_metadata).get(),
+            kCVAttachmentMode_ShouldPropagate);
+        break;
+      default:
+        break;
     }
   }
 
@@ -780,10 +782,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       }
 
       if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
-        if (@available(macOS 11, *)) {
-          type_ = CALayerType::kVideo;
-          video_type_can_downgrade_ = false;
-        }
+        type_ = CALayerType::kVideo;
+        video_type_can_downgrade_ = false;
       }
     }
   }
@@ -1117,9 +1117,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         ca_layer_ = av_layer_;
         av_layer_.videoGravity = AVLayerVideoGravityResize;
         if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
-          if (@available(macOS 11, *)) {
-            av_layer_.preventsCapture = true;
-          }
+          av_layer_.preventsCapture = true;
         }
         break;
       case CALayerType::kDefault:

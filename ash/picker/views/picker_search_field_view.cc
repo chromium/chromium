@@ -146,6 +146,8 @@ void PickerSearchFieldView::ContentsChanged(
   clear_button_->SetVisible(!new_contents.empty());
   UpdateTextfieldBorder();
 
+  ScheduleNotifyInitialActiveDescendantForA11y();
+
   search_callback_.Run(new_contents);
 }
 
@@ -162,6 +164,8 @@ void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
   if (focused_now == textfield_) {
     performance_metrics_->MarkInputFocus();
   }
+
+  ScheduleNotifyInitialActiveDescendantForA11y();
 }
 
 const std::u16string& PickerSearchFieldView::GetPlaceholderText() const {
@@ -175,14 +179,23 @@ void PickerSearchFieldView::SetPlaceholderText(
 }
 
 void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
+  // If the initial active descendant has not been announced yet, then track
+  // this descendant so it can be announced when the timer fires.
+  if (!textfield_->HasFocus() ||
+      notify_initial_active_descendant_timer_.IsRunning()) {
+    active_descendant_tracker_.SetView(view);
+    return;
+  }
+
+  // The initial active descendant has been announced, so announce this
+  // descendant immediately.
   if (view) {
     textfield_->GetViewAccessibility().SetActiveDescendant(*view);
   } else {
     textfield_->GetViewAccessibility().ClearActiveDescendant();
   }
 
-  textfield_->NotifyAccessibilityEvent(
-      ax::mojom::Event::kActiveDescendantChanged, true);
+  active_descendant_tracker_.SetView(nullptr);
 }
 
 std::u16string_view PickerSearchFieldView::GetQueryText() const {
@@ -216,6 +229,24 @@ void PickerSearchFieldView::UpdateTextfieldBorder() {
   textfield_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, back_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin, 0,
       clear_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin)));
+}
+
+void PickerSearchFieldView::ScheduleNotifyInitialActiveDescendantForA11y() {
+  // Delay the active descendant change so that:
+  // (1) There's no jarring transition of the screen reader's focus rectangle.
+  // (2) There's time for the screen reader to read out the change to input
+  // field contents.
+  notify_initial_active_descendant_timer_.Start(
+      FROM_HERE, kNotifyInitialActiveDescendantA11yDelay,
+      base::BindOnce(
+          &PickerSearchFieldView::NotifyInitialActiveDescendantForA11y,
+          base::Unretained(this)));
+}
+
+void PickerSearchFieldView::NotifyInitialActiveDescendantForA11y() {
+  if (active_descendant_tracker_) {
+    SetTextfieldActiveDescendant(active_descendant_tracker_.view());
+  }
 }
 
 BEGIN_METADATA(PickerSearchFieldView)

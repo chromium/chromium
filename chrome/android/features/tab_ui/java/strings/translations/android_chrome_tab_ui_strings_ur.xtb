@@ -36,6 +36,7 @@
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی</translation>
 <translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>
+<translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> گھنٹہ پہلے تخلیق کیا گیا}other{<ph name="NUM_HOURS_MANY" /> گھنٹے پہلے تخلیق کیا گیا}}</translation>
 <translation id="2801787514987684416">اسٹور کی معلومات دیکھیں؟</translation>
 <translation id="2928243913527329289">‏Google | اس اسٹور کے بارے میں</translation>
@@ -65,9 +66,9 @@
 <translation id="4159784952369912983">جامنی</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_ONE" /> ٹیب کے ساتھ پھیلائیں۔}other{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ پھیلائیں۔}}</translation>
 <translation id="427987768447457592">نیا ٹیب گروپ</translation>
-<translation id="4338724047016295066">غیر فعال ٹیبز خودکار طور پر بند ہو جائیں گے۔ آپ انہیں ہمیشہ سرگزشت میں تلاش کر سکتے ہیں۔</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
+<translation id="4590027107044272416">آپ اب یہاں ایک نیا ٹیب کھول سکتے ہیں</translation>
 <translation id="4648718555153979859">آپ کے ٹیبز کو ایک ساتھ یہاں گروپ بند کیا گیا ہے</translation>
 <translation id="4686942373615810936">ابھی ابھی تخلیق کیا گیا</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 دن کے بعد بند کریں}other{<ph name="DAY_COUNT_MANY" /> دن کے بعد بند کریں}}</translation>
@@ -75,6 +76,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> جائزہ)}other{(<ph name="REVIEWS_COUNT_MANY" /> جائزے)}}</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>
+<translation id="4871719318659334896">گروپ بند کریں</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> گروپس کو محفوظ کیا گیا (ٹیبز کو بند کر دیا جائے گا اور گروپس کو حذف کر دیا جائے گا)</translation>
@@ -100,7 +102,9 @@
 <translation id="5972844218283131174">سبھی کو غیر منتخب کریں</translation>
 <translation id="6017514345406065928">سبز</translation>
 <translation id="6040143037577758943">بند کریں</translation>
+<translation id="6051432659151380973">آپ کے ٹیب گروپس خودکار طور پر محفوظ ہو جاتے ہیں</translation>
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
+<translation id="6082313992897617440">آپ فوری طور پر <ph name="GROUP_NAME" /> ٹیب گروپ تک رسائی سے محروم ہو جائیں گے</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6271513594716432922">تمام غیر فعال ٹیبز بند کریں</translation>
@@ -115,7 +119,6 @@
 <translation id="6562820390860419811">ٹیب کو بائیں منتقل کریں</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
 <translation id="6744956528665271406">گروپ کے رنگ میں ترمیم کریں</translation>
-<translation id="6840760312327750441">ٹیبز کا گروپ بنانے کے لیے، کسی ٹیب کو ٹچ کریں اور دبائے رکھیں۔ پھر، اسے کسی دوسرے ٹیب پر گھسیٹیں۔</translation>
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ٹیب کا اشتراک کریں}other{ٹیبز کا اشتراک کریں}}</translation>
 <translation id="7129458170538955174">اس اسٹور سے متعلق معلومات نصف اونچائی پر کھلی ہے</translation>
@@ -125,6 +128,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> منتخب کیا گیا</translation>
 <translation id="7326879924029668159">واپسی کی پالیسی اور مزید دیکھیں</translation>
 <translation id="7352298686197644113">دیکھیں کہ آپ کے کھلے ٹیبز میں کون سے آئٹم کی قیمت کم ہے</translation>
+<translation id="7421293530411019405">ٹیب گروپ چھوڑیں؟</translation>
 <translation id="7452985128687107478">ٹیب گروپس آپ کے تمام آلات پر خودکار طور پر محفوظ اور اپ ڈیٹ ہوتے ہیں</translation>
 <translation id="747459581954555080">سبھی کو بحال کریں</translation>
 <translation id="753732157349120914">ٹیب سوئچر</translation>
@@ -152,6 +156,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب بند کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز بند کریں}}</translation>
 <translation id="8398929769197326728">نیا فولڈر - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ترتیبات</translation>
+<translation id="8631711675211020168">ہر کوئی فوری طور پر <ph name="GROUP_NAME" /> ٹیب گروپ تک رسائی سے محروم ہو جائے گا، اور اسے تمام آلات سے حذف کر دیا جائے گا</translation>
+<translation id="870736955561925754">ٹیب بند کریں اور گروپ کو حذف کریں؟</translation>
 <translation id="8714939927607906138">کم قیمت</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8730999928494395583">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے ہٹائی جائے گی</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="9216898458513705996">اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپ کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="USER_EMAIL" /> میں سائن ان ہیں</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}}</translation>
-<translation id="959682366969460160">منظم رہیں</translation>
 <translation id="992256792861109788">گلابی</translation>
 </translationbundle>

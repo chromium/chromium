@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
+
+#include <array>
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
@@ -21,8 +28,8 @@ using CallDetails =
 constexpr const char* kExtensionIds[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
                                          "eeeeeeeeffffffffgggggggghhhhhhhh",
                                          "aaaaeeeebbbbffffccccggggddddhhhh"};
-constexpr TabsApiInfo::ApiMethod kApiMethods[] = {
-    TabsApiInfo::CREATE, TabsApiInfo::UPDATE, TabsApiInfo::REMOVE};
+constexpr auto kApiMethods = std::to_array(
+    {TabsApiInfo::CREATE, TabsApiInfo::UPDATE, TabsApiInfo::REMOVE});
 constexpr const char* kUrls[] = {"http://www.example1.com/",
                                  "https://www.example2.com/"};
 

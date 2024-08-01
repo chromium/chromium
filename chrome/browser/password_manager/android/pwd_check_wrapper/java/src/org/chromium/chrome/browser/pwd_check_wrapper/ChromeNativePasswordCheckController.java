@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -15,11 +14,6 @@ class ChromeNativePasswordCheckController
         implements PasswordCheckController, PasswordCheck.Observer {
     private CompletableFuture<Integer> mPasswordsTotalCount;
     private CompletableFuture<PasswordCheckResult> mPasswordCheckResult;
-    private final SettingsLauncher mSettingsLauncher;
-
-    public ChromeNativePasswordCheckController(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
-    }
 
     @Override
     public CompletableFuture<PasswordCheckResult> checkPasswords(
@@ -62,7 +56,7 @@ class ChromeNativePasswordCheckController
     }
 
     private PasswordCheck getPasswordCheck() {
-        PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate(mSettingsLauncher);
+        PasswordCheck passwordCheck = PasswordCheckFactory.getOrCreate();
         assert passwordCheck != null : "Password Check UI component needs native counterpart!";
         return passwordCheck;
     }

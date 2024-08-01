@@ -163,6 +163,7 @@ source_set("unit_tests") {
     "//components/variations/service",
     "//components/version_info:version_info",
     "//ios/chrome/browser/flags:client_side",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/test:test_support",
     "//net",
     "//services/network:test_support",

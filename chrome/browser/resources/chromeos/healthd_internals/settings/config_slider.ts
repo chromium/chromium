@@ -62,7 +62,9 @@ export class HealthdInternalsConfigSliderElement extends PolymerElement {
 
   initSlider(start: number, end: number, stepSize: number) {
     this.ticks = createTicks(start, end, stepSize);
-    this.markerCounts = this.ticks.length;
+    // The width of slider is fixed to 200px. Hide tick markers when there are
+    // too many. Otherwise, there is not enough space between tick markers.
+    this.markerCounts = (this.ticks.length > 20) ? 0 : this.ticks.length;
     this.startTick = start;
     this.tickStepSize = stepSize;
   }

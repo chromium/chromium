@@ -164,45 +164,69 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
     bool show_error_page,
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   auto query_result_pair = results_.find(query);
-
-  // TODO(crbug.com/337243708): Remove when observer check is implemented.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    // If one of the checks (sync/async) successfully finishes, early return if
-    // the query was already checked and erased from the map.
-    if (query_result_pair == results_.end()) {
-      return;
-    }
-  } else {
-    DCHECK(query_result_pair != results_.end());
-  }
+  DCHECK(query_result_pair != results_.end());
 
   // Store the query result.
   Result& result = query_result_pair->second;
-  result.proceed = proceed;
-  result.show_error_page = show_error_page;
-
-  // If an error page is requested, an UnsafeResource must be stored before the
-  // execution of its completion block.
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    if (result.sync_check_complete || result.async_check_complete) {
+      // If one result has already been received, combine results.
+      result.proceed = result.proceed && proceed;
+      result.show_error_page = result.show_error_page || show_error_page;
+    } else {
+      result.proceed = proceed;
+      result.show_error_page = show_error_page;
+    }
+  } else {
+    result.proceed = proceed;
+    result.show_error_page = show_error_page;
+  }
+  // If an error page is requested, an UnsafeResource must be stored before
+  // the execution of its completion block.
   DCHECK(!show_error_page || result.resource);
 
   // Notify observers of the completed URL check. `this` might get destroyed
   // when an observer is notified.
   auto weak_this = weak_factory_.GetWeakPtr();
-  for (auto& observer : observers_) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-      observer.SafeBrowsingSyncQueryFinished(this, query, result,
-                                             performed_check);
-    } else {
-      observer.SafeBrowsingQueryFinished(this, query, result, performed_check);
-    }
-    if (!weak_this)
-      return;
-  }
 
-  // Clear out the state since the query is finished.
-  results_.erase(query_result_pair);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    if (is_async_check) {
+      result.async_check_complete = true;
+    } else {
+      result.sync_check_complete = true;
+    }
+
+    for (auto& observer : observers_) {
+      if (is_async_check) {
+        observer.SafeBrowsingAsyncQueryFinished(this, query, result,
+                                                performed_check);
+      } else {
+        observer.SafeBrowsingSyncQueryFinished(this, query, result,
+                                               performed_check);
+      }
+
+      if (!weak_this) {
+        return;
+      }
+    }
+
+    // Clear out the state since the query is finished.
+    if (result.sync_check_complete && result.async_check_complete) {
+      results_.erase(query_result_pair);
+    }
+  } else {
+    for (auto& observer : observers_) {
+      observer.SafeBrowsingQueryFinished(this, query, result, performed_check);
+      if (!weak_this) {
+        return;
+      }
+    }
+
+    // Clear out the state since the query is finished.
+    results_.erase(query_result_pair);
+  }
 }
 
 #pragma mark - SafeBrowsingQueryManager::Query

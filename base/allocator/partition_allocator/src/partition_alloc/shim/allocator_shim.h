@@ -107,6 +107,16 @@ void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 const AllocatorDispatch* GetAllocatorDispatchChainHeadForTesting();
 
+class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+    AutoResetAllocatorDispatchChainForTesting {
+ public:
+  AutoResetAllocatorDispatchChainForTesting();
+  ~AutoResetAllocatorDispatchChainForTesting();
+
+ private:
+  const allocator_shim::AllocatorDispatch* original_dispatch_;
+};
+
 #if PA_BUILDFLAG(IS_APPLE)
 // The fallback function to be called when try_free_default_function receives a
 // pointer which doesn't belong to the allocator.

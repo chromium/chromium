@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.iban;
 
 import android.content.Context;
+import android.widget.EditText;
 
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -19,14 +20,32 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * <p>This component shows a bottom sheet to let the user choose to save a IBAN.
  */
 public class AutofillSaveIbanBottomSheetCoordinator {
+    /** Native callbacks for the IBAN bottom sheet. */
+    public interface NativeDelegate {
+        /**
+         * Called when the save button has been clicked.
+         *
+         * @param userProvidedNickname The nickname provided by the user when the "Save" button is
+         *     clicked.
+         */
+        void onUiAccepted(String userProvidedNickname);
+
+        /** Called when the user clicks on the "No thanks" button. */
+        void onUiCanceled();
+
+        /** Called when the user ignores the save IBAN bottom sheet. */
+        void onUiIgnored();
+    }
+
     private final AutofillSaveIbanBottomSheetMediator mMediator;
     private final AutofillSaveIbanBottomSheetView mView;
     private PropertyModel mModel;
+    protected EditText mNickname;
 
     /**
      * Creates the coordinator.
      *
-     * @param bridge The bridge to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.) to.
+     * @param delegate The delegate to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.) to.
      * @param uiInfo An object providing UI resources for the bottom sheet model.
      * @param context The context for this component.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
@@ -37,7 +56,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
      *     tab change.
      */
     public AutofillSaveIbanBottomSheetCoordinator(
-            AutofillSaveIbanBottomSheetBridge bridge,
+            NativeDelegate delegate,
             AutofillSaveIbanUiInfo uiInfo,
             Context context,
             BottomSheetController bottomSheetController,
@@ -57,18 +76,34 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 uiInfo.getCancelText())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION,
+                                v ->
+                                        this.onAcceptButtonClick(
+                                                mView.mNickname.getText().toString().trim()))
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION,
+                                v -> this.onCancelButtonClick())
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveIbanBottomSheetViewBinder::bind);
 
         mMediator =
                 new AutofillSaveIbanBottomSheetMediator(
-                        bridge,
+                        delegate,
                         new AutofillSaveIbanBottomSheetContent(
                                 mView.mContentView, mView.mScrollView),
                         bottomSheetController,
                         layoutStateProvider,
                         tabModel);
+    }
+
+    void onAcceptButtonClick(String userProvidedNickname) {
+        mMediator.onAccepted(userProvidedNickname);
+    }
+
+    void onCancelButtonClick() {
+        mMediator.onCanceled();
     }
 
     /** Request to show the bottom sheet. */
@@ -78,11 +113,15 @@ public class AutofillSaveIbanBottomSheetCoordinator {
 
     /** Destroys this component, hiding the bottom sheet if needed. */
     public void destroy() {
-        mMediator.destroy();
+        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
     }
 
     /** Retrieves the PropertyModel associated with the view for testing purposes. */
     PropertyModel getPropertyModelForTesting() {
         return mModel;
+    }
+
+    AutofillSaveIbanBottomSheetView getAutofillSaveIbanBottomSheetViewForTesting() {
+        return mView;
     }
 }

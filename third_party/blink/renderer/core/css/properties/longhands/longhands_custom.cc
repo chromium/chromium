@@ -813,7 +813,7 @@ void BackgroundClip::ApplyValue(StyleResolverState& state,
   const auto* value_list = DynamicTo<CSSValueList>(value);
   if (value_list && !value.IsImageSetValue()) {
     // Walk each value and put it into a layer, creating new layers as needed.
-    const auto* curr_val = value_list->begin();
+    auto curr_val = value_list->begin();
     while (curr_child || curr_val != value_list->end()) {
       if (!curr_child) {
         curr_child = prev_child->EnsureNext();
@@ -2668,9 +2668,9 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
               ConsumeAttr(css_parsing_utils::ConsumeFunction(stream), context);
         } else {
           alt_text = css_parsing_utils::ConsumeString(stream);
-          if (!alt_text) {
-            break;
-          }
+        }
+        if (!alt_text) {
+          break;
         }
         alt_text_values->Append(*alt_text);
         savepoint.Release();
@@ -3140,7 +3140,11 @@ std::optional<DisplayValidationResult> ValidateDisplayKeywords(
   return result;
 }
 
-void DropDisplayKeywords(DisplayValidationResult& result) {
+// Drop redundant keywords, and update to backward-compatible keywords.
+// e.g. {outside:"block", inside:"flow"} ==> {outside:"block", inside:null}
+//      {outside:"inline", inside:"flow-root"} ==>
+//          {outside:null, inside:"inline-block"}
+void AdjustDisplayKeywords(DisplayValidationResult& result) {
   CSSValueID outside =
       result.outside ? result.outside->GetValueID() : CSSValueID::kInvalid;
   CSSValueID inside =
@@ -3157,6 +3161,21 @@ void DropDisplayKeywords(DisplayValidationResult& result) {
     case CSSValueID::kTable:
       if (outside == CSSValueID::kBlock) {
         result.outside = nullptr;
+      } else if (RuntimeEnabledFeatures::CssDisplaySerialziationFixEnabled() &&
+                 outside == CSSValueID::kInline && !result.list_item) {
+        CSSValueID new_id = CSSValueID::kInvalid;
+        if (inside == CSSValueID::kFlex) {
+          new_id = CSSValueID::kInlineFlex;
+        } else if (inside == CSSValueID::kFlowRoot) {
+          new_id = CSSValueID::kInlineBlock;
+        } else if (inside == CSSValueID::kGrid) {
+          new_id = CSSValueID::kInlineGrid;
+        } else if (inside == CSSValueID::kTable) {
+          new_id = CSSValueID::kInlineTable;
+        }
+        CHECK_NE(new_id, CSSValueID::kInvalid);
+        result.outside = nullptr;
+        result.inside = CSSIdentifierValue::Create(new_id);
       }
       break;
     case CSSValueID::kMath:
@@ -3202,7 +3221,7 @@ const CSSValue* ParseDisplayMultipleKeywords(
     }
   }
 
-  DropDisplayKeywords(*result);
+  AdjustDisplayKeywords(*result);
   CSSValueList* result_list = CSSValueList::CreateSpaceSeparated();
   if (result->outside) {
     result_list->Append(*result->outside);
@@ -3234,9 +3253,12 @@ const CSSValue* Display::ParseSingleValue(CSSParserTokenStream& stream,
 
     // The property has only one keyword (or one keyword and then junk,
     // in which case the caller will abort for us).
-    if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
-        IsDisplayInternal(id) || IsDisplayLegacy(id) || IsDisplayInside(id) ||
-        IsDisplayOutside(id)) {
+    if (RuntimeEnabledFeatures::CssDisplaySerialziationFixEnabled() &&
+        id == CSSValueID::kFlow) {
+      return CSSIdentifierValue::Create(CSSValueID::kBlock);
+    } else if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
+               IsDisplayInternal(id) || IsDisplayLegacy(id) ||
+               IsDisplayInside(id) || IsDisplayOutside(id)) {
       return value;
     } else {
       return nullptr;
@@ -3601,6 +3623,8 @@ const CSSValue* FlexBasis::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
+  // TODO(https://crbug.com/353538495): This should really use
+  // css_parsing_utils::ValidWidthOrHeightKeyword.
   if (css_parsing_utils::IdentMatches<
           CSSValueID::kAuto, CSSValueID::kContent, CSSValueID::kMinContent,
           CSSValueID::kMaxContent, CSSValueID::kFitContent>(
@@ -3608,7 +3632,9 @@ const CSSValue* FlexBasis::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(stream);
   }
   return css_parsing_utils::ConsumeLengthOrPercent(
-      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
+      css_parsing_utils::UnitlessQuirk::kForbid, kCSSAnchorQueryTypesNone,
+      css_parsing_utils::AllowCalcSize::kAllowWithAutoAndContent);
 }
 
 const CSSValue* FlexBasis::CSSValueFromComputedStyleInternal(
@@ -11135,9 +11161,11 @@ const CSSValue* Zoom::ParseSingleValue(CSSParserTokenStream& stream,
   if (zoom) {
     if (!(token.Id() == CSSValueID::kNormal ||
           (token.GetType() == kNumberToken &&
-           To<CSSPrimitiveValue>(zoom)->GetDoubleValue() == 1) ||
+           To<CSSPrimitiveValue>(zoom)->IsOne() ==
+               CSSPrimitiveValue::BoolStatus::kTrue) ||
           (token.GetType() == kPercentageToken &&
-           To<CSSPrimitiveValue>(zoom)->GetDoubleValue() == 100))) {
+           To<CSSPrimitiveValue>(zoom)->IsHundred() ==
+               CSSPrimitiveValue::BoolStatus::kTrue))) {
       context.Count(WebFeature::kCSSZoomNotEqualToOne);
     }
   }

@@ -5,7 +5,14 @@
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
 
-import {FinalResult, SodaEvent, TimeDelta, TimingInfo} from './types.js';
+import {
+  FinalResult,
+  PartialResult,
+  SodaEvent,
+  SpeakerLabelCorrectionEvent,
+  TimeDelta,
+  TimingInfo,
+} from './types.js';
 
 // A time range in milliseconds.
 export const timeRangeSchema = z.object({
@@ -19,6 +26,7 @@ export const textPartSchema = z.object({
   text: z.string(),
   timeRange: z.nullable(timeRangeSchema),
   leadingSpace: z.nullable(z.boolean()),
+  speakerLabel: z.autoNullOptional(z.string()),
 });
 
 export type TextPart = Infer<typeof textPartSchema>;
@@ -57,7 +65,11 @@ function parseTimingInfo(
   };
 }
 
-function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
+function flattenEvent(
+  ev: FinalResult|PartialResult,
+  offsetMs: number,
+  speakerIdEnabled: boolean,
+): TextPart[] {
   const {hypothesisPart, timingEvent} = ev;
 
   const result: TextPart[] = [];
@@ -96,6 +108,7 @@ function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
       text: assertExists(part.text[0]),
       timeRange,
       leadingSpace: part.leadingSpace,
+      speakerLabel: speakerIdEnabled ? part.speakerLabel : null,
     });
   }
   return result;
@@ -105,21 +118,63 @@ function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
 export class SodaEventTransformer {
   private readonly tokens: TextToken[] = [];
 
-  // The last token from the PartialResult in SodaEvent with partial result.
-  private partialResultToken: TextToken|null = null;
+  // The last tokens from the PartialResult in SodaEvent with partial result.
+  private partialResultTokens: TextToken[]|null = null;
 
-  getTokens(): TextToken[] {
-    // TODO(pihsun): This happens to always return a new array each time it's
-    // called, which triggers lit update. We should have some "computed" values
-    // that is only updated when needed.
-    const ret = [...this.tokens];
-    if (this.partialResultToken !== null) {
-      if (ret.length > 0) {
-        ret.push(textSeparator);
+  constructor(private readonly speakerIdEnabled: boolean) {}
+
+  getTranscription(): Transcription {
+    const tokens = [...this.tokens];
+    if (this.partialResultTokens !== null) {
+      if (tokens.length > 0) {
+        tokens.push(textSeparator);
       }
-      ret.push(this.partialResultToken);
+      tokens.push(...this.partialResultTokens);
     }
-    return ret;
+    return new Transcription(tokens);
+  }
+
+  private handleSpeakerLabelCorrectionEvent(
+    ev: SpeakerLabelCorrectionEvent,
+    offsetMs: number,
+  ) {
+    const {hypothesisParts} = ev;
+    for (const correctionPart of hypothesisParts) {
+      const speakerId = correctionPart.speakerLabel ?? null;
+      const startMs = toMs(correctionPart.alignment);
+      if (startMs === null) {
+        console.error('speaker label correction event without timestamp', ev);
+        continue;
+      }
+      // We search backward since it's more likely that the corrected token is
+      // recent.
+      // TODO(pihsun): assert that the tokens have increasing timestamp, and
+      // binary search for efficiency.
+      let found = false;
+      for (let i = this.tokens.length - 1; i >= 0; i--) {
+        const token = assertExists(this.tokens[i]);
+        if (token.kind === 'textSeparator') {
+          continue;
+        }
+        if (token.timeRange?.startMs === startMs + offsetMs &&
+            token.text === correctionPart.text[0]) {
+          // TODO(pihsun): This inline updates this.tokens, which works now
+          // since getTokens always return a copy, but ideally we want either
+          // immutable update, or signal/proxy with nested change detection, or
+          // have a clearer boundary on which values (especially object/array)
+          // should be immutably updated for lit change detection.
+          token.speakerLabel = speakerId;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        console.error(
+          'speaker label correction event without corresponding previous part?',
+          ev,
+        );
+      }
+    }
   }
 
   /**
@@ -132,56 +187,133 @@ export class SodaEventTransformer {
    */
   addEvent(event: SodaEvent, offsetMs: number): void {
     if ('partialResult' in event) {
-      this.partialResultToken = {
-        kind: 'textPart',
-        text: assertExists(event.partialResult.partialText[0]),
-        timeRange: parseTimingInfo(event.partialResult.timingEvent, offsetMs),
-        leadingSpace: true,
-      };
+      this.partialResultTokens = flattenEvent(
+        event.partialResult,
+        offsetMs,
+        this.speakerIdEnabled,
+      );
       // Don't update tokens since it'll be added in getTokens.
       return;
     }
     if ('finalResult' in event) {
       // New final result, remove the partial result event.
-      this.partialResultToken = null;
+      this.partialResultTokens = null;
       const {finalResult} = event;
       if (this.tokens.length > 0) {
         this.tokens.push(textSeparator);
       }
-      this.tokens.push(...flattenEvent(finalResult, offsetMs));
-    } else {
-      console.error('unknown event type', event);
+      this.tokens.push(
+        ...flattenEvent(finalResult, offsetMs, this.speakerIdEnabled),
+      );
+      return;
     }
+    if ('labelCorrectionEvent' in event) {
+      this.handleSpeakerLabelCorrectionEvent(
+        event.labelCorrectionEvent,
+        offsetMs,
+      );
+      return;
+    }
+    console.error('unknown event type', event);
   }
 }
 
-/**
- * Concatenates textTokens into the string representation of the transcription.
- *
- * This is also used to export the transcription into a txt file.
- *
- * TODO(pihsun): Have a class for TextToken[] and move this function.
- * TODO(pihsun): Have a different function for exporting to text format and
- * when exporting representation used for summary input.
- * TODO(pihsun): Include speaker ID in the output.
- */
-export function concatTextTokens(textTokens: TextToken[]): string {
-  const ret: string[] = [];
-  let startOfParagraph = true;
-  // TODO(pihsun): This currently don't include the speaker ID, but since the
-  // speaker ID is a little bit not accurate on the start of sentence,
-  // including it might make the result weird.
-  for (const token of textTokens) {
-    if (token.kind === 'textSeparator') {
-      ret.push('\n');
-      startOfParagraph = true;
-      continue;
-    }
-    if (!startOfParagraph && (token.leadingSpace ?? true)) {
-      ret.push(' ');
-    }
-    ret.push(token.text);
-    startOfParagraph = false;
+export const transcriptionSchema = z.transform(
+  z.object({
+    // Transcriptions in form of text tokens.
+    //
+    // Since transcription can be enabled / disabled during the recording, the
+    // `textTokens` might only contain part of the transcription when
+    // transcription is enabled.
+    //
+    // If the transcription is never enabled while recording, `textTokens` will
+    // be null (to show a different state in playback view).
+    textTokens: z.nullable(z.array(textTokenSchema)),
+  }),
+  {
+    test(input) {
+      return input instanceof Transcription;
+    },
+    decode({textTokens}) {
+      if (textTokens === null) {
+        return null;
+      }
+      return new Transcription(textTokens);
+    },
+    encode(val) {
+      if (val === null) {
+        return {textTokens: null};
+      }
+      return {textTokens: val.textTokens};
+    },
+  },
+);
+
+const MAX_DESCRIPTION_LENGTH = 512;
+
+export class Transcription {
+  constructor(readonly textTokens: TextToken[]) {}
+
+  isEmpty(): boolean {
+    return this.textTokens.length === 0;
   }
-  return ret.join('');
+
+  /**
+   * Concatenates textTokens into the string representation of the
+   * transcription.
+   *
+   * This is also used to export the transcription into a txt file.
+   *
+   * TODO(pihsun): Have a different function for exporting to text format and
+   * when exporting representation used for summary input.
+   * TODO(pihsun): Include speaker ID in the output.
+   * TODO(pihsun): Cache this.
+   */
+  toPlainText(): string {
+    const ret: string[] = [];
+    let startOfParagraph = true;
+    // TODO(pihsun): This currently don't include the speaker ID, but since the
+    // speaker ID is a little bit not accurate on the start of sentence,
+    // including it might make the result weird.
+    for (const token of this.textTokens) {
+      if (token.kind === 'textSeparator') {
+        ret.push('\n');
+        startOfParagraph = true;
+        continue;
+      }
+      if (!startOfParagraph && (token.leadingSpace ?? true)) {
+        ret.push(' ');
+      }
+      ret.push(token.text);
+      startOfParagraph = false;
+    }
+    return ret.join('');
+  }
+
+  toShortDescription(): string {
+    if (this.textTokens === null) {
+      return '';
+    }
+    const transcription = this.toPlainText();
+    if (transcription.length <= MAX_DESCRIPTION_LENGTH - 3) {
+      return transcription;
+    }
+    return transcription.substring(0, MAX_DESCRIPTION_LENGTH - 3) + '...';
+  }
+
+  /**
+   * Gets the list of speaker label in the transcription.
+   *
+   * The returned label is ordered by the first appearance of the label in the
+   * transcription.
+   */
+  getSpeakerLabels(): string[] {
+    const speakerLabels = new Set<string>();
+    for (const token of this.textTokens) {
+      if (token.kind === 'textPart' && token.speakerLabel !== null) {
+        speakerLabels.add(token.speakerLabel);
+      }
+    }
+    return Array.from(speakerLabels);
+  }
 }

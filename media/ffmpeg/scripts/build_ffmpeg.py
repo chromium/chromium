@@ -1007,8 +1007,9 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
         BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
                     options.config_only, branding, configure_flags, options)
 
-    # Only build Chromium, Chrome for ia32, x86 non-android platforms.
-    if target_os != 'android':
+    # Don't build video decoders for 32-bit Android ARM due to binary size
+    # concerns.
+    if target_os != 'android' or not target_arch in ("arm", "arm-neon"):
         do_build_ffmpeg(
             'Chromium', configure_flags['Common'] +
             configure_flags['Chromium'] + configure_args)

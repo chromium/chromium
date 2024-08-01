@@ -51,9 +51,9 @@ struct FlexChildData {
   std::string ToString() const {
     std::ostringstream oss;
     oss << "{ preferred " << preferred_size.ToString() << " current "
-        << current_size.ToString() << " min " << miniumize_size.ToString()
+        << current_size.ToString() << " min " << minimum_size.ToString()
         << " base " << flex_base_content_size.ToString() << " max "
-        << maxiumize_size.ToString() << " margins " << margins.ToString()
+        << maximum_size.ToString() << " margins " << margins.ToString()
         << (using_default_margins ? " (using default)" : "") << " padding "
         << internal_padding.ToString() << " bounds " << actual_bounds.ToString()
         << " }";
@@ -63,8 +63,8 @@ struct FlexChildData {
   NormalizedSize preferred_size;
   NormalizedSize current_size;
   NormalizedSize pending_size;
-  NormalizedSize miniumize_size;
-  NormalizedSize maxiumize_size;
+  NormalizedSize minimum_size;
+  NormalizedSize maximum_size;
   NormalizedSize flex_base_content_size;
   NormalizedInsets margins;
   bool using_default_margins = true;
@@ -478,13 +478,13 @@ ProposedLayout FlexLayout::CalculateProposedLayout(
     std::vector<NormalizedSize> backup_size(data.num_children());
     for (size_t i = 0; i < data.num_children(); ++i) {
       FlexChildData& flex_child = data.child_data[i];
-      backup_size[i] = flex_child.maxiumize_size;
-      flex_child.maxiumize_size = flex_child.preferred_size;
+      backup_size[i] = flex_child.maximum_size;
+      flex_child.maximum_size = flex_child.preferred_size;
     }
     AllocateFlexItem(bounds, order_to_view_index, data, child_spacing, true);
     for (size_t i = 0; i < data.num_children(); ++i) {
       FlexChildData& flex_child = data.child_data[i];
-      flex_child.maxiumize_size = backup_size[i];
+      flex_child.maximum_size = backup_size[i];
     }
   }
   AllocateFlexItem(bounds, order_to_view_index, data, child_spacing, true);
@@ -590,15 +590,15 @@ void FlexLayout::InitializeChildData(
     // 'C'. So here the basic size is set according to the C rule.
     flex_child.preferred_size =
         GetPreferredSizeForRule(flex_child.flex.rule(), child, available_cross);
-    flex_child.miniumize_size =
+    flex_child.minimum_size =
         GetCurrentSizeForRule(flex_child.flex.rule(), child,
                               NormalizedSizeBounds(0, available_cross));
-    flex_child.maxiumize_size = GetCurrentSizeForRule(
+    flex_child.maximum_size = GetCurrentSizeForRule(
         flex_child.flex.rule(), child,
         NormalizedSizeBounds(bounds.main(), available_cross));
 
     data.SetCurrentSize(view_index, main_axis_bounded
-                                        ? flex_child.miniumize_size
+                                        ? flex_child.minimum_size
                                         : flex_child.preferred_size);
 
     // Keep track of non-hidden/ignored child views that can flex. We assume any
@@ -609,7 +609,7 @@ void FlexLayout::InitializeChildData(
         weight > 0 ||
         flex_child.current_size.main() < flex_child.preferred_size.main() ||
         (weight == 0 &&
-         flex_child.maxiumize_size.main() > flex_child.preferred_size.main());
+         flex_child.maximum_size.main() > flex_child.preferred_size.main());
 
     // Add views that have the potential to flex to the appropriate order list.
     if (can_flex)
@@ -617,11 +617,11 @@ void FlexLayout::InitializeChildData(
 
     if (main_axis_bounded) {
       flex_child.flex_base_content_size = std::min<NormalizedSize>(
-          std::max<NormalizedSize>(flex_child.miniumize_size,
+          std::max<NormalizedSize>(flex_child.minimum_size,
                                    flex_child.preferred_size),
-          flex_child.maxiumize_size);
+          flex_child.maximum_size);
     } else {
-      flex_child.flex_base_content_size = flex_child.maxiumize_size;
+      flex_child.flex_base_content_size = flex_child.maximum_size;
     }
   }
 }
@@ -839,8 +839,8 @@ NormalizedSize FlexLayout::ClampSizeToMinAndMax(FlexLayoutData& data,
                                                 const size_t view_index,
                                                 SizeBound size) const {
   FlexChildData& flex_child = data.child_data[view_index];
-  if (size.value() <= flex_child.miniumize_size.main()) {
-    return flex_child.miniumize_size;
+  if (size.value() <= flex_child.minimum_size.main()) {
+    return flex_child.minimum_size;
   }
 
   ChildLayout& child_layout = data.layout.child_layouts[view_index];
@@ -853,8 +853,8 @@ NormalizedSize FlexLayout::ClampSizeToMinAndMax(FlexLayoutData& data,
       flex_child.flex.rule(), child_layout.child_view, available);
 
   return std::min<NormalizedSize>(
-      std::max<NormalizedSize>(flex_child.miniumize_size, new_size),
-      flex_child.maxiumize_size);
+      std::max<NormalizedSize>(flex_child.minimum_size, new_size),
+      flex_child.maximum_size);
 }
 
 void FlexLayout::AllocateFlexItem(const NormalizedSizeBounds& bounds,

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 
+#include "base/files/file_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
-#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -16,6 +17,28 @@
 #include "content/public/browser/download_item_utils.h"
 
 namespace policy {
+
+namespace {
+// Returns true if the file should be uploaded to the specified cloud provider.
+bool ShouldUploadFile(Profile* profile,
+                      SkyvaultRenameHandler::CloudProvider cloud_provider,
+                      const base::FilePath& path) {
+  switch (cloud_provider) {
+    case SkyvaultRenameHandler::kGoogleDrive: {
+      drive::DriveIntegrationService* service =
+          drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+      return service &&
+             service->GetRelativeDrivePath(path, /*drive_path=*/nullptr);
+    }
+    case SkyvaultRenameHandler::kOneDrive:
+      base::FilePath tmp_dir;
+      if (!base::GetTempDir(&tmp_dir)) {
+        return false;
+      }
+      return tmp_dir.IsParent(path);
+  }
+}
+}  // namespace
 
 // static
 std::unique_ptr<SkyvaultRenameHandler> SkyvaultRenameHandler::CreateIfNeeded(
@@ -66,9 +89,16 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   rename_callback_ = std::move(rename_callback);
 
+  if (!ShouldUploadFile(profile_, cloud_provider_,
+                        download_item_->GetTargetFilePath())) {
+    std::move(rename_callback_)
+        .Run(download::DOWNLOAD_INTERRUPT_REASON_NONE,
+             download_item_->GetTargetFilePath());
+    return;
+  }
+
   switch (cloud_provider_) {
     case CloudProvider::kGoogleDrive:
-      // TODO(ayaelattar): Add DCheck that the file is in cache.
       ash::cloud_upload::DriveUploadObserver::Observe(
           profile_, download_item_->GetTargetFilePath(),
           download_item_->GetTotalBytes(),
@@ -79,8 +109,6 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
       break;
 
     case CloudProvider::kOneDrive:
-      // TODO(ayaelattar): Add DCheck that the file is in /tmp.
-
       ash::cloud_upload::OdfsSkyvaultUploader::Upload(
           profile_, download_item_->GetTargetFilePath(),
           ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload,

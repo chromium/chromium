@@ -27,11 +27,6 @@
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
-// static
-std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
-    AccountSelectionView::Delegate* delegate) {
-  return std::make_unique<FedCmAccountSelectionView>(delegate);
-}
 
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
@@ -830,7 +825,8 @@ void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
 }
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
-    const GURL& url) {
+    const GURL& url,
+    blink::mojom::RpMode rp_mode) {
   if (popup_window_) {
     // TODO(crbug.com/324052630): Support add account with multi IDP API. An add
     // account pop-up of a different IDP might be open, so this might need to
@@ -1145,6 +1141,11 @@ void FedCmAccountSelectionView::OnLensOverlayControllerDestroyed() {
 
 void FedCmAccountSelectionView::SetIsLensOverlayShowingForTesting(bool value) {
   is_lens_overlay_showing_ = value;
+}
+
+base::WeakPtr<FedCmAccountSelectionView>
+FedCmAccountSelectionView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void FedCmAccountSelectionView::ShowMultiAccountPicker(

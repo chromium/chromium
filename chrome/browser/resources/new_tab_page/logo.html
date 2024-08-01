@@ -28,7 +28,7 @@ ${this.showDoodle_ ? html`
   </div>
 ` : ''}
 ${this.showShareDialog_ ? html`
-  <ntp-doodle-share-dialog title="${this.doodle_!.description}"
+  <ntp-doodle-share-dialog .title="${this.doodle_!.description}"
       .url="${this.doodle_!.image!.shareUrl}"
       @close="${this.onShareDialogClose_}" @share="${this.onShare_}">
   </ntp-doodle-share-dialog>

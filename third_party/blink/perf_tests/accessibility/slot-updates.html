@@ -7,6 +7,9 @@
   <sn-form slot="form-slot"></sn-form>
 </sn-show-element>
 <script>
+  var isDone = false;
+  var startTime;
+
   const TABLE_COLS = 5;
   const TABLE_ROWS = 5;
   const FORM_CONTROLS = 5;
@@ -97,9 +100,6 @@
   customElements.define('sn-form', snForm);
   customElements.define('sn-show-element', snShowElement);
 
-  var isDone = false;
-  var startTime;
-
   function toggleDisplay() {
     const snShowElem = document.querySelector('sn-show-element');
     const currentState = snShowElem.getAttribute('active');
@@ -115,7 +115,7 @@
       PerfTestRunner.addRunTestStartMarker();
       startTime = PerfTestRunner.now();
 
-      setTimeout(toggleDisplay, 250);
+      toggleDisplay();
 
       // Re-run the same test.
       // Wait to allow the asynchronous accessibility code that's
@@ -138,7 +138,7 @@
     traceEventsToMeasure: [
       'TotalAccessibilityCleanLayoutLifecycleStages',
       'ProcessDeferredUpdatesLifecycleStage',
-    'FinalizingTreeLifecycleStage',
+      'FinalizingTreeLifecycleStage',
       'SerializeLifecycleStage',
       'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
       'BrowserAccessibilityManager::OnAccessibilityEvents',

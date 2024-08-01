@@ -39,10 +39,8 @@
 
 namespace autofill {
 
-class AutofillDriverIOS;
 class AutofillField;
 class AutofillProfile;
-class ContentAutofillDriver;
 class CreditCard;
 class FormData;
 class FormFieldData;
@@ -60,52 +58,7 @@ class LogManager;
 class AutofillManager
     : public translate::TranslateDriver::LanguageDetectionObserver {
  public:
-  // An AutofillManager's LifecycleState indicates whether its content is
-  // currently presented to the user. It closely follows
-  // content::RenderFrameHost's LifecycleState but collapses inactive states.
-  //
-  // Observer::OnAutofillManagerStateChanged() is fired when the state changes.
-  // State changes must not happen during construction or destruction.
-  //
-  // The possible transitions are:
-  //
-  //   ╭───────────────────────────╮
-  //   │                           ▼
-  // kInactive ◄──► kActive ──► kPendingDeletion
-  //   ▲                ▲
-  //   │                ╰─────► kPendingReset
-  //   ╰──────────────────────► kPendingReset
-  //
-  // The initial state is kInactive.
-  //
-  // Transitions from kPendingReset can only return to the previous state.
-  // Transitions between kInactive and kPendingReset only happen if the frame is
-  // prerendering.
-  // TODO: crbug.com/342132628 - Such transitions won't be possible anymore when
-  // prerendered CADs are deferred.
-  //
-  // Common behavior very shortly after the AutofillManager's creation is the
-  // following:
-  // 1. It transitions to kActive.
-  //    That happens unless the document is prerendering.
-  // 2. It transitions to kPendingReset and then back to its previous state,
-  //    kActive or kInactive. That happens on non-iOS when the frame does its
-  //    first navigation, which is just a special case of a navigation that the
-  //    AutofillManager survives.
-  enum class LifecycleState {
-    // The AutofillManager corresponds to a frame that is currently not
-    // displayed to the user, either because it is being prerendered or because
-    // it is BFCached.
-    kInactive,
-    // The AutofillManager corresponds to a frame that is being displayed.
-    kActive,
-    // The AutofillManager is about to be reset because the document in its
-    // associated driver is about to change.
-    kPendingReset,
-    // The destructor of AutofillManager and its associated AutofillDriver are
-    // about to begin. The AutofillManager is still fully intact at this point.
-    kPendingDeletion,
-  };
+  using LifecycleState = AutofillDriver::LifecycleState;
 
   // Observer of AutofillManager events.
   //
@@ -125,9 +78,6 @@ class AutofillManager
     virtual void OnAutofillManagerStateChanged(AutofillManager& manager,
                                                LifecycleState previous,
                                                LifecycleState current) {}
-
-    virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}
-    virtual void OnAutofillManagerReset(AutofillManager& manager) {}
 
     virtual void OnBeforeLanguageDetermined(AutofillManager& manager) {}
     virtual void OnAfterLanguageDetermined(AutofillManager& manager) {}
@@ -242,14 +192,6 @@ class AutofillManager
                                  const FormData& form) {}
   };
 
-  class AutofillDriverPassKey {
-   private:
-    friend class AutofillDriverIOS;
-    friend class AutofillManagerTestApi;
-    friend class ContentAutofillDriver;
-    AutofillDriverPassKey() = default;
-  };
-
   // TODO(crbug.com/40733066): Move to anonymous namespace once
   // BrowserAutofillManager::OnLoadedServerPredictions() moves to
   // AutofillManager.
@@ -262,14 +204,11 @@ class AutofillManager
 
   ~AutofillManager() override;
 
-  // Fires Observer::OnAutofillManagerStateChanged().
-  // State changes must not happen during construction or destruction of
-  // AutofillManager or its owning AutofillDriver.
-  void SetLifecycleState(LifecycleState state, AutofillDriverPassKey);
-
-  // Clears the managed forms and other objects held by the AutofillManager.
-  // Does not touch the LifecycleState, which is controlled by the caller.
-  void Reset(AutofillDriverPassKey);
+  // Notifies `Observer`s and calls Reset() if applicable.
+  void OnAutofillDriverLifecycleStateChanged(
+      LifecycleState old_state,
+      LifecycleState new_state,
+      base::PassKey<AutofillDriverFactory> pass_key);
 
   AutofillClient& client() { return driver_->GetAutofillClient(); }
   const AutofillClient& client() const { return driver_->GetAutofillClient(); }
@@ -383,8 +322,9 @@ class AutofillManager
  protected:
   explicit AutofillManager(AutofillDriver* driver);
 
-  // Must only be called by Reset().
-  virtual void ResetImpl();
+  // Clears the managed forms and other objects held by the AutofillManager.
+  // Does not touch the LifecycleState, which is controlled by the caller.
+  virtual void Reset();
 
   LogManager* log_manager() { return log_manager_; }
 
@@ -505,8 +445,6 @@ class AutofillManager
 
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
-
-  LifecycleState lifecycle_state_ = LifecycleState::kInactive;
 
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.

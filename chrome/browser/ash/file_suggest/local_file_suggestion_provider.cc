@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -225,7 +226,7 @@ void LocalFileSuggestionProvider::OnValidationComplete(
     }
 
     final_results.emplace_back(FileSuggestionType::kLocalFile, result.path,
-                               justification_string,
+                               /*title=*/std::nullopt, justification_string,
                                /*modified_time=*/result.info.last_modified,
                                /*viewed_time=*/result.info.last_accessed,
                                /*shared_time=*/std::nullopt, result.score,

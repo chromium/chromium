@@ -225,8 +225,6 @@ void MessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (GetViewAccessibility().GetCachedName().empty()) {
     node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
-
-  node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
 }
 
 bool MessageView::OnMousePressed(const ui::MouseEvent& event) {

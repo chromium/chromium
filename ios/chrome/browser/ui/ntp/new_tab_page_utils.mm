@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_utils.h"
 
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 
 bool ShouldShowTopOfFeedSyncPromo() {

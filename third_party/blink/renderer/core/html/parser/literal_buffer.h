@@ -198,7 +198,7 @@ class LCharLiteralBuffer : public LiteralBufferBase<LChar, kInlineSize> {
 
   ALWAYS_INLINE void AddChar(LChar val) { this->AddCharImpl(val); }
 
-  String AsString() const { return String(this->data(), this->size()); }
+  String AsString() const { return String(*this); }
 };
 
 template <wtf_size_t kInlineSize>

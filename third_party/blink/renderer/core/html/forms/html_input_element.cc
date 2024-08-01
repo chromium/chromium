@@ -346,7 +346,7 @@ void HTMLInputElement::UpdateSelectionOnFocus(
       if (GetLayoutObject()) {
         scroll_into_view_util::ScrollRectToVisible(
             *GetLayoutObject(), BoundingBoxForScrollIntoView(),
-            ScrollAlignment::CreateScrollIntoViewParams());
+            scroll_into_view_util::CreateScrollIntoViewParams());
       }
       if (GetDocument().GetFrame())
         GetDocument().GetFrame()->Selection().RevealSelection();

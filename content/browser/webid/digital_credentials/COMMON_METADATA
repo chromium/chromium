@@ -1,0 +1,6 @@
+monorail: {
+  component: "Blink>Identity>DigitalCredentials"
+}
+buganizer_public: {
+  component_id: 1518527
+}

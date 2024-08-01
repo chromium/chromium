@@ -7,6 +7,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/test/ash_test_base.h"

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -558,7 +559,7 @@ void OutputDeviceMixerImpl::StopListening(Listener* listener) {
   {
     base::AutoLock scoped_lock(listener_lock_);
     auto iter = listeners_.find(listener);
-    DCHECK(iter != listeners_.end());
+    CHECK(iter != listeners_.end(), base::NotFatalUntil::M130);
     listeners_.erase(iter);
   }
 
@@ -697,7 +698,7 @@ void OutputDeviceMixerImpl::CloseStream(MixTrack* mix_track) {
   DCHECK(!base::Contains(active_tracks_, mix_track));
 
   auto iter = mix_tracks_.find(mix_track);
-  DCHECK(iter != mix_tracks_.end());
+  CHECK(iter != mix_tracks_.end(), base::NotFatalUntil::M130);
 
   mix_tracks_.erase(iter);
 }

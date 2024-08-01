@@ -425,89 +425,6 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
-       NotifyMetadataAndActionsChangeWhenTurningControllable) {
-  media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = u"title";
-  expected_metadata.artist = u"artist";
-  expected_metadata.album = u"album";
-  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
-
-  CreateServiceForFrame(sub_frame_);
-
-  {
-    blink::mojom::SpecMediaMetadataPtr spec_metadata(
-        blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = u"title";
-    spec_metadata->artist = u"artist";
-    spec_metadata->album = u"album";
-
-    services_[sub_frame_]->SetMetadata(std::move(spec_metadata));
-  }
-
-  services_[sub_frame_]->EnableAction(MediaSessionAction::kSeekForward);
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    observer.WaitForEmptyActions();
-    observer.WaitForExpectedMetadata(empty_metadata());
-  }
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    StartPlayerForFrame(sub_frame_);
-
-    observer.WaitForExpectedMetadata(expected_metadata);
-    observer.WaitForExpectedActions(
-        GetDefaultActionsWithExtra(MediaSessionAction::kSeekForward));
-  }
-}
-
-TEST_F(MediaSessionImplServiceRoutingTest,
-       NotifyActionsAndMetadataChangeWhenTurningUncontrollable) {
-  media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = u"title";
-  expected_metadata.artist = u"artist";
-  expected_metadata.album = u"album";
-  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
-
-  CreateServiceForFrame(sub_frame_);
-
-  {
-    blink::mojom::SpecMediaMetadataPtr spec_metadata(
-        blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = u"title";
-    spec_metadata->artist = u"artist";
-    spec_metadata->album = u"album";
-
-    services_[sub_frame_]->SetMetadata(std::move(spec_metadata));
-  }
-
-  StartPlayerForFrame(sub_frame_);
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    observer.WaitForExpectedActions(default_actions());
-    observer.WaitForExpectedMetadata(expected_metadata);
-  }
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    ClearPlayersForFrame(sub_frame_);
-
-    observer.WaitForEmptyActions();
-    observer.WaitForExpectedMetadata(empty_metadata());
-  }
-}
-
-TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyActionsAndMetadataChangeWhenUncontrollableForMainFrame) {
   // When no frames have playback and the main frame has a service, observers
   // should be notified of actions and metadata on the main frame's service.
@@ -538,6 +455,35 @@ TEST_F(MediaSessionImplServiceRoutingTest,
     observer.WaitForExpectedMetadata(expected_metadata);
     observer.WaitForExpectedActions({MediaSessionAction::kSeekForward});
   }
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       RoutesTopMostFrameWhenNoFrameIsHasPlayers) {
+  // When no services exist, we should not route any service.
+  EXPECT_EQ(nullptr, ComputeServiceForRouting());
+
+  // Create a service with no players.
+  CreateServiceForFrame(sub_frame_);
+
+  // Since we have no other service with players, we should route the subframe's
+  // service.
+  EXPECT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+
+  // Create another service with no players on the main frame.
+  CreateServiceForFrame(main_frame_);
+
+  // Since the main frame is above the subframe, we should route that one
+  // instead.
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  // If the subframe has players, then it should then become the routed frame
+  // since the main frame has no players.
+  StartPlayerForFrame(sub_frame_);
+  EXPECT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+
+  // If the main frame then has players, then that one should be used.
+  StartPlayerForFrame(main_frame_);
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
@@ -586,8 +532,6 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        TestReceivingPauseActionWhenNoServiceRouted) {
-  CreateServiceForFrame(sub_frame_);
-
   EXPECT_EQ(nullptr, ComputeServiceForRouting());
 
   // This should not crash.

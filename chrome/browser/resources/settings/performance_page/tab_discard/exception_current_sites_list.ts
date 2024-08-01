@@ -114,6 +114,12 @@ export class ExceptionCurrentSitesListElement extends
     this.stopUpdatingCurrentSites_();
   }
 
+  // Notifies the iron-list child that it should resize (generally because this
+  // element's visibility has changed).
+  notifyResize() {
+    this.$.list.notifyResize();
+  }
+
   private onVisibilityChanged_() {
     if (this.visible && document.visibilityState === 'visible') {
       this.startUpdatingCurrentSites_();

@@ -9,6 +9,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/stringprintf.h"
@@ -20,29 +23,23 @@ namespace safe_browsing {
 namespace dmg {
 namespace {
 
-const char* kGPTExpectedPartitions[] = {
-  "MBR",
-  "Primary GPT Header",
-  "Primary GPT Tabler",
-  "Apple_Free",
-  "Apple_HFS",
-  "Apple_Free",
-  "Backup GPT Table",
-  "Backup GPT Header",
-  nullptr,
-};
+constexpr std::array<const std::string_view, 8> kGPTExpectedPartitions = {
+    "MBR",
+    "Primary GPT Header",
+    "Primary GPT Tabler",
+    "Apple_Free",
+    "Apple_HFS",
+    "Apple_Free",
+    "Backup GPT Table",
+    "Backup GPT Header"};
 
-const char* kNoPartitionMap[] = {
-  "Apple_HFS",
-  nullptr,
-};
+constexpr std::array<std::string_view, 1> kNoPartitionMap = {"Apple_HFS"};
 
-const char* kAPMExpectedPartitions[] = {
-  "DDM",
-  "Apple_partition_map",
-  "Apple_HFS",
-  "Apple_Free",
-  nullptr,
+constexpr std::array<std::string_view, 4> kAPMExpectedPartitions = {
+    "DDM",
+    "Apple_partition_map",
+    "Apple_HFS",
+    "Apple_Free",
 };
 
 struct UDIFTestCase {
@@ -58,10 +55,7 @@ struct UDIFTestCase {
   // The disk image file to open.
   const char* file_name;
 
-  // The NULL-terminated C array of expected partition types.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
-  RAW_PTR_EXCLUSION const char** expected_partitions;
+  base::span<const std::string_view> expected_partitions;
 
   // A bitmask of ExpectedResults. As the parser currently only supports
   // certain UDIF features, this is used to properly test expectations.
@@ -128,12 +122,7 @@ TEST_P(UDIFParserTest, ParseUDIF) {
   if (!expected_parse_success)
     return;
 
-  size_t expected_partition_count = 0;
-  for (; test_case.expected_partitions[expected_partition_count];
-       ++expected_partition_count) {
-  }
-
-  EXPECT_EQ(expected_partition_count, udif.GetNumberOfPartitions());
+  EXPECT_EQ(test_case.expected_partitions.size(), udif.GetNumberOfPartitions());
 
   for (size_t i = 0; i < udif.GetNumberOfPartitions(); ++i) {
     SCOPED_TRACE(base::StringPrintf("partition %zu", i));
@@ -205,53 +194,53 @@ TEST_P(UDIFParserTest, ReadAll_100000) {
   RunReadAllTest(100000);
 }
 
-const UDIFTestCase cases[] = {
-  {"dmg_UDBZ_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UDBZ_NONE.dmg", kNoPartitionMap, UDIFTestCase::ALL_PASS},
-  {"dmg_UDBZ_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UDCO_GPTSPUD.dmg", kGPTExpectedPartitions,
-    // ADC compression not supported.
-    UDIFTestCase::UDIF_PARSE | UDIFTestCase::GET_HFS_STREAM},
-  {"dmg_UDCO_NONE.dmg", kNoPartitionMap,
-    // ADC compression not supported.
-    UDIFTestCase::UDIF_PARSE | UDIFTestCase::GET_HFS_STREAM},
-  {"dmg_UDCO_SPUD.dmg", kAPMExpectedPartitions,
-    // ADC compression not supported.
-    UDIFTestCase::UDIF_PARSE | UDIFTestCase::GET_HFS_STREAM},
-  {"dmg_UDRO_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UDRO_NONE.dmg", kNoPartitionMap, UDIFTestCase::ALL_PASS},
-  {"dmg_UDRO_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UDRW_GPTSPUD.dmg", kGPTExpectedPartitions,
-    // UDRW not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDRW_NONE.dmg", kNoPartitionMap,
-    // UDRW not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDRW_SPUD.dmg", kAPMExpectedPartitions,
-    // UDRW not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDSP_GPTSPUD.sparseimage", kGPTExpectedPartitions,
-    // Sparse images not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDSP_NONE.sparseimage", kNoPartitionMap,
-    // UDRW not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDSP_SPUD.sparseimage", kAPMExpectedPartitions,
-    // Sparse images not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDTO_GPTSPUD.cdr", kGPTExpectedPartitions,
-    // CD/DVD format not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDTO_NONE.cdr", kNoPartitionMap,
-    // CD/DVD format not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDTO_SPUD.cdr", kAPMExpectedPartitions,
-    // CD/DVD format not supported.
-    UDIFTestCase::ALL_FAIL},
-  {"dmg_UDZO_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UDZO_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UFBI_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
-  {"dmg_UFBI_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
+constexpr UDIFTestCase cases[] = {
+    {"dmg_UDBZ_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UDBZ_NONE.dmg", kNoPartitionMap, UDIFTestCase::ALL_PASS},
+    {"dmg_UDBZ_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UDCO_GPTSPUD.dmg", kGPTExpectedPartitions,
+     // ADC compression not supported.
+     UDIFTestCase::UDIF_PARSE | UDIFTestCase::GET_HFS_STREAM},
+    {"dmg_UDCO_NONE.dmg", kNoPartitionMap,
+     // ADC compression not supported.
+     UDIFTestCase::UDIF_PARSE | UDIFTestCase::GET_HFS_STREAM},
+    {"dmg_UDCO_SPUD.dmg", kAPMExpectedPartitions,
+     // ADC compression not supported.
+     UDIFTestCase::UDIF_PARSE | UDIFTestCase::GET_HFS_STREAM},
+    {"dmg_UDRO_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UDRO_NONE.dmg", kNoPartitionMap, UDIFTestCase::ALL_PASS},
+    {"dmg_UDRO_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UDRW_GPTSPUD.dmg", kGPTExpectedPartitions,
+     // UDRW not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDRW_NONE.dmg", kNoPartitionMap,
+     // UDRW not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDRW_SPUD.dmg", kAPMExpectedPartitions,
+     // UDRW not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDSP_GPTSPUD.sparseimage", kGPTExpectedPartitions,
+     // Sparse images not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDSP_NONE.sparseimage", kNoPartitionMap,
+     // UDRW not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDSP_SPUD.sparseimage", kAPMExpectedPartitions,
+     // Sparse images not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDTO_GPTSPUD.cdr", kGPTExpectedPartitions,
+     // CD/DVD format not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDTO_NONE.cdr", kNoPartitionMap,
+     // CD/DVD format not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDTO_SPUD.cdr", kAPMExpectedPartitions,
+     // CD/DVD format not supported.
+     UDIFTestCase::ALL_FAIL},
+    {"dmg_UDZO_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UDZO_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UFBI_GPTSPUD.dmg", kGPTExpectedPartitions, UDIFTestCase::ALL_PASS},
+    {"dmg_UFBI_SPUD.dmg", kAPMExpectedPartitions, UDIFTestCase::ALL_PASS},
 };
 
 INSTANTIATE_TEST_SUITE_P(UDIFParserTest,

@@ -111,6 +111,16 @@ FeatureTile* GameDashboardContextTestApi::GetMainMenuScreenshotTile() {
       GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
 }
 
+const std::u16string&
+GameDashboardContextTestApi::GetMainMenuScreenSizeSubtitle() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  const views::Label* subtitle_label =
+      main_menu_view->GetScreenSizeRowSubtitle();
+  CHECK(subtitle_label);
+  return subtitle_label->GetText();
+}
+
 views::Button*
 GameDashboardContextTestApi::GetMainMenuScreenSizeSettingsButton() {
   return views::AsViewClass<views::Button>(

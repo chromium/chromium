@@ -32,17 +32,18 @@ ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 void ContentFacilitatedPaymentsDriver::TriggerPixCodeDetection(
     base::OnceCallback<void(mojom::PixCodeDetectionResult, const std::string&)>
         callback) {
-  GetAgent()->TriggerPixCodeDetection(std::move(callback));
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  if (render_frame_host && render_frame_host->IsActive()) {
+    GetAgent(render_frame_host)->TriggerPixCodeDetection(std::move(callback));
+  }
 }
 
 const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>&
-ContentFacilitatedPaymentsDriver::GetAgent() {
+ContentFacilitatedPaymentsDriver::GetAgent(
+    content::RenderFrameHost* render_frame_host) {
   if (!agent_.is_bound()) {
-    content::RenderFrameHost* render_frame_host =
-        content::RenderFrameHost::FromID(render_frame_host_id_);
-    if (render_frame_host && render_frame_host->IsActive()) {
-      render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
-    }
+    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
   }
   return agent_;
 }

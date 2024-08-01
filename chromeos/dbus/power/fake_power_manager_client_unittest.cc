@@ -320,7 +320,9 @@ TEST(FakePowerManagerClientTest, AmbientLightSensorEnabled) {
 
   // Turn the Ambient Light Sensor off, and check that observers are notified
   // asynchronously.
-  client.SetAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  client.SetAmbientLightSensorEnabled(set_als_request);
 
   // The Ambient Light Sensor should not be disabled synchronously, since the
   // real client waits for a response from Power Manager.
@@ -343,7 +345,8 @@ TEST(FakePowerManagerClientTest, AmbientLightSensorEnabled) {
 
   // Turn the Ambient Light Sensor on, and check that observers are notified
   // asynchronously.
-  client.SetAmbientLightSensorEnabled(true);
+  set_als_request.set_sensor_enabled(true);
+  client.SetAmbientLightSensorEnabled(set_als_request);
 
   // The Ambient Light Sensor should not be enabled synchronously, since the
   // real client waits for a response from Power Manager.
@@ -381,7 +384,9 @@ TEST(FakePowerManagerClientTest, KeyboardAmbientLightSensorEnabled) {
 
   // Turn the Keyboard Ambient Light Sensor off, and check that observers are
   // notified asynchronously.
-  client.SetKeyboardAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  client.SetKeyboardAmbientLightSensorEnabled(set_als_request);
 
   // The Keyboard Ambient Light Sensor should not be disabled synchronously,
   // since the real client waits for a response from Power Manager.
@@ -406,7 +411,8 @@ TEST(FakePowerManagerClientTest, KeyboardAmbientLightSensorEnabled) {
 
   // Turn the Keyboard Ambient Light Sensor on, and check that observers are
   // notified asynchronously.
-  client.SetKeyboardAmbientLightSensorEnabled(true);
+  set_als_request.set_sensor_enabled(true);
+  client.SetKeyboardAmbientLightSensorEnabled(set_als_request);
 
   // The Keyboard Ambient Light Sensor should not be enabled synchronously,
   // since the real client waits for a response from Power Manager.
@@ -434,7 +440,9 @@ TEST(FakePowerManagerClientTest, GetAmbientLightSensorEnabled) {
   FakePowerManagerClient client;
 
   {
-    client.SetAmbientLightSensorEnabled(true);
+    power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+    set_als_request.set_sensor_enabled(true);
+    client.SetAmbientLightSensorEnabled(set_als_request);
 
     bool called = false;
     client.GetAmbientLightSensorEnabled(base::BindOnce(
@@ -456,7 +464,9 @@ TEST(FakePowerManagerClientTest, GetAmbientLightSensorEnabled) {
   }
 
   {
-    client.SetAmbientLightSensorEnabled(false);
+    power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+    set_als_request.set_sensor_enabled(false);
+    client.SetAmbientLightSensorEnabled(set_als_request);
 
     bool called = false;
     client.GetAmbientLightSensorEnabled(base::BindOnce(

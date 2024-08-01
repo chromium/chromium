@@ -88,7 +88,10 @@ group("metrics_python_tests") {
     "//tools/metrics/actions/extract_actions.py",
     "//tools/metrics/actions/extract_actions_test.py",
 
+    "//tools/metrics/common/codegen_shared_test.py",
+    "//tools/metrics/common/codegen_shared.py",
     "//tools/metrics/common/diff_util.py",
+    "//tools/metrics/common/model_shared.py",
     "//tools/metrics/common/models.py",
     "//tools/metrics/common/path_util.py",
     "//tools/metrics/common/presubmit_util.py",
@@ -127,7 +130,6 @@ group("metrics_python_tests") {
 
     "//tools/metrics/ukm/ukm.xml",
     "//tools/metrics/ukm/codegen.py",
-    "//tools/metrics/ukm/codegen_test.py",
     "//tools/metrics/ukm/builders_template.py",
     "//tools/metrics/ukm/decode_template.py",
     "//tools/metrics/ukm/gen_builders.py",

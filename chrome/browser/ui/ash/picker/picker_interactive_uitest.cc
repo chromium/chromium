@@ -247,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
 
 // Searches for '1 + 1', checks the top result is '2', and inserts it
 // into a web input field.
-IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertMath) {
+// TODO: crbug.com/355618977 - Fix flakiness.
+IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, DISABLED_SearchAndInsertMath) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -331,8 +332,9 @@ class PickerSpokenFeedbackInteractiveUiTest : public PickerInteractiveUiTest {
   }
 };
 
+// TODO: crbug.com/355618977 - Fix flakiness.
 IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
-                       AnnouncesOnWindowShown) {
+                       DISABLED_AnnouncesOnWindowShown) {
   ASSERT_TRUE(CreateBrowserWindow(
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
@@ -352,6 +354,7 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
 
   sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("window");
+  sm_.ExpectSpeechPattern("Turn on Caps Lock");
   sm_.Replay();
 }
 

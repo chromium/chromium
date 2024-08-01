@@ -25,7 +25,6 @@ include_rules = [
   "+components/facilitated_payments/content/renderer",
   "+components/facilitated_payments/core/features",
   "+components/feed/content/renderer",
-  "+components/feed/buildflags.h",
   "+components/feed/feed_feature_list.h",
   "+components/grit",
   "+components/guest_view/renderer",

@@ -1,0 +1,68 @@
+<style include="cr-hidden-style cr-shared-style">
+:host {
+  border-top: 1px solid var(--cr-separator-color);
+  display: flex;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-content p,
+.card-content ol {
+  color: var(--cr-secondary-text-color);
+}
+
+.card-content .subtitle {
+  font-size: smaller;
+  color: var(--cr-secondary-text-color);
+  margin-inline-start: 1ex;
+}
+
+cr-button {
+  flex: 0;
+  margin-block-start: var(--cr-section-vertical-padding);
+}
+
+ol {
+  padding-inline-start: 2ex;
+}
+
+li {
+  margin-block: 1ex;
+}
+
+#instructions,
+#data {
+  margin-inline: var(--cr-section-padding);
+}
+
+#data cr-button {
+  margin-block-start: 0;
+}
+
+</style>
+<div class="card-content">
+  <h3>[[item.displayTitle]]</h3>
+  <cr-expand-button expanded="{{dataExpanded_}}">
+    <div id="label"><b>Stored Data</b></div>
+  </cr-expand-button>
+  <div id="data" hidden="[[!dataExpanded_]]">
+    <template is="dom-if" if="[[isModule_()]]">
+      <p><b>Module name:</b> [[item.moduleName]]</p>
+      <p><b>Has browser command: </b>[[formatHasBrowserCommand_()]]</p>
+      <p><b>Is feature enabled: </b>[[formatIsFeatureEnabled_()]]</p>
+      <p><b>Queue position: </b>[[formatQueuePosition_()]]</p>
+    </template>
+    <template is="dom-if" if="[[isEdition_()]]">
+      <p><b>Edition name:</b> [[item.editionName]]</p>
+      <p><b>Is feature enabled: </b>[[formatIsFeatureEnabled_()]]</p>
+      <p><b>Has been used: </b>[[formatHasBeenUsed_()]]</p>
+      <p hidden="[[!item.hasBeenUsed]]">
+        <b>Version used: </b>[[item.versionUsed]]</p>
+    </template>
+    <cr-button id="clear" on-click="clearData_">
+      Clear Data
+    </cr-button>
+  </div>
+</div>

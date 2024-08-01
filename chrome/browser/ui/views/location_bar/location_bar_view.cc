@@ -941,6 +941,10 @@ void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
   SchedulePaint();
 }
 
+bool LocationBarView::HasSecurityStateChanged() {
+  return location_icon_view_->HasSecurityStateChanged();
+}
+
 void LocationBarView::Update(WebContents* contents) {
   if (contents)
     page_action_icon_controller_->UpdateWebContents(contents);
@@ -1299,10 +1303,6 @@ void LocationBarView::UpdateContentSettingsIcons() {
 
 void LocationBarView::SaveStateToContents(WebContents* contents) {
   omnibox_view_->SaveStateToTab(contents);
-}
-
-const OmniboxView* LocationBarView::GetOmniboxView() const {
-  return omnibox_view_;
 }
 
 LocationBarTesting* LocationBarView::GetLocationBarForTesting() {

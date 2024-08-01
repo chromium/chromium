@@ -3,6 +3,19 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+type Constructor<T> = new (...args: any[]) => T;
+type Installer<T> = (instance: T) => void;
+
+export function installMock<T extends object>(clazz: Constructor<T>):
+    TestMock<T> {
+  const installer =
+      (clazz as unknown as {setInstance: Installer<T>}).setInstance;
+  const mock = TestMock.fromClass(clazz);
+  installer!(mock);
+  return mock;
+}
 
 /**
  * Asserts the computed style value for an element.

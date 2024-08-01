@@ -64,20 +64,20 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   };
   using FailureCallback = base::OnceCallback<void(FailureReason)>;
 
-  // The |failure_callback| will be called at most once if there was a failure.
   ContentVerifyJob(const ExtensionId& extension_id,
-                   const base::Version& extension_version,
                    const base::FilePath& extension_root,
-                   const base::FilePath& relative_path,
-                   int manifest_version,
-                   FailureCallback failure_callback);
+                   const base::FilePath& relative_path);
 
   ContentVerifyJob(const ContentVerifyJob&) = delete;
   ContentVerifyJob& operator=(const ContentVerifyJob&) = delete;
 
   // This begins the process of getting expected hashes, so it should be called
   // as early as possible.
-  void Start(ContentVerifier* verifier);
+  // The |failure_callback| will be called at most once if there was a failure.
+  void Start(ContentVerifier* verifier,
+             const base::Version& extension_version,
+             int manifest_version,
+             FailureCallback failure_callback);
 
   // Call this to add more bytes to verify. If at any point the read bytes
   // don't match the expected hashes, this will dispatch the failure callback.
@@ -89,6 +89,9 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // Call once when finished adding bytes via OnDone.
   void DoneReading();
+
+  const ExtensionId& extension_id() const { return extension_id_; }
+  const base::FilePath& relative_path() const { return relative_path_; }
 
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
    public:
@@ -117,7 +120,11 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   virtual ~ContentVerifyJob();
   friend class base::RefCountedThreadSafe<ContentVerifyJob>;
 
-  void DidGetContentHashOnIO(scoped_refptr<const ContentHash> hash);
+  // Called when the content verification hashes are created.
+  void DidCreateContentHashOnIO(scoped_refptr<const ContentHash> hash);
+
+  // Starts the verification process with the content verification hashes.
+  void StartWithContentHash(scoped_refptr<const ContentHash> hash);
 
   // Same as BytesRead, but is run without acquiring lock.
   void BytesReadImpl(const char* data, int count, MojoResult read_result);
@@ -142,33 +149,32 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   bool has_ignorable_read_error_ = false;
 
   // Indicates whether the caller has told us they are done calling BytesRead.
-  bool done_reading_;
+  bool done_reading_ = false;
 
   // Set to true once hash_reader_ has read its expected hashes.
-  bool hashes_ready_;
+  bool hashes_ready_ = false;
 
   // While we're waiting for the callback from the ContentHashReader, we need
   // to queue up bytes any bytes that are read.
   std::string queue_;
 
   // The total bytes we've read.
-  int64_t total_bytes_read_;
+  int64_t total_bytes_read_ = 0;
 
   // The index of the block we're currently on.
-  int current_block_;
+  int current_block_ = 0;
 
   // The hash we're building up for the bytes of |current_block_|.
   std::unique_ptr<crypto::SecureHash> current_hash_;
 
   // The number of bytes we've already input into |current_hash_|.
-  int current_hash_byte_count_;
+  int current_hash_byte_count_ = 0;
 
   // Valid and set after |hashes_ready_| is set to true.
   std::unique_ptr<const ContentHashReader> hash_reader_;
 
   // Resource info for this verify job.
   const ExtensionId extension_id_;
-  const base::Version extension_version_;
   const base::FilePath extension_root_;
   const base::FilePath relative_path_;
 
@@ -176,13 +182,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // The manifest version of the extension associated with the verify job.
   // Used only for metrics purposes.
-  const int manifest_version_;
+  int manifest_version_ = 0;
 
   // Called once if verification fails.
   FailureCallback failure_callback_;
 
   // Set to true if we detected a mismatch and called the failure callback.
-  bool failed_;
+  bool failed_ = false;
 
   // Used to synchronize all public methods.
   base::Lock lock_;

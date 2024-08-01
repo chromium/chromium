@@ -1087,10 +1087,9 @@ TEST_P(PasswordProtectionServiceBaseTest,
   std::string access_token = "fake access token";
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::string out;
-        EXPECT_TRUE(request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &out));
-        EXPECT_EQ(out, "Bearer " + access_token);
+        EXPECT_THAT(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            testing::Optional("Bearer " + access_token));
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kOmit);
@@ -1119,9 +1118,9 @@ TEST_P(PasswordProtectionServiceBaseTest,
   std::string access_token = "fake access token";
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::string out;
-        EXPECT_FALSE(request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &out));
+        EXPECT_EQ(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            std::nullopt);
         // Cookies should be attached when token is empty.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kInclude);
@@ -1157,6 +1156,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
   account_info.gaia = "gaia";
+  account_info.hosted_domain = "example.com";
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 

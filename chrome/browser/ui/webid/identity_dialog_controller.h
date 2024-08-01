@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
@@ -77,6 +78,7 @@ class IdentityDialogController
   // Show a modal dialog that loads content from the IdP in a WebView.
   content::WebContents* ShowModalDialog(
       const GURL& url,
+      blink::mojom::RpMode rp_mode,
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
   content::WebContents* GetRpWebContents() override;
@@ -102,6 +104,10 @@ class IdentityDialogController
       std::unique_ptr<AccountSelectionView> account_view);
 
  private:
+  // Attempts to set `account_view_` if it is not already set -- directly on
+  // Android, via TabFeatures on desktop.
+  bool TrySetAccountView();
+
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;

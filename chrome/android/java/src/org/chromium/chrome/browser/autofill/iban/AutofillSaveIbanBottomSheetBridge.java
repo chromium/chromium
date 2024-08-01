@@ -24,7 +24,8 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** JNI wrapper to trigger Android bottom sheet prompting the user to save their IBAN locally. */
 @JNINamespace("autofill")
-public class AutofillSaveIbanBottomSheetBridge {
+public class AutofillSaveIbanBottomSheetBridge
+        implements AutofillSaveIbanBottomSheetCoordinator.NativeDelegate {
     private long mNativeAutofillSaveIbanBottomSheetBridge;
     private final BottomSheetController mBottomSheetController;
     private final Context mContext;
@@ -86,6 +87,7 @@ public class AutofillSaveIbanBottomSheetBridge {
      * @param userProvidedNickname The nickname provided by the user when the "Save" button is
      *     clicked.
      */
+    @Override
     public void onUiAccepted(String userProvidedNickname) {
         if (mNativeAutofillSaveIbanBottomSheetBridge != 0) {
             AutofillSaveIbanBottomSheetBridgeJni.get()
@@ -94,6 +96,7 @@ public class AutofillSaveIbanBottomSheetBridge {
     }
 
     /** Called when the cancel button is clicked or bottom sheet dismissed (e.g. back press). */
+    @Override
     public void onUiCanceled() {
         if (mNativeAutofillSaveIbanBottomSheetBridge != 0) {
             AutofillSaveIbanBottomSheetBridgeJni.get()
@@ -102,6 +105,7 @@ public class AutofillSaveIbanBottomSheetBridge {
     }
 
     /** Called when the the bottom sheet is hidden without interaction with the bottom sheet. */
+    @Override
     public void onUiIgnored() {
         if (mNativeAutofillSaveIbanBottomSheetBridge != 0) {
             AutofillSaveIbanBottomSheetBridgeJni.get()

@@ -19,122 +19,157 @@ namespace {
 namespace cx_diag = ::chromeos::api::os_diagnostics;
 namespace crosapi = ::crosapi::mojom;
 
-// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
-// `CreateMemoryRoutineArguments` instance. Returns whether `out` was
-// successfully populated.
-bool PopulateMemoryRoutineArguments(
-    const cx_diag::CreateMemoryRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+// All fields of `cx_diag::CreateRoutineArgumentsUnion`. The enums are defined
+// manually because there are no tools to generate them automatically.
+enum class CreateRoutineArgumentsField {
+  kMemory,
+  kVolumeButton,
+  kFan,
+  kNetworkBandwidth,
+  kLedLitUp,
+  kCameraFrameAnalysis,
+  kKeyboardBacklight,
+};
+
+// All fields of `cx_diag::RoutineInquiryReplyUnion`. The enums are defined
+// manually because there are no tools to generate them automatically.
+enum class RoutineInquiryReplyField {
+  kCheckLedLitUpState,
+  kCheckKeyboardBacklightState,
+};
+
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateMemoryRoutineArguments& cx_args) {
   if (cx_args.max_testing_mem_kib.has_value() &&
       cx_args.max_testing_mem_kib.value() < 0) {
-    return false;
+    return std::nullopt;
   }
 
   auto args = crosapi::TelemetryDiagnosticMemoryRoutineArgument::New();
   args->max_testing_mem_kib = cx_args.max_testing_mem_kib;
-  out = crosapi::TelemetryDiagnosticRoutineArgument::NewMemory(std::move(args));
-  return true;
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewMemory(
+      std::move(args));
 }
 
-// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
-// `CreateVolumeButtonRoutineArguments` instance. Returns whether `out` was
-// successfully populated.
-bool PopulateVolumeButtonRoutineArguments(
-    const cx_diag::CreateVolumeButtonRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateVolumeButtonRoutineArguments& cx_args) {
   if (cx_args.timeout_seconds <= 0 ||
       cx_args.button_type == cx_diag::VolumeButtonType::kNone) {
-    return false;
+    return std::nullopt;
   }
 
   auto args = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
   args->type = ConvertVolumeButtonRoutineButtonType(cx_args.button_type);
   args->timeout = base::Seconds(cx_args.timeout_seconds);
-  out = crosapi::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
       std::move(args));
-  return true;
 }
 
-// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
-// `CreateFanRoutineArguments` instance. Returns whether `out` was successfully
-// populated.
-bool PopulateFanRoutineArguments(
-    const cx_diag::CreateFanRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
-  out = crosapi::TelemetryDiagnosticRoutineArgument::NewFan(
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateFanRoutineArguments& cx_args) {
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewFan(
       crosapi::TelemetryDiagnosticFanRoutineArgument::New());
-  return true;
 }
 
-bool PopulateNetworkBandwidthRoutineArguments(
-    const cx_diag::CreateNetworkBandwidthRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
-  out = crosapi::TelemetryDiagnosticRoutineArgument::NewNetworkBandwidth(
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateNetworkBandwidthRoutineArguments& cx_args) {
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewNetworkBandwidth(
       crosapi::TelemetryDiagnosticNetworkBandwidthRoutineArgument::New());
-  return true;
 }
 
-// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
-// `CreateLedLitUpRoutineArguments` instance. Returns whether `out` was
-// successfully populated.
-bool PopulateLedLitUpRoutineArguments(
-    const cx_diag::CreateLedLitUpRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateLedLitUpRoutineArguments& cx_args) {
   auto args = crosapi::TelemetryDiagnosticLedLitUpRoutineArgument::New();
   args->name = ConvertLedName(cx_args.name);
   args->color = ConvertLedColor(cx_args.color);
-  out =
-      crosapi::TelemetryDiagnosticRoutineArgument::NewLedLitUp(std::move(args));
-  return true;
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewLedLitUp(
+      std::move(args));
 }
 
-// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
-// `CreateCameraFrameAnalysisRoutineArguments` instance. Returns whether `out`
-// was successfully populated.
-bool PopulateCameraFrameAnalysisRoutineArguments(
-    const cx_diag::CreateCameraFrameAnalysisRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
-  out = crosapi::TelemetryDiagnosticRoutineArgument::NewCameraFrameAnalysis(
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateCameraFrameAnalysisRoutineArguments& cx_args) {
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewCameraFrameAnalysis(
       crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineArgument::New());
-  return true;
 }
 
-// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
-// `CreateKeyboardBacklightRoutineArguments` instance. Returns whether `out`
-// was successfully populated.
-bool PopulateKeyboardBacklightRoutineArguments(
-    const cx_diag::CreateKeyboardBacklightRoutineArguments& cx_args,
-    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
-  out = crosapi::TelemetryDiagnosticRoutineArgument::NewKeyboardBacklight(
+std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CreateKeyboardBacklightRoutineArguments& cx_args) {
+  return crosapi::TelemetryDiagnosticRoutineArgument::NewKeyboardBacklight(
       crosapi::TelemetryDiagnosticKeyboardBacklightRoutineArgument::New());
-  return true;
 }
 
-// Populates a `TelemetryDiagnosticRoutineInquiryReplyPtr` object from a
-// `CheckLedLitUpStateReply` instance. Returns whether `out` was successfully
-// populated.
-bool PopulateCheckLedLitUpStateReply(
-    const cx_diag::CheckLedLitUpStateReply& cx_args,
-    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr& out) {
+std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CheckLedLitUpStateReply& cx_args) {
   auto args = crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::New();
   args->state = ConvertLedLitUpState(cx_args.state);
-  out = crosapi::TelemetryDiagnosticRoutineInquiryReply::NewCheckLedLitUpState(
+  return crosapi::TelemetryDiagnosticRoutineInquiryReply::NewCheckLedLitUpState(
       std::move(args));
-  return true;
 }
 
-// Populates a `TelemetryDiagnosticRoutineInquiryReplyPtr` object from a
-// `CheckKeyboardBacklightStateReply` instance. Returns whether `out` was
-// successfully populated.
-bool PopulateCheckKeyboardBacklightStateReply(
-    const cx_diag::CheckKeyboardBacklightStateReply& cx_args,
-    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr& out) {
+std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
+ConvertExtensionUnionToMojoUnion(
+    const cx_diag::CheckKeyboardBacklightStateReply& cx_args) {
   auto args =
       crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::New();
   args->state = ConvertKeyboardBacklightState(cx_args.state);
-  out = crosapi::TelemetryDiagnosticRoutineInquiryReply::
+  return crosapi::TelemetryDiagnosticRoutineInquiryReply::
       NewCheckKeyboardBacklightState(std::move(args));
-  return true;
+}
+
+// Default implementation of `ConvertExtensionUnionToMojoUnion` raises compile
+// error.
+template <typename Arg, typename OutputT>
+OutputT ConvertExtensionUnionToMojoUnion(const Arg& arg) {
+  static_assert(
+      false, "ConvertExtensionUnionToMojoUnion for specific type not defined.");
+  NOTREACHED_NORETURN();
+}
+
+std::vector<RoutineInquiryReplyField> GetNonNullFields(
+    const cx_diag::RoutineInquiryReplyUnion& extension_union) {
+  std::vector<RoutineInquiryReplyField> result;
+  if (extension_union.check_led_lit_up_state.has_value()) {
+    result.push_back(RoutineInquiryReplyField::kCheckLedLitUpState);
+  }
+  if (extension_union.check_keyboard_backlight_state.has_value()) {
+    result.push_back(RoutineInquiryReplyField::kCheckKeyboardBacklightState);
+  }
+  return result;
+}
+
+std::vector<CreateRoutineArgumentsField> GetNonNullFields(
+    const cx_diag::CreateRoutineArgumentsUnion& extension_union) {
+  std::vector<CreateRoutineArgumentsField> result;
+  if (extension_union.memory.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kMemory);
+  }
+  if (extension_union.volume_button.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kVolumeButton);
+  }
+  if (extension_union.fan.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kFan);
+  }
+  if (extension_union.network_bandwidth.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kNetworkBandwidth);
+  }
+  if (extension_union.led_lit_up.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kLedLitUp);
+  }
+  if (extension_union.camera_frame_analysis.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kCameraFrameAnalysis);
+  }
+  if (extension_union.keyboard_backlight.has_value()) {
+    result.push_back(CreateRoutineArgumentsField::kKeyboardBacklight);
+  }
+  return result;
 }
 
 }  // namespace
@@ -428,90 +463,74 @@ ConvertKeyboardBacklightState(
 std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
 ConvertRoutineArgumentsUnion(
     cx_diag::CreateRoutineArgumentsUnion extension_union) {
-  // Implementation note: when more than one field is set in `extension_union`,
-  // return std::nullopt because it is an invalid union.
+  std::vector<CreateRoutineArgumentsField> non_null_fields =
+      GetNonNullFields(extension_union);
 
-  crosapi::TelemetryDiagnosticRoutineArgumentPtr result;
-  if (extension_union.memory) {
-    if (result || !PopulateMemoryRoutineArguments(
-                      extension_union.memory.value(), result)) {
-      return std::nullopt;
-    }
+  if (non_null_fields.empty()) {
+    // When extension is newer than the browser, extension might pass in a
+    // routine argument that cannot be recognized by the browser. For better
+    // developer experience, don't treat it as an invalid union.
+    return crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
+        false);
   }
-  if (extension_union.volume_button) {
-    if (result || !PopulateVolumeButtonRoutineArguments(
-                      extension_union.volume_button.value(), result)) {
-      return std::nullopt;
-    }
+
+  // A dictionary-based union is invalid when more than one fields are set.
+  if (non_null_fields.size() > 1) {
+    return std::nullopt;
   }
-  if (extension_union.fan) {
-    if (result ||
-        !PopulateFanRoutineArguments(extension_union.fan.value(), result)) {
-      return std::nullopt;
-    }
+
+  CHECK(non_null_fields.size() == 1);
+  switch (non_null_fields.front()) {
+    case CreateRoutineArgumentsField::kMemory:
+      return ConvertExtensionUnionToMojoUnion(extension_union.memory.value());
+    case CreateRoutineArgumentsField::kVolumeButton:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.volume_button.value());
+    case CreateRoutineArgumentsField::kFan:
+      return ConvertExtensionUnionToMojoUnion(extension_union.fan.value());
+    case CreateRoutineArgumentsField::kNetworkBandwidth:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.network_bandwidth.value());
+    case CreateRoutineArgumentsField::kLedLitUp:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.led_lit_up.value());
+    case CreateRoutineArgumentsField::kCameraFrameAnalysis:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.camera_frame_analysis.value());
+    case CreateRoutineArgumentsField::kKeyboardBacklight:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.keyboard_backlight.value());
   }
-  if (extension_union.network_bandwidth) {
-    if (result || !PopulateNetworkBandwidthRoutineArguments(
-                      extension_union.network_bandwidth.value(), result)) {
-      return std::nullopt;
-    }
-  }
-  if (extension_union.led_lit_up) {
-    if (result || !PopulateLedLitUpRoutineArguments(
-                      extension_union.led_lit_up.value(), result)) {
-      return std::nullopt;
-    }
-  }
-  if (extension_union.camera_frame_analysis) {
-    if (result || !PopulateCameraFrameAnalysisRoutineArguments(
-                      extension_union.camera_frame_analysis.value(), result)) {
-      return std::nullopt;
-    }
-  }
-  if (extension_union.keyboard_backlight) {
-    if (result || !PopulateKeyboardBacklightRoutineArguments(
-                      extension_union.keyboard_backlight.value(), result)) {
-      return std::nullopt;
-    }
-  }
-  if (result) {
-    return result;
-  }
-  // When extension is newer than the browser, extension might pass in a routine
-  // argument that cannot be recognized by the browser. For better developer
-  // experience, don't treat it as an invalid union.
-  return crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
-      false);
 }
 
 std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
 ConvertRoutineInquiryReplyUnion(
     cx_diag::RoutineInquiryReplyUnion extension_union) {
-  // Implementation note: when more than one field is set in `extension_union`,
-  // return std::nullopt because it is an invalid union.
+  std::vector<RoutineInquiryReplyField> non_null_fields =
+      GetNonNullFields(extension_union);
 
-  crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr result;
-  if (extension_union.check_led_lit_up_state) {
-    if (result || !PopulateCheckLedLitUpStateReply(
-                      extension_union.check_led_lit_up_state.value(), result)) {
-      return std::nullopt;
-    }
+  if (non_null_fields.empty()) {
+    // When extension is newer than the browser, extension might pass in a reply
+    // that cannot be recognized by the browser. For better developer
+    // experience, don't treat it as an invalid union.
+    return crosapi::TelemetryDiagnosticRoutineInquiryReply::
+        NewUnrecognizedReply(false);
   }
-  if (extension_union.check_keyboard_backlight_state) {
-    if (result ||
-        !PopulateCheckKeyboardBacklightStateReply(
-            extension_union.check_keyboard_backlight_state.value(), result)) {
-      return std::nullopt;
-    }
+
+  // A dictionary-based union is invalid when more than one fields are set.
+  if (non_null_fields.size() > 1) {
+    return std::nullopt;
   }
-  if (result) {
-    return result;
+
+  CHECK(non_null_fields.size() == 1);
+  switch (non_null_fields.front()) {
+    case RoutineInquiryReplyField::kCheckLedLitUpState:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.check_led_lit_up_state.value());
+    case RoutineInquiryReplyField::kCheckKeyboardBacklightState:
+      return ConvertExtensionUnionToMojoUnion(
+          extension_union.check_keyboard_backlight_state.value());
   }
-  // When extension is newer than the browser, extension might pass in a reply
-  // that cannot be recognized by the browser. For better developer experience,
-  // don't treat it as an invalid union.
-  return crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
-      false);
 }
 
 }  // namespace chromeos::converters::diagnostics

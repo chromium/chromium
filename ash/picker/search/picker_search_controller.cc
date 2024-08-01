@@ -87,7 +87,7 @@ void PickerSearchController::StartEmojiSearch(
   const base::TimeTicks search_start = base::TimeTicks::Now();
 
   emoji::EmojiSearchResult results =
-      emoji_search_.SearchEmoji(base::UTF16ToUTF8(query));
+      emoji_search_.SearchEmoji(base::UTF16ToUTF8(query), {{"en"}});
 
   base::TimeDelta elapsed = base::TimeTicks::Now() - search_start;
   base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime", elapsed);
@@ -111,19 +111,21 @@ void PickerSearchController::StartEmojiSearch(
     }
     emoji_results.push_back(PickerSearchResult::Emoji(
         base::UTF8ToUTF16(emoji_string),
-        base::UTF8ToUTF16(emoji_search_.GetEmojiName(emoji_string))));
+        base::UTF8ToUTF16(emoji_search_.GetEmojiName(emoji_string, "en"))));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
-    emoji_results.push_back(PickerSearchResult::Symbol(
-        base::UTF8ToUTF16(result.emoji_string),
-        base::UTF8ToUTF16(emoji_search_.GetEmojiName(result.emoji_string))));
+    emoji_results.push_back(
+        PickerSearchResult::Symbol(base::UTF8ToUTF16(result.emoji_string),
+                                   base::UTF8ToUTF16(emoji_search_.GetEmojiName(
+                                       result.emoji_string, "en"))));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
     emoji_results.push_back(PickerSearchResult::Emoticon(
         base::UTF8ToUTF16(result.emoji_string),
-        base::UTF8ToUTF16(emoji_search_.GetEmojiName(result.emoji_string))));
+        base::UTF8ToUTF16(
+            emoji_search_.GetEmojiName(result.emoji_string, "en"))));
   }
 
   std::move(callback).Run(std::move(emoji_results));

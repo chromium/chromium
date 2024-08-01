@@ -16,7 +16,11 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {
+  settings,
+  SpeakerIdEnableState,
+  TranscriptionEnableState,
+} from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
 /**
@@ -205,7 +209,20 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 2: {
-        // TODO: b/344785475 - Implement speaker ID enable/disable logic.
+        const disableSpeakerId = () => {
+          settings.mutate((s) => {
+            s.speakerIdEnabled = SpeakerIdEnableState.DISABLED_FIRST;
+          });
+          this.close();
+        };
+
+        const enableSpeakerId = () => {
+          settings.mutate((s) => {
+            s.speakerIdEnabled = SpeakerIdEnableState.ENABLED;
+          });
+          this.close();
+        };
+
         return this.renderDialog(
           'onboarding_speaker_id',
           i18n.onboardingDialogSpeakerIdHeader,
@@ -224,11 +241,11 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               .label=${i18n.onboardingDialogSpeakerIdDisallowButton}
               button-style="secondary"
-              @click=${this.close}
+              @click=${disableSpeakerId}
             ></cra-button>
             <cra-button
               .label=${i18n.onboardingDialogSpeakerIdAllowButton}
-              @click=${this.close}
+              @click=${enableSpeakerId}
             ></cra-button>
           `,
         );

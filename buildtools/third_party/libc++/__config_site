@@ -63,9 +63,8 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
-// TODO(crbug.com/354741399): Re-enable on Fuchsia once SDK is fixed.
 // TODO(crbug.com/354741410): Re-enable on swangle bots once VK-GL-CTS is fixed.
-#if !defined(__Fuchsia__) && !defined(ANGLE_DEQP_DATA_DIR)
+#if !defined(ANGLE_DEQP_DATA_DIR)
 #define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 #endif
 
@@ -78,14 +77,5 @@
 // function because by default, this macro will does not call the verbose
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
-
-// TODO(crbug.com/40272953) Link against compiler-rt's builtins library to
-// enable 128-arithmetic.
-#if defined(_WIN32)
-#define _LIBCPP_HAS_NO_INT128
-#endif
-
-// TODO(thakis): Remove this after LLVM 19's libc++ is rolled in.
-#define _LIBCPP_CHAR_TRAITS_REMOVE_BASE_SPECIALIZATION
 
 #endif // _LIBCPP_CONFIG_SITE

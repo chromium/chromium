@@ -14,11 +14,16 @@ import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBott
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.WARNING;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,7 +56,8 @@ class AllPlusAddressesBottomSheetViewBinder {
                 .inflate(R.layout.plus_profile_info_view, parent, false);
     }
 
-    static void bindPlusAddressView(PropertyModel model, View view, PropertyKey propertyKey) {
+    static void bindPlusAddressView(
+            PropertyModel model, View view, PropertyKey propertyKey, FaviconHelper helper) {
         if (propertyKey == PLUS_PROFILE) {
             PlusProfile plusProfile = model.get(PLUS_PROFILE);
 
@@ -63,8 +69,13 @@ class AllPlusAddressesBottomSheetViewBinder {
             plusAddressChip
                     .getPrimaryTextView()
                     .setContentDescription(plusProfile.getPlusAddress());
-            plusAddressChip.setIcon(
-                    R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+
+            setPlusProfileIcon(view, helper.getDefaultIcon(plusProfile.getOrigin()));
+            helper.fetchFavicon(
+                    plusProfile.getOrigin(),
+                    (drawable) -> {
+                        setPlusProfileIcon(view, drawable);
+                    });
         } else if (propertyKey == ON_PLUS_ADDRESS_SELECTED) {
             ChipView plusAddressChip = view.findViewById(R.id.plus_address);
             plusAddressChip.setOnClickListener(
@@ -78,6 +89,19 @@ class AllPlusAddressesBottomSheetViewBinder {
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    private static void setPlusProfileIcon(View view, @Nullable Drawable icon) {
+        if (icon == null) {
+            return;
+        }
+        final int kIconSize =
+                view.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.all_plus_addresses_favicon_side);
+        icon.setBounds(0, 0, kIconSize, kIconSize);
+        ImageView plusProfileFavicon = view.findViewById(R.id.profile_origin_favicon);
+        plusProfileFavicon.setImageDrawable(icon);
     }
 
     private AllPlusAddressesBottomSheetViewBinder() {}

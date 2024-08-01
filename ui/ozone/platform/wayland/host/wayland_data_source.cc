@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
 #include <gtk-primary-selection-client-protocol.h>
@@ -56,11 +61,13 @@ void DataSource<T>::HandleFinishEvent(bool completed) {
 // for more details about non-blocking behavior for 'write' syscall.
 // https://pubs.opengroup.org/onlinepubs/007904975/functions/write.html
 bool WriteDataNonBlocking(int fd, const std::string& data_str) {
-  const char* data = data_str.data();
-  const ssize_t size = base::checked_cast<ssize_t>(data_str.size());
+  auto data_span = base::as_bytes(base::make_span(data_str));
+  const ssize_t size = base::checked_cast<ssize_t>(data_span.size());
   ssize_t written = 0;
+
   while (written < size) {
-    ssize_t result = write(fd, data + written, size - written);
+    auto remaining_span = data_span.subspan(written);
+    ssize_t result = write(fd, remaining_span.data(), remaining_span.size());
     if (result == -1) {
       if (errno == EINTR || errno == EAGAIN)
         continue;

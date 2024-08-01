@@ -46,7 +46,6 @@ namespace {
 
 NSString* const kPassphrase = @"hello";
 
-using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::SettingsAccountButton;
@@ -71,15 +70,6 @@ id<GREYMatcher> SuggestPasswordChip() {
   return grey_allOf(
       grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SUGGEST_PASSWORD)),
       nil);
-}
-
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 // Simulates a keyboard event where a character is typed.
@@ -121,7 +111,7 @@ void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(username)];
   [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Types `text` on an input field with `fieldID`. Dismisses the password bottom
@@ -433,7 +423,7 @@ void LoginOnUff() {
       performAction:TapWebElementWithId(kFormPassword)];
 
   // Wait for the accessory icon to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Tap on a suggest password chip.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
@@ -469,7 +459,7 @@ void LoginOnUff() {
       performAction:TapWebElementWithId(kFormPassword)];
 
   // Wait for the accessory icon to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Verify the suggest password chip is shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
@@ -513,7 +503,7 @@ void LoginOnUff() {
       performAction:TapWebElementWithId(kFormPassword)];
 
   // Wait for the accessory icon to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Verify the suggest password chip is not shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
@@ -525,7 +515,7 @@ void LoginOnUff() {
 - (void)testPasswordGenerationWhileSignedInWithError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
@@ -555,7 +545,7 @@ void LoginOnUff() {
       performAction:TapWebElementWithId(kFormPassword)];
 
   // Wait for the accessory icon to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Verify the suggest password chip is not shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]

@@ -790,22 +790,14 @@ CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
   }
 }
 
-CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::ResolvesTo(
+    double value) const {
   std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
   if (!maybe_value.has_value()) {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
-  return maybe_value.value() == 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsOne() const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() == 1.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+  return maybe_value.value() == value ? CSSPrimitiveValue::BoolStatus::kTrue
+                                      : CSSPrimitiveValue::BoolStatus::kFalse;
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsNegative()
@@ -1140,6 +1132,7 @@ CalculationExpressionSizingKeywordNode::Keyword CSSValueIDToSizingKeyword(
     KEYWORD_CASE(kAny)
     KEYWORD_CASE(kSize)
     KEYWORD_CASE(kAuto)
+    KEYWORD_CASE(kContent)
     KEYWORD_CASE(kMinContent)
     KEYWORD_CASE(kWebkitMinContent)
     KEYWORD_CASE(kMaxContent)
@@ -1168,6 +1161,7 @@ CSSValueID SizingKeywordToCSSValueID(
     KEYWORD_CASE(kAny)
     KEYWORD_CASE(kSize)
     KEYWORD_CASE(kAuto)
+    KEYWORD_CASE(kContent)
     KEYWORD_CASE(kMinContent)
     KEYWORD_CASE(kWebkitMinContent)
     KEYWORD_CASE(kMaxContent)
@@ -1190,6 +1184,8 @@ CalculationResultCategory DetermineKeywordCategory(
       return kCalcLength;
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return kCalcLengthFunction;
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
+      return kCalcNumber;
   };
 }
 
@@ -1226,6 +1222,10 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
           CSSValueIDToSizingKeyword(keyword_));
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
+      // TODO(crbug.com/325309578): Produce a CalculationExpressionNode-derived
+      // object for color channel keywords.
+      NOTREACHED_NORETURN();
   };
 }
 
@@ -1243,6 +1243,7 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       NOTREACHED_NORETURN();
   };
 }
@@ -1261,6 +1262,7 @@ CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
           NOTREACHED_NORETURN();
       }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
+    case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       return std::nullopt;
   }
 }
@@ -2138,22 +2140,14 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
                             false),
       operator_(op) {}
 
-CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::ResolvesTo(
+    double value) const {
   std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
   if (!maybe_value.has_value()) {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
-  return maybe_value.value() == 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsOne() const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() == 1.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+  return maybe_value.value() == value ? CSSPrimitiveValue::BoolStatus::kTrue
+                                      : CSSPrimitiveValue::BoolStatus::kFalse;
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsNegative() const {
@@ -3659,7 +3653,21 @@ class CSSMathExpressionNodeParser {
         (id == CSSValueID::kAny ||
          (id == CSSValueID::kAuto &&
           parsing_flags_.Has(Flag::AllowAutoInCalcSize)) ||
+         (id == CSSValueID::kContent &&
+          parsing_flags_.Has(Flag::AllowContentInCalcSize)) ||
          css_parsing_utils::ValidWidthOrHeightKeyword(id, context_))) {
+      // TODO(https://crbug.com/353538495): Right now 'flex-basis'
+      // accepts fewer keywords than other width properties.  So for
+      // now specifically exclude the ones that it doesn't accept,
+      // based off the flag for accepting 'content'.
+      if (parsing_flags_.Has(Flag::AllowContentInCalcSize) &&
+          !css_parsing_utils::IdentMatches<
+              CSSValueID::kAny, CSSValueID::kAuto, CSSValueID::kContent,
+              CSSValueID::kMinContent, CSSValueID::kMaxContent,
+              CSSValueID::kFitContent>(id)) {
+        return nullptr;
+      }
+
       // Note: We don't want to accept 'none' (for 'max-*' properties) since
       // it's not meaningful for animation, since it's equivalent to infinity.
       tokens.ConsumeIncludingWhitespace();
@@ -3965,13 +3973,23 @@ class CSSMathExpressionNodeParser {
           (token.GetType() == kPercentageToken &&
            parsing_flags_.Has(Flag::AllowPercent)) ||
           token.GetType() == kDimensionToken)) {
-      // For relative color syntax. Swap in the associated value of a color
-      // channel here. e.g. color(from color(srgb 1 0 0) calc(r * 2) 0 0) should
+      // For relative color syntax.
+      // If the associated values of color channels are known, swap them in
+      // here. e.g. color(from color(srgb 1 0 0) calc(r * 2) 0 0) should
       // swap in "1" for the value of "r" in the calc expression.
-      if (color_channel_map_.Contains(token.Id())) {
-        return CSSMathExpressionNumericLiteral::Create(
-            color_channel_map_.at(token.Id()),
-            CSSPrimitiveValue::UnitType::kNumber);
+      // If channel values are not known, create keyword literals for valid
+      // channel names instead.
+      if (auto it = color_channel_map_.find(token.Id());
+          it != color_channel_map_.end()) {
+        const std::optional<double>& channel = it->value;
+        if (channel.has_value()) {
+          return CSSMathExpressionNumericLiteral::Create(
+              channel.value(), CSSPrimitiveValue::UnitType::kNumber);
+        } else {
+          return CSSMathExpressionKeywordLiteral::Create(
+              token.Id(),
+              CSSMathExpressionKeywordLiteral::Context::kColorChannel);
+        }
       }
       return nullptr;
     }

@@ -3913,7 +3913,7 @@ std::unique_ptr<QueryTreeReply> detail::ReadReply<QueryTreeReply>(
   Pad(&buf, 14);
 
   // children
-  children.resize(children_len);
+  children.resize(length);
   for (auto& children_elem : children) {
     // children_elem
     Read(&children_elem, &buf);

@@ -10,7 +10,8 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
+extern const int64_t kJniZeroHashWhole = -7874644414477415950LL;
+extern const int64_t kJniZeroHashPriority = 4439870226107528323LL;
 // Class Accessors.
 #ifndef org_jni_1zero_SampleProxyEdgeCases_clazz_defined
 #define org_jni_1zero_SampleProxyEdgeCases_clazz_defined

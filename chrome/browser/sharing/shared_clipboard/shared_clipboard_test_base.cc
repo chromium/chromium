@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/sharing/mock_sharing_service.h"
+#include "components/sharing_message/mock_sharing_service.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"

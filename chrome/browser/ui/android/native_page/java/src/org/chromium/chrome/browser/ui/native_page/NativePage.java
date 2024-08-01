@@ -109,6 +109,14 @@ public interface NativePage {
         return null;
     }
 
+    /**
+     * @return {@code true} if the associated download is from secure source or there is no
+     *     associated download.
+     */
+    default boolean isDownloadSafe() {
+        return true;
+    }
+
     /** Notify the native page that it is about to be navigated back or hidden by a back press. */
     default void notifyHidingWithBack() {}
 

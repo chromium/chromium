@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 
 #include <memory>
@@ -67,7 +72,7 @@ SkColorType GetCompatibleSurfaceColorType(GrGLenum format) {
     case GL_SRGB8_ALPHA8:
       return kRGBA_8888_SkColorType;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED_IN_MIGRATION() << "Unknown format: " << format;
       return kUnknown_SkColorType;
   }
 }

@@ -64,14 +64,10 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingController;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
@@ -285,7 +281,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mMinimizeDelegateSupplier.hasValue()) {
             toolbar.setMinimizeDelegate(mMinimizeDelegateSupplier.get());
         }
-        if (MinimizedFeatureUtils.isWebApp(mIntentDataProvider.get())) {
+        if (MinimizedFeatureUtils.isWebApp(mIntentDataProvider.get())
+                || MinimizedFeatureUtils.isFedCmIntent(mIntentDataProvider.get())) {
             toolbar.setMinimizeButtonEnabled(false);
         }
         if (mIntentDataProvider.get().isPartialCustomTab()) {
@@ -452,7 +449,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mTabModelSelectorSupplier.get(),
                 mModalDialogManagerSupplier.get(),
                 new IncognitoReauthManager(mActivity, profile),
-                new SettingsLauncherImpl(),
                 /* layoutManager= */ null,
                 /* hubManagerSupplier= */ null,
                 /* showRegularOverviewIntent= */ showRegularOverviewIntent,
@@ -630,13 +626,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         shouldShowPrivacySandboxDialog);
                             }
 
-                            didShowPrompt =
-                                    maybeOnboardTrackingProtection(
-                                            profile,
-                                            didShowPrompt,
-                                            activityType,
-                                            new TrackingProtectionBridge(profile));
-
                             if (isAdsNoticeInCCTFeatureEnabled()
                                     && shouldShowPrivacySandboxDialog
                                     && isCustomTab) {
@@ -692,27 +681,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 () -> maybeRecordPrivacySandboxActivityType(),
                 mIntentDataProvider,
                 mProfileSupplier);
-    }
-
-    boolean maybeOnboardTrackingProtection(
-            Profile profile,
-            boolean didShowPrompt,
-            int activityType,
-            TrackingProtectionBridge trackingProtectionBridge) {
-        if (didShowPrompt) return true;
-        if (!ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)
-                || ActivityTypeMapper.toSurfaceType(activityType, mIntentDataProvider.get())
-                        != SurfaceType.AGACCT) {
-            return false;
-        }
-        return TrackingProtectionOnboardingController.maybeCreate(
-                mActivity,
-                trackingProtectionBridge,
-                mActivityTabProvider,
-                mMessageDispatcher,
-                new SettingsLauncherImpl(),
-                SurfaceType.AGACCT);
     }
 
     private void maybeRecordPrivacySandboxActivityType() {

@@ -54,8 +54,9 @@ export class PrivacySandboxInterestItemElement extends
       assert(!this.interest.site);
       return this.i18n(
           this.interest.removed ?
-              (this.shouldShowV2_() ? 'unblockTopicButtonTextV2' :
-                                      'topicsPageAllowTopic') :
+              (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled') ?
+                   'unblockTopicButtonTextV2' :
+                   'topicsPageAllowTopic') :
               'topicsPageBlockTopic');
     } else {
       assert(!this.interest.topic);
@@ -70,8 +71,9 @@ export class PrivacySandboxInterestItemElement extends
       assert(!this.interest.site);
       return this.i18n(
           this.interest.removed ?
-              (this.shouldShowV2_() ? 'topicsPageUnblockTopicA11yLabel' :
-                                      'topicsPageAllowTopicA11yLabel') :
+              (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled') ?
+                   'topicsPageUnblockTopicA11yLabel' :
+                   'topicsPageAllowTopicA11yLabel') :
               'topicsPageBlockTopicA11yLabel',
           this.interest.topic.displayString!);
     } else {
@@ -88,18 +90,6 @@ export class PrivacySandboxInterestItemElement extends
     this.dispatchEvent(new CustomEvent(
         'interest-changed',
         {bubbles: true, composed: true, detail: this.interest}));
-  }
-
-  // Only show V2 when PTB is enabled. If user is part of Mode B and
-  // include-mode-b feature param is false, don't show V2.
-  // TODO (b/340217427): Consolidate into separate file to be shared
-  // across the different pages.
-  private shouldShowV2_(): boolean {
-    if (!loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
-      return false;
-    }
-    return loadTimeData.getBoolean('proactiveTopicsBlockingIncludesModeB') ||
-        !loadTimeData.getBoolean('isInCookieDeprecationFacilitatedTesting');
   }
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 
 #include <memory>
@@ -23,15 +28,9 @@ namespace {
 
 template <typename StringType>
 PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
-  auto* begin = reinterpret_cast<typename std::vector<uint8_t>::const_pointer>(
-      data_string.data());
-  std::vector<uint8_t> result(
-      begin,
-      begin + (data_string.size() * sizeof(typename StringType::value_type)));
-  return static_cast<scoped_refptr<base::RefCountedBytes>>(
-      base::RefCountedBytes::TakeVector(&result));
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      base::as_byte_span(data_string));
 }
-
 }  // namespace
 
 // Regression test for https://crbug.com/1284996.

@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/in_session_auth/authentication_dialog.h"
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
@@ -126,11 +127,11 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
   DCHECK_NE(auth_token_provider_, nullptr);
 
   if (reason == Reason::kAccessPasswordManager &&
-      features::IsUseAuthPanelInPasswordManagerEnabled()) {
+      features::IsUseAuthPanelInSessionEnabled()) {
     CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
                            account_id);
   } else if (reason == Reason::kAccessAuthenticationSettings &&
-             features::IsUseAuthPanelInSettingsEnabled()) {
+             features::IsUseAuthPanelInSessionEnabled()) {
     CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
                            account_id);
   } else {

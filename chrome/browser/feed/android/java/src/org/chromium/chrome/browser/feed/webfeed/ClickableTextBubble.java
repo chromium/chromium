@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.LoadingView;
@@ -99,10 +98,9 @@ public class ClickableTextBubble extends TextBubble {
     @Override
     protected void updateTextStyle(TextView view, boolean isInverse) {
         if (isInverse) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    view, R.style.TextAppearance_ClickableButtonInverse);
+            view.setTextAppearance(R.style.TextAppearance_ClickableButtonInverse);
         } else {
-            ApiCompatibilityUtils.setTextAppearance(view, R.style.TextAppearance_ClickableButton);
+            view.setTextAppearance(R.style.TextAppearance_ClickableButton);
         }
     }
 

@@ -1208,8 +1208,10 @@ class TabImpl implements Tab {
 
     /** Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view. */
     void showRenderedPage() {
-        updateTitle();
+        // During title update, we prioritize titles in NativePage instead of those from
+        // WebContents. Thus we should remove the obsolete NativePage before title update.
         if (mNativePage != null) hideNativePage(true, null);
+        updateTitle();
     }
 
     void updateWindowAndroid(WindowAndroid windowAndroid) {
@@ -1740,9 +1742,7 @@ class TabImpl implements Tab {
             WebContents oldWebContents = mWebContents;
             mWebContents = webContents;
 
-            ContentView cv =
-                    ContentView.createContentView(
-                            mThemedApplicationContext, /* eventOffsetHandler= */ null, webContents);
+            ContentView cv = ContentView.createContentView(mThemedApplicationContext, webContents);
             cv.setContentDescription(
                     mThemedApplicationContext
                             .getResources()

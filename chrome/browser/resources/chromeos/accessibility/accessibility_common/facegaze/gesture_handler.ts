@@ -6,8 +6,9 @@ import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_call
 import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
-import {MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
+import {MouseClickLeftDoubleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
+import {AsyncUtil} from '/common/async_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
@@ -16,6 +17,10 @@ import {GestureDetector} from './gesture_detector.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
 
+import RoleType = chrome.automation.RoleType;
+import StateType = chrome.automation.StateType;
+
+type AutomationNode = chrome.automation.AutomationNode;
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
 /**
@@ -211,6 +216,9 @@ export class GestureHandler {
         return new MouseClickMacro(
             this.mouseController_.mouseLocation(), /*leftClick=*/ true,
             /*clickImmediately=*/ false);
+      case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
+        return new MouseClickLeftDoubleMacro(
+            this.mouseController_.mouseLocation());
       case MacroName.RESET_CURSOR:
         return new ResetCursorMacro(this.mouseController_);
       case MacroName.KEY_PRESS_SPACE:
@@ -231,6 +239,26 @@ export class GestureHandler {
           this.mouseController_.togglePaused();
           this.togglePaused();
         });
+      case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
+        return new CustomCallbackMacro(
+            MacroName.TOGGLE_VIRTUAL_KEYBOARD, async () => {
+              // TODO(b/355662617): Unify with SwitchAccessPredicate.
+              const isVisible = (node: AutomationNode): boolean => {
+                return Boolean(
+                    !node.state![StateType.OFFSCREEN] && node.location &&
+                    node.location.top >= 0 && node.location.left >= 0 &&
+                    !node.state![StateType.INVISIBLE]);
+              };
+
+              const desktop = await AsyncUtil.getDesktop();
+              const keyboard = desktop.find({role: RoleType.KEYBOARD});
+              const currentlyVisible = Boolean(
+                  keyboard && isVisible(keyboard) &&
+                  keyboard.find({role: RoleType.ROOT_WEB_AREA}));
+              // Toggle the visibility of the virtual keyboard.
+              chrome.accessibilityPrivate.setVirtualKeyboardVisible(
+                  !currentlyVisible);
+            });
       default:
         return;
     }

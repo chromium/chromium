@@ -80,8 +80,9 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
       StorageDeviceList* list,
       const std::string& file_path) {
     for (auto& device : list->data) {
-      if (device.storage_unit_id == file_path)
+      if (device.storage_unit_id == file_path) {
         return &device;
+      }
     }
     return nullptr;
   }

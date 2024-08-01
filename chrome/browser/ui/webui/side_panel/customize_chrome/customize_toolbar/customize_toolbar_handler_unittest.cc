@@ -52,6 +52,7 @@ class MockPage
               SetActionPinned,
               (side_panel::customize_chrome::mojom::ActionId action_id,
                bool pinned));
+  MOCK_METHOD(void, NotifyActionsUpdated, ());
 
   mojo::Receiver<side_panel::customize_chrome::mojom::CustomizeToolbarClient>
       receiver_{this};
@@ -352,6 +353,42 @@ TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
     EXPECT_NE(std::find(reset_ids.begin(), reset_ids.end(), id),
               reset_ids.end());
   }
+}
+
+TEST_F(CustomizeToolbarHandlerTest, ActionsUpdatedOnVisibilityChange) {
+  std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
+  base::MockCallback<CustomizeToolbarHandler::ListActionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&actions));
+  handler().ListActions(callback.Get());
+
+  const auto contains_action =
+      [&actions](side_panel::customize_chrome::mojom::ActionId id) -> bool {
+    return std::find_if(
+               actions.begin(), actions.end(),
+               [id](side_panel::customize_chrome::mojom::ActionPtr& action) {
+                 return action->id == id;
+               }) != actions.end();
+  };
+
+  // Devtools is initially present in the actions list.
+  ASSERT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kDevTools));
+
+  // Set visibility of devtools to false, and...
+  actions::ActionItem* const scope_action =
+      browser()->browser_actions()->root_action_item();
+  actions::ActionItem* const devtools_action_item =
+      actions::ActionManager::Get().FindAction(kActionDevTools, scope_action);
+
+  // The WebUI client is notified, and...
+  EXPECT_CALL(mock_page_, NotifyActionsUpdated).Times(1);
+  devtools_action_item->SetVisible(false);
+
+  // Devtools is now absent from the actions list.
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&actions));
+  handler().ListActions(callback.Get());
+  EXPECT_FALSE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kDevTools));
 }
 
 class CustomizeToolbarHandlerCompanionTest

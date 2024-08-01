@@ -57,7 +57,7 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
   // Implementation notes:
   //   The following LoadURLParams don't have an equivalent in OpenURLParams:
   //     base_url_for_data_url
-  //     virtual_url_for_data_url
+  //     virtual_url_for_special_cases
   //     data_url_as_string
   //
   //     can_load_local_resources

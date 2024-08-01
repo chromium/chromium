@@ -6,13 +6,15 @@
 #define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
-#include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
+#include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -28,6 +30,10 @@
 class ManualFillingController;
 class AllPasswordsBottomSheetController;
 class Profile;
+
+namespace plus_addresses {
+class AllPlusAddressesBottomSheetController;
+}  // namespace plus_addresses
 
 // Use either PasswordAccessoryController::GetOrCreate or
 // PasswordAccessoryController::GetIfExisting to obtain instances of this class.
@@ -181,6 +187,15 @@ class PasswordAccessoryControllerImpl
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
 
+  // Fills `plus_address` into the currently focused field. Called when the
+  // manually triggered plus address creation bottom sheet is accepted by the
+  // user.
+  void OnPlusAddressCreated(const std::string& plus_address);
+
+  // Triggers the filling `plus_address` into the currently focused field.
+  void OnPlusAddressSelected(
+      base::optional_ref<const std::string> plus_address);
+
   content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
@@ -227,6 +242,9 @@ class PasswordAccessoryControllerImpl
   // Callback attempting to display the migration warning when invoked.
   // Used to facilitate injecting a mock bridge in tests.
   ShowMigrationWarningCallback show_migration_warning_callback_;
+
+  std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
+      all_plus_addresses_bottom_sheet_controller_;
 
   base::WeakPtrFactory<PasswordAccessoryControllerImpl> weak_ptr_factory_{this};
 

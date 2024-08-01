@@ -111,6 +111,11 @@ void PinContainerView::ResetState() {
   auth_input_->ResetState();
 }
 
+void PinContainerView::SetInputEnabled(bool enabled) {
+  SetEnabled(enabled);
+  auth_input_->SetInputEnabled(enabled);
+}
+
 void PinContainerView::AddObserver(Observer* observer) {
   auth_input_->AddObserver(observer);
 }

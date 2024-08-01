@@ -31,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -41,7 +42,7 @@ using ::ash::string_matching::TokenizedString;
 
 // Returns true if the match is an answer, including calculator answers.
 bool IsAnswer(const AutocompleteMatch& match) {
-  return match.answer.has_value() ||
+  return match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
          match.type == AutocompleteMatchType::CALCULATOR;
 }
 

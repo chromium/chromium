@@ -210,12 +210,6 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->delta_units;
           gesture_event->data.scroll_update.inertial_phase =
               gesture_data->scroll_data->inertial_phase;
-          if (gesture_data->scroll_data->update_details) {
-            gesture_event->data.scroll_update.velocity_x =
-                gesture_data->scroll_data->update_details->velocity_x;
-            gesture_event->data.scroll_update.velocity_y =
-                gesture_data->scroll_data->update_details->velocity_y;
-          }
           break;
       }
     }
@@ -492,23 +486,20 @@ StructTraits<blink::mojom::EventDataView,
           gesture_event->data.scroll_begin.inertial_phase,
           gesture_event->data.scroll_begin.synthetic,
           gesture_event->data.scroll_begin.pointer_count,
-          gesture_event->data.scroll_begin.cursor_control, nullptr);
+          gesture_event->data.scroll_begin.cursor_control);
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           0, 0, gesture_event->data.scroll_end.delta_units, false,
           gesture_event->data.scroll_end.inertial_phase,
-          gesture_event->data.scroll_end.synthetic, 0, false, nullptr);
+          gesture_event->data.scroll_end.synthetic, 0, false);
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           gesture_event->data.scroll_update.delta_x,
           gesture_event->data.scroll_update.delta_y,
           gesture_event->data.scroll_update.delta_units, false,
-          gesture_event->data.scroll_update.inertial_phase, false, 0, false,
-          blink::mojom::ScrollUpdate::New(
-              gesture_event->data.scroll_update.velocity_x,
-              gesture_event->data.scroll_update.velocity_y));
+          gesture_event->data.scroll_update.inertial_phase, false, 0, false);
       break;
     case blink::WebInputEvent::Type::kGestureFlingStart:
       gesture_data->fling_data = blink::mojom::FlingData::New(

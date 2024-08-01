@@ -1198,9 +1198,11 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
   }
   if (has_more)
     return;
-  trace_processor_->NotifyEndOfFile();
 
-  auto status = perfetto::trace_processor::json::ExportJson(
+  auto status = trace_processor_->NotifyEndOfFile();
+  DCHECK(status.ok()) << status.message();
+
+  status = perfetto::trace_processor::json::ExportJson(
       trace_processor_.get(), json_output_writer_.get());
   DCHECK(status.ok()) << status.message();
   trace_processor_.reset();

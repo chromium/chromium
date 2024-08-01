@@ -450,13 +450,15 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
       test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url, kRefreshUrl);
   auto headers = pending_request->request.headers;
-  std::string assertion;
-  EXPECT_TRUE(headers.GetHeader("Sec-Session-Google-Response", &assertion));
+  std::optional<std::string> assertion =
+      headers.GetHeader("Sec-Session-Google-Response");
+  ASSERT_TRUE(assertion);
 
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      assertion, *unexportable_key_service_.GetAlgorithm(binding_key_id_),
+      assertion.value(),
+      *unexportable_key_service_.GetAlgorithm(binding_key_id_),
       *unexportable_key_service_.GetSubjectPublicKeyInfo(binding_key_id_)));
-  EXPECT_THAT(assertion,
+  EXPECT_THAT(assertion.value(),
               JwtHasExpectedFields(kSessionId, kChallenge, kRefreshUrl));
 
   // Set required cookies and complete the request.
@@ -615,8 +617,9 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
   auto headers = pending_request->request.headers;
-  std::string assertion;
-  ASSERT_TRUE(headers.GetHeader("Sec-Session-Google-Response", &assertion));
+  std::optional<std::string> assertion =
+      headers.GetHeader("Sec-Session-Google-Response");
+  ASSERT_TRUE(assertion);
 
   // Complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
@@ -641,8 +644,9 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
   auto headers = pending_request->request.headers;
-  std::string assertion;
-  ASSERT_TRUE(headers.GetHeader("Sec-Session-Google-Response", &assertion));
+  std::optional<std::string> assertion =
+      headers.GetHeader("Sec-Session-Google-Response");
+  ASSERT_TRUE(assertion);
 
   // Complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
@@ -733,12 +737,13 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, DebugHeaderSent) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
   auto headers = pending_request->request.headers;
-  std::string sent_info_base64;
-  ASSERT_TRUE(headers.GetHeader("Sec-Session-Google-Rotation-Debug-Info",
-                                &sent_info_base64));
+  std::optional<std::string> sent_info_base64 =
+      headers.GetHeader("Sec-Session-Google-Rotation-Debug-Info");
+  ASSERT_TRUE(sent_info_base64);
 
   std::string sent_info_serialized;
-  ASSERT_TRUE(base::Base64Decode(sent_info_base64, &sent_info_serialized));
+  ASSERT_TRUE(
+      base::Base64Decode(sent_info_base64.value(), &sent_info_serialized));
   RotationDebugInfo sent_info;
   ASSERT_TRUE(sent_info.ParseFromString(sent_info_serialized));
 
@@ -813,10 +818,9 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
 
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
-  std::string assertion;
-  EXPECT_TRUE(pending_request->request.headers.GetHeader(
-      "Sec-Session-Google-Response", &assertion));
-  EXPECT_EQ(assertion, kAssertionToken);
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Session-Google-Response"),
+      testing::Optional(std::string(kAssertionToken)));
 
   // Set required cookies and complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);

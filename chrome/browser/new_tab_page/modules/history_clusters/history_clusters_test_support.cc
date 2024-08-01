@@ -23,16 +23,6 @@ MockHistoryClustersTabHelper::MockHistoryClustersTabHelper(
 
 MockHistoryClustersTabHelper::~MockHistoryClustersTabHelper() = default;
 
-MockHistoryClustersModuleService::MockHistoryClustersModuleService()
-    : HistoryClustersModuleService(nullptr,
-                                   nullptr,
-                                   nullptr,
-                                   nullptr,
-                                   nullptr,
-                                   nullptr) {}
-
-MockHistoryClustersModuleService::~MockHistoryClustersModuleService() = default;
-
 history::ClusterVisit SampleVisitForURL(
     history::VisitID id,
     GURL url,

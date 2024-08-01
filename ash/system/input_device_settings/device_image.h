@@ -25,13 +25,13 @@ class ASH_EXPORT DeviceImage {
 
   std::string device_key() const { return device_key_; }
   std::string data_url() const { return data_url_; }
-  gfx::Image gfx_image() const { return image_; }
+  gfx::ImageSkia gfx_image_skia() const { return image_; }
   bool IsValid() const;
 
  private:
   std::string device_key_;
   std::string data_url_;
-  gfx::Image image_;
+  gfx::ImageSkia image_;
 };
 
 }  // namespace ash

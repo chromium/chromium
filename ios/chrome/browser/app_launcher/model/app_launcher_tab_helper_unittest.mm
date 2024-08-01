@@ -163,7 +163,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     abuse_detector_ = [[FakeAppLauncherAbuseDetector alloc] init];
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_,
                                             /*incognito*/ incognito_);

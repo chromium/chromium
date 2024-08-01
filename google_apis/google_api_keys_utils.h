@@ -12,7 +12,7 @@
 namespace google_apis {
 
 // Returns an API key that can be used to override the API key and that is
-// configured via and experimental feature.
+// configured via an experimental feature.
 COMPONENT_EXPORT(GOOGLE_APIS)
 std::string GetAPIKeyOverrideViaFeature();
 

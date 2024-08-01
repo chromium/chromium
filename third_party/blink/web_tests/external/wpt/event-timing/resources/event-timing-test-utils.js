@@ -416,6 +416,10 @@ async function createPerformanceObserverPromise(observeTypes, callback, readyToR
   });
 }
 
+const ENTER_KEY = '\uE007';
+const SPACE_KEY = '\uE00D';
+
+
 // The testdriver.js, testdriver-vendor.js need to be included to use this
 // function.
 async function interactAndObserve(interactionType, target, observerPromise, key = '') {
@@ -457,6 +461,17 @@ async function interactAndObserve(interactionType, target, observerPromise, key 
     case 'orphan-pointerup': {
       addListeners(target, ['pointerup']);
       interactionPromise = pointerup(target);
+      break;
+    }
+    case 'space-key-simulated-click': {
+      addListeners(target, ['keydown', 'click']);
+      interactionPromise = interact('key', target, SPACE_KEY);
+      break;
+    }
+
+    case 'enter-key-simulated-click': {
+      addListeners(target, ['keydown', 'click']);
+      interactionPromise = interact('key', target, ENTER_KEY);
       break;
     }
   }

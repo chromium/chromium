@@ -227,24 +227,6 @@ void ConnectorsManager::OnTabStripModelChanged(
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-std::optional<AnalysisSettings>
-ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
-    const GURL& url,
-    AnalysisConnector connector) {
-  if (analysis_connector_settings_.count(connector) == 0)
-    CacheAnalysisConnectorPolicy(connector);
-
-  // If the connector is still not in memory, it means the pref is set to an
-  // empty list or that it is not a list.
-  if (analysis_connector_settings_.count(connector) == 0)
-    return std::nullopt;
-
-  // While multiple services can be set by the connector policies, only the
-  // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
-      url, GetDataRegion());
-}
-
 void ConnectorsManager::CacheAnalysisConnectorPolicy(
     AnalysisConnector connector) const {
   analysis_connector_settings_.erase(connector);

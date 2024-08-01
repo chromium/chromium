@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/block_cleanup_test.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -52,15 +52,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
-
-    chrome_browser_state_ =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+    chrome_browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
 
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
@@ -226,13 +219,14 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
  private:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   AppState* app_state_;
   CertificatePolicyAppAgent* app_agent_;
   raw_ptr<ChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> regular_browser_1_;
   std::unique_ptr<TestBrowser> regular_browser_2_;
   std::unique_ptr<TestBrowser> incognito_browser_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 
   scoped_refptr<net::X509Certificate> cert_;
   net::CertStatus status_;

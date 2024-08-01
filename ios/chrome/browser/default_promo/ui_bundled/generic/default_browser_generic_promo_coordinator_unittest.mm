@@ -75,7 +75,7 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
@@ -95,7 +95,7 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
    DefaultBrowserGenericPromoCoordinator* coordinator_;

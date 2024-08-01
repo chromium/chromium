@@ -83,8 +83,8 @@ message ContactInfoSpecifics {
   // The BCP 47 language code used to format the address for display.
   optional string language_code = 38;
 
-  // A user chosen profile label that is used to identify the profile.
-  // The value of the label can be freely chosen by the user.
+  // A label intended to be chosen by the user. This was however never
+  // implemented and is currently unused.
   optional string profile_label = 5;
 
   // Tracks the application that initially created the profile. The integer

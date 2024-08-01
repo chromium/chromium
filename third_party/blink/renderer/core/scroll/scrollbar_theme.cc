@@ -295,9 +295,9 @@ ScrollbarTheme& ScrollbarTheme::GetTheme() {
   return NativeTheme();
 }
 
-void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
-                                          const Scrollbar& scrollbar,
-                                          const gfx::Rect& rect) {
+void ScrollbarTheme::PaintTrackBackgroundAndButtons(GraphicsContext& context,
+                                                    const Scrollbar& scrollbar,
+                                                    const gfx::Rect& rect) {
   // CustomScrollbarTheme must override this method.
   DCHECK(!scrollbar.IsCustomScrollbar());
   CHECK_EQ(rect.size(), scrollbar.FrameRect().size());
@@ -321,13 +321,13 @@ void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
 
   gfx::Rect track_rect = TrackRect(scrollbar);
   track_rect.Offset(offset);
-  PaintTrack(context, scrollbar, track_rect);
+  PaintTrackBackground(context, scrollbar, track_rect);
 }
 
-void ScrollbarTheme::PaintTrackButtonsTickmarks(GraphicsContext& context,
-                                                const Scrollbar& scrollbar,
-                                                const gfx::Rect& rect) {
-  PaintTrackAndButtons(context, scrollbar, rect);
+void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
+                                          const Scrollbar& scrollbar,
+                                          const gfx::Rect& rect) {
+  PaintTrackBackgroundAndButtons(context, scrollbar, rect);
   if (scrollbar.HasTickmarks()) {
     gfx::Rect track_rect = TrackRect(scrollbar);
     track_rect.Offset(rect.origin() - scrollbar.Location());

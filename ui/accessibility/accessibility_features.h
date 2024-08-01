@@ -51,6 +51,10 @@ AX_BASE_EXPORT bool IsAccessibilityPdfOcrForSelectToSpeakEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPruneRedundantInlineText);
 AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineTextEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityPruneRedundantInlineConnectivity);
+AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
+
 // Use Alternative mechanism for acquiring image descriptions.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();
@@ -239,11 +243,6 @@ AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
 // targets only desktop versions of Chrome for now.)
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kPdfOcr);
 AX_BASE_EXPORT bool IsPdfOcrEnabled();
-
-// Make the Read Anything Side Panel local (don't persist when opening a new
-// tab)
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLocalSidePanel);
-AX_BASE_EXPORT bool IsReadAnythingLocalSidePanelEnabled();
 
 // Show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);

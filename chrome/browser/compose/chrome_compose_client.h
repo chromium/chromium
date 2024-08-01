@@ -336,6 +336,8 @@ class ChromeComposeClient
 
   BooleanPrefMember proactive_nudge_enabled_;
 
+  // Time since page load, or time since page has changed if it's not loaded
+  // yet.
   base::TimeTicks page_change_time_;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};

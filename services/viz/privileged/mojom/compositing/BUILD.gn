@@ -63,8 +63,10 @@ mojom("compositing") {
           cpp = "::viz::DebugRendererSettings"
         },
       ]
-      traits_headers = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h" ]
-      traits_sources = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.cc" ]
+      traits_headers =
+          [ "//services/viz/privileged/cpp/renderer_settings_mojom_traits.h" ]
+      traits_sources =
+          [ "//services/viz/privileged/cpp/renderer_settings_mojom_traits.cc" ]
       traits_public_deps += [ "//ui/gfx/geometry/mojom" ]
     },
   ]

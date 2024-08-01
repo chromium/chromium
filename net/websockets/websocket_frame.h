@@ -178,8 +178,7 @@ GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header);
 // ERR_INVALID_ARGUMENT and does not write any data to |buffer|.
 NET_EXPORT int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
                                          const WebSocketMaskingKey* masking_key,
-                                         char* buffer,
-                                         int buffer_size);
+                                         base::span<uint8_t> buffer);
 
 // Generates a masking key suitable for use in a new WebSocket frame.
 NET_EXPORT WebSocketMaskingKey GenerateWebSocketMaskingKey();

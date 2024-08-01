@@ -20,7 +20,6 @@
 
 class Browser;
 class CommandUpdater;
-class OmniboxView;
 class PageActionIconLoadingIndicatorView;
 class PageActionIconViewObserver;
 
@@ -75,8 +74,6 @@ class PageActionIconView : public IconLabelBubbleView {
 
     // Returns whether or not the given page action icon should be hidden.
     virtual bool ShouldHidePageActionIcon(PageActionIconView* icon_view) const;
-
-    virtual const OmniboxView* GetOmniboxView() const;
   };
 
   PageActionIconView(const PageActionIconView&) = delete;

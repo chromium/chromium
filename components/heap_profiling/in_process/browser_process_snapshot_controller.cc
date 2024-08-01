@@ -15,13 +15,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "base/profiler/process_type.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -56,18 +56,14 @@ BrowserProcessSnapshotController::BrowserProcessSnapshotController(
 
   // Initialize with all supported process types.
   using RemoteSet = mojo::RemoteSet<mojom::SnapshotController>;
-  remotes_by_process_type_.emplace(
-      metrics::CallStackProfileParams::Process::kGpu,
-      std::make_unique<RemoteSet>());
-  remotes_by_process_type_.emplace(
-      metrics::CallStackProfileParams::Process::kNetworkService,
-      std::make_unique<RemoteSet>());
-  remotes_by_process_type_.emplace(
-      metrics::CallStackProfileParams::Process::kRenderer,
-      std::make_unique<RemoteSet>());
-  remotes_by_process_type_.emplace(
-      metrics::CallStackProfileParams::Process::kUtility,
-      std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(base::ProfilerProcessType::kGpu,
+                                   std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(base::ProfilerProcessType::kNetworkService,
+                                   std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(base::ProfilerProcessType::kRenderer,
+                                   std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(base::ProfilerProcessType::kUtility,
+                                   std::make_unique<RemoteSet>());
 
   // Now that `remotes_by_process_type_` is initialized all further access
   // should be on the snapshot sequence.
@@ -91,7 +87,7 @@ void BrowserProcessSnapshotController::SetBindRemoteForChildProcessCallback(
 
 void BrowserProcessSnapshotController::BindRemoteForChildProcess(
     int child_process_id,
-    metrics::CallStackProfileParams::Process child_process_type) {
+    base::ProfilerProcessType child_process_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   mojo::PendingRemote<mojom::SnapshotController> remote;
   bind_remote_callback_.Run(child_process_id,
@@ -114,16 +110,16 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
     }
     int snapshot_probability_pct;
     switch (process_type) {
-      case metrics::CallStackProfileParams::Process::kGpu:
+      case base::ProfilerProcessType::kGpu:
         snapshot_probability_pct = kGpuSnapshotProbability.Get();
         break;
-      case metrics::CallStackProfileParams::Process::kNetworkService:
+      case base::ProfilerProcessType::kNetworkService:
         snapshot_probability_pct = kNetworkSnapshotProbability.Get();
         break;
-      case metrics::CallStackProfileParams::Process::kRenderer:
+      case base::ProfilerProcessType::kRenderer:
         snapshot_probability_pct = kRendererSnapshotProbability.Get();
         break;
-      case metrics::CallStackProfileParams::Process::kUtility:
+      case base::ProfilerProcessType::kUtility:
         snapshot_probability_pct = kUtilitySnapshotProbability.Get();
         break;
       default:
@@ -157,7 +153,7 @@ void BrowserProcessSnapshotController::SuppressRandomnessForTesting() {
 
 void BrowserProcessSnapshotController::StoreRemoteOnSnapshotSequence(
     mojo::PendingRemote<mojom::SnapshotController> remote,
-    metrics::CallStackProfileParams::Process process_type) {
+    base::ProfilerProcessType process_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(snapshot_sequence_checker_);
   // at() will CHECK if `process_type` wasn't added in the constructor.
   remotes_by_process_type_.at(process_type)

@@ -80,11 +80,8 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/314004675
   "filemanager.DrivefsUI.fieldtrial_testing_config_on@reven-vmtest",
-  "filemanager.DrivefsUI.fieldtrial_testing_config_on@betty-pi-arc",
   "filemanager.DrivefsUI.fieldtrial_testing_config_off@reven-vmtest",
-  "filemanager.DrivefsUI.fieldtrial_testing_config_off@betty-pi-arc",
   "platform.Drivefs@reven-vmtest",
-  "platform.Drivefs@betty-pi-arc",
 
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
@@ -94,7 +91,6 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl.lacros@volteer",
 
   # b/344964853
-  "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty-pi-arc",
   "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty",
 
   # b/346793249, b/330290054
@@ -102,10 +98,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/347713587, b/347111366
   "crostini.TaskManager.bookworm_stable",
-
-  # b/352371706 betty-pi-arc builder is getting removed, and these tests are blocking LKGM.
-  "network.ConfigBaseline.login@betty-pi-arc",
-  "network.ConfigBaseline.oobe@betty-pi-arc",
 
   # b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
   "nacl.Pnacl@brya",
@@ -117,7 +109,13 @@ tast_disabled_tests_from_chrome_all = [
   # b/354660409, tests will be re-enabled after the tast test is updated to work with the new change. Disabling these to unblock uprev and LKGM.
   "inputs.PhysicalKeyboardEmojiSuggestion",
   "inputs.PhysicalKeyboardEmojiSuggestion.guest",
+  "inputs.PhysicalKeyboardEmojiSuggestion.guest_lacros",
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
+  "inputs.PhysicalKeyboardEmojiSuggestion.incognito_lacros",
+  "inputs.PhysicalKeyboardEmojiSuggestion.lacros",
+
+  # b/355351792, tests failing on jacuzzi.
+  "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]

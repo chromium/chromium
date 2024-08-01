@@ -61,6 +61,8 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
       return 1;
     case ManualFillDataType::kAddress:
       return 2;
+    case ManualFillDataType::kOther:
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -71,10 +71,62 @@ enum {
 
 class AsyncSocket;
 class MockClientSocket;
+class MockTCPClientSocket;
+class MockSSLClientSocket;
 class SSLClientSocket;
 class StreamSocket;
 
 enum IoMode { ASYNC, SYNCHRONOUS };
+
+// Used to delay MockClientSocket::Connect.
+// Example usage:
+// TEST(FooTest, Test) {
+//   MockClientSocketFactory socket_factory;
+//
+//   MockConnectCompleter completer;
+//   SequencedSocketData data;
+//   data.set_connect_data(MockConnect(&completer));
+//   socket_factory.AddSocketDataProvider(&data);
+//
+//   // Create a MockClientSocket somehow.
+//   std::unique_ptr<StreamSocket> stream = CreateStreamSocket();
+//   std::optional<int> delayed_result;
+//   int rv = stream->Connect(base::BindLambdaForTesting([&](int result){
+//      delayed_result = result;
+//   }));
+//   // Connect() returns ERR_IO_PENDING.
+//   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+//
+//   RunUntilIdle();
+//   // Connect() is still blocked.
+//   ASSERT_FALSE(delayed_result.has_value());
+//
+//   completer.Complete(OK);
+//   RunUntilIdle();
+//   EXPECT_THAT(delayed_result, Optional(IsOk()));
+// }
+class MockConnectCompleter {
+ public:
+  MockConnectCompleter();
+
+  MockConnectCompleter(const MockConnectCompleter&) = delete;
+  MockConnectCompleter& operator=(const MockConnectCompleter&) = delete;
+
+  ~MockConnectCompleter();
+
+  // Completes Connect() with `result`.
+  void Complete(int result);
+
+ private:
+  friend class MockTCPClientSocket;
+  friend class MockSSLClientSocket;
+
+  // Sets a completion callback that is passed to Connect(). Called by
+  // MockClientSocket implementations.
+  void SetCallback(CompletionOnceCallback callback);
+
+  CompletionOnceCallback callback_;
+};
 
 struct MockConnect {
   // Asynchronous connection success.
@@ -86,12 +138,16 @@ struct MockConnect {
   MockConnect(IoMode io_mode, int r);
   MockConnect(IoMode io_mode, int r, IPEndPoint addr);
   MockConnect(IoMode io_mode, int r, IPEndPoint addr, bool first_attempt_fails);
+  // Creates a MockConnect that delays connection until `completer` invokes
+  // Complete().
+  explicit MockConnect(MockConnectCompleter* completer);
   ~MockConnect();
 
   IoMode mode;
   int result;
   IPEndPoint peer_addr;
   bool first_attempt_fails = false;
+  raw_ptr<MockConnectCompleter> completer;
 };
 
 struct MockConfirm {
@@ -486,6 +542,7 @@ class StaticSocketDataProvider : public SocketDataProvider {
 // to Connect().
 struct SSLSocketDataProvider {
   SSLSocketDataProvider(IoMode mode, int result);
+  explicit SSLSocketDataProvider(MockConnectCompleter* completer);
   SSLSocketDataProvider(const SSLSocketDataProvider& other);
   ~SSLSocketDataProvider();
 

@@ -31,6 +31,10 @@
 #define SIMD_NEON 1
 #endif
 
+#if defined(ARCH_CPU_LOONGARCH_FAMILY) && defined(__loongarch_sx)
+#define SIMD_LSX 1
+#endif
+
 // avoid confusion with Mac OS X's math library (Carbon)
 #if defined(__APPLE__)
 #undef FloatToFixed

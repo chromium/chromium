@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, getRecentSeaPenImageIds, getSeaPenStore, getSeaPenThumbnails, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, selectRecentSeaPenImage, selectSeaPenThumbnail, setCurrentSeaPenQueryAction, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, FullscreenPreviewState, getRecentSeaPenImageIds, getSeaPenStore, getSeaPenThumbnails, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, selectRecentSeaPenImage, selectSeaPenThumbnail, setCurrentSeaPenQueryAction, setFullscreenStateAction, setRecentSeaPenImagesAction, setSeaPenFullscreenStateAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -18,6 +18,7 @@ suite('SeaPen reducers', () => {
 
   setup(() => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
     seaPenProvider = new TestSeaPenProvider();
     personalizationStore = new TestPersonalizationStore({});
     personalizationStore.setReducersEnabled(true);
@@ -228,6 +229,8 @@ suite('SeaPen reducers', () => {
           beginLoadSelectedImageAction(),
           beginLoadSelectedRecentSeaPenImageAction(),
           endSelectRecentSeaPenImageAction(456, false),
+          setFullscreenStateAction(FullscreenPreviewState.OFF),
+          setSeaPenFullscreenStateAction(FullscreenPreviewState.OFF),
           setSelectedRecentSeaPenImageAction(123),
         ],
         personalizationStore.actions,
@@ -287,6 +290,8 @@ suite('SeaPen reducers', () => {
           beginLoadSelectedImageAction(),
           beginLoadSelectedRecentSeaPenImageAction(),
           endSelectRecentSeaPenImageAction(456, false),
+          setFullscreenStateAction(FullscreenPreviewState.OFF),
+          setSeaPenFullscreenStateAction(FullscreenPreviewState.OFF),
           setSelectedRecentSeaPenImageAction(null),
         ],
         personalizationStore.actions,
@@ -297,6 +302,8 @@ suite('SeaPen reducers', () => {
           null,
           null,
           null,
+          loadTimeData.getString('seaPenErrorGeneric'),
+          loadTimeData.getString('seaPenErrorGeneric'),
           loadTimeData.getString('seaPenErrorGeneric'),
           loadTimeData.getString('seaPenErrorGeneric'),
         ],
@@ -315,5 +322,48 @@ suite('SeaPen reducers', () => {
     assertEquals(
         loadTimeData.getString('seaPenErrorGeneric'),
         personalizationStore.data.wallpaper.seaPen.error);
+  });
+
+  test('select recent SeaPen image on clamshell mode', async () => {
+    const {tabletMode} = await seaPenProvider.isInTabletMode();
+
+    assertFalse(tabletMode);
+
+    seaPenProvider.selectSeaPenRecentImageResponse =
+        Promise.resolve({success: true});
+    await selectRecentSeaPenImage(123, seaPenProvider, seaPenStore);
+
+    assertDeepEquals(
+        [
+          beginSelectRecentSeaPenImageAction(123),
+          beginLoadSelectedImageAction(),
+          beginLoadSelectedRecentSeaPenImageAction(),
+          endSelectRecentSeaPenImageAction(123, true),
+        ],
+        personalizationStore.actions,
+        'expected actions when select recent image on clamshell mode');
+  });
+
+  test('select recent SeaPen image on tablet mode', async () => {
+    seaPenProvider.isInTabletModeResponse = true;
+    const {tabletMode} = await seaPenProvider.isInTabletMode();
+
+    assertTrue(tabletMode);
+
+    seaPenProvider.selectSeaPenRecentImageResponse =
+        Promise.resolve({success: true});
+    await selectRecentSeaPenImage(123, seaPenProvider, seaPenStore);
+
+    assertDeepEquals(
+        [
+          beginSelectRecentSeaPenImageAction(123),
+          beginLoadSelectedImageAction(),
+          beginLoadSelectedRecentSeaPenImageAction(),
+          setFullscreenStateAction(FullscreenPreviewState.LOADING),
+          setSeaPenFullscreenStateAction(FullscreenPreviewState.LOADING),
+          endSelectRecentSeaPenImageAction(123, true),
+        ],
+        personalizationStore.actions,
+        'expected actions when select recent image on tablet mode');
   });
 });

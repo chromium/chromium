@@ -84,10 +84,12 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /** Tests {@link AccountManagementFragment}. */
 @RunWith(ParameterizedRunner.class)
@@ -95,9 +97,6 @@ import java.util.List;
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
-    private static final String CHILD_ACCOUNT_NAME =
-            AccountManagerTestRule.generateChildEmail("account@gmail.com");
-
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
@@ -121,7 +120,6 @@ public class AccountManagementFragmentTest {
 
     public static class ReplaceProfileIsChildWithAccountCapabilitiesParams
             implements ParameterProvider {
-
         private static List<ParameterSet> sReplaceProfileIsChildWithAccountCapabilities =
                 Arrays.asList(
                         new ParameterSet()
@@ -246,15 +244,9 @@ public class AccountManagementFragmentTest {
             ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
     public void testAccountManagementViewForChildAccount(
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
-        final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
-                new AccountCapabilitiesBuilder();
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
-                signinTestRule.addAccount(
-                        CHILD_ACCOUNT_NAME,
-                        accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
-        signinTestRule.waitForSeeding();
-        signinTestRule.waitForSignin(primarySupervisedAccount);
+                signinTestRule.addChildTestAccountThenWaitForSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
@@ -262,13 +254,14 @@ public class AccountManagementFragmentTest {
                     return mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+                            .hasProfileDataForTesting(primarySupervisedAccount.getEmail());
                 });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(
                 view,
-                "account_management_fragment_for_child_account_with_add_account_for_supervised_users");
+                "account_management_fragment_for_child_account_with_add_account_for_supervised_"
+                        + "users");
     }
 
     @Test
@@ -278,13 +271,9 @@ public class AccountManagementFragmentTest {
             ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
     public void testAccountManagementViewForChildAccountWithSecondaryEduAccount(
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
-        final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
-                new AccountCapabilitiesBuilder();
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
-                signinTestRule.addAccount(
-                        CHILD_ACCOUNT_NAME,
-                        accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
+                signinTestRule.addChildTestAccountThenWaitForSignin();
         signinTestRule.addAccount("account@school.com");
         signinTestRule.waitForSeeding();
         signinTestRule.waitForSignin(primarySupervisedAccount);
@@ -295,18 +284,23 @@ public class AccountManagementFragmentTest {
                     return mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+                            .hasProfileDataForTesting(primarySupervisedAccount.getEmail());
                 });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(
                 view,
-                "account_management_fragment_for_child_and_edu_accounts_with_add_account_for_supervised_users");
+                "account_management_fragment_for_child_and_edu_accounts_with_add_account_for_"
+                        + "supervised_users");
     }
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutUserWithoutShowingSignOutDialog() {
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -319,6 +313,23 @@ public class AccountManagementFragmentTest {
                                         .getIdentityManager(
                                                 ProfileManager.getLastUsedRegularProfile())
                                         .hasPrimaryAccount(ConsentLevel.SIGNIN)));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSignOutShowsUnsavedDataDialog() {
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.sign_out)).perform(click());
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test

@@ -4,11 +4,13 @@
 
 package org.chromium.components.sync;
 
+import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
 /** Java accessor for base/android/feature_map.h state. */
+@JNINamespace("syncer")
 public final class SyncFeatureMap extends FeatureMap {
     public static final String SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE =
             "SyncEnableBookmarksInTransportMode";

@@ -36,6 +36,7 @@ enum class MigrationUploadError {
   kCopyFailed,          // Copying the file to the destination failed.
   kDeleteFailed,        // Deleting the source file after upload failed.
   kOther,               // An unspecified error occurred.
+  kCancelled,           // Upload explicitly cancelled.
 };
 
 // Returns whether local user files are enabled on the device by the flag and

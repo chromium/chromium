@@ -87,15 +87,11 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
-import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.supervised_user.SupervisedUserPreferences;
-import org.chromium.components.supervised_user.SupervisedUserPreferencesJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -195,7 +191,6 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
     @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock private SupervisedUserPreferences.Natives mSupervisedUserPreferencesJniMock;
 
     // Mocked xSurface setup.
     @Mock private ProcessScope mProcessScope;
@@ -240,7 +235,6 @@ public class FeedSurfaceCoordinatorTest {
                 FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        mocker.mock(SupervisedUserPreferencesJni.TEST_HOOKS, mSupervisedUserPreferencesJniMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead()).thenReturn(5);
 
@@ -264,8 +258,6 @@ public class FeedSurfaceCoordinatorTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);
         when(mPrivacyPreferencesManager.isMetricsReportingEnabled()).thenReturn(true);
         when(mUserPrefsJniMock.get(any(Profile.class))).thenReturn(mPrefService);
-        when(mSupervisedUserPreferencesJniMock.isSubjectToParentalControls(any(PrefService.class)))
-                .thenAnswer(invocation -> isPrimaryAccountSupervised());
 
         // Resources set up.
         when(mSectionHeaderView.getResources()).thenReturn(mResources);
@@ -487,6 +479,8 @@ public class FeedSurfaceCoordinatorTest {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
                 .thenReturn(account);
+        when(mProfileMock.isChild()).thenReturn(true);
+
         assertTrue(mCoordinator.shouldDisplaySupervisedFeed());
     }
 
@@ -536,16 +530,6 @@ public class FeedSurfaceCoordinatorTest {
                 capabilities);
     }
 
-    private boolean isPrimaryAccountSupervised() {
-        CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (account == null) {
-            return false;
-        }
-        AccountInfo info =
-                mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail());
-        return info.getAccountCapabilities().isSubjectToParentalControls() == Tribool.TRUE;
-    }
-
     private boolean hasStreamBound() {
         if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;
@@ -579,7 +563,6 @@ public class FeedSurfaceCoordinatorTest {
                 false,
                 /* viewportView= */ null,
                 mFeedActionDelegate,
-                /* helpAndFeedbackLauncher= */ null,
                 mTabStripHeightSupplier);
     }
 }

@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './cpu_frequency_chart.html.js';
+import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsCpuFrequencyChartElement {
   $: {
@@ -32,20 +33,28 @@ export class HealthdInternalsCpuFrequencyChartElement extends PolymerElement {
     const UNITBASE_FREQUENCY: number = 1000;
     const UNIT_FREQUENCY: string[] = ['kHz', 'mHz', 'GHz'];
     this.$.lineChart.initCanvasDrawer(UNIT_FREQUENCY, UNITBASE_FREQUENCY);
+
+    this.updateHelper = new UiUpdateHelper(() => {
+      this.$.lineChart.updateEndTime(Date.now());
+    });
   }
 
-  addDataSeries(cpuFrequencyDataSeries: DataSeries[]) {
-    for (const dataSeries of cpuFrequencyDataSeries) {
+  // Helper for updating UI regularly. Init in `connectedCallback`.
+  private updateHelper: UiUpdateHelper;
+
+  addDataSeries(batteryDataSeries: DataSeries[]) {
+    for (const dataSeries of batteryDataSeries) {
       this.$.lineChart.addDataSeries(dataSeries);
     }
   }
 
-  updateEndTime(timestamp: number) {
-    this.$.lineChart.updateEndTime(timestamp);
+  updateVisibility(isVisible: boolean) {
+    this.$.lineChart.updateVisibility(isVisible);
+    this.updateHelper.updateVisibility(isVisible);
   }
 
-  updateVisibility(isVisble: boolean) {
-    this.$.lineChart.updateVisibility(isVisble);
+  updateUiUpdateInterval(intervalSeconds: number) {
+    this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 }
 

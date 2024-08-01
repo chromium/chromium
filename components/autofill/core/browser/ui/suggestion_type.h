@@ -119,8 +119,11 @@ enum class SuggestionType {
   // Test address option that specifies a full address for a country
   // so that users can test their form with it.
   kDevtoolsTestAddressEntry = 50,
+  // Test address option that gives users feedback about what the
+  // suggestions with country names as main text mean.
+  kDevtoolsTestAddressByCountry = 51,
 
-  kMaxValue = 50
+  kMaxValue = 51
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

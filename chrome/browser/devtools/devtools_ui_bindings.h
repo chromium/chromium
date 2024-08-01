@@ -305,7 +305,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void OnAidaClientResponse(
       DispatchCallback callback,
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();

@@ -16,34 +16,22 @@ namespace web_app {
 
 namespace {
 
-const IwaKeyRotations::KeyRotationInfo* GetKeyRotationInfoFromProvider(
-    const std::string& web_bundle_id) {
-  const auto& component_data =
-      IwaKeyDistributionInfoProvider::GetInstance()->component_data();
-  if (!component_data || !component_data->proto.has_key_rotation_data()) {
-    return nullptr;
-  }
-  return base::FindOrNull(
-      component_data->proto.key_rotation_data().key_rotations(), web_bundle_id);
-}
-
 base::expected<void, std::string>
 ValidateWebBundleIdentityAgainstKeyRotationInfo(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys,
-    const IwaKeyRotations::KeyRotationInfo& kr_info) {
-  if (!kr_info.has_expected_key()) {
+    const IwaKeyDistributionInfoProvider::KeyRotationInfo& kr_info) {
+  if (!kr_info.public_key) {
     return base::unexpected(base::StringPrintf(
         "Web Bundle ID <%s> is disabled via the Key Rotation Component.",
         web_bundle_id.c_str()));
   }
 
-  std::vector<uint8_t> b64_decoded_key =
-      *base::Base64Decode(kr_info.expected_key());
   if (!base::ranges::any_of(public_keys, [&](const auto& public_key) {
         return absl::visit(
             [&](const auto& public_key) {
-              return base::ranges::equal(public_key.bytes(), b64_decoded_key);
+              return base::ranges::equal(public_key.bytes(),
+                                         *kr_info.public_key);
             },
             public_key);
       })) {
@@ -67,7 +55,9 @@ base::expected<void, std::string>
 IwaIdentityValidator::ValidateWebBundleIdentity(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys) const {
-  if (const auto* kr_info = GetKeyRotationInfoFromProvider(web_bundle_id)) {
+  if (const auto* kr_info =
+          IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo(
+              web_bundle_id)) {
     return ValidateWebBundleIdentityAgainstKeyRotationInfo(
         web_bundle_id, public_keys, *kr_info);
   }

@@ -8,6 +8,8 @@
 #endif
 
 #include "net/spdy/http2_priority_dependencies.h"
+
+#include "base/not_fatal_until.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace net {
@@ -62,7 +64,7 @@ bool Http2PriorityDependencies::PriorityLowerBound(spdy::SpdyPriority priority,
 bool Http2PriorityDependencies::ParentOfStream(spdy::SpdyStreamId id,
                                                IdList::iterator* parent) {
   auto entry = entry_by_stream_id_.find(id);
-  DCHECK(entry != entry_by_stream_id_.end());
+  CHECK(entry != entry_by_stream_id_.end(), base::NotFatalUntil::M130);
 
   spdy::SpdyPriority priority = entry->second->second;
   auto curr = entry->second;
@@ -83,7 +85,7 @@ bool Http2PriorityDependencies::ParentOfStream(spdy::SpdyStreamId id,
 bool Http2PriorityDependencies::ChildOfStream(spdy::SpdyStreamId id,
                                               IdList::iterator* child) {
   auto entry = entry_by_stream_id_.find(id);
-  DCHECK(entry != entry_by_stream_id_.end());
+  CHECK(entry != entry_by_stream_id_.end(), base::NotFatalUntil::M130);
 
   spdy::SpdyPriority priority = entry->second->second;
   *child = entry->second;

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Button;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
@@ -73,11 +72,9 @@ public class PhotoPickerToolbar extends SelectableListToolbar<PickerBitmap> {
         done.setEnabled(selectedItems.size() > 0);
 
         if (selectCount > 0) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    done, R.style.TextAppearance_TextMedium_Secondary);
+            done.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
         } else {
-            ApiCompatibilityUtils.setTextAppearance(
-                    done, R.style.TextAppearance_TextMedium_Disabled);
+            done.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
 
             showBackArrow();
         }

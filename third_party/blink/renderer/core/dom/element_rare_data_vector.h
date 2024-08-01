@@ -327,6 +327,12 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   bool DidAttachInternals() const { return did_attach_internals_; }
   bool HasUndoStack() const { return has_undo_stack_; }
   void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
+  void SetPseudoElementStylesChangeCounters(bool value) {
+    has_counters_styles_ = value;
+  }
+  bool PseudoElementStylesAffectCounters() const {
+    return has_counters_styles_;
+  }
   bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
     return scrollbar_pseudo_element_styles_depend_on_font_metrics_;
   }
@@ -428,6 +434,12 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   unsigned did_attach_internals_ : 1;
   unsigned has_undo_stack_ : 1;
   unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
+  // This never gets reset, since we would have to keep track for
+  // every pseudo element whether it has counter style or not.
+  // But since situations when counter style if removed from
+  // pseudo element are rare, we are fine with it, since
+  // it doesn't hurt performance much.
+  unsigned has_counters_styles_ : 1;
   unsigned has_been_explicitly_scrolled_ : 1;
   HasInvalidationFlags has_invalidation_flags_;
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;

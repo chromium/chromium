@@ -15,6 +15,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
@@ -96,7 +97,7 @@ constexpr auto kHeaderIconButtonMargin =
 constexpr auto kHeaderLabelBorder = gfx::Insets::VH(4, 10);
 constexpr auto kHeaderViewMargin = gfx::Insets::TLBR(16, 16, 0, 16);
 
-// For GlanceablesV2: the border of `MonthHeaderView`.
+// The border of `MonthHeaderView` when time management glanceables are enabled.
 constexpr auto kMonthHeaderBorder = gfx::Insets::TLBR(14, 0, 2, 0);
 
 // Adds a gap between the bottom visible row in the scrollview and the top of

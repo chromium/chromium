@@ -189,11 +189,6 @@ BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
              "NtpModulesLoadTimeoutMilliseconds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If true, extends width of modules if space allows.
-BASE_FEATURE(kNtpWideModules,
-             "NtpWideModules",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Dummy feature to set param "NtpModulesOrderParam".
 // This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesOrder,
@@ -299,11 +294,6 @@ BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, the History clusters module will be shown.
 BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Dummy feature to set kNtpHistoryClustersModuleBeginTimeDurationHoursParam.
-BASE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration,
-             "NtpHistoryClustersModuleBeginTimeDuration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set kNtpHistoryClustersModuleMinimumVisitsRequiredParam.
@@ -459,10 +449,6 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
     "NtpDriveModuleCacheMaxAgeSParam";
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
-const char kNtpHistoryClustersModuleDataParam[] =
-    "NtpHistoryClustersModuleDataParam";
-const char kNtpChromeCartInHistoryClustersModuleDataParam[] =
-    "NtpChromeCartInHistoryClustersModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";

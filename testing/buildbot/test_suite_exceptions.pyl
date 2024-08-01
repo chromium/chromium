@@ -110,6 +110,7 @@
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
         ],
+        'ci_only': True,
         'swarming': {
           'dimensions': {
             'device_type': 'crosshatch',
@@ -314,6 +315,7 @@
   'blink_platform_unittests': {
     'modifications': {
       'android-pie-arm64-rel': {
+        'ci_only': True,
         # TODO(crbug.com/40142574): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
@@ -368,14 +370,6 @@
             'gpu': None,
           },
           'shards': 12,
-        },
-      },
-      'Mac10.15 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 1,
         },
       },
       'Mac11 Tests': {
@@ -674,14 +668,6 @@
           'shards': 18,
         },
       },
-      'Mac10.15 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 1,
-        },
-      },
       'Mac11 Tests': {
         'swarming': {
           'dimensions': {
@@ -920,8 +906,6 @@
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
       'ToTLinuxTSan',  # https://crbug.com/368525
-      # TODO(crbug.com/40166003): Enable the suite in 'Mac10.15 Tests' once it's
-      # off CQ.
       'mac-code-coverage', # https://crbug.com/1201386
       'mac11-arm64-rel-tests', # https://crbug.com/1406364
       'mac12-arm64-rel-tests', # https://crbug.com/1406364
@@ -1022,13 +1006,6 @@
         'swarming': {
           'shards': 20,  # crbug.com/1361887
         },
-      },
-      'Mac10.15 Tests': {
-        # crbug.com/1042757
-        'swarming': {
-          'shards': 30,
-        },
-        'experiment_percentage': 100,
       },
       'Mac11 Tests': {
         'ci_only': True,
@@ -1295,6 +1272,9 @@
         # TODO(crbug.com/343210417) : Remove once fixed.
         'experiment_percentage': 100,
       },
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
       'android-pie-x86-rel': {
         # https://crbug.com/1039860
         'args': [
@@ -1389,11 +1369,18 @@
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
     ],
+    'modifications': {
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
+    },
   },
   'chrome_public_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
+      # TODO(crbug.com/352811552): Enable with "ci_only" once green
+      'android-14-arm64-rel',
     ],
     'modifications': {
       'android-11-x86-rel': {
@@ -1535,6 +1522,8 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
+      # TODO(crbug.com/352811552): Remove after test group is fully promoted.
+      'android-14-arm64-fyi-rel',
     ],
     'modifications': {
       'android-12-x64-rel': {
@@ -1905,6 +1894,7 @@
       },
       'android-14-arm64-rel': {
         'args': [
+          '--gtest-also-run-pre-tests',
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter',
         ],
       },
@@ -1917,6 +1907,9 @@
         },
       },
       'android-15-x64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter',
+        ],
         'swarming': {
           'shards': 40,
         },
@@ -1963,6 +1956,7 @@
           '--gtest-also-run-pre-tests',
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
         ],
+        'ci_only': True,
         'swarming': {
           # TODO(crbug.com/40922014): Temporarily increase the shard by 5 for the surging number of tests.
           # Recover to default number of shards(20) after the bug is fixed.
@@ -2108,6 +2102,11 @@
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
+      },
+      'win11-arm64-dbg-tests': {
+        'swarming': {
+          'shards': 16,
+        },
       },
     },
   },
@@ -3484,7 +3483,7 @@
     'modifications': {
       'android-11-x86-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.media_unittests.filter',
         ],
       },
       'android-12-x64-rel': {
@@ -3595,6 +3594,20 @@
         'swarming': {
           'shards': 2,
         },
+      },
+    },
+  },
+  'monochrome_public_bundle_smoke_test': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        'ci_only': True,
+      },
+    },
+  },
+  'monochrome_public_smoke_test': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        'ci_only': True,
       },
     },
   },
@@ -4484,8 +4497,6 @@
     },
     'remove_from': [
       'android-pie-arm64-rel',
-      # crbug.com/936540
-      'Mac10.15 Tests',
       # TODO crbug.com/1277277
       'mac14-tests-dbg',
       'Linux - Future (dbg)',  # client.v8.chromium
@@ -4816,6 +4827,9 @@
       'android-15-x64-fyi-rel': {
         # TODO(crbug.com/343210417) : Remove once fixed.
         'experiment_percentage': 100,
+      },
+      'android-pie-arm64-rel': {
+        'ci_only': True,
       },
       'fuchsia-fyi-arm64-dbg': {
         'args': [
@@ -5570,7 +5584,7 @@
       },
       'android-15-x64-fyi-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
         ],
         'swarming': {
           'shards': 12,

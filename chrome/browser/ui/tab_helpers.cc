@@ -28,7 +28,6 @@
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
@@ -132,7 +131,6 @@
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/feed/buildflags.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
@@ -303,7 +301,7 @@
 #include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_REPORTING)
 #include "components/tpcd/enterprise_reporting/enterprise_reporting_tab_helper.h"
 #endif
 
@@ -404,7 +402,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_REPORTING)
   if (base::FeatureList::IsEnabled(
           net::features::kReportingApiEnableEnterpriseCookieIssues)) {
     tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
@@ -639,10 +637,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   FormInteractionTabHelper::CreateForWebContents(web_contents);
   FramebustBlockTabHelper::CreateForWebContents(web_contents);
   IntentPickerTabHelper::CreateForWebContents(web_contents);
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  enterprise_data_protection::DataProtectionNavigationController::
-      MaybeCreateForWebContents(web_contents);
-#endif
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
@@ -685,9 +679,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (companion::IsCompanionFeatureEnabled()) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
   }
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    ReadAnythingTabHelper::CreateForWebContents(web_contents);
-  }
+  ReadAnythingTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           companion::features::internal::
               kCompanionEnabledByObservingExpsNavigations)) {

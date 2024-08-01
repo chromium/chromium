@@ -106,7 +106,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   int times_decline_virtual_card_called_ = 0;
   base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   id<ApplicationCommands> application_handler_;

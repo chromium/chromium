@@ -113,4 +113,18 @@ public class AdTopicsFragmentTest {
         mAdTopicsButton.performClick();
         verify(mPrefService).setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, false);
     }
+
+    @Test
+    public void testTurnAdTopicsOff_changeAdTopicsOffUserAction() {
+        initFragmentWithAdTopicsState(true);
+        mAdTopicsButton.performClick();
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeAdTopicsOff"));
+    }
+
+    @Test
+    public void testTurnAdTopicsOn_changeAdTopicsOnUserAction() {
+        initFragmentWithAdTopicsState(false);
+        mAdTopicsButton.performClick();
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeAdTopicsOn"));
+    }
 }

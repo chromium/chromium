@@ -72,6 +72,12 @@
       permissions_policy_name: "accelerometer",
     },
     {
+      name: "AllScreensCapture",
+      permissions_policy_name: "all-screens-capture",
+      depends_on: ["GetAllScreensMedia"],
+      visibility: "IsolatedContext",
+    },
+    {
       name: "AmbientLightSensor",
       permissions_policy_name: "ambient-light-sensor",
       depends_on: ["SensorExtraClasses"],
@@ -324,6 +330,12 @@
     {
       name: "Magnetometer",
       permissions_policy_name: "magnetometer",
+    },
+    {
+      name: "MediaPlaybackWhileNotVisible",
+      permissions_policy_name: "media-playback-while-not-visible",
+      feature_default: "EnableForAll",
+      depends_on: ["MediaPlaybackWhileNotVisiblePermissionPolicy"],
     },
     {
       name: "Microphone",

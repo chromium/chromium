@@ -66,16 +66,10 @@ class ActivityLogApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if !defined(NDEBUG)
-// TODO(crbug.com/40334711): This test is very long and can time out in debug
-// builds.
-#define MAYBE_TriggerEvent DISABLED_TriggerEvent
-#else
-#define MAYBE_TriggerEvent TriggerEvent
-#endif
 // The test extension sends a message to its 'friend'. The test completes
 // if it successfully sees the 'friend' receive the message.
-IN_PROC_BROWSER_TEST_F(ActivityLogApiTest, MAYBE_TriggerEvent) {
+// TODO(crbug.com/40334711): This test is very long and can time out.
+IN_PROC_BROWSER_TEST_F(ActivityLogApiTest, DISABLED_TriggerEvent) {
   ActivityLog::GetInstance(profile())->SetWatchdogAppActiveForTesting(true);
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(

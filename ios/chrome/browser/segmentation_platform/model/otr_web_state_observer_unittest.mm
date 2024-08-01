@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -48,12 +49,9 @@ class OTRWebStateObserverTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    auto state = TestChromeBrowserState::Builder().Build();
-    browser_state_ = state.get();
-    browser_state_manager_ =
-        std::make_unique<TestChromeBrowserStateManager>(std::move(state));
-    observer_ =
-        std::make_unique<OTRWebStateObserver>(browser_state_manager_.get());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
+    observer_ = std::make_unique<OTRWebStateObserver>(&browser_state_manager_);
 
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state_);
@@ -74,7 +72,6 @@ class OTRWebStateObserverTest : public PlatformTest {
     browser_.reset();
     observer_->TearDown();
     observer_.reset();
-    browser_state_manager_.reset();
   }
 
   void AddWebState() {
@@ -93,8 +90,9 @@ class OTRWebStateObserverTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
 
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   raw_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<ChromeBrowserState> otr_browser_state_;
   std::unique_ptr<OTRWebStateObserver> observer_;

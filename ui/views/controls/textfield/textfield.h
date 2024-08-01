@@ -561,6 +561,8 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns true if a context menu for this view is showing.
   bool IsMenuShowing() const;
 
+  virtual void UpdateAccessibleTextSelection();
+
  private:
   friend class TextfieldTestApi;
 
@@ -610,7 +612,7 @@ class VIEWS_EXPORT Textfield : public View,
       bool cursor_changed,
       std::optional<bool> notify_caret_bounds_changed = std::nullopt);
 
-  void UpdateAccessibilityTextDirection();
+  virtual void UpdateAccessibilityTextDirection();
 
   // Updates cursor visibility and blinks the cursor if needed.
   void ShowCursor();
@@ -710,6 +712,8 @@ class VIEWS_EXPORT Textfield : public View,
   bool StartSelectionDragging(const ui::GestureEvent& event);
 
   void StopSelectionDragging();
+
+  void UpdateAccessibleDefaultActionVerb();
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // Calculate widths for each grapheme and word starts and ends. Used for

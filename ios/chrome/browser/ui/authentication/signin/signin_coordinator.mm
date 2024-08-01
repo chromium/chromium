@@ -143,6 +143,10 @@ using signin_metrics::PromoAction;
                                                            intent:
                                                                (SigninTrustedVaultDialogIntent)
                                                                    intent
+                                                 securityDomainID:
+                                                     (trusted_vault::
+                                                          SecurityDomainId)
+                                                         securityDomainID
                                                           trigger:
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)
@@ -156,6 +160,7 @@ using signin_metrics::PromoAction;
       initWithBaseViewController:viewController
                          browser:browser
                           intent:intent
+                securityDomainID:securityDomainID
                          trigger:trigger
                      accessPoint:accessPoint];
 }

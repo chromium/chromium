@@ -64,6 +64,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   void OnSurveyLoaded() override;
   void OnSurveyCompleted() override;
   void OnSurveyClosed() override;
+  void OnSurveyQuestionAnswered(std::string& state);
 
  protected:
   friend class MockHatsNextWebDialog;

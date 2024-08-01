@@ -663,6 +663,55 @@ TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
   EXPECT_NSEQ(@"My group", groups.children[0].title);
 }
 
+// Tests that closing all tabs then adding a tab to the WebStateList removes the
+// undo.
+TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ closeAllButtonTapped:nil];
+
+  TabGridToolbarsConfiguration* configuration =
+      fake_toolbars_mediator_.configuration;
+  EXPECT_TRUE(configuration.newTabButton);
+  EXPECT_TRUE(configuration.searchButton);
+  if (GetParam() == TEST_REGULAR_MEDIATOR) {
+    // Undo is only available in regular.
+    EXPECT_TRUE(configuration.undoButton);
+  } else {
+    EXPECT_FALSE(configuration.undoButton);
+  }
+
+  EXPECT_FALSE(configuration.selectAllButton);
+  EXPECT_FALSE(configuration.doneButton);
+  EXPECT_EQ(0u, configuration.selectedItemsCount);
+  EXPECT_FALSE(configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(configuration.addToButton);
+  EXPECT_FALSE(configuration.shareButton);
+  EXPECT_FALSE(configuration.closeAllButton);
+  EXPECT_FALSE(configuration.selectTabsButton);
+  EXPECT_FALSE(configuration.deselectAllButton);
+  EXPECT_FALSE(configuration.cancelSearchButton);
+
+  // Insert a WebState, the undo should be gone.
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateFakeWebStateWithURL(GURL("http://google.com"));
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state));
+
+  configuration = fake_toolbars_mediator_.configuration;
+  EXPECT_TRUE(configuration.closeAllButton);
+  EXPECT_TRUE(configuration.doneButton);
+  EXPECT_TRUE(configuration.newTabButton);
+  EXPECT_TRUE(configuration.searchButton);
+  EXPECT_TRUE(configuration.selectTabsButton);
+
+  EXPECT_FALSE(configuration.undoButton);
+  EXPECT_FALSE(configuration.deselectAllButton);
+  EXPECT_FALSE(configuration.selectAllButton);
+  EXPECT_FALSE(configuration.addToButton);
+  EXPECT_FALSE(configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(configuration.shareButton);
+  EXPECT_FALSE(configuration.cancelSearchButton);
+}
+
 // Tests selecting a tab and a group with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   base::test::ScopedFeatureList scoped_feature_list;

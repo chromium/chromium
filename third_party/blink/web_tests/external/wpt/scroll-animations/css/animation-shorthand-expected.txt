@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Animation shorthand can be represented with same list length (computed)
+  assert_equals: expected "1s ease-in infinite forwards paused bounce, 0.2s linear 1s 2 reverse backwards roll" but got "1s ease-in 0s infinite normal forwards paused bounce, 0.2s linear 1s 2 reverse backwards running roll"
+Harness: the test ran to completion.
+

@@ -229,15 +229,15 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line_1);
-        TextView descriptionLine2 = mView.getContentView().findViewById(R.id.description_line_2);
+        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line);
         assertThat(
                 descriptionLine1.getText(),
-                is("Limits from your financial institution are applied."));
-        assertThat(
-                descriptionLine2.getText(),
                 hasToString(
-                        containsString("To turn off PIX in Chrome, go to your payment settings")));
+                        containsString(
+                                "By continuing, you agree to have your precise device location"
+                                    + " collected and shared with your account holder for fraud"
+                                    + " prevention purposes. To turn off Pix in Chrome, go to your"
+                                    + " payment settings")));
     }
 
     @Test

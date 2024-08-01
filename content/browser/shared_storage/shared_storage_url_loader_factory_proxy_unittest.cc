@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -32,14 +33,23 @@ namespace content {
 
 namespace {
 
-const char kScriptUrl[] = "https://host.test/script";
+const char kContextUrl[] = "https://a.host.test";
+const char kSameOriginScriptUrl[] = "https://a.host.test/script";
+const char kCrossOriginScriptUrl[] = "https://b.host.test/script";
 
 // Values for the Accept header.
 const char kAcceptJavascript[] = "application/javascript";
 
+enum class DataOriginCase {
+  kSameOriginScript = 0,
+  kCrossOriginScriptUseContextDataOrigin = 1,
+  kCrossOriginScriptUseScriptDataOrigin = 2,
+};
+
 }  // namespace
 
-class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
+class SharedStorageURLLoaderFactoryProxyTest
+    : public testing::TestWithParam<DataOriginCase> {
  public:
   // Ways the proxy can behave in response to a request.
   enum class ExpectedResponse {
@@ -47,10 +57,26 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
     kAllow,
   };
 
-  SharedStorageURLLoaderFactoryProxyTest() { CreateUrlLoaderFactoryProxy(); }
+  SharedStorageURLLoaderFactoryProxyTest()
+      : script_url_(IsSameOriginScript() ? GURL(kSameOriginScriptUrl)
+                                         : GURL(kCrossOriginScriptUrl)),
+        frame_origin_(url::Origin::Create(GURL(kContextUrl))),
+        data_origin_(IsContextOriginDataOrigin()
+                         ? url::Origin::Create(GURL(kContextUrl))
+                         : url::Origin::Create(script_url_)) {
+    CreateUrlLoaderFactoryProxy();
+  }
 
   ~SharedStorageURLLoaderFactoryProxyTest() override {
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  }
+
+  bool IsSameOriginScript() const {
+    return GetParam() == DataOriginCase::kSameOriginScript;
+  }
+
+  bool IsContextOriginDataOrigin() const {
+    return GetParam() != DataOriginCase::kCrossOriginScriptUseScriptDataOrigin;
   }
 
   void CreateUrlLoaderFactoryProxy() {
@@ -68,7 +94,7 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
         std::make_unique<SharedStorageURLLoaderFactoryProxy>(
             factory.Unbind(),
             remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
-            frame_origin_, GURL(kScriptUrl),
+            frame_origin_, data_origin_, script_url_,
             network::mojom::CredentialsMode::kSameOrigin,
             net::SiteForCookies::FromOrigin(frame_origin_));
   }
@@ -136,12 +162,24 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
     // The URL should be unaltered.
     EXPECT_EQ(request.url, observed_request.url);
 
-    // The accept kAcceptJavascript header should be the only header.
-    std::string observed_accept_header;
-    EXPECT_TRUE(observed_request.headers.GetHeader(
-        net::HttpRequestHeaders::kAccept, &observed_accept_header));
-    EXPECT_EQ(kAcceptJavascript, observed_accept_header);
-    EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
+    // Verify the accept kAcceptJavascript header.
+    EXPECT_THAT(
+        observed_request.headers.GetHeader(net::HttpRequestHeaders::kAccept),
+        testing::Optional(std::string(kAcceptJavascript)));
+
+    if (IsContextOriginDataOrigin()) {
+      // The accept kAcceptJavascript header should be the only header.
+      EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
+    } else {
+      // In addition to the accept kAcceptJavascript header, the
+      // kSecSharedStorageDataOriginHeader should be present.
+      EXPECT_EQ(2u, observed_request.headers.GetHeaderVector().size());
+
+      EXPECT_THAT(
+          observed_request.headers.GetHeader(kSecSharedStorageDataOriginHeader),
+          testing::Optional(
+              url::Origin::Create(GURL(kCrossOriginScriptUrl)).Serialize()));
+    }
 
     // The request should include credentials, and should not follow redirects.
     EXPECT_EQ(network::mojom::CredentialsMode::kSameOrigin,
@@ -156,26 +194,59 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
     ASSERT_FALSE(observed_request.trusted_params);
   }
 
+  void TryMakeRequest(const GURL& url, ExpectedResponse expected_response) {
+    network::ResourceRequest request;
+    request.url = url;
+    TryMakeRequest(request, expected_response);
+  }
+
   void TryMakeRequest(const std::string& url,
                       ExpectedResponse expected_response) {
-    network::ResourceRequest request;
-    request.url = GURL(url);
-    TryMakeRequest(request, expected_response);
+    TryMakeRequest(GURL(url), expected_response);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  const url::Origin frame_origin_ = url::Origin::Create(GURL(kScriptUrl));
+  const GURL script_url_;
+  const url::Origin frame_origin_;
+  const url::Origin data_origin_;
   network::TestURLLoaderFactory proxied_url_loader_factory_;
   std::unique_ptr<SharedStorageURLLoaderFactoryProxy> url_loader_factory_proxy_;
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
 };
 
-TEST_F(SharedStorageURLLoaderFactoryProxyTest, Basic) {
-  TryMakeRequest(kScriptUrl, ExpectedResponse::kAllow);
-  TryMakeRequest("https://host.test/", ExpectedResponse::kReject);
-  TryMakeRequest(kScriptUrl, ExpectedResponse::kAllow);
+namespace {
+
+std::string DescribeTestParam(
+    const testing::TestParamInfo<
+        SharedStorageURLLoaderFactoryProxyTest::ParamType>& info) {
+  return base::StrCat(
+      {(info.param == DataOriginCase::kSameOriginScript ? "Same" : "Cross"),
+       "OriginScript",
+       (info.param == DataOriginCase::kSameOriginScript
+            ? ""
+            : (info.param ==
+                       DataOriginCase::kCrossOriginScriptUseContextDataOrigin
+                   ? "_ContextDataOrigin"
+                   : "_ScriptDataOrigin"))});
+}
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStorageURLLoaderFactoryProxyTest,
+    testing::Values(DataOriginCase::kSameOriginScript,
+                    DataOriginCase::kCrossOriginScriptUseContextDataOrigin,
+                    DataOriginCase::kCrossOriginScriptUseScriptDataOrigin),
+    DescribeTestParam);
+
+TEST_P(SharedStorageURLLoaderFactoryProxyTest, Basic) {
+  TryMakeRequest(script_url_, ExpectedResponse::kAllow);
+  TryMakeRequest(kContextUrl, ExpectedResponse::kReject);
+  TryMakeRequest("https://b.host.test/", ExpectedResponse::kReject);
+  TryMakeRequest(script_url_, ExpectedResponse::kAllow);
 }
 
 }  // namespace content

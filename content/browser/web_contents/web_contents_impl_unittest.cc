@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -83,6 +84,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -321,11 +323,37 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
                             response_data.original_bitmap_sizes);
   }
 
+  void DownloadImageFromAxNode(
+      int32_t ax_node_id,
+      const ::gfx::Size& preferred_size,
+      uint32_t max_bitmap_size,
+      bool bypass_cache,
+      DownloadImageFromAxNodeCallback callback) override {
+    if (!base::Contains(fake_response_data_per_ax_node_id_, ax_node_id)) {
+      // This could return a 404, but there is no test that currently relies on
+      // it.
+      return;
+    }
+
+    const FakeResponseData& response_data =
+        fake_response_data_per_ax_node_id_[ax_node_id];
+    std::move(callback).Run(/*http_status_code=*/0, response_data.bitmaps,
+                            response_data.original_bitmap_sizes);
+  }
+
   void SetFakeResponseData(
       const GURL& url,
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) {
     fake_response_data_per_url_[url] =
+        FakeResponseData{bitmaps, original_bitmap_sizes};
+  }
+
+  void SetFakeResponseData(
+      const int ax_node_id,
+      const std::vector<SkBitmap>& bitmaps,
+      const std::vector<gfx::Size>& original_bitmap_sizes) {
+    fake_response_data_per_ax_node_id_[ax_node_id] =
         FakeResponseData{bitmaps, original_bitmap_sizes};
   }
 
@@ -342,6 +370,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
 
   mojo::Receiver<blink::mojom::ImageDownloader> receiver_{this};
   std::map<GURL, FakeResponseData> fake_response_data_per_url_;
+  std::map<int, FakeResponseData> fake_response_data_per_ax_node_id_;
 };
 
 class MockPageBroadcast : public TestPageBroadcast {
@@ -389,13 +418,11 @@ class MockNetworkContext : public network::TestNetworkContext {
   explicit MockNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
       : receiver_(this, std::move(receiver)) {}
-  MOCK_METHOD(void,
-              NotifyExternalCacheHit,
-              (const GURL&,
-               const std::string&,
-               const net::NetworkIsolationKey&,
-               bool),
-              (override));
+  MOCK_METHOD(
+      void,
+      NotifyExternalCacheHit,
+      (const GURL&, const std::string&, const net::NetworkIsolationKey&, bool),
+      (override));
 
  private:
   mojo::Receiver<network::mojom::NetworkContext> receiver_;
@@ -461,8 +488,8 @@ TEST_F(WebContentsImplTest, UpdateTitleWhileFirstNavigationIsPending) {
 
 TEST_F(WebContentsImplTest, DontUsePendingEntryUrlAsTitle) {
   const GURL kGURL(GetWebUIURL("blah"));
-  controller().LoadURL(
-      kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_EQ(std::u16string(), contents()->GetTitle());
 }
 
@@ -564,10 +591,9 @@ TEST_F(WebContentsImplTest, SimpleNavigation) {
   EXPECT_EQ(instance1, orig_rfh->GetSiteInstance());
   // Controller's pending entry will have a null site instance until we assign
   // it in Commit.
-  EXPECT_EQ(
-      nullptr,
-      NavigationEntryImpl::FromNavigationEntry(controller().GetVisibleEntry())->
-          site_instance());
+  EXPECT_EQ(nullptr, NavigationEntryImpl::FromNavigationEntry(
+                         controller().GetVisibleEntry())
+                         ->site_instance());
 
   navigation->Commit();
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
@@ -575,20 +601,19 @@ TEST_F(WebContentsImplTest, SimpleNavigation) {
   EXPECT_EQ(instance1, orig_rfh->GetSiteInstance());
   // Controller's entry should now have the SiteInstance, or else we won't be
   // able to find it later.
-  EXPECT_EQ(
-      instance1,
-      NavigationEntryImpl::FromNavigationEntry(controller().GetVisibleEntry())->
-          site_instance());
+  EXPECT_EQ(instance1, NavigationEntryImpl::FromNavigationEntry(
+                           controller().GetVisibleEntry())
+                           ->site_instance());
 }
 
 // Test that we reject NavigateToEntry if the url is over kMaxURLChars.
 TEST_F(WebContentsImplTest, NavigateToExcessivelyLongURL) {
   // Construct a URL that's kMaxURLChars + 1 long of all 'a's.
-  const GURL url(std::string("http://example.org/").append(
-      url::kMaxURLChars + 1, 'a'));
+  const GURL url(
+      std::string("http://example.org/").append(url::kMaxURLChars + 1, 'a'));
 
-  controller().LoadURL(
-      url, Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+  controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_GENERATED,
+                       std::string());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 }
 
@@ -596,13 +621,13 @@ TEST_F(WebContentsImplTest, NavigateToExcessivelyLongURL) {
 TEST_F(WebContentsImplTest, NavigateToInvalidURL) {
   // Invalid URLs should not trigger a navigation.
   const GURL invalid_url("view-source:http://example%00.com/");
-  controller().LoadURL(
-      invalid_url, Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+  controller().LoadURL(invalid_url, Referrer(), ui::PAGE_TRANSITION_GENERATED,
+                       std::string());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 
   // Empty URLs are supported and should start a navigation.
-  controller().LoadURL(
-      GURL(), Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+  controller().LoadURL(GURL(), Referrer(), ui::PAGE_TRANSITION_GENERATED,
+                       std::string());
   EXPECT_NE(nullptr, controller().GetPendingEntry());
 }
 
@@ -1010,7 +1035,6 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
 // Test that we can find an opener RVH even if it's pending.
 // http://crbug.com/176252.
 TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
-
   // Navigate to a URL.
   const GURL url("http://www.google.com");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url);
@@ -1127,8 +1151,8 @@ TEST_F(WebContentsImplTest, CrossSiteUnloadHandlers) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
   orig_rfh->SimulateBeforeUnloadCompleted(false);
   EXPECT_FALSE(orig_rfh->is_waiting_for_beforeunload_completion());
@@ -1136,8 +1160,8 @@ TEST_F(WebContentsImplTest, CrossSiteUnloadHandlers) {
   EXPECT_EQ(orig_rfh, main_test_rfh());
 
   // Navigate again, but simulate an onbeforeunload approval.
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
   auto navigation =
       NavigationSimulator::CreateFromPending(contents()->GetController());
@@ -1173,8 +1197,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationPreempted) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());
 
@@ -1323,8 +1347,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationNotPreemptedByFrame) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
 
   // Simulate a sub-frame navigation arriving and ensure the RVH is still
   // waiting for a before unload response.
@@ -1549,10 +1573,11 @@ TEST_F(WebContentsImplTest, HistoryNavigationExitsFullscreen) {
     EXPECT_TRUE(fake_delegate.IsFullscreenForTabOrPending(contents()));
 
     // Navigate backward (or forward).
-    if (i == 0)
+    if (i == 0) {
       NavigationSimulator::GoBack(contents());
-    else
+    } else {
       NavigationSimulator::GoForward(contents());
+    }
 
     // Confirm fullscreen has exited.
     EXPECT_FALSE(contents()->IsFullscreen());
@@ -2054,9 +2079,7 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
     return count;
   }
 
-  bool last_zoom_in() const {
-    return last_zoom_in_;
-  }
+  bool last_zoom_in() const { return last_zoom_in_; }
 
   // WebContentsDelegate:
   void ContentsZoomChange(bool zoom_in) override {
@@ -2167,8 +2190,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountBasic) {
 // Tests that GetRelatedActiveContentsCount is preserved correctly across
 // same-site and cross-site navigations.
 TEST_F(WebContentsImplTest, ActiveContentsCountNavigate) {
-  scoped_refptr<SiteInstance> instance(
-      SiteInstance::Create(browser_context()));
+  scoped_refptr<SiteInstance> instance(SiteInstance::Create(browser_context()));
 
   EXPECT_EQ(0u, instance->GetRelatedActiveContentsCount());
 
@@ -2247,8 +2269,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountNavigate) {
 // Tests that GetRelatedActiveContentsCount tracks BrowsingInstance changes
 // from WebUI.
 TEST_F(WebContentsImplTest, ActiveContentsCountChangeBrowsingInstance) {
-  scoped_refptr<SiteInstance> instance(
-      SiteInstance::Create(browser_context()));
+  scoped_refptr<SiteInstance> instance(SiteInstance::Create(browser_context()));
 
   EXPECT_EQ(0u, instance->GetRelatedActiveContentsCount());
 
@@ -2713,10 +2734,10 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager {
     return true;
   }
 
-  void CancelDialogs(WebContents* web_contents,
-                     bool reset_state) override {
-    if (reset_state)
+  void CancelDialogs(WebContents* web_contents, bool reset_state) override {
+    if (reset_state) {
       ++reset_count_;
+    }
   }
 
  private:
@@ -3319,6 +3340,46 @@ TEST_F(WebContentsImplTest, CreateWebContentsWithOpenerAndNetworkHandle) {
   std::unique_ptr<WebContentsImpl> contents(
       WebContentsImpl::CreateWithOpener(params, /*opener_rfh=*/nullptr));
   EXPECT_EQ(test_target_network_handle, contents->GetTargetNetwork());
+}
+
+TEST_F(WebContentsImplTest, BadDownloadImageFromAXNodeId) {
+  // Avoid using TestWebContents, which fakes image download logic without
+  // exercising the code in WebContentsImpl.
+  scoped_refptr<SiteInstance> instance =
+      SiteInstance::Create(GetBrowserContext());
+  instance->GetProcess()->Init();
+  WebContents::CreateParams create_params(GetBrowserContext(),
+                                          std::move(instance));
+  create_params.desired_renderer_state = WebContents::CreateParams::
+      CreateParams::kInitializeAndWarmupRendererProcess;
+  std::unique_ptr<WebContentsImpl> contents(
+      WebContentsImpl::CreateWithOpener(create_params, /*opener_rfh=*/nullptr));
+  ASSERT_FALSE(
+      contents->GetPrimaryMainFrame()->GetProcess()->ShutdownRequested());
+
+  // Set up the fake image downloader.
+  FakeImageDownloader fake_image_downloader;
+  fake_image_downloader.Init(
+      contents->GetPrimaryMainFrame()->GetRemoteInterfaces());
+
+  int img_node_id = 3;
+  fake_image_downloader.SetFakeResponseData(img_node_id, {},
+                                            {gfx::Size(30, 30)});
+
+  base::RunLoop run_loop;
+  contents->DownloadImageFromAxNode(
+      contents->GetPrimaryMainFrame()->GetAXTreeID(), img_node_id, gfx::Size(),
+      0, false,
+      base::BindLambdaForTesting([&](int download_id, int http_status_code,
+                                     const GURL& url,
+                                     const std::vector<SkBitmap>& bitmaps,
+                                     const std::vector<gfx::Size>& sizes) {
+        EXPECT_EQ(400, http_status_code);
+        EXPECT_TRUE(bitmaps.empty());
+        EXPECT_TRUE(sizes.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace content

@@ -242,6 +242,31 @@ void PinnedToolbarActionsModel::MaybeUpdateSearchCompanionPinnedState(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+void PinnedToolbarActionsModel::ResetToDefault() {
+  // By default, home is unpinned and forward is pinned.
+  pref_service_->ClearPref(prefs::kShowHomeButton);
+  pref_service_->ClearPref(prefs::kShowForwardButton);
+
+  // By default, most action items are not pinned.
+  const std::vector<actions::ActionId> pinned_ids = PinnedActionIds();
+  for (actions::ActionId id : pinned_ids) {
+    // The exception is Chrome Labs.
+    UpdatePinnedState(id, id == kActionShowChromeLabs);
+  }
+}
+
+bool PinnedToolbarActionsModel::IsDefault() const {
+  // Chrome Labs is pinned by default.
+  const bool labs_is_default = Contains(kActionShowChromeLabs);
+
+  // Other than Labs, only Home is pinned by default.
+  const bool is_default =
+      !pref_service_->GetBoolean(prefs::kShowHomeButton) &&
+      pref_service_->GetBoolean(prefs::kShowForwardButton) && labs_is_default &&
+      PinnedActionIds().size() == 1;
+  return is_default;
+}
+
 const std::vector<actions::ActionId>&
 PinnedToolbarActionsModel::PinnedActionIds() const {
   return pinned_action_ids_;

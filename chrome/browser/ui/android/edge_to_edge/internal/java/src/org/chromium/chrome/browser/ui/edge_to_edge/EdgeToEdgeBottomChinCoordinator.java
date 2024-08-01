@@ -57,8 +57,13 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
         mLayoutManager = layoutManager;
         mSceneLayer = sceneLayer;
 
+        int initNavBarColor = navigationBarColorProvider.getNavigationBarColor();
         PropertyModel model =
-                new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS).build();
+                new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS)
+                        .with(EdgeToEdgeBottomChinProperties.IS_VISIBLE, false)
+                        .with(EdgeToEdgeBottomChinProperties.COLOR, initNavBarColor)
+                        .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, initNavBarColor)
+                        .build();
         PropertyModelChangeProcessor.create(
                 model, sceneLayer, EdgeToEdgeBottomChinViewBinder::bind);
         mLayoutManager.createCompositorMCP(

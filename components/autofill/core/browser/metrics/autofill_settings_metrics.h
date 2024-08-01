@@ -39,7 +39,7 @@ void LogIsAutofillProfileEnabledAtPageLoad(
     AutofillMetrics::PaymentsSigninState sync_state);
 
 // This should be called each time a page containing forms is loaded.
-void LogIsAutofillCreditCardEnabledAtPageLoad(
+void LogIsAutofillPaymentMethodsEnabledAtPageLoad(
     bool enabled,
     AutofillMetrics::PaymentsSigninState sync_state);
 
@@ -50,7 +50,7 @@ void LogIsAutofillEnabledAtStartup(bool enabled);
 void LogIsAutofillProfileEnabledAtStartup(bool enabled);
 
 // This should be called each time a new chrome profile is launched.
-void LogIsAutofillCreditCardEnabledAtStartup(bool enabled);
+void LogIsAutofillPaymentMethodsEnabledAtStartup(bool enabled);
 
 // Logs the source that disabled Autofill Profile, on startup. This should be
 // called each time a new chrome profile is launched.
@@ -59,6 +59,16 @@ void LogAutofillProfileDisabledReasonAtStartup(const PrefService& pref_service);
 // Logs the source that disabled Autofill Profile, on page load for a page
 // containing forms.
 void LogAutofillProfileDisabledReasonAtPageLoad(
+    const PrefService& pref_service);
+
+// Logs the source that disabled payment method Autofill, on startup. This
+// should be called each time a new chrome profile is launched.
+void LogAutofillPaymentMethodsDisabledReasonAtStartup(
+    const PrefService& pref_service);
+
+// Logs the source that disabled payment method Autofill, on page load for a
+// page containing forms.
+void LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
     const PrefService& pref_service);
 
 // Logs user action "Autofill_ProfileDisabled" if

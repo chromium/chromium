@@ -148,8 +148,8 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
         offsetLeftPx += 3;
         tooltipMessage = this.i18n('cursorTooltipTextHighlightMessage');
       } else if (tooltipType === CursorTooltipType.CLICK_SEARCH) {
-        offsetTopPx += 8;
-        offsetLeftPx += 4;
+        offsetTopPx += 17;
+        offsetLeftPx += 11;
         tooltipMessage = this.i18n('cursorTooltipClickMessage');
       }
       // LINT.ThenChange(//chrome/browser/resources/lens/overlay/selection_overlay.ts:CursorOffsetValues)

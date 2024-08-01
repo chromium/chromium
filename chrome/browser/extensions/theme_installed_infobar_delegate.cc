@@ -131,14 +131,16 @@ std::u16string ThemeInstalledInfoBarDelegate::GetButtonLabel(
 }
 
 bool ThemeInstalledInfoBarDelegate::Cancel() {
-  if (prev_theme_reinstaller_)
+  if (prev_theme_reinstaller_) {
     prev_theme_reinstaller_->Reinstall();
+  }
   return false;  // The theme change will close us.
 }
 
 void ThemeInstalledInfoBarDelegate::OnThemeChanged() {
   // If the new theme is different from what this info bar is associated with,
   // close this info bar since it is no longer relevant.
-  if (theme_id_ != theme_service_->GetThemeID())
+  if (theme_id_ != theme_service_->GetThemeID()) {
     infobar()->RemoveSelf();
+  }
 }

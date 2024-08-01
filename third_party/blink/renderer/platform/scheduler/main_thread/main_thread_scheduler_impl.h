@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -136,6 +137,13 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     CompositorTQPolicyDuringThreadedScroll
         compositor_tq_policy_during_threaded_scroll;
 
+    // The policy to use for discrete input-based task deferral. If
+    // `features::kDeferRendererTasksAfterInput` is enabled, this is set to the
+    // policy set in the associated feature param, otherwise this is
+    // std::nullopt.
+    std::optional<features::TaskDeferralPolicy>
+        discrete_input_task_deferral_policy;
+
     // If we haven't run BeginMainFrame in this many milliseconds, give the next
     // BeginMainFrame task elevated priority.
     base::TimeDelta prioritize_compositing_after_delay_pre_fcp;
@@ -233,7 +241,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       WebInputEvent::Type web_input_event_type,
       const WebInputEventAttribution& web_input_event_attribution);
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
-                                       WebInputEventResult result);
+                                       WebInputEventResult result,
+                                       bool frame_requested);
 
   // Use a separate task runner so that IPC tasks are not logged via the same
   // task queue that executes them. Otherwise this would result in an infinite
@@ -345,6 +354,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   const SchedulingSettings& scheduling_settings() const;
 
+  void OnWebSchedulingTaskQueuePriorityChanged(MainThreadTaskQueue*);
+
   base::WeakPtr<MainThreadSchedulerImpl> GetWeakPtr();
 
   TaskPriority compositor_priority() const {
@@ -448,7 +459,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
    public:
     RAILMode rail_mode = RAILMode::kAnimation;
     bool should_freeze_compositor_task_queue = false;
-    bool should_defer_task_queues = false;
     bool should_pause_task_queues = false;
     bool should_pause_task_queues_for_android_webview = false;
     bool should_prioritize_ipc_tasks = false;
@@ -461,7 +471,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     bool operator==(const Policy& other) const = default;
 
-    bool IsQueueEnabled(MainThreadTaskQueue* task_queue) const;
+    bool IsQueueEnabled(MainThreadTaskQueue*, const SchedulingSettings&) const;
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
@@ -653,6 +663,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       owned_sequence_manager_;
   MainThreadSchedulerHelper helper_;
   scoped_refptr<MainThreadTaskQueue> idle_helper_queue_;
+  std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
+      idle_queue_voter_;
   IdleHelper idle_helper_;
   RenderWidgetSignals render_widget_scheduler_signals_;
 
@@ -765,6 +777,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // used by the kPrioritizeCompositingAfterInput experiment to determine if
     // the next frame should be prioritized.
     bool is_current_task_discrete_input = false;
+    // Set when a frame is known to be requested when handling an input event on
+    // the main thread.
+    bool is_frame_requested_after_discrete_input = false;
     // Cumulative non-continuous time spent running render-blocking tasks since
     // the last frame.
     base::TimeDelta rendering_blocking_duration_since_last_frame;
@@ -786,6 +801,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks last_idle_period_end_time;
     UserModel user_model;
     TraceableState<bool, TracingCategory::kInfo> awaiting_touch_start_response;
+    TraceableState<bool, TracingCategory::kInfo>
+        awaiting_discrete_input_response;
     TraceableState<bool, TracingCategory::kInfo> in_idle_period;
     TraceableState<bool, TracingCategory::kInfo>
         begin_main_frame_on_critical_path;

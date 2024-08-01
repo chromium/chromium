@@ -52,13 +52,14 @@ class FakeFormFetcher : public FormFetcher {
   base::span<const PasswordForm> GetAllRelevantMatches() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
+  std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+  GetPreferredOrPotentialMatchedFormType() const override;
   // Returns a new FakeFormFetcher.
   std::unique_ptr<FormFetcher> Clone() override;
   std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
       const override;
   std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
-  bool WereGroupedCredentialsAvailable() const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {
     state_ = State::NOT_WAITING;
@@ -74,6 +75,13 @@ class FakeFormFetcher : public FormFetcher {
 
   void set_insecure_credentials(const std::vector<PasswordForm>& credentials) {
     insecure_credentials_ = credentials;
+  }
+
+  void set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType
+          preferred_or_potential_matched_form_type) {
+    preferred_or_potential_matched_form_type_ =
+        preferred_or_potential_matched_form_type;
   }
 
   // Set non-federated matches. All matches must have the same scheme
@@ -109,6 +117,8 @@ class FakeFormFetcher : public FormFetcher {
   bool is_blocklisted_ = false;
   std::optional<PasswordStoreBackendError> profile_store_backend_error_;
   std::optional<PasswordStoreBackendError> account_store_backend_error_;
+  std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+      preferred_or_potential_matched_form_type_;
 };
 
 }  // namespace password_manager

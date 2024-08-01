@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -90,14 +90,8 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         IOSProfileSessionDurationsServiceFactory::GetInstance(),
         base::BindRepeating(&FakeProfileSessionDurationsService::Create));
-
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
-
-    browser_state_ =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
   }
@@ -123,10 +117,11 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   AppMetricsAppStateAgent* agent_;
   raw_ptr<ChromeBrowserState> browser_state_;
   FakeAppState* app_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 };
 
 TEST_F(AppMetricsAppStateAgentTest, CountSessionDuration) {

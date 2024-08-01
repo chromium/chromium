@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "url/gurl.h"
@@ -17,7 +18,8 @@ PickerTextMedia::PickerTextMedia(std::u16string text) : text(std::move(text)) {}
 PickerTextMedia::PickerTextMedia(std::string_view text)
     : PickerTextMedia(base::UTF8ToUTF16(text)) {}
 
-PickerLinkMedia::PickerLinkMedia(GURL url) : url(std::move(url)) {}
+PickerLinkMedia::PickerLinkMedia(GURL url, std::string title)
+    : url(std::move(url)), title(std::move(title)) {}
 
 PickerLocalFileMedia::PickerLocalFileMedia(base::FilePath path)
     : path(std::move(path)) {}

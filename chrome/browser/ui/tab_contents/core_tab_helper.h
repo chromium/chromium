@@ -71,16 +71,21 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Opens the Lens standalone experience for the image that triggered the
   // context menu. If the google lens supports opening requests in side panel,
-  // then the request will open in the side panel instead of new tab.
+  // then the request will open in the side panel instead of new tab, unless
+  // force_open_in_new_tab is set.
   void SearchWithLens(content::RenderFrameHost* render_frame_host,
                       const GURL& src_url,
                       lens::EntryPoint entry_point,
-                      bool is_image_translate);
+                      bool is_image_translate,
+                      bool force_open_in_new_tab);
 
   // Opens the Lens experience for an `image`, which will be resized if needed.
   // If the search engine supports opening requests in side panel, then the
-  // request will open in the side panel instead of a new tab.
-  void SearchWithLens(const gfx::Image& image, lens::EntryPoint entry_point);
+  // request will open in the side panel instead of a new tab, unless
+  // force_open_in_new_tab is set.
+  void SearchWithLens(const gfx::Image& image,
+                      lens::EntryPoint entry_point,
+                      bool force_open_in_new_tab);
 
   // Performs an image search for the image that triggered the context menu. The
   // `src_url` is passed to the search request and is not used directly to fetch

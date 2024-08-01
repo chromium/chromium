@@ -7,8 +7,7 @@
 #include <optional>
 
 #include "base/strings/string_util.h"
-#include "chrome/browser/extensions/api/context_menus/context_menus_api.h"
-#include "chrome/browser/extensions/api/context_menus/context_menus_api_helpers.h"
+#include "chrome/browser/extensions/context_menu_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/chrome_web_view_internal.h"
 #include "content/public/browser/render_frame_host.h"
@@ -42,14 +41,14 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
     const base::Value& properties = args()[1];
     EXTENSION_FUNCTION_VALIDATE(properties.is_dict());
-    std::optional<int> result = properties.GetDict().FindInt(
-        extensions::context_menus_api_helpers::kGeneratedIdKey);
+    std::optional<int> result =
+        properties.GetDict().FindInt(context_menu_helpers::kGeneratedIdKey);
     EXTENSION_FUNCTION_VALIDATE(result);
     id.uid = *result;
   }
 
   std::string error;
-  bool success = extensions::context_menus_api_helpers::CreateMenuItem(
+  bool success = context_menu_helpers::CreateMenuItem(
       params->create_properties, Profile::FromBrowserContext(browser_context()),
       extension(), id, &error);
   return RespondNow(success ? NoArguments() : Error(error));
@@ -77,7 +76,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
     NOTREACHED_IN_MIGRATION();
 
   std::string error;
-  bool success = extensions::context_menus_api_helpers::UpdateMenuItem(
+  bool success = context_menu_helpers::UpdateMenuItem(
       params->update_properties, profile, extension(), item_id, &error);
 
   return RespondNow(success ? NoArguments() : Error(error));
@@ -111,8 +110,8 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
   // Ensure one <webview> can't remove another's menu items.
   if (!item || item->id().extension_key != id.extension_key) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        context_menus_api_helpers::kCannotFindItemError,
-        context_menus_api_helpers::GetIDString(id))));
+        context_menu_helpers::kCannotFindItemError,
+        context_menu_helpers::GetIDString(id))));
   } else if (!menu_manager->RemoveContextMenuItem(id)) {
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }

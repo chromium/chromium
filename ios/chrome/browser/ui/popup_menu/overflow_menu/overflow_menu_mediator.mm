@@ -40,11 +40,13 @@
 #import "ios/chrome/browser/follow/model/follow_util.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -56,6 +58,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -65,6 +68,7 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -72,7 +76,6 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -228,6 +231,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuAction* shareChromeAction;
 
 @property(nonatomic, strong) OverflowMenuAction* editActionsAction;
+@property(nonatomic, strong) OverflowMenuAction* lensOverlayAction;
 
 @end
 
@@ -657,6 +661,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                  handler:^{
                                    [weakSelf beginCustomization];
                                  }];
+  if (IsLensOverlayAvailable()) {
+    self.lensOverlayAction = [self openLensOverlayAction];
+  }
   self.editActionsAction.automaticallyUnhighlight = NO;
   self.editActionsAction.useButtonStyling = YES;
 
@@ -727,6 +734,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf addOrEditBookmark];
+                                 }];
+}
+
+- (OverflowMenuAction*)openLensOverlayAction {
+  __weak __typeof(self) weakSelf = self;
+  return [self
+      createOverflowMenuActionWithNameID:IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY
+                              actionType:overflow_menu::ActionType::LensOverlay
+                              symbolName:kCameraLensSymbol
+                            systemSymbol:NO
+                        monochromeSymbol:NO
+                         accessibilityID:kToolsMenuOpenLensOverlay
+                            hideItemText:nil
+                                 handler:^{
+                                   [weakSelf startLensOverlay];
                                  }];
 }
 
@@ -1844,7 +1866,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 #pragma mark - OverflowMenuActionProvider
 
 - (ActionRanking)basePageActions {
-  return {
+  ActionRanking actions = {
       overflow_menu::ActionType::Follow,
       overflow_menu::ActionType::Bookmark,
       overflow_menu::ActionType::ReadingList,
@@ -1854,6 +1876,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       overflow_menu::ActionType::FindInPage,
       overflow_menu::ActionType::TextZoom,
   };
+
+  if (IsLensOverlayAvailable()) {
+    actions.push_back(overflow_menu::ActionType::LensOverlay);
+  }
+
+  return actions;
 }
 
 - (OverflowMenuAction*)actionForActionType:
@@ -1916,6 +1944,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.shareChromeAction;
     case overflow_menu::ActionType::EditActions:
       return self.editActionsAction;
+    case overflow_menu::ActionType::LensOverlay:
+      return self.lensOverlayAction;
   }
 }
 
@@ -1953,6 +1983,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self newFindInPageAction];
     case overflow_menu::ActionType::TextZoom:
       return [self newTextZoomAction];
+    case overflow_menu::ActionType::LensOverlay:
+      return [self openLensOverlayAction];
   }
 }
 
@@ -2148,6 +2180,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self.menuOrderer commitActionsUpdate];
 }
 
+// Creates and opens the lens overlay UI.
+- (void)startLensOverlay {
+  RecordAction(UserMetricsAction("MobileMenuLensOverlay"));
+  [self dismissMenu];
+  [self.lensOverlayHandler createAndShowLensUI:YES];
+}
+
 #pragma mark - Destinations Handlers
 
 // Dismisses the menu and opens bookmarks.
@@ -2227,7 +2266,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens What's New.
 - (void)openWhatsNew {
   [self dismissMenu];
-  [self.browserCoordinatorHandler showWhatsNew];
+  [self.whatsNewHandler showWhatsNew];
 }
 
 // Dismisses the menu and opens settings.

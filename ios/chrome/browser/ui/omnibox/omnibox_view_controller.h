@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
-#import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 
 @class LayoutGuideCenter;
 @protocol OmniboxAdditionalTextConsumer;

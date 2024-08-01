@@ -99,6 +99,7 @@ ClientPermissionState GetClientPermissionState(
     }
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kSports: {
       BOOL mobile_notifications =
           GetMobileNotificationPermissionStatusForClient(client_id, gaia_id);

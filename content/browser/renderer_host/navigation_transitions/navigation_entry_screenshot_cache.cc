@@ -16,6 +16,13 @@
 namespace content {
 
 namespace {
+
+NavigationEntryScreenshotCache::CompressedCallback& GetTestCallback() {
+  static base::NoDestructor<NavigationEntryScreenshotCache::CompressedCallback>
+      instance;
+  return *instance;
+}
+
 std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshotFromEntry(
     NavigationEntry* entry) {
   CHECK(entry);
@@ -24,7 +31,7 @@ std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshotFromEntry(
   CHECK(data);
   auto* screenshot = static_cast<NavigationEntryScreenshot*>(data.release());
   CHECK(screenshot->is_cached());
-  screenshot->set_cache(nullptr);
+  screenshot->SetCache(nullptr);
   return base::WrapUnique(screenshot);
 }
 
@@ -34,6 +41,12 @@ bool AreBackForwardTransitionsEnabled() {
   // TODO(crbug.com/40256003): We might want to disable this feature on
   // low-end devices.
   return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
+}
+
+// static
+void NavigationEntryScreenshotCache::SetCompressedCallbackForTesting(
+    CompressedCallback callback) {
+  GetTestCallback() = std::move(callback);
 }
 
 NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
@@ -102,8 +115,8 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
   CHECK(cached_screenshots_.find(entry->GetUniqueID()) ==
         cached_screenshots_.end());
   CHECK(!screenshot->is_cached());
-  screenshot->set_cache(this);
-  const size_t size = screenshot->SizeInBytes();
+  const size_t size = screenshot->SetCache(this);
+
   entry->SetUserData(NavigationEntryScreenshot::kUserDataKey,
                      std::move(screenshot));
   entry->navigation_transition_data().set_is_copied_from_embedder(
@@ -112,7 +125,8 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
       .SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
   entry->navigation_transition_data().set_cache_hit_or_miss_reason(
       NavigationTransitionData::CacheHitOrMissReason::kCacheHit);
-  cached_screenshots_.insert(entry->GetUniqueID());
+
+  cached_screenshots_[entry->GetUniqueID()] = size;
   manager_->OnScreenshotCached(this, size);
 
   if (new_screenshot_cached_callback_) {
@@ -131,23 +145,43 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
   CHECK(it != cached_screenshots_.end());
 
   // Remove the tracked nav entry id and the entry and update the metadata.
+  const size_t size = it->second;
   cached_screenshots_.erase(it);
   auto screenshot = RemoveScreenshotFromEntry(navigation_entry);
-  manager_->OnScreenshotRemoved(this, screenshot->SizeInBytes());
   static_cast<NavigationEntryImpl*>(navigation_entry)
       ->navigation_transition_data()
       .set_cache_hit_or_miss_reason(std::nullopt);
+  manager_->OnScreenshotRemoved(this, size);
+
   return screenshot;
 }
 
 void NavigationEntryScreenshotCache::OnNavigationEntryGone(
-    int navigation_entry_id,
-    size_t size) {
+    int navigation_entry_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.find(navigation_entry_id);
   CHECK(it != cached_screenshots_.end());
+
+  const size_t size = it->second;
   cached_screenshots_.erase(it);
   manager_->OnScreenshotRemoved(this, size);
+}
+
+void NavigationEntryScreenshotCache::OnScreenshotCompressed(
+    int navigation_entry_id,
+    size_t new_size) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto it = cached_screenshots_.find(navigation_entry_id);
+  CHECK(it != cached_screenshots_.end());
+
+  const size_t old_size = it->second;
+  it->second = new_size;
+  manager_->OnScreenshotCompressed(this, old_size, new_size);
+
+  if (GetTestCallback()) {
+    std::move(GetTestCallback())
+        .Run(nav_controller_->GetEntryIndexWithUniqueID(navigation_entry_id));
+  }
 }
 
 void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
@@ -208,15 +242,15 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
         it != cached_screenshots_.end()) {
       std::unique_ptr<NavigationEntryScreenshot> evicted_screenshot =
           RemoveScreenshotFromEntry(candidate_entry);
-      cached_screenshots_.erase(it);
-      CHECK_LE(evicted_screenshot->SizeInBytes(),
-               manager_->GetCurrentCacheSize());
-      manager_->OnScreenshotRemoved(this, evicted_screenshot->SizeInBytes());
-
       candidate_entry->navigation_transition_data()
           .set_cache_hit_or_miss_reason(
               NavigationTransitionData::CacheHitOrMissReason::
                   kCacheMissEvicted);
+
+      const size_t size = it->second;
+      cached_screenshots_.erase(it);
+      CHECK_LE(size, manager_->GetCurrentCacheSize());
+      manager_->OnScreenshotRemoved(this, size);
     }
   }
 }
@@ -229,12 +263,11 @@ void NavigationEntryScreenshotCache::PurgeInternal(bool for_memory_pressure) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.begin();
   while (!IsEmpty()) {
-    auto* evicted_entry = nav_controller_->GetEntryWithUniqueID(*it);
+    auto* evicted_entry = nav_controller_->GetEntryWithUniqueID(it->first);
     CHECK(evicted_entry);
     auto purged = RemoveScreenshotFromEntry(evicted_entry);
+    const size_t size = it->second;
     cached_screenshots_.erase(it);
-    CHECK_LE(purged->SizeInBytes(), manager_->GetCurrentCacheSize());
-    manager_->OnScreenshotRemoved(this, purged->SizeInBytes());
 
     if (for_memory_pressure) {
       evicted_entry->navigation_transition_data().set_cache_hit_or_miss_reason(
@@ -247,6 +280,8 @@ void NavigationEntryScreenshotCache::PurgeInternal(bool for_memory_pressure) {
           std::nullopt);
     }
 
+    CHECK_LE(size, manager_->GetCurrentCacheSize());
+    manager_->OnScreenshotRemoved(this, size);
     it = cached_screenshots_.begin();
   }
 }

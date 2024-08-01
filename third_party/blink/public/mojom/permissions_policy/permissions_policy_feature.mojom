@@ -254,6 +254,11 @@ enum PermissionsPolicyFeature {
   // Digital Credentials (https://wicg.github.io/digital-credentials/)
   kDigitalCredentialsGet = 120,
 
+  kMediaPlaybackWhileNotVisible = 121,
+
+  // Capture all screens (https://screen-share.github.io/capture-all-screens/)
+  kAllScreensCapture = 122,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/variations_app_state_agent.h"
-#import "ios/chrome/app/variations_app_state_agent+testing.h"
 
 #import "base/metrics/field_trial.h"
 #import "base/test/ios/wait_util.h"
@@ -16,10 +15,12 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/variations_app_state_agent+testing.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
-#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
@@ -74,8 +75,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
       mock_fetcher_ = nil;
       [mock_app_state_ stopMocking];
       mock_app_state_ = nil;
-      local_state_.Get()->ClearPref(
-          variations::prefs::kVariationsLastFetchTime);
+      local_state()->ClearPref(variations::prefs::kVariationsLastFetchTime);
     }
   }
 
@@ -164,9 +164,13 @@ class VariationsAppStateAgentTest : public PlatformTest {
   // Gets the current scene state to simulate activation level transitions.
   SceneState* GetSceneState() { return scene_state_; }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   // Test PrefService dependencies.
   base::test::TaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   // VariationsAppStateAgent dependencies.
   IOSChromeVariationsSeedFetcher* mock_fetcher_;
@@ -419,8 +423,8 @@ TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
   TransitionAgentToStage(agent, stageAfterChromeInitialization);
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
-  local_state_.Get()->SetTime(variations::prefs::kVariationsLastFetchTime,
-                              last_fetch_time);
+  local_state()->SetTime(variations::prefs::kVariationsLastFetchTime,
+                         last_fetch_time);
   //  Simulate backgrounding and launch again.
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelBackground];

@@ -238,9 +238,18 @@ void KeyboardBrightnessController::HandleGetKeyboardBrightness(
 }
 
 void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
-    bool enabled) {
+    bool enabled,
+    KeyboardAmbientLightSensorEnabledChangeSource source) {
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(enabled);
+  request.set_cause(
+      source == KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp
+          ? power_manager::
+                SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP
+          : power_manager::
+                SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE);
   chromeos::PowerManagerClient::Get()->SetKeyboardAmbientLightSensorEnabled(
-      enabled);
+      request);
 }
 
 void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
@@ -268,7 +277,8 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
   }
 
   HandleSetKeyboardAmbientLightSensorEnabled(
-      keyboard_ambient_light_sensor_enabled_for_account);
+      keyboard_ambient_light_sensor_enabled_for_account,
+      KeyboardAmbientLightSensorEnabledChangeSource::kRestoredFromUserPref);
 
   // Record the keyboard ambient light sensor status at login.
   if (has_sensor_ && !has_keyboard_ambient_light_sensor_status_been_recorded_) {
@@ -291,7 +301,8 @@ void KeyboardBrightnessController::
   const bool ambient_light_sensor_last_enabled_for_account =
       pref_service_->GetBoolean(prefs::kKeyboardAmbientLightSensorLastEnabled);
   HandleSetKeyboardAmbientLightSensorEnabled(
-      ambient_light_sensor_last_enabled_for_account);
+      ambient_light_sensor_last_enabled_for_account,
+      KeyboardAmbientLightSensorEnabledChangeSource::kRestoredFromUserPref);
 
   has_keyboard_ambient_light_sensor_been_restored_for_new_user_ = true;
 }

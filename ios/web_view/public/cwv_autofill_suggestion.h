@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "cwv_export.h"
+#import "cwv_suggestion_type.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -61,6 +62,9 @@ CWV_EXPORT
 // The icon image of the suggestion, currently this is only used for displaying
 // credit card network icon.
 @property(nonatomic, readonly, nullable) UIImage* icon;
+
+// The type of the suggestion.
+@property(nonatomic, readonly) CWVSuggestionType suggestionType;
 
 - (instancetype)init NS_UNAVAILABLE;
 

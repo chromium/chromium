@@ -16,6 +16,7 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"
@@ -49,8 +50,9 @@ std::vector<BirchFileItem> MakeFileItemList(int item_count) {
   std::vector<BirchFileItem> file_item_list;
   for (int i = 0; i < item_count; i++) {
     file_item_list.emplace_back(
-        base::FilePath("test path " + base::NumberToString(i)), u"suggestion",
-        base::Time(), "file_id_" + base::NumberToString(i), "icon_url");
+        base::FilePath("test path " + base::NumberToString(i)), "title",
+        u"suggestion", base::Time(), "file_id_" + base::NumberToString(i),
+        "icon_url");
   }
   return file_item_list;
 }
@@ -490,7 +492,8 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("https://www.example.com/"),
-      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+      base::Time(), u"my device", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
@@ -500,9 +503,9 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
-                                    u"media title", false, ui::ImageModel(),
-                                    base::DoNothing());
+  lost_media_item_list.emplace_back(
+      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
@@ -562,7 +565,8 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("https://www.example.com/"),
-      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+      base::Time(), u"my device", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
@@ -572,9 +576,9 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
-                                    u"media title", false, ui::ImageModel(),
-                                    base::DoNothing());
+  lost_media_item_list.emplace_back(
+      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   // The model returns no items.
@@ -913,7 +917,8 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("foo.bar.two"), base::Time(),
-      u"my device", ui::ImageModel(), base::DoNothing());
+      u"my device", ui::ImageModel(), SecondaryIconType::kTabFromDesktop,
+      base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -1064,7 +1069,8 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("foo.bar.two"), base::Time(),
-      u"my device", ui::ImageModel(), base::DoNothing());
+      u"my device", ui::ImageModel(), SecondaryIconType::kTabFromDesktop,
+      base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
@@ -1073,9 +1079,9 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
-  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
-                                    u"media title", false, ui::ImageModel(),
-                                    base::DoNothing());
+  lost_media_item_list.emplace_back(
+      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
@@ -1527,8 +1533,9 @@ TEST_F(BirchModelTest, RemoveFileItemNotifiesBirchClient) {
   BirchModel* model = Shell::Get()->birch_model();
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("/test/path"), u"suggestion",
-                              base::Time(), "file_id_0", "icon_url");
+  file_item_list.emplace_back(base::FilePath("/test/path"), "title",
+                              u"suggestion", base::Time(), "file_id_0",
+                              "icon_url");
   model->SetFileSuggestItems(file_item_list);
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
@@ -1571,12 +1578,12 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
 
   std::vector<BirchFileItem> file_item_list;
   file_item_list.emplace_back(
-      base::FilePath("Recently Edited File 1"),
+      base::FilePath("Recently Edited File 1"), "title_1",
       /*justification=*/u"",
       /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
       /*file_id=*/"duplicate_file_id_1", "icon_url");
   file_item_list.emplace_back(
-      base::FilePath("Recently Edited File 2"),
+      base::FilePath("Recently Edited File 2"), "recently_edited_title_2",
       /*justification=*/u"",
       /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
       /*file_id=*/"duplicate_file_id_2", "icon_url");
@@ -1589,7 +1596,7 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
   EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kAttachment);
   EXPECT_EQ(all_items[0]->title(), u"Ongoing Event Attachment 1");
   EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
-  EXPECT_EQ(all_items[1]->title(), u"Recently Edited File 2");
+  EXPECT_EQ(all_items[1]->title(), u"recently_edited_title_2");
 }
 
 TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
@@ -1612,7 +1619,8 @@ TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
       u"self share guid", u"self share tab", GURL("https://www.example.com/"),
-      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+      base::Time(), u"my device", ui::ImageModel(),
+      SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
@@ -1692,10 +1700,10 @@ TEST_F(BirchModelTest, DifferentSelfShareAndRecentTabItem) {
   model->SetRecentTabItems(std::move(tab_item_list));
 
   std::vector<BirchSelfShareItem> self_share_item_list;
-  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
-                                    GURL("https://www.exampletwo.com/"),
-                                    base::Time(), u"my device",
-                                    ui::ImageModel(), base::DoNothing());
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab",
+      GURL("https://www.exampletwo.com/"), base::Time(), u"my device",
+      ui::ImageModel(), SecondaryIconType::kTabFromDesktop, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();

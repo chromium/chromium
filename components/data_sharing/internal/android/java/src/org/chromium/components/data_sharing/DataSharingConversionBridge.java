@@ -30,4 +30,10 @@ public class DataSharingConversionBridge {
     public static Integer createPeopleGroupActionOutcome(int value) {
         return value;
     }
+
+    @CalledByNative
+    public static DataSharingService.ParseURLResult createParseURLResult(
+            GroupToken groupToken, int status) {
+        return new DataSharingService.ParseURLResult(groupToken, status);
+    }
 }

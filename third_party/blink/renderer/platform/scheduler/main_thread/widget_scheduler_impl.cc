@@ -92,9 +92,10 @@ void WidgetSchedulerImpl::WillHandleInputEventOnMainThread(
 
 void WidgetSchedulerImpl::DidHandleInputEventOnMainThread(
     const WebInputEvent& web_input_event,
-    WebInputEventResult result) {
-  main_thread_scheduler_->DidHandleInputEventOnMainThread(web_input_event,
-                                                          result);
+    WebInputEventResult result,
+    bool frame_requested) {
+  main_thread_scheduler_->DidHandleInputEventOnMainThread(
+      web_input_event, result, frame_requested);
 }
 
 void WidgetSchedulerImpl::DidRunBeginMainFrame() {}

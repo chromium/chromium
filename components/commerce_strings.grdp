@@ -446,17 +446,14 @@
   <message name="IDS_PRICE_INSIGHTS_TRACK_BUTTON_TITLE" desc="The title text for track button of price insights.">
     Track
   </message>
-  <message name="IDS_PRICE_INSIGHTS_RANGE_LABEL_LOW" desc="The range slider label text for low prices.">
-    Low
-  </message>
-  <message name="IDS_PRICE_INSIGHTS_RANGE_LABEL_HIGH" desc="The range slider label text for high prices.">
-    High
-  </message>
   <message name="IDS_PRICE_INSIGHTS_TRACKING_BUTTON_TITLE" desc="The title text for tracking button of price insights.">
     Tracking
   </message>
   <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL" desc="The expanded text for the price insights icon in the location bar, indicating an option is a good deal.">
     Good Deal Now
+  </message>
+  <message name="IDS_INSIGHTS_RICH_IPH_TEXT" desc="The text displayed in the price insights rich IPH.">
+    See price history and more to help you shop smarter.
   </message>
   <message name="IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT" desc="The expanded text for the price insights icon when price is high, indicating that the user should track the page.">
     Track this item
@@ -495,12 +492,6 @@
     <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
       Price is High
     </message>
-    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT" desc="The title text for the price range component of price insights when the product has a variant.">
-      Price Range for All Options
-    </message>
-    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT" desc="The title text for the price range component of price insights when the product has no variant.">
-      Price Range
-    </message>
   </if> <!-- use_titlecase -->
   <if expr="not use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
@@ -511,12 +502,6 @@
     </message>
     <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
       Price is high
-    </message>
-    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT" desc="The title text for the price range component of price insights when the product has a variant.">
-      Price range for all options
-    </message>
-    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT" desc="The title text for the price range component of price insights when the product has no variant.">
-      Price range
     </message>
   </if> <!-- not use_titlecase -->
 
@@ -570,6 +555,9 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE" translateable="false" desc="The title for the product price row in the product specifications table.">
     Price
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_OFFLINE_TOAST_MESSAGE" translateable="false" desc="The message that shows when product specifications is offline.">
+    Check your connection and try again.
+  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP" translateable="false" desc="The title of the menu item for renaming the product specification list.">
     Rename group
   </message>
@@ -596,6 +584,9 @@
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT" translateable="false" desc="The text for the accept button on the FRE disclosure.">
     Lets go
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE" translateable="false" desc="The text for the decline button on the FRE disclosure.">
+    No thanks
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_TITLE" translateable="false" desc="The text for the FRE disclosure bubble.">
     Chrome can help you view product specifications

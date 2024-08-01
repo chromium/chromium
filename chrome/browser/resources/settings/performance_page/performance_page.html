@@ -7,16 +7,14 @@
       on-sub-label-link-clicked="onPerformanceInterventionLearnMoreLinkClick_">
   </settings-toggle-button>
 </template>
-<template is="dom-if" if="[[isDiscardRingImprovementsEnabled_]]">
-  <settings-toggle-button id="discardRingTreatmentToggleButton"
-      on-change="onDiscardRingChange_"
-      pref="{{prefs.performance_tuning.discard_ring_treatment.enabled}}"
-      label="$i18n{discardRingTreatmentEnabledLabel}"
-      sub-label-with-link="
-          $i18n{discardRingTreatmentEnabledDescriptionWithLearnLink}"
-      on-sub-label-link-clicked="onDiscardRingTreatmentLearnMoreLinkClick_">
-  </settings-toggle-button>
-</template>
+<settings-toggle-button id="discardRingTreatmentToggleButton"
+  on-change="onDiscardRingChange_"
+  pref="{{prefs.performance_tuning.discard_ring_treatment.enabled}}"
+  label="$i18n{discardRingTreatmentEnabledLabel}"
+  sub-label-with-link="
+        $i18n{discardRingTreatmentEnabledDescriptionWithLearnLink}"
+  on-sub-label-link-clicked="onDiscardRingTreatmentLearnMoreLinkClick_">
+</settings-toggle-button>
 <cr-link-row
     label="$i18n{tabHoverPreviewCardLinkTitle}"
     sub-label="$i18n{tabHoverPreviewCardLinkSubtitle}"

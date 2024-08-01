@@ -33,6 +33,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item.sessionName = @"session a";
   item.tabTitle = @"title a";
   item.tabURL = GURL("https://a");
+  item.reason = @"You visited this web site 1 hour ago";
   item.syncedTime = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
   item.faviconImage = DefaultSettingsRootSymbol(@"circle");
   item.contentImage = DefaultSettingsRootSymbol(@"flame");
@@ -45,6 +46,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item2.sessionName = @"session b";
   item2.tabTitle = @"title b";
   item2.tabURL = GURL("https://b");
+  item2.reason = @"You may also like this web site";
   item2.syncedTime = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(2));
   item2.faviconImage = DefaultSettingsRootSymbol(@"link");
   item2.contentImage = DefaultSettingsRootSymbol(@"trash");
@@ -57,6 +59,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   EXPECT_EQ(item.itemType, TabResumptionItemType::kMostRecentTab);
   EXPECT_NSEQ(item.sessionName, @"session b");
   EXPECT_NSEQ(item.tabTitle, @"title b");
+  EXPECT_NSEQ(item.reason, @"You may also like this web site");
   EXPECT_EQ(item.tabURL, GURL("https://b"));
   EXPECT_EQ(item.syncedTime,
             base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(2)));

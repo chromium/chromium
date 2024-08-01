@@ -34,8 +34,8 @@ class MailboxFrameRegistry;
 class MEDIA_MOJO_EXPORT StableVideoDecoderFactoryService
     : public stable::mojom::StableVideoDecoderFactory {
  public:
-  StableVideoDecoderFactoryService(const gpu::GpuFeatureInfo& gpu_feature_info,
-                                   bool enable_direct_video_decoder);
+  explicit StableVideoDecoderFactoryService(
+      const gpu::GpuFeatureInfo& gpu_feature_info);
   StableVideoDecoderFactoryService(const StableVideoDecoderFactoryService&) =
       delete;
   StableVideoDecoderFactoryService& operator=(

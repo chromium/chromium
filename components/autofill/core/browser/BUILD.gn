@@ -84,7 +84,10 @@ static_library("browser") {
     "autofill_compose_delegate.h",
     "autofill_data_util.cc",
     "autofill_data_util.h",
+    "autofill_driver.cc",
     "autofill_driver.h",
+    "autofill_driver_factory.cc",
+    "autofill_driver_factory.h",
     "autofill_driver_router.cc",
     "autofill_driver_router.h",
     "autofill_experiments.cc",
@@ -133,8 +136,6 @@ static_library("browser") {
     "data_model/autofill_i18n_parsing_expression_components.h",
     "data_model/autofill_i18n_parsing_expressions.h",
     "data_model/autofill_i18n_stopwords.h",
-    "data_model/autofill_metadata.cc",
-    "data_model/autofill_metadata.h",
     "data_model/autofill_offer_data.cc",
     "data_model/autofill_offer_data.h",
     "data_model/autofill_profile.cc",
@@ -183,6 +184,8 @@ static_library("browser") {
     "data_model/iban.h",
     "data_model/payment_instrument.cc",
     "data_model/payment_instrument.h",
+    "data_model/payments_metadata.cc",
+    "data_model/payments_metadata.h",
     "data_model/phone_number.cc",
     "data_model/phone_number.h",
     "field_filling_address_util.cc",
@@ -841,6 +844,9 @@ static_library("test_support") {
   sources = [
     "address_data_cleaner_test_api.h",
     "address_data_manager_test_api.h",
+    "autofill_driver_factory_test_api.cc",
+    "autofill_driver_factory_test_api.h",
+    "autofill_driver_test_api.h",
     "autofill_form_test_utils.cc",
     "autofill_form_test_utils.h",
     "autofill_manager_test_api.h",
@@ -943,6 +949,7 @@ static_library("test_support") {
     "test_address_data_manager.h",
     "test_address_normalizer.cc",
     "test_address_normalizer.h",
+    "test_autofill_client.cc",
     "test_autofill_client.h",
     "test_autofill_clock.cc",
     "test_autofill_clock.h",
@@ -1317,6 +1324,7 @@ source_set("unit_tests") {
   if (!is_ios && !is_android) {
     sources += [
       "payments/local_card_migration_manager_unittest.cc",
+      "payments/payments_requests/migrate_cards_request_unittest.cc",
       "server_prediction_overrides_unittest.cc",
     ]
   }

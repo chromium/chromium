@@ -226,6 +226,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // or the image failed to decode.
   virtual void SetSeaPenWallpaper(const AccountId& account_id,
                                   uint32_t image_id,
+                                  bool preview_mode,
                                   SetWallpaperCallback callback) = 0;
 
   // Confirms the wallpaper being previewed to be set as the actual user

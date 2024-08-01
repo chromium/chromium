@@ -74,7 +74,7 @@ SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
   return tab;
 }
 
-SavedTabGroup CreateTestSavedTabGroup() {
+SavedTabGroup CreateTestSavedTabGroup(std::optional<base::Time> creation_date) {
   base::Uuid id = base::Uuid::GenerateRandomV4();
   const std::u16string title = u"Test Test";
   const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
@@ -89,7 +89,12 @@ SavedTabGroup CreateTestSavedTabGroup() {
 
   std::vector<SavedTabGroupTab> tabs = {tab1, tab2};
 
-  SavedTabGroup group(title, color, tabs, std::nullopt, id);
+  SavedTabGroup group(title, color, tabs, /*position=*/std::nullopt, id,
+                      /*local_group_id=*/std::nullopt,
+                      /*creator_cache_guid=*/std::nullopt,
+                      /*last_updater_cache_guid=*/std::nullopt,
+                      /*created_before_syncing_tab_groups=*/false,
+                      /*creation_time_windows_epoch_micros=*/creation_date);
   return group;
 }
 

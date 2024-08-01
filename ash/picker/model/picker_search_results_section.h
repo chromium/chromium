@@ -21,6 +21,7 @@ enum class ASH_EXPORT PickerSectionType {
   kDriveFiles,
   kEditorWrite,
   kEditorRewrite,
+  kMaxValue = kEditorRewrite,
 };
 
 // Search results are divided into different sections.

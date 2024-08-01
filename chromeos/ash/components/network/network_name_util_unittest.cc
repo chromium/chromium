@@ -33,6 +33,7 @@ const char kTestEidName[] = "eid";
 const char kTestEthName[] = "test_eth_name";
 const char kTestNameFromShill[] = "shill_network_name";
 
+const char kTestCellularDevicePath[] = "device/cellular1";
 const char kTestESimCellularServicePath[] = "/service/cellular1";
 const char kTestEthServicePath[] = "/service/eth0";
 
@@ -52,6 +53,8 @@ class NetworkNameUtilTest : public testing::Test {
     network_state_test_helper_.hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEidName, /*is_active=*/true,
         /*physical_slot=*/0);
+    network_state_test_helper_.device_test()->AddDevice(
+        kTestCellularDevicePath, shill::kTypeCellular, "fake_cellular_device");
     cellular_esim_profile_handler_->Init(
         network_state_test_helper_.network_state_handler(),
         cellular_inhibitor_.get());

@@ -8,17 +8,9 @@
 
 namespace features {
 
-// Kill-switch controlled by the field trial. When this feature is enabled,
-// PrerenderHostRegistry doesn't query about the current memory footprint and
-// bypasses the memory limit check, while it still checks the limit on the
-// number of ongoing prerendering requests and memory pressure events to prevent
-// excessive memory usage. See https://crbug.com/1382697 for details.
-BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
-             "Prerender2BypassMemoryLimitCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables a new limit and scheduler for prerender triggers.
-// See crbug.com/1464021 for more details.
+// This was used for enabling a new limit and scheduler for prerender triggers
+// (crbug.com/1464021). Now the new implementation is used by default and this
+// flag is just for injecting parameters through field trials.
 BASE_FEATURE(kPrerender2NewLimitAndScheduler,
              "Prerender2NewLimitAndScheduler",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -68,5 +60,17 @@ const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutForEmbedders{
         &blink::features::kPrerender2NoVarySearch,
         "wait_for_headers_timeout_embedders", 1000};
+
+// If enabled, suppresses prerendering on slow network.
+BASE_FEATURE(kSuppressesPrerenderingOnSlowNetwork,
+             "SuppressesPrerenderingOnSlowNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Regarding how this number was chosen, see the design doc linked from
+// crbug.com/350519234.
+const base::FeatureParam<base::TimeDelta>
+    kSuppressesPrerenderingOnSlowNetworkThreshold{
+        &kSuppressesPrerenderingOnSlowNetwork,
+        "slow_network_threshold_for_prerendering", base::Milliseconds(208)};
 
 }  // namespace features

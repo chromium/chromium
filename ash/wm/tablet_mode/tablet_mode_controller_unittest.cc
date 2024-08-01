@@ -232,8 +232,9 @@ class TabletModeControllerTest : public AshTestBase {
   void WaitForWindowAnimation(aura::Window* window) {
     auto* compositor = window->layer()->GetCompositor();
 
-    while (window->layer()->GetAnimator()->is_animating())
+    while (window->layer()->GetAnimator()->is_animating()) {
       EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+    }
   }
 
   // Wait one more frame presented for the metrics to get recorded.
@@ -1886,8 +1887,9 @@ class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
     for (int id :
          {kShellWindowId_FloatContainer, kShellWindowId_ShelfContainer}) {
       const aura::Window* container = root->GetChildById(id);
-      if (container->layer()->opacity() != 1.0f)
+      if (container->layer()->opacity() != 1.0f) {
         return false;
+      }
     }
     return true;
   }

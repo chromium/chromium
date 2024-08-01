@@ -211,18 +211,6 @@ void TabsCloser::UndoStorage::Undo() {
 }
 
 void TabsCloser::UndoStorage::Drop() {
-  // Pretend that the original Browser's WebStateList is going through a
-  // batched operation. This is a fix for https://crbug.com/1521867 where
-  // RecentTabsMediator observes the TabRestoreService for modifications
-  // and updates its state each time it is notified by the service.
-  //
-  // Using a ScopedBatchOperation causes RecentTabsMediator to consider
-  // that a batch operation is in progress for one of the WebStateList
-  // it is observing and to avoid updating its state for each closed
-  // WebState.
-  WebStateList::ScopedBatchOperation original_browser_lock =
-      original_browser_->GetWebStateList()->StartBatchOperation();
-
   CloseAllWebStates(*temporary_browser_->GetWebStateList(),
                     WebStateList::CLOSE_USER_ACTION);
 
@@ -285,16 +273,18 @@ bool TabsCloser::CanUndoCloseTabs() const {
 
 int TabsCloser::UndoCloseTabs() {
   DCHECK(CanUndoCloseTabs());
-  const int result = state_->count();
-  state_->Undo();
-  state_.reset();
+  // Invalidate `state_` before performing the "undo" operation.
+  std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
+  const int result = state->count();
+  state->Undo();
   return result;
 }
 
 int TabsCloser::ConfirmDeletion() {
   DCHECK(CanUndoCloseTabs());
-  const int result = state_->count();
-  state_->Drop();
-  state_.reset();
+  // Invalidate `state_` before performing the "drop" operation.
+  std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
+  const int result = state->count();
+  state->Drop();
   return result;
 }

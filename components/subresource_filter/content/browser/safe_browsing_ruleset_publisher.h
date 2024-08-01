@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 
 namespace content {
 class RenderProcessHost;
@@ -26,7 +27,9 @@ class SafeBrowsingRulesetPublisher : public RulesetPublisher {
   SafeBrowsingRulesetPublisher(
       RulesetService* ruleset_service,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-      : RulesetPublisher(ruleset_service, std::move(blocking_task_runner)) {}
+      : RulesetPublisher(ruleset_service,
+                         std::move(blocking_task_runner),
+                         ruleset_service->config()) {}
 
   SafeBrowsingRulesetPublisher(const SafeBrowsingRulesetPublisher&) = delete;
   SafeBrowsingRulesetPublisher& operator=(const SafeBrowsingRulesetPublisher&) =

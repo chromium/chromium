@@ -120,12 +120,13 @@ export type StandardAcceleratorInfo =
       },
     };
 
-export type TextAcceleratorInfo =
-    Omit<AcceleratorInfoTypes.AcceleratorInfo, 'layoutProperties'>&{
-      layoutProperties: {
-        textAccelerator: {parts: AcceleratorInfoTypes.TextAcceleratorPart[]},
-      },
-    };
+export type TextAcceleratorInfo = Omit<
+    AcceleratorInfoTypes.AcceleratorInfo,
+    'layoutProperties'|'acceleratorLocked'>&{
+  layoutProperties: {
+    textAccelerator: {parts: AcceleratorInfoTypes.TextAcceleratorPart[]},
+  },
+};
 
 export type AcceleratorInfo = TextAcceleratorInfo|StandardAcceleratorInfo;
 

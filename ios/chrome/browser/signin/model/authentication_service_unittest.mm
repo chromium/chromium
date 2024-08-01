@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -54,7 +53,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -117,7 +116,7 @@ class AuthenticationServiceTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
         browser_state_.get());
@@ -229,11 +228,15 @@ class AuthenticationServiceTest : public PlatformTest {
         prefs::kRestrictAccountsToPatterns, std::move(allowed_patterns));
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
-  IOSChromeScopedTestingLocalState local_state_;
-  raw_ptr<ChromeAccountManagerService> account_manager_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  raw_ptr<ChromeAccountManagerService> account_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   // Used to verify histogram logging.
@@ -849,9 +852,8 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
   EXPECT_EQ(1, observer_test.GetOnServiceStatusChangedCounter());
 
   // Set sign-in disabled by policy.
-  local_state_.Get()->SetInteger(
-      prefs::kBrowserSigninPolicy,
-      static_cast<int>(BrowserSigninMode::kDisabled));
+  local_state()->SetInteger(prefs::kBrowserSigninPolicy,
+                            static_cast<int>(BrowserSigninMode::kDisabled));
   // Expect sign-in to be disabled by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByPolicy,
             authentication_service()->GetServiceStatus());
@@ -859,8 +861,8 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
   EXPECT_EQ(2, observer_test.GetOnServiceStatusChangedCounter());
 
   // Set sign-in forced by policy.
-  local_state_.Get()->SetInteger(prefs::kBrowserSigninPolicy,
-                                 static_cast<int>(BrowserSigninMode::kForced));
+  local_state()->SetInteger(prefs::kBrowserSigninPolicy,
+                            static_cast<int>(BrowserSigninMode::kForced));
   // Expect sign-in to be forced by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
             authentication_service()->GetServiceStatus());

@@ -505,8 +505,15 @@ export class EnterpriseEnrollmentElement extends
   }
 
   private onEnrollKiosk(): void {
-    chrome.send(
-        'oauthEnrollCompleteLogin', [this.email, OobeTypes.LicenseType.KIOSK]);
+    // Kiosk enrollment only requires an email address, but the callback is
+    // shared with the enterprise enrollment, so empty credentials are passed.
+    chrome.send('oauthEnrollCompleteLogin', [
+      this.email,
+      /* gaia_id */ '',
+      /* password */ '',
+      /* using_saml */ false,
+      OobeTypes.LicenseType.KIOSK,
+    ]);
   }
 
   /**
@@ -537,13 +544,21 @@ export class EnterpriseEnrollmentElement extends
       return;
     }
     if (this.licenseType === OobeTypes.LicenseType.ENTERPRISE) {
-      chrome.send(
-          'oauthEnrollCompleteLogin',
-          [detail.email, OobeTypes.LicenseType.ENTERPRISE]);
+      chrome.send('oauthEnrollCompleteLogin', [
+        detail.email,
+        detail.gaiaId,
+        detail.password,
+        detail.usingSAML,
+        OobeTypes.LicenseType.ENTERPRISE,
+      ]);
     } else if (this.licenseType === OobeTypes.LicenseType.EDUCATION) {
-      chrome.send(
-          'oauthEnrollCompleteLogin',
-          [detail.email, OobeTypes.LicenseType.EDUCATION]);
+      chrome.send('oauthEnrollCompleteLogin', [
+        detail.email,
+        detail.gaiaId,
+        detail.password,
+        detail.usingSAML,
+        OobeTypes.LicenseType.EDUCATION,
+      ]);
     } else {
       this.email = detail.email;
       this.showStep(OobeTypes.EnrollmentStep.KIOSK_ENROLLMENT);

@@ -377,12 +377,10 @@ bool Widget::RequiresNonClientView(InitParams::Type type) {
 
 // static
 bool Widget::IsWindowCompositingSupported() {
-#if BUILDFLAG(IS_WIN)
-  return true;
-#elif BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE)
   return ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported();
 #else
-  return false;
+  return true;
 #endif
 }
 
@@ -427,11 +425,13 @@ void Widget::Init(InitParams params) {
   ViewsDelegate::GetInstance()->OnBeforeWidgetInit(&params, this);
 
   if (params.delegate) {
-    widget_delegate_ = params.delegate->AsWeakPtr();
+    widget_delegate_ = params.delegate->AttachWidgetAndGetHandle(this);
   } else {
     auto default_delegate = std::make_unique<DefaultWidgetDelegate>();
-    widget_delegate_ = default_delegate.release()->AsWeakPtr();
+    widget_delegate_ =
+        default_delegate.release()->AttachWidgetAndGetHandle(this);
   }
+
   DCHECK(widget_delegate_);
 
   if (params.opacity == views::Widget::InitParams::WindowOpacity::kInferred)
@@ -442,8 +442,6 @@ void Widget::Init(InitParams params) {
                                     : InitParams::Activatable::kNo;
 
   widget_delegate_->SetCanActivate(can_activate);
-
-  widget_delegate_->WidgetInitializing(this);
 
   ownership_ = params.ownership;
 

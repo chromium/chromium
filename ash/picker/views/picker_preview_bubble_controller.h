@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -32,6 +33,12 @@ class PickerPreviewBubbleView;
 
 class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the bubble is shown or hidden.
+    virtual void OnPreviewBubbleVisibilityChanged(bool visible) = 0;
+  };
+
   PickerPreviewBubbleController();
   PickerPreviewBubbleController(const PickerPreviewBubbleController&) = delete;
   PickerPreviewBubbleController& operator=(
@@ -51,6 +58,11 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
   // TODO: b/322899032 - Take in an `anchor_view` to avoid accidentally closing
   // the bubble view shown by a different anchor view.
   void CloseBubble();
+
+  bool IsBubbleVisible() const;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -83,6 +95,8 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
 
   // Owned by the bubble widget.
   raw_ptr<PickerPreviewBubbleView> bubble_view_;
+
+  base::ObserverList<Observer> observers_;
 
   base::CallbackListSubscription image_subscription_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>

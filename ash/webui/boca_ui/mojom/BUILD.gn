@@ -17,6 +17,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/events/ash/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 
   cpp_typemaps = []

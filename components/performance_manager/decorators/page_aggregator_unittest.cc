@@ -19,8 +19,8 @@ namespace {
 class PageAggregatorTest : public GraphTestHarness {
  public:
   void SetUp() override {
+    GetGraphFeatures().EnablePageAggregator();
     GraphTestHarness::SetUp();
-    graph()->PassToGraph(std::make_unique<PageAggregator>());
   }
 };
 

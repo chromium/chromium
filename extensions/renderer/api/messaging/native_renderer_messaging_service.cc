@@ -545,7 +545,20 @@ void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
           UserActivationNotificationType::kExtensionMessagingNeitherPrivileged;
     }
 
-    script_context->web_frame()->NotifyUserActivation(notification_type);
+    blink::WebLocalFrame* frame = script_context->web_frame();
+    bool has_unrestricted_user_activation =
+        frame->HasTransientUserActivation() &&
+        !frame->LastActivationWasRestricted();
+    // IMPORTANT: Only notify the web frame of a user activation if there isn't
+    // already an unrestricted user activation. Otherwise, this will override
+    // the currently-active, more-privileged activation. See
+    // https://crbug.com/355266358.
+    // TODO(https://crbug.com/356418716): Ideally, this would be unnecessary,
+    // and the blink API would properly track these activations independently.
+    // Remove this if-check when that happens.
+    if (!has_unrestricted_user_activation) {
+      script_context->web_frame()->NotifyUserActivation(notification_type);
+    }
 
     blink::WebDocument document = script_context->web_frame()->GetDocument();
     allow_window_focus =

@@ -26,7 +26,6 @@ import("//components/allocation_recorder/testing/testing.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//components/feed/features.gni")
 import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
@@ -142,6 +141,7 @@ static_library("chrome_test_launcher") {
 static_library("test_support") {
   defines = []
   deps = [ "//chrome/browser/ui:ui_features" ]
+  public_deps = []
   testonly = true
 
   sources = [
@@ -182,10 +182,6 @@ static_library("test_support") {
     "../browser/search_engines/template_url_service_factory_test_util.h",
     "../browser/search_engines/template_url_service_test_util.cc",
     "../browser/search_engines/template_url_service_test_util.h",
-    "../browser/sharing/fake_device_info.cc",
-    "../browser/sharing/fake_device_info.h",
-    "../browser/sharing/mock_sharing_service.cc",
-    "../browser/sharing/mock_sharing_service.h",
     "../browser/signin/identity_test_environment_profile_adaptor.cc",
     "../browser/signin/identity_test_environment_profile_adaptor.h",
     "../browser/signin/test_signin_client_builder.cc",
@@ -384,12 +380,13 @@ static_library("test_support") {
   ]
 
   # New deps should go in the non-iOS section below.
-  public_deps = [
+  public_deps += [
     "//base/test:test_support",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/browser:browser_process",
     "//chrome/browser:test_support",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/supervised_user:test_support",
     "//chrome/child",
@@ -603,6 +600,7 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications",
       "//components/crx_file",
       "//components/enterprise/common/proto:connectors_proto",
@@ -643,6 +641,8 @@ static_library("test_support") {
       "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/download/download_browsertest_utils.cc",
       "../browser/download/download_browsertest_utils.h",
+      "../browser/net/profile_network_context_service_test_utils.cc",
+      "../browser/net/profile_network_context_service_test_utils.h",
       "../browser/performance_manager/test_support/fake_child_process_tuning_delegate.cc",
       "../browser/performance_manager/test_support/fake_child_process_tuning_delegate.h",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
@@ -663,6 +663,8 @@ static_library("test_support") {
       "../browser/preloading/preview/preview_test_util.h",
       "../browser/renderer_context_menu/mock_render_view_context_menu.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
+      "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.cc",
+      "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.h",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
       "../browser/signin/signin_browser_test_base.h",
@@ -812,6 +814,7 @@ static_library("test_support") {
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/kcer",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
     ]
@@ -820,14 +823,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.cc",
-      "../browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h",
-      "../browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.cc",
-      "../browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h",
-      "../browser/ash/policy/dlp/test/mock_files_policy_notification_manager.cc",
-      "../browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h",
-      "../browser/ash/policy/enrollment/fake_auto_enrollment_client.cc",
-      "../browser/ash/policy/enrollment/fake_auto_enrollment_client.h",
       "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
       "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.cc",
@@ -836,10 +831,6 @@ static_library("test_support") {
       "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h",
       "../browser/enterprise/connectors/analysis/source_destination_test_util.cc",
       "../browser/enterprise/connectors/analysis/source_destination_test_util.h",
-      "../browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.cc",
-      "../browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h",
-      "../browser/ui/webui/ash/login/fake_update_required_screen_handler.cc",
-      "../browser/ui/webui/ash/login/fake_update_required_screen_handler.h",
       "base/ash/js_test_api.cc",
       "base/ash/js_test_api.h",
       "base/browser_process_platform_part_test_api_chromeos.cc",
@@ -874,7 +865,6 @@ static_library("test_support") {
       "//chrome/browser/ash/login/enrollment",
       "//chrome/browser/ash/login/enrollment:test_support",
       "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ash/policy/enrollment",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/account_manager",
@@ -909,16 +899,16 @@ static_library("test_support") {
       "//chrome/browser/ash/login/session:test_support",
       "//chrome/browser/ash/login/users",
       "//chrome/browser/ash/net",
-      "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/core:test_support",
-      "//chrome/browser/ash/policy/dlp",
-      "//chrome/browser/ash/policy/dlp/dialogs",
+      "//chrome/browser/ash/policy/test_support",
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/printing:test_support",
       "//chrome/browser/ash/printing/history:print_job_info_proto",
+      "//chrome/browser/ash/settings",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ui/ash",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/webui/ash/login",
       "//chromeos/ash/components/attestation:test_support",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
@@ -1306,6 +1296,11 @@ if (is_android) {
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
+    if (!is_java_debug) {
+      proguard_enabled = true
+      proguard_configs = [ "//chrome/android/proguard/main.flags" ]
+    }
+
     deps = [
       ":android_browsertests_assets",
       ":android_browsertests_java",
@@ -1338,6 +1333,7 @@ if (is_android) {
       "//chrome/browser/ui/android/hats/test:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
+      "//chrome/test/android:live_signin_test_util_public_impl_java",
       "//components/autofill/content/renderer:test_support",
       "//components/blocked_content",
       "//components/browser_ui/widget/android:java",
@@ -1348,6 +1344,11 @@ if (is_android) {
       "//components/commerce/core:persisted_state_db_content_proto",
       "//components/content_settings/browser:browser",
       "//components/crash/android:crashpad_main",
+      "//components/feed:feature_list",
+      "//components/feed/core/v2:feed_core_v2",
+      "//components/feed/core/v2:ios_shared",
+      "//components/feed/core/v2:test_helpers",
+      "//components/feed/mojom:mojo_bindings",
       "//components/infobars/content",
       "//components/metrics:content",
       "//components/metrics/demographics",
@@ -1421,6 +1422,7 @@ if (is_android) {
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc",
       "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
+      "../browser/feed/rss_links_fetcher_browsertest.cc",
       "../browser/metrics/metrics_log_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/sampled_out_client_id_saved_browsertest.cc",
@@ -1528,10 +1530,10 @@ if (is_android) {
     # apk.
     if (enable_arm_cfi_table) {
       sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
-      deps += [
-        "//chrome/android/modules/stack_unwinder/internal:java",
-        "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing",
-      ]
+
+      # Cannot depend on the stack_unwinder/internal:java since it uses a custom
+      # GEN_JNI class via @NativeMethods("stack_unwinder").
+      deps += [ "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing" ]
       configs -= [ "//build/config/compiler:default_symbols" ]
       if (symbol_level == 2) {
         configs += [ "//build/config/compiler:symbols" ]
@@ -1548,17 +1550,6 @@ if (is_android) {
       # are failing due to absence of AR, or due to an issue with propagating
       # the enterprise policy setting.
       sources += [ "../browser/android/vr/webxr_policy_browsertest.cc" ]
-    }
-
-    if (enable_feed_v2) {
-      sources += [ "../browser/feed/rss_links_fetcher_browsertest.cc" ]
-      deps += [
-        "//components/feed:feature_list",
-        "//components/feed/core/v2:feed_core_v2",
-        "//components/feed/core/v2:ios_shared",
-        "//components/feed/core/v2:test_helpers",
-        "//components/feed/mojom:mojo_bindings",
-      ]
     }
 
     data = [
@@ -1759,6 +1750,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:buildflags",
       "//chrome/browser:main_extra_parts",
+      "//chrome/browser:primitives",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps/app_service",
@@ -1767,6 +1759,7 @@ if (!is_android) {
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
@@ -1782,6 +1775,8 @@ if (!is_android) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/dips:browser_tests",
       "//chrome/browser/favicon",
+      "//chrome/browser/feedback",
+      "//chrome/browser/feedback:feedback_impl",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/headless:browser_tests",
       "//chrome/browser/icon_transcoder:browser_tests",
@@ -1792,6 +1787,7 @@ if (!is_android) {
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/metrics/structured:test_support",
       "//chrome/browser/notifications/scheduler:factory",
@@ -1814,6 +1810,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/segmentation_platform:test_utils",
       "//chrome/browser/storage_access_api",
@@ -1828,14 +1825,17 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
+      "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:prevent_close_test_support",
@@ -1911,6 +1911,7 @@ if (!is_android) {
       "//components/enterprise:test_support",
       "//components/enterprise/browser/identifiers:identifiers",
       "//components/enterprise/common/proto:connectors_proto",
+      "//components/enterprise/connectors/core",
       "//components/error_page/content/browser",
       "//components/favicon/content",
       "//components/favicon/core",
@@ -2044,6 +2045,8 @@ if (!is_android) {
       "//components/segmentation_platform/internal:test_support",
       "//components/segmentation_platform/public",
       "//components/sharing_message/proto",
+      "//components/sharing_message/shared_clipboard",
+      "//components/sharing_message/web_push",
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher_config",
       "//components/supervised_user/core/browser:mocked",
@@ -2170,6 +2173,7 @@ if (!is_android) {
       "//third_party/libwebp",
       "//third_party/openscreen/src/cast/streaming:common",
       "//third_party/protobuf:py_proto_runtime",
+      "//third_party/tflite:buildflags",
       "//third_party/webrtc_overrides:webrtc_component",
       "//third_party/widevine/cdm:buildflags",
       "//third_party/widevine/cdm:headers",
@@ -2209,6 +2213,8 @@ if (!is_android) {
         "//chrome/browser/chromeos/arc",
         "//chrome/browser/chromeos/enterprise",
         "//chrome/browser/chromeos/enterprise/cloud_storage",
+        "//chrome/browser/chromeos/network",
+        "//chrome/browser/chromeos/platform_keys",
         "//chromeos/dbus/dlp:dlp",
         "//components/onc",
         "//ui/chromeos",
@@ -2270,10 +2276,12 @@ if (!is_android) {
         "//chrome/browser/ash/input_method/ui",
         "//chrome/browser/ash/plugin_vm",
         "//chrome/browser/ash/plugin_vm:test_support",
+        "//chrome/browser/ash/policy/affiliation:test_support",
         "//chrome/browser/ash/policy/core",
         "//chrome/browser/ash/policy/core:test_support",
         "//chrome/browser/ash/policy/dlp",
         "//chrome/browser/ash/policy/dlp/dialogs",
+        "//chrome/browser/ash/policy/dlp/test:test_support",
         "//chrome/browser/ash/policy/enrollment",
         "//chrome/browser/ash/policy/enrollment:test_support",
         "//chrome/browser/ash/policy/enrollment/psm:test_support",
@@ -2281,9 +2289,11 @@ if (!is_android) {
         "//chrome/browser/ash/policy/external_data:test_support",
         "//chrome/browser/ash/policy/handlers",
         "//chrome/browser/ash/policy/handlers:test_support",
+        "//chrome/browser/ash/policy/login:test_support",
         "//chrome/browser/ash/policy/remote_commands",
         "//chrome/browser/ash/policy/remote_commands:test_support",
         "//chrome/browser/ash/policy/skyvault",
+        "//chrome/browser/ash/policy/test_support",
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/printing:test_support",
         "//chrome/browser/ash/printing/print_management",
@@ -2573,7 +2583,6 @@ if (!is_android) {
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
       "../browser/webapps/installable/ml_promotion_browsertest.cc",
-      "../browser/webapps/web_app_link_capturing_browsertest.cc",
 
       # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
       "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",
@@ -2662,8 +2671,6 @@ if (!is_android) {
       "../browser/net/nss_context_chromeos_browsertest.cc",
       "../browser/net/private_network_access_browsertest.cc",
       "../browser/net/profile_network_context_service_browsertest.cc",
-      "../browser/net/profile_network_context_service_test_utils.cc",
-      "../browser/net/profile_network_context_service_test_utils.h",
       "../browser/net/proxy_browsertest.cc",
       "../browser/net/proxy_test_utils.cc",
       "../browser/net/proxy_test_utils.h",
@@ -2784,8 +2791,6 @@ if (!is_android) {
       "../browser/renderer_context_menu/accessibility_labels_bubble_model_browsertest.cc",
       "../browser/renderer_context_menu/accessibility_labels_menu_observer_browsertest.cc",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest.cc",
-      "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.cc",
-      "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.h",
       "../browser/renderer_context_menu/spelling_bubble_model_browsertest.cc",
       "../browser/renderer_context_menu/spelling_menu_observer_browsertest.cc",
       "../browser/renderer_host/render_process_host_chrome_browsertest.cc",
@@ -2923,6 +2928,7 @@ if (!is_android) {
       "../browser/ui/extensions/extension_image_util_browsertest.cc",
       "../browser/ui/extensions/extension_side_panel_test_utils.h",
       "../browser/ui/extensions/hosted_app_browsertest.cc",
+      "../browser/ui/extensions/mv2_disabled_dialog_controller_browsertest.cc",
       "../browser/ui/extensions/notifications_custom_bindings_browsertest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_browsertest.cc",
       "../browser/ui/find_bar/find_bar_controller_browsertest.cc",
@@ -2930,6 +2936,7 @@ if (!is_android) {
       "../browser/ui/hats/hats_service_browsertest.cc",
       "../browser/ui/hats/trust_safety_sentiment_service_browsertest.cc",
       "../browser/ui/javascript_dialogs/javascript_dialog_browsertest.cc",
+      "../browser/ui/lens/lens_overlay_live_test.cc",
       "../browser/ui/login/login_handler_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
@@ -3006,7 +3013,6 @@ if (!is_android) {
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
-      "../browser/ui/views/message_box_dialog_browsertest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc",
       "../browser/ui/views/profiles/avatar_toolbar_button_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
@@ -3048,6 +3054,7 @@ if (!is_android) {
       "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",
       "../browser/ui/webui/chrome_webui_navigation_browsertest.cc",
+      "../browser/ui/webui/commerce/product_specifications_disclosure_dialog_browsertest.cc",
       "../browser/ui/webui/commerce/shopping_ui_handler_delegate_browsertest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
@@ -3367,6 +3374,7 @@ if (!is_android) {
 
     if (enable_click_to_call) {
       sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
+      deps += [ "//components/sharing_message" ]
     }
 
     if (enable_pdf) {
@@ -3432,6 +3440,7 @@ if (!is_android) {
         "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
+        "//chrome/browser/chromeos/video_conference",
         "//chrome/browser/web_applications/app_service",
         "//chrome/browser/web_applications/app_service:test_support",
         "//chromeos/components/kcer",
@@ -3446,7 +3455,6 @@ if (!is_android) {
       sources += [
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
         "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
-        "../browser/chromeos/kcer/kcer_factory_nss_browsertest.cc",
         "../browser/chromeos/policy/default_notifications_setting_browsertest.cc",
         "../browser/chromeos/policy/dino_easter_egg_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
@@ -3454,7 +3462,6 @@ if (!is_android) {
         "../browser/chromeos/policy/dlp/dlp_data_transfer_notifier_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_rules_manager_impl_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate_browsertest.cc",
-        "../browser/chromeos/video_conference/video_conference_media_listener_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",
@@ -3468,12 +3475,19 @@ if (!is_android) {
       ]
     }
 
+    if (is_win || is_mac) {
+      sources += [
+        "../browser/enterprise/platform_auth/platform_auth_policy_observer_browsertest.cc",
+        "../browser/enterprise/platform_auth/platform_auth_provider_manager_browsertest.cc",
+      ]
+
+      deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
+    }
+
     if (is_win) {
       sources += [
         "../browser/chrome_browser_main_win_browsertest.cc",
         "../browser/chrome_main_process_singleton_browsertest.cc",
-        "../browser/enterprise/platform_auth/platform_auth_policy_observer_browsertest.cc",
-        "../browser/enterprise/platform_auth/platform_auth_provider_manager_browsertest.cc",
         "../browser/font_prewarmer_tab_helper_browsertest.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
@@ -3496,7 +3510,6 @@ if (!is_android) {
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
         "//chrome/app:command_ids",
-        "//chrome/browser/enterprise/platform_auth:test_utils",
         "//chrome/browser/ui/startup:buildflags",
         "//chrome/credential_provider/common:common_constants",
         "//chrome/test:credential_provider_test_utils",
@@ -3523,6 +3536,7 @@ if (!is_android) {
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.cc",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.h",
         "../browser/chrome_browser_application_mac_browsertest.mm",
+        "../browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac_browsertest.cc",
         "../browser/mac/auth_session_request_browsertest.mm",
         "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/spellchecker/spell_check_host_chrome_impl_mac_browsertest.cc",
@@ -4087,8 +4101,6 @@ if (!is_android) {
         "../browser/extensions/window_open_apitest.cc",
         "../browser/extensions/worker_apitest.cc",
         "../browser/notifications/notification_permission_context_apitest.cc",
-        "../browser/policy/extension_force_install_mixin.cc",
-        "../browser/policy/extension_force_install_mixin.h",
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.cc",
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h",
         "../browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
@@ -4655,7 +4667,6 @@ if (!is_android) {
         "../browser/ash/policy/status_collector/child_status_collector_browsertest.cc",
         "../browser/ash/policy/status_collector/device_status_collector_browsertest.cc",
         "../browser/chromeos/mahi/mahi_web_contents_manager_browsertest.cc",
-        "../browser/chromeos/network/network_portal_signin_window_ash_browsertest.cc",
         "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
         "../browser/chromeos/reporting/websites/website_events_observer_ash_browsertest.cc",
         "../browser/chromeos/reporting/websites/website_usage_telemetry_sampler_ash_browsertest.cc",
@@ -4727,22 +4738,8 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
         "../browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/ash/add_supervision/add_supervision_ui_browsertest.cc",
-        "../browser/ui/webui/ash/app_install/app_install_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/cloud_upload/cloud_upload_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/cloud_upload/cloud_upload_dialog_browsertest.h",
-        "../browser/ui/webui/ash/cloud_upload/drive_upload_handler_browsertest.cc",
-        "../browser/ui/webui/ash/cloud_upload/one_drive_upload_handler_browsertest.cc",
-        "../browser/ui/webui/ash/cros_components_browsertest.cc",
         "../browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog_browsertest.cc",
         "../browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler_browsertest.cc",
-        "../browser/ui/webui/ash/kerberos/kerberos_in_browser_browsertest.cc",
-        "../browser/ui/webui/ash/login/oobe_display_chooser_browsertest.cc",
-        "../browser/ui/webui/ash/login/testapi/oobe_test_api_browsertest.cc",
-        "../browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/office_fallback/office_fallback_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h",
-        "../browser/ui/webui/ash/parent_access/parent_access_dialog_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_auto_screen_lock_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_lock_screen_authentication_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_notification_settings_browsertest.cc",
@@ -4755,9 +4752,6 @@ if (!is_android) {
         "../browser/ui/webui/ash/settings/pages/files/google_drive_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/power/device_power_handler_browsertest.cc",
-        "../browser/ui/webui/ash/skyvault/local_files_migration_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/smb_shares/smb_credentials_dialog_browsertest.cc",
-        "../browser/ui/webui/ash/system_web_dialog_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
         "../browser/ui/webui/signin/ash/inline_login_dialog_browsertest.cc",
         "../browser/ui/webui/signin/ash/inline_login_handler_impl_browsertest.cc",
@@ -4767,6 +4761,7 @@ if (!is_android) {
         "../browser/web_applications/app_service/web_apps_browsertest.cc",
         "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
+        "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
         "base/chromeos/demo_ash_requires_lacros_browsertest.cc",
       ]
       data += [
@@ -4836,6 +4831,8 @@ if (!is_android) {
         "//ash/style:style",
         "//ash/webui/annotator",
         "//ash/webui/annotator:test_support",
+        "//ash/webui/boca_ui",
+        "//ash/webui/boca_ui/mojom",
         "//ash/webui/common:trusted_types_util",
         "//ash/webui/demo_mode_app_ui",
         "//ash/webui/diagnostics_ui",
@@ -4930,6 +4927,7 @@ if (!is_android) {
         "//chrome/browser/ash/platform_keys",
         "//chrome/browser/ash/platform_keys:test_support",
         "//chrome/browser/ash/platform_keys/key_permissions",
+        "//chrome/browser/ash/policy/display",
         "//chrome/browser/ash/policy/reporting/event_based_logs",
         "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
         "//chrome/browser/ash/policy/reporting/metrics_reporting",
@@ -4939,6 +4937,8 @@ if (!is_android) {
         "//chrome/browser/ash/policy/reporting/os_updates",
         "//chrome/browser/ash/policy/status_collector",
         "//chrome/browser/ash/scalable_iph:test_support",
+        "//chrome/browser/ash/settings",
+        "//chrome/browser/ash/settings:test_support",
         "//chrome/browser/ash/system_web_apps/types:types",
         "//chrome/browser/ash/video_conference",
         "//chrome/browser/chromeos:test_support",
@@ -4970,13 +4970,19 @@ if (!is_android) {
         "//chrome/browser/ui/views/editor_menu:utils",
         "//chrome/browser/ui/views/editor_menu:views",
         "//chrome/browser/ui/views/mahi",
+        "//chrome/browser/ui/webui/ash",
+        "//chrome/browser/ui/webui/ash:browser_tests",
         "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
+        "//chrome/browser/ui/webui/ash/cloud_upload",
         "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
+        "//chrome/browser/ui/webui/ash/login",
         "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",
+        "//chrome/browser/ui/webui/ash/parent_access",
         "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/browser/ui/webui/ash/parent_access:proto",
         "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
         "//chrome/browser/ui/webui/ash/settings/test_support",
+        "//chrome/browser/ui/webui/ash/skyvault",
         "//chrome/services/file_util/public/cpp:browser_tests",
         "//chrome/services/keymaster/public/mojom",
         "//chrome/services/keymint/public/mojom",
@@ -5375,11 +5381,6 @@ if (!is_android) {
       deps += [ "//components/os_crypt/sync:test_support" ]
     }
 
-    if (is_chromeos) {
-      sources += [ "../browser/webauthn/chromeos/passkey_browsertest.cc" ]
-      deps += [ "//chrome/browser/webauthn:test_support" ]
-    }
-
     if (!is_chromeos) {
       sources +=
           [ "../browser/ui/webui/whats_new/whats_new_fetcher_browsertest.cc" ]
@@ -5431,9 +5432,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/extensions/odfs_config_private/odfs_config_private_api_browsertest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
-      "../browser/chromeos/kcer/kcer_factory_no_nss_lacros_browsertest.cc",
       "../browser/chromeos/mahi/mahi_web_contents_manager_browsertest.cc",
-      "../browser/chromeos/network/network_portal_signin_window_lacros_browsertest.cc",
       "../browser/chromeos/policy/dlp/dlp_files_controller_lacros_browsertest.cc",
       "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
       "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
@@ -5568,16 +5567,19 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos:lacros_chrome_browsertests",
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
+      "//chrome/browser/chromeos/network",
       "//chrome/browser/chromeos/smart_reader",
-      "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/video_conference",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
@@ -6142,7 +6144,6 @@ test("unit_tests") {
     "../browser/media_effects/media_effects_manager_binder_unittest.cc",
     "../browser/media_effects/media_effects_service_factory_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_notice_service_unittest.cc",
-    "../browser/privacy_sandbox/tracking_protection_onboarding_delegate_unittest.cc",
     "../browser/tab_group_sync/tab_group_sync_service_factory_unittest.cc",
 
     # TODO(crbug.com/40753746): move p_s_d_impl_unittest.cc to the same directory
@@ -6297,6 +6298,7 @@ test("unit_tests") {
     "../browser/segmentation_platform/segmentation_platform_config_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_profile_observer_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_service_factory_unittest.cc",
+    "../browser/sharing/sharing_device_registration_impl_unittest.cc",
     "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
     "../browser/signin/header_modification_delegate_impl_unittest.cc",
     "../browser/top_level_storage_access_api/top_level_storage_access_permission_context_unittest.cc",
@@ -6314,28 +6316,6 @@ test("unit_tests") {
     "../browser/sessions/session_common_utils_unittest.cc",
     "../browser/share/share_history_unittest.cc",
     "../browser/share/share_ranking_unittest.cc",
-    "../browser/sharing/ack_message_handler_unittest.cc",
-    "../browser/sharing/fake_sharing_handler_registry.cc",
-    "../browser/sharing/fake_sharing_handler_registry.h",
-    "../browser/sharing/mock_sharing_device_source.cc",
-    "../browser/sharing/mock_sharing_device_source.h",
-    "../browser/sharing/mock_sharing_message_handler.cc",
-    "../browser/sharing/mock_sharing_message_handler.h",
-    "../browser/sharing/mock_sharing_message_sender.cc",
-    "../browser/sharing/mock_sharing_message_sender.h",
-    "../browser/sharing/sharing_device_registration_unittest.cc",
-    "../browser/sharing/sharing_device_source_sync_unittest.cc",
-    "../browser/sharing/sharing_device_source_unittest.cc",
-    "../browser/sharing/sharing_fcm_handler_unittest.cc",
-    "../browser/sharing/sharing_fcm_sender_unittest.cc",
-    "../browser/sharing/sharing_handler_registry_impl_unittest.cc",
-    "../browser/sharing/sharing_message_sender_unittest.cc",
-    "../browser/sharing/sharing_service_unittest.cc",
-    "../browser/sharing/sharing_sync_preference_unittest.cc",
-    "../browser/sharing/sharing_utils_unittest.cc",
-    "../browser/sharing/vapid_key_manager_unittest.cc",
-    "../browser/sharing/web_push/json_web_token_util_unittest.cc",
-    "../browser/sharing/web_push/web_push_sender_unittest.cc",
     "../browser/signin/account_consistency_mode_manager_unittest.cc",
     "../browser/signin/account_id_from_account_info_unittest.cc",
     "../browser/signin/chrome_device_id_helper_unittest.cc",
@@ -6362,6 +6342,7 @@ test("unit_tests") {
     "../browser/storage_access_api/storage_access_api_tab_helper_unittest.cc",
     "../browser/storage_access_api/storage_access_grant_permission_context_unittest.cc",
     "../browser/subresource_filter/subresource_filter_history_observer_unittest.cc",
+    "../browser/supervised_user/classify_url_navigation_throttle_unittest.cc",
     "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
     "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
     "../browser/supervised_user/supervised_user_navigation_throttle_unittest.cc",
@@ -6478,13 +6459,6 @@ test("unit_tests") {
 
   if (is_linux) {
     sources += [ "../browser/metrics/pressure/pressure_metrics_unittest.cc" ]
-  }
-
-  if (enable_feed_v2) {
-    sources += [
-      "../browser/feed/feed_service_factory_unittest.cc",
-      "../browser/feed/rss_links_fetcher_unittest.cc",
-    ]
   }
 
   if (is_linux || is_chromeos) {
@@ -6628,6 +6602,7 @@ test("unit_tests") {
   }
   defines = []
 
+  public_deps = [ "//chrome/browser/media/webrtc" ]
   deps = [
     ":test_support",
     ":test_support_unit",
@@ -6644,6 +6619,7 @@ test("unit_tests") {
     "//chrome/browser:active_use_util",
     "//chrome/browser:buildflags",
     "//chrome/browser:font_pref",
+    "//chrome/browser:primitives",
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/ai",
     "//chrome/browser/apps:icon_standardizer",
@@ -6658,6 +6634,8 @@ test("unit_tests") {
     "//chrome/browser/devtools",
     "//chrome/browser/dips:unit_tests",
     "//chrome/browser/favicon",
+    "//chrome/browser/feedback",
+    "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/google:unit_tests",
@@ -6690,6 +6668,7 @@ test("unit_tests") {
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform:test_utils",
     "//chrome/browser/share",
@@ -6773,7 +6752,6 @@ test("unit_tests") {
     "//components/enterprise/common/proto:legacy_tech_events_proto",
     "//components/favicon/core/test:test_support",
     "//components/feature_engagement/public",
-    "//components/feed:buildflags",
     "//components/feed/core/v2:feed_core_stubs",
     "//components/feed/core/v2:feed_core_v2",
     "//components/feed/core/v2:test_helpers",
@@ -6796,6 +6774,7 @@ test("unit_tests") {
     "//components/invalidation",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
+    "//components/ip_protection:common",
     "//components/language/core/browser",
     "//components/lens",
     "//components/leveldb_proto:test_support",
@@ -6934,7 +6913,12 @@ test("unit_tests") {
     "//components/services/patch/content",
     "//components/services/unzip/content",
     "//components/session_proto_db:session_proto_db",
+    "//components/sharing_message:buildflags",
+    "//components/sharing_message:test_support",
+    "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
+    "//components/sharing_message/shared_clipboard",
+    "//components/sharing_message/web_push",
     "//components/site_engagement/content",
     "//components/site_engagement/core",
     "//components/site_isolation",
@@ -7093,6 +7077,15 @@ test("unit_tests") {
     ]
   }
 
+  if (is_win || is_mac) {
+    sources += [
+      "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
+      "../browser/enterprise/platform_auth/platform_auth_provider_manager_unittest.cc",
+    ]
+
+    deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
+  }
+
   if (is_win) {
     assert(toolkit_views)
     sources += [
@@ -7102,8 +7095,6 @@ test("unit_tests") {
       "../browser/device_reauth/win/device_authenticator_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_provider_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_utils_win_unittest.cc",
-      "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
-      "../browser/enterprise/platform_auth/platform_auth_provider_manager_unittest.cc",
       "../browser/install_verification/win/module_info_unittest.cc",
       "../browser/install_verification/win/module_list_unittest.cc",
       "../browser/install_verification/win/module_verification_test.cc",
@@ -7111,8 +7102,11 @@ test("unit_tests") {
       "../browser/media/cdm_document_service_impl_test.cc",
       "../browser/media/media_foundation_service_monitor_unittest.cc",
       "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
+      "../browser/notifications/notification_platform_bridge_win_unittest.cc",
       "../browser/notifications/win/fake_notification_image_retainer.cc",
       "../browser/notifications/win/fake_notification_image_retainer.h",
+      "../browser/notifications/win/notification_helper_launches_chrome_unittest.cc",
+      "../browser/notifications/win/notification_launch_id_unittest.cc",
       "../browser/notifications/win/notification_template_builder_unittest.cc",
       "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",
       "../browser/policy/browser_dm_token_storage_win_unittest.cc",
@@ -7152,6 +7146,7 @@ test("unit_tests") {
       "//chrome",
       "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_1",
       "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_2",
+      "//chrome/notification_helper",
     ]
 
     deps += [
@@ -7161,13 +7156,14 @@ test("unit_tests") {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
       "//chrome/browser:chrome_process_finder",
-      "//chrome/browser/enterprise/platform_auth:test_utils",
       "//chrome/browser/shortcuts",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/chrome_elf:constants",
       "//chrome/common/notifications",
       "//chrome/install_static:install_static_util",
+      "//chrome/installer/setup:lib",
       "//chrome/installer/util:strings",
+      "//chrome/installer/util:with_no_strings",
       "//chrome/services/util_win:lib",
       "//chrome/test:credential_provider_test_utils",
       "//chrome/updater:browser_sources",
@@ -7177,6 +7173,10 @@ test("unit_tests") {
       "//ui/events/devices:test_support",
       "//ui/resources",
     ]
+
+    if (enable_platform_experience) {
+      deps += [ "//chrome/browser/platform_experience/win:unit_tests" ]
+    }
 
     ldflags = [
       "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
@@ -7435,6 +7435,8 @@ test("unit_tests") {
       "../browser/fast_checkout/fast_checkout_delegate_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_personal_data_helper_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_trigger_validator_impl_unittest.cc",
+      "../browser/feed/feed_service_factory_unittest.cc",
+      "../browser/feed/rss_links_fetcher_unittest.cc",
       "../browser/feedback/android/family_info_feedback_source_unittest.cc",
       "../browser/long_screenshots/long_screenshots_tab_service_unittest.cc",
       "../browser/lookalikes/safety_tip_message_delegate_android_unittest.cc",
@@ -7933,13 +7935,13 @@ test("unit_tests") {
       "../browser/ui/toolbar/app_menu_icon_controller_unittest.cc",
       "../browser/ui/toolbar/app_menu_model_unittest.cc",
       "../browser/ui/toolbar/back_forward_menu_model_unittest.cc",
+      "../browser/ui/toolbar/cast/cast_contextual_menu_unittest.cc",
+      "../browser/ui/toolbar/cast/cast_toolbar_button_controller_unittest.cc",
+      "../browser/ui/toolbar/cast/mock_cast_toolbar_button_controller.cc",
+      "../browser/ui/toolbar/cast/mock_cast_toolbar_button_controller.h",
       "../browser/ui/toolbar/chrome_labs/chrome_labs_model_unittest.cc",
       "../browser/ui/toolbar/chrome_location_bar_model_delegate_unittest.cc",
       "../browser/ui/toolbar/location_bar_model_unittest.cc",
-      "../browser/ui/toolbar/media_router/media_router_action_controller_unittest.cc",
-      "../browser/ui/toolbar/media_router/media_router_contextual_menu_unittest.cc",
-      "../browser/ui/toolbar/media_router/mock_media_router_action_controller.cc",
-      "../browser/ui/toolbar/media_router/mock_media_router_action_controller.h",
       "../browser/ui/toolbar/toolbar_actions_model_unittest.cc",
       "../browser/ui/url_identity_unittest.cc",
       "../browser/ui/views/autofill/add_new_address_bubble_view_unittest.cc",
@@ -7965,6 +7967,7 @@ test("unit_tests") {
       "../browser/ui/views/side_panel/companion/companion_utils_unittest.cc",
       "../browser/ui/views/side_panel/companion/exps_registration_success_observer_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_entry_key_unittest.cc",
+      "../browser/ui/views/webauthn/passkey_deleted_confirmation_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_saved_confirmation_view_unittest.cc",
       "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",
       "../browser/ui/views/webid/account_selection_view_test_base.cc",
@@ -7973,6 +7976,7 @@ test("unit_tests") {
       "../browser/ui/views/webid/fake_delegate.h",
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_unittest.cc",
       "../browser/ui/views/webid/fedcm_modal_dialog_view_unittest.cc",
+      "../browser/ui/webauthn/passkey_deleted_confirmation_controller_unittest.cc",
       "../browser/ui/webauthn/passkey_saved_confirmation_controller_unittest.cc",
       "../browser/ui/webauthn/sheet_models_unittest.cc",
       "../browser/ui/webid/identity_dialog_controller_unittest.cc",
@@ -8009,6 +8013,7 @@ test("unit_tests") {
       "../browser/ui/webui/sanitized_image_source_unittest.cc",
       "../browser/ui/webui/search_engine_choice/icon_utils_unittest.cc",
       "../browser/ui/webui/searchbox/realbox_handler_unittest.cc",
+      "../browser/ui/webui/segmentation_internals/segmentation_internals_page_handler_impl_unittest.cc",
       "../browser/ui/webui/settings/downloads_handler_unittest.cc",
       "../browser/ui/webui/settings/hats_handler_unittest.cc",
       "../browser/ui/webui/settings/metrics_reporting_handler_unittest.cc",
@@ -8197,7 +8202,6 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/file_suggestion/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/cart/cart_processor_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/discount/discount_processor_unittest.cc",
-      "../browser/new_tab_page/modules/history_clusters/history_clusters_module_service_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/history_clusters_module_util_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/history_clusters_test_support.cc",
       "../browser/new_tab_page/modules/history_clusters/history_clusters_test_support.h",
@@ -8215,11 +8219,6 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.h",
       "../browser/search/ntp_features_unittest.cc",
     ]
-
-    if (enable_feed_v2) {
-      sources +=
-          [ "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc" ]
-    }
 
     if (build_with_tflite_lib) {
       sources += [ "../browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler_unittest.cc" ]
@@ -8246,7 +8245,10 @@ test("unit_tests") {
       deps += [ "//ui/ozone" ]
     }
 
-    public_deps = [ "//chrome/browser/ui/views/side_panel" ]
+    public_deps += [
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/toolbar",
+    ]
 
     # Non-android deps for "unit_tests" target.
     deps += [
@@ -8259,6 +8261,7 @@ test("unit_tests") {
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/apps/link_capturing:unit_tests",
       "//chrome/browser/companion:unit_tests",
@@ -8274,7 +8277,6 @@ test("unit_tests") {
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/new_tab_page/chrome_colors",
-      "//chrome/browser/new_tab_page/modules/feed:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",
@@ -8292,16 +8294,19 @@ test("unit_tests") {
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens:unit_tests",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
+      "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webauthn/proto",
       "//chrome/common/accessibility:mojo_bindings",
+      "//chrome/services/speech:unit_tests",
       "//components/app_constants",
       "//components/color",
       "//components/commerce/core:account_checker_test_support",
@@ -8555,12 +8560,6 @@ test("unit_tests") {
       "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
       "../browser/ui/webui/ash/add_supervision/add_supervision_handler_utils_unittest.cc",
-      "../browser/ui/webui/ash/cloud_upload/hats_office_trigger_unittest.cc",
-      "../browser/ui/webui/ash/diagnostics_dialog_unittest.cc",
-      "../browser/ui/webui/ash/edu_account_login_handler_unittest.cc",
-      "../browser/ui/webui/ash/enterprise_reporting/history_converter_unittest.cc",
-      "../browser/ui/webui/ash/print_preview_cros/print_prevew_cros_dialog_unittest.cc",
-      "../browser/ui/webui/ash/sensor_info/sensor_page_handler_unittest.cc",
       "../browser/ui/webui/ash/settings/pages/people/os_sync_handler_unittest.cc",
       "../browser/ui/webui/ash/smb_shares/smb_handler_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
@@ -8590,7 +8589,7 @@ test("unit_tests") {
       "//ash/webui/annotator/public/mojom:annotator_mojo_bindings",
       "//ash/webui/camera_app_ui",
       "//ash/webui/mall:app_id",
-      "//ash/webui/personalization_app/mojom:mojom",
+      "//ash/webui/personalization_app/mojom",
       "//ash/webui/projector_app:test_support",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
@@ -8653,8 +8652,11 @@ test("unit_tests") {
       "//chrome/browser/ash/policy/reporting/metrics_reporting",
       "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/ash/policy/status_collector",
+      "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ash/printing:test_support",
       "//chrome/browser/ash/release_notes",
+      "//chrome/browser/ash/settings",
+      "//chrome/browser/ash/settings:test_support",
       "//chrome/browser/ash/smb_client:test_support",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
@@ -8681,7 +8683,7 @@ test("unit_tests") {
       "//chrome/browser/nearby_sharing/proto:tachyon_proto",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
-      "//chrome/browser/push_notification:push_notification",
+      "//chrome/browser/push_notification",
       "//chrome/browser/push_notification:test_support",
       "//chrome/browser/push_notification/protos:proto",
       "//chrome/browser/screen_ai:unit_tests",
@@ -8706,7 +8708,11 @@ test("unit_tests") {
       "//chrome/browser/ui/views/editor_menu:utils",
       "//chrome/browser/ui/views/editor_menu:views",
       "//chrome/browser/ui/views/mahi",
+      "//chrome/browser/ui/webui/ash:unit_tests",
       "//chrome/browser/ui/webui/ash/enterprise_reporting:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/login",
+      "//chrome/browser/ui/webui/ash/settings",
+      "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/services/pdf:pdf_progressive_searchifier_test",
       "//chrome/services/pdf:pdf_searchifier_test",
@@ -8719,7 +8725,6 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/quick_start_decoder:unit_tests",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/cpp:unit_tests",
-      "//chrome/services/speech:unit_tests",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/browser_context_helper",
@@ -8806,10 +8811,6 @@ test("unit_tests") {
       "//ui/file_manager:resources_grit",
       "//ui/webui/resources/cr_components/app_management:unit_tests",
       "//ui/wm/public",
-
-      # Gather unit tests from //c/b/ui/webui/ash subdirectories:
-      "//chrome/browser/ui/webui/ash/emoji:unit_tests",
-      "//chrome/browser/ui/webui/ash/mako:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
@@ -8825,7 +8826,6 @@ test("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
     sources += [
       "../browser/lacros/account_manager/account_manager_util_unittest.cc",
       "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
@@ -8878,27 +8878,6 @@ test("unit_tests") {
       "//components/reporting/metrics:metrics_data_collection",
       "//components/reporting/metrics/fakes:test_support",
     ]
-  }
-
-  if (enable_system_notifications) {
-    if (is_linux) {
-      sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
-    }
-
-    if (is_win) {
-      sources += [
-        "../browser/notifications/notification_platform_bridge_win_unittest.cc",
-        "../browser/notifications/win/notification_helper_launches_chrome_unittest.cc",
-        "../browser/notifications/win/notification_launch_id_unittest.cc",
-      ]
-
-      deps += [
-        "//chrome/installer/setup:lib",
-        "//chrome/installer/util:with_no_strings",
-      ]
-
-      data_deps += [ "//chrome/notification_helper" ]
-    }
   }
 
   if (is_linux || is_chromeos) {
@@ -9404,7 +9383,6 @@ test("unit_tests") {
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
         "../browser/policy/restricted_mgs_policy_provider_ash_unittest.cc",
-        "../browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
         "../renderer/extensions/api/accessibility_private_hooks_delegate_unittest.cc",
@@ -9460,6 +9438,7 @@ test("unit_tests") {
 
   if (is_linux) {
     sources += [
+      "../browser/notifications/notification_platform_bridge_linux_unittest.cc",
       "../browser/shell_integration_linux_unittest.cc",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_linux_unittest.cc",
@@ -9704,6 +9683,7 @@ test("unit_tests") {
     deps += [
       "../browser/enterprise/connectors/test:test_support",
       "//components/enterprise/connectors:unit_tests",
+      "//components/enterprise/connectors/core:unit_tests",
     ]
     if (is_chromeos) {
       deps += [ "//chromeos/components/mgs" ]
@@ -9779,6 +9759,7 @@ test("unit_tests") {
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_registrar_unittest.cc",
+      "../browser/ui/webui/whats_new/whats_new_storage_service_impl_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
 
@@ -9981,6 +9962,7 @@ test("unit_tests") {
       "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_toolbar_button_view_unittest.cc",
       "../browser/ui/views/sharing/sharing_dialog_view_unittest.cc",
+      "../browser/ui/views/sharing/sharing_icon_view_unittest.cc",
       "../browser/ui/webui/signin/signin_error_handler_unittest.cc",
       "../browser/upgrade_detector/installed_version_poller_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_impl_unittest.cc",
@@ -10260,8 +10242,9 @@ test("unit_tests") {
     }
     if (is_linux || is_win || is_mac) {
       sources += [
+        "../browser/ui/views/enterprise/managed_menu_view_unittest.cc",
+        "../browser/ui/views/enterprise/management_toolbar_button_unittest.cc",
         "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc",
-        "../browser/ui/views/toolbar/management_toolbar_button_unittest.cc",
       ]
     }
     if (use_aura) {
@@ -10587,15 +10570,18 @@ if (!is_android) {
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -10874,6 +10860,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/about_flags_browsertest.cc",
       "../browser/browser_keyevents_browsertest.cc",
       "../browser/chrome_render_widget_host_browsertests.cc",
+      "../browser/controlled_frame/controlled_frame_interactive_browsertest.cc",
       "../browser/devtools/devtools_interactive_browsertest.cc",
       "../browser/focus_ring_browsertest.cc",
       "../browser/media/webrtc/display_media_access_handler_interactive_uitest.cc",
@@ -10883,6 +10870,8 @@ if (!is_android && !is_chromeos_device) {
       "../browser/mouse_events_interactive_uitest.cc",
       "../browser/net/cookie_encryption_provider_browsertest.cc",
       "../browser/new_tab_page/modules/new_tab_page_modules_interactive_uitest.cc",
+      "../browser/new_tab_page/modules/test_support.cc",
+      "../browser/new_tab_page/modules/test_support.h",
       "../browser/new_tab_page/new_tab_page_interactive_uitest.cc",
       "../browser/notifications/platform_notification_service_interactive_uitest.cc",
       "../browser/password_manager/password_generation_interactive_uitest.cc",
@@ -11048,6 +11037,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:interactive_ui_tests",
@@ -11056,10 +11046,12 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
@@ -11068,8 +11060,10 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens:interactive_ui_tests",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
@@ -11256,7 +11250,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/user_education/show_promo_in_page_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/mandatory_reauth_bubble_view_uitest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_interactive_uitest.cc",
-        "../browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views_interactive_uitest.cc",
+        "../browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/bookmarks/bookmark_bar_view_test.cc",
@@ -11409,7 +11403,6 @@ if (!is_android && !is_chromeos_device) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
-          "../browser/ui/webui/ash/firmware_update_ui/integration_tests/firmware_update_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/pages/device/integration_tests/audio_page_interactive_uitest.cc",
@@ -11427,7 +11420,6 @@ if (!is_android && !is_chromeos_device) {
           "//ash:interactive_ui_test_support",
           "//ash/webui/print_management:print_management",
           "//chrome/browser/apps/app_service",
-          "//chrome/browser/ash:interactive_ui_tests",
           "//chrome/browser/ash/accessibility",
           "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/app_restore",
@@ -11439,10 +11431,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//chrome/browser/ui/ash",
-          "//chrome/browser/ui/ash:interactive_ui_tests",
           "//chrome/browser/ui/ash/multi_user",
-          "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
-          "//chrome/test/base/ash/interactive:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",
           "//chromeos/ash/components/fwupd",
@@ -11452,6 +11441,13 @@ if (!is_android && !is_chromeos_device) {
           "//ui/chromeos",
           "//ui/events/devices",
           "//ui/events/devices:test_support",
+
+          # Gather tests from other build files:
+          "//chrome/browser/ash:interactive_ui_tests",
+          "//chrome/browser/ui/ash:interactive_ui_tests",
+          "//chrome/browser/ui/webui/ash/firmware_update_ui/integration_tests:interactive_ui_tests",
+          "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
+          "//chrome/test/base/ash/interactive:interactive_ui_tests",
         ]
       } else {
         sources += [
@@ -11650,6 +11646,7 @@ if (!is_android && !is_chromeos_device) {
     if (enable_extensions) {
       sources += [
         "../browser/extensions/api/extension_action/extension_action_api_interactive_uitest.cc",
+        "../browser/extensions/api/permissions/permissions_api_interactive_uitest.cc",
         "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_interactive_uitest.cc",
       ]
       deps += [ "//chrome/browser/controlled_frame:test_support" ]
@@ -11857,10 +11854,14 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/preferences_helper.h",
     "../browser/sync/test/integration/quiesce_status_change_checker.cc",
     "../browser/sync/test/integration/quiesce_status_change_checker.h",
+    "../browser/sync/test/integration/saved_tab_groups_helper.cc",
+    "../browser/sync/test/integration/saved_tab_groups_helper.h",
     "../browser/sync/test/integration/secondary_account_helper.cc",
     "../browser/sync/test/integration/secondary_account_helper.h",
     "../browser/sync/test/integration/session_hierarchy_match_checker.cc",
     "../browser/sync/test/integration/session_hierarchy_match_checker.h",
+    "../browser/sync/test/integration/shared_tab_group_data_helper.cc",
+    "../browser/sync/test/integration/shared_tab_group_data_helper.h",
     "../browser/sync/test/integration/single_client_status_change_checker.cc",
     "../browser/sync/test/integration/single_client_status_change_checker.h",
     "../browser/sync/test/integration/status_change_checker.cc",
@@ -11904,8 +11905,6 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/migration_watcher.h",
       "../browser/sync/test/integration/product_specifications_helper.cc",
       "../browser/sync/test/integration/product_specifications_helper.h",
-      "../browser/sync/test/integration/saved_tab_groups_helper.cc",
-      "../browser/sync/test/integration/saved_tab_groups_helper.h",
       "../browser/sync/test/integration/search_engines_helper.cc",
       "../browser/sync/test/integration/search_engines_helper.h",
       "../browser/sync/test/integration/send_tab_to_self_helper.cc",
@@ -12058,6 +12057,7 @@ if (!is_android) {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/search_engines",
       "//chrome/browser/sync",
@@ -12089,6 +12089,7 @@ if (!is_android) {
       "//components/reading_list/features:flags",
       "//components/saved_tab_groups:core",
       "//components/saved_tab_groups:tab_group_sync_bridge",
+      "//components/saved_tab_groups:test_support",
       "//components/send_tab_to_self",
       "//components/spellcheck/common",
       "//components/sync",

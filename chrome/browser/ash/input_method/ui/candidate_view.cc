@@ -314,15 +314,10 @@ gfx::Size CandidateView::CalculatePreferredSize(
 void CandidateView::SetPositionData(int index, int total) {
   candidate_index_ = index;
   total_candidates_ = total;
-}
 
-void CandidateView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
   // PosInSet needs to be incremented since |candidate_index_| is 0-based.
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             candidate_index_ + 1);
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                             total_candidates_);
+  GetViewAccessibility().SetPosInSet(candidate_index_ + 1);
+  GetViewAccessibility().SetSetSize(total_candidates_);
 }
 
 BEGIN_METADATA(CandidateView)

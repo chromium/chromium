@@ -12,6 +12,7 @@
 #include "chrome/grit/dev_ui_browser_resources.h"
 #include "chrome/grit/internals_resources.h"
 #include "chrome/grit/internals_resources_map.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -66,13 +67,9 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   profile_ = Profile::FromWebUI(web_ui);
   source_ = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUIInternalsHost);
-  source_->AddResourcePaths(
-      base::make_span(kInternalsResources, kInternalsResourcesSize));
-  webui::EnableTrustedTypesCSP(source_);
-
-  // chrome://internals/
-  // Redirects to: chrome://chrome-urls/#internals
-  source_->AddResourcePath("", IDR_INTERNALS_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(
+      source_, base::make_span(kInternalsResources, kInternalsResourcesSize),
+      IDR_INTERNALS_INTERNALS_HTML);
 
   // Add your sub-URL internals WebUI here.
   // Keep this set of sub-URLs in sync with `ChromeInternalsURLPaths()`.
@@ -98,6 +95,8 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   source_->SetRequestFilter(
       base::BindRepeating(&ShouldHandleWebUIRequestCallback),
       base::BindRepeating(&HandleWebUIRequestCallback, profile_));
+
+  source_->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
 }
 
 InternalsUI::~InternalsUI() = default;

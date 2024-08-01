@@ -16,6 +16,12 @@ namespace chromeos::features {
 // Adds Managed APN Policies support.
 BASE_FEATURE(kApnPolicies, "ApnPolicies", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables smaller battery badge icons to improve legibility of the battery
+// percentage.
+BASE_FEATURE(kBatteryBadgeIcon,
+             "BatteryBadgeIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
@@ -88,17 +94,6 @@ BASE_FEATURE(kCrosMallSwa, "CrosMallSwa", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCrosShortstand,
              "CrosShortstand",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// With this feature enabled, the shortcut app badge is painted in the UI
-// instead of being part of the shortcut app icon.
-
-// Enables the new UI for browser created shortcut backed by web app system
-// on Chrome OS.
-BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
-             "CrosWebAppShortcutUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
@@ -280,6 +275,10 @@ bool IsApnPoliciesEnabled() {
   return base::FeatureList::IsEnabled(kApnPolicies);
 }
 
+bool IsBatteryBadgeIconEnabled() {
+  return base::FeatureList::IsEnabled(kBatteryBadgeIcon);
+}
+
 bool IsCaptivePortalPopupWindowEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()
@@ -352,17 +351,6 @@ bool IsCrosShortstandEnabled() {
   return false;
 #else
   return base::FeatureList::IsEnabled(kCrosShortstand);
-#endif
-}
-
-bool IsCrosWebAppShortcutUiUpdateEnabled() {
-  if (IsCrosShortstandEnabled()) {
-    return true;
-  }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(kCrosWebAppShortcutUiUpdate);
 #endif
 }
 

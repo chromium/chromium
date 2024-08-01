@@ -362,10 +362,12 @@ BidderWorklet::BidderWorklet(
     const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-    std::optional<uint16_t> experiment_group_id)
+    std::optional<uint16_t> experiment_group_id,
+    mojom::TrustedSignalsPublicKeyPtr public_key)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
+      public_key_(std::move(public_key)),
       top_window_origin_(top_window_origin),
       auction_network_events_handler_(
           std::move(auction_network_events_handler)) {
@@ -2251,6 +2253,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // Therefore, it's safe to post a callback with the `task`  iterator the v8
   // thread.
   int thread_index = GetNextThreadIndex();
+  task->generate_bid_start_time = base::TimeTicks::Now();
   task->task_id = cancelable_task_tracker_.PostTask(
       v8_runners_[thread_index].get(), FROM_HERE,
       base::BindOnce(
@@ -2412,7 +2415,10 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
           /*direct_from_seller_signals_latency=*/
           NullOptIfZero(task->wait_direct_from_seller_signals),
           /*trusted_bidding_signals_latency=*/
-          NullOptIfZero(task->wait_trusted_signals)),
+          NullOptIfZero(task->wait_trusted_signals),
+          /*deps_wait_start_time=*/task->trace_wait_deps_start,
+          /*generate_bid_start_time=*/task->generate_bid_start_time,
+          /*generate_bid_finish_time=*/base::TimeTicks::Now()),
       reject_reason, error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }

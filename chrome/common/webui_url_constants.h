@@ -712,8 +712,11 @@ inline constexpr char kChromeUILensURL[] = "chrome://lens/";
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 inline constexpr char kChromeUICertificateManagerDialogURL[] =
-    "chrome://certificate-manager/";
+    "chrome://certificate-manager";
 inline constexpr char kChromeUICertificateManagerHost[] = "certificate-manager";
+inline constexpr char kChromeUICertificateRedirectPath[] = "/certificates";
+inline constexpr char kChromeUICertificateRedirectURL[] =
+    "chrome://settings/certificates";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 // Extensions sub pages.

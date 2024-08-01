@@ -1330,9 +1330,22 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   static const features::LcppPreloadLazyLoadImageType
       kPreloadLazyLoadImageType =
           features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
-  preload_lazy_load_image_type = kPreloadLazyLoadImageType;
+  preload_lazy_load_image_type =
+      preload_lazy_load_image_type_for_testing.has_value()
+          ? preload_lazy_load_image_type_for_testing.value()
+          : kPreloadLazyLoadImageType;
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
+}
+
+// static
+std::optional<features::LcppPreloadLazyLoadImageType>
+    CachedDocumentParameters::preload_lazy_load_image_type_for_testing =
+        std::nullopt;
+// static
+void CachedDocumentParameters::SetLcppPreloadLazyLoadImageTypeForTesting(
+    std::optional<features::LcppPreloadLazyLoadImageType> type) {
+  preload_lazy_load_image_type_for_testing = type;
 }
 
 }  // namespace blink

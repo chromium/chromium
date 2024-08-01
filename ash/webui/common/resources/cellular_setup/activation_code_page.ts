@@ -246,16 +246,20 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   private playVideo_(): void {
     const videoElement = this.shadowRoot!.querySelector<HTMLVideoElement>('#video');
     if (videoElement) {
+      assert(this.stream_);
+      videoElement.srcObject = this.stream_;
       videoElement.play();
     }
   }
 
   /**
-   * Function used to stop a stream. Can be overwritten by setFakesForTesting().
+   * Function used to stop a stream.
    */
   private stopStream_(stream: MediaStream|null): void {
     if (stream) {
-      stream.getTracks()[0].stop();
+      for (const track of stream.getTracks()) {
+        track.stop();
+      }
     }
   }
 
@@ -298,14 +302,12 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
       barcodeDetectorClass: typeof BarcodeDetector,
       imageCaptureClass: typeof ImageCapture,
       setIntervalFunction: (callback: Function, interval: number) => number,
-      playVideoFunction: () => void,
-      stopStreamFunction: (stream: MediaStream) => void): Promise<void> {
+      playVideoFunction: () => void): Promise<void> {
     this.barcodeDetectorClass_ = barcodeDetectorClass;
     await this.initBarcodeDetector_();
     this.imageCaptureClass_ = imageCaptureClass;
     this.setIntervalFunction_ = setIntervalFunction;
     this.playVideo_ = playVideoFunction;
-    this.stopStream_ = stopStreamFunction;
   }
 
   getQrCodeDetectorTimerForTest(): number|null {
@@ -386,15 +388,10 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
           },
           audio: false,
         })
-        .then(stream => {
+        .then((stream: MediaStream) => {
           this.stream_ = stream;
           if (this.stream_) {
-            const videoElement =
-                this.shadowRoot!.querySelector<HTMLVideoElement>('#video');
-            if (videoElement) {
-              videoElement.srcObject = stream;
-              this.playVideo_();
-            }
+            this.playVideo_();
           }
 
           this.activationCode = '';

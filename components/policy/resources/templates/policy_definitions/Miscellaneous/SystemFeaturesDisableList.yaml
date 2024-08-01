@@ -53,6 +53,12 @@ items:
 - caption: Terminal (supported since version 117)
   name: terminal
   value: terminal
+- caption: Print Jobs (supported since version 129)
+  name: print_jobs
+  value: print_jobs
+- caption: Key Shortcuts (supported since version 129)
+  name: key_shortcuts
+  value: key_shortcuts
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
@@ -71,6 +77,8 @@ schema:
     - crosh
     - gallery
     - terminal
+    - print_jobs
+    - key_shortcuts
     type: string
   type: array
 supported_on:

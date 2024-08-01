@@ -31,10 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "partition_alloc/partition_alloc_forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace base {

@@ -28,6 +28,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -120,7 +121,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id);
+      std::optional<uint16_t> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key);
   explicit BidderWorklet(const BidderWorklet&) = delete;
   ~BidderWorklet() override;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
@@ -255,6 +257,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::TimeDelta wait_trusted_signals;
     base::TimeDelta wait_direct_from_seller_signals;
     base::TimeDelta wait_promises;
+
+    // Time where the BidderWorklet finished waiting for GenerateBid
+    // dependencies, used to compute start and end times for latency phase UKMs.
+    base::TimeTicks generate_bid_start_time;
 
     // Set while loading is in progress.
     std::unique_ptr<TrustedSignalsRequestManager::Request>
@@ -742,6 +748,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // for.
   const GURL script_source_url_;
   std::optional<GURL> wasm_helper_url_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.

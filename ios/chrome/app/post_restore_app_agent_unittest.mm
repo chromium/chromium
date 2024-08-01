@@ -63,7 +63,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -85,7 +85,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
   void SetFakePreRestoreAccountInfo() {
     AccountInfo accountInfo;
     accountInfo.email = kFakePreRestoreAccountEmail;
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+    StorePreRestoreIdentity(local_state(), accountInfo,
                             /*history_sync_enabled=*/false);
   }
 
@@ -100,8 +100,12 @@ class PostRestoreAppAgentTest : public PlatformTest {
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
  protected:
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
@@ -118,13 +122,13 @@ TEST_F(PostRestoreAppAgentTest, MaybeRegisterPromo) {
       .Times(0);
 
   // Scenarios which should not register a promo.
-  ClearPreRestoreIdentity(local_state_.Get());
+  ClearPreRestoreIdentity(local_state());
   MockAppStateChange(InitStageFinal);
 
   SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
 
-  ClearPreRestoreIdentity(local_state_.Get());
+  ClearPreRestoreIdentity(local_state());
   MockAppStateChange(InitStageFinal);
 }
 
@@ -156,7 +160,7 @@ TEST_F(PostRestoreAppAgentTest, DeregisterPromoAlert) {
       .Times(1);
 
   SetFakePreRestoreAccountInfo();
-  ClearPreRestoreIdentity(local_state_.Get());
+  ClearPreRestoreIdentity(local_state());
   MockAppStateChange(InitStageFinal);
 }
 

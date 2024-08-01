@@ -90,7 +90,7 @@ void GridMediatorTestClass::SetUp() {
   builder.AddTestingFactory(
       tab_groups::TabGroupSyncServiceFactory::GetInstance(),
       base::BindRepeating(&CreateMockTabGroupSyncService));
-  browser_state_ = builder.Build();
+  browser_state_ = std::move(builder).Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());

@@ -71,6 +71,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -80,8 +81,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
@@ -275,8 +274,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithSignin_nonDisplayableEmail() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        AccountInfo accountInfo = addAccountWithNonDisplayableEmail();
-        SigninTestUtil.signin(accountInfo);
+        AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
         ThreadUtils.runOnUiThreadBlocking(mTab::reload);
@@ -292,7 +290,7 @@ public class IdentityDiscControllerTest {
                         isDisplayed(),
                         withContentDescription(expectedContentDescription)));
 
-        mSigninTestRule.signOut();
+        mSigninTestRule.forceSignOut();
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -334,7 +332,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithSigninAndEnableSync_nonDisplayableEmail() {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
-        AccountInfo accountInfo = addAccountWithNonDisplayableEmail();
+        AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
         SigninTestUtil.signinAndEnableSync(
                 accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
         String expectedContentDescription =
@@ -349,7 +347,7 @@ public class IdentityDiscControllerTest {
                         withContentDescription(expectedContentDescription),
                         isDisplayed()));
 
-        mSigninTestRule.signOut();
+        mSigninTestRule.forceSignOut();
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -469,21 +467,10 @@ public class IdentityDiscControllerTest {
         ChromeTabUtils.waitForTabPageLoaded(mTab, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }
 
-    private AccountInfo addAccountWithNonDisplayableEmail() {
-        // TODO(b/343378391) Update accountInfo to use
-        // AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL.
-        AccountInfo accountInfo =
-                new AccountInfo.Builder(EMAIL, FakeAccountManagerFacade.toGaiaId(EMAIL))
-                        .fullName(NAME)
-                        .givenName(NAME)
-                        .accountCapabilities(
-                                new AccountCapabilitiesBuilder()
-                                        .setCanHaveEmailAddressDisplayed(false)
-                                        .setIsSubjectToParentalControls(true)
-                                        .build())
-                        .build();
-        mSigninTestRule.addAccount(accountInfo);
-        return accountInfo;
+    private AccountInfo addAndSigninAccountWithNonDisplayableEmail() {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        return AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
     }
 
     private IdentityDiscController buildControllerWithObserver(

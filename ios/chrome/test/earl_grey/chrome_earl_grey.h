@@ -531,21 +531,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Signs the user out, clears the known accounts & browsing data, and wait for
 // the completion of those steps. Induces a GREYAssert if the operation fails or
 // timeouts.
-// TODO(crbug.com/40065405): When the browser data cleaning will always have an
-// acceptable delay, this method should be merged with
-// `signOutAndClearIdentities` and the whole sign-out operation completion
-// should always be ensured before executing next steps.
-- (void)signOutAndClearIdentitiesAndWaitForCompletion;
-
-// Signs the user out, clears the known accounts entirely and checks whether the
-// accounts were correctly removed from the keychain. Induces a GREYAssert if
-// the operation fails. This will block the UI with a spinner until all
-// identities are cleared. In order to interact with the UI again call
-// `WaitForActivityOverlayToDisappear()`.
-// TODO(crbug.com/40065405): When the browser data cleaning will always have an
-// acceptable delay, this method should be merged with
-// `signOutAndClearIdentitiesAndWaitForCompletion` and the whole sign-out
-// operation completion should always be ensured before executing next steps.
 - (void)signOutAndClearIdentities;
 
 #pragma mark - Sync Utilities (EG2)
@@ -572,8 +557,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (std::string)syncCacheGUID;
 
 // Adds a bookmark with a sync passphrase. The sync server will need the sync
-// passphrase to start.
+// passphrase to start. In order to work, this need to be called before the
+// primary user is signed-in.
 - (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
+
+// Add a sync passphrase requirement to start the sync server.
+- (void)addSyncPassphrase:(NSString*)syncPassphrase;
 
 #pragma mark - WebState Utilities (EG2)
 
@@ -791,6 +780,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // UIKeyInputEscape constants as `input`.
 - (void)simulatePhysicalKeyboardEvent:(NSString*)input
                                 flags:(UIKeyModifierFlags)flags;
+
+// Waits for the keyboard to appear;
+- (void)waitForKeyboardToAppear;
+
+// Waits for the keyboard to disappear;
+- (void)waitForKeyboardToDisappear;
 
 #pragma mark - Default Utilities (EG2)
 

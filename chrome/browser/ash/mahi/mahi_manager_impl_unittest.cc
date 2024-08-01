@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
@@ -265,6 +266,20 @@ TEST_F(MahiManagerImplTest, TurnOffSettingsClearCache) {
 
   // Cache must be empty after user turn off the settings.
   SetMahiEnabledByUserPref(false);
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+}
+
+TEST_F(MahiManagerImplTest, ClearCacheSuccessfully) {
+  // No cache yet.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  RequestSummary();
+
+  // Summary is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+
+  // Cache must be empty after cleared.
+  mahi_manager_impl_->ClearCache();
   EXPECT_EQ(GetCacheManager()->size(), 0);
 }
 

@@ -164,7 +164,11 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
             mBuilder.setExtras(mJobExtras);
 
             if (oneOffInfo.hasWindowStartTimeConstraint()) {
-                mBuilder.setMinimumLatency(oneOffInfo.getWindowStartTimeMs());
+                long latency = oneOffInfo.getWindowStartTimeMs();
+                if (latency < 0) {
+                    latency = 0;
+                }
+                mBuilder.setMinimumLatency(latency);
             }
             if (oneOffInfo.hasWindowEndTimeConstraint()) {
                 long windowEndTimeMs = oneOffInfo.getWindowEndTimeMs();

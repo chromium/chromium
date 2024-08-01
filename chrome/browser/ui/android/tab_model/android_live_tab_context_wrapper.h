@@ -145,9 +145,11 @@ class AndroidLiveTabContextRestoreWrapper : public AndroidLiveTabContext {
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
-  sessions::LiveTab* AddRestoredTab(const sessions::tab_restore::Tab& tab,
-                                    int tab_index,
-                                    bool select) override;
+  sessions::LiveTab* AddRestoredTab(
+      const sessions::tab_restore::Tab& tab,
+      int tab_index,
+      bool select,
+      sessions::tab_restore::Type original_session_type) override;
 
   // Returns the TabGroup data aggregated via AddRestoredTab.
   const std::map<tab_groups::TabGroupId, TabGroup>& GetTabGroups();

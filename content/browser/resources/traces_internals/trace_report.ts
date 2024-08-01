@@ -3,30 +3,20 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import {getCss} from './trace_report.css.js';
 import {getHtml} from './trace_report.html.js';
 import type {ClientTraceReport} from './trace_report.mojom-webui.js';
-import {SkipUploadReason} from './trace_report.mojom-webui.js';
+import {ReportUploadState, SkipUploadReason} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
-import {Notification, NotificationTypeEnum} from './trace_report_list.js';
-
-enum UploadState {
-  NOT_UPLOADED = 0,
-  PENDING = 1,
-  USER_REQUEST = 2,
-  UPLOADED = 3,
-}
+import {Notification, NotificationType} from './trace_report_list.js';
 
 // Create the temporary element here to hold the data to download the trace
 // since it is only obtained after downloadData_ is called. This way we can
@@ -56,53 +46,33 @@ export class TraceReportElement extends CrLitElement {
   static override get properties() {
     return {
       trace: {type: Object},
-      // Enable the html template to use UploadState
-      uploadStateEnum_: {type: Object},
       isLoading: {type: Boolean},
     };
   }
 
-  protected trace: ClientTraceReport;
-  protected isLoading: boolean = false;
-  protected uploadStateEnum_: typeof UploadState = UploadState;
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
 
+  protected trace: ClientTraceReport = {
+    // Dummy ClientTraceReport
+    uuid: {
+      high: 0n,
+      low: 0n,
+    },
+    creationTime: {internalValue: 0n},
+    scenarioName: '',
+    uploadRuleName: '',
+    totalSize: 0n,
+    uploadState: ReportUploadState.kNotUploaded,
+    uploadTime: {internalValue: 0n},
+    skipReason: SkipUploadReason.kNoSkip,
+    hasTraceContent: false,
+  };
+  protected isLoading_: boolean = false;
+
   protected onCopyUuidClick_(): void {
     // Get the text field
-    assert(this.trace.uuid.high);
-    assert(this.trace.uuid.low);
-    navigator.clipboard.writeText(this.tokenToString_(this.trace.uuid));
-  }
-
-  protected onCopyScenarioClick_(): void {
-    // Get the text field
-    assert(this.trace.scenarioName);
-    navigator.clipboard.writeText(this.trace.scenarioName);
-  }
-
-  protected onCopyUploadRuleClick_(): void {
-    // Get the text field
-    assert(this.trace.uploadRuleName);
-    navigator.clipboard.writeText(this.trace.uploadRuleName);
-  }
-
-  protected getSkipReason_(): string {
-    // Keep this in sync with the values of SkipUploadReason in
-    // trace_report.mojom
-    const skipReasonMap: string[] = [
-      'None',
-      'Size limit exceeded',
-      'Not anonymized',
-      'Scenario quota exceeded',
-      'Upload timed out',
-    ];
-
-    return skipReasonMap[this.trace.skipReason];
-  }
-
-  protected isManualUploadPermitted_(skipReason: number): boolean {
-    return skipReason !== SkipUploadReason.kNotAnonymized;
+    navigator.clipboard.writeText(this.getTokenAsString_());
   }
 
   protected getTraceSize_(): string {
@@ -122,6 +92,35 @@ export class TraceReportElement extends CrLitElement {
     }
 
     return `${displayedSize.toFixed(2)} ${sizes[i]}`;
+  }
+
+  protected getSkipReason_(): string {
+    // Keep this in sync with the values of SkipUploadReason in
+    // tracereport.mojom
+    const skipReasonMap: string[] = [
+      'None',
+      'Size limit exceeded',
+      'Not anonymized',
+      'Scenario quota exceeded',
+      'Upload timed out',
+    ];
+
+    return skipReasonMap[this.trace.skipReason] ??
+        'Could not get the skip reason';
+  }
+
+  protected onCopyScenarioClick_(): void {
+    // Get the text field
+    navigator.clipboard.writeText(this.trace.scenarioName);
+  }
+
+  protected onCopyUploadRuleClick_(): void {
+    // Get the text field
+    navigator.clipboard.writeText(this.trace.uploadRuleName);
+  }
+
+  protected isManualUploadPermitted_(): boolean {
+    return this.trace.skipReason !== SkipUploadReason.kNotAnonymized;
   }
 
   protected dateToString_(mojoTime: Time): string {
@@ -153,22 +152,21 @@ export class TraceReportElement extends CrLitElement {
   }
 
   protected async onDownloadTraceClick_(): Promise<void> {
-    this.isLoading = true;
+    this.isLoading_ = true;
     const {trace} =
         await this.traceReportProxy_.handler.downloadTrace(this.trace.uuid);
     if (trace !== null) {
-      this.downloadData_(`${this.tokenToString_(this.trace.uuid)}.gz`, trace);
+      this.downloadData_(`${this.getTokenAsString_()}.gz`, trace);
     } else {
-      this.dispatchToast_(
-          `Failed to download trace ${this.tokenToString_(this.trace.uuid)}.`);
+      this.dispatchToast_(`Failed to download trace ${this.getTokenAsString_()}.`);
     }
-    this.isLoading = false;
+    this.isLoading_ = false;
   }
 
   private downloadData_(fileName: string, data: BigBuffer): void {
     if (data.invalidBuffer) {
-      this.dispatchToast_(`Invalid buffer received for ${
-          this.tokenToString_(this.trace.uuid)}.`);
+      this.dispatchToast_(
+          `Invalid buffer received for ${this.getTokenAsString_()}.`);
       return;
     }
     try {
@@ -187,64 +185,92 @@ export class TraceReportElement extends CrLitElement {
           new Blob([bytes], {type: 'application/octet-stream'}));
       downloadUrl(fileName, url);
     } catch (e) {
-      this.dispatchToast_(`Unable to create blob from trace data for ${
-          this.tokenToString_(this.trace.uuid)}.`);
+      this.dispatchToast_(
+          `Unable to create blob from trace data for ${this.getTokenAsString_()}.`);
     }
   }
 
   protected async onDeleteTraceClick_(): Promise<void> {
-    this.isLoading = true;
+    this.isLoading_ = true;
     const {success} =
         await this.traceReportProxy_.handler.deleteSingleTrace(this.trace.uuid);
     if (!success) {
-      this.dispatchToast_(
-          `Failed to delete ${this.tokenToString_(this.trace.uuid)}.`);
+      this.dispatchToast_(`Failed to delete ${this.getTokenAsString_()}.`);
     } else {
       this.dispatchReloadRequest_();
     }
-    this.isLoading = false;
+    this.isLoading_ = false;
   }
 
   protected async onUploadTraceClick_(): Promise<void> {
-    this.isLoading = true;
+    this.isLoading_ = true;
     const {success} =
         await this.traceReportProxy_.handler.userUploadSingleTrace(
             this.trace.uuid);
     if (!success) {
-      this.dispatchToast_(
-          `Failed to upload trace ${this.tokenToString_(this.trace.uuid)}.`);
+      this.dispatchToast_(`Failed to upload trace ${this.getTokenAsString_()}.`);
     } else {
       this.dispatchReloadRequest_();
     }
-    this.isLoading = false;
+    this.isLoading_ = false;
   }
 
-  protected uploadStateEqual_(state: UploadState): boolean {
-    return this.trace.uploadState === state as number;
+  protected uploadStateEqual_(state: ReportUploadState): boolean {
+    return this.trace.uploadState === state;
   }
 
-  protected tokenToString_(token: Token): string {
-    return `${token.high.toString(16)}-${token.low.toString(16)}`;
+  protected getTokenAsString_(): string {
+    return `${this.trace.uuid.high.toString(16)}-${
+        this.trace.uuid.low.toString(16)}`;
   }
 
   private dispatchToast_(message: string): void {
     this.dispatchEvent(new CustomEvent('show-toast', {
       bubbles: true,
       composed: true,
-      detail: new Notification(NotificationTypeEnum.ERROR, message),
+      detail: new Notification(NotificationType.ERROR, message),
     }));
   }
 
   protected isDownloadDisabled_(): boolean {
-    return this.isLoading || !this.trace.hasTraceContent;
+    return this.isLoading_ || !this.trace.hasTraceContent;
   }
 
   protected getDownloadTooltip_(): string {
-    return this.trace.hasTraceContent ? 'Dowload Trace' : 'Trace expired';
+    return this.trace.hasTraceContent ? 'Download Trace' : 'Trace expired';
   }
 
   private dispatchReloadRequest_(): void {
     this.fire('refresh-traces-request');
+  }
+
+  protected getStateCssClass_(): string {
+    switch (this.trace.uploadState) {
+      case ReportUploadState.kNotUploaded:
+        return 'state-default';
+      case ReportUploadState.kPending:
+      case ReportUploadState.kPending_UserRequested:
+        return 'state-pending';
+      case ReportUploadState.kUploaded:
+        return 'state-success';
+      default:
+        return '';
+    }
+  }
+
+  protected getStateText_(): string {
+    switch (this.trace.uploadState) {
+      case ReportUploadState.kNotUploaded:
+        return `Skip reason: ${this.getSkipReason_()}`;
+      case ReportUploadState.kPending:
+        return 'Pending upload';
+      case ReportUploadState.kPending_UserRequested:
+        return 'Pending upload: User requested';
+      case ReportUploadState.kUploaded:
+        return `Uploaded: ${this.dateToString_(this.trace.uploadTime)}`;
+      default:
+        return '';
+    }
   }
 }
 

@@ -580,7 +580,7 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
     }
 
     // Create the key events.
-    int number_modifiers = std::size(kModifiers);
+    constexpr int number_modifiers = std::size(kModifiers);
     bool necessary_modifiers[number_modifiers];
     for (int j = 0; j < number_modifiers; ++j) {
       necessary_modifiers[j] = all_modifiers & kModifiers[j].mask &&

@@ -565,7 +565,8 @@ bool StructTraits<autofill::mojom::PasswordFormFillDataDataView,
       !data.ReadUsernameElementRendererId(&out->username_element_renderer_id) ||
       !data.ReadPasswordElementRendererId(&out->password_element_renderer_id) ||
       !data.ReadPreferredLogin(&out->preferred_login) ||
-      !data.ReadAdditionalLogins(&out->additional_logins)) {
+      !data.ReadAdditionalLogins(&out->additional_logins) ||
+      !data.ReadSuggestionBannedFields(&out->suggestion_banned_fields)) {
     return false;
   }
 

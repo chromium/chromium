@@ -9,14 +9,14 @@
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -51,11 +51,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
         test_form_activity_tab_helper_(test_web_state_.get()) {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
+    PlatformTest::SetUp();
 
     GURL url("http://foo.com");
     test_web_state_->SetCurrentURL(url);
@@ -96,8 +92,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   std::unique_ptr<web::FakeWebFrame> main_frame_;
   FakeWebStateListDelegate web_state_list_delegate_;

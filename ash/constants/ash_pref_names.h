@@ -814,6 +814,14 @@ inline constexpr char kAccessibilityFaceGazeActionsEnabled[] =
 // separately or whether speeds in all directions should be adjusted together.
 inline constexpr char kAccessibilityFaceGazeAdjustSpeedSeparately[] =
     "settings.a11y.face_gaze.adjust_speed_separately";
+// A boolean pref which indicates whether the FaceGaze DLC success notification
+// has ever been shown.
+inline constexpr char kFaceGazeDlcSuccessNotificationHasBeenShown[] =
+    "settings.a11y.face_gaze.dlc_success_notification_has_been_shown";
+// A boolean pref which indicates whether the FaceGaze DLC failure notification
+// has ever been shown.
+inline constexpr char kFaceGazeDlcFailureNotificationHasBeenShown[] =
+    "settings.a11y.face_gaze.dlc_failure_notification_has_been_shown";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
@@ -1860,9 +1868,6 @@ inline constexpr char kLoginScreenWebUILazyLoading[] =
 inline constexpr char kFloatingWorkspaceV2Enabled[] =
     "ash.floating_workspace_v2_enabled";
 
-// Boolean value for the ClassHub policy
-inline constexpr char kClassHub[] = "ash.class_hub_enabled";
-
 // Boolean value indicating that post reboot notification should be shown to the
 // user.
 inline constexpr char kShowPostRebootNotification[] =
@@ -2256,6 +2261,10 @@ inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
 // all user devices.
 inline constexpr char kKeyboardDefaultSplitModifierSettings[] =
     "ash.settings.keyboard.split_modifier_defaults";
+
+// A boolean pref of whether the user has used a split modifier keyboard before.
+inline constexpr char kKeyboardHasSplitModifierKeyboard[] =
+    "ash.settings.keyboard.has_split_modifier_keyboard";
 
 // A dictionary pref containing the set of default touchpad settings for the
 // user. These are applied to new touchpads that are connected to the system.

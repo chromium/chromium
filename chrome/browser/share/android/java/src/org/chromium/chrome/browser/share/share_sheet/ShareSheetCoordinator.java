@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -356,7 +355,7 @@ public class ShareSheetCoordinator
                         mLinkToggleMetricsDetails,
                         mProfile,
                         mDeviceLockActivityLauncher);
-        mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
+        mIsMultiWindow = activity.isInMultiWindowMode();
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
                 contentTypes, chromeShareExtras.getDetailedContentType(), mIsMultiWindow);
@@ -480,7 +479,7 @@ public class ShareSheetCoordinator
         if (mActivity == null) {
             return;
         }
-        boolean isMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(mActivity);
+        boolean isMultiWindow = mActivity.isInMultiWindowMode();
         // mContentTypes is null if Chrome features should not be shown.
         if (mIsMultiWindow == isMultiWindow || mContentTypes == null) {
             return;

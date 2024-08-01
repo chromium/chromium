@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/buildflags.h"
+#include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -285,6 +286,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   static scoped_refptr<CanvasResourceSharedBitmap> Create(
       const SkImageInfo&,
       base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
       cc::PaintFlags::FilterQuality);
   ~CanvasResourceSharedBitmap() override;
   bool IsRecycleable() const final { return IsValid(); }
@@ -301,10 +303,14 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   void NotifyResourceLost() override;
 
  private:
-  CanvasResourceSharedBitmap(const SkImageInfo&,
-                             base::WeakPtr<CanvasResourceProvider>,
-                             cc::PaintFlags::FilterQuality);
+  CanvasResourceSharedBitmap(
+      const SkImageInfo&,
+      base::WeakPtr<CanvasResourceProvider>,
+      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
+      cc::PaintFlags::FilterQuality);
 
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  gpu::SyncToken sync_token_;
   viz::SharedBitmapId shared_bitmap_id_;
   base::WritableSharedMemoryMapping shared_mapping_;
   gfx::Size size_;

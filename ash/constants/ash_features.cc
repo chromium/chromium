@@ -220,7 +220,7 @@ BASE_FEATURE(kAutocorrectToggle,
 // Enables using a toggle for enabling autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectByDefault,
              "AutocorrectByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutocorrectUseReplaceSurroundingText,
              "AutocorrectUseReplaceSurroundingText",
@@ -235,7 +235,7 @@ BASE_FEATURE(kAutozoomNudgeSessionReset,
 // Make Battery Saver available.
 BASE_FEATURE(kBatterySaver,
              "CrosBatterySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Determines the behavior of the battery saver controller auto enable threshold
 // and notification timing.
@@ -284,6 +284,11 @@ BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Boca consumer user experience on ChromeOS.
 BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables Boca extension consumer experience on ChromeOS.
+BASE_FEATURE(kBocaExtensionConsumer,
+             "BocaExtensionConsumer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -994,8 +999,13 @@ BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
              "FastPairHandshakeLongTermRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables prototype support for Fast Pair HID.
-BASE_FEATURE(kFastPairHID, "FastPairHID", base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables prototype support for Fast Pair HID (non-keyboard).
+BASE_FEATURE(kFastPairHID, "FastPairHID", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables prototype support for Fast Pair for keyboards.
+BASE_FEATURE(kFastPairKeyboards,
+             "FastPairKeyboards",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Saved Devices nicknames logic for Fast Pair.
 BASE_FEATURE(kFastPairSavedDevicesNicknames,
@@ -1281,11 +1291,6 @@ BASE_FEATURE(kGalleryAppPdfEditNotification,
 const base::FeatureParam<std::string> kGalleryAppPdfEditNotificationText{
     &kGalleryAppPdfEditNotification, "text", ""};
 
-// Enables glanceables on time management surface.
-BASE_FEATURE(kGlanceablesV2,
-             "GlanceablesV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Classroom Student Glanceable on time management surface.
 BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentView,
              "GlanceablesTimeManagementClassroomStudentView",
@@ -1565,18 +1570,6 @@ BASE_FEATURE(kHideShelfControlsInTabletMode,
 // If enabled, add Hindi Inscript keyboard layout.
 BASE_FEATURE(kHindiInscriptLayout,
              "HindiInscriptLayout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables holding space icon to be permanently displayed with extended file
-// expiration to increase predictability of the feature.
-BASE_FEATURE(kHoldingSpacePredictability,
-             "HoldingSpacePredictability",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables refresh of holding space UI to better convey the relationship with
-// the Files app to simplify feature comprehension.
-BASE_FEATURE(kHoldingSpaceRefresh,
-             "HoldingSpaceRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables suggestions in the pinned files section of Holding Space.
@@ -2391,10 +2384,6 @@ BASE_FEATURE(kOverviewDeskNavigation,
              "OverviewDeskNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOverviewNewFocus,
-             "OverviewNewFocus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly,
@@ -2744,7 +2733,7 @@ BASE_FEATURE(kSeaPenUseExptTemplate,
 // Enables sea pen features for enterprise users controlled by the policy.
 BASE_FEATURE(kSeaPenEnterprise,
              "SeaPenEnterprise",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables automated control of the refresh rate for the internal display.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
@@ -2754,7 +2743,7 @@ BASE_FEATURE(kSeamlessRefreshRateSwitching,
 // Controls whether to enable kSecondaryAccountAllowedInArc policy.
 BASE_FEATURE(kSecondaryAccountAllowedInArcPolicy,
              "SecondaryAccountAllowedInArcPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables displaying separate network icons for different networks types.
 // https://crbug.com/902409
@@ -3034,24 +3023,11 @@ BASE_FEATURE(kUseAnnotatedAccountId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This features toggles which implementation is used for authentication UIs on
-// Chrome password manager on ChromeOS. When the feature is enabled,
+// ChromeOS settings or PasswordManager. When the feature is enabled,
 // `AuthPanel` is used as an authentication UI.
-BASE_FEATURE(kUseAuthPanelInPasswordManager,
-             "UseAuthPanelInPasswordManager",
+BASE_FEATURE(kUseAuthPanelInSession,
+             "UseAuthPanelInSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This features toggles which implementation is used for authentication UIs on
-// ChromeOS settings. When the feature is enabled,
-// `AuthPanel` is used as an authentication UI.
-BASE_FEATURE(kUseAuthPanelInSettings,
-             "UseAuthPanelInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature dictates whether AuthPanel is restricted to only passwords,
-// or has the full suite of auth factors available.
-BASE_FEATURE(kAuthPanelUsesOnlyPassword,
-             "AuthPanelUsesOnlyPassword",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not passwordless setup is enabled, such as
 // having a pin-only config.
@@ -3553,6 +3529,10 @@ bool IsBocaConsumerEnabled() {
   return base::FeatureList::IsEnabled(kBocaConsumer);
 }
 
+bool IsBocaExtensionConsumerEnabled() {
+  return base::FeatureList::IsEnabled(kBocaExtensionConsumer);
+}
+
 bool IsBrightnessControlInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kEnableBrightnessControlInSettings);
 }
@@ -3757,6 +3737,10 @@ bool IsFastPairHIDEnabled() {
   return base::FeatureList::IsEnabled(kFastPairHID);
 }
 
+bool IsFastPairKeyboardsEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairKeyboards);
+}
+
 bool IsFastPairSavedDevicesNicknamesEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevicesNicknames);
 }
@@ -3944,10 +3928,6 @@ bool IsGrowthCampaignsTriggerByBrowserEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByBrowser);
 }
 
-bool AreGlanceablesV2Enabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesV2);
-}
-
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
   return base::FeatureList::IsEnabled(
       kGlanceablesTimeManagementClassroomStudentView);
@@ -3985,14 +3965,6 @@ bool IsHibernateEnabled() {
 
 bool IsHideShelfControlsInTabletModeEnabled() {
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
-}
-
-bool IsHoldingSpacePredictabilityEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpacePredictability);
-}
-
-bool IsHoldingSpaceRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceRefresh);
 }
 
 bool IsHoldingSpaceSuggestionsEnabled() {
@@ -4412,10 +4384,6 @@ bool IsOsSyncConsentRevampEnabled() {
 
 bool IsOverviewDeskNavigationEnabled() {
   return base::FeatureList::IsEnabled(kOverviewDeskNavigation);
-}
-
-bool IsOverviewNewFocusEnabled() {
-  return base::FeatureList::IsEnabled(kOverviewNewFocus);
 }
 
 bool IsPasspointSettingsEnabled() {
@@ -4930,16 +4898,8 @@ bool ShouldUseV2DeviceSync() {
          base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
 }
 
-bool IsUseAuthPanelInPasswordManagerEnabled() {
-  return base::FeatureList::IsEnabled(kUseAuthPanelInPasswordManager);
-}
-
-bool IsUseAuthPanelInSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kUseAuthPanelInSettings);
-}
-
-bool IsAuthPanelUsingOnlyPassword() {
-  return base::FeatureList::IsEnabled(kAuthPanelUsesOnlyPassword);
+bool IsUseAuthPanelInSessionEnabled() {
+  return base::FeatureList::IsEnabled(kUseAuthPanelInSession);
 }
 
 bool IsAllowPasswordlessSetupEnabled() {

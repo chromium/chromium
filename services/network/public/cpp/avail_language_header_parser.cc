@@ -36,6 +36,7 @@ std::optional<std::vector<std::string>> ParseAvailLanguage(
   }
 
   std::vector<std::string> result;
+  std::vector<std::string> non_default_languages;
   for (const auto& list_item : maybe_list.value()) {
     const std::string& token_value = list_item.member[0].item.GetString();
     // If the language is default like `en;d`, insert the language `en` into the
@@ -45,11 +46,13 @@ std::optional<std::vector<std::string>> ParseAvailLanguage(
     if (list_item.params.size() == 1 && list_item.params[0].first == "d" &&
         list_item.params[0].second.is_boolean() &&
         list_item.params[0].second.GetBoolean()) {
-      result.insert(result.begin(), token_value);
-    } else {
       result.push_back(token_value);
+    } else {
+      non_default_languages.push_back(token_value);
     }
   }
+  result.insert(result.end(), non_default_languages.begin(),
+                non_default_languages.end());
   return std::make_optional(std::move(result));
 }
 

@@ -38,6 +38,7 @@
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -369,9 +370,10 @@ apps::IntentFilterPtr CreateMimeTypeShareFilter(
   return intent_filter;
 }
 
-apps::IntentFilterPtr CreateIntentFilterFromScopeExtensionInfo(
-    const web_app::ScopeExtensionInfo& scope_extension_info) {
-  CHECK(!scope_extension_info.origin.opaque());
+apps::IntentFilterPtr CreateIntentFilterFromOrigin(
+    const url::Origin& origin,
+    bool add_subdomain_wildcard) {
+  CHECK(!origin.opaque());
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
@@ -380,20 +382,38 @@ apps::IntentFilterPtr CreateIntentFilterFromScopeExtensionInfo(
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
-                                         scope_extension_info.origin.scheme(),
+                                         origin.scheme(),
                                          apps::PatternMatchType::kLiteral);
 
+  std::string authority = apps_util::AuthorityView::Encode(origin);
+  if (add_subdomain_wildcard) {
+    DCHECK(!base::StartsWith(authority, "."));
+    authority = '.' + authority;
+  }
   intent_filter->AddSingleValueCondition(
-      apps::ConditionType::kAuthority,
-      apps_util::AuthorityView::Encode(scope_extension_info.origin),
-      scope_extension_info.has_origin_wildcard
-          ? apps::PatternMatchType::kSuffix
-          : apps::PatternMatchType::kLiteral);
+      apps::ConditionType::kAuthority, authority,
+      add_subdomain_wildcard ? apps::PatternMatchType::kSuffix
+                             : apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "",
                                          apps::PatternMatchType::kPrefix);
 
   return intent_filter;
+}
+
+apps::IntentFilters CreateIntentFiltersFromScopeExtensionInfo(
+    const web_app::ScopeExtensionInfo& scope_extension_info) {
+  apps::IntentFilters filters;
+  filters.push_back(
+      CreateIntentFilterFromOrigin(scope_extension_info.origin,
+                                   /*add_subdomain_wildcard=*/false));
+  if (scope_extension_info.has_origin_wildcard) {
+    // In addition to matching the exact same origin, the wildcard should match
+    // subdomains.
+    filters.push_back(CreateIntentFilterFromOrigin(
+        scope_extension_info.origin, /*add_subdomain_wildcard=*/true));
+  }
+  return filters;
 }
 
 apps::IntentFilters CreateShareIntentFiltersFromShareTarget(
@@ -628,8 +648,8 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
 
   for (const ScopeExtensionInfo& scope_extension_info :
        app.validated_scope_extensions()) {
-    filters.push_back(
-        CreateIntentFilterFromScopeExtensionInfo(scope_extension_info));
+    base::Extend(filters, CreateIntentFiltersFromScopeExtensionInfo(
+                              scope_extension_info));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

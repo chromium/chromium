@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
 
 /** Container view for omnibox tail suggestions. */
@@ -23,7 +22,7 @@ public class TailSuggestionView extends TextView {
         super(context, attrs);
         setGravity(Gravity.CENTER_VERTICAL);
         setMaxLines(1);
-        ApiCompatibilityUtils.setTextAppearance(this, R.style.TextAppearance_TextLarge_Primary);
+        setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
     }
 
     public TailSuggestionView(Context context) {

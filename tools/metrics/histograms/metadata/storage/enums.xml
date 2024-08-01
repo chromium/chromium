@@ -188,6 +188,73 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Notifications"/>
 </enum>
 
+<!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
+
+<enum name="InterestGroupStorageInitializationResult">
+  <int value="0" label="SuccessAlreadyCurrent"/>
+  <int value="1" label="SuccessUpgraded"/>
+  <int value="2" label="SuccessCreateSchema"/>
+  <int value="3" label="SuccessCreateSchemaAfterIncompatibleRaze"/>
+  <int value="4" label="SuccessCreateSchemaAfterNoMetaTableRaze"/>
+  <int value="5" label="FailedCreateInMemory"/>
+  <int value="6" label="FailedCreateDirectory"/>
+  <int value="7" label="FailedCreateFile"/>
+  <int value="8" label="FailedToRazeIncompatible"/>
+  <int value="9" label="FailedToRazeNoMetaTable"/>
+  <int value="10" label="FailedMetaTableInit"/>
+  <int value="11" label="FailedCreateSchema"/>
+  <int value="12" label="FailedCreateSchemaAfterIncompatibleRaze"/>
+  <int value="13" label="FailedCreateSchemaAfterNoMetaTableRaze"/>
+  <int value="14" label="FailedUpgradeDB"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageInitializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageJSONDeserializationResult) -->
+
+<enum name="InterestGroupStorageJSONDeserializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageJSONDeserializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageJSONSerializationResult) -->
+
+<enum name="InterestGroupStorageJSONSerializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageJSONSerializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageProtoDeserializationResult) -->
+
+<enum name="InterestGroupStorageProtoDeserializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageProtoDeserializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageProtoSerializationResult) -->
+
+<enum name="InterestGroupStorageProtoSerializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageProtoSerializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageVacuumResult) -->
+
+<enum name="InterestGroupStorageVacuumResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
+
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>
   <int value="1" label="Approved with new grant"/>

@@ -22,6 +22,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 using ::testing::_;
 
 class PerformanceControlsHatsServiceTest : public testing::Test {
@@ -155,11 +159,25 @@ class PerformanceControlsHatsServiceBatterySaverOptOutTest
 
 TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   SetMemorySaverEnabled(false);
+
+// Battery Saver is controlled by the OS on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool cros_battery_saver = ash::features::IsBatterySaverAvailable();
+
+  // Enable Chrome Battery Saver if CrOS Battery Saver isn't used.
+  const bool battery_saver_mode = !cros_battery_saver;
+  if (!cros_battery_saver) {
+    SetBatterySaverMode(performance_manager::user_tuning::prefs::
+                            BatterySaverModeState::kEnabledBelowThreshold);
+  }
+#else
   SetBatterySaverMode(performance_manager::user_tuning::prefs::
                           BatterySaverModeState::kEnabledBelowThreshold);
+  const bool battery_saver_mode = true;
+#endif
 
   SurveyBitsData expected_bits = {{"high_efficiency_mode", false},
-                                  {"battery_saver_mode", true}};
+                                  {"battery_saver_mode", battery_saver_mode}};
   SurveyStringData expected_strings = {};
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPerformance, _,
@@ -167,7 +185,9 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   performance_controls_hats_service()->OpenedNewTabPage();
 }
 
+// Battery Saver is controlled by the OS on ChromeOS
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
        LaunchesBatteryPerformanceSurvey) {
   EXPECT_CALL(
@@ -176,7 +196,8 @@ TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
                    _, _, _));
   performance_controls_hats_service()->OpenedNewTabPage();
 }
-#endif
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
        LaunchesMemorySaverOptOutSurvey) {
@@ -187,6 +208,9 @@ TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
   SetMemorySaverEnabled(false);
 }
 
+// Battery Saver is controlled by the OS on ChromeOS
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
        LaunchesBatterySaverOptOutSurvey) {
   EXPECT_CALL(*mock_hats_service(),
@@ -195,4 +219,69 @@ TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
                   10000, _, _));
   SetBatterySaverMode(performance_manager::user_tuning::prefs::
                           BatterySaverModeState::kDisabled);
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class PerformanceControlsHatsServiceDestructorTest : public testing::Test {
+ public:
+  PerformanceControlsHatsServiceDestructorTest() = default;
+
+  void SetUp() override {
+    testing::Test::SetUp();
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    TestingProfile* profile =
+        profile_manager_->CreateTestingProfile("Test", true);
+
+    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+    environment_.SetUp(&local_state_);
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {performance_manager::features::
+                 kPerformanceControlsBatterySaverOptOutSurvey,
+             {}},
+        },
+        {});
+
+    performance_controls_hats_service_ =
+        std::make_unique<PerformanceControlsHatsService>(profile);
+  }
+
+  void TearDown() override { testing::Test::TearDown(); }
+
+  void ResetPerformanceControlsHatsService() {
+    performance_controls_hats_service_.reset();
+  }
+
+  void ResetBatterySaverModeManager() { environment_.TearDown(); }
+
+ protected:
+  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
+      environment_;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<PerformanceControlsHatsService>
+      performance_controls_hats_service_;
+};
+
+TEST_F(PerformanceControlsHatsServiceDestructorTest,
+       HandlesBatterySaverModeManagerDestruction) {
+  EXPECT_TRUE(
+      performance_manager::user_tuning::BatterySaverModeManager::HasInstance());
+  ResetBatterySaverModeManager();
+
+  EXPECT_FALSE(
+      performance_manager::user_tuning::BatterySaverModeManager::HasInstance());
+  // Check that destroying the PerformanceControlsHatsService after the
+  // BatterySaverModeManager doesn't cause UAF.
+  ResetPerformanceControlsHatsService();
 }

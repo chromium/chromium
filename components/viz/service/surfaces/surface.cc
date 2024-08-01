@@ -747,6 +747,11 @@ const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
   return active_frame_data_->frame.metadata;
 }
 
+const FrameIntervalInputs& Surface::GetFrameIntervalInputs() const {
+  DCHECK(active_frame_data_);
+  return active_frame_data_->frame.metadata.frame_interval_inputs;
+}
+
 void Surface::SetActiveFrameForViewTransition(CompositorFrame frame) {
   CHECK(active_frame_data_.has_value());
 

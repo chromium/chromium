@@ -22,7 +22,18 @@ namespace ash {
 // on the app. Or represents the only opened browser window and its favicons
 // inside the screenshot preview.
 //
-// TODO(hewer): Add ASCII art.
+//   +----------------------------------------------+
+//   |  +-------+   +-----------------------+       |
+//   |  |       |   |                       |       |
+//   |  |       |   +-----------------------+       |
+//   |  |       |   +-+ +-+ +-+ +-+         ^       |
+//   |  +-------+   +-+ +-+ +-+ +-+         |       |
+//   +--^---------------^-------------------|-------+
+//   ^  |               |                   `Label`
+//   |  `ImageView`     |
+//   |                  `ImageView` inside `BoxLayoutView` (Chrome App)
+//   |
+//   `InformedRestoreItemView`
 class ASH_EXPORT InformedRestoreItemView : public views::BoxLayoutView {
   METADATA_HEADER(InformedRestoreItemView, views::BoxLayoutView)
 

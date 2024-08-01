@@ -192,7 +192,7 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
   }
 
   LocalFrame* frame = GetElement()->GetDocument().GetFrame();
-  auto* it = decode_requests_.begin();
+  auto it = decode_requests_.begin();
   while (it != decode_requests_.end()) {
     // If the image already in kDispatched state or still in kPendingMicrotask
     // state, then we don't dispatch decodes for it. So, the only case to handle
@@ -226,8 +226,7 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
 void ImageLoader::DecodeRequestFinished(uint64_t request_id, bool success) {
   // First we find the corresponding request id, then we either resolve or
   // reject it and remove it from the list.
-  for (auto* it = decode_requests_.begin(); it != decode_requests_.end();
-       ++it) {
+  for (auto it = decode_requests_.begin(); it != decode_requests_.end(); ++it) {
     auto& request = *it;
     if (request->request_id() != request_id)
       continue;
@@ -250,7 +249,7 @@ void ImageLoader::RejectPendingDecodes(UpdateType update_type) {
   // have to reject even the pending mutation requests because conceptually they
   // would have been scheduled before the synchronous update ran, so they
   // referred to the old image.
-  for (auto* it = decode_requests_.begin(); it != decode_requests_.end();) {
+  for (auto it = decode_requests_.begin(); it != decode_requests_.end();) {
     auto& request = *it;
     if (update_type == UpdateType::kAsync &&
         request->state() == DecodeRequest::kPendingMicrotask) {

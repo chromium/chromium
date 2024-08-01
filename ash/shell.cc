@@ -40,6 +40,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/auth/active_session_auth_controller_impl.h"
 #include "ash/birch/birch_model.h"
 #include "ash/booting/booting_animation_controller.h"
 #include "ash/calendar/calendar_controller.h"
@@ -693,6 +694,8 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       parent_access_controller_(std::make_unique<ParentAccessControllerImpl>()),
       local_authentication_request_controller_(
           std::make_unique<LocalAuthenticationRequestControllerImpl>()),
+      active_session_auth_controller_(
+          std::make_unique<ActiveSessionAuthControllerImpl>()),
       session_controller_(std::make_unique<SessionControllerImpl>()),
       feature_discover_reporter_(
           std::make_unique<FeatureDiscoveryDurationReporterImpl>(
@@ -1038,6 +1041,7 @@ Shell::~Shell() {
   accessibility_delegate_.reset();
   accessibility_focus_ring_controller_.reset();
   policy_recommendation_restorer_.reset();
+  active_session_auth_controller_.reset();
   ime_controller_.reset();
   back_gesture_event_handler_.reset();
 
@@ -1864,6 +1868,8 @@ void Shell::Init(
   // Initialize the D-Bus bus and services for ash.
   dbus_bus_ = dbus_bus;
   ash_dbus_services_ = std::make_unique<AshDBusServices>(dbus_bus.get());
+
+  tab_strip_delegate_ = shell_delegate_->CreateTabStripDelegate();
 }
 
 void Shell::InitializeDisplayManager() {

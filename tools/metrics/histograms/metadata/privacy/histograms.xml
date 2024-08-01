@@ -78,22 +78,6 @@ reviewer.
 </variants>
 
 <variants name="PSNotice">
-  <variant name="Full3PCDClankBrApp"
-      summary="3PCD notice on Clank Browser App."/>
-  <variant name="Full3PCDClankCCT" summary="3PCD notice on Clank CCT."/>
-  <variant name="Full3PCDDesktopIPH" summary="3PCD notice on Desktop."/>
-  <variant name="Full3PCDSilentClankBrApp"
-      summary="Silent 3PCD notice on Clank Browser App."/>
-  <variant name="Full3PCDSilentClankCCT"
-      summary="Silent 3PCD notice on Clank CCT."/>
-  <variant name="Full3PCDSilentDesktopIPH"
-      summary="Silent 3PCD notice on Desktop."/>
-  <variant name="Full3PCDWithIPPClankBrApp"
-      summary="3PCD with IPP notice on Browser App."/>
-  <variant name="Full3PCDWithIPPClankCCT"
-      summary="3PCD with IPP notice on Clank CCT."/>
-  <variant name="Full3PCDWithIPPDesktopIPH"
-      summary="3PCD with IPP notice on Desktop."/>
   <variant name="TopicsConsentDesktopModal"
       summary="Consent notice with Topics API on Desktop."/>
   <variant name="TopicsConsentModalClankBrApp"
@@ -276,7 +260,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SiteDataAccessType"
-    enum="ThirdPartySiteDataAccessType" expires_after="2024-11-17">
+    enum="ThirdPartySiteDataAccessType" expires_after="2025-01-26">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>
@@ -288,7 +272,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SiteEngagementScore"
-    units="units" expires_after="2024-11-17">
+    units="units" expires_after="2025-01-26">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>
@@ -450,7 +434,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -595,7 +579,7 @@ reviewer.
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2024-09-30">
+    expires_after="2025-01-26">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -619,7 +603,7 @@ reviewer.
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2024-09-30">
+    expires_after="2025-01-26">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -629,7 +613,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord"
-    units="days" expires_after="2024-09-30">
+    units="days" expires_after="2025-01-26">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -700,7 +684,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.Percentage.{ActivityTypeStoragePercentage}2"
-    units="%" expires_after="2024-09-30">
+    units="%" expires_after="2025-01-26">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -885,7 +869,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.ScheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="2024-11-24">
+    enum="AggregationServiceObserverReportStatus" expires_after="2025-01-26">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1053,7 +1037,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.UnscheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="2024-11-24">
+    enum="AggregationServiceObserverReportStatus" expires_after="2025-01-26">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1351,7 +1335,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
-    units="counts" expires_after="2024-11-03">
+    units="counts" expires_after="2025-01-26">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1044891598689252897">Weby budou fungovat normálně</translation>
 <translation id="1073417869336441572">Pomozte nám vylepšit Chrome tím, že nám sdělíte, proč jste povolili soubory cookie třetích stran. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Skrýt kartu s poklesem ceny</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1192844206376121885">Tímto vymažete všechna uložená data a soubory cookie webu <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Nápověda a zpětná vazba</translation>
 <translation id="2501278716633472235">Zpět</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
-<translation id="2550801787432930915">Karta s poklesem ceny</translation>
 <translation id="2570922361219980984">Přístup k poloze je vypnut také v tomto zařízení. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3859306556332390985">Přetočit dopředu</translation>
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
+<translation id="3905475044299942653">Zastavit spousty oznámení</translation>
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Některé funkce mohou být omezeny. Související weby mohou soubory cookie třetích stran používat i nadále.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Chráněný obsah</translation>
 <translation id="662080504995468778">Zůstat</translation>
 <translation id="6653342741369270081">Režim celé obrazovky ukončíte stisknutím tlačítka Zpět.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Skrýt modul Pokračovat s touto kartou}few{Skrýt modul Pokračovat s těmito kartami}many{Skrýt modul Pokračovat s těmito kartami}other{Skrýt modul Pokračovat s těmito kartami}}</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Aktivní stahování</translation>
 <translation id="6722828510648505498">Blokovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Vyberte možnost pro web <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6818926723028410516">Výběr položek</translation>
+<translation id="6840760312327750441">Chcete-li karty seskupit, podržte některou kartu. Potom ji přetáhněte na jinou kartu.</translation>
 <translation id="6864395892908308021">Toto zařízení neumí číst NFC</translation>
 <translation id="6912998170423641340">Blokovat webům přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6945221475159498467">Vybrat</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
 <translation id="930525582205581608">Zapomenout tento web?</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
+<translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="967624055006145463">Uložená data</translation>
 </translationbundle>

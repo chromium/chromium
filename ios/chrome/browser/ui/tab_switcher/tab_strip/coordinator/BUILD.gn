@@ -13,12 +13,16 @@ source_set("coordinator") {
     ":tab_strip_mediator_utils",
     "//base",
     "//components/favicon/ios",
+    "//components/saved_tab_groups:core",
+    "//components/strings",
     "//components/tab_groups",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
@@ -29,9 +33,11 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
     "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups:tab_group_creation",
@@ -64,6 +70,23 @@ source_set("tab_strip_mediator_utils") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_tab_strip_consumer.h",
+    "fake_tab_strip_consumer.mm",
+    "fake_tab_strip_handler.h",
+    "fake_tab_strip_handler.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:swift",
+    "//ios/web/public/test/fakes",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -73,10 +96,12 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     ":tab_strip_mediator_utils",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/favicon/core",
     "//components/favicon/ios",
+    "//components/saved_tab_groups:model",
     "//components/saved_tab_groups:test_support",
     "//components/tab_groups",
     "//ios/chrome/browser/drag_and_drop/model",

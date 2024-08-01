@@ -4824,6 +4824,13 @@ void RenderFrameImpl::WasShown() {
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
+void RenderFrameImpl::OnFrameVisibilityChanged(
+    blink::mojom::FrameVisibility render_status) {
+  for (auto& observer : observers_) {
+    observer.OnFrameVisibilityChanged(render_status);
+  }
+}
+
 bool RenderFrameImpl::IsMainFrame() {
   return is_main_frame_;
 }
@@ -5054,6 +5061,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
       GetWebFrame()->PerformanceMetricsForNestedContexts().UnloadStart();
   params->unload_end =
       GetWebFrame()->PerformanceMetricsForNestedContexts().UnloadEnd();
+  params->commit_navigation_start = navigation_state->commit_start_time();
   params->commit_navigation_end = GetWebFrame()
                                       ->PerformanceMetricsForNestedContexts()
                                       .CommitNavigationEnd();

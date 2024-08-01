@@ -4,6 +4,8 @@
 
 module segmentation_internals.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Status information about the segmentation service.
 struct ServiceStatus {
   // Whether the service is initialized.
@@ -29,6 +31,9 @@ struct SegmentInfo {
 
   // Latest result for executing the segment.
   string prediction_result;
+
+  // Timestamp when the prediction result was computed.
+  mojo_base.mojom.Time prediction_timestamp;
 };
 
 // Information about a segmentation client.

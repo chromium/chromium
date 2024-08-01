@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_L10N_FILE_UTIL_H_
 #define EXTENSIONS_BROWSER_L10N_FILE_UTIL_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -21,14 +22,12 @@ enum class GzippedMessagesPermission;
 
 namespace extensions::l10n_file_util {
 
-// TODO(devlin): All these methods return ownership of the object. Make them
-// return unique_ptrs.
-
 // Loads the extension message bundle substitution map. Contains at least
 // the extension_id item. Does not supported compressed locale files. Passes
 // |gzip_permission| to extension_l10n_util::LoadMessageCatalogs (see
 // extension_l10n_util.h).
-MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMap(
+std::unique_ptr<MessageBundle::SubstitutionMap>
+LoadMessageBundleSubstitutionMap(
     const base::FilePath& extension_path,
     const ExtensionId& extension_id,
     const std::string& default_locale,
@@ -37,13 +36,14 @@ MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMap(
 // Loads the extension message bundle substitution map for a non-localized
 // extension. Contains only the extension_id item.
 // This doesn't require hitting disk, so it's safe to call on any thread.
-MessageBundle::SubstitutionMap* LoadNonLocalizedMessageBundleSubstitutionMap(
-    const ExtensionId& extension_id);
+std::unique_ptr<MessageBundle::SubstitutionMap>
+LoadNonLocalizedMessageBundleSubstitutionMap(const ExtensionId& extension_id);
 
 // Loads the extension message bundle substitution map from the specified paths.
 // Contains at least the extension_id item. Passes |gzip_permission| to
 // extension_l10n_util::LoadMessageCatalogs (see extension_l10n_util.h).
-MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMapFromPaths(
+std::unique_ptr<MessageBundle::SubstitutionMap>
+LoadMessageBundleSubstitutionMapFromPaths(
     const std::vector<base::FilePath>& paths,
     const ExtensionId& extension_id,
     const std::string& default_locale,

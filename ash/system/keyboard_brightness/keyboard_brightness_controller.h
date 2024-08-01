@@ -69,7 +69,9 @@ class ASH_EXPORT KeyboardBrightnessController
       KeyboardBrightnessChangeSource source) override;
   void HandleGetKeyboardBrightness(
       base::OnceCallback<void(std::optional<double>)> callback) override;
-  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override;
+  void HandleSetKeyboardAmbientLightSensorEnabled(
+      bool enabled,
+      KeyboardAmbientLightSensorEnabledChangeSource source) override;
   void HandleGetKeyboardAmbientLightSensorEnabled(
       base::OnceCallback<void(std::optional<bool>)> callback) override;
 

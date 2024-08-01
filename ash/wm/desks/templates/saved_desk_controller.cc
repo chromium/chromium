@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"

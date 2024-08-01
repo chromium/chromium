@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">隐藏降价卡片</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">此操作会删除 <ph name="ORIGIN" /> 存储的全部数据和 Cookie。</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
+<translation id="1500473259453106018">隐藏“在标签页上显示降价通知”卡片</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>
 <translation id="1547123415014299762">允许使用第三方 Cookie</translation>
 <translation id="1568470248891039841">您访问的网站可以嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站可向您请求权限，以便使用它们在您浏览所访网站时保存的与您相关的信息。<ph name="BEGIN_LINK" />详细了解嵌入式内容<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">帮助和反馈</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
-<translation id="2550801787432930915">降价卡片</translation>
 <translation id="2570922361219980984">此设备的位置信息使用权也已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3232293466644486101">删除浏览数据…</translation>
 <translation id="3242646949159196181">开启此设置后，网站可以播放声音。关闭此设置后，网站无法播放声音。</translation>
+<translation id="3273479183583863618">在标签页上显示降价通知</translation>
 <translation id="3277252321222022663">允许网站使用传感器（推荐）</translation>
 <translation id="3285500645985761267">允许相关网站查看您在该群组中的活动记录</translation>
 <translation id="3295019059349372795">第 11 章：奥兹国神奇的翡翠城</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
+<translation id="3905475044299942653">停止发送大量通知</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">某些功能可能无法正常运行。相关网站仍然可以使用第三方 Cookie。</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">受保护的内容</translation>
 <translation id="662080504995468778">留下</translation>
 <translation id="6653342741369270081">按返回按钮即可退出全屏模式。</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{隐藏“使用此标签页继续”}other{隐藏“使用这些标签页继续”}}</translation>
 <translation id="6689172468748959065">个人资料照片</translation>
 <translation id="6697925417670533197">正在下载内容</translation>
 <translation id="6722828510648505498">屏蔽来自身份服务的登录提示。</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">为 <ph name="SITE_NAME" /> 选择一个选项</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">选择内容</translation>
+<translation id="6840760312327750441">要将标签页分组，请轻触并按住某个标签页，然后拖动到另一个标签页上。</translation>
 <translation id="6864395892908308021">此设备无法读取 NFC 数据</translation>
+<translation id="6870169401250095575">隐藏“安全检查”卡片</translation>
 <translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6950072572526089586">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7990211076305263060">开启此设置后，网站可以请求使用您的麦克风。关闭此设置后，网站无法使用您的麦克风。</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{隐藏“继续使用此标签页”卡片}other{隐藏“继续使用这些标签页”卡片}}</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8067883171444229417">播放视频</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">这是一个危险网页</translation>
 <translation id="930525582205581608">移除此网站？</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
+<translation id="959682366969460160">让各项内容井井有条</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 </translationbundle>

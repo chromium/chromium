@@ -316,11 +316,13 @@ const std::string& ApplicationContextImpl::GetApplicationCountry() {
   return application_country_;
 }
 
-ios::ChromeBrowserStateManager*
+ChromeBrowserStateManager*
 ApplicationContextImpl::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!chrome_browser_state_manager_) {
-    chrome_browser_state_manager_.reset(new ChromeBrowserStateManagerImpl());
+    chrome_browser_state_manager_ =
+        std::make_unique<ChromeBrowserStateManagerImpl>(
+            GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
   return chrome_browser_state_manager_.get();
 }

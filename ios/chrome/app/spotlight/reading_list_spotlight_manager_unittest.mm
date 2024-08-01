@@ -80,7 +80,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     model_ = ReadingListModelFactory::GetInstance()->GetForBrowserState(
         browser_state_.get());

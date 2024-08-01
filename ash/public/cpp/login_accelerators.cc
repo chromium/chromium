@@ -63,10 +63,6 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
        ui::VKEY_H, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
        false, kScopeOobe,
     }, {
-       kEnableConsumerKiosk,
-       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-       false, kScopeOobe,
-    }, {
        kLaunchDiagnostics,
        ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
        true, kScopeOobe | kScopeLogin,

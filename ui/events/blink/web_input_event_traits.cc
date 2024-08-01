@@ -56,15 +56,14 @@ void ApppendEventDetails(const WebMouseWheelEvent& event, std::string* result) {
 }
 
 void ApppendEventDetails(const WebGestureEvent& event, std::string* result) {
-  StringAppendF(
-      result,
-      "{\n Pos: (%f, %f)\n GlobalPos: (%f, %f)\n SourceDevice: %d\n"
-      " RawData: (%f, %f, %f, %f)\n}",
-      event.PositionInWidget().x(), event.PositionInWidget().y(),
-      event.PositionInScreen().x(), event.PositionInScreen().y(),
-      static_cast<int>(event.SourceDevice()), event.data.scroll_update.delta_x,
-      event.data.scroll_update.delta_y, event.data.scroll_update.velocity_x,
-      event.data.scroll_update.velocity_y);
+  StringAppendF(result,
+                "{\n Pos: (%f, %f)\n GlobalPos: (%f, %f)\n SourceDevice: %d\n"
+                " RawData: (%f, %f)\n}",
+                event.PositionInWidget().x(), event.PositionInWidget().y(),
+                event.PositionInScreen().x(), event.PositionInScreen().y(),
+                static_cast<int>(event.SourceDevice()),
+                event.data.scroll_update.delta_x,
+                event.data.scroll_update.delta_y);
 }
 
 void ApppendTouchPointDetails(const WebTouchPoint& point, std::string* result) {

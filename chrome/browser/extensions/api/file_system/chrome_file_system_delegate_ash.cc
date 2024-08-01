@@ -167,8 +167,9 @@ void DispatchVolumeListChangeEventAsh(
   file_system::VolumeListChangedEvent event_args;
   FillVolumeList(browser_context, &event_args.volumes);
   for (const auto& extension : registry->enabled_extensions()) {
-    if (!consent_provider->IsGrantable(*extension.get()))
+    if (!consent_provider->IsGrantable(*extension.get())) {
       continue;
+    }
 
     event_router->DispatchEventToExtension(
         extension->id(),

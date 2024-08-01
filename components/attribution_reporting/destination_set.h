@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
@@ -47,7 +46,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) DestinationSet {
   DestinationSet& operator=(DestinationSet&&);
 
   const Destinations& destinations() const {
-    CHECK(IsValid(), base::NotFatalUntil::M128);
+    CHECK(IsValid());
     return destinations_;
   }
 

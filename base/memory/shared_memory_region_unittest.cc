@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -22,14 +19,12 @@ namespace base {
 
 const size_t kRegionSize = 1024;
 
-bool IsMemoryFilledWithByte(const void* memory, size_t size, char byte) {
-  const char* start_ptr = static_cast<const char*>(memory);
-  const char* end_ptr = start_ptr + size;
-  for (const char* ptr = start_ptr; ptr < end_ptr; ++ptr) {
-    if (*ptr != byte)
+bool IsMemoryFilledWithByte(span<const uint8_t> memory, uint8_t byte) {
+  for (uint8_t c : memory) {
+    if (c != byte) {
       return false;
+    }
   }
-
   return true;
 }
 
@@ -41,8 +36,10 @@ class SharedMemoryRegionTest : public ::testing::Test {
         CreateMappedRegion<SharedMemoryRegionType>(kRegionSize);
     ASSERT_TRUE(region_.IsValid());
     ASSERT_TRUE(rw_mapping_.IsValid());
-    memset(rw_mapping_.memory(), 'G', kRegionSize);
-    EXPECT_TRUE(IsMemoryFilledWithByte(rw_mapping_.memory(), kRegionSize, 'G'));
+    span<uint8_t> mapped = base::span(rw_mapping_);
+    EXPECT_EQ(mapped.size(), kRegionSize);
+    std::ranges::fill(mapped, uint8_t{'G'});
+    EXPECT_TRUE(IsMemoryFilledWithByte(mapped, 'G'));
   }
 
  protected:
@@ -72,14 +69,12 @@ TYPED_TEST(SharedMemoryRegionTest, MoveRegion) {
   // Check that moved region maps correctly.
   typename TypeParam::MappingType mapping = moved_region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  EXPECT_NE(this->rw_mapping_.memory(), mapping.memory());
-  EXPECT_EQ(memcmp(this->rw_mapping_.memory(), mapping.memory(), kRegionSize),
-            0);
+  EXPECT_NE(this->rw_mapping_.data(), mapping.data());
+  EXPECT_EQ(base::span(this->rw_mapping_), base::span(mapping));
 
   // Verify that the second mapping reflects changes in the first.
-  memset(this->rw_mapping_.memory(), '#', kRegionSize);
-  EXPECT_EQ(memcmp(this->rw_mapping_.memory(), mapping.memory(), kRegionSize),
-            0);
+  std::ranges::fill(base::span(this->rw_mapping_), '#');
+  EXPECT_EQ(base::span(this->rw_mapping_), base::span(mapping));
 }
 
 TYPED_TEST(SharedMemoryRegionTest, MappingValidAfterClose) {
@@ -87,28 +82,25 @@ TYPED_TEST(SharedMemoryRegionTest, MappingValidAfterClose) {
   this->region_ = TypeParam();
   EXPECT_FALSE(this->region_.IsValid());
   ASSERT_TRUE(this->rw_mapping_.IsValid());
-  EXPECT_TRUE(
-      IsMemoryFilledWithByte(this->rw_mapping_.memory(), kRegionSize, 'G'));
+  EXPECT_TRUE(IsMemoryFilledWithByte(base::span(this->rw_mapping_), 'G'));
 }
 
 TYPED_TEST(SharedMemoryRegionTest, MapTwice) {
   // The second mapping is either writable or read-only.
   typename TypeParam::MappingType mapping = this->region_.Map();
   ASSERT_TRUE(mapping.IsValid());
-  EXPECT_NE(this->rw_mapping_.memory(), mapping.memory());
-  EXPECT_EQ(memcmp(this->rw_mapping_.memory(), mapping.memory(), kRegionSize),
-            0);
+  EXPECT_NE(this->rw_mapping_.data(), mapping.data());
+  EXPECT_EQ(base::span(this->rw_mapping_), base::span(mapping));
 
   // Verify that the second mapping reflects changes in the first.
-  memset(this->rw_mapping_.memory(), '#', kRegionSize);
-  EXPECT_EQ(memcmp(this->rw_mapping_.memory(), mapping.memory(), kRegionSize),
-            0);
+  std::ranges::fill(base::span(this->rw_mapping_), '#');
+  EXPECT_EQ(base::span(this->rw_mapping_), base::span(mapping));
 
   // Close the region and unmap the first memory segment, verify the second
   // still has the right data.
   this->region_ = TypeParam();
   this->rw_mapping_ = WritableSharedMemoryMapping();
-  EXPECT_TRUE(IsMemoryFilledWithByte(mapping.memory(), kRegionSize, '#'));
+  EXPECT_TRUE(IsMemoryFilledWithByte(base::span(mapping), '#'));
 }
 
 TYPED_TEST(SharedMemoryRegionTest, MapUnmapMap) {
@@ -116,7 +108,7 @@ TYPED_TEST(SharedMemoryRegionTest, MapUnmapMap) {
 
   typename TypeParam::MappingType mapping = this->region_.Map();
   ASSERT_TRUE(mapping.IsValid());
-  EXPECT_TRUE(IsMemoryFilledWithByte(mapping.memory(), kRegionSize, 'G'));
+  EXPECT_TRUE(IsMemoryFilledWithByte(base::span(mapping), 'G'));
 }
 
 TYPED_TEST(SharedMemoryRegionTest, SerializeAndDeserialize) {
@@ -128,12 +120,11 @@ TYPED_TEST(SharedMemoryRegionTest, SerializeAndDeserialize) {
   EXPECT_FALSE(this->region_.IsValid());
   typename TypeParam::MappingType mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  EXPECT_TRUE(IsMemoryFilledWithByte(mapping.memory(), kRegionSize, 'G'));
+  EXPECT_TRUE(IsMemoryFilledWithByte(base::span(mapping), 'G'));
 
   // Verify that the second mapping reflects changes in the first.
-  memset(this->rw_mapping_.memory(), '#', kRegionSize);
-  EXPECT_EQ(memcmp(this->rw_mapping_.memory(), mapping.memory(), kRegionSize),
-            0);
+  std::ranges::fill(base::span(this->rw_mapping_), '#');
+  EXPECT_EQ(base::span(this->rw_mapping_), base::span(mapping));
 }
 
 // Map() will return addresses which are aligned to the platform page size, this
@@ -141,7 +132,7 @@ TYPED_TEST(SharedMemoryRegionTest, SerializeAndDeserialize) {
 // minimum alignment that callers can count on, test for it here.
 TYPED_TEST(SharedMemoryRegionTest, MapMinimumAlignment) {
   EXPECT_EQ(0U,
-            reinterpret_cast<uintptr_t>(this->rw_mapping_.memory()) &
+            reinterpret_cast<uintptr_t>(this->rw_mapping_.data()) &
                 (subtle::PlatformSharedMemoryRegion::kMapMinimumAlignment - 1));
 }
 
@@ -165,10 +156,10 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
   auto [region, rw_mapping] = CreateMappedRegion<TypeParam>(kDataSize);
   ASSERT_TRUE(region.IsValid());
   ASSERT_TRUE(rw_mapping.IsValid());
-  uint32_t* ptr = static_cast<uint32_t*>(rw_mapping.memory());
+  auto map = rw_mapping.template GetMemoryAsSpan<uint32_t>();
 
   for (size_t i = 0; i < kCount; ++i)
-    ptr[i] = i;
+    map[i] = i;
 
   rw_mapping = WritableSharedMemoryMapping();
 
@@ -179,9 +170,9 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
     ASSERT_TRUE(mapping.IsValid());
 
     size_t int_offset = bytes_offset / sizeof(uint32_t);
-    const uint32_t* ptr2 = static_cast<const uint32_t*>(mapping.memory());
+    auto map2 = mapping.template GetMemoryAsSpan<uint32_t>();
     for (size_t i = int_offset; i < kCount; ++i) {
-      EXPECT_EQ(ptr2[i - int_offset], i);
+      EXPECT_EQ(map2[i - int_offset], i);
     }
   }
 }
@@ -211,9 +202,9 @@ TYPED_TEST(DuplicatableSharedMemoryRegionTest, Duplicate) {
   EXPECT_EQ(this->region_.GetGUID(), dup_region.GetGUID());
   typename TypeParam::MappingType mapping = dup_region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  EXPECT_NE(this->rw_mapping_.memory(), mapping.memory());
+  EXPECT_NE(this->rw_mapping_.data(), mapping.data());
   EXPECT_EQ(this->rw_mapping_.guid(), mapping.guid());
-  EXPECT_TRUE(IsMemoryFilledWithByte(mapping.memory(), kRegionSize, 'G'));
+  EXPECT_TRUE(IsMemoryFilledWithByte(base::span(mapping), 'G'));
 }
 
 class ReadOnlySharedMemoryRegionTest : public ::testing::Test {
@@ -260,8 +251,15 @@ TEST_F(ReadOnlySharedMemoryRegionTest,
   ASSERT_TRUE(region.IsValid());
   ReadOnlySharedMemoryMapping mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  void* memory_ptr = const_cast<void*>(mapping.memory());
-  EXPECT_DEATH_IF_SUPPORTED(memset(memory_ptr, 'G', kRegionSize), "");
+  base::span<const uint8_t> mem(mapping);
+  base::span<uint8_t> mut_mem =
+      // SAFETY: The data() and size() from `mem` produce a valid span as they
+      // come from another span of the same type (modulo const). Const-casting
+      // is not Undefined Behaviour here as it's not pointing to a const object.
+      // We're testing that we crash if writing to a ReadOnly shared memory
+      // backing.
+      UNSAFE_BUFFERS(base::span(const_cast<uint8_t*>(mem.data()), mem.size()));
+  EXPECT_DEATH_IF_SUPPORTED(std::ranges::fill(mut_mem, 'G'), "");
 }
 
 TEST_F(ReadOnlySharedMemoryRegionTest,
@@ -270,8 +268,15 @@ TEST_F(ReadOnlySharedMemoryRegionTest,
   ASSERT_TRUE(region.IsValid());
   ReadOnlySharedMemoryMapping mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  void* memory_ptr = const_cast<void*>(mapping.memory());
-  EXPECT_DEATH_IF_SUPPORTED(memset(memory_ptr, 'G', kRegionSize), "");
+  base::span<const uint8_t> mem(mapping);
+  base::span<uint8_t> mut_mem =
+      // SAFETY: The data() and size() from `mem` produce a valid span as they
+      // come from another span of the same type (modulo const). Const-casting
+      // is not Undefined Behaviour here as it's not pointing to a const object.
+      // We're testing that we crash if writing to a ReadOnly shared memory
+      // backing.
+      UNSAFE_BUFFERS(base::span(const_cast<uint8_t*>(mem.data()), mem.size()));
+  EXPECT_DEATH_IF_SUPPORTED(std::ranges::fill(mut_mem, 'G'), "");
 }
 
 }  // namespace base

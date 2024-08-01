@@ -5,17 +5,20 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -26,6 +29,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -36,6 +40,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v3.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -84,6 +89,9 @@ bool IsImeEnabled() {
     return true;
   if (cmd_line->HasSwitch(switches::kDisableWaylandIme))
     return false;
+  if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3)) {
+    return true;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros chrome, we check whether ash-chrome supports IME, then
@@ -240,25 +248,55 @@ WaylandInputMethodContext::~WaylandInputMethodContext() {
   connection_->window_manager()->RemoveObserver(this);
 }
 
+void WaylandInputMethodContext::CreateTextInputWrapper() {
+  // Can be specified as value for --wayland-ime-version to use text-input-v1 or
+  // text-input-v3.
+  constexpr char kWaylandTextInputVersion1[] = "1";
+  constexpr char kWaylandTextInputVersion3[] = "3";
+
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  const std::string version_from_cmd_line =
+      cmd_line->GetSwitchValueASCII(switches::kWaylandTextInputVersion);
+  const bool enable_using_cmd_line_version =
+      cmd_line->HasSwitch(switches::kEnableWaylandIme) &&
+      !version_from_cmd_line.empty();
+
+  if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3) ||
+      (enable_using_cmd_line_version &&
+       version_from_cmd_line == kWaylandTextInputVersion3)) {
+    text_input_ = std::make_unique<ZWPTextInputWrapperV3>(
+        connection_, this, connection_->text_input_manager_v3());
+    return;
+  } else if (enable_using_cmd_line_version &&
+             version_from_cmd_line != kWaylandTextInputVersion1) {
+    LOG(WARNING) << "text input version should be either 1 or 3. Defaulting to "
+                    "text-input-v1.";
+  }
+  text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
+      connection_, this, connection_->text_input_manager_v1(),
+      connection_->text_input_extension_v1());
+}
+
 void WaylandInputMethodContext::Init(
     bool initialize_for_testing,
-    std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing) {
+    std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing,
+    std::optional<base::nix::DesktopEnvironment> desktop_for_testing) {
+  desktop_environment_ = desktop_for_testing.value_or(
+      base::nix::GetDesktopEnvironment(base::Environment::Create().get()));
   if (wrapper_for_testing) {
     text_input_ = std::move(wrapper_for_testing);
     return;
   }
 
   bool use_ozone_wayland_vkb = initialize_for_testing || IsImeEnabled();
-
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
-  if (use_ozone_wayland_vkb && !text_input_ &&
-      connection_->text_input_manager_v1()) {
-    text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-        connection_, this, connection_->text_input_manager_v1(),
-        connection_->text_input_extension_v1());
+  if (!use_ozone_wayland_vkb || text_input_) {
+    return;
   }
+
+  CreateTextInputWrapper();
 }
 
 bool WaylandInputMethodContext::DispatchKeyEvent(const KeyEvent& key_event) {
@@ -578,6 +616,28 @@ void WaylandInputMethodContext::OnPreeditString(
         static_cast<uint32_t>(preedit_cursor.start()),
         static_cast<uint32_t>(preedit_cursor.end())};
     base::UTF8ToUTF16AndAdjustOffsets(text, &offsets);
+    if (desktop_environment_ == base::nix::DESKTOP_ENVIRONMENT_GNOME) {
+      if (!compositor_sends_invalid_cursor_end_) {
+        // This was seen in gnome where it sends erroneous value for cursor_end
+        // in text-input-v3 [1].
+        // Currently only way to detect this is by checking if cursor end is
+        // less than cursor start or the value is invalid.
+        //
+        // [1] https://gitlab.gnome.org/GNOME/mutter/-/issues/3547
+        if (offsets[1] == std::u16string::npos || offsets[1] < offsets[0]) {
+          DVLOG(1) << "Detected invalid cursor end in gnome. Will disable "
+                      "preedit selection";
+          compositor_sends_invalid_cursor_end_ = true;
+        }
+      }
+      // Once an erroneous cursor end value is detected, it always be wrong
+      // going forward.
+      // So set it equal to cursor begin as workaround, i.e. default to cursor
+      // position at cursor_begin instead of using a selection.
+      if (compositor_sends_invalid_cursor_end_) {
+        offsets[1] = offsets[0];
+      }
+    }
     if (offsets[0] == std::u16string::npos ||
         offsets[1] == std::u16string::npos) {
       DVLOG(1) << "got invalid cursor position (byte offset)="

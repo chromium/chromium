@@ -35,17 +35,6 @@ const char kFormCardNumber[] = "CCNo";
 const char kFormCardExpirationMonth[] = "CCExpiresMonth";
 const char kFormCardExpirationYear[] = "CCExpiresYear";
 
-using base::test::ios::kWaitForActionTimeout;
-
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
-}
-
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetEGTest : ChromeTestCase
@@ -383,7 +372,7 @@ NSString* ExpirationDateNSString() {
   [[EarlGrey selectElementWithMatcher:useKeyboardButton]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Verify that the Payments Bottom Sheet "Show Details" button opens the proper
@@ -491,7 +480,7 @@ NSString* ExpirationDateNSString() {
       performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
 
   // With no suggestions left, the keyboard should open instead.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Make sure the bottom sheet isn't there.
   [[EarlGrey selectElementWithMatcher:continueButton]
@@ -513,7 +502,7 @@ NSString* ExpirationDateNSString() {
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
       performAction:grey_tap()];
 
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Tests that both the virtual card and the original card are shown

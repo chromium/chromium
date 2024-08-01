@@ -20,6 +20,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
@@ -37,7 +38,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/shell_federated_permission_context.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -405,9 +405,9 @@ class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  ShellFederatedPermissionContext* sharing_context() {
+  InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
+    return static_cast<InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 };
@@ -423,9 +423,9 @@ class WebIdIdpSigninStatusForFetchKeepAliveBrowserTest
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  ShellFederatedPermissionContext* sharing_context() {
+  InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
+    return static_cast<InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 };
@@ -444,9 +444,9 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  ShellFederatedPermissionContext* sharing_context() {
+  InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
+    return static_cast<InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 };
@@ -1165,9 +1165,9 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  ShellFederatedPermissionContext* sharing_context() {
+  InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
+    return static_cast<InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 
@@ -1640,7 +1640,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
   // The client id `client_id_1` is on the `approved_clients` list defined in
   // content/test/data/fedcm/accounts_endpoint.json so by exempting the IdP from
   // the check, auto re-authn can be triggered and a token can be returned.
-  static_cast<ShellFederatedPermissionContext*>(
+  static_cast<InMemoryFederatedPermissionContext*>(
       shell()
           ->web_contents()
           ->GetBrowserContext()

@@ -46,14 +46,16 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
       autofill::FieldGlobalId field,
       autofill::AutofillPlusAddressDelegate::SuggestionContext
           suggestion_context,
-      autofill::AutofillClient::PasswordFormType form_type,
+      autofill::AutofillClient::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type,
       size_t plus_address_count);
 
  private:
   // autofill::AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
-  void OnAutofillManagerReset(autofill::AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      autofill::AutofillManager& manager,
+      autofill::AutofillManager::LifecycleState old_state,
+      autofill::AutofillManager::LifecycleState new_state) override;
   void OnFormSubmitted(autofill::AutofillManager& manager,
                        const autofill::FormData& form) override;
 

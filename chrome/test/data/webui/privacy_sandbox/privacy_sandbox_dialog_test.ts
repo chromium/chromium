@@ -17,9 +17,9 @@ import type {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandb
 import type {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
 import type {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -185,7 +185,7 @@ suite('Consent', function() {
 
   test('escPressed', async function() {
     browserProxy.reset();
-    pressAndReleaseKeyOn(page, 0, '', 'Escape');
+    pressAndReleaseKeyOn(page, 0, [], 'Escape');
     // No user action is triggered by pressing Esc.
     assertEquals(browserProxy.getCallCount('promptActionOccurred'), 0);
   });
@@ -242,7 +242,7 @@ suite('Notice', function() {
   });
 
   test('escPressed', async function() {
-    pressAndReleaseKeyOn(page, 0, '', 'Escape');
+    pressAndReleaseKeyOn(page, 0, [], 'Escape');
     const [action] = await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(action, PrivacySandboxPromptAction.NOTICE_DISMISS);
   });

@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './elements/viewer-error-dialog.js';
+// This import is necessary for html_to_wrapper to detect this is a Polymer
+// element.
+import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import './elements/viewer_error_dialog.js';
 // <if expr="enable_ink">
-import './elements/viewer-ink-host.js';
+import './elements/viewer_ink_host.js';
 // </if>
-import './elements/viewer-password-dialog.js';
+import './elements/viewer_password_dialog.js';
 // <if expr="enable_pdf_ink2">
-import './elements/viewer-side-panel.js';
+import './elements/viewer_side_panel.js';
 // </if>
-import './elements/viewer-pdf-sidenav.js';
-import './elements/viewer-properties-dialog.js';
-import './elements/viewer-toolbar.js';
-import './elements/shared-vars.css.js';
+import './elements/viewer_pdf_sidenav.js';
+import './elements/viewer_properties_dialog.js';
+import './elements/viewer_toolbar.js';
+import './elements/shared_vars.css.js';
 import './pdf_viewer_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
@@ -34,12 +37,12 @@ import {PluginControllerEventType} from './controller.js';
 // <if expr="enable_ink">
 import type {ContentController} from './controller.js';
 // </if>
-import type {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer-bookmark.js';
-import {ChangePageOrigin} from './elements/viewer-bookmark.js';
-import type {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
-import type {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
-import type {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
-import type {ViewerToolbarElement} from './elements/viewer-toolbar.js';
+import type {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer_bookmark.js';
+import {ChangePageOrigin} from './elements/viewer_bookmark.js';
+import type {ViewerErrorDialogElement} from './elements/viewer_error_dialog.js';
+import type {ViewerPasswordDialogElement} from './elements/viewer_password_dialog.js';
+import type {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
+import type {ViewerToolbarElement} from './elements/viewer_toolbar.js';
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>

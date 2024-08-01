@@ -12,7 +12,6 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -48,15 +47,6 @@ constexpr base::TimeDelta kResyncInterval = base::Days(7);
 constexpr base::TimeDelta kFaviconRefreshInterval = base::Days(14);
 
 }  // namespace
-
-NSString* RecordIdentifierForPasskey(
-    const sync_pb::WebauthnCredentialSpecifics& passkey) {
-  // These are the UNIQUE keys in the login database.
-  return [NSString
-      stringWithFormat:@"%@|%@", base::SysUTF8ToNSString(passkey.rp_id()),
-                       base::SysUTF8ToNSString(
-                           base::HexEncode(passkey.credential_id()))];
-}
 
 NSString* RecordIdentifierForPasswordForm(
     const password_manager::PasswordForm& form) {

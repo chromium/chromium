@@ -249,7 +249,7 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     const JavaParamRef<jstring>& extra_headers,
     const JavaParamRef<jobject>& j_post_data,
     const JavaParamRef<jstring>& base_url_for_data_url,
-    const JavaParamRef<jstring>& virtual_url_for_data_url,
+    const JavaParamRef<jstring>& virtual_url_for_special_cases,
     const JavaParamRef<jstring>& data_url_as_string,
     jboolean can_load_local_resources,
     jboolean is_renderer_initiated,
@@ -312,9 +312,9 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
         GURL(ConvertJavaStringToUTF8(env, base_url_for_data_url));
   }
 
-  if (virtual_url_for_data_url) {
-    params.virtual_url_for_data_url =
-        GURL(ConvertJavaStringToUTF8(env, virtual_url_for_data_url));
+  if (virtual_url_for_special_cases) {
+    params.virtual_url_for_special_cases =
+        GURL(ConvertJavaStringToUTF8(env, virtual_url_for_special_cases));
   }
 
   if (data_url_as_string) {

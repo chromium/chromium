@@ -31,6 +31,7 @@ source_set("starboard") {
     "starboard_volume_control.cc",
   ]
   deps = [
+    ":mime_utils",
     ":starboard_api_wrapper",
     "//base",
     "//chromecast/public",
@@ -87,6 +88,17 @@ cast_source_set("starboard_api_wrapper") {
   }
 }
 
+cast_source_set("mime_utils") {
+  sources = [
+    "mime_utils.cc",
+    "mime_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public/media",
+  ]
+}
+
 test("media_pipeline_backend_starboard_test") {
   sources = [ "media_pipeline_backend_starboard_test.cc" ]
   deps = [
@@ -96,6 +108,7 @@ test("media_pipeline_backend_starboard_test") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/public",
+    "//chromecast/public/media",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -159,6 +172,17 @@ test("starboard_video_plane_test") {
     ":starboard",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("mime_utils_test") {
+  sources = [ "mime_utils_test.cc" ]
+  deps = [
+    ":mime_utils",
+    "//base/test:run_all_unittests",
+    "//chromecast/public/media",
     "//testing/gmock",
     "//testing/gtest",
   ]

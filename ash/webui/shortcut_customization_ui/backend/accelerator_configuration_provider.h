@@ -248,7 +248,8 @@ class AcceleratorConfigurationProvider
       bool locked,
       mojom::AcceleratorType type,
       mojom::AcceleratorState state,
-      std::vector<mojom::AcceleratorInfoPtr>& output);
+      std::vector<mojom::AcceleratorInfoPtr>& output,
+      bool is_accelerator_locked = false);
 
   // Returns a non-null value if there was an error with pre-processing the
   // accelerator to be added.

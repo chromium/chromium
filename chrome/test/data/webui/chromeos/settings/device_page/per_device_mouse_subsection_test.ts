@@ -432,7 +432,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
     assertFalse(isVisible(appRow));
     subsection.set('mouse', {...fakeMice[1]});
     await flushTasks();
-    appRow = subsection.shadowRoot!.querySelector('#openApp');
+    appRow = subsection.shadowRoot!.querySelector('#AppInstalledRow');
     assertTrue(isVisible(appRow));
   });
 });

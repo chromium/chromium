@@ -42,6 +42,7 @@ static_library("assistant") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/assistant_optin",
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/network",

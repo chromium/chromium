@@ -341,7 +341,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     feature_list_.InitWithFeatures(
         {blink::features::kPrerender2MainFrameNavigation,
          // To enable Content-Security-Policy navigate-to support.
-         ::features::kExperimentalContentSecurityPolicyFeatures},
+         ::features::kExperimentalContentSecurityPolicyFeatures,
+         ::features::kSuppressesPrerenderingOnSlowNetwork},
         {});
   }
   ~PrerenderBrowserTest() override = default;
@@ -6646,24 +6647,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
 class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderSequentialPrerenderingBrowserTest() {
-    if (base::FeatureList::IsEnabled(
-            features::kPrerender2NewLimitAndScheduler)) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{features::kPrerender2NewLimitAndScheduler,
-            {{"max_num_of_running_speculation_rules_eager_prerenders",
-              base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           {features::kPrerender2EmbedderBlockedHosts,
-            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
-          {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kPrerender2,
-            {{"max_num_of_running_speculation_rules",
-              base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           {features::kPrerender2EmbedderBlockedHosts,
-            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
-          {});
-    }
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2NewLimitAndScheduler,
+          {{"max_num_of_running_speculation_rules_eager_prerenders",
+            base::NumberToString(MaxNumOfRunningPrerenders())}}},
+         {features::kPrerender2EmbedderBlockedHosts,
+          {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
+        {});
   }
 
   int MaxNumOfRunningPrerenders() const { return 4; }
@@ -6781,7 +6771,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kTriggerDestroyed, 2);
+      PrerenderFinalStatus::kOtherPrerenderedPageActivated, 2);
 }
 
 // Tests that a cancelled request in the pending queue is skipped and the next
@@ -6833,10 +6823,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerender3);
   EXPECT_TRUE(prerender3_observer.was_activated());
 
-  // The first prerender is destroyed by SpeculationHostImpl.
+  // The first prerender is destroyed during activation.
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kTriggerDestroyed, 1);
+      PrerenderFinalStatus::kOtherPrerenderedPageActivated, 1);
 
   // The second prerender is destroyed directly.
   histogram_tester().ExpectBucketCount(
@@ -10403,22 +10393,12 @@ class MultiplePrerendersBrowserTest : public PrerenderBrowserTest {
          // can run on any bots.
          {"memory_threshold_in_mb", "0"}}};
 
-    if (base::FeatureList::IsEnabled(
-            features::kPrerender2NewLimitAndScheduler)) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{features::kPrerender2NewLimitAndScheduler,
-            {{"max_num_of_running_speculation_rules_eager_prerenders",
-              base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           memory_controls},
-          {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kPrerender2,
-            {{"max_num_of_running_speculation_rules",
-              base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           memory_controls},
-          {});
-    }
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2NewLimitAndScheduler,
+          {{"max_num_of_running_speculation_rules_eager_prerenders",
+            base::NumberToString(MaxNumOfRunningPrerenders())}}},
+         memory_controls},
+        {});
   }
 
   int MaxNumOfRunningPrerenders() const { return 4; }
@@ -10439,22 +10419,12 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
          // can run on any bots.
          {"memory_threshold_in_mb", "0"}}};
 
-    if (base::FeatureList::IsEnabled(
-            features::kPrerender2NewLimitAndScheduler)) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{features::kPrerender2NewLimitAndScheduler,
-            {{"max_num_of_running_speculation_rules_eager_prerenders",
-              base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           memory_controls},
-          {features::kPrerender2BypassMemoryLimitCheck});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kPrerender2,
-            {{"max_num_of_running_speculation_rules",
-              base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           memory_controls},
-          {features::kPrerender2BypassMemoryLimitCheck});
-    }
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2NewLimitAndScheduler,
+          {{"max_num_of_running_speculation_rules_eager_prerenders",
+            base::NumberToString(MaxNumOfRunningPrerenders())}}},
+         memory_controls},
+        {});
   }
 
  private:
@@ -10650,7 +10620,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kTriggerDestroyed, 2);
+      PrerenderFinalStatus::kOtherPrerenderedPageActivated, 2);
 }
 
 // Tests that cross-site urls cannot be prerendered.
@@ -13020,6 +12990,52 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // The initiator page should not be closed by window.closed().
   EXPECT_TRUE(ExecJs(web_contents(), ""));
+}
+
+// Tests that Prerender is suppressed by slow network.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SlowNetwork) {
+  // Emulate slow network.
+  MockClientHintsControllerDelegate client_hints_controller_delegate(
+      GetShellUserAgentMetadata());
+  ShellContentBrowserClient::Get()
+      ->browser_context()
+      ->set_client_hints_controller_delegate(&client_hints_controller_delegate);
+  network::NetworkQualityTracker& network_quality_tracker =
+      *client_hints_controller_delegate.GetNetworkQualityTracker();
+  base::TimeDelta http_rtt =
+      base::Milliseconds(1) +
+      ::features::kSuppressesPrerenderingOnSlowNetworkThreshold.Get();
+  network_quality_tracker.ReportRTTsAndThroughputForTesting(
+      http_rtt, network_quality_tracker.GetDownstreamThroughputKbps());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL initial_url = GetUrl("/empty.html");
+  GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Attempt to prerender.
+  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  AddPrerenderAsync(prerendering_url);
+  observer.WaitForTrigger(prerendering_url);
+
+  // It should fail.
+  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kSlowNetwork);
+
+  // Navigate primary page to flush the metrics.
+  NavigatePrimaryPage(prerendering_url);
+  // Cross-check that the eligibility reason points to kSlowNetwork on slow
+  // network.
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      PrimaryPageSourceId(), PreloadingType::kPrerender,
+      PreloadingEligibility::kSlowNetwork,
+      PreloadingHoldbackStatus::kUnspecified,
+      PreloadingTriggeringOutcome::kUnspecified,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/std::nullopt,
+      blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // Many of these tests navigate away from a page and then test whether the back

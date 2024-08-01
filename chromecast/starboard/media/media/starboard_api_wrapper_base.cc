@@ -393,5 +393,12 @@ void StarboardApiWrapperBase::WriteSample(void* player,
                    sample_infos_count);
 }
 
+StarboardMediaSupportType StarboardApiWrapperBase::CanPlayMimeAndKeySystem(
+    const char* mime,
+    const char* key_system) {
+  return static_cast<StarboardMediaSupportType>(
+      SbMediaCanPlayMimeAndKeySystem(mime, key_system));
+}
+
 }  // namespace media
 }  // namespace chromecast

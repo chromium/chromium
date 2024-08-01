@@ -9,6 +9,8 @@ static_library("common") {
   sources = [
     "api_error_codes.cc",
     "api_error_codes.h",
+    "api_key_request_util.cc",
+    "api_key_request_util.h",
     "auth_service.cc",
     "auth_service.h",
     "auth_service_interface.h",
@@ -59,6 +61,7 @@ source_set("common_unittests") {
   testonly = true
 
   sources = [
+    "api_key_request_util_unittest.cc",
     "base_requests_unittest.cc",
     "request_sender_unittest.cc",
     "time_util_unittest.cc",
@@ -69,6 +72,7 @@ source_set("common_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//base/version_info:channel",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

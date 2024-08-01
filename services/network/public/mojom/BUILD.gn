@@ -1631,6 +1631,22 @@ mojom("mojom") {
           [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.GeoHint"
+          cpp = "::network::GeoHint"
+        },
+        {
+          mojom = "network.mojom.BlindSignedAuthToken"
+          cpp = "::network::BlindSignedAuthToken"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/ip_protection_data_types_mojom_traits.h",
+      ]
+      traits_sources = [ "//services/network/public/cpp/ip_protection_data_types_mojom_traits.cc" ]
+    },
   ]
 
   if (enable_reporting) {

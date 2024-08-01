@@ -284,6 +284,10 @@ void ExtensionServiceTestBase::InitializeExtensionService(
   registry_ = ExtensionRegistry::Get(profile());
 }
 
+bool ExtensionServiceTestBase::ShouldAllowMV2Extensions() {
+  return true;
+}
+
 void ExtensionServiceTestBase::InitializeEmptyExtensionService() {
   ExtensionServiceInitParams params;
   params.prefs_content = "";
@@ -402,6 +406,10 @@ void ExtensionServiceTestBase::SetUp() {
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
   }
 #endif
+
+  if (ShouldAllowMV2Extensions()) {
+    mv2_enabler_.emplace();
+  }
 }
 
 void ExtensionServiceTestBase::TearDown() {

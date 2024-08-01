@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -135,12 +136,13 @@ class LocalFrameMojoHandler
   void AdvanceFocusForIME(mojom::blink::FocusType focus_type) final;
   void ReportContentSecurityPolicyViolation(
       network::mojom::blink::CSPViolationPtr csp_violation) final;
-  // Updates the snapshotted policy attributes (sandbox flags and permissions
+  // Updates the snapshot policy attributes (sandbox flags and permissions
   // policy container policy) in the frame's FrameOwner. This is used when this
   // frame's parent is in another process and it dynamically updates this
   // frame's sandbox flags or container policy. The new policy won't take effect
   // until the next navigation.
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
+  void OnFrameVisibilityChanged(mojom::blink::FrameVisibility visibility) final;
   void PostMessageEvent(
       const std::optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,

@@ -20,6 +20,7 @@ namespace net::device_bound_sessions {
 namespace {
 
 bool IsIncludeSiteAllowed(const url::Origin& origin) {
+  // This is eTLD+1
   const std::string domain_and_registry =
       registry_controlled_domains::GetDomainAndRegistry(
           origin, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);

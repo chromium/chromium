@@ -18,6 +18,11 @@ build_webui("build") {
     "images/default_browser_frame_dark.svg",
   ]
 
+  non_web_component_files = [
+    "default_browser/browser_proxy.ts",
+    "browser_proxy.ts",
+  ]
+
   if (enable_dice_support) {
     static_files += [
       "images/cloud_upload.svg",
@@ -27,10 +32,20 @@ build_webui("build") {
     if (!is_chrome_branded) {
       static_files += [ "images/security.svg" ]
     }
-    web_component_files = [
+
+    non_web_component_files += [
+      "default_browser/app.html.ts",
       "default_browser/app.ts",
+      "dice_app.html.ts",
       "dice_app.ts",
+      "sign_in_promo.html.ts",
       "sign_in_promo.ts",
+    ]
+
+    css_files = [
+      "default_browser/app.css",
+      "dice_app.css",
+      "sign_in_promo.css",
     ]
   }
 
@@ -39,18 +54,21 @@ build_webui("build") {
     web_component_files = [ "lacros_app.ts" ]
   }
 
-  non_web_component_files = [
-    "default_browser/browser_proxy.ts",
-    "browser_proxy.ts",
-  ]
-
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//chrome/browser/resources/signin:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+  if (is_chromeos_lacros) {
+    ts_deps += [ "//third_party/polymer/v3_0:library" ]
+  }
+
+  ts_path_mappings = [ "chrome://intro/tangible_sync_style_shared_lit.css.js|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/signin/tsc/tangible_sync_style_shared_lit.css.d.ts",
+                           target_gen_dir) ]
 
   webui_context_type = "trusted"
 }

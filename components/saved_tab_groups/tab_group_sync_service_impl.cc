@@ -143,6 +143,26 @@ void TabGroupSyncServiceImpl::UpdateVisualData(
   stats::RecordTabGroupVisualsMetrics(visual_data);
 }
 
+void TabGroupSyncServiceImpl::UpdateGroupPosition(
+    const base::Uuid& sync_id,
+    std::optional<bool> is_pinned,
+    std::optional<int> new_index) {
+  VLOG(2) << __func__;
+
+  std::optional<SavedTabGroup> group = GetGroup(sync_id);
+  if (!group.has_value()) {
+    return;
+  }
+
+  if (is_pinned.has_value() && group->is_pinned() != is_pinned) {
+    model_->TogglePinState(sync_id);
+  }
+
+  if (new_index.has_value()) {
+    model_->ReorderGroupLocally(sync_id, new_index.value());
+  }
+}
+
 void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                                      const LocalTabID& tab_id,
                                      const std::u16string& title,

@@ -74,6 +74,7 @@ class BASE_EXPORT SharedMemoryMapping {
                       size_t size,
                       const UnguessableToken& guid,
                       SharedMemoryMapper* mapper);
+
   // Returns a span over the full mapped memory.
   span<uint8_t> mapped_memory() const { return mapped_span_; }
 
@@ -107,7 +108,17 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
 
   // Returns the base address of the read-only mapping. Returns nullptr for
   // invalid instances.
-  const void* memory() const { return mapped_memory().data(); }
+  //
+  // Use `span(mapping)` to make a span of `uint8_t`, `GetMemoryAs<T>()` to
+  // access the memory as a single `T` or `GetMemoryAsSpan<T>()` to access it as
+  // an array of `T`.
+  const uint8_t* data() const { return mapped_memory().data(); }
+
+  // TODO(crbug.com/355451178): Deprecated. Use `span(mapping)` to make a span
+  // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T` or
+  // `GetMemoryAsSpan<T>()` to access it as an array of `T`, or `data()` for an
+  // unbounded pointer.
+  const void* memory() const { return data(); }
 
   // Returns a pointer to a page-aligned const T if the mapping is valid and
   // large enough to contain a T, or nullptr otherwise.
@@ -187,7 +198,17 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
 
   // Returns the base address of the writable mapping. Returns nullptr for
   // invalid instances.
-  void* memory() const { return mapped_memory().data(); }
+  //
+  // Use `span(mapping)` to make a span of `uint8_t`, `GetMemoryAs<T>()` to
+  // access the memory as a single `T` or `GetMemoryAsSpan<T>()` to access it as
+  // an array of `T`.
+  uint8_t* data() const { return mapped_memory().data(); }
+
+  // TODO(crbug.com/355451178): Deprecated. Use `span(mapping)` to make a span
+  // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T`, or
+  // `GetMemoryAsSpan<T>()` to access it as an array of `T` or `data()` for an
+  // unbounded pointer.
+  void* memory() const { return data(); }
 
   // Returns a pointer to a page-aligned T if the mapping is valid and large
   // enough to contain a T, or nullptr otherwise.

@@ -11,3 +11,53 @@ mojom("mojo_bindings") {
   sources = [ "sensor.mojom" ]
   webui_module_path = "/"
 }
+
+static_library("sensor_info") {
+  sources = [
+    "sensor_info_ui.cc",
+    "sensor_info_ui.h",
+    "sensor_page_handler.cc",
+    "sensor_page_handler.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/sensor_info:resources",
+    "//chrome/browser/ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "sensor_page_handler_unittest.cc" ]
+
+  deps = [
+    ":sensor_info",
+    "//ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search/background",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+}

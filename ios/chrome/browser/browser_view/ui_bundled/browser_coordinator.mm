@@ -30,6 +30,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/translate/core/browser/translate_manager.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
@@ -75,13 +76,21 @@
 #import "ios/chrome/browser/download/ui_bundled/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/safari_download_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/vcard_coordinator.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_controller_ios.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
+#import "ios/chrome/browser/follow/ui_bundled/first_follow_coordinator.h"
+#import "ios/chrome/browser/follow/ui_bundled/follow_iph_coordinator.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_mediator.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
@@ -89,9 +98,13 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
@@ -103,6 +116,8 @@
 #import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/add_contacts_coordinator.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
@@ -161,6 +176,7 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features_utils.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -181,6 +197,7 @@
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
+#import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -189,25 +206,13 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
-#import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
-#import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
-#import "ios/chrome/browser/ui/follow/follow_iph_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
-#import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
-#import "ios/chrome/browser/ui/phone_number/add_contacts_coordinator.h"
-#import "ios/chrome/browser/ui/phone_number/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
@@ -232,7 +237,6 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
@@ -336,7 +340,8 @@ enum class ToolbarKind {
     URLLoadingDelegate,
     WebContentCommands,
     WebNavigationNTPDelegate,
-    WebUsageEnablerBrowserAgentObserving>
+    WebUsageEnablerBrowserAgentObserving,
+    WhatsNewCommands>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -598,6 +603,7 @@ enum class ToolbarKind {
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
+  DriveFilePickerCoordinator* _driveFilePickerCoordinator;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -948,6 +954,7 @@ enum class ToolbarKind {
     @protocol(UnitConversionCommands),
     @protocol(AddContactsCommands),
     @protocol(CountryCodePickerCommands),
+    @protocol(WhatsNewCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1028,6 +1035,13 @@ enum class ToolbarKind {
                                      tracker:engagementTracker
                                 webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
+  _bubblePresenter.webContentOverlayPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kWebContentArea);
+  _bubblePresenter.infobarBannerPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarBanner);
+  _bubblePresenter.infobarModalPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarModal);
+
   _bubblePresenter.delegate = self;
   [_dispatcher startDispatchingToTarget:_bubblePresenter
                             forProtocol:@protocol(HelpCommands)];
@@ -1555,6 +1569,8 @@ enum class ToolbarKind {
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+
+  [self hideDriveFilePicker];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1751,7 +1767,10 @@ enum class ToolbarKind {
 #pragma mark - AutofillBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
-  if (self.passwordSuggestionBottomSheetCoordinator) {
+  // Do not present the bottom sheet if there is already another VC presented
+  // in which case the coordinator will end up in a bad state.
+  if (self.passwordSuggestionBottomSheetCoordinator ||
+      self.viewController.presentedViewController) {
     return;
   }
   self.passwordSuggestionBottomSheetCoordinator =
@@ -1769,7 +1788,10 @@ enum class ToolbarKind {
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
-  if (self.paymentsSuggestionBottomSheetCoordinator) {
+  // Do not present the bottom sheet if there is already another VC presented
+  // in which case the coordinator will end up in a bad state.
+  if (self.paymentsSuggestionBottomSheetCoordinator ||
+      self.viewController.presentedViewController) {
     return;
   }
   self.paymentsSuggestionBottomSheetCoordinator =
@@ -2069,24 +2091,6 @@ enum class ToolbarKind {
   }
 }
 
-- (void)showWhatsNew {
-  self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.whatsNewCoordinator start];
-}
-
-- (void)dismissWhatsNew {
-  if (self.whatsNewCoordinator) {
-    [self.whatsNewCoordinator stop];
-    self.whatsNewCoordinator = nil;
-  }
-}
-
-- (void)showWhatsNewIPH {
-  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
-}
-
 - (void)showSpotlightDebugger {
   [self.spotlightDebuggerCoordinator stop];
   self.spotlightDebuggerCoordinator = [[SpotlightDebuggerCoordinator alloc]
@@ -2212,6 +2216,8 @@ enum class ToolbarKind {
       base::SysUTF8ToNSString(config_ref.iph_text);
   _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
       YES;
+  _contextualPanelEntrypointHelpPresenter.customBubbleVisibilityDuration =
+      LargeContextualPanelEntrypointDisplayedInSeconds();
 
   // Early return if the bubble wouldn't fit in its parent view.
   if (![_contextualPanelEntrypointHelpPresenter
@@ -2302,6 +2308,12 @@ enum class ToolbarKind {
 #pragma mark - DriveFilePickerCommands
 
 - (void)showDriveFilePicker {
+  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+    return;
+  }
+  // If there is a coordinator, stop it before showing it again.
+  [self hideDriveFilePicker];
+  // Return early if the current WebState is not choosing files.
   web::WebState* activeWebState = self.activeWebState;
   if (!activeWebState || activeWebState->IsBeingDestroyed()) {
     // If there is no active WebState or it is being destroyed, do nothing.
@@ -2312,12 +2324,17 @@ enum class ToolbarKind {
   if (!tab_helper->IsChoosingFiles()) {
     return;
   }
-  // TODO(crbug.com/344812548): Show the Drive file picker.
-  tab_helper->StopChoosingFiles();
+  // Start the coordinator.
+  _driveFilePickerCoordinator = [[DriveFilePickerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        webState:activeWebState];
+  [_driveFilePickerCoordinator start];
 }
 
 - (void)hideDriveFilePicker {
-  // TODO(crbug.com/344812548): Hide the Drive file picker.
+  [_driveFilePickerCoordinator stop];
+  _driveFilePickerCoordinator = nil;
 }
 
 #pragma mark - FeedCommands
@@ -3009,7 +3026,10 @@ enum class ToolbarKind {
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
                      proactive:(BOOL)proactive
                decisionHandler:(void (^)(BOOL accept))decisionHandler {
-  if (self.passwordSuggestionCoordinator) {
+  // Do not present the bottom sheet if there is already another VC presented
+  // in which case the coordinator will end up in a bad state.
+  if (self.passwordSuggestionCoordinator ||
+      self.viewController.presentedViewController) {
     return;
   }
   self.passwordSuggestionCoordinator = [[PasswordSuggestionCoordinator alloc]
@@ -3262,6 +3282,9 @@ enum class ToolbarKind {
     (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
+                                          securityDomainID:
+                                              trusted_vault::SecurityDomainId::
+                                                  kChromeSync
                                                    trigger:trigger
                                                accessPoint:
                                                    signin_metrics::AccessPoint::
@@ -3273,6 +3296,10 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           self.viewController
+                                                       securityDomainID:
+                                                           trusted_vault::
+                                                               SecurityDomainId::
+                                                                   kChromeSync
                                                                 trigger:trigger
                                                             accessPoint:
                                                                 signin_metrics::
@@ -3803,6 +3830,26 @@ enum class ToolbarKind {
   CHECK(IsIosQuickDeleteEnabled());
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+}
+
+#pragma mark - WhatsNewCommands
+
+- (void)showWhatsNew {
+  self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.whatsNewCoordinator start];
+}
+
+- (void)dismissWhatsNew {
+  if (self.whatsNewCoordinator) {
+    [self.whatsNewCoordinator stop];
+    self.whatsNewCoordinator = nil;
+  }
+}
+
+- (void)showWhatsNewIPH {
+  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
 }
 
 @end

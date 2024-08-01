@@ -82,7 +82,7 @@
     width: var(--icon-container-size);
   }
 
-  #icon-container iron-icon {
+  #icon-container cr-icon {
     --icon-size: 16px;
     height: var(--icon-size);
     padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
@@ -145,7 +145,7 @@
     <div id="avatar-container">
       <img id="avatar" alt="" src="[[pictureUrl_]]">
       <div class="work-badge" hidden="[[!managementDisclaimer_]]">
-        <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        <cr-icon class="icon" icon="cr:domain"></cr-icon>
       </div>
     </div>
     <div id="text-container">
@@ -158,7 +158,7 @@
     </div>
     <div id="info-box" hidden="[[!managementDisclaimer_]]">
       <div id="icon-container">
-        <iron-icon icon="cr:domain"></iron-icon>
+        <cr-icon icon="cr:domain"></cr-icon>
       </div>
       <p id="enterprise-info">
         [[managementDisclaimer_]]

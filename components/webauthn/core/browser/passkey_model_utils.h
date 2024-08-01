@@ -78,6 +78,9 @@ std::optional<std::vector<uint8_t>> GenerateEcSignature(
     base::span<const uint8_t> pkcs8_ec_private_key,
     base::span<const uint8_t> signed_over_data);
 
+// Returns whether the provided algorithm is supported.
+bool IsSupportedAlgorithm(int32_t algorithm);
+
 }  // namespace webauthn::passkey_model_utils
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_UTILS_H_

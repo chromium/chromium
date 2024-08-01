@@ -508,6 +508,7 @@ function getCSS() {
       display: none;
       font: var(--cros-body-2-font);
       height: 20px;
+      width: 100%;
       margin: 0 10px;
       outline: 2px solid var(--cros-sys-focus_ring);
       overflow: hidden;

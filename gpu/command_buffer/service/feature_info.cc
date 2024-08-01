@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/feature_info.h"
 
 #include <stddef.h>
@@ -203,10 +208,7 @@ FeatureInfo::FeatureInfo(
   feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
-#elif BUILDFLAG(IS_MAC)
-  feature_flags_.chromium_image_ycbcr_p010 =
-      base::mac::MacOSMajorVersion() >= 11;
-#elif BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_APPLE)
   feature_flags_.chromium_image_ycbcr_p010 = true;
 #endif
 }

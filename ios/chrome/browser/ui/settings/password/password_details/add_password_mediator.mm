@@ -92,7 +92,7 @@ bool CheckForDuplicates(
     _prefService = prefService;
     _syncService = syncService;
     _sequencedTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
     _validationTaskTracker = std::make_unique<base::CancelableTaskTracker>();
   }
   return self;

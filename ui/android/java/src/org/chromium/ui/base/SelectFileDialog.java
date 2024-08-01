@@ -537,7 +537,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             return;
         }
 
-        Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent getContentIntent =
+                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
+                        ? new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        : new Intent(Intent.ACTION_GET_CONTENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -584,13 +587,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * The deprecated way of launching a chooser intent to get files from an external source (use
      * showExternalPicker instead). If launching the Intent is not successful, the onFileNotSelected
      * is called to end file upload.
+     *
      * @param camera A camera capture intent to supply as extra Intent data.
      * @param camcorder A camcorder intent to supply as extra Intent data.
      * @param soundRecorder A soundRecorder intent to supply as extra Intent data.
      */
     private void showExternalPickerDeprecated(
             Intent camera, Intent camcorder, Intent soundRecorder) {
-        Intent getContentIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent getContentIntent =
+                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
+                        ? new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        : new Intent(Intent.ACTION_GET_CONTENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -951,11 +958,23 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
 
         if (ContentResolver.SCHEME_CONTENT.equals(results.getScheme())) {
+            Uri uri = results.getData();
+            if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)) {
+                ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+                try {
+                    cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } catch (SecurityException e) {
+                    Log.w(TAG, "No persisted read permission for " + uri);
+                }
+                try {
+                    cr.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                } catch (SecurityException e) {
+                    Log.w(TAG, "No persisted write permission for " + uri);
+                }
+            }
             GetDisplayNameTask task =
                     new GetDisplayNameTask(
-                            ContextUtils.getApplicationContext(),
-                            false,
-                            new Uri[] {results.getData()});
+                            ContextUtils.getApplicationContext(), false, new Uri[] {uri});
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             return;
         }
@@ -1616,7 +1635,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             WindowAndroid.IntentCallback intentCallback,
             boolean allowMultiple,
             List<String> mimeTypes) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent =
+                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
+                        ? new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        : new Intent(Intent.ACTION_GET_CONTENT);
         if (allowMultiple) {
             // Note that the ACTION_GET_CONTENT intent does not support a parameter to set a max
             // limit of photos (ACTION_PICK_IMAGES support is via MediaStore.EXTRA_PICK_IMAGES_MAX).

@@ -89,8 +89,9 @@
 
 #pragma mark - Public
 
-- (void)setPage:(TabGridPage)page {
+- (void)setActivePage:(TabGridPage)page {
   [self notifyPageMutatorAboutPage:page];
+  [_currentPageMutator setPageAsActive];
 }
 
 - (void)setModeOnCurrentPage:(TabGridMode)mode {

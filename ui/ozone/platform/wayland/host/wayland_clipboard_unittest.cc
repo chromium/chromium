@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 
 #include <linux/input.h>
@@ -233,9 +238,9 @@ class WaylandClipboardTest : public WaylandClipboardTestBase {
 
   // Fill the clipboard backing store with sample data.
   void OfferData(ClipboardBuffer buffer,
-                 const char* data,
+                 std::string_view data,
                  const std::string& mime_type) {
-    std::vector<uint8_t> data_vector(data, data + std::strlen(data));
+    std::vector<uint8_t> data_vector(data.begin(), data.end());
     offered_data_[mime_type] = base::RefCountedBytes::TakeVector(&data_vector);
 
     base::MockCallback<PlatformClipboard::OfferDataClosure> offer_callback;

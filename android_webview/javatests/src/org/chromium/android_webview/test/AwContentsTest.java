@@ -1203,7 +1203,7 @@ public class AwContentsTest extends AwParameterizedTest {
         String expectedUrl =
                 encodeOctothorpes
                         ? "data:text/html,<html>test%23foo</html>"
-                        : "data:text/html,<html>test#foo</html>";
+                        : "data:text/html,<html>test#foo%3C/html%3E";
         Assert.assertEquals(expectedUrl, awContents.getLastCommittedUrl());
 
         // A URL with many '#' characters.
@@ -1216,7 +1216,7 @@ public class AwContentsTest extends AwParameterizedTest {
         expectedUrl =
                 encodeOctothorpes
                         ? "data:text/html,<html>test%23foo%23bar%23</html>"
-                        : "data:text/html,<html>test#foo#bar#</html>";
+                        : "data:text/html,<html>test#foo#bar#%3C/html%3E";
         Assert.assertEquals(expectedUrl, awContents.getLastCommittedUrl());
 
         // An already encoded '#' character.

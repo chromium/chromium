@@ -20,6 +20,7 @@
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -153,7 +154,7 @@ class ActivationStateComputingNavigationThrottleTest
   void InitializeRulesetHandles(
       scoped_refptr<base::SequencedTaskRunner> ruleset_task_runner) {
     dealer_handle_ = std::make_unique<VerifiedRulesetDealer::Handle>(
-        std::move(ruleset_task_runner));
+        std::move(ruleset_task_runner), kSafeBrowsingRulesetConfig);
     dealer_handle_->TryOpenAndSetRulesetFile(test_ruleset_pair_.indexed.path,
                                              /*expected_checksum=*/0,
                                              base::DoNothing());

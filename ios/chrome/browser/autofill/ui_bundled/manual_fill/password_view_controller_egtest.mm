@@ -7,7 +7,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
@@ -20,7 +19,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
@@ -210,8 +208,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   if (@available(iOS 17.4, *)) {
     // Skip verification.
   } else {
-    GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                   @"Keyboard should be shown");
+    [ChromeEarlGrey waitForKeyboardToAppear];
   }
 
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
@@ -264,9 +261,6 @@ void CheckKeyboardIsUpAndNotCovered() {
     config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
   }
 
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordAuthOnEntryV2);
-
   return config;
 }
 
@@ -278,6 +272,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Opens the "Other Passwords" screen.
 - (void)openOtherPasswords {
   // Bring up the keyboard.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
 
@@ -699,8 +695,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
   // Verify keyboard is shown and that the password controller is still present
   // in the background.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
@@ -833,8 +828,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:TapWebElementWithIdInFrame(kFormElementUsername, 0)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);
@@ -871,8 +865,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);
@@ -1026,7 +1019,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 - (void)testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
@@ -1074,8 +1067,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);
@@ -1111,8 +1103,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);
@@ -1191,8 +1182,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);
@@ -1234,8 +1224,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/true);

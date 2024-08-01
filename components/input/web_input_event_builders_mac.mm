@@ -143,16 +143,6 @@ void SetWebEventLocationFromEventInView(blink::WebMouseEvent* result,
 
   CGEventRef cgEvent = nullptr;
   if (unacceleratedMovement && (cgEvent = [event CGEvent]) != nullptr) {
-    // The caller should have already validated that we are running on a
-    // compatible OS before asking for unaccelerated movement.
-    // See RenderWidgetHostViewMac::IsUnadjustedMouseMovementSupported
-    // for the OS validation.
-#if DCHECK_IS_ON()
-    if (@available(macOS 10.15.1, *)) { /* nop */
-    } else {
-      NOTREACHED_IN_MIGRATION();
-    }
-#endif
     result->movement_x = CGEventGetIntegerValueField(
         cgEvent, kCGEventUnacceleratedPointerMovementX);
     result->movement_y = CGEventGetIntegerValueField(

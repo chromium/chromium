@@ -55,6 +55,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void OnMatchSelectedForAppending(const AutocompleteMatch& match) override;
   void OnMatchSelectedForDeletion(const AutocompleteMatch& match) override;
   void OnScroll() override;
+  void OnCallActionTap() override;
 
   void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
 

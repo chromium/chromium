@@ -27,21 +27,6 @@ namespace {
 constexpr int kFirmwareUpdateAppDefaultWidth = 600;
 constexpr int kFirmwareUpdateAppDefaultHeight = 640;
 
-// FirmwareUpdateApp's title bar and background needs to be bg-elevation-2 for
-// dark mode instead of the default dark mode background color.
-SkColor GetDarkModeBackgroundColor() {
-  // This code will be deleted after Jelly launch.  Do NOT copy it! This was
-  // copied from system_web_app_install_utils.cc
-  ui::ColorProviderSource* color_provider_source =
-      ash::ColorUtil::GetColorProviderSourceForWindow(
-          ash::Shell::GetPrimaryRootWindow());
-  DCHECK(color_provider_source);
-  const ui::ColorProvider* color_provider =
-      color_provider_source->GetColorProvider();
-  DCHECK(color_provider);
-  return color_provider->GetColor(cros_tokens::kBgColorElevation2Dark);
-}
-
 }  // namespace
 
 // TODO(michaelcheco): Update to correct icon.
@@ -60,12 +45,6 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   info->theme_color =
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Once Jelly is launched, the theme and background colors for SWA are
-    // ignored and this can be deleted.
-    info->dark_mode_theme_color = GetDarkModeBackgroundColor();
-    info->dark_mode_background_color = info->dark_mode_theme_color;
-  }
   info->background_color = info->theme_color;
 
   return info;

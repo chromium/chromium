@@ -73,7 +73,7 @@ void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
       std::make_unique<CryptohomeCoreImpl>(UserDataAuthClient::Get());
   RegisterEngineFactory(std::make_unique<CryptohomePasswordEngineFactory>());
 
-  if (!features::IsAuthPanelUsingOnlyPassword()) {
+  if (!features::IsUseAuthPanelInSessionEnabled()) {
     RegisterEngineFactory(
         std::make_unique<CryptohomePinEngineFactory>(local_state));
     RegisterEngineFactory(std::make_unique<CryptohomeSmartCardEngineFactory>());

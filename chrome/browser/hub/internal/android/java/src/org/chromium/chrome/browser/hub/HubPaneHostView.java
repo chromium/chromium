@@ -13,6 +13,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -23,6 +24,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.core.widget.TextViewCompat;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.Objects;
@@ -32,11 +36,64 @@ public class HubPaneHostView extends FrameLayout {
     // Chosen to exactly match the default add/remove animation duration of RecyclerView.
     private static final int FADE_ANIMATION_DURATION_MILLIS = 120;
 
+    private final OnLayoutChangeListener mSnackbarLayoutChangeListener =
+            new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(
+                        View v,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int oldLeft,
+                        int oldTop,
+                        int oldRight,
+                        int oldBottom) {
+                    // oldTop being 0 means this is the first layout.
+                    if (oldTop == 0) return;
+
+                    endFloatingActionButtonAnimation();
+
+                    int height = bottom - top;
+                    int oldHeight = oldBottom - oldTop;
+                    // If the height is unchanged there is no need to do anything.
+                    if (height == oldHeight) return;
+
+                    int delta = height - oldHeight;
+                    ObjectAnimator animator =
+                            ObjectAnimator.ofFloat(mActionButton, View.TRANSLATION_Y, -delta);
+                    // Keep in sync with SnackbarView.java.
+                    animator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
+                    animator.setDuration(mFloatingActionButtonAnimatorDuration);
+                    animator.addListener(
+                            new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    mActionButton.setTranslationY(0);
+                                    FrameLayout.LayoutParams params =
+                                            (FrameLayout.LayoutParams)
+                                                    mActionButton.getLayoutParams();
+                                    params.bottomMargin = mOriginalMargin + height;
+                                    mActionButton.setLayoutParams(params);
+                                    mFloatingActionButtonAnimator = null;
+                                }
+                            });
+
+                    mFloatingActionButtonAnimator = animator;
+                    animator.start();
+                }
+            };
+
     private FrameLayout mPaneFrame;
     private ButtonCompat mActionButton;
     private ImageView mHairline;
+    private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private @Nullable Animator mCurrentAnimator;
+    private @Nullable Animator mFloatingActionButtonAnimator;
+
+    private int mFloatingActionButtonAnimatorDuration;
+    private int mOriginalMargin;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
@@ -46,13 +103,19 @@ public class HubPaneHostView extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        Resources res = getContext().getResources();
+
         mPaneFrame = findViewById(R.id.pane_frame);
         mActionButton = findViewById(R.id.host_action_button);
         mHairline = findViewById(R.id.pane_top_hairline);
+        mFloatingActionButtonAnimatorDuration =
+                res.getInteger(android.R.integer.config_mediumAnimTime);
+        mOriginalMargin = res.getDimensionPixelSize(R.dimen.floating_action_button_margin);
+        mSnackbarContainer = findViewById(R.id.pane_host_view_snackbar_container);
+        mSnackbarContainer.addOnLayoutChangeListener(mSnackbarLayoutChangeListener);
 
         // ButtonCompat's style Flat removes elevation after calling super so it is overridden. Undo
         // this.
-        Resources res = getContext().getResources();
         mActionButton.setElevation(
                 res.getDimensionPixelSize(R.dimen.floating_action_button_elevation));
     }
@@ -63,6 +126,7 @@ public class HubPaneHostView extends FrameLayout {
         if (mCurrentAnimator != null) {
             mCurrentAnimator.end();
             assert mCurrentAnimator == null;
+            endFloatingActionButtonAnimation();
         }
 
         if (oldRootView != null && newRootView != null) {
@@ -133,6 +197,18 @@ public class HubPaneHostView extends FrameLayout {
         mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    void setFloatingActionButtonConsumer(Callback<Supplier<View>> consumer) {
+        consumer.onResult(this::getFloatingActionButton);
+    }
+
+    void setSnackbarContainerConsumer(Callback<ViewGroup> consumer) {
+        consumer.onResult(mSnackbarContainer);
+    }
+
+    private @Nullable View getFloatingActionButton() {
+        return mActionButton.getVisibility() == View.VISIBLE ? mActionButton : null;
+    }
+
     private void tryAddViewToFrame(View rootView) {
         ViewParent parent = rootView.getParent();
         if (!Objects.equals(parent, mPaneFrame)) {
@@ -141,5 +217,16 @@ public class HubPaneHostView extends FrameLayout {
             }
             mPaneFrame.addView(rootView);
         }
+    }
+
+    private void endFloatingActionButtonAnimation() {
+        if (mFloatingActionButtonAnimator != null) {
+            mFloatingActionButtonAnimator.end();
+            assert mFloatingActionButtonAnimator == null;
+        }
+    }
+
+    OnLayoutChangeListener getSnackbarLayoutChangeListenerForTesting() {
+        return mSnackbarLayoutChangeListener;
     }
 }

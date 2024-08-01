@@ -8,6 +8,10 @@
 #include "ash/wm/lock_state_controller.h"
 #include "base/memory/raw_ptr.h"
 
+namespace ui {
+class Layer;
+}  // namespace ui
+
 namespace ash {
 
 // Helper class used by tests to access LockStateController's internal state.
@@ -51,6 +55,10 @@ class LockStateControllerTestApi {
 
   void trigger_take_screenshot_timeout() const {
     controller_->take_screenshot_fail_timer_.FireNow();
+  }
+
+  const ui::Layer* mirror_wallpaper_layer() const {
+    return controller_->mirror_wallpaper_layer_.get();
   }
 
  private:

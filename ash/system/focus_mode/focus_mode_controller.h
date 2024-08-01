@@ -104,6 +104,7 @@ class ASH_EXPORT FocusModeController
   const std::optional<FocusModeSession>& current_session() const {
     return current_session_;
   }
+  size_t congratulatory_index() const { return congratulatory_index_; }
 
   FocusModeTasksModel& tasks_model() { return tasks_model_; }
   FocusModeSoundsController* focus_mode_sounds_controller() const {
@@ -285,6 +286,10 @@ class ASH_EXPORT FocusModeController
 
   // This is used to track the current session, if any.
   std::optional<FocusModeSession> current_session_;
+
+  // A random value between 0 and `focus_mode_util::kCongratulatoryTitleNum -
+  // 1`.
+  size_t congratulatory_index_ = 0;
 
   std::unique_ptr<FocusModeMetricsRecorder> focus_mode_metrics_recorder_;
 

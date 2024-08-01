@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -170,6 +171,25 @@ PrefService* GetPrefService() {
     return nullptr;
   }
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
+std::string SecondaryIconTypeToString(SecondaryIconType type) {
+  switch (type) {
+    case SecondaryIconType::kTabFromDesktop:
+      return "kTabFromDesktop";
+    case SecondaryIconType::kTabFromPhone:
+      return "kTabFromPhone";
+    case SecondaryIconType::kTabFromTablet:
+      return "kTabFromTablet";
+    case SecondaryIconType::kLostMediaAudio:
+      return "kLostMediaAudio";
+    case SecondaryIconType::kLostMediaVideo:
+      return "kLostMediaVideo";
+    case SecondaryIconType::kLostMediaVideoConference:
+      return "kLostMediaVideoConference";
+    case SecondaryIconType::kUnknown:
+      return "kUnknown";
+  }
 }
 
 }  // namespace
@@ -429,11 +449,12 @@ std::u16string BirchAttachmentItem::GetSubtitle(base::Time start_time,
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
+                             const std::optional<std::string>& title,
                              const std::u16string& justification,
                              base::Time timestamp,
                              const std::string& file_id,
                              const std::string& icon_url)
-    : BirchItem(GetTitle(file_path), justification),
+    : BirchItem(GetTitle(file_path, title), justification),
       file_id_(file_id),
       icon_url_(icon_url),
       file_path_(file_path),
@@ -480,7 +501,12 @@ void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
 }
 
 // static
-std::u16string BirchFileItem::GetTitle(const base::FilePath& file_path) {
+std::u16string BirchFileItem::GetTitle(
+    const base::FilePath& file_path,
+    const std::optional<std::string>& title) {
+  if (title.has_value()) {
+    return base::UTF8ToUTF16(title.value());
+  }
   // Convert "/path/to/foo.txt" into just "foo".
   std::string filename = file_path.BaseName().RemoveExtension().value();
   return base::UTF8ToUTF16(filename);
@@ -772,18 +798,21 @@ std::u16string BirchMostVisitedItem::GetSubtitle() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BirchSelfShareItem::BirchSelfShareItem(const std::u16string& guid,
-                                       const std::u16string& title,
-                                       const GURL& url,
-                                       const base::Time& shared_time,
-                                       const std::u16string& device_name,
-                                       const ui::ImageModel& backup_icon,
-                                       base::RepeatingClosure callback)
+BirchSelfShareItem::BirchSelfShareItem(
+    const std::u16string& guid,
+    const std::u16string& title,
+    const GURL& url,
+    const base::Time& shared_time,
+    const std::u16string& device_name,
+    const ui::ImageModel& backup_icon,
+    const SecondaryIconType& secondary_icon_type,
+    base::RepeatingClosure callback)
     : BirchItem(title, GetSubtitle(device_name, shared_time)),
       guid_(guid),
       url_(url),
       shared_time_(shared_time),
       backup_icon_(backup_icon),
+      secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(callback)) {}
 
 BirchSelfShareItem::BirchSelfShareItem(BirchSelfShareItem&&) = default;
@@ -808,7 +837,8 @@ std::string BirchSelfShareItem::ToString() const {
      << ", Title: " << base::UTF16ToUTF8(title())
      << ", Device Name: " << base::UTF16ToUTF8(subtitle())
      << ", GUID: " << guid_ << ", Shared Time: " << shared_time_
-     << ", URL: " << url_ << "}";
+     << ", URL: " << url_ << ", Secondary Icon Type: "
+     << SecondaryIconTypeToString(secondary_icon_type_) << "}";
   return ss.str();
 }
 
@@ -866,12 +896,14 @@ BirchLostMediaItem::BirchLostMediaItem(
     const std::u16string& media_title,
     bool is_video_conference_tab,
     const ui::ImageModel& backup_icon,
+    const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure activation_callback)
     : BirchItem(media_title, GetSubtitle(is_video_conference_tab)),
       source_url_(source_url),
       media_title_(media_title),
       is_video_conference_tab_(is_video_conference_tab),
       backup_icon_(backup_icon),
+      secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(activation_callback)) {}
 
 BirchLostMediaItem::BirchLostMediaItem(BirchLostMediaItem&&) = default;
@@ -894,7 +926,9 @@ std::string BirchLostMediaItem::ToString() const {
   std::stringstream ss;
   ss << "Lost Media item: {ranking: " << ranking()
      << ", Source Url: " << source_url_ << ", Media Title: " << media_title_
-     << ", Is Video Conference Tab: " << is_video_conference_tab_ << "}";
+     << ", Is Video Conference Tab: " << is_video_conference_tab_
+     << ", Secondary Icon Type: "
+     << SecondaryIconTypeToString(secondary_icon_type_) << "}";
   return ss.str();
 }
 

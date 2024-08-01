@@ -167,7 +167,7 @@ static void ScrollToVisible(Range* match) {
                           : mojom::blink::ScrollBehavior::kInstant;
   scroll_into_view_util::ScrollRectToVisible(
       *first_node.GetLayoutObject(), PhysicalRect(match->BoundingBox()),
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kUser,
           true /* make_visible_in_visual_viewport */, scroll_behavior,
@@ -797,7 +797,7 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
       scroll_into_view_util::ScrollRectToVisible(
           *active_match_->FirstNode()->GetLayoutObject(),
           PhysicalRect(active_match_bounding_box),
-          ScrollAlignment::CreateScrollIntoViewParams(
+          scroll_into_view_util::CreateScrollIntoViewParams(
               ScrollAlignment::CenterIfNeeded(),
               ScrollAlignment::CenterIfNeeded(),
               mojom::blink::ScrollType::kUser));

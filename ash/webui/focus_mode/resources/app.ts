@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MediaClientInterface, MediaClientReceiver, TrackDefinition, TrackProvider, TrackProviderInterface} from './focus_mode.mojom-webui.js';
+import {MediaClientInterface, MediaClientReceiver, PlaybackState, TrackDefinition, TrackProvider, TrackProviderInterface} from './focus_mode.mojom-webui.js';
 
 const UNTRUSTED_ORIGIN = 'chrome-untrusted://focus-mode-player';
 
@@ -11,6 +11,118 @@ let clientInstance: MediaClientImpl|null = null;
 
 // Implemented by Ash, provides the tracks that we will play.
 let providerInstance: TrackProviderInterface|null = null;
+
+interface PlaybackReportingConfig {
+  intervalShort: number;
+  intervalLong: number;
+  intervalThreshold: number;
+  intervalId: number;
+}
+const reportConfig: PlaybackReportingConfig = {
+  intervalShort: 10,
+  intervalLong: 40,
+  intervalThreshold: 40,
+  intervalId: setInterval(() => postQueryPlaybackStatusRequest(), 2000),
+};
+
+interface PlaybackStatus {
+  state: string;
+  position: number;
+  initial: boolean;
+}
+let playbackStatus: PlaybackStatus|null = null;
+
+let currentTrack: TrackDefinition|null = null;
+
+// Valid playback state string values.
+const validStates = ['playing', 'paused', 'ended', 'switchedtonext'];
+
+// Check if the playback state comes with valid values.
+function isValidPlaybackStatus(playbackStatus: PlaybackStatus): boolean {
+  return validStates.includes(playbackStatus.state) &&
+      playbackStatus.position >= 0 && playbackStatus.position <= 18000;
+}
+
+function getPlaybackState(playbackStateString: string): PlaybackState {
+  switch (playbackStateString) {
+    case 'playing':
+      return PlaybackState.kPlaying;
+    case 'paused':
+      return PlaybackState.kPaused;
+    case 'switchedtonext':
+      return PlaybackState.kSwitchedToNext;
+    case 'ended':
+      return PlaybackState.kEnded;
+  }
+  return PlaybackState.kNone;
+}
+
+function getDuration(
+    oldPlaybackStatus: PlaybackStatus|null,
+    newPlaybackStatus: PlaybackStatus|null): [number, number] {
+  return [
+    Math.floor(oldPlaybackStatus?.position ?? 0),
+    Math.floor(newPlaybackStatus?.position ?? 0),
+  ];
+}
+
+function shouldReportInitialPlayback(newPlaybackStatus: PlaybackStatus):
+    boolean {
+  const [start, end] = getDuration(playbackStatus, newPlaybackStatus);
+  return newPlaybackStatus.initial && start == end;
+}
+
+function shouldReportSubsequentPlayback(newPlaybackStatus: PlaybackStatus):
+    boolean {
+  const [start, end] = getDuration(playbackStatus, newPlaybackStatus);
+  const interval = end <= reportConfig.intervalThreshold ?
+      reportConfig.intervalShort :
+      reportConfig.intervalLong;
+
+  // The condition for minimal interval needs to be a little more permissive by
+  // 1s in case the previous timer fires at 30.01s and the current timer fires
+  // at 39.98s.
+  return !newPlaybackStatus.initial && start < end &&
+      (end - start + 1 >= interval || newPlaybackStatus.state == 'ended' ||
+       newPlaybackStatus.state == 'switchedtonext');
+}
+
+function onReceiveNewPlaybackStatus(newPlaybackStatus: PlaybackStatus) {
+  if (currentTrack == null || !currentTrack.enablePlaybackReporting ||
+      !isValidPlaybackStatus(newPlaybackStatus)) {
+    return;
+  }
+
+  const reportInitial = shouldReportInitialPlayback(newPlaybackStatus);
+  const reportSubsequent = shouldReportSubsequentPlayback(newPlaybackStatus);
+  if (reportInitial || reportSubsequent) {
+    const [start, end] = getDuration(playbackStatus, newPlaybackStatus);
+    getProvider().reportPlayback({
+      state: getPlaybackState(newPlaybackStatus.state),
+      title: currentTrack.title,
+      url: currentTrack.mediaUrl,
+      mediaStart: reportInitial ? null : start,
+      mediaEnd: reportInitial ? null : end,
+      initialPlayback: newPlaybackStatus.initial,
+    });
+    playbackStatus = newPlaybackStatus;
+  }
+}
+
+function isEventData(data: any): boolean {
+  return data && typeof data == 'object' && typeof data.cmd == 'string';
+}
+
+function isNextTrackEventData(data: any): boolean {
+  return isEventData(data) && data.cmd == 'gettrack';
+}
+
+function isPlaybackStatus(data: any): boolean {
+  return (
+      isEventData(data) && data.cmd == 'replyplaybackstatus' &&
+      typeof data.state == 'string' && typeof data.position == 'number' &&
+      typeof data.initial == 'boolean');
+}
 
 function getProvider(): TrackProviderInterface {
   if (!providerInstance) {
@@ -28,6 +140,8 @@ function postPlayRequest(track: TrackDefinition) {
 
   const child = document.getElementById('child') as HTMLIFrameElement;
   if (child.contentWindow) {
+    playbackStatus = null;
+    currentTrack = track;
     child.contentWindow.postMessage(
         {
           cmd: 'play',
@@ -37,6 +151,22 @@ function postPlayRequest(track: TrackDefinition) {
             title: track.title,
             artist: track.artist,
           },
+        },
+        UNTRUSTED_ORIGIN);
+  }
+}
+
+// Post a query request for playback status to the iframe.
+function postQueryPlaybackStatusRequest() {
+  if (currentTrack == null || !currentTrack.enablePlaybackReporting) {
+    return;
+  }
+
+  const child = document.getElementById('child') as HTMLIFrameElement;
+  if (child.contentWindow) {
+    child.contentWindow.postMessage(
+        {
+          cmd: 'queryplaybackstatus',
         },
         UNTRUSTED_ORIGIN);
   }
@@ -82,8 +212,8 @@ globalThis.addEventListener('message', async (event: MessageEvent) => {
   }
 
   const data = event.data;
-  if (data && typeof data == 'object' && typeof data.cmd == 'string') {
-    if (data.cmd == 'gettrack') {
+  if (isEventData(data)) {
+    if (isNextTrackEventData(data)) {
       if (requestInProgress) {
         // There is no point in doing concurrent requests, so if we get a new
         // request while another is pending (this can happen if the user hammers
@@ -97,6 +227,12 @@ globalThis.addEventListener('message', async (event: MessageEvent) => {
       requestInProgress = false;
 
       postPlayRequest(result.track);
+    } else if (isPlaybackStatus(data)) {
+      onReceiveNewPlaybackStatus({
+        state: data.state,
+        position: data.position,
+        initial: data.initial,
+      });
     }
   }
 });

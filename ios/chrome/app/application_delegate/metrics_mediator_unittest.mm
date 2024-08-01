@@ -151,7 +151,7 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   NSArray<FakeSceneState*>* connected_scenes_;
   __block BOOL num_tabs_has_been_called_;

@@ -506,7 +506,8 @@ TEST_F(AutofillPopupControllerImplTest,
       .WillOnce(Return(true));
   // Remove the first entry. The popup should be redrawn since its size has
   // changed.
-  EXPECT_CALL(*client().popup_view(), OnSuggestionsChanged());
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
       0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
@@ -554,10 +555,12 @@ TEST_F(AutofillPopupControllerImplTest,
                                  Suggestion(u"axx"),
                              });
 
-  EXPECT_CALL(*client().popup_view(), OnSuggestionsChanged());
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true));
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
 
-  EXPECT_CALL(*client().popup_view(), OnSuggestionsChanged());
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true));
   controller.SetFilter(std::nullopt);
 }
 
@@ -684,7 +687,8 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
 
   // Remove the first entry. The popup should be redrawn since its size has
   // changed.
-  EXPECT_CALL(*client().popup_view(), OnSuggestionsChanged());
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   Mock::VerifyAndClearExpectations(client().popup_view());

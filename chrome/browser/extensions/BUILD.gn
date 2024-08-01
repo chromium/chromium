@@ -91,10 +91,6 @@ source_set("extensions") {
     "api/commands/commands.h",
     "api/content_settings/content_settings_api.cc",
     "api/content_settings/content_settings_api.h",
-    "api/context_menus/context_menus_api.cc",
-    "api/context_menus/context_menus_api.h",
-    "api/context_menus/context_menus_api_helpers.cc",
-    "api/context_menus/context_menus_api_helpers.h",
     "api/cookies/cookies_api.cc",
     "api/cookies/cookies_api.h",
     "api/cookies/cookies_api_constants.cc",
@@ -131,8 +127,6 @@ source_set("extensions") {
     "api/desktop_capture/desktop_capture_base.h",
     "api/developer_private/developer_private_api.cc",
     "api/developer_private/developer_private_api.h",
-    "api/developer_private/entry_picker.cc",
-    "api/developer_private/entry_picker.h",
     "api/developer_private/extension_info_generator.cc",
     "api/developer_private/extension_info_generator.h",
     "api/developer_private/inspectable_views_finder.cc",
@@ -494,6 +488,8 @@ source_set("extensions") {
     "component_extensions_allowlist/allowlist.h",
     "component_loader.cc",
     "component_loader.h",
+    "context_menu_helpers.cc",
+    "context_menu_helpers.h",
     "context_menu_matcher.cc",
     "context_menu_matcher.h",
     "convert_user_script.cc",
@@ -518,8 +514,6 @@ source_set("extensions") {
     "error_console/error_console_factory.h",
     "event_router_forwarder.cc",
     "event_router_forwarder.h",
-    "extension_action_icon_factory.cc",
-    "extension_action_icon_factory.h",
     "extension_action_runner.cc",
     "extension_action_runner.h",
     "extension_action_storage_manager.cc",
@@ -786,6 +780,12 @@ source_set("extensions") {
 
     # TODO(crbug.com/345487716): Remove this circular dependency.
     "//chrome/browser/ui/views/side_panel",
+
+    # TODO(crbug.com/353284909): Remove this circular dependency.
+    "//chrome/browser/media/webrtc",
+
+    "//chrome/browser/feedback",
+    "//chrome/browser/ui/views/toolbar",
   ]
 
   # Since browser and browser_extensions actually depend on each other,
@@ -796,6 +796,7 @@ source_set("extensions") {
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/extensions/api:api_registration",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/common",
     "//chrome/common/extensions/api",
@@ -824,8 +825,11 @@ source_set("extensions") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:font_pref",
+    "//chrome/browser:primitives",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/feedback",
+    "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
@@ -833,6 +837,7 @@ source_set("extensions") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/toolbar",
 
     # Only for allow_circular_includes_from
     "//chrome/browser/apps/app_service/app_icon",
@@ -900,6 +905,7 @@ source_set("extensions") {
     "//components/enterprise",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors",
+    "//components/enterprise/connectors/core",
     "//components/favicon/content",
     "//components/feedback",
     "//components/gcm_driver",
@@ -1101,6 +1107,8 @@ source_set("extensions") {
       "system_display/display_info_provider_utils.h",
     ]
     deps += [
+      "//chrome/browser/chromeos/platform_keys",
+      "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
     ]
@@ -1183,8 +1191,6 @@ source_set("extensions") {
 
   if (is_chromeos_ash) {
     sources += [
-      "api/crash_report_private/crash_report_private_api.cc",
-      "api/crash_report_private/crash_report_private_api.h",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.cc",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h",
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",
@@ -1298,6 +1304,7 @@ source_set("extensions") {
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/ash/settings",
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/devtools",
@@ -1305,6 +1312,9 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/webui/ash",
+      "//chrome/browser/ui/webui/ash/cloud_upload",
+      "//chrome/browser/ui/webui/ash/login",
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/cryptohome",
@@ -1400,11 +1410,12 @@ source_set("extensions") {
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/handlers",
-      "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/shelf/app_service",
+      "//chrome/browser/ui/webui/ash",
+      "//chrome/browser/ui/webui/ash/login",
     ]
 
     if (is_cfm) {

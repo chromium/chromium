@@ -119,6 +119,9 @@ class DiagnosticsReporter {
   void WeakPtrToGCed(const clang::Decl* decl,
                      const clang::CXXRecordDecl* weak_ptr,
                      const clang::CXXRecordDecl* gc_type);
+  void GCedField(const clang::FieldDecl* field,
+                 const clang::CXXRecordDecl* gctype);
+  void GCedVar(const clang::VarDecl* var, const clang::CXXRecordDecl* gctype);
 
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
@@ -154,6 +157,8 @@ class DiagnosticsReporter {
   unsigned diag_base_class_must_declare_virtual_trace_;
   unsigned diag_class_must_crtp_itself_;
   unsigned diag_weak_ptr_to_gc_managed_class_;
+  unsigned diag_gced_field_;
+  unsigned diag_gced_var_;
 
   unsigned diag_base_requires_tracing_note_;
   unsigned diag_field_requires_tracing_note_;

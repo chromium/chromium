@@ -95,12 +95,14 @@ class AudioWaitingExtensionTest : public ExtensionApiTest {
       auto* audible_helper = RecentlyAudibleHelper::FromWebContents(tab);
       audio_playing = audible_helper->WasRecentlyAudible();
       base::RunLoop().RunUntilIdle();
-      if (audio_playing)
+      if (audio_playing) {
         break;
+      }
       base::PlatformThread::Sleep(base::Milliseconds(100));
     }
-    if (!audio_playing)
+    if (!audio_playing) {
       FAIL() << "Audio did not start playing within ~5 seconds.";
+    }
   }
 };
 

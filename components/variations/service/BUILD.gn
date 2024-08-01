@@ -36,6 +36,7 @@ static_library("service") {
   sources = [
     "google_groups_manager.cc",
     "google_groups_manager.h",
+    "google_groups_manager_prefs.h",
     "limited_entropy_randomization.cc",
     "limited_entropy_randomization.h",
     "limited_entropy_synthetic_trial.cc",

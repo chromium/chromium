@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
 <translation id="1073417869336441572">Үчүнчү тараптын cookie файлдарына эмне үчүн уруксат бергениңизди айтып, Chrome'ду жакшыртууга жардам бериңиз. <ph name="BEGIN_LINK" />Пикир билдирүү<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Баасы арзандады картасын жашыруу</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1192844206376121885">Ушуну менен <ph name="ORIGIN" /> сактаган бардык маалымат менен cookie файлдары өчүрүлөт.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Жардам/пикир билдирүү</translation>
 <translation id="2501278716633472235">Артка кайтуу</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
-<translation id="2550801787432930915">Баасы арзандады картасы</translation>
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android параметрлерине<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
 <translation id="2586657967955657006">Алмашуу буфери</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Артка</translation>
 <translation id="3859306556332390985">Алдыга түрдүрүү</translation>
 <translation id="3895926599014793903">Мажбурлап чоңойтууну иштетүү</translation>
+<translation id="3905475044299942653">Көп сандагы билдирмелерди токтотуу</translation>
 <translation id="3908288065506437185">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Айрым функциялар иштебеши мүмкүн. Байланышкан сайттар үчүнчү тараптын cookie файлдарын колдоно бериши мүмкүн.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Корголгон мазмун</translation>
 <translation id="662080504995468778">Калуу</translation>
 <translation id="6653342741369270081">Толук экрандан чыгуу үчүн "Артка" баскычын басыңыз.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Бул өтмөктө улантууну жашыруу}other{Бул өтмөктөрдө улантууну жашыруу}}</translation>
 <translation id="6689172468748959065">Профилдин сүрөттөрү</translation>
 <translation id="6697925417670533197">Жүктөлүп алынган файлдар</translation>
 <translation id="6722828510648505498">Идентификациялык кызматтарда кирүү сурамдарын бөгөттөө.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> үчүн параметр тандаңыз</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6818926723028410516">Элементтерди тандоо</translation>
+<translation id="6840760312327750441">Өтмөктөрдү топко кошуу үчүн алардын бирин басып кармап туруңуз. Андан кийин аны башка өтмөккө сүйрөңүз.</translation>
 <translation id="6864395892908308021">Бул түзмөк NFC'ни окуй албайт</translation>
 <translation id="6912998170423641340">Сайттарда алмашуу буфериндеги тексттер жана сүрөттөрдү окуу бөгөттөлсүн</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Бул кооптуу барак</translation>
 <translation id="930525582205581608">Бул сайт унутулсунбу?</translation>
 <translation id="947156494302904893">Сайттар чыныгы колдонуучу экениңизди ырастаган маалыматты алышы мүмкүн</translation>
+<translation id="959682366969460160">Иреттеп алыңыз</translation>
 <translation id="967624055006145463">Сакталган дайындар</translation>
 </translationbundle>

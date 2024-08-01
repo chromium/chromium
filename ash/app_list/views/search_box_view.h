@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -89,8 +90,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   static int GetFocusRingSpacing();
 
   // Overridden from SearchBoxViewBase:
-  void UpdateSearchTextfieldAccessibleNodeData(
-      ui::AXNodeData* node_data) override;
+  void UpdateSearchTextfieldAccessibleActiveDescendantId() override;
   void UpdateKeyboardVisibility() override;
   void HandleQueryChange(const std::u16string& query,
                          bool initiated_by_user) override;
@@ -173,7 +173,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The active descendant should be the currently selected result view in the
   // search results list.
   // `nullopt` indicates no active descendant, i.e. that no result is selected.
-  void SetA11yActiveDescendant(const std::optional<int32_t>& active_descendant);
+  void SetA11yActiveDescendant(
+      const std::optional<ui::AXPlatformNodeId>& active_descendant);
 
   // Refreshes the placeholder text with a fixed one rather than the one picked
   // up randomly
@@ -317,7 +318,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view - the value is the ID of the currently selected result
   // view.
-  std::optional<int32_t> a11y_active_descendant_;
+  std::optional<ui::AXPlatformNodeId> a11y_active_descendant_;
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_mode_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 
@@ -92,6 +93,8 @@ class ASH_EXPORT PickerViewDelegate {
 
   // Whether GIFs are enabled or not.
   virtual bool IsGifsEnabled() = 0;
+
+  virtual PickerModeType GetMode() = 0;
 };
 
 }  // namespace ash

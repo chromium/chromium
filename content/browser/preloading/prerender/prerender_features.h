@@ -11,7 +11,6 @@
 
 namespace features {
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2BypassMemoryLimitCheck);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NewLimitAndScheduler);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2AllowActivationInBackground);
 
@@ -32,6 +31,12 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutConservativePrerender;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutForEmbedders;
+
+// If enabled, suppresses prerendering on slow network.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressesPrerenderingOnSlowNetwork);
+
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSuppressesPrerenderingOnSlowNetworkThreshold;
 
 }  // namespace features
 

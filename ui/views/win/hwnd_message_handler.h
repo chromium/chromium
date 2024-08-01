@@ -186,8 +186,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon);
 
-  virtual void set_use_system_default_icon(bool use_system_default_icon);
-
   // Set the fullscreen state. `target_display_id` indicates the display where
   // the window should be shown fullscreen; display::kInvalidDisplayId indicates
   // that no display was specified, so the current display may be used.
@@ -646,8 +644,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // Set to true in Close() and false is CloseNow().
   bool waiting_for_close_now_;
-
-  bool use_system_default_icon_;
 
   // Whether all ancestors have been enabled. This is only used if is_modal_ is
   // true.

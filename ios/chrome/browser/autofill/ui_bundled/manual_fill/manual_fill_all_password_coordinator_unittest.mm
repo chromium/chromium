@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
@@ -36,16 +34,11 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-using base::test::ScopedFeatureList;
-
 // Test fixture for ManualFillAllPasswordCoordinator.
 class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
 
     TestChromeBrowserState::Builder builder;
 
@@ -64,7 +57,7 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
@@ -140,7 +133,6 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
   MockReauthenticationModule* mock_reauth_module_ = nil;
   std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       scoped_reauth_override_;
-  ScopedFeatureList scoped_feature_list_;
   id mocked_application_commands_handler_;
   ManualFillAllPasswordCoordinator* coordinator_ = nil;
 };
@@ -156,19 +148,5 @@ TEST_F(ManualFillAllPasswordCoordinatorTest,
   [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Passwords visible.
-  ASSERT_TRUE(ArePasswordsVisible());
-}
-
-// Tests that passwords are revealed without authentication when the feature
-// requiring auth is disabled.
-TEST_F(ManualFillAllPasswordCoordinatorTest,
-       PasswordSettingsPresentedWithoutAuth) {
-  ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordAuthOnEntryV2);
-
-  StartCoordinator();
-
-  // Passwords should be visible.
   ASSERT_TRUE(ArePasswordsVisible());
 }

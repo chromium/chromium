@@ -145,9 +145,18 @@ message InferenceCalculatorOptions {
       optional string accelerator_name = 3;
     }
     message Xnnpack {
+      reserved 3;
       // Number of threads for XNNPACK delegate. (By default, calculator tries
       // to choose optimal number of threads depending on the device.)
       optional int32 num_threads = 1 [default = -1];
+      // Enables an experimental TfLite feature to directly access the MP input
+      // tensors (and this way avoids copying the data). Note that this requires
+      // *all* input tensors to be aligned to tflite::kDefaultTensorAlignment
+      // bytes and that the model has no duplicate output tensors (tensors with
+      // identical TfLite tensor indices) and no passthrough input->output
+      // tensors (input and output tensors with identical TfLite tensor
+      // indices).
+      optional bool enable_zero_copy_tensor_io = 7;
     }
 
     oneof delegate {
@@ -242,17 +251,65 @@ message InferenceCalculatorOptions {
       // - Given model tensor output order: [Tensor2, Tensor1, Tensor0]
       // - Desired InferenceCalculator output order: tensor0, tensor1, tensor2
       // - model_tensor_indices: [2, 1, 0]
-      //
       repeated int32 model_tensor_indices = 1 [packed = true];
     }
 
+    // Defines tensor order described by the TfLite signature names.
+    message TensorNamesMap {
+      // Ordered list of tensor names describing a bijective mapping between
+      // the InferenceCalculator tensor I/O index and the TFLite model I/O
+      // tensor names (only models with a single signature are supported). The
+      // nth entry in the list maps the nth InferenceCalculator I/O tensor. The
+      // size of the list must match the number of tensors in the input or
+      // output of the InferenceCalculator.
+      //
+      // Example configurations:
+      // Input (Input<std::vector<Tensor>> or Input<Tensor>::Multiple) config:
+      // - Desired inference calculator input order: tensor0, tensor1, tensor2
+      // - Given model tensor input order: [Tensor2, Tensor1, Tensor0]
+      // - tensor_names_map: ["Tensor0", "Tensor1", "Tensor2"]
+      // Output (Output<std::vector<Tensor>> or Output<Tensor>::Multiple)
+      // config:
+      // - Given model tensor output order: [Tensor2, Tensor1, Tensor0]
+      // - Desired InferenceCalculator output order: tensor0, tensor1, tensor2
+      // - tensor_names_map: ["Tensor0", "Tensor1", "Tensor2"]
+      repeated string tensor_names = 1;
+    }
+
     // Maps the input tensors of the InferenceCalculator to the input tensors of
-    // the TFLite model. Values are model I/O tensor indices.
-    optional TensorIndicesMap input_tensor_indices_map = 1;
+    // the TFLite model. Values are model I/O tensor indices or tensor names.
+    oneof InputTensorMap {
+      TensorIndicesMap input_tensor_indices_map = 1;
+      TensorNamesMap input_tensor_names_map = 3;
+    }
 
     // Maps the output tensors of the TfLite model to the the output tensors of
-    // the InferenceCalculator. Values are model I/O tensor indices.
-    optional TensorIndicesMap output_tensor_indices_map = 2;
+    // the InferenceCalculator. Values are model I/O tensor indices or tensor
+    // names.
+    oneof OutputTensorMap {
+      TensorIndicesMap output_tensor_indices_map = 2;
+      TensorNamesMap output_tensor_names_map = 4;
+    }
+
+    // Feedback tensor links are pairs of model input / output tensors where
+    // the output should be set as inputs in the next model invocation. This
+    // allows to manage a notion of temporal state by continuously feeding from
+    // the model's output to the model's input during each inference step.  Note
+    // that these feedback tensors must be excluded from the input/output
+    // tensor maps above as they are not used as regular inputs/outputs of the
+    // inference calculator.
+    message FeedbackTensorLink {
+      // TfLite output tensor name from default TfLite signature to use as
+      // source.
+      optional string from_output_tensor_name = 1;
+      // TfLite tensor name from default TfLitesignature to pass input
+      // tensor to.
+      optional string to_input_tensor_name = 2;
+    }
+
+    // Defines a mapping between output tensors that should be
+    // used as input tensors during the next inference invocation.
+    repeated FeedbackTensorLink feedback_tensor_links = 5;
   }
 
   // Optionally remaps input and output tensors to align with TfLite model and

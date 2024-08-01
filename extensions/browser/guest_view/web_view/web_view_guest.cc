@@ -1082,6 +1082,11 @@ void WebViewGuest::RequestMediaAccessPermission(
     WebContents* source,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
+  if (IsOwnedByControlledFrameEmbedder()) {
+    web_view_permission_helper_->RequestMediaAccessPermissionForControlledFrame(
+        source, request, std::move(callback));
+    return;
+  }
   web_view_permission_helper_->RequestMediaAccessPermission(
       source, request, std::move(callback));
 }
@@ -1090,6 +1095,11 @@ bool WebViewGuest::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
+  if (IsOwnedByControlledFrameEmbedder()) {
+    return web_view_permission_helper_
+        ->CheckMediaAccessPermissionForControlledFrame(render_frame_host,
+                                                       security_origin, type);
+  }
   return web_view_permission_helper_->CheckMediaAccessPermission(
       render_frame_host, security_origin, type);
 }

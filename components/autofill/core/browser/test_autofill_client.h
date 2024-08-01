@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -31,7 +32,6 @@
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
-#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
@@ -197,10 +197,6 @@ class TestAutofillClientTemplate : public T {
     return &test_address_normalizer_;
   }
 
-  AutofillOfferManager* GetAutofillOfferManager() override {
-    return autofill_offer_manager_.get();
-  }
-
   FastCheckoutClient* GetFastCheckoutClient() override {
     return &mock_fast_checkout_client_;
   }
@@ -297,13 +293,6 @@ class TestAutofillClientTemplate : public T {
       const AutofillProfile& profile,
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
-
-  bool ShowTouchToFillCreditCard(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilities) override {
-    return false;
-  }
 
   bool ShowTouchToFillIban(
       base::WeakPtr<TouchToFillDelegate> delegate,
@@ -485,11 +474,6 @@ class TestAutofillClientTemplate : public T {
     return &mock_autocomplete_history_manager_;
   }
 
-  void set_autofill_offer_manager(
-      std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
-    autofill_offer_manager_ = std::move(autofill_offer_manager);
-  }
-
   void set_channel_for_testing(const version_info::Channel channel) {
     channel_for_testing_ = channel;
   }
@@ -550,7 +534,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
-  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
@@ -615,6 +598,11 @@ class TestAutofillClientTemplate : public T {
 class TestAutofillClient : public TestAutofillClientTemplate<AutofillClient> {
  public:
   using TestAutofillClientTemplate<AutofillClient>::TestAutofillClientTemplate;
+
+  AutofillDriverFactory& GetAutofillDriverFactory() override;
+
+ private:
+  AutofillDriverFactory autofill_driver_factory_;
 };
 
 }  // namespace autofill

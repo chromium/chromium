@@ -60,6 +60,7 @@ static_library("fileapi") {
     "//ash/components/arc/mojom",
     "//base",
     "//base:i18n",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/drivefs/mojom",
     "//components/account_id",
@@ -96,11 +97,6 @@ static_library("fileapi") {
     "//services/network/public/mojom:url_loader_base",
     "//third_party/blink/public/common:headers",
     "//ui/file_manager/base/gn:file_types_data_cpp",
-
-    # TODO(b/354635675): Use target having included headers from
-    # chrome/browser/ash/fileapi/external_file_url_util.cc.
-    "//chrome/browser/ash/fusebox:fusebox_proto",
-    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
   ]
 }
 

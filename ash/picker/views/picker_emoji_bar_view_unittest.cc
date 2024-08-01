@@ -338,5 +338,19 @@ TEST_F(PickerEmojiBarViewTest, GetsItemRightOfSkipsGifsIfGifsDisabled) {
             emoji_bar->more_emojis_button_for_testing());
 }
 
+TEST_F(PickerEmojiBarViewTest, ItemsAreTruncatedToFit) {
+  MockEmojiBarViewDelegate mock_delegate;
+  PickerEmojiBarView emoji_bar(&mock_delegate, 200);
+
+  emoji_bar.SetSearchResults({PickerSearchResult::Emoji(u"😊"),
+                              PickerSearchResult::Emoji(u"😊"),
+                              PickerSearchResult::Emoji(u"😊")});
+
+  EXPECT_EQ(emoji_bar.GetNumItems(), 2u);
+  EXPECT_THAT(emoji_bar.GetItemsForTesting(),
+              ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
+                          Truly(&views::IsViewClass<PickerEmojiItemView>)));
+}
+
 }  // namespace
 }  // namespace ash

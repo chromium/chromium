@@ -2270,6 +2270,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure encoding the profile id."/>
 </enum>
 
+<enum name="EnterpriseProfileUnaffiliatedReason">
+  <summary>Profile management status.</summary>
+  <int value="0" label="User unmanaged"/>
+  <int value="1" label="User managed by cloud and device unmanaged"/>
+  <int value="2" label="User managed by cloud and device managed by platform"/>
+  <int value="3" label="User and device managed by cloud and unaffiliated"/>
+</enum>
+
 <enum name="EnterpriseReportingEventType">
   <int value="0" label="Unknown event"/>
   <int value="1" label="Password reuse event"/>

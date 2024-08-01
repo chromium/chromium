@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_consumer.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 // View controller for the Full Screen Default Browser generic promo.
-@interface DefaultBrowserGenericPromoViewController : UIViewController
+@interface DefaultBrowserGenericPromoViewController
+    : UIViewController <DefaultBrowserGenericPromoConsumer>
 
 // The action handler for interactions in this view controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;

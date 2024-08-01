@@ -517,30 +517,6 @@ void WidgetBaseInputHandler::HandleInputEvent(
   DCHECK(handling_state.injected_scroll_params().empty());
 }
 
-bool WidgetBaseInputHandler::DidOverscrollFromBlink(
-    const gfx::Vector2dF& overscroll_delta,
-    const gfx::Vector2dF& accumulated_overscroll,
-    const gfx::PointF& position,
-    const gfx::Vector2dF& velocity,
-    const cc::OverscrollBehavior& behavior) {
-  // We aren't currently handling an event. Allow the processing to be
-  // dispatched separately from the ACK.
-  if (!handling_input_state_)
-    return true;
-
-  // If we're currently handling an event, stash the overscroll data such that
-  // it can be bundled in the event ack.
-  std::unique_ptr<InputHandlerProxy::DidOverscrollParams> params =
-      std::make_unique<InputHandlerProxy::DidOverscrollParams>();
-  params->accumulated_overscroll = accumulated_overscroll;
-  params->latest_overscroll_delta = overscroll_delta;
-  params->current_fling_velocity = velocity;
-  params->causal_event_viewport_point = position;
-  params->overscroll_behavior = behavior;
-  handling_input_state_->set_event_overscroll(std::move(params));
-  return false;
-}
-
 void WidgetBaseInputHandler::InjectScrollbarGestureScroll(
     const gfx::Vector2dF& delta,
     ui::ScrollGranularity granularity,

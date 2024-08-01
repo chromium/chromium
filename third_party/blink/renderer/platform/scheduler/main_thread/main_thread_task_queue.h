@@ -196,6 +196,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
+    QueueTraits SetCanBeDeferredForRendering(bool value) {
+      can_be_deferred_for_rendering = value;
+      return *this;
+    }
+
     QueueTraits SetCanBeThrottled(bool value) {
       can_be_throttled = value;
       return *this;
@@ -245,6 +250,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       int offset = 0;
       int key = 1 << (offset++);
       key |= can_be_deferred << (offset++);
+      key |= can_be_deferred_for_rendering << (offset++);
       key |= can_be_throttled << (offset++);
       key |= can_be_intensively_throttled << (offset++);
       key |= can_be_paused << (offset++);
@@ -260,6 +266,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
     bool can_be_deferred : 1 = false;
+    bool can_be_deferred_for_rendering : 1 = false;
     bool can_be_throttled : 1 = false;
     bool can_be_intensively_throttled : 1 = false;
     bool can_be_paused : 1 = false;
@@ -301,6 +308,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     QueueCreationParams SetCanBeDeferred(bool value) {
       queue_traits = queue_traits.SetCanBeDeferred(value);
+      ApplyQueueTraitsToSpec();
+      return *this;
+    }
+
+    QueueCreationParams SetCanBeDeferredForRendering(bool value) {
+      queue_traits = queue_traits.SetCanBeDeferredForRendering(value);
       ApplyQueueTraitsToSpec();
       return *this;
     }
@@ -387,6 +400,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   QueueType queue_type() const { return queue_type_; }
 
   bool CanBeDeferred() const { return queue_traits_.can_be_deferred; }
+
+  bool CanBeDeferredForRendering() const {
+    return queue_traits_.can_be_deferred_for_rendering;
+  }
 
   bool CanBeThrottled() const { return queue_traits_.can_be_throttled; }
 

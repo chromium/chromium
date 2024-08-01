@@ -55,6 +55,9 @@ class TabModelList {
 
   static const TabModelVector& models();
 
+  static void SetArchivedTabModel(TabModel* archived_tab_model);
+  static TabModel* GetArchivedTabModel();
+
  private:
   TabModelList();
 

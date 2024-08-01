@@ -341,11 +341,12 @@ class TrustTokenBeginRedemptionPostconditionsTest
 // Check that the redemption helper sets the Sec-Private-State-Token and
 // Sec-Private-State-Token-Crypto-Version headers on the outgoing request.
 TEST_F(TrustTokenBeginRedemptionPostconditionsTest, SetsHeaders) {
-  std::string attached_header;
-  EXPECT_TRUE(request_->extra_request_headers().GetHeader(
-      kTrustTokensSecTrustTokenHeader, &attached_header));
-  EXPECT_TRUE(request_->extra_request_headers().GetHeader(
-      kTrustTokensSecTrustTokenVersionHeader, &attached_header));
+  EXPECT_THAT(request_->extra_request_headers().GetHeader(
+                  kTrustTokensSecTrustTokenHeader),
+              Optional(_));
+  EXPECT_THAT(request_->extra_request_headers().GetHeader(
+                  kTrustTokensSecTrustTokenVersionHeader),
+              Optional(_));
 }
 
 class TrustTokenBeginRedemptionPostconditionsTestWithMetrics

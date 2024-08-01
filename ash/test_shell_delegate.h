@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -72,6 +73,7 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;
   std::unique_ptr<api::TasksDelegate> CreateTasksDelegate() const override;
+  std::unique_ptr<TabStripDelegate> CreateTabStripDelegate() const override;
   std::unique_ptr<FocusModeDelegate> CreateFocusModeDelegate() const override;
   std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
       const override;

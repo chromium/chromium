@@ -43,9 +43,11 @@ LensRegionSearchController::~LensRegionSearchController() {
 void LensRegionSearchController::Start(
     content::WebContents* web_contents,
     bool use_fullscreen_capture,
+    bool force_open_in_new_tab,
     bool is_google_default_search_provider,
     lens::AmbientSearchEntryPoint entry_point) {
   entry_point_ = entry_point;
+  force_open_in_new_tab_ = force_open_in_new_tab;
   is_google_default_search_provider_ = is_google_default_search_provider;
   // Return early if web contents/browser don't exist and if capture mode is
   // already active.
@@ -201,7 +203,8 @@ void LensRegionSearchController::OnCaptureCompleted(
         entry_point_ == lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH
             ? lens::EntryPoint::COMPANION_REGION_SEARCH
             : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
-    core_tab_helper->SearchWithLens(image, lens_entry_point);
+    core_tab_helper->SearchWithLens(image, lens_entry_point,
+                                    force_open_in_new_tab_);
   } else {
     core_tab_helper->SearchByImage(image);
   }

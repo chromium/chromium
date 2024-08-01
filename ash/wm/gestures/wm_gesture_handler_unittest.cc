@@ -4,7 +4,6 @@
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/test/mock_input_device_settings_controller.h"
@@ -20,7 +19,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -57,22 +55,14 @@ bool InOverviewSession() {
 }
 
 const aura::Window* GetFocusedWindow() {
-  if (features::IsOverviewNewFocusEnabled()) {
-    if (!InOverviewSession()) {
-      return nullptr;
-    }
-
-    views::View* focused_view = GetFocusedView();
-    if (!focused_view) {
-      return nullptr;
-    }
-
-    return views::IsViewClass<OverviewItemView>(focused_view)
-               ? focused_view->GetWidget()->GetNativeWindow()
-               : nullptr;
+  if (!InOverviewSession()) {
+    return nullptr;
   }
 
-  return InOverviewSession() ? GetOverviewFocusedWindow() : nullptr;
+  views::View* focused_view = GetFocusedView();
+  return views::IsViewClass<OverviewItemView>(focused_view)
+             ? focused_view->GetWidget()->GetNativeWindow()
+             : nullptr;
 }
 
 class TestInputDeviceSettingsController
@@ -468,14 +458,7 @@ TEST_F(WmGestureHandlerTest, ActivateFocusedDeskWithVerticalScroll) {
       overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
           ->desks_bar_view()
           ->mini_views()[1];
-
-  if (features::IsOverviewNewFocusEnabled()) {
-    mini_view_1->desk_preview()->RequestFocus();
-  } else {
-    overview_session->focus_cycler_old()->MoveFocusToView(
-        mini_view_1->desk_preview());
-    ASSERT_TRUE(mini_view_1->desk_preview()->is_focused());
-  }
+  mini_view_1->desk_preview()->RequestFocus();
 
   // Exit overview with 3-fingers downward swipes.
   DeskSwitchAnimationWaiter waiter;

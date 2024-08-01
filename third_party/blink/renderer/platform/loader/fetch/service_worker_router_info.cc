@@ -38,6 +38,7 @@ ServiceWorkerRouterInfo::ToMojo() const {
   info->actual_source_type = actual_source_type_;
   info->route_rule_num = route_rule_num_;
   info->evaluation_worker_status = evaluation_worker_status_;
+  info->router_evaluation_time = router_evaluation_time_;
   return info;
 }
 

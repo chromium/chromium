@@ -1690,9 +1690,6 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
       downloads::GetFileIcon::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const std::optional<downloads::GetFileIconOptions>& options = params->options;
-  int icon_size = kDefaultIconSize;
-  if (options && options->size)
-    icon_size = *options->size;
   DownloadItem* download_item = GetDownload(
       browser_context(), include_incognito_information(), params->download_id);
   std::string error;
@@ -1700,6 +1697,15 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
       Fault(download_item->GetTargetFilePath().empty(),
             download_extension_errors::kEmptyFile, &error))
     return RespondNow(Error(std::move(error)));
+
+  int icon_size = kDefaultIconSize;
+  if (options && options->size) {
+    icon_size = *options->size;
+    if (icon_size != 16 && icon_size != 32) {
+      return RespondNow(Error("Invalid `size`. Must be either `16` or `32`."));
+    }
+  }
+
   // In-progress downloads return the intermediate filename for GetFullPath()
   // which doesn't have the final extension. Therefore a good file icon can't be
   // found, so use GetTargetFilePath() instead.

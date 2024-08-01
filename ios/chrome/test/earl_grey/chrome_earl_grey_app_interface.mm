@@ -41,6 +41,8 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -57,8 +59,6 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -1070,6 +1070,10 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase {
   chrome_test_util::AddBookmarkWithSyncPassphrase(
       base::SysNSStringToUTF8(syncPassphrase));
+}
+
++ (void)addSyncPassphrase:(NSString*)syncPassphrase {
+  chrome_test_util::AddSyncPassphrase(base::SysNSStringToUTF8(syncPassphrase));
 }
 
 + (BOOL)isSyncHistoryDataTypeSelected {

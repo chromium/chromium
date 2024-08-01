@@ -14,6 +14,8 @@ static_library("extended_updates") {
     "extended_updates_notification.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",
@@ -55,6 +57,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/settings",

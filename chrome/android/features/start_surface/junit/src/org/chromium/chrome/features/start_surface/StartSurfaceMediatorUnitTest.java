@@ -60,6 +60,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -94,7 +95,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.features.start_surface.StartSurface.OnTabSelectingListener;
 import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -142,7 +142,8 @@ public class StartSurfaceMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private HomeModulesCoordinator mHomeModulesCoordinator;
-    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
+    @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<UrlFocusChangeListener> mUrlFocusChangeListenerCaptor;
 
@@ -186,6 +187,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
         doReturn(false).when(mNormalTabModel).isIncognito();
         doReturn(true).when(mIncognitoTabModel).isIncognito();
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mNormalTabModelFilter);
@@ -221,7 +223,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(2).when(mNormalTabModel).getCount();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         showHomepageAndVerify(mediator);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
@@ -229,15 +231,11 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(true);
-        mTabModelSelectorObserverCaptor
-                .getValue()
-                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
+        mTabModelSupplierObserverCaptor.getValue().onResult(mIncognitoTabModel);
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(false);
-        mTabModelSelectorObserverCaptor
-                .getValue()
-                .onTabModelSelected(mNormalTabModel, mIncognitoTabModel);
+        mTabModelSupplierObserverCaptor.getValue().onResult(mNormalTabModel);
         assertTrue(mediator.isHomepageShown());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
@@ -252,7 +250,7 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator = createStartSurfaceMediator();
         showHomepageAndVerify(mediator);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
 
         assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED), equalTo(false));
         assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE), equalTo(false));
@@ -265,7 +263,7 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator = createStartSurfaceMediator();
         showHomepageAndVerify(mediator);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
 
         assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED), equalTo(false));
         assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE), equalTo(false));
@@ -436,7 +434,7 @@ public class StartSurfaceMediatorUnitTest {
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
 
         showHomepageAndVerify(mediator);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
         verify(mNormalTabModel, never()).addObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelFilterProvider)
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
@@ -456,16 +454,12 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(true);
-        mTabModelSelectorObserverCaptor
-                .getValue()
-                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
+        mTabModelSupplierObserverCaptor.getValue().onResult(mIncognitoTabModel);
         assertTrue(mPropertyModel.get(IS_INCOGNITO));
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(false);
-        mTabModelSelectorObserverCaptor
-                .getValue()
-                .onTabModelSelected(mNormalTabModel, mIncognitoTabModel);
+        mTabModelSupplierObserverCaptor.getValue().onResult(mNormalTabModel);
         assertFalse(mPropertyModel.get(IS_INCOGNITO));
 
         int lastId = 1;
@@ -499,7 +493,7 @@ public class StartSurfaceMediatorUnitTest {
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
 
         showHomepageAndVerify(mediator);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
         verify(mNormalTabModel, never()).addObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelFilterProvider)
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
@@ -523,7 +517,7 @@ public class StartSurfaceMediatorUnitTest {
                 .removeUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
         verify(mTabModelFilterProvider)
                 .removeTabModelFilterObserver(mTabModelObserverCaptor.capture());
-        verify(mTabModelSelector).removeObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSupplier).removeObserver(mTabModelSupplierObserverCaptor.capture());
         assertFalse(mediator.isHomepageShown());
     }
 

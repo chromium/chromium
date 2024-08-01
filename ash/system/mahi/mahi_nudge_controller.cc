@@ -8,6 +8,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/mahi_constants.h"

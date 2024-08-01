@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <memory>
 
@@ -359,6 +364,25 @@ SkYUVAPixmapInfo::DataType ToSkYUVADataType(viz::SharedImageFormat format) {
       return SkYUVAPixmapInfo::DataType::kFloat16;
   }
   NOTREACHED_NORETURN();
+}
+
+bool IsGLFormatAndTypeSupported(GLenum format, GLenum type) {
+  switch (format) {
+    case GL_RGBA:
+      return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
+    case GL_RGB:
+      return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5;
+    case GL_RGBA8:
+    case GL_RGB565:
+    case GL_RGBA16F:
+    case GL_RGB8:
+    case GL_RGB10_A2:
+    case GL_RGBA4:
+    case GL_SRGB8_ALPHA8:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // anonymous namespace
@@ -5218,6 +5242,10 @@ GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
     InsertError(GL_INVALID_VALUE, "Invalid texture target");
     return error::kNoError;
   }
+  if (!IsGLFormatAndTypeSupported(internal_format, type)) {
+    InsertError(GL_INVALID_VALUE, "Invalid GL format");
+    return error::kNoError;
+  }
 
   GLuint gl_texture_service_id = GetTextureServiceID(
       api(), texture, resources_, /*create_if_missing=*/false);
@@ -5288,6 +5316,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
 
   if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE) {
     InsertError(GL_INVALID_VALUE, "Invalid texture target");
+    return error::kNoError;
+  }
+  if (!IsGLFormatAndTypeSupported(internal_format, type)) {
+    InsertError(GL_INVALID_VALUE, "Invalid GL format");
     return error::kNoError;
   }
 

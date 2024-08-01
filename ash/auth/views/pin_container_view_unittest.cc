@@ -78,6 +78,17 @@ TEST_F(PinContainerUnitTest, TypePin) {
   EXPECT_EQ(test_api_auth_input_->GetTextfield()->GetText(), kPin);
 }
 
+// Verify type is not operating with disabled input.
+TEST_F(PinContainerUnitTest, DisabledTypePin) {
+  container_view_->SetInputEnabled(false);
+  // Press 1,2,3,4,5,6 buttons on the pin pad.
+  const std::u16string kPin(u"123456");
+  for (size_t i = 1; i <= kPin.size(); ++i) {
+    LeftClickOn(test_api_pin_keyboard_->digit_button(kPin[i - 1] - u'0'));
+  }
+  EXPECT_EQ(test_api_auth_input_->GetTextfield()->GetText(), std::u16string());
+}
+
 // Verify pin keyboard connected with auth input row.
 TEST_F(PinContainerUnitTest, BackspaceTest) {
   const std::u16string kPin(u"6893112");
@@ -100,6 +111,20 @@ TEST_F(PinContainerUnitTest, SubmitTest) {
     LeftClickOn(test_api_pin_keyboard_->digit_button(kPin[i - 1] - u'0'));
   }
   EXPECT_CALL(*mock_observer_, OnSubmit(kPin)).Times(1);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+}
+
+// Verify enter press is not operating with disabled input.
+TEST_F(PinContainerUnitTest, SubmitDisabledTest) {
+  const std::u16string kPin(u"60012345");
+  // Set textfield to be focused.
+  container_view_->GetFocusManager()->SetFocusedView(
+      test_api_auth_input_->GetTextfield());
+  for (size_t i = 1; i <= kPin.size(); ++i) {
+    LeftClickOn(test_api_pin_keyboard_->digit_button(kPin[i - 1] - u'0'));
+  }
+  container_view_->SetInputEnabled(false);
+  EXPECT_CALL(*mock_observer_, OnSubmit(kPin)).Times(0);
   PressAndReleaseKey(ui::VKEY_RETURN);
 }
 

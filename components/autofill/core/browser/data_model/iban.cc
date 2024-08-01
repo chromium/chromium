@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -109,9 +109,9 @@ Iban::~Iban() = default;
 
 Iban& Iban::operator=(const Iban& iban) = default;
 
-AutofillMetadata Iban::GetMetadata() const {
+PaymentsMetadata Iban::GetMetadata() const {
   CHECK_NE(record_type_, Iban::kUnknown);
-  AutofillMetadata metadata(*this);
+  PaymentsMetadata metadata(*this);
   metadata.id = record_type_ == Iban::kLocalIban
                     ? guid()
                     : base::NumberToString(instrument_id());
@@ -487,7 +487,7 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
   }
 }
 
-bool Iban::SetMetadata(const AutofillMetadata& metadata) {
+bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
   if (metadata.id != guid()) {
     return false;
   }
@@ -642,7 +642,7 @@ std::string Iban::GetCountryCode() const {
 
 void Iban::RecordAndLogUse() {
   autofill_metrics::LogDaysSinceLastIbanUse(*this);
-  set_use_date(AutofillClock::Now());
+  RecordUseDate(AutofillClock::Now());
   set_use_count(use_count() + 1);
 }
 
@@ -653,35 +653,26 @@ std::u16string Iban::GetIdentifierStringForAutofillDisplay(
   if (value_.empty() && record_type_ == kLocalIban) {
     return value_;
   }
-  // Displaying the full IBAN value is not possible for server-based IBANs.
-  CHECK(is_value_masked || record_type_ != Iban::kServerIban);
-  CHECK(length_ >= int(prefix_.length() + suffix_.length()));
 
-  // If masked IBAN value is needed, the IBAN identifier string can be
-  // constructed by adding ellipsis dots in the middle based on the middle
-  // length (which can be calculated from subtracting `prefix_.length()` and
-  // `suffix_.length()` from `length_`). Otherwise, `iban_identifier` can be
-  // directly set to the full value.
-  std::u16string iban_identifier;
   if (is_value_masked) {
-    iban_identifier = base::StrCat(
-        {prefix_,
-         std::u16string(length_ - prefix_.length() - suffix_.length(),
-                        kEllipsisOneDot),
-         suffix_});
-  } else {
-    iban_identifier = value_;
+    const std::u16string one_space = std::u16string(1, kEllipsisOneSpace);
+    const std::u16string two_dots = std::u16string(2, kEllipsisOneDot);
+    return base::StrCat({prefix(), one_space, two_dots, suffix()});
   }
 
-  // Now that the IBAN identifier string has been constructed, the remaining
-  // step is to add space separators.
+  // Displaying the full IBAN value is not possible for server-based IBANs.
+  CHECK(record_type_ != Iban::kServerIban);
+
+  // Add space separators into the IBAN identifier to display it in groups of
+  // four characters. For example, an IBAN with value of DE91100000000123456789
+  // will be displayed as: DE91 1000 0000 0123 4567 89.
   std::u16string output;
-  output.reserve(length_ + (length_ - 1) / 4);
+  output.reserve(value_.length() + (value_.length() - 1) / 4);
   for (int i = 0; i < length_; ++i) {
     if (i % 4 == 0 && i > 0) {
       output.push_back(kEllipsisOneSpace);
     }
-    output.push_back(iban_identifier[i]);
+    output.push_back(value_[i]);
   }
 
   return output;

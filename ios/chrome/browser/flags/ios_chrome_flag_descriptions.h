@@ -349,18 +349,6 @@ extern const char kEnableFollowIPHExpParamsDescription[];
 extern const char kEnableFollowUIUpdateName[];
 extern const char kEnableFollowUIUpdateDescription[];
 
-// Title and description for the flag to enable Friendlier Enhanced Safe
-// Browsing feature on iOS.
-extern const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[];
-extern const char
-    kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[];
-
-// Title and description for the flag to enable Friendlier Standard Safe
-// Browsing feature on iOS.
-extern const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[];
-extern const char
-    kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[];
-
 // Title and description for the flag to disable the Lens input selection
 // and camera experience.
 extern const char kDisableLensCameraName[];
@@ -461,6 +449,10 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIdentityDiscAccountMenuName[];
 extern const char kIdentityDiscAccountMenuDescription[];
 
+// Title and description for the flag to enable identity confirmation snackbar.
+extern const char kIdentityConfirmationSnackbarName[];
+extern const char kIdentityConfirmationSnackbarDescription[];
+
 // Title and description for the flag that updates the inactive tab from a
 // header to a button.
 extern const char kInactiveTabButtonRefactoringName[];
@@ -505,11 +497,6 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 // Title and description for the flag to enable the keyboard accessory upgrade.
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
-
-// Title and description for the flag to require Local Authentication before
-// accessing the any of the Password Manager surfaces.
-extern const char kIOSPasswordAuthOnEntryV2Name[];
-extern const char kIOSPasswordAuthOnEntryV2Description[];
 
 // Title and description for the flag to enable password bottom sheet triggering
 // on autofocus on IOS.
@@ -843,10 +830,6 @@ extern const char kPasswordSharingDescription[];
 // Chrome.
 extern const char kDownloadedPDFOpeningName[];
 extern const char kDownloadedPDFOpeningDescription[];
-
-// Title and description for the flag to enable chrome://policy/test.
-extern const char kEnablePolicyTestPageName[];
-extern const char kEnablePolicyTestPageDescription[];
 
 // Title and description for the flag to enable the Privacy Guide.
 extern const char kPrivacyGuideIosName[];

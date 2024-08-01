@@ -1260,11 +1260,6 @@ TEST_F(SessionRestorationServiceImplTest, PurgeUnassociatedData) {
   service()->Disconnect(&browser);
 }
 
-// Tests that PlaceholderTabsEnabled() can be called at any time.
-TEST_F(SessionRestorationServiceImplTest, PlaceholderTabsEnabled) {
-  EXPECT_TRUE(service()->PlaceholderTabsEnabled());
-}
-
 // Tests that LoadWebStateStorage(...) loads the data from disk.
 TEST_F(SessionRestorationServiceImplTest, LoadWebStateData) {
   // Insert a few WebState in a Browser, wait for the changes to be saved,

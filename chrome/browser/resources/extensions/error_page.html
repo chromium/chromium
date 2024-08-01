@@ -37,6 +37,10 @@
     margin: 0 10px;
   }
 
+  #dev-reload-button {
+    margin-inline-end: 12px;
+  }
+
   #errorsList {
     min-height: 100px;
   }
@@ -119,6 +123,12 @@
           aria-label="$i18n{back}" on-click="onCloseButtonClick_">
       </cr-icon-button>
       <span role="heading" aria-level="2">$i18n{errorsPageHeading}</span>
+      <template is="dom-if" if="[[showReloadButton_(data.*)]]">
+        <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
+            title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
+            aria-describedby="a11yAssociation" on-click="onReloadClick_">
+        </cr-icon-button>
+      </template>
       <cr-button on-click="onClearAllClick_" hidden="[[!entries_.length]]">
         $i18n{clearAll}
       </cr-button>

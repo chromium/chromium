@@ -34,7 +34,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.gridlayout.widget.GridLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
@@ -279,7 +278,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
      * @param resId @see android.widget.TextView#setTextAppearance(int id).
      */
     protected void setTitleAppearance(int resId) {
-        ApiCompatibilityUtils.setTextAppearance(mTitleView, resId);
+        mTitleView.setTextAppearance(resId);
     }
 
     /**
@@ -288,16 +287,16 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
      * @param resId @see android.widget.TextView#setTextAppearance(int id).
      */
     protected void setSummaryAppearance(int leftResId, int rightResId) {
-        ApiCompatibilityUtils.setTextAppearance(mSummaryLeftTextView, leftResId);
-        ApiCompatibilityUtils.setTextAppearance(mSummaryRightTextView, rightResId);
+        mSummaryLeftTextView.setTextAppearance(leftResId);
+        mSummaryRightTextView.setTextAppearance(rightResId);
     }
 
     /**
      * Sets how the summary text should be displayed.
      *
-     * @param leftTruncate      How to truncate the left summary text.  Set to null to clear.
-     * @param leftIsSingleLine  Whether the left summary text should be a single line.
-     * @param rightTruncate     How to truncate the right summary text.  Set to null to clear.
+     * @param leftTruncate How to truncate the left summary text. Set to null to clear.
+     * @param leftIsSingleLine Whether the left summary text should be a single line.
+     * @param rightTruncate How to truncate the right summary text. Set to null to clear.
      * @param rightIsSingleLine Whether the right summary text should be a single line.
      */
     public void setSummaryProperties(
@@ -368,20 +367,17 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         // The title is always displayed for the row at the top of the main section.
         mTitleView = new TextView(getContext());
         mTitleView.setText(sectionName);
-        ApiCompatibilityUtils.setTextAppearance(
-                mTitleView, R.style.TextAppearance_TextMedium_Accent1);
+        mTitleView.setTextAppearance(R.style.TextAppearance_TextMedium_Accent1);
         mainSectionLayout.addView(
                 mTitleView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         // Create the two TextViews for showing the summary text.
         mSummaryLeftTextView = new TextView(getContext());
         mSummaryLeftTextView.setId(R.id.payments_left_summary_label);
-        ApiCompatibilityUtils.setTextAppearance(
-                mSummaryLeftTextView, R.style.TextAppearance_TextLarge_Primary);
+        mSummaryLeftTextView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
 
         mSummaryRightTextView = new TextView(getContext());
-        ApiCompatibilityUtils.setTextAppearance(
-                mSummaryRightTextView, R.style.TextAppearance_TextLarge_Primary);
+        mSummaryRightTextView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
         mSummaryRightTextView.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
 
         // The main TextView sucks up all the available space.
@@ -617,8 +613,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
             // Create the view and set the text appearance and layout parameters.
             mUpdatedView = new TextView(context);
-            ApiCompatibilityUtils.setTextAppearance(
-                    mUpdatedView, R.style.TextAppearance_TextLarge_Primary);
+            mUpdatedView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
             LinearLayout.LayoutParams updatedLayoutParams =
                     new LinearLayout.LayoutParams(
                             LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -676,8 +671,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 LineItem item = cart.getContents().get(i);
 
                 TextView description = new TextView(context);
-                ApiCompatibilityUtils.setTextAppearance(
-                        description,
+                description.setTextAppearance(
                         item.getIsPending()
                                 ? R.style.TextAppearance_PaymentsUiSectionPendingTextEndAligned
                                 : R.style
@@ -690,8 +684,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 }
 
                 TextView amount = new TextView(context);
-                ApiCompatibilityUtils.setTextAppearance(
-                        amount,
+                amount.setTextAppearance(
                         item.getIsPending()
                                 ? R.style.TextAppearance_PaymentsUiSectionPendingTextEndAligned
                                 : R.style
@@ -1032,8 +1025,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                             resources.getDimensionPixelSize(
                                     R.dimen.payments_section_add_button_height);
 
-                    ApiCompatibilityUtils.setTextAppearance(
-                            labelView, R.style.TextAppearance_EditorDialogSectionAddButton);
+                    labelView.setTextAppearance(
+                            R.style.TextAppearance_EditorDialogSectionAddButton);
                     labelView.setMinimumHeight(buttonHeight);
                     labelView.setGravity(Gravity.CENTER_VERTICAL);
                 } else if (mRowType == OPTION_ROW_TYPE_DESCRIPTION) {
@@ -1041,14 +1034,13 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                     columnStart = 0;
                     columnSpan = 4;
 
-                    ApiCompatibilityUtils.setTextAppearance(
-                            labelView, R.style.TextAppearance_TextMedium_Secondary);
+                    labelView.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
                     labelView.setId(R.id.payments_description_label);
                 } else if (mRowType == OPTION_ROW_TYPE_WARNING) {
                     // Warnings use three columns.
                     columnSpan = 3;
-                    ApiCompatibilityUtils.setTextAppearance(
-                            labelView, R.style.TextAppearance_PaymentsUiSectionWarningText);
+                    labelView.setTextAppearance(
+                            R.style.TextAppearance_PaymentsUiSectionWarningText);
                     labelView.setId(R.id.payments_warning_label);
                 }
 
@@ -1400,8 +1392,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 setLogoDrawable(null);
                 // Section summary should be displayed as descriptive text style.
                 if (!mSummaryInDescriptiveText) {
-                    ApiCompatibilityUtils.setTextAppearance(
-                            getSummaryLeftTextView(), R.style.TextAppearance_TextMedium_Secondary);
+                    TextView view = getSummaryLeftTextView();
+                    view.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
                     mSummaryInDescriptiveText = true;
                 }
                 SectionUiUtils.showSectionSummaryInTextViewInSingeLine(
@@ -1411,8 +1403,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 // Selected item summary should be displayed as
                 // R.style.TextAppearance_TextLarge_Primary.
                 if (mSummaryInDescriptiveText) {
-                    ApiCompatibilityUtils.setTextAppearance(
-                            getSummaryLeftTextView(), R.style.TextAppearance_TextLarge_Primary);
+                    TextView view = getSummaryLeftTextView();
+                    view.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
                     mSummaryInDescriptiveText = false;
                 }
                 // Split summary in DISPLAY_MODE_NORMAL if caller specified. The first part is

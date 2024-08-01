@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/search/ntp_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ntp {
@@ -62,6 +64,13 @@ class MockHistoryService : public history::HistoryService {
                          ToAnnotatedVisitsCallback callback,
                          base::CancelableTaskTracker* tracker));
 };
+
+static constexpr size_t kNumModuleFeatures = 5;
+extern const std::vector<base::test::FeatureRef>& kAllModuleFeatures;
+
+std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(
+    const std::vector<base::test::FeatureRef>& features,
+    const std::vector<base::test::FeatureRef>& enabled_features);
 
 }  // namespace ntp
 

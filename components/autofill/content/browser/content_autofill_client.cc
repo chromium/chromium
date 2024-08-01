@@ -12,9 +12,9 @@ ContentAutofillClient::ContentAutofillClient(content::WebContents* web_contents)
 
 ContentAutofillClient::~ContentAutofillClient() = default;
 
-ContentAutofillDriverFactory*
+ContentAutofillDriverFactory&
 ContentAutofillClient::GetAutofillDriverFactory() {
-  return &autofill_driver_factory_;
+  return autofill_driver_factory_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentAutofillClient);

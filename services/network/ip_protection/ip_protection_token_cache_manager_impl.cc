@@ -4,13 +4,20 @@
 
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 
+#include <memory>
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "ip_protection_config_cache.h"
+#include "ip_protection_token_cache_manager.h"
+#include "net/base/features.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
+#include "services/network/ip_protection/ip_protection_geo_utils.h"
 
 namespace network {
 
@@ -22,21 +29,40 @@ namespace {
 constexpr base::TimeDelta kMinimumFuzzInterval = base::Seconds(5);
 
 // Interval between measurements of the token rates.
-const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
+constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
+
+// Time delay used for immediate refill to prevent overloading servers.
+constexpr base::TimeDelta kImmediateTokenRefillDelay = base::Minutes(1);
+
+// Time delay used for when a token limit has been exceeded.
+constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
+
+// Default Geo used until caching by geo is enabled.
+constexpr std::string kDefaultGeo = "EARTH";
 
 }  // namespace
 
 IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
-    mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
-    network::mojom::IpProtectionProxyLayer proxy_layer,
+    IpProtectionConfigCache* config_cache,
+    IpProtectionConfigGetter* config_getter,
+    IpProtectionProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
           net::features::kIpPrivacyAuthTokenCacheLowWaterMark.Get()),
+      enable_token_caching_by_geo_(
+          net::features::kIpPrivacyCacheTokensByGeo.Get()),
       config_getter_(config_getter),
       proxy_layer_(proxy_layer),
+      ip_protection_config_cache_(config_cache),
       disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
+  // If caching by geo is disabled, the current geo will be resolved to
+  // `kDefaultGeo` and should not be modified.
+  if (!enable_token_caching_by_geo_) {
+    current_geo_id_ = kDefaultGeo;
+  }
+
   last_token_rate_measurement_ = base::TimeTicks::Now();
   // Start the timer. The timer is owned by `this` and thus cannot outlive it.
   measurement_timer_.Start(
@@ -54,10 +80,19 @@ IpProtectionTokenCacheManagerImpl::~IpProtectionTokenCacheManagerImpl() =
     default;
 
 bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable() {
+  return IsAuthTokenAvailable(current_geo_id_);
+}
+
+bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable(
+    const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RemoveExpiredTokens();
-  return cache_.size() > 0;
+
+  // After `RemoveExpiredTokens()`, any keys for an empty token deque will be
+  // removed. Thus, we do not need to check if the deque is empty or not here.
+  return cache_by_geo_.contains(enable_token_caching_by_geo_ ? geo_id
+                                                             : kDefaultGeo);
 }
 
 // If this is a good time to request another batch of tokens, do so. This
@@ -65,7 +100,7 @@ bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable() {
 void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
   RemoveExpiredTokens();
   if (fetching_auth_tokens_ || !config_getter_ ||
-      disable_cache_management_for_testing_) {
+      !ip_protection_config_cache_ || disable_cache_management_for_testing_) {
     return;
   }
 
@@ -79,10 +114,10 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
     return;
   }
 
-  if (cache_.size() < cache_low_water_mark_) {
+  if (NeedsRefill()) {
     fetching_auth_tokens_ = true;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
-    config_getter_->get()->TryGetAuthTokens(
+    config_getter_->TryGetAuthTokens(
         batch_size_, proxy_layer_,
         base::BindOnce(
             &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
@@ -98,30 +133,51 @@ void IpProtectionTokenCacheManagerImpl::InvalidateTryAgainAfterTime() {
   ScheduleMaybeRefillCache();
 }
 
+std::string IpProtectionTokenCacheManagerImpl::CurrentGeo() const {
+  return current_geo_id_;
+}
+
+void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
+    const std::string& geo_id) {
+  // If caching by geo is disabled, no further action is needed.
+  if (!enable_token_caching_by_geo_) {
+    return;
+  }
+
+  current_geo_id_ = geo_id;
+
+  if (NeedsRefill() && !fetching_auth_tokens_) {
+    MaybeRefillCache();
+  }
+}
+
 // Schedule the next timed call to `MaybeRefillCache()`. This method is
 // idempotent, and may be called at any time.
 void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
-  // If currently getting tokens, the call will be rescheduled when that
-  // completes. If there's no getter, there's nothing to do.
+  // Early return cases:
+  // 1. If currently retrieving tokens, the call will be rescheduled when that
+  //    completes, so there is no need to call a refill here.
+  // 2. If there is no config getter or config cache, there is nothing to do.
+  // 3. If testing requires disabling the cache management.
   if (fetching_auth_tokens_ || !config_getter_ ||
-      disable_cache_management_for_testing_) {
+      !ip_protection_config_cache_ || disable_cache_management_for_testing_) {
     next_maybe_refill_cache_.Stop();
     return;
   }
 
   base::Time now = base::Time::Now();
   base::TimeDelta delay;
-  if (cache_.size() < cache_low_water_mark_) {
-    // If the cache is below the low-water mark, call now or (more likely) at
-    // the requested backoff time.
+
+  if (NeedsRefill()) {
     if (try_get_auth_tokens_after_.is_null()) {
       delay = base::TimeDelta();
     } else {
       delay = try_get_auth_tokens_after_ - now;
     }
   } else {
-    // Call when the next token expires.
-    delay = cache_[0]->expiration - now;
+    // Conditional above ensures token entry exists in map for current geo.
+    // Delay refill to when the next token expires.
+    delay = cache_by_geo_[current_geo_id_].front().expiration - now;
   }
 
   if (delay.is_negative()) {
@@ -134,16 +190,60 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+// Returns true if the cache map does not contain the necessary geo or the
+// number of tokens in the latest geo is below the low water mark.
+bool IpProtectionTokenCacheManagerImpl::NeedsRefill() const {
+  auto it = cache_by_geo_.find(current_geo_id_);
+  if (it == cache_by_geo_.end()) {
+    return true;
+  }
+
+  const std::deque<BlindSignedAuthToken>& cache = it->second;
+  return cache.size() < cache_low_water_mark_;
+}
+
+// Returns true if the cache of the latest geo contains more that enough
+// tokens.
+// This indicates a possible bad state where new tokens are continually
+// being requested "on-demand" due to a geo mismatch between token and proxy
+// list signals in `IpProtectionConfigCache`.
+bool IpProtectionTokenCacheManagerImpl::IsTokenLimitExceeded(
+    const std::string& geo_id) const {
+  auto it = cache_by_geo_.find(geo_id);
+  if (it == cache_by_geo_.end()) {
+    return false;
+  }
+
+  const std::deque<BlindSignedAuthToken>& cache = it->second;
+  return cache.size() > batch_size_ + cache_low_water_mark_;
+}
+
 void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     const base::TimeTicks attempt_start_time_for_metrics,
-    std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
+    std::optional<std::vector<BlindSignedAuthToken>> tokens,
     std::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  fetching_auth_tokens_ = false;
-  if (tokens.has_value()) {
-    VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
-    try_get_auth_tokens_after_ = base::Time();
 
+  // Failed Call - Short circuit and schedule refill.
+  if (!tokens.has_value()) {
+    fetching_auth_tokens_ = false;
+    VLOG(2) << "IPPATC::OnGotAuthTokens back off until " << *try_again_after;
+    try_get_auth_tokens_after_ = *try_again_after;
+
+    if (on_try_get_auth_tokens_completed_for_testing_) {
+      std::move(on_try_get_auth_tokens_completed_for_testing_).Run();
+    }
+
+    ScheduleMaybeRefillCache();
+    return;
+  }
+
+  VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
+  try_get_auth_tokens_after_ = base::Time();
+
+  std::string geo_id_from_token;
+
+  if (!tokens->empty()) {
     // Randomize the expiration time of the tokens, applying the same "fuzz" to
     // all tokens in the batch.
     if (enable_token_expiration_fuzzing_for_testing_) {
@@ -152,33 +252,55 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
       base::TimeDelta fuzz =
           base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
       for (auto& token : *tokens) {
-        token->expiration -= fuzz;
+        token.expiration -= fuzz;
       }
     }
 
-    cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
-                  std::make_move_iterator(tokens->end()));
-    std::sort(cache_.begin(), cache_.end(),
-              [](network::mojom::BlindSignedAuthTokenPtr& a,
-                 network::mojom::BlindSignedAuthTokenPtr& b) {
-                return a->expiration < b->expiration;
-              });
+    geo_id_from_token =
+        enable_token_caching_by_geo_
+            ? network::GetGeoIdFromGeoHint(tokens->front().geo_hint)
+            : kDefaultGeo;
 
-    // If the number of tokens in the cache is still below the low-water mark,
-    // we do not want to immediately re-request tokens, lest we overwhelm the
-    // server. This is unlikely to happen in practice, but exists as a safety
-    // check.
-    if (cache_.size() < cache_low_water_mark_) {
-      try_get_auth_tokens_after_ = base::Time::Now() + base::Minutes(1);
+    // The latest tokens should be placed into the map of caches.
+    if (!cache_by_geo_.contains(geo_id_from_token)) {
+      cache_by_geo_.emplace(geo_id_from_token,
+                            std::deque<BlindSignedAuthToken>());
     }
 
-    base::UmaHistogramMediumTimes(
-        "NetworkService.IpProtection.TokenBatchGenerationTime",
-        base::TimeTicks::Now() - attempt_start_time_for_metrics);
-  } else {
-    VLOG(2) << "IPPATC::OnGotAuthTokens back off until " << *try_again_after;
-    try_get_auth_tokens_after_ = *try_again_after;
+    std::deque<BlindSignedAuthToken>& cache = cache_by_geo_[geo_id_from_token];
+
+    cache.insert(cache.end(), std::make_move_iterator(tokens->begin()),
+                 std::make_move_iterator(tokens->end()));
+    std::sort(cache.begin(), cache.end(),
+              [](BlindSignedAuthToken& a, BlindSignedAuthToken& b) {
+                return a.expiration < b.expiration;
+              });
   }
+
+  // If a refill is still needed, we do not want to immediately re-request
+  // tokens, lest we overwhelm the server. This is unlikely to happen in
+  // practice, but exists as a safety check.
+  if (NeedsRefill()) {
+    try_get_auth_tokens_after_ = base::Time::Now() + kImmediateTokenRefillDelay;
+  }
+
+  // Add an extended delay in event of overflow since this could be indicative
+  // of a bad state causing a loop.
+  if (IsTokenLimitExceeded(geo_id_from_token)) {
+    try_get_auth_tokens_after_ = base::Time::Now() + kTokenLimitExceededDelay;
+  }
+
+  fetching_auth_tokens_ = false;
+
+  bool has_geo_id_changed =
+      geo_id_from_token != "" && geo_id_from_token != current_geo_id_;
+  if (enable_token_caching_by_geo_ && has_geo_id_changed) {
+    ip_protection_config_cache_->GeoChangeObserved(geo_id_from_token);
+  }
+
+  base::UmaHistogramMediumTimes(
+      "NetworkService.IpProtection.TokenBatchGenerationTime",
+      base::TimeTicks::Now() - attempt_start_time_for_metrics);
 
   if (on_try_get_auth_tokens_completed_for_testing_) {
     std::move(on_try_get_auth_tokens_completed_for_testing_).Run();
@@ -187,35 +309,58 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   ScheduleMaybeRefillCache();
 }
 
-std::optional<network::mojom::BlindSignedAuthTokenPtr>
+std::optional<BlindSignedAuthToken>
 IpProtectionTokenCacheManagerImpl::GetAuthToken() {
+  return GetAuthToken(current_geo_id_);
+}
+
+std::optional<BlindSignedAuthToken>
+IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveExpiredTokens();
 
-  base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
-                            cache_.size() > 0);
-  VLOG(2) << "IPPATC::GetAuthToken with " << cache_.size()
-          << " tokens available";
-
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> result;
-  if (cache_.size() > 0) {
-    result = std::move(cache_.front());
-    cache_.pop_front();
+  size_t tokens_in_cache = 0;
+  std::optional<BlindSignedAuthToken> result;
+  // Checks to see if the geo is available in the map and then checks if the
+  // cache itself is not empty.
+  if (auto it = cache_by_geo_.find(enable_token_caching_by_geo_ ? geo_id
+                                                                : kDefaultGeo);
+      it != cache_by_geo_.end() && !it->second.empty()) {
+    tokens_in_cache = it->second.size();
+    result.emplace(std::move(it->second.front()));
+    it->second.pop_front();
     tokens_spent_++;
   }
+
+  base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
+                            tokens_in_cache > 0);
+  VLOG(2) << "IPPATC::GetAuthToken with " << tokens_in_cache
+          << " tokens available";
   MaybeRefillCache();
   return result;
 }
 
+// All calls to this function should be accompanied by a call to
+// `MaybeRefillCache()`.
 void IpProtectionTokenCacheManagerImpl::RemoveExpiredTokens() {
   base::Time fresh_after = base::Time::Now();
-  // Tokens are sorted, so only the first (soonest to expire) is important.
-  while (cache_.size() > 0 && cache_[0]->expiration <= fresh_after) {
-    cache_.pop_front();
-    tokens_expired_++;
+  for (auto it = cache_by_geo_.begin(); it != cache_by_geo_.end();) {
+    std::deque<BlindSignedAuthToken>& tokens = it->second;
+    // Remove expired tokens from each geo. Tokens are sorted and sooner
+    // expirations are toward the front of the deque.
+    while (!tokens.empty() && tokens.front().expiration <= fresh_after) {
+      tokens.pop_front();
+      tokens_expired_++;
+    }
+
+    // A map entry should be removed if the entry contains no tokens and the
+    // current geo does not match.
+    if (tokens.empty()) {
+      it = cache_by_geo_.erase(it);
+    } else {
+      ++it;
+    }
   }
-  // Note that all uses of this method also generate a call to
-  // `MaybeRefillCache()`, so there is no need to do so here.
 }
 
 void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
@@ -228,10 +373,14 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     last_token_rate_measurement_ = now;
 
     auto spend_rate = tokens_spent_ * denominator / interval_ms;
-    std::string proxy_layer =
-        proxy_layer_ == network::mojom::IpProtectionProxyLayer::kProxyA
-            ? "ProxyA"
-            : "ProxyB";
+    std::string proxy_layer = [&] {
+      switch (proxy_layer_) {
+        case IpProtectionProxyLayer::kProxyA:
+          return "ProxyA";
+        case IpProtectionProxyLayer::kProxyB:
+          return "ProxyB";
+      }
+    }();
     // A maximum of 1000 would correspond to a spend rate of about 16/min,
     // which is higher than we expect to see.
     base::UmaHistogramCounts1000(base::StrCat({"NetworkService.IpProtection.",
@@ -279,7 +428,7 @@ void IpProtectionTokenCacheManagerImpl::CallTryGetAuthTokensForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_getter_);
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
-  config_getter_->get()->TryGetAuthTokens(
+  config_getter_->TryGetAuthTokens(
       batch_size_, proxy_layer_,
       base::BindOnce(
           &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,

@@ -8,9 +8,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -24,7 +24,6 @@
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -59,11 +58,6 @@ const gfx::VectorIcon& GetToggleIcon(bool enabled) {
   return enabled ? views::kEyeRefreshIcon : views::kEyeCrossedRefreshIcon;
 }
 
-bool IsNewUiEnabled() {
-  return base::FeatureList::IsEnabled(
-      privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
-}
-
 }  // namespace
 
 CookieControlsBubbleViewController::CookieControlsBubbleViewController(
@@ -76,7 +70,8 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
   controller_observation_.Observe(controller);
   bubble_view_->UpdateSubtitle(GetSubjectUrlName(web_contents));
 
-  bubble_view_->InitContentView(std::make_unique<CookieControlsContentView>());
+  bubble_view_->InitContentView(std::make_unique<CookieControlsContentView>(
+      controller->ShowActFeatures()));
   bubble_view_->InitReloadingView(InitReloadingView(web_contents));
 
   FetchFaviconFrom(web_contents);
@@ -155,8 +150,9 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
       label_title, l10n_util::GetStringUTF16(label_description));
-  // New UB UI toggle matches protections state (off when protections off).
-  bubble_view_->GetContentView()->SetToggleIsOn(!IsNewUiEnabled());
+  // ACT feature toggle matches protections state (off when protections off).
+  bubble_view_->GetContentView()->SetToggleIsOn(
+      !controller_->ShowActFeatures());
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
@@ -169,8 +165,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
-  // New UB UI toggle matches protections state (on when protections on).
-  bubble_view_->GetContentView()->SetToggleIsOn(IsNewUiEnabled());
+  // ACT feature toggle matches protections state (on when protections on).
+  bubble_view_->GetContentView()->SetToggleIsOn(controller_->ShowActFeatures());
 }
 
 void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
@@ -249,7 +245,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     bubble_view_->CloseWidget();
     return;
   }
-  if (IsNewUiEnabled()) {
+  if (controller_->ShowActFeatures()) {
     FillViewForTrackingProtection(enforcement, expiration, features);
   } else {
     // The legacy UI only supports 3PC blocking.
@@ -355,8 +351,9 @@ void CookieControlsBubbleViewController::SetCallbacks() {
 
 void CookieControlsBubbleViewController::OnToggleButtonPressed(
     bool toggled_on) {
-  // Protections are on iff the toggle is on in the new UI or off in the old UI.
-  bool protections_on = IsNewUiEnabled() == toggled_on;
+  // Protections are on iff the toggle is on in the ACT features UI or off in
+  // the 3PC-only UI.
+  bool protections_on = controller_->ShowActFeatures() == toggled_on;
   if (!protections_on) {
     base::RecordAction(base::UserMetricsAction(
         "CookieControls.Bubble.AllowThirdPartyCookies"));

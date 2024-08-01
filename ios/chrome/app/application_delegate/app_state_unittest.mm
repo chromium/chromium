@@ -47,9 +47,9 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/block_cleanup_test.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -214,14 +214,9 @@ class AppStateTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
-
-    browser_state_ =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -348,6 +343,8 @@ class AppStateTest : public BlockCleanupTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   TestAppState* app_state_;
   FakeSceneState* main_scene_state_;
   SafeModeAppAgent* safe_mode_app_agent_;
@@ -365,7 +362,6 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
   raw_ptr<ChromeBrowserState> browser_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 };
 
 #pragma mark - Tests.
@@ -380,11 +376,10 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
       [[FakeStartupInformation alloc] init];
   [startupInformation setIsColdStart:YES];
 
-  TestChromeBrowserState::Builder test_cbs_builder;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager =
-      std::make_unique<TestChromeBrowserStateManager>(test_cbs_builder.Build());
-  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-      browser_state_manager.get());
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
+  TestChromeBrowserStateManager browser_state_manager;
+  browser_state_manager.AddBrowserStateWithBuilder(
+      TestChromeBrowserState::Builder());
 
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];

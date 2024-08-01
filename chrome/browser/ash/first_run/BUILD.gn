@@ -12,6 +12,8 @@ static_library("first_run") {
     "first_run.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/constants",

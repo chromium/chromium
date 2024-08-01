@@ -101,7 +101,7 @@ OTRWebStateObserver::BrowserStateData::BrowserStateData() = default;
 OTRWebStateObserver::BrowserStateData::~BrowserStateData() = default;
 
 OTRWebStateObserver::OTRWebStateObserver(
-    ios::ChromeBrowserStateManager* browser_state_manager)
+    ChromeBrowserStateManager* browser_state_manager)
     : browser_state_manager_(browser_state_manager) {
   browser_state_manager_->GetBrowserStateInfoCache()->AddObserver(this);
   for (ChromeBrowserState* state :

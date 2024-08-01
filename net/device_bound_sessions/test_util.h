@@ -21,13 +21,14 @@ class SessionServiceMock : public SessionService {
               (RegistrationFetcherParam registration_params,
                const IsolationInfo& isolation_info),
               (override));
-  MOCK_METHOD(std::optional<std::string>,
+  MOCK_METHOD(std::optional<Session::Id>,
               GetAnySessionRequiringDeferral,
               (URLRequest * request),
               (override));
   MOCK_METHOD(void,
               DeferRequestForRefresh,
-              (std::string session_id,
+              (URLRequest * request,
+               Session::Id session_id,
                RefreshCompleteCallback restart_callback,
                RefreshCompleteCallback continue_callback),
               (override));

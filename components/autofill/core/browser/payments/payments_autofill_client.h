@@ -7,10 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 
@@ -18,6 +20,7 @@ namespace autofill {
 
 struct AutofillErrorDialogContext;
 class AutofillOfferData;
+class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
 struct CardUnmaskChallengeOption;
@@ -35,6 +38,7 @@ class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
+class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
@@ -437,6 +441,23 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // details page for the offers in a promo code suggestions popup. Every offer
   // in a promo code suggestions popup links to the same offer details page.
   virtual void OpenPromoCodeOfferDetailsURL(const GURL& url);
+
+  // Gets an AutofillOfferManager instance (can be null for unsupported
+  // platforms).
+  virtual AutofillOfferManager* GetAutofillOfferManager();
+  const AutofillOfferManager* GetAutofillOfferManager() const;
+
+  // Shows the Touch To Fill surface for filling credit card information, if
+  // possible, and returns `true` on success. `delegate` will be notified of
+  // events. `card_acceptabilies` is a boolean list denoting if the virtual
+  // card in `cards_to_suggest` is acceptable on the merchant's platform.
+  // Should be called only if the feature is supported by the platform.
+  // This function is implemented on all platforms, so this should be a pure
+  // virtual function to enforce the override implementation.
+  virtual bool ShowTouchToFillCreditCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilies);
 };
 
 }  // namespace payments

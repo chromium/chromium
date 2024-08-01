@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -134,13 +133,13 @@ public final class ReadAloudFeatures {
     // TODO: b/323238277 Move this check into isAllowed()
     /** Returns true if in multi-window and ReadAloud is disabled for multi-window. */
     public static boolean isInMultiWindowAndDisabled(Activity activity) {
-        return ApiCompatibilityUtils.isInMultiWindowMode(activity)
+        return activity.isInMultiWindowMode()
                 && !ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_MULTI_WINDOW);
     }
 
     /** Returns true if Read Aloud tap to seek is enabled. */
     public static boolean isTapToSeekEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_TAP_TO_SEEK);
+        return ChromeFeatureList.sReadAloudTapToSeek.isEnabled();
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */

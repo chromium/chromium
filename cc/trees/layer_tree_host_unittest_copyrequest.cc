@@ -1411,7 +1411,7 @@ class LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest
         EXPECT_TRUE(saw_child);
         // Make another draw happen after doing the copy request.
         host_impl->SetViewportDamage(gfx::Rect(1, 1));
-        host_impl->SetNeedsRedraw();
+        host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
         break;
       case 3:
         // If LayerTreeHostImpl does the wrong thing, it will try to draw the

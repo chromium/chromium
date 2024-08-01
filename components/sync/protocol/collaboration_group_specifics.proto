@@ -21,7 +21,10 @@ message CollaborationGroupSpecifics {
   optional string collaboration_id = 1;
 
   // Indicates staleness of the collaboration group, used to determine whether
-  // client should refresh cached group. Server-side derived from group
-  // `consistency_token`.
-  optional int64 last_updated_timestamp_millis_since_unix_epoch = 2;
+  // client should refresh cached group. Server-side derived from group event
+  // `changed_at`.
+  optional int64 changed_at_timestamp_millis_since_unix_epoch = 2;
+
+  // An opaque token, that is used to optimize ReadGroup(s) RPCs.
+  optional string consistency_token = 3;
 }

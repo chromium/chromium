@@ -367,6 +367,7 @@ void PictureLayerTilingSet::ReleaseAllResources() {
 
 void PictureLayerTilingSet::RemoveAllTilings() {
   tilings_.clear();
+  all_tiles_done_ = true;
 }
 
 void PictureLayerTilingSet::Remove(PictureLayerTiling* tiling) {
@@ -380,6 +381,7 @@ void PictureLayerTilingSet::Remove(PictureLayerTiling* tiling) {
 void PictureLayerTilingSet::RemoveAllTiles() {
   for (const auto& tiling : tilings_)
     tiling->Reset();
+  all_tiles_done_ = true;
 }
 
 float PictureLayerTilingSet::GetMaximumContentsScale() const {
@@ -546,6 +548,7 @@ bool PictureLayerTilingSet::UpdateTilePriorities(
   UpdatePriorityRects(visible_rect_in_layer_space,
                       current_frame_time_in_seconds, ideal_contents_scale);
 
+  all_tiles_done_ = true;
   for (const auto& tiling : tilings_) {
     tiling->set_can_require_tiles_for_activation(
         can_require_tiles_for_activation);
@@ -553,6 +556,7 @@ bool PictureLayerTilingSet::UpdateTilePriorities(
         visible_rect_in_layer_space_, skewport_in_layer_space_,
         soon_border_rect_in_layer_space_, eventually_rect_in_layer_space_,
         ideal_contents_scale, occlusion_in_layer_space);
+    all_tiles_done_ &= tiling->all_tiles_done();
   }
   return true;
 }

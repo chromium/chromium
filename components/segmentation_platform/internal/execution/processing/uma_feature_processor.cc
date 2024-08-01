@@ -56,46 +56,63 @@ UkmDatabase::CustomSqlQuery MakeSqlQuery(
 
   constexpr char kQueryTemplate[] =
       // clang-format off
-      "SELECT IFNULL(%s,0)FROM uma_metrics "
-      "WHERE metric_hash='%" PRIX64 "' "
-      "AND profile_id=? "
-      "AND type=? "
-      "%s" // Enum IDs
-      "AND event_timestamp BETWEEN ? AND ?";
+      "SELECT IFNULL(%s,0)FROM uma_metrics " // 0: AggregationOfMetrics
+      "WHERE metric_hash='%" PRIX64 "' " // 1: MetricHashInHex
+      "AND profile_id=? "  // ?: ProfileID
+      "AND type=? " // ?: MetricType
+      "%s" // 2: EnumIDClause
+      "AND event_timestamp BETWEEN ? AND ?"; // ?,?: TimeRange
   // clang-format on
 
   constexpr char kBucketedQueryTemplate[] =
       // clang-format off
-      "SELECT IFNULL(%s,0)FROM "
+      // Bucket values have all possible bucket indices like "(0),(1)...(N)".
+      "WITH all_buckets(bucket)AS(VALUES%s)" // 0: BucketValuesAsRows
+      "SELECT IFNULL(%s,0)FROM " // 1: AggregationOfMetrics
         "(SELECT "
          "SUM(metric_value) AS sum_vals, "
          "COUNT(metric_value) AS count_vals, "
-         "(event_timestamp-?)/? AS bucket "
+         "(event_timestamp-?)/? AS bucket " // ?: StartTime, ?: BucketDuration
          "FROM uma_metrics "
-         "WHERE metric_hash='%" PRIX64 "' "
-         "AND profile_id=? "
-         "AND type=? "
-         "%s" // Enum IDs
-         "AND event_timestamp BETWEEN ? AND ? "
-         "GROUP BY bucket)";
+         "WHERE metric_hash='%" PRIX64 "' " // 2: MetricHashInHex
+         "AND profile_id=? " // ?: ProfileID
+         "AND type=? " // MetricType
+         "%s" // 3: EnumIDClause
+         "AND event_timestamp BETWEEN ? AND ? " // ?,?: TimeRange
+         "GROUP BY bucket)"
+         "RIGHT JOIN all_buckets USING(bucket)"
+         "ORDER BY bucket";
   // clang-format on
 
   constexpr char kLatestQueryTemplate[] =
       // clang-format off
-      "SELECT IFNULL(metric_value,%f)FROM uma_metrics "
-      "WHERE metric_hash='%" PRIX64 "' "
-      "AND profile_id=? "
-      "AND type=? "
-      "%s" // Enum IDs
-      "AND event_timestamp BETWEEN ? AND ? "
-      "ORDER BY event_timestamp DESC "
-      "LIMIT 1";
+      "SELECT COALESCE("
+        "(SELECT metric_value FROM uma_metrics "
+         "WHERE metric_hash='%" PRIX64 "' " // 0: MetricHashInHex
+         "AND profile_id=? " // ?: ProfileID
+         "AND type=? " // ?: MetricType
+         "%s" // 1: EnumIDClause
+         "AND event_timestamp BETWEEN ? AND ? " // ?,?: TimeRange
+         "ORDER BY event_timestamp DESC,id DESC "
+         "LIMIT 1),"
+        "%f)"; // 2: DefaultValue
   // clang-format on
 
   std::string enum_matcher;
   if (!accepted_enum_ids.empty()) {
     enum_matcher =
         "AND metric_value IN(" + base::JoinString(accepted_enum_ids, ",") + ")";
+  }
+  std::string bucket_values;
+  if (bucket_count > 0) {
+    std::ostringstream oss;
+    for (uint64_t i = 0; i < bucket_count; ++i) {
+      oss << "(" << i << ")";
+      if (i != bucket_count - 1) {
+        oss << ",";
+      }
+    }
+    bucket_values = std::move(oss).str();
   }
   bool is_bucketed = false;
   switch (aggregation) {
@@ -112,19 +129,21 @@ UkmDatabase::CustomSqlQuery MakeSqlQuery(
       break;
     case proto::Aggregation::BUCKETED_COUNT:
       is_bucketed = true;
-      query.query = base::StringPrintf(kBucketedQueryTemplate, "count_vals",
-                                       name_hash, enum_matcher.c_str());
+      query.query =
+          base::StringPrintf(kBucketedQueryTemplate, bucket_values.c_str(),
+                             "count_vals", name_hash, enum_matcher.c_str());
       break;
     case proto::Aggregation::BUCKETED_COUNT_BOOLEAN:
       is_bucketed = true;
-      query.query = base::StringPrintf(kBucketedQueryTemplate, "count_vals>0",
-                                       name_hash, enum_matcher.c_str());
+      query.query =
+          base::StringPrintf(kBucketedQueryTemplate, bucket_values.c_str(),
+                             "count_vals>0", name_hash, enum_matcher.c_str());
       break;
     case proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT:
       is_bucketed = true;
-      query.query =
-          base::StringPrintf(kBucketedQueryTemplate, "COUNT(count_vals>0)",
-                             name_hash, enum_matcher.c_str());
+      query.query = base::StringPrintf(
+          kBucketedQueryTemplate, bucket_values.c_str(), "COUNT(count_vals>0)",
+          name_hash, enum_matcher.c_str());
       break;
     case proto::Aggregation::BUCKETED_CUMULATIVE_COUNT:
       // TODO(ssid): Deprecate this type. Unused and complex to write query.
@@ -140,27 +159,29 @@ UkmDatabase::CustomSqlQuery MakeSqlQuery(
       break;
     case proto::Aggregation::BUCKETED_SUM:
       is_bucketed = true;
-      query.query = base::StringPrintf(kBucketedQueryTemplate, "sum_vals",
-                                       name_hash, enum_matcher.c_str());
+      query.query =
+          base::StringPrintf(kBucketedQueryTemplate, bucket_values.c_str(),
+                             "sum_vals", name_hash, enum_matcher.c_str());
       break;
     case proto::Aggregation::BUCKETED_SUM_BOOLEAN:
       is_bucketed = true;
-      query.query = base::StringPrintf(kBucketedQueryTemplate, "sum_vals>0",
-                                       name_hash, enum_matcher.c_str());
+      query.query =
+          base::StringPrintf(kBucketedQueryTemplate, bucket_values.c_str(),
+                             "sum_vals>0", name_hash, enum_matcher.c_str());
       break;
     case proto::Aggregation::BUCKETED_SUM_BOOLEAN_TRUE_COUNT:
       is_bucketed = true;
-      query.query =
-          base::StringPrintf(kBucketedQueryTemplate, "COUNT(sum_vals>0)",
-                             name_hash, enum_matcher.c_str());
+      query.query = base::StringPrintf(
+          kBucketedQueryTemplate, bucket_values.c_str(), "COUNT(sum_vals>0)",
+          name_hash, enum_matcher.c_str());
       break;
     case proto::Aggregation::BUCKETED_CUMULATIVE_SUM:
       // TODO(ssid): Deprecate this type. Unused and complex to write query.
       NOTIMPLEMENTED();
       return query;
     case proto::Aggregation::LATEST_OR_DEFAULT:
-      query.query = base::StringPrintf(kLatestQueryTemplate, default_value,
-                                       name_hash, enum_matcher.c_str());
+      query.query = base::StringPrintf(kLatestQueryTemplate, name_hash,
+                                       enum_matcher.c_str(), default_value);
       break;
   }
   if (is_bucketed) {

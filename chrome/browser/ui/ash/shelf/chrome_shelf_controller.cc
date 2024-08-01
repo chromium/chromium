@@ -104,8 +104,6 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -1142,50 +1140,6 @@ void ChromeShelfController::OnPromiseAppRemoved(
   UnpinShelfItemInternal(item.id);
 }
 
-void ChromeShelfController::OnShortcutUpdated(
-    const apps::ShortcutUpdate& update) {
-  // When shortcut got initialized in the AppService, we update the
-  // pin location from sync.
-  if (update.ShortcutInitialized()) {
-    UpdatePinnedAppsFromSync();
-  }
-
-  int index = model_->ItemIndexByAppID(update.ShortcutId().value());
-  if (index == kInvalidIndex) {
-    return;
-  }
-  ash::ShelfItem item = model_->items()[index];
-
-  if (update.IconKeyChanged()) {
-    AppIconLoader* app_icon_loader =
-        GetAppIconLoaderForApp(update.ShortcutId().value());
-    if (app_icon_loader) {
-      app_icon_loader->FetchImage(update.ShortcutId().value());
-    }
-  }
-
-  std::u16string title = base::UTF8ToUTF16(update.Name());
-  if (item.title != title) {
-    item.title = title;
-    model_->Set(index, item);
-  }
-
-  std::u16string accessible_name =
-      ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
-          latest_active_profile_, update.ShortcutId());
-  if (accessible_name != item.accessible_name) {
-    item.accessible_name = accessible_name;
-    model_->Set(index, item);
-  }
-}
-
-void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {
-  ash::ShelfID shelf_id(id.value());
-  if (model_->ItemByID(shelf_id)) {
-    UnpinShelfItemInternal(shelf_id);
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // AppIconLoaderDelegate:
 
@@ -1785,17 +1739,6 @@ void ChromeShelfController::ShelfItemAdded(int index) {
           ShelfControllerHelper::GetPromiseAppAccessibleName(
               latest_active_profile_, id.app_id);
       if (is_promise_app && accessible_name != item.accessible_name) {
-        needs_update = true;
-        item.accessible_name = accessible_name;
-      }
-    }
-
-    if (ShelfControllerHelper::IsAppServiceShortcut(latest_active_profile_,
-                                                    id.app_id)) {
-      std::u16string accessible_name =
-          ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
-              latest_active_profile_, apps::ShortcutId(id.app_id));
-      if (accessible_name != item.accessible_name) {
         needs_update = true;
         item.accessible_name = accessible_name;
       }

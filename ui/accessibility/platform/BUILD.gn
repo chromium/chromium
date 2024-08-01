@@ -50,6 +50,7 @@ component("platform") {
     "child_iterator_base.h",
 
     # Used by browser_accessibility_manager.cc.
+    "ax_node_id_delegate.h",
     "ax_platform_tree_manager.cc",
     "ax_platform_tree_manager.h",
 
@@ -249,11 +250,9 @@ component("platform") {
       ]
 
       frameworks = [
+        "Accessibility.framework",
         "AppKit.framework",
         "Foundation.framework",
-      ]
-      weak_frameworks = [
-        "Accessibility.framework",  # macOS 11
       ]
     }
 

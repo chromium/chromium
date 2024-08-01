@@ -48,20 +48,6 @@ struct OwnedFragmentState : OwnedProgrammableStage {
   Vector<wgpu::BlendState> blend_states;
 };
 
-struct OwnedPrimitiveState {
-  OwnedPrimitiveState() = default;
-
-  //  This struct should be non-copyable non-movable because it contains
-  //  self-referencing pointers that would be invalidated when moved / copied.
-  OwnedPrimitiveState(const OwnedPrimitiveState& desc) = delete;
-  OwnedPrimitiveState(OwnedPrimitiveState&& desc) = delete;
-  OwnedPrimitiveState& operator=(const OwnedPrimitiveState& desc) = delete;
-  OwnedPrimitiveState& operator=(OwnedPrimitiveState&& desc) = delete;
-
-  wgpu::PrimitiveState dawn_desc = {};
-  wgpu::PrimitiveDepthClipControl depth_clip_control;
-};
-
 struct OwnedDepthStencilState {
   OwnedDepthStencilState() = default;
 
@@ -93,7 +79,6 @@ struct OwnedRenderPipelineDescriptor {
   wgpu::RenderPipelineDescriptor dawn_desc = {};
   std::string label;
   OwnedVertexState vertex;
-  OwnedPrimitiveState primitive;
   OwnedDepthStencilState depth_stencil;
   OwnedFragmentState fragment;
 };

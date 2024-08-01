@@ -505,7 +505,7 @@ using PriceNotificationItems =
       continue;
     }
 
-    // TODO: This should use the async version of IsSubscribed.
+    // TODO: b/355423868 - This should use the async version of IsSubscribed.
     if (self.shoppingService->IsSubscribedFromCache(
             commerce::BuildUserSubscriptionForClusterId(
                 meta->shopping_specifics().product_cluster_id()))) {

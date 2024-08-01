@@ -109,7 +109,14 @@ class ZoomValue : public views::Label {
   // views::Label:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    return gfx::Size(max_width_, GetHeightForWidth(max_width_));
+    gfx::Size size =
+        views::Label::CalculatePreferredSize(views::SizeBounds(max_width_, {}));
+    // When the initial value of the text width is small(eg: 80%), the
+    // `ZoomBubbleView` will be smaller. Then after we use a larger value(eg:
+    // 200%), the text will not be fully displayed. It needs to be set to the
+    // maximum value to ensure that the size of `ZoomBubbleView` is fixed.
+    size.set_width(max_width_);
+    return size;
   }
 
  private:

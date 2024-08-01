@@ -185,9 +185,10 @@ class CORE_EXPORT ScrollbarTheme {
                           const Scrollbar&,
                           const gfx::Rect&) {}
 
-  void PaintTrackButtonsTickmarks(GraphicsContext&,
-                                  const Scrollbar&,
-                                  const gfx::Rect&);
+  // Paints the track (including tickmarks if present) and the buttons.
+  void PaintTrackAndButtons(GraphicsContext&,
+                            const Scrollbar&,
+                            const gfx::Rect&);
 
   virtual int MaxOverlapBetweenPages() const {
     return std::numeric_limits<int>::max();
@@ -250,19 +251,18 @@ class CORE_EXPORT ScrollbarTheme {
   virtual ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) const;
 
   virtual int TickmarkBorderWidth() const { return 0; }
-  virtual void PaintTrack(GraphicsContext&,
-                          const Scrollbar&,
-                          const gfx::Rect&) {}
+  // Paints the background of the track, not including tickmarks.
+  virtual void PaintTrackBackground(GraphicsContext&,
+                                    const Scrollbar&,
+                                    const gfx::Rect&) {}
   virtual void PaintButton(GraphicsContext&,
                            const Scrollbar&,
                            const gfx::Rect&,
                            ScrollbarPart) {}
 
-  // |offset| is the offset of the |context|'s current space to the space of
-  // scrollbar's FrameRect().
-  virtual void PaintTrackAndButtons(GraphicsContext& context,
-                                    const Scrollbar&,
-                                    const gfx::Rect&);
+  virtual void PaintTrackBackgroundAndButtons(GraphicsContext& context,
+                                              const Scrollbar&,
+                                              const gfx::Rect&);
 
  protected:
   // For GetTheme().

@@ -39,10 +39,10 @@ void MaybeLocalizeInBackground(
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  std::unique_ptr<MessageBundle::SubstitutionMap> localization_messages(
+  std::unique_ptr<MessageBundle::SubstitutionMap> localization_messages =
       l10n_file_util::LoadMessageBundleSubstitutionMap(
           extension_path, extension_id, extension_default_locale,
-          gzip_permission));
+          gzip_permission);
 
   std::string error;
   MessageBundle::ReplaceMessagesWithExternalDictionary(*localization_messages,

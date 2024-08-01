@@ -160,7 +160,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling
-  // AutofillClient::ShowTouchToFillCreditCard().
+  // PaymentsAutofillClient::ShowTouchToFillCreditCard().
   //
   // If the DryRunResult::outcome is TriggerOutcome::kShow, the
   // DryRun::cards_to_suggest contains the cards; otherwise it is empty.

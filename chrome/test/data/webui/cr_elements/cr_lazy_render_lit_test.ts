@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import {html, CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
@@ -64,6 +64,7 @@ suite('cr-lazy-render', function() {
 
     const inner = lazy.get();
     assertEquals(inner, parent.shadowRoot!.querySelector('h1'));
+    assertEquals(inner, lazy.previousElementSibling);
     assertEquals(lazy.getIfExists(), parent.shadowRoot!.querySelector('h1'));
     assertEquals('H1', inner.nodeName);
     assertEquals(inner, parent.shadowRoot!.querySelector('h1'));
@@ -107,35 +108,5 @@ suite('cr-lazy-render', function() {
     const inner2 = lazy.get();
     assertEquals(inner2, parent.shadowRoot!.querySelector('h1'));
     assertEquals(inner1, inner2);
-  });
-
-  test('AssertionErrorThrownOnMultipleChildren', function() {
-    // A test element that uses cr-lazy-render-lit incorrectly by specifying
-    // multiple direct children into the template.
-    class TestElement2 extends CrLitElement {
-      static get is() {
-        return 'test-element2';
-      }
-
-      override render() {
-        return html`
-          <cr-lazy-render-lit .template=${() => html`
-            <div>Child1</div>
-            <div>Child2</div>
-          `}></cr-lazy-render-lit>`;
-      }
-    }
-
-    customElements.define(TestElement2.is, TestElement2);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const parent2 = document.createElement('test-element2') as TestElement2;
-    document.body.appendChild(parent2);
-    const lazy2 = parent2.shadowRoot!.querySelector('cr-lazy-render-lit');
-    assertTrue(!!lazy2);
-
-    assertThrows(() => {
-      lazy2.get();
-    });
   });
 });

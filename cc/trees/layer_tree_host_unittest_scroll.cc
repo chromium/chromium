@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/memory/raw_ptr.h"
 #include "cc/trees/layer_tree_host.h"
 
@@ -897,12 +902,12 @@ class LayerTreeHostScrollTestSimple : public LayerTreeHostScrollTest {
     // We force a second draw here of the first commit before activating
     // the second commit.
     if (impl->active_tree()->source_frame_number() == 0)
-      impl->SetNeedsRedraw();
+      impl->SetNeedsRedraw(RedrawReason::kUntracked);
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
     if (impl->pending_tree())
-      impl->SetNeedsRedraw();
+      impl->SetNeedsRedraw(RedrawReason::kUntracked);
 
     LayerImpl* root = impl->active_tree()->root_layer();
     LayerImpl* scroll_layer =
@@ -1077,7 +1082,7 @@ class LayerTreeHostScrollTestImplOnlyScroll : public LayerTreeHostScrollTest {
 
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
     if (impl->pending_tree())
-      impl->SetNeedsRedraw();
+      impl->SetNeedsRedraw(RedrawReason::kUntracked);
 
     LayerImpl* scroll_layer =
         impl->active_tree()->OuterViewportScrollLayerForTesting();
@@ -2150,7 +2155,7 @@ class LayerTreeHostScrollTestScrollAbortedCommitMFBA
     switch (num_impl_commits_) {
       case 1:
         // Redraw so that we keep scrolling.
-        impl->SetNeedsRedraw();
+        impl->SetNeedsRedraw(RedrawReason::kUntracked);
         // Block activation until third commit is aborted.
         impl->BlockNotifyReadyToActivateForTesting(true);
         break;
@@ -2171,7 +2176,7 @@ class LayerTreeHostScrollTestScrollAbortedCommitMFBA
       case 1:
         EXPECT_EQ(2, num_impl_commits_);
         // Redraw to end the test.
-        impl->SetNeedsRedraw();
+        impl->SetNeedsRedraw(RedrawReason::kUntracked);
         break;
     }
     num_aborted_commits_++;
@@ -3115,7 +3120,7 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
         host_impl->GetInputHandler().ScrollEnd();
         // make sure redraw happen
         host_impl->active_tree()->set_needs_update_draw_properties();
-        host_impl->SetNeedsRedraw();
+        host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
       }
     }
   }
@@ -3144,7 +3149,7 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
           // In pending tree, recreating tiling should delayed during scroll
           ASSERT_TRUE(scroll_check_pending_);
           ASSERT_EQ(tiling_transform.scale(), initial_scale_);
-          host_impl->SetNeedsRedraw();
+          host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
         } else {
           // recreating tiling should happen after scroll finish
           ASSERT_FALSE(scroll_check_pending_);

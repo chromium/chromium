@@ -27,6 +27,7 @@ static_library("wallpaper_handlers") {
     "//ash/webui/personalization_app/mojom",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//content/public/browser",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//base/test:test_support",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//ui/display:test_support",
     "//ui/gfx:test_support",
   ]

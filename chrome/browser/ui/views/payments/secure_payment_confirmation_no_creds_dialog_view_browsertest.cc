@@ -9,11 +9,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
-#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -161,9 +161,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
 
 class SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest
     : public SecurePaymentConfirmationNoCredsDialogViewTest {
+ public:
+  SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest() {
+    base::FieldTrialParams params;
+    params["spc_network_and_issuer_icons_option"] = "inline";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
+        params);
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that the cart icon is still shown even when the inline network/issuer

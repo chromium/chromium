@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 source_set("speech") {
   sources = [
     "audio_buffer.cc",
@@ -18,6 +20,16 @@ source_set("speech") {
     "upstream_loader_client.h",
   ]
 
+  public_deps = [ "//base" ]
+  deps = [
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/flac",
+  ]
+
   if (!is_android) {
     sources += [
       "endpointer/endpointer.cc",
@@ -29,27 +41,25 @@ source_set("speech") {
     ]
   }
 
-  public_deps = [ "//base" ]
-  deps = [
-    "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/platform",
-    "//mojo/public/cpp/system",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//third_party/flac",
-  ]
+  if (use_blink && !is_android) {
+    sources += [
+      "speech_recognizer_fsm.cc",
+      "speech_recognizer_fsm.h",
+    ]
+
+    deps += [
+      "//media/mojo/mojom:audio_data",
+      "//media/mojo/mojom:web_speech_recognition",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "chunked_byte_buffer_unittest.cc",
-  ]
+  sources = [ "chunked_byte_buffer_unittest.cc" ]
 
   if (!is_android) {
-    sources += [
-      "endpointer/endpointer_unittest.cc",
-    ]
+    sources += [ "endpointer/endpointer_unittest.cc" ]
   }
 
   deps = [

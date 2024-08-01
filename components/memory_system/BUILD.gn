@@ -35,7 +35,6 @@ source_set("memory_system") {
   ]
 
   public_deps = [
-    "//components/metrics:call_stack_profile_params",
     "//components/version_info",
     "//third_party/abseil-cpp:absl",
   ]

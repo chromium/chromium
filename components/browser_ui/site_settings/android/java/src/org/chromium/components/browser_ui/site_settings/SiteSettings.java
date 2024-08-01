@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -33,6 +34,10 @@ public class SiteSettings extends BaseSiteSettingsFragment
     // switch at the bottom of the page and its top divider.
     @VisibleForTesting
     public static final String PERMISSION_AUTOREVOCATION_PREF = "permission_autorevocation";
+
+    @VisibleForTesting
+    public static final String PERMISSION_AUTOREVOCATION_HISTOGRAM_NAME =
+            "Settings.SafetyHub.AutorevokeUnusedSitePermissions.Changed";
 
     private static final String DIVIDER_PREF = "divider";
 
@@ -201,8 +206,10 @@ public class SiteSettings extends BaseSiteSettingsFragment
             switch_pref.setChecked(getSiteSettingsDelegate().isPermissionAutorevocationEnabled());
             switch_pref.setOnPreferenceChangeListener(
                     (preference, newValue) -> {
-                        getSiteSettingsDelegate()
-                                .setPermissionAutorevocationEnabled((boolean) newValue);
+                        boolean boolValue = (boolean) newValue;
+                        getSiteSettingsDelegate().setPermissionAutorevocationEnabled(boolValue);
+                        RecordHistogram.recordBooleanHistogram(
+                                PERMISSION_AUTOREVOCATION_HISTOGRAM_NAME, boolValue);
                         return true;
                     });
         }

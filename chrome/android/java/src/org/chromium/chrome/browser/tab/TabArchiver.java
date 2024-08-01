@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -104,6 +106,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                     (archivePersistedTabData) -> {
                         if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
                             mArchivedTabModel.closeTab(tab);
+                            RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
                         }
                     });
         }
@@ -117,6 +120,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         while (mArchivedTabModel.getCount() > 0) {
             Tab tab = mArchivedTabModel.getTabAt(0);
             unarchiveAndRestoreTab(regularTabCreator, tab);
+            RecordUserAction.record("Tabs.ArchivedTabRescued");
         }
     }
 
@@ -130,7 +134,7 @@ public class TabArchiver implements TabWindowManager.Observer {
      */
     public Tab archiveAndRemoveTab(TabModel tabModel, Tab tab) {
         ThreadUtils.assertOnUiThread();
-        TabState tabState = TabStateExtractor.from(tab);
+        TabState tabState = prepareTabState(tab);
         Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
         tabModel.closeTab(tab);
 
@@ -143,6 +147,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                     archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
                 });
 
+        RecordUserAction.record("Tabs.TabArchived");
         return newTab;
     }
 
@@ -155,10 +160,11 @@ public class TabArchiver implements TabWindowManager.Observer {
      */
     public void unarchiveAndRestoreTab(TabCreator tabCreator, Tab tab) {
         ThreadUtils.assertOnUiThread();
-        TabState tabState = TabStateExtractor.from(tab);
+        TabState tabState = prepareTabState(tab);
         mArchivedTabModel.removeTab(tab);
         mAsyncTabParamsManager.add(tab.getId(), new TabReparentingParams(tab, null));
         tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+        RecordUserAction.record("Tabs.ArchivedTabRestored");
     }
 
     // TabWindowManager.Observer implementation.
@@ -192,17 +198,28 @@ public class TabArchiver implements TabWindowManager.Observer {
         TabState tabState = TabStateExtractor.from(tab);
         if (tabState.contentsState == null) return false;
 
-        return isTimestampWithinTargetHours(
-                tab.getTimestampMillis(), mTabArchiveSettings.getArchiveTimeDeltaHours());
+        long timestampMillis = tab.getTimestampMillis();
+        int tabAgeDays = timestampMillisToDays(timestampMillis);
+        boolean result =
+                isTimestampWithinTargetHours(
+                        timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabEligibleForArchive.AfterNDays", tabAgeDays);
+        return result;
     }
 
     private boolean isArchivedTabEligibleForDeletion(
             ArchivePersistedTabData archivePersistedTabData) {
         if (archivePersistedTabData == null) return false;
 
-        return isTimestampWithinTargetHours(
-                archivePersistedTabData.getArchivedTimeMs(),
-                mTabArchiveSettings.getAutoDeleteTimeDeltaHours());
+        long archivedTimeMillis = archivePersistedTabData.getArchivedTimeMs();
+        int tabAgeDays = timestampMillisToDays(archivedTimeMillis);
+        boolean result =
+                isTimestampWithinTargetHours(
+                        archivedTimeMillis, mTabArchiveSettings.getAutoDeleteTimeDeltaHours());
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabEligibleForAutoDeletion.AfterNDays", tabAgeDays);
+        return result;
     }
 
     private boolean isTimestampWithinTargetHours(long timestampMillis, int targetHours) {
@@ -210,5 +227,21 @@ public class TabArchiver implements TabWindowManager.Observer {
 
         long ageHours = TimeUnit.MILLISECONDS.toHours(mClock.currentTimeMillis() - timestampMillis);
         return ageHours >= targetHours;
+    }
+
+    private int timestampMillisToDays(long timestampMillis) {
+        if (timestampMillis == INVALID_TIMESTAMP) return (int) INVALID_TIMESTAMP;
+
+        return (int) TimeUnit.MILLISECONDS.toDays(mClock.currentTimeMillis() - timestampMillis);
+    }
+
+    /** Extracts the tab state and prepares it for archive/restore. */
+    private TabState prepareTabState(Tab tab) {
+        TabState tabState = TabStateExtractor.from(tab);
+        // Strip the parent id to avoid ordering issues within the tab model.
+        tabState.parentId = Tab.INVALID_TAB_ID;
+        // Strip the root id to avoid re-using the old rootId from the tab state file.
+        tabState.rootId = Tab.INVALID_TAB_ID;
+        return tabState;
     }
 }

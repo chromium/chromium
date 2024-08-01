@@ -11,7 +11,6 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_update_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
@@ -25,6 +24,8 @@ struct WebAppInstallInfo;
 }  // namespace web_app
 
 namespace ash {
+
+class WebKioskAppData;
 
 // Does the management of web kiosk apps.
 class WebKioskAppManager : public KioskAppManagerBase {

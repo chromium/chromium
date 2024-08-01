@@ -369,38 +369,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Sync-consent", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, PRE_AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    // With local passwords feature aborting at this stage would
-    // trigger user cleanup and remove all user information.
-    GTEST_SKIP();
-  }
-  LoginAndShowSyncConsentScreenWithCapability();
-  WaitForScreenShown();
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().ExpectVisiblePath(kOverviewDialog);
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    // With local passwords feature aborting at this stage would
-    // trigger user cleanup and remove all user information,
-    // so this test makes no sense.
-    GTEST_SKIP();
-  }
-  EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
-            session_manager::SessionManager::Get()->session_state());
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  // Expect sync everything toggle is on when consent flow is abandoned without
-  // user action.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_TRUE(settings->IsSyncEverythingEnabled());
-  EXPECT_TRUE(settings->IsSyncAllOsTypesEnabled());
-}
-
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SyncConsentRecorder) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   LoginAndShowSyncConsentScreenWithCapability();
@@ -784,38 +752,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Decline) {
       SyncConsentScreenHandler::UserChoice::kDeclined, 1);
   histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
                                        false, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, PRE_AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    GTEST_SKIP();
-  }
-  LoginAndShowSyncConsentScreenWithCapability();
-  WaitForScreenShown();
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().ExpectVisiblePath(kOverviewDialog);
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    GTEST_SKIP();
-  }
-  EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
-            session_manager::SessionManager::Get()->session_state());
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  ASSERT_NE(profile, nullptr);
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  ASSERT_NE(identity_manager, nullptr);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  // Expect all data types are disabled when consent flow is abandoned without
-  // user action.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  ASSERT_NE(settings, nullptr);
-  EXPECT_FALSE(settings->IsSyncEverythingEnabled());
-  EXPECT_TRUE(settings->GetSelectedTypes().empty());
-  EXPECT_FALSE(settings->IsSyncAllOsTypesEnabled());
-  EXPECT_TRUE(settings->GetSelectedOsTypes().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest,

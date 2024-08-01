@@ -49,9 +49,6 @@ extern const char kExtensionProcess[];
 // manifest.
 extern const char kExtensionsOnChromeURLs[];
 
-// Whether to force developer mode extensions highlighting.
-extern const char kForceDevModeHighlighting[];
-
 // Comma-separated list of paths to apps to load at startup. The first app in
 // the list will be launched.
 extern const char kLoadApps[];

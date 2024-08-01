@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+source_set("core") {
+  sources = [
+    "analysis_settings.cc",
+    "analysis_settings.h",
+    "connectors_service_base.cc",
+    "connectors_service_base.h",
+    "enterprise_connectors_policy_handler.cc",
+    "enterprise_connectors_policy_handler.h",
+    "reporting_constants.h",
+    "reporting_service_settings.cc",
+    "reporting_service_settings.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/download/public/common:public",
+    "//components/enterprise/buildflags:buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/connectors",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/strings:components_strings_grit",
+    "//ui/gfx/range",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "connectors_service_base_unittest.cc",
+    "enterprise_connectors_policy_handler_unittest.cc",
+    "reporting_service_settings_unittest.cc",
+  ]
+
+  public_deps = [ ":core" ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/connectors",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//testing/gtest",
+    "//url",
+  ]
+}

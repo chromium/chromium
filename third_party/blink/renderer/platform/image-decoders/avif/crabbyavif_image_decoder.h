@@ -172,11 +172,14 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   // aperture) property.
   raw_ptr<const crabbyavif::avifImage, DanglingUntriaged> decoded_image_ =
       nullptr;
+  // The declaration order of the next three fields is important. decoder_
+  // points to avif_io_, and avif_io_ points to avif_io_data_. The destructor
+  // must destroy them in that order.
+  AvifIOData avif_io_data_;
+  crabbyavif::avifIO avif_io_ = {};
   std::unique_ptr<crabbyavif::avifDecoder,
                   decltype(&crabbyavif::crabby_avifDecoderDestroy)>
       decoder_{nullptr, crabbyavif::crabby_avifDecoderDestroy};
-  crabbyavif::avifIO avif_io_ = {};
-  AvifIOData avif_io_data_;
 
   const AnimationOption animation_option_;
 

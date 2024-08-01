@@ -1168,7 +1168,7 @@ void FrameSelection::RevealSelection(
 
   scroll_into_view_util::ScrollRectToVisible(
       *start.AnchorNode()->GetLayoutObject(), selection_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(alignment, alignment));
+      scroll_into_view_util::CreateScrollIntoViewParams(alignment, alignment));
   UpdateAppearance();
 }
 

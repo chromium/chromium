@@ -194,7 +194,7 @@
   </message>
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging.">
-      Your card details are encrypted when they’re saved in your Google Account and used to pay online
+      Pay faster when your card is saved. Card details are encrypted in your Google Account.
     </message>
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE" desc="Explanation of the benefit of credit card upload save on Desktop, using convenience-focused messaging.">
       Save this card to use online with Google Pay for purchases across your devices
@@ -523,9 +523,6 @@
   </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a card, and the response from the bank indicates that no further verification is required.">
     Verified
-  </message>
-  <message name="IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE" desc="Title for FIDO authentication progress dialog">
-      Verifying...
   </message>
   <message name="IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_TITLE" desc="Title displayed when there is a server failure during the process of unmasking a server IBAN.">
     IBAN not filled in
@@ -1181,6 +1178,16 @@
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_SUMMARY_SEPARATED_BY_PIPE" desc="Summary text separator with pipe symbol. i.e. arg1 | arg2" formatter_data="android_java">
     <ph name="EXPIRATION_DATE">%1$s<ex>12/24</ex></ph> | <ph name="SECURITY_CODE">%2$s<ex>123</ex></ph>
   </message>
+
+  <!-- IBAN snackbar confirmation -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a server IBAN is saved.">
+      IBAN saved to your Google Account
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT" desc="Text shown on the ok button of the confirmation prompt after an IBAN is saved.">
+      Got it
+    </message>
+  </if>
 
   <!-- Card upload and virtual card enrollment confirmation related strings-->
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after save card is successfully uploaded and saved to the server.">

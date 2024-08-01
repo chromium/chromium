@@ -16,6 +16,7 @@ static_library("recorder_app") {
 
   public_deps = [
     "//ash/webui/recorder_app_ui",
+    "//chrome/browser:browser_public_dependencies",
     "//components/soda:constants",
     "//content/public/browser",
   ]
@@ -25,6 +26,7 @@ static_library("recorder_app") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chromeos/strings",

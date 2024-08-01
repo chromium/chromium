@@ -237,6 +237,12 @@ bool InterestGroup::IsValid() const {
     return false;
   }
 
+  if (trusted_bidding_signals_coordinator) {
+    if (trusted_bidding_signals_coordinator->scheme() != url::kHttpsScheme) {
+      return false;
+    }
+  }
+
   if (ads) {
     for (const auto& ad : ads.value()) {
       if (!IsUrlAllowedForRenderUrls(GURL(ad.render_url()))) {
@@ -380,6 +386,9 @@ size_t InterestGroup::EstimateSize() const {
   }
   size += sizeof(trusted_bidding_signals_slot_size_mode);
   size += sizeof(max_trusted_bidding_signals_url_length);
+  if (trusted_bidding_signals_coordinator) {
+    size += trusted_bidding_signals_coordinator->Serialize().size();
+  }
   if (user_bidding_signals) {
     size += user_bidding_signals->size();
   }
@@ -428,7 +437,8 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   bidding_wasm_helper_url, update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   trusted_bidding_signals_slot_size_mode,
-                  max_trusted_bidding_signals_url_length, user_bidding_signals,
+                  max_trusted_bidding_signals_url_length,
+                  trusted_bidding_signals_coordinator, user_bidding_signals,
                   ads, ad_components, ad_sizes, size_groups,
                   auction_server_request_flags, additional_bid_key,
                   aggregation_coordinator_origin) ==
@@ -442,6 +452,7 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   other.trusted_bidding_signals_keys,
                   other.trusted_bidding_signals_slot_size_mode,
                   other.max_trusted_bidding_signals_url_length,
+                  other.trusted_bidding_signals_coordinator,
                   other.user_bidding_signals, other.ads, other.ad_components,
                   other.ad_sizes, other.size_groups,
                   other.auction_server_request_flags, other.additional_bid_key,

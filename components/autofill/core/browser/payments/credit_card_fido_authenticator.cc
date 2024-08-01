@@ -765,18 +765,6 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
             autofill_client_->GetLastCommittedPrimaryMainFrameURL()
                 .DeprecatedGetOriginAsURL();
       }
-#if BUILDFLAG(IS_ANDROID)
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableFIDOProgressDialog)) {
-        // Open the progress dialog when authenticating and getting the full
-        // card from FIDO.
-        autofill_client_->GetPaymentsAutofillClient()
-            ->ShowAutofillProgressDialog(
-                AutofillProgressDialogType::kAndroidFIDOProgressDialog,
-                base::BindOnce(&CreditCardFidoAuthenticator::CancelVerification,
-                               weak_ptr_factory_.GetWeakPtr()));
-      }
-#endif
       full_card_request_->GetFullCardViaFIDO(
           *card_, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
           weak_ptr_factory_.GetWeakPtr(), std::move(response),

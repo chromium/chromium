@@ -5,6 +5,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {FaceGazeConstants} from './constants.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
@@ -24,6 +25,7 @@ export class FaceGaze {
   private metricsUtils_: MetricsUtils;
   private webCamFaceLandmarker_: WebCamFaceLandmarker;
   private skipInitializeWebCamFaceLandmarkerForTesting_ = false;
+  private weightsWindowId_ = -1;
 
   constructor() {
     this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
@@ -61,8 +63,7 @@ export class FaceGaze {
       this.maybeInitializeWebCamFaceLandmarker_();
     }, FaceGaze.INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT);
 
-    // TODO(b/309121742): Add logic to open the camera stream page so that
-    // developers can quickly customize weights.
+    this.openWeightsPanel_();
   }
 
   private maybeInitializeWebCamFaceLandmarker_(): void {
@@ -150,6 +151,9 @@ export class FaceGaze {
   onFaceGazeDisabled(): void {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
+    if (this.weightsWindowId_ !== -1) {
+      chrome.windows.remove(this.weightsWindowId_);
+    }
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
@@ -170,6 +174,28 @@ export class FaceGaze {
    */
   setSkipInitializeWebCamFaceLandmarkerForTesting(skip: boolean): void {
     this.skipInitializeWebCamFaceLandmarkerForTesting_ = skip;
+  }
+
+  private openWeightsPanel_(): void {
+    const params = {
+      url: chrome.runtime.getURL('accessibility_common/facegaze/weights.html'),
+      type: chrome.windows.CreateType.PANEL,
+    };
+    chrome.windows.create(params, (win) => {
+      if (!win || win.id === undefined) {
+        return;
+      }
+
+      this.weightsWindowId_ = win.id;
+      chrome.runtime.onMessage.addListener(message => {
+        if (message.type === FaceGazeConstants.UPDATE_LANDMARK_WEIGHTS) {
+          this.mouseController_.updateLandmarkWeights(
+              new Map(Object.entries(message.weights)));
+        }
+
+        return false;
+      });
+    });
   }
 }
 

@@ -242,7 +242,8 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       can_use_warm_up_connection_(can_use_warm_up_connection),
 #endif
       histogram_memory_region_(std::move(histogram_memory_region)),
-      tracing_config_memory_region_(std::move(tracing_config_memory_region)) {
+      tracing_config_memory_region_(std::move(tracing_config_memory_region)),
+      init_start_time_(base::TimeTicks::Now()) {
   if (!mojo::core::GetConfiguration().is_broker_process &&
       !command_line_->HasSwitch(switches::kDisableMojoBroker)) {
     command_line_->AppendSwitch(switches::kDisableMojoBroker);
@@ -274,6 +275,10 @@ void ChildProcessLauncherHelper::StartLaunchOnClientThread() {
 
 void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+
+  // Record the delay in getting to the launcher thread.
+  UMA_HISTOGRAM_TIMES("MPArch.ChildProcessLauncher.PreLaunchDelay",
+                      base::TimeTicks::Now() - init_start_time_);
 
 #if BUILDFLAG(IS_FUCHSIA)
   mojo_channel_.emplace();
@@ -410,6 +415,10 @@ void ChildProcessLauncherHelper::PostLaunchOnClientThread(
 #endif
     int error_code) {
   if (child_process_launcher_) {
+    // Record the total launch duration.
+    UMA_HISTOGRAM_TIMES("MPArch.ChildProcessLauncher.Notify",
+                        base::TimeTicks::Now() - init_start_time_);
+
     child_process_launcher_->Notify(std::move(process),
 #if BUILDFLAG(IS_WIN)
                                     last_error,

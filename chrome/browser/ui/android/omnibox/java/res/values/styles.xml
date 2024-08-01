@@ -16,14 +16,20 @@ found in the LICENSE file.
     </style>
 
     <!-- Omnibox suggestions -->
-    <style name="TextAppearance.OmniboxAnswerDescriptionNegativeSmall">
-        <item name="android:textSize">@dimen/text_size_small</item>
+    <style name="TextAppearance.OmniboxAnswerDescriptionNegative">
         <item name="android:textColor">@color/answers_description_text_negative</item>
     </style>
 
-    <style name="TextAppearance.OmniboxAnswerDescriptionPositiveSmall">
-        <item name="android:textSize">@dimen/text_size_small</item>
+    <style name="TextAppearance.OmniboxAnswerDescriptionPositive">
         <item name="android:textColor">@color/answers_description_text_positive</item>
+    </style>
+
+    <style name="TextAppearance.OmniboxAnswerDescriptionNegativeSmall" parent="TextAppearance.OmniboxAnswerDescriptionNegative">
+        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
+    <style name="TextAppearance.OmniboxAnswerDescriptionPositiveSmall" parent="TextAppearance.OmniboxAnswerDescriptionPositive">
+        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
     <style name="OmniboxIcon" parent="LocationBarButton">

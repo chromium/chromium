@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 
+#include <array>
 #include <optional>
 #include <queue>
 #include <string>
@@ -1001,7 +997,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[5];
+        std::array<MockCallback<OnceClosure>, 5> tasks;
         // Post 5 tasks, run them, go idle. Expected to only exit
         // "ThreadController active" state at the end.
         for (auto& t : tasks)

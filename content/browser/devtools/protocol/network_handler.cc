@@ -1528,9 +1528,13 @@ void NetworkHandler::OnEndpointsUpdatedForOrigin(
   if (!host_ || endpoints.empty()) {
     return;
   }
-  url::Origin origin = endpoints[0].group_key.origin;
+  // Endpoint should have an origin.
+  DCHECK(endpoints[0].group_key.origin.has_value());
+  url::Origin origin = endpoints[0].group_key.origin.value();
   DCHECK(base::ranges::all_of(endpoints, [&](auto const& endpoint) {
-    return endpoint.group_key.origin == origin;
+    // Endpoint should have an origin.
+    DCHECK(endpoint.group_key.origin.has_value());
+    return endpoint.group_key.origin.value() == origin;
   }));
   std::vector<GURL> reporting_filter_urls = ComputeReportingURLs(host_);
 

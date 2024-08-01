@@ -185,9 +185,9 @@ WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
   return WebThemeEngine::ExtraParams(scrollbar_extra);
 }
 
-void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
-                                   const Scrollbar& scrollbar,
-                                   const gfx::Rect& rect) {
+void ScrollbarThemeMac::PaintTrackBackground(GraphicsContext& context,
+                                             const Scrollbar& scrollbar,
+                                             const gfx::Rect& rect) {
   GraphicsContextStateSaver state_saver(context);
   context.Translate(rect.x(), rect.y());
 

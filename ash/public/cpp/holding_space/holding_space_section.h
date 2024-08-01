@@ -26,7 +26,6 @@ enum class HoldingSpaceSectionId {
 struct ASH_PUBLIC_EXPORT HoldingSpaceSection {
   HoldingSpaceSection(HoldingSpaceSectionId id,
                       std::set<HoldingSpaceItem::Type> supported_types,
-                      std::optional<size_t> max_item_count,
                       std::optional<size_t> max_visible_item_count);
 
   HoldingSpaceSection(const HoldingSpaceSection&) = delete;
@@ -38,10 +37,6 @@ struct ASH_PUBLIC_EXPORT HoldingSpaceSection {
 
   // Types of holding space items to be rendered in the section.
   const std::set<HoldingSpaceItem::Type> supported_types;
-
-  // Maximum count of items to be cached in the model for the section. If
-  // absent, no maximum count is enforced.
-  const std::optional<size_t> max_item_count;
 
   // Maximum count of items to be visible at once for the section in holding
   // space UI. If absent, no maximum count is enforced.

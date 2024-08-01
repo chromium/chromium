@@ -652,6 +652,14 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL(),
       GetMSBBStateFromPrefs());
 
+  compose::ProactiveNudgeTracker::Signals nudge_signals;
+  nudge_signals.page_origin =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  nudge_signals.page_url = web_contents()->GetURL();
+  nudge_signals.form = form_data;
+  nudge_signals.field = form_field_data;
+  nudge_signals.page_change_time = page_change_time_;
+
   if (!proactive_nudge_status.has_value()) {
     compose::LogComposeProactiveNudgeShowStatus(proactive_nudge_status.error());
     // Record that the nudge could have shown if it was disabled by
@@ -660,18 +668,18 @@ bool ChromeComposeClient::ShouldTriggerPopup(
             proactive_nudge_status.error())) {
       page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
     }
+    if (proactive_nudge_status.error() ==
+            compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled &&
+        compose::GetComposeConfig().selection_nudge_enabled) {
+      // If the proactive nudge is disabled but the selection nudge is is
+      // enabled we need to initialize the nudge tracker for this form field to
+      // accept the selection nudge.
+      return nudge_tracker_.OnlySelectionNudgeRequestedForFormField(
+          std::move(nudge_signals));
+    }
     return false;
   }
 
-  // Time since page load, or time since page has changed if it's not loaded
-  // yet.
-  compose::ProactiveNudgeTracker::Signals nudge_signals;
-  nudge_signals.page_origin =
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  nudge_signals.page_url = web_contents()->GetURL();
-  nudge_signals.form = form_data;
-  nudge_signals.field = form_field_data;
-  nudge_signals.page_change_time = page_change_time_;
   // ProactiveNudgeRequestedForFormField logs metrics for showing the nudge.
   if (nudge_tracker_.ProactiveNudgeRequestedForFormField(
           std::move(nudge_signals))) {

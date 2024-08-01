@@ -777,7 +777,7 @@ MAC_M1_MINI_2020_NO_BRP = PerfPlatform(
 MAC_M1_PRO = PerfPlatform('mac-m1-pro-perf',
                           'Mac M1 PRO 2020',
                           _MAC_M1_PRO_BENCHMARK_CONFIGS,
-                          1,
+                          4,
                           'mac',
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf',
@@ -786,12 +786,6 @@ MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf',
                           20,
                           'mac',
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-MAC_14_M1_PRO = PerfPlatform('mac-14-m1-pro-perf',
-                             'Mac M1 PRO 2020 running MacOS 14',
-                             _MAC_M1_PRO_BENCHMARK_CONFIGS,
-                             1,
-                             'mac',
-                             pinpoint_only=True)
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
@@ -898,7 +892,7 @@ ANDROID_PIXEL4_PGO = PerfPlatform(
     pinpoint_only=True)
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
-    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 48, 'android')
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 40, 'android')
 # TODO(crbug.com/307958700): Switch shard number back to a higher number around
 #                            28 once more devices are procured. Temporarily use
 #                            15 to avoid high contention in the pixel6 pool.

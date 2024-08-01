@@ -108,6 +108,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -524,6 +525,9 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
                                            .LocalFrameRoot()
                                            .GetOrResetContentCaptureManager()) {
     manager->OnScrollPositionChanged();
+  }
+  if (GetLayoutBox()->IsScrollContainerWithScrollMarkerGroup()) {
+    GetLayoutBox()->UpdateScrollMarkerControlsAfterScroll();
   }
   if (AXObjectCache* cache =
           GetLayoutBox()->GetDocument().ExistingAXObjectCache())
@@ -2412,10 +2416,9 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   // Represent the rect in the container's scroll-origin coordinate.
   local_expose_rect.Move(border_origin_to_scroll_origin);
   PhysicalRect scroll_snapport_rect = VisibleScrollSnapportRect();
-
-  ScrollOffset target_offset = ScrollAlignment::GetScrollOffsetToExpose(
-      scroll_snapport_rect, local_expose_rect, scroll_margin,
-      *params->align_x.get(), *params->align_y.get(), GetScrollOffset());
+  ScrollOffset target_offset = scroll_into_view_util::GetScrollOffsetToExpose(
+      *this, local_expose_rect, scroll_margin, *params->align_x.get(),
+      *params->align_y.get());
   ScrollOffset new_scroll_offset(
       ClampScrollOffset(gfx::ToRoundedVector2d(target_offset)));
 
@@ -2449,7 +2452,6 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     SetScrollOffset(new_scroll_offset, params->type,
                     mojom::blink::ScrollBehavior::kInstant);
   }
-
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.
   // To calculate the result from the scroll, we move the |local_expose_rect| to
@@ -2585,6 +2587,13 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kPaintClean);
   if (HasBeenDisposed()) {
+    return true;
+  }
+
+  if (RuntimeEnabledFeatures::ExcludePopupMainThreadScrollingReasonEnabled() &&
+      !GetLayoutBox()->GetFrame()->Client()->GetWebFrame()) {
+    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
+    // threaded scrolling. This currently only happens in a WebPagePopup.
     return true;
   }
 

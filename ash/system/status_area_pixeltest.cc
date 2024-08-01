@@ -7,6 +7,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/media/media_tray.h"
+#include "ash/system/model/fake_power_status.h"
+#include "ash/system/model/scoped_fake_power_status.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
@@ -21,6 +23,8 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/i18n/rtl.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -194,6 +198,80 @@ TEST_P(StatusAreaParamerterizedAlignmentPixelTest, DISABLED_OverflowTray) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow_tray" + GetScreenshotNameSuffix(),
       /*revision_number=*/0, overflow_tray));
+}
+
+class StatusAreaBatteryPixelTest : public StatusAreaPixelTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  bool IsBatteryBadgeIconEnabled() { return GetParam(); }
+
+  FakePowerStatus* GetFakePowerStatus() {
+    return scoped_fake_power_status_->fake_power_status();
+  }
+
+  PowerTrayView* power_tray_view() {
+    return GetPrimaryUnifiedSystemTray()->power_tray_view_;
+  }
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(
+        chromeos::features::kBatteryBadgeIcon, IsBatteryBadgeIconEnabled());
+    scoped_fake_power_status_ = std::make_unique<ScopedFakePowerStatus>();
+  }
+
+  // AshTestBase:
+  void TearDown() override {
+    scoped_fake_power_status_.reset();
+    scoped_feature_list_->Reset();
+    AshTestBase::TearDown();
+  }
+
+  std::string GetScreenshotName(const std::string& test_name, bool new_icon) {
+    return test_name + (new_icon ? "_new" : "_old");
+  }
+
+ private:
+  std::unique_ptr<ScopedFakePowerStatus> scoped_fake_power_status_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StatusAreaBatteryPixelTest,
+                         /*IsBatteryBadgeIconEnabled()=*/testing::Bool());
+
+TEST_P(StatusAreaBatteryPixelTest, BoltIcon) {
+  auto* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsLinePowerConnected(true);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GetScreenshotName("bolt_icon", IsBatteryBadgeIconEnabled()),
+      /*revision_number=*/0, power_tray_view()));
+}
+
+TEST_P(StatusAreaBatteryPixelTest, UnreliableIcon) {
+  auto* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsUsbChargerConnected(true);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GetScreenshotName("unreliable_icon", IsBatteryBadgeIconEnabled()),
+      /*revision_number=*/0, power_tray_view()));
+}
+
+TEST_P(StatusAreaBatteryPixelTest, BatterySaverPlusIcon) {
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsBatterySaverActive(true);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GetScreenshotName("battery_saver_plus_icon", IsBatteryBadgeIconEnabled()),
+      /*revision_number=*/0, power_tray_view()));
+}
+
+TEST_P(StatusAreaBatteryPixelTest, AlertIcon) {
+  auto* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetBatteryPercent(1);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GetScreenshotName("alert_icon", IsBatteryBadgeIconEnabled()),
+      /*revision_number=*/0, power_tray_view()));
 }
 
 }  // namespace ash

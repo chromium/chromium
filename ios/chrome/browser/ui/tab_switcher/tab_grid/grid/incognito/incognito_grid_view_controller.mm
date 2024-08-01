@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_view_controller.h"
 
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

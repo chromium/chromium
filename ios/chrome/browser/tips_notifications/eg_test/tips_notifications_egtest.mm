@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/stringprintf.h"
+#import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -57,10 +58,11 @@ void TapNotification() {
       initWithBundleIdentifier:@"com.apple.springboard"];
   auto notification =
       springboardApplication.otherElements[@"Notification"].firstMatch;
-  GREYAssert([notification waitForExistenceWithTimeout:4],
-             @"A notification did not appear");
+  BOOL notificationAppeared = [notification
+      waitForExistenceWithTimeout:base::test::ios::kWaitForUIElementTimeout
+                                      .InSecondsF()];
   [notification tap];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  XCTAssert(notificationAppeared, @"A notification did not appear");
 }
 
 // Dismiss a notification, if one exists.
@@ -121,16 +123,24 @@ void MaybeDismissNotification() {
 
 #pragma mark - Helpers
 
-// Opt in to Tips Notications via the SetUpList long-press menu.
-- (void)optInToTipsNotifications {
+// Opt in to Tips Notications via the SetUpList long-press menu. Mark all
+// Tips Notifications as "sent", except for the ones included in `types`.
+- (void)optInToTipsNotifications:(std::vector<TipsNotificationType>)types {
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
       grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
   [[EarlGrey selectElementWithMatcher:setUpList]
       performAction:grey_longPress()];
 
-  // Clear pref that stores which notifications have been sent.
-  [ChromeEarlGrey resetDataForLocalStatePref:kTipsNotificationsSentPref];
+  // This uses kTipsNotificationsSentPref to mark all notifications except for
+  // the ones listed in `types` as "sent", which will ensure that they are not
+  // sent again during the current test case.
+  int sentBits = 0xffff;
+  for (auto type : types) {
+    sentBits ^= 1 << int(type);
+  }
+  [ChromeEarlGrey setIntegerValue:sentBits
+                forLocalStatePref:kTipsNotificationsSentPref];
 
   // Tap the menu item to enable notifications.
   TapText(@"Turn on Notifications");
@@ -161,7 +171,7 @@ void MaybeDismissNotification() {
 - (void)testToggleTipsNotificationsMenuItem {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
-  [self optInToTipsNotifications];
+  [self optInToTipsNotifications:{}];
   [self turnOffTipsNotifications];
 }
 
@@ -172,20 +182,12 @@ void MaybeDismissNotification() {
 
   MaybeDismissNotification();
 
-  [self optInToTipsNotifications];
-
-  // Wait for and tap the Default Browser Notification.
-  TapNotification();
-
-  // Verify that the Default Browser Promo is visible.
-  id<GREYMatcher> defaultBrowserView =
-      chrome_test_util::DefaultBrowserSettingsTableViewMatcher();
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:defaultBrowserView];
-
-  // Tap "cancel".
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
-      performAction:grey_tap()];
+  [self optInToTipsNotifications:{
+                                     TipsNotificationType::kWhatsNew,
+                                     TipsNotificationType::kDefaultBrowser,
+                                     TipsNotificationType::kDocking,
+                                     TipsNotificationType::kSignin,
+                                 }];
 
   // Wait for and tap the What's New notification.
   TapNotification();
@@ -200,10 +202,36 @@ void MaybeDismissNotification() {
   [[EarlGrey selectElementWithMatcher:whatsNewDoneButton]
       performAction:grey_tap()];
 
+  // Wait for and tap the Default Browser Notification.
+  TapNotification();
+
+  // Verify that the Default Browser Promo is visible.
+  id<GREYMatcher> defaultBrowserView =
+      chrome_test_util::DefaultBrowserSettingsTableViewMatcher();
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:defaultBrowserView];
+
+  // Tap "cancel".
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Wait for and tap the Docking promo notification.
+  TapNotification();
+
+  // Verify the Docking promo is showing.
+  id<GREYMatcher> dockingPromoView =
+      grey_accessibilityID(@"kDockingPromoAccessibilityId");
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:dockingPromoView];
+
+  // Tap "Got It" on the Docking promo view.
+  id<GREYMatcher> gotItButton = grey_accessibilityID(
+      kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+  [ChromeEarlGrey waitForAndTapButton:gotItButton];
+
   // Wait for and tap the Signin notification.
   TapNotification();
 
-  // Verify the signin screen is showing
+  // Verify the signin screen is showing.
   id<GREYMatcher> signinView =
       grey_accessibilityID(kWebSigninAccessibilityIdentifier);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:signinView];

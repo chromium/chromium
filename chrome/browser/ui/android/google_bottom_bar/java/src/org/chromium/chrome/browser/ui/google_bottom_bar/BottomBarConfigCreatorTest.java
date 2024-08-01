@@ -25,6 +25,8 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED;
 
@@ -555,6 +557,59 @@ public class BottomBarConfigCreatorTest {
     }
 
     @Test
+    public void create_noVariant_heightNotSpecified_hasDefaultHeight() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(
+                BottomBarConfigCreator.DEFAULT_NO_VARIANT_HEIGHT_DP, bottomBarConfig.getHeightDp());
+    }
+
+    @Test
+    public void create_noVariant_heightSpecifiedByFinch_hasFinchHeight() {
+        GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(123, bottomBarConfig.getHeightDp());
+    }
+
+    @Test
+    public void create_noVariant_heightSpecifiedByIntent_hasIntentHeight() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                        .setNoVariantHeightDp(123)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(123, bottomBarConfig.getHeightDp());
+    }
+
+    @Test
+    public void create_noVariant_heightSpecifiedByFinchAndIntent_hasIntentHeight() {
+        GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                        .setNoVariantHeightDp(456)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(456, bottomBarConfig.getHeightDp());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void create_singleDecker_withEmptyList_hasCorrectBottomBarConfig() {
         Drawable drawable = mock(Drawable.class);
@@ -574,6 +629,64 @@ public class BottomBarConfigCreatorTest {
         assertEquals(SINGLE_DECKER, bottomBarConfig.getVariantLayoutType());
         assertEquals(0, bottomBarConfig.getButtonList().size());
         assertNull(bottomBarConfig.getSpotlightId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void create_singleDecker_heightNotSpecified_hasDefaultHeight() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(
+                BottomBarConfigCreator.DEFAULT_SINGLE_DECKER_HEIGHT_DP,
+                bottomBarConfig.getHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void create_singleDecker_heightSpecifiedByFinch_hasFinchHeight() {
+        GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(123, bottomBarConfig.getHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void create_singleDecker_heightSpecifiedByIntent_hasIntentHeight() {
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .setSingleDeckerHeightDp(123)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(123, bottomBarConfig.getHeightDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void create_singleDecker_heightSpecifiedByFinchAndIntent_hasIntentHeight() {
+        GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                        .setSingleDeckerHeightDp(456)
+                        .build();
+
+        BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
+
+        assertEquals(456, bottomBarConfig.getHeightDp());
     }
 
     @Test
@@ -804,15 +917,26 @@ public class BottomBarConfigCreatorTest {
             BottomBarConfig config, @GoogleBottomBarVariantLayoutType int layoutType) {
         assertNull(config.getSpotlightId());
 
-        if (layoutType == NO_VARIANT || layoutType == DOUBLE_DECKER) {
+        if (layoutType == NO_VARIANT) {
             assertEquals(2, config.getButtonList().size());
             assertEquals(SAVE, config.getButtonList().get(0).getId());
             assertEquals(SHARE, config.getButtonList().get(1).getId());
+            assertEquals(BottomBarConfigCreator.DEFAULT_NO_VARIANT_HEIGHT_DP, config.getHeightDp());
+        } else if (layoutType == DOUBLE_DECKER) {
+            assertEquals(2, config.getButtonList().size());
+            assertEquals(SAVE, config.getButtonList().get(0).getId());
+            assertEquals(SHARE, config.getButtonList().get(1).getId());
+            assertEquals(BottomBarConfigCreator.DOUBLE_DECKER_HEIGHT_DP, config.getHeightDp());
         } else if (layoutType == SINGLE_DECKER_WITH_RIGHT_BUTTONS) {
             assertEquals(1, config.getButtonList().size());
             assertEquals(SHARE, config.getButtonList().get(0).getId());
+            assertEquals(
+                    BottomBarConfigCreator.SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP,
+                    config.getHeightDp());
         } else if (layoutType == SINGLE_DECKER) {
             assertEquals(0, config.getButtonList().size());
+            assertEquals(
+                    BottomBarConfigCreator.DEFAULT_SINGLE_DECKER_HEIGHT_DP, config.getHeightDp());
         } else {
             throw new IllegalArgumentException(
                     String.format("Layout type with id %s is not tested.", layoutType));

@@ -284,11 +284,13 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
 int ExtensionWindowLastFocusedTest::GetTabId(
     const base::Value::Dict& dict) const {
   const base::Value::List* tabs = dict.FindList(keys::kTabsKey);
-  if (!tabs || tabs->empty())
+  if (!tabs || tabs->empty()) {
     return -2;
+  }
   const base::Value::Dict* tab_dict = (*tabs)[0].GetIfDict();
-  if (!tab_dict)
+  if (!tab_dict) {
     return -2;
+  }
   return tab_dict->FindInt(keys::kIdKey).value_or(-2);
 }
 

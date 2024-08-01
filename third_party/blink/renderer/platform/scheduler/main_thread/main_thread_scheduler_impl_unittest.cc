@@ -43,7 +43,11 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/test/recording_task_time_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/test/web_scheduling_test_helper.h"
 #include "v8/include/v8.h"
 
 using base::sequence_manager::TaskQueue;
@@ -537,8 +541,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
     scheduler_->DidHandleInputEventOnCompositorThread(
         FakeInputEvent(blink::WebInputEvent::Type::kGestureScrollEnd),
         InputEventState::EVENT_CONSUMED_BY_COMPOSITOR);
-    test_task_runner_->AdvanceMockTickClock(
-        priority_escalation_after_input_duration() * 2);
+    test_task_runner_->AdvanceMockTickClock(UserModel::kGestureEstimationLimit *
+                                            2);
     scheduler_->ForceUpdatePolicy();
   }
 
@@ -653,28 +657,32 @@ class MainThreadSchedulerImplTest : public testing::Test {
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
           FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-          WebInputEventResult::kHandledSystem);
+          WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
 
       scheduler_->DidHandleInputEventOnCompositorThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-          WebInputEventResult::kHandledSystem);
+          WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
 
       scheduler_->DidHandleInputEventOnCompositorThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-          WebInputEventResult::kHandledSystem);
+          WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
     }
     if (gesture_type != blink::WebInputEvent::Type::kUndefined) {
       scheduler_->DidHandleInputEventOnCompositorThread(
           FakeInputEvent(gesture_type),
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
-          FakeInputEvent(gesture_type), WebInputEventResult::kHandledSystem);
+          FakeInputEvent(gesture_type), WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
     }
   }
 
@@ -686,7 +694,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
     test_task_runner_->AdvanceMockTickClock(begin_main_frame_duration);
     scheduler_->DidHandleInputEventOnMainThread(
         FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-        WebInputEventResult::kHandledApplication);
+        WebInputEventResult::kHandledApplication,
+        /*frame_requested=*/true);
     scheduler_->DidCommitFrameToCompositor();
   }
 
@@ -782,7 +791,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                                  String value) {
     scheduler_->DidHandleInputEventOnMainThread(
         FakeInputEvent(WebInputEvent::Type::kMouseMove),
-        WebInputEventResult::kHandledApplication);
+        WebInputEventResult::kHandledApplication,
+        /*frame_requested=*/true);
     AppendToVectorBeginMainFrameTask(vector, value);
   }
 
@@ -790,7 +800,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                     Vector<String>* vector,
                                     String value) {
     scheduler_->DidHandleInputEventOnMainThread(
-        FakeInputEvent(event_type), WebInputEventResult::kHandledApplication);
+        FakeInputEvent(event_type), WebInputEventResult::kHandledApplication,
+        /*frame_requested=*/true);
     AppendToVectorTestTask(vector, value);
   }
 
@@ -915,14 +926,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
  protected:
-  static base::TimeDelta priority_escalation_after_input_duration() {
-    return base::Milliseconds(UserModel::kGestureEstimationLimitMillis);
-  }
-
-  static base::TimeDelta subsequent_input_expected_after_input_duration() {
-    return base::Milliseconds(UserModel::kExpectSubsequentGestureMillis);
-  }
-
   static base::TimeDelta maximum_idle_period_duration() {
     return IdleHelper::kMaximumIdlePeriod;
   }
@@ -1212,8 +1215,7 @@ TEST_F(MainThreadSchedulerImplTest,
   EnableIdleTasks();
   SimulateCompositorGestureStart(TouchEventPolicy::kSendTouchStart);
 
-  base::TimeTicks loop_end_time =
-      Now() + base::Milliseconds(UserModel::kMedianGestureDurationMillis * 2);
+  base::TimeTicks loop_end_time = Now() + UserModel::kMedianGestureDuration * 2;
 
   // The UseCase::kCompositorGesture usecase initially deprioritizes
   // compositor tasks (see
@@ -1263,7 +1265,8 @@ TEST_F(MainThreadSchedulerImplTest,
   EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1281,7 +1284,8 @@ TEST_F(MainThreadSchedulerImplTest,
   EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1295,7 +1299,8 @@ TEST_F(MainThreadSchedulerImplTest,
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledApplication);
+      WebInputEventResult::kHandledApplication,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
   // Because the main thread is performing custom input handling, we let all
   // tasks run. However compositing tasks are still given priority.
@@ -1316,7 +1321,8 @@ TEST_F(
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
   // Because we are still waiting for the touchstart to be processed,
   // non-essential tasks like loading tasks are blocked.
@@ -1390,7 +1396,8 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EnableIdleTasks();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("C1", "C2", "D1", "D2"));
@@ -1402,13 +1409,15 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingCancel),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnCompositorThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureTapDown),
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureTapDown),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre());
 
@@ -1420,7 +1429,8 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureScrollBegin),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(run_order, testing::ElementsAre("L1", "T1", "T2"));
@@ -1544,7 +1554,8 @@ TEST_F(MainThreadSchedulerImplTest,
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kMouseMove,
                      blink::WebInputEvent::kLeftButtonDown),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1719,7 +1730,8 @@ TEST_F(MainThreadSchedulerImplTest,
   // Note compositor tasks are not prioritized.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kKeyDown),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1875,11 +1887,12 @@ TEST_F(MainThreadSchedulerImplTest, SlowMainThreadInputEvent) {
 
   // Simulate the input event being queued for a very long time. The compositor
   // task we post here represents the enqueued input task.
-  test_task_runner_->AdvanceMockTickClock(
-      priority_escalation_after_input_duration() * 2);
+  test_task_runner_->AdvanceMockTickClock(UserModel::kGestureEstimationLimit *
+                                          2);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
 
   // Even though we exceeded the input priority escalation period, we should
@@ -1887,8 +1900,7 @@ TEST_F(MainThreadSchedulerImplTest, SlowMainThreadInputEvent) {
   EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
 
   // After the escalation period ends we should go back into normal mode.
-  test_task_runner_->FastForwardBy(priority_escalation_after_input_duration() *
-                                   2);
+  test_task_runner_->FastForwardBy(UserModel::kGestureEstimationLimit * 2);
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
 }
 
@@ -1930,7 +1942,8 @@ TEST_F(MainThreadSchedulerImplTest, UpdatePolicyCountTriggeredByOneInputEvent) {
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
 
   test_task_runner_->AdvanceMockTickClock(base::Seconds(1));
@@ -1953,7 +1966,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
 
   // The second call to DidHandleInputEventOnCompositorThread should not post
@@ -1967,7 +1981,8 @@ TEST_F(MainThreadSchedulerImplTest,
   // We expect DidHandleInputEvent to trigger a policy update.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
 
   // The third call to DidHandleInputEventOnCompositorThread should post a
@@ -1982,7 +1997,8 @@ TEST_F(MainThreadSchedulerImplTest,
   // We expect DidHandleInputEvent to trigger a policy update.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(2, scheduler_->update_policy_count_);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   // We finally expect a delayed policy update.
@@ -2003,7 +2019,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   // We expect a delayed policy update.
@@ -2020,7 +2037,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(3, scheduler_->update_policy_count_);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   // We finally expect a delayed policy update.
@@ -2054,16 +2072,20 @@ TEST_F(MainThreadSchedulerImplTest, EnsureUpdatePolicyNotTriggeredTooOften) {
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchEnd),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 
   EXPECT_EQ(2, scheduler_->update_policy_count_);
 
@@ -2230,7 +2252,7 @@ TEST_F(MainThreadSchedulerImplTest, TestLongIdlePeriodInTouchStartPolicy) {
   EXPECT_EQ(0, run_count);
 
   // The long idle period should start after the touchstart policy has finished.
-  test_task_runner_->FastForwardBy(priority_escalation_after_input_duration());
+  test_task_runner_->FastForwardBy(UserModel::kGestureEstimationLimit);
   EXPECT_EQ(1, run_count);
 }
 
@@ -2351,7 +2373,8 @@ TEST_F(MainThreadSchedulerImplTest, MismatchedDidHandleInputEventOnMainThread) {
   // debugging impossible.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest, BeginMainFrameOnCriticalPath) {
@@ -3111,9 +3134,10 @@ TEST_F(MainThreadSchedulerImplTest, CompositingAfterInput) {
 
   // Input tasks and compositor tasks will be interleaved because they have the
   // same priority.
-  PostTestTasks(&run_order, "T1 PD1 C1 PD2 C2");
+  PostTestTasks(&run_order, "T1 PD1 C1 PD2 C2 CM1");
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("PD1", "C1", "PD2", "C2", "T1"));
+  EXPECT_THAT(run_order,
+              testing::ElementsAre("PD1", "C1", "PD2", "C2", "CM1", "T1"));
   run_order.clear();
 }
 
@@ -3615,6 +3639,251 @@ TEST_F(UrgentMessageSchedulingPolicyTest, UrgentMessageAndCompositorPriority) {
   EXPECT_THAT(run_order, testing::ElementsAre("PD1", "C1", "CM", "D1", "D2",
                                               "T1", "T2", "C2", "C3"));
 }
+
+class DeferRendererTasksAfterInputTest
+    : public MainThreadSchedulerImplTest,
+      public ::testing::WithParamInterface<features::TaskDeferralPolicy>,
+      public WebSchedulingTestHelper::Delegate {
+ public:
+  DeferRendererTasksAfterInputTest() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kDeferRendererTasksAfterInput,
+          base::FieldTrialParams(
+              {{"policy",
+                features::kTaskDeferralPolicyParam.GetName(GetParam())}})}},
+        {});
+  }
+
+  void SetUp() override {
+    MainThreadSchedulerImplTest::SetUp();
+    web_scheduling_test_helper_ =
+        std::make_unique<WebSchedulingTestHelper>(*this);
+  }
+
+  void TearDown() override {
+    MainThreadSchedulerImplTest::TearDown();
+    web_scheduling_test_helper_.reset();
+  }
+
+  FrameOrWorkerScheduler& GetFrameOrWorkerScheduler() override {
+    return *main_frame_scheduler_.get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      TaskType task_type) override {
+    return main_frame_scheduler_->GetTaskRunner(task_type);
+  }
+
+ protected:
+  using TestTaskSpecEntry = WebSchedulingTestHelper::TestTaskSpecEntry;
+  using WebSchedulingParams = WebSchedulingTestHelper::WebSchedulingParams;
+
+  std::unique_ptr<WebSchedulingTestHelper> web_scheduling_test_helper_;
+};
+
+TEST_P(DeferRendererTasksAfterInputTest, TaskDeferral) {
+  Vector<String> run_order;
+
+  // Simulate a long idle period starting.
+  scheduler_->BeginFrameNotExpectedSoon();
+
+  // Post potentially deferrable tasks.
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "F1", .type_info = TaskType::kDOMManipulation},
+      {.descriptor = "F2", .type_info = TaskType::kPostedMessage},
+      {.descriptor = "F3", .type_info = TaskType::kInternalMediaRealTime},
+      {.descriptor = "F4", .type_info = TaskType::kJavascriptTimerImmediate},
+      {.descriptor = "BG1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "UV1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  // The input task will run first and change the UseCase.
+  PostTestTasks(&run_order, "PD1 D1 I1");
+
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+
+  // The main frame task will reset the UseCase and unblock the deferred queues.
+  PostTestTasks(&run_order, "CM1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+
+  switch (GetParam()) {
+    case features::TaskDeferralPolicy::kMinimalTypes:
+      EXPECT_THAT(run_order,
+                  testing::ElementsAre("PD1", "UB1", "F2", "F3", "F4", "UV1",
+                                       "D1", "CM1", "F1", "BG1", "I1"));
+      break;
+    case features::TaskDeferralPolicy::kNonUserBlockingDeferrableTypes:
+      EXPECT_THAT(run_order,
+                  testing::ElementsAre("PD1", "UB1", "F3", "D1", "CM1", "F1",
+                                       "F2", "F4", "UV1", "BG1", "I1"));
+      break;
+    case features::TaskDeferralPolicy::kAllDeferrableTypes:
+      EXPECT_THAT(run_order,
+                  testing::ElementsAre("PD1", "F3", "D1", "CM1", "UB1", "F1",
+                                       "F2", "F4", "UV1", "BG1", "I1"));
+      break;
+    case features::TaskDeferralPolicy::kNonUserBlockingTypes:
+      EXPECT_THAT(run_order,
+                  testing::ElementsAre("PD1", "UB1", "D1", "CM1", "F1", "F2",
+                                       "F3", "F4", "UV1", "BG1", "I1"));
+      break;
+    case features::TaskDeferralPolicy::kAllTypes:
+      EXPECT_THAT(run_order,
+                  testing::ElementsAre("PD1", "D1", "CM1", "UB1", "F1", "F2",
+                                       "F3", "F4", "UV1", "BG1", "I1"));
+      break;
+  }
+}
+
+TEST_P(DeferRendererTasksAfterInputTest, DynamicPriorityTaskDeferral) {
+  Vector<String> run_order;
+
+  PostTestTasks(&run_order, "PD1");
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+  EXPECT_THAT(run_order, testing::ElementsAre("PD1"));
+
+  // Post potentially deferrable tasks.
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "UV1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  web_scheduling_test_helper_
+      ->GetWebSchedulingTaskQueue(WebSchedulingQueueType::kTaskQueue,
+                                  WebSchedulingPriority::kUserBlockingPriority)
+      ->SetPriority(WebSchedulingPriority::kBackgroundPriority);
+  web_scheduling_test_helper_
+      ->GetWebSchedulingTaskQueue(WebSchedulingQueueType::kTaskQueue,
+                                  WebSchedulingPriority::kUserVisiblePriority)
+      ->SetPriority(WebSchedulingPriority::kUserBlockingPriority);
+
+  // Run whatever isn't deferrable.
+  base::RunLoop().RunUntilIdle();
+
+  // The main frame task will reset the UseCase and unblock the deferred queues.
+  PostTestTasks(&run_order, "CM1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+
+  // UB1, which is now background priority, should be deferred by every policy.
+  // UV1, which is now user-blocking priority, will should only be deferred for
+  // the all-types and all-deferrable policies.
+  switch (GetParam()) {
+    case features::TaskDeferralPolicy::kMinimalTypes:
+    case features::TaskDeferralPolicy::kNonUserBlockingDeferrableTypes:
+    case features::TaskDeferralPolicy::kNonUserBlockingTypes:
+      EXPECT_THAT(run_order, testing::ElementsAre("PD1", "UV1", "CM1", "UB1"));
+      break;
+    case features::TaskDeferralPolicy::kAllDeferrableTypes:
+    case features::TaskDeferralPolicy::kAllTypes:
+      EXPECT_THAT(run_order, testing::ElementsAre("PD1", "CM1", "UV1", "UB1"));
+      break;
+  }
+}
+
+TEST_P(DeferRendererTasksAfterInputTest, TaskDeferralTimeout) {
+  Vector<String> run_order;
+
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "F1", .type_info = TaskType::kDOMManipulation}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  PostTestTasks(&run_order, "PD1 D1");
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+  EXPECT_THAT(run_order, testing::ElementsAre("PD1", "D1"));
+
+  // Simulate reaching the discrete input deferral timeout.
+  run_order.clear();
+  test_task_runner_->FastForwardBy(base::Milliseconds(50));
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  EXPECT_THAT(run_order, testing::ElementsAre("F1"));
+}
+
+TEST_P(DeferRendererTasksAfterInputTest,
+       DiscreteInputUseCaseDependsOnFrameRequested) {
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kMouseUp),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/false);
+      }));
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kMouseUp),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/true);
+      }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kDiscreteInputResponse);
+}
+
+TEST_P(DeferRendererTasksAfterInputTest,
+       DiscreteInputUseCaseIgnoresContinuous) {
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kMouseMove),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/false);
+      }));
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CurrentUseCase(), UseCase::kNone);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeferRendererTasksAfterInputTest,
+    testing::Values(
+        features::TaskDeferralPolicy::kMinimalTypes,
+        features::TaskDeferralPolicy::kNonUserBlockingDeferrableTypes,
+        features::TaskDeferralPolicy::kNonUserBlockingTypes,
+        features::TaskDeferralPolicy::kAllDeferrableTypes,
+        features::TaskDeferralPolicy::kAllTypes),
+    [](const testing::TestParamInfo<features::TaskDeferralPolicy>& info) {
+      switch (info.param) {
+        case features::TaskDeferralPolicy::kMinimalTypes:
+          return "MinimalTypes";
+        case features::TaskDeferralPolicy::kNonUserBlockingDeferrableTypes:
+          return "NonUserBlockingDeferrableTypes";
+        case features::TaskDeferralPolicy::kNonUserBlockingTypes:
+          return "NonUserBlockingTypes";
+        case features::TaskDeferralPolicy::kAllDeferrableTypes:
+          return "AllDeferrableTypes";
+        case features::TaskDeferralPolicy::kAllTypes:
+          return "AllTypes";
+      }
+    });
 
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler

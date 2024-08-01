@@ -8,11 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/common/extension.h"
@@ -44,7 +44,7 @@ class ImageModel;
 // members (see also comments above ExtensionIsValid()).
 class ExtensionActionViewController
     : public ToolbarActionViewController,
-      public ExtensionActionIconFactory::Observer,
+      public extensions::ExtensionActionIconFactory::Observer,
       public extensions::ExtensionContextMenuModel::PopupDelegate,
       public extensions::ExtensionHostObserver {
  public:
@@ -136,7 +136,7 @@ class ExtensionActionViewController
       extensions::ExtensionRegistry* extension_registry,
       ExtensionsContainer* extensions_container);
 
-  // ExtensionActionIconFactory::Observer:
+  // extensions::ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
 
   // ExtensionHostObserver:
@@ -212,7 +212,7 @@ class ExtensionActionViewController
   // It may load the icon asynchronously (in which case the initial icon
   // returned by the factory will be transparent), so we have to observe it for
   // updates to the icon.
-  ExtensionActionIconFactory icon_factory_;
+  extensions::ExtensionActionIconFactory icon_factory_;
 
   // The associated ExtensionRegistry; cached for quick checking.
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;

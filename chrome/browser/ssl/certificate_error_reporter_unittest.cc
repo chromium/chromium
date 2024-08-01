@@ -71,8 +71,11 @@ TEST_F(ErrorReporterTest, ExtendedReportingSendReport) {
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         latest_report_uri = request.url;
-        request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                  &latest_content_type);
+        if (std::optional<std::string> header = request.headers.GetHeader(
+                net::HttpRequestHeaders::kContentType);
+            header) {
+          latest_content_type = std::move(header).value();
+        }
         latest_report = network::GetUploadData(request);
       }));
 

@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -59,9 +59,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
@@ -1932,31 +1930,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
-      TableViewItem* item = [model itemAtIndexPath:indexPath];
-
-      if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-        [self showDetailedViewPageForItem:item];
-      } else if ([self.reauthenticationModule canAttemptReauth]) {
-        void (^showPasswordDetailsHandler)(ReauthenticationResult) =
-            ^(ReauthenticationResult result) {
-              if (result == ReauthenticationResult::kFailure) {
-                return;
-              }
-
-              [self showDetailedViewPageForItem:item];
-            };
-
-        [self.reauthenticationModule
-            attemptReauthWithLocalizedReason:
-                l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_SHOW)
-                        canReusePreviousAuth:YES
-                                     handler:showPasswordDetailsHandler];
-      } else {
-        DCHECK(self.handler);
-        [self.handler showSetupPasscodeDialog];
-      }
-
+      [self showDetailedViewPageForItem:[model itemAtIndexPath:indexPath]];
       break;
     }
     case ItemTypeBlocked: {

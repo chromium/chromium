@@ -37,17 +37,7 @@ namespace {
 constexpr char kNewPasswordFieldID[] = "pw";
 constexpr char kConfirmationPasswordFieldID[] = "cpw";
 
-using base::test::ios::kWaitForActionTimeout;
 using password_manager_test_utils::DeleteCredential;
-
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSeconds()];
-}
 
 // Get the top presented view controller, in this case the bottom sheet view
 // controller.
@@ -171,7 +161,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 #pragma mark - Tests
@@ -216,7 +206,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       selectElementWithMatcher:ProactivePasswordGenerationUseKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Tests that the bottom sheet does not show after it has been
@@ -240,7 +230,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Re-enable proactive password generation bottom sheet by using the
   // suggested password from the keyboard accessory.
@@ -313,14 +303,14 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet does not show if the user isn't signed in.
 - (void)testUserSignedOut {
-  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+  [ChromeEarlGrey signOutAndClearIdentities];
 
   [self loadSignupPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 @end

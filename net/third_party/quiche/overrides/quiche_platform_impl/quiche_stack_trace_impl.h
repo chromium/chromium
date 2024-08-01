@@ -8,15 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "quiche/common/platform/api/quiche_export.h"
-#include "third_party/abseil-cpp/absl/types/span.h"
 
 namespace quiche {
 
 QUICHE_EXPORT std::vector<void*> CurrentStackTraceImpl();
 QUICHE_EXPORT std::string SymbolizeStackTraceImpl(
-    absl::Span<void* const> stacktrace);
+    base::span<const void* const> stacktrace);
 QUICHE_EXPORT std::string QuicheStackTraceImpl();
 QUICHE_EXPORT bool QuicheShouldRunStackTraceTestImpl();
 

@@ -16,7 +16,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/device_api/device_service_impl.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -84,6 +83,8 @@ constexpr char kNotAffiliatedErrorMessage[] =
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kTrustedIwaManifestFile[] = "manifest_app1.json";
+constexpr char kTrustedIwaManifestUrl[] =
+    "https://example.com/manifest_app1.json";
 constexpr char kTrustedIwaSignedWebBundle[] = "web_bundle_app.swbn";
 constexpr char kBaseUrlForUrlLoader[] = "https://example.com/";
 constexpr char kUpdateManifestValueApp[] = R"(
@@ -223,7 +224,7 @@ class DeviceAPIServiceTest {
 class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
                                    public WebAppTest {
  public:
-  explicit DeviceAPIServiceWebAppTest()
+  DeviceAPIServiceWebAppTest()
       : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {
     account_id_ = AccountId::FromUserEmail(kUserEmail);
   }
@@ -375,7 +376,6 @@ TEST_F(DeviceAPIServiceWebAppTest, ReportErrorForDefaultUser) {
 class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
  public:
   void SetUp() override {
-    web_app::IwaIdentityValidator::CreateSingleton();
     DeviceAPIServiceWebAppTest::SetUp();
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -407,9 +407,8 @@ class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
 
     web_app::PolicyGenerator policy_generator;
 
-    policy_generator.AddForceInstalledIwa(
-        get_url_info().web_bundle_id(),
-        GURL("https://example.com/manifest_app1.json"));
+    policy_generator.AddForceInstalledIwa(get_url_info().web_bundle_id(),
+                                          GURL(kTrustedIwaManifestUrl));
 
     profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                                policy_generator.Generate());
@@ -640,9 +639,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
  public:
-  DeviceAPIServiceWithKioskUserTest()
-      : fake_user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {}
+  DeviceAPIServiceWithKioskUserTest() {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+  }
 
   void SetUp() override {
     DeviceAPIServiceParamTest::SetUp();
@@ -663,14 +662,14 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
   }
 
   ash::FakeChromeUserManager* fake_user_manager() const {
-    return fake_user_manager_;
+    return fake_user_manager_.Get();
   }
 
   ash::WebKioskAppManager* app_manager() const { return app_manager_.get(); }
 
  private:
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<ash::WebKioskAppManager> app_manager_;
   base::test::ScopedCommandLine command_line_;
 };
@@ -712,10 +711,7 @@ class DeviceAPIServiceWithChromeAppKioskUserTest
  public:
   DeviceAPIServiceWithChromeAppKioskUserTest()
       : account_id_(AccountId::FromUserEmail(kUserEmail)) {
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
   void LoginChromeAppKioskUser() {
@@ -726,7 +722,7 @@ class DeviceAPIServiceWithChromeAppKioskUserTest
   const AccountId& account_id() const { return account_id_; }
 
   ash::FakeChromeUserManager* fake_user_manager() const {
-    return fake_user_manager_;
+    return fake_user_manager_.Get();
   }
 
   void TryCreatingService(
@@ -738,9 +734,9 @@ class DeviceAPIServiceWithChromeAppKioskUserTest
 
  private:
   AccountId account_id_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 // The service should be disabled if a non-PWA kiosk user is logged in.

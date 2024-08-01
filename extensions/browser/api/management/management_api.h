@@ -138,8 +138,8 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
   void CheckManifestV2Deprecation();
   void OnManifestV2DeprecationChecked(bool enable_allowed);
 
-  // Enables the extension if `response_value` is successful, and returns
-  // `response_value`.
+  // Returns `response_value`. This should be called when enable checks are
+  // finished.
   void FinishEnable(ResponseValue response_value);
 
   // Returns whether `extension_id` has any unsupported requirements.

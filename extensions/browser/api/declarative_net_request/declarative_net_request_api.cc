@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
 
+#include <functional>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <set>
@@ -37,6 +39,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -72,6 +75,34 @@ void FilterRules(std::vector<dnr_api::Rule>& rules,
   }
 }
 
+// Returns if the first action in `actions` will intercept the request (i.e.
+// block or redirect it).
+// Note: If `actions` contains more than one action, then it's guaranteed to be
+// modifyHeaders actions which do not intercept the request. See
+// DeclarativeNetRequestTestMatchOutcomeFunction::GetActions, which mirrors
+// RulesetManager::EvaluateRequestInternal for more details.
+bool IsRequestIntercepted(
+    const std::vector<declarative_net_request::RequestAction>& actions) {
+  return !actions.empty() &&
+         (actions[0].IsBlockOrCollapse() || actions[0].IsRedirectOrUpgrade());
+}
+
+// Returns the priority of the matching allow action in `actions` or 0 if none
+// exists. Note: DeclarativeNetRequestTestMatchOutcomeFunction::GetActions.
+// which is based off of RulesetManager::EvaluateRequestInternal, will return
+// either no action, a list of modifyheaders actions or a single action of any
+// other type. Based on this, only the first action of `actions` need to be
+// examined.
+uint64_t GetAllowActionPriority(
+    const std::vector<declarative_net_request::RequestAction>& actions) {
+  uint64_t max_priority = 0;
+  if (!actions.empty() && actions[0].IsAllowOrAllowAllRequests()) {
+    max_priority = actions[0].index_priority;
+  }
+
+  return max_priority;
+}
+
 }  // namespace
 
 DeclarativeNetRequestUpdateDynamicRulesFunction::
@@ -90,7 +121,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   if (params->options.remove_rule_ids)
     rule_ids_to_remove = std::move(*params->options.remove_rule_ids);
 
-  std::vector<api::declarative_net_request::Rule> rules_to_add;
+  std::vector<dnr_api::Rule> rules_to_add;
   if (params->options.add_rules)
     rules_to_add = std::move(*params->options.add_rules);
 
@@ -198,7 +229,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   if (params->options.remove_rule_ids)
     rule_ids_to_remove = std::move(*params->options.remove_rule_ids);
 
-  std::vector<api::declarative_net_request::Rule> rules_to_add;
+  std::vector<dnr_api::Rule> rules_to_add;
   if (params->options.add_rules)
     rules_to_add = std::move(*params->options.add_rules);
 
@@ -735,15 +766,28 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
   auto method = params->request.method == dnr_api::RequestMethod::kNone
                     ? dnr_api::RequestMethod::kGet
                     : params->request.method;
-  // TODO(crbug.com/40727004): Add response header support for ruleset test
-  // matching.
+
+  // If enabled, parse response headers from function args into
+  // `response_headers`.
+  // Note: If headers are not specified in function args, then
+  // `response_headers` is set to an empty header object.
+  scoped_refptr<const net::HttpResponseHeaders> response_headers = nullptr;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kDeclarativeNetRequestResponseHeaderMatching)) {
+    std::string parse_header_error;
+    response_headers =
+        ParseHeaders(params->request.response_headers, parse_header_error);
+    if (!parse_header_error.empty()) {
+      return RespondNow(Error(parse_header_error));
+    }
+
+    DCHECK(response_headers);
+  }
+
   declarative_net_request::RequestParams request_params(
-      url, initiator, params->request.type, method, tab_id,
-      /*response_headers=*/nullptr);
+      url, initiator, params->request.type, method, tab_id, response_headers);
 
   // Set up the rule matcher.
-
-  dnr_api::TestMatchOutcomeResult result;
 
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
@@ -754,8 +798,8 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
       rules_monitor_service->ruleset_manager()->GetMatcherForExtension(
           extension_id());
   if (!matcher) {
-    return RespondNow(
-        ArgumentList(dnr_api::TestMatchOutcome::Results::Create(result)));
+    return RespondNow(ArgumentList(dnr_api::TestMatchOutcome::Results::Create(
+        dnr_api::TestMatchOutcomeResult())));
   }
 
   // Determine if the extension has permission to redirect the request.
@@ -769,23 +813,163 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
               REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
           initiator, web_request_resource_type);
 
-  std::vector<declarative_net_request::RequestAction> actions =
-      GetActions(*matcher, request_params, page_access);
+  // First, match against rules which operate on the request before it would be
+  // sent.
+  std::vector<declarative_net_request::RequestAction> before_request_actions =
+      GetActions(
+          *matcher, request_params,
+          declarative_net_request::RulesetMatchingStage::kOnBeforeRequest,
+          page_access);
+
+  // Stop here if response headers should not be matched or the request is
+  // intercepted before it is sent.
+  if (!response_headers || IsRequestIntercepted(before_request_actions)) {
+    return RespondNow(
+        ArgumentList(CreateMatchedRulesFromActions(before_request_actions)));
+  }
+
+  DCHECK(response_headers);
+
+  // Match against rules which match with response headers.
+  std::vector<declarative_net_request::RequestAction> headers_received_actions =
+      GetActions(
+          *matcher, request_params,
+          declarative_net_request::RulesetMatchingStage::kOnHeadersReceived,
+          page_access);
+
+  // Same as in production, erase any actions from `before_request_actions` with
+  // lower priority than the max allow priority from `headers_received_actions`.
+  // Note that `request_params.max_priority_allow_action` means that reusing
+  // `request_params` when calling `GetActions` for kOnHeadersReceived will only
+  // return actions with a higher priority than the max allow priority from
+  // kOnBeforeRequest.
+  uint64_t headers_received_allow_priority =
+      GetAllowActionPriority(headers_received_actions);
+  std::erase_if(before_request_actions,
+                [headers_received_allow_priority](
+                    const declarative_net_request::RequestAction& action) {
+                  return action.index_priority <
+                         headers_received_allow_priority;
+                });
+
+  // At this point, the set of matching request actions for the test request
+  // would be {before_request_actions, headers_received_actions}. If one list of
+  // actions is empty (which means no actions were applied onto the request from
+  // that request phase), return the other.
+  if (before_request_actions.empty() ||
+      IsRequestIntercepted(headers_received_actions)) {
+    return RespondNow(
+        ArgumentList(CreateMatchedRulesFromActions(headers_received_actions)));
+  }
+  if (headers_received_actions.empty()) {
+    return RespondNow(
+        ArgumentList(CreateMatchedRulesFromActions(before_request_actions)));
+  }
+
+  // At this point, if both lists are non-empty, then either:
+  // - both lists contain the same max priority allow action matched in
+  //   OnBeforeRequest. Return either list.
+  // - one list contains an allow action, and the other contains modify header
+  //   actions. In this case, return the list with modify header actions. This
+  //   mimics the logic in CompositeMatcher::GetModifyHeadersActions where only
+  //   modify header actions above the max allow rule's priority are returned.
+  // - both lists contain modify header actions. In this case, merge them and
+  //   sort in descending order of priority. The merging is done since each
+  //   action is relevant to the request and shouldn't be ignored, and the
+  //   sorting reflects CompositeMatcher::GetModifyHeadersActions which returns
+  //   a list of actions in sorted order.
+  DCHECK(!before_request_actions.empty());
+  DCHECK(!headers_received_actions.empty());
+  if (before_request_actions[0].IsAllowOrAllowAllRequests()) {
+    return RespondNow(
+        ArgumentList(CreateMatchedRulesFromActions(headers_received_actions)));
+  }
+  if (headers_received_actions[0].IsAllowOrAllowAllRequests()) {
+    return RespondNow(
+        ArgumentList(CreateMatchedRulesFromActions(before_request_actions)));
+  }
+
+  std::vector<declarative_net_request::RequestAction> merged_actions;
+  merged_actions.reserve(before_request_actions.size() +
+                         headers_received_actions.size());
+  merged_actions.insert(merged_actions.end(),
+                        std::make_move_iterator(before_request_actions.begin()),
+                        std::make_move_iterator(before_request_actions.end()));
+  merged_actions.insert(
+      merged_actions.end(),
+      std::make_move_iterator(headers_received_actions.begin()),
+      std::make_move_iterator(headers_received_actions.end()));
+  std::sort(merged_actions.begin(), merged_actions.end(), std::greater<>());
+
+  return RespondNow(
+      ArgumentList(CreateMatchedRulesFromActions(merged_actions)));
+}
+
+scoped_refptr<const net::HttpResponseHeaders>
+DeclarativeNetRequestTestMatchOutcomeFunction::ParseHeaders(
+    std::optional<TestResponseHeaders>& test_headers,
+    std::string& error) const {
+  net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200");
+
+  if (test_headers.has_value()) {
+    for (const auto [header, values] : test_headers->additional_properties) {
+      if (!net::HttpUtil::IsValidHeaderName(header)) {
+        error = ErrorUtils::FormatErrorMessage(
+            declarative_net_request::kInvalidResponseHeaderNameError, header);
+        return nullptr;
+      }
+
+      // Header values must be specified as a list.
+      if (!values.is_list()) {
+        error = ErrorUtils::FormatErrorMessage(
+            declarative_net_request::kInvalidResponseHeaderObjectError, header);
+        return nullptr;
+      }
+
+      // Assume an empty string as a header value if an empty list is specified.
+      if (values.GetList().empty()) {
+        builder.AddHeader(header, "");
+        continue;
+      }
+      for (const auto& value : values.GetList()) {
+        // Check that header values are valid strings.
+        if (!value.is_string() ||
+            !net::HttpUtil::IsValidHeaderName(value.GetString())) {
+          error = ErrorUtils::FormatErrorMessage(
+              declarative_net_request::kInvalidResponseHeaderValueError,
+              header);
+          return nullptr;
+        }
+        builder.AddHeader(header, value.GetString());
+      }
+    }
+  }
+
+  return builder.Build();
+}
+
+base::Value::List
+DeclarativeNetRequestTestMatchOutcomeFunction::CreateMatchedRulesFromActions(
+    const std::vector<declarative_net_request::RequestAction>& actions) const {
+  dnr_api::TestMatchOutcomeResult result;
+  std::vector<dnr_api::MatchedRule> matched_rules;
+
   for (auto& action : actions) {
     dnr_api::MatchedRule match;
     match.rule_id = action.rule_id;
     match.ruleset_id = GetPublicRulesetID(*extension(), action.ruleset_id);
-    result.matched_rules.push_back(std::move(match));
+    matched_rules.push_back(std::move(match));
   }
 
-  return RespondNow(
-      ArgumentList(dnr_api::TestMatchOutcome::Results::Create(result)));
+  result.matched_rules = std::move(matched_rules);
+  return dnr_api::TestMatchOutcome::Results::Create(result);
 }
 
 std::vector<declarative_net_request::RequestAction>
 DeclarativeNetRequestTestMatchOutcomeFunction::GetActions(
     const declarative_net_request::CompositeMatcher& matcher,
     const declarative_net_request::RequestParams& params,
+    declarative_net_request::RulesetMatchingStage stage,
     PermissionsData::PageAccess page_access) const {
   // TODO(crbug.com/343503170): The logic here is very similar to that of
   // `RulesetManager::EvaluateRequestInternal` except this is for a single
@@ -797,12 +981,7 @@ DeclarativeNetRequestTestMatchOutcomeFunction::GetActions(
   std::vector<RequestAction> actions;
 
   std::optional<RequestAction> action =
-      matcher
-          .GetAction(
-              params,
-              declarative_net_request::RulesetMatchingStage::kOnBeforeRequest,
-              page_access)
-          .action;
+      matcher.GetAction(params, stage, page_access).action;
 
   if (action) {
     bool is_request_modifying_action = !action->IsAllowOrAllowAllRequests();
@@ -814,9 +993,7 @@ DeclarativeNetRequestTestMatchOutcomeFunction::GetActions(
   }
 
   std::vector<RequestAction> modify_headers_actions =
-      matcher.GetModifyHeadersActions(
-          params,
-          declarative_net_request::RulesetMatchingStage::kOnBeforeRequest);
+      matcher.GetModifyHeadersActions(params, stage);
 
   if (!modify_headers_actions.empty()) {
     return modify_headers_actions;

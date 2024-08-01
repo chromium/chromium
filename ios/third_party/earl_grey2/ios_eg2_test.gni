@@ -58,14 +58,6 @@ template("ios_eg2_test_app_host") {
     if (xcode_version_int >= 1430) {
       extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
     }
-
-    if (!defined(ldflags)) {
-      ldflags = []
-    }
-    ldflags += [
-      "-Wl,-rpath,@executable_path/Frameworks",
-      "-Wl,-rpath,@loader_path/Frameworks",
-    ]
   }
 }
 

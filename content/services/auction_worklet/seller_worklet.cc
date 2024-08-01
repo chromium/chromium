@@ -2027,6 +2027,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
                      weak_ptr_factory_.GetWeakPtr(), task));
 
   int thread_index = get_next_thread_index_callback_.Run();
+  task->score_ad_start_time = base::TimeTicks::Now();
   task->task_id = cancelable_task_tracker_.PostTask(
       v8_runners_[thread_index].get(), FROM_HERE,
       base::BindOnce(
@@ -2093,7 +2094,10 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
           /*direct_from_seller_signals_latency=*/
           NullOptIfZero(task->wait_direct_from_seller_signals),
           /*trusted_scoring_signals_latency=*/
-          NullOptIfZero(task->wait_trusted_signals)),
+          NullOptIfZero(task->wait_trusted_signals),
+          /*deps_wait_start_time=*/task->trace_wait_deps_start,
+          /*score_ad_start_time=*/task->score_ad_start_time,
+          /*score_ad_finish_time=*/base::TimeTicks::Now()),
       std::move(errors));
   score_ad_tasks_.erase(task);
 }

@@ -1331,6 +1331,15 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECT_GESTURE_SUBTITLE" desc="Subtitle for dialog page to select a gesture for a given action in the action settings.">
     Selecting an already assigned gesture will remove it from its original action
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_TITLE" desc="Title for dialog page to set the confidence threshold for a gesture.">
+    Gesture setting: <ph name="SELECTED_GESTURE">$1<ex>Eyes blink</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_SUBTITLE" desc="Subtitle for dialog page to set the confidence threshold for a gesture.">
+    Adjust the detection threshold so that you can comfortably trigger the gesture
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL" desc="Label for knob on slider indicating the confidence threshold for detecting a gesture.">
+    Detection threshold
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME" desc="The name of a section in settings for controlling the cursor speed.">
     Speed
   </message>
@@ -5180,7 +5189,7 @@ Press an assigned switch or key to remove assignment.
     Stream your phone's apps
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to grant permissions, they need to have their phone unlocked, close by, and with Bluetooth/Wi-Fi on to complete setup.">
-    Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on
+    Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when the user needs to follow the setup flow instructions on their phone.">
     Finish setting up on your phone
@@ -5192,10 +5201,10 @@ Press an assigned switch or key to remove assignment.
     Can't establish connection
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that the device is unable to establish a connection to the phone.">
-    Something went wrong. Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on.
+    Something went wrong. Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow when the device loses its connection to the phone.">
-    Can't maintain a connection with your phone. Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on.
+    Can't maintain a connection with your phone. Make sure your phone is nearby, unlocked, and Bluetooth and Wi-Fi are turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow when the phone's account notification streaming is prohibited.">
     Can't use this account
@@ -5762,13 +5771,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE" desc="In Device Settings > Displays, the label for the display arrangement section.">
     Arrangement
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_BRIGHTNESS_LABEL" desc="In Device Settings > Displays, the label for setting the screen brightness of the selected display." translateable="false">
+  <message name="IDS_SETTINGS_DISPLAY_BRIGHTNESS_LABEL" desc="In Device Settings > Displays, the label for setting the screen brightness of the selected display.">
     Display brightness
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_LABEL" desc="In Device Settings > Displays, the label for toggling automatic display brightness for the selected display." translateable="false">
+  <message name="IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_LABEL" desc="In Device Settings > Displays, the label for toggling automatic display brightness for the selected display.">
     Automatically adjust display brightness
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_SUBTITLE" desc="In Device Settings > Displays, the subtitle under the label for toggling automatic display brightness for the selected display." translateable="false">
+  <message name="IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_SUBTITLE" desc="In Device Settings > Displays, the subtitle under the label for toggling automatic display brightness for the selected display.">
     Adjust brightness based on your environment
   </message>
   <message name="IDS_SETTINGS_DISPLAY_MIRROR" desc="In Device Settings > Displays, the label for the control for mirroring.">
@@ -6261,21 +6270,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS" desc="In Device Settings, the checkbox label for interpreting the top-row keys as function keys instead.">
     Treat top-row keys as function keys
   </message>
-  <!-- TODO(b/329861823) Finalize and translate these strings -->
-  <message name="IDS_SETTINGS_KEYBOARD_COLORS" translateable="false" desc="In Device Settings, the direct link from Keyboard Settings to Personalization Hub's RGB keyboard control">
-    Keyboard Colors
+  <message name="IDS_SETTINGS_KEYBOARD_COLORS" desc="In Device Settings, the direct link from Keyboard Settings to Personalization Hub's RGB keyboard control">
+    Keyboard backlight colors
   </message>
-  <!-- TODO(b/329861823) Finalize and translate these strings -->
-  <message name="IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL" translateable="false" desc="The label for setting the keyboard brightness.">
-    Keyboard brightness
+  <message name="IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL" desc="The label for setting the keyboard brightness.">
+    Keyboard backlight brightness
   </message>
-  <!-- TODO(b/329861823) Finalize and translate these strings -->
-  <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_LABEL" translateable="false" desc="The label for setting the keyboard auto brightness enabled.">
-    Automatically adjust brightness
+  <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_LABEL" desc="The label for setting the keyboard auto brightness enabled.">
+    Automatically adjust keyboard backlight brightness
   </message>
-  <!-- TODO(b/329861823) Finalize and translate these strings -->
-  <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_SUB_LABEL" translateable="false" desc="The sub-label for setting the keyboard auto brightness enabled.">
-    Adjust keyboard backlight based on surrounding light levels
+  <message name="IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_SUB_LABEL" desc="The sub-label for setting the keyboard auto brightness enabled.">
+    Adjust brightness based on your environment
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
     Press and hold to automatically repeat the key

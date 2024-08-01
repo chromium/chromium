@@ -459,11 +459,7 @@ int UDPSocketPosix::SetDoNotFragment() {
 #if !defined(IP_PMTUDISC_DO) && !BUILDFLAG(IS_MAC)
   return ERR_NOT_IMPLEMENTED;
 
-// setsockopt(IP_DONTFRAG) is supported on macOS from Big Sur
 #elif BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() < 11) {
-    return ERR_NOT_IMPLEMENTED;
-  }
   int val = 1;
   if (addr_family_ == AF_INET6) {
     int rv =
@@ -509,7 +505,11 @@ int UDPSocketPosix::SetRecvTos() {
         0) {
       return MapSystemError(errno);
     }
-
+#if BUILDFLAG(IS_APPLE)
+    // Linux requires dual-stack sockets to have the sockopt set on both levels.
+    // Apple does not, and in fact returns an error if it is.
+    return OK;
+#else
     int v6_only = false;
     socklen_t v6_only_len = sizeof(v6_only);
     if (getsockopt(socket_, IPPROTO_IPV6, IPV6_V6ONLY, &v6_only,
@@ -519,6 +519,7 @@ int UDPSocketPosix::SetRecvTos() {
     if (v6_only) {
       return OK;
     }
+#endif  // BUILDFLAG(IS_APPLE)
   }
 
   int rv = setsockopt(socket_, IPPROTO_IP, IP_RECVTOS, &ecn, sizeof(ecn));

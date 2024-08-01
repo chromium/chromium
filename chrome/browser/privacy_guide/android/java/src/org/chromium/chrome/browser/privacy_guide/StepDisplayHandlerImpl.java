@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_guide;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -21,9 +22,11 @@ import org.chromium.components.sync.UserSelectableType;
 /** Computes for each privacy guide step whether it should be displayed or not. */
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     private final Profile mProfile;
+    private PrivacySandboxBridge mPrivacySandboxBridge;
 
     StepDisplayHandlerImpl(Profile profile) {
         mProfile = profile;
+        mPrivacySandboxBridge = new PrivacySandboxBridge(mProfile);
     }
 
     @Override
@@ -81,6 +84,7 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
     @Override
     public boolean shouldDisplayAdTopics() {
         return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS);
+                        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS)
+                && mPrivacySandboxBridge.isConsentCountry();
     }
 }

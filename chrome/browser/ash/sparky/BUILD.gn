@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 static_library("sparky") {
   sources = [
+    "keyboard_util.cc",
+    "keyboard_util.h",
     "sparky_delegate_impl.cc",
     "sparky_delegate_impl.h",
     "sparky_manager_impl.cc",
@@ -15,6 +17,8 @@ static_library("sparky") {
     "sparky_manager_service_factory.cc",
     "sparky_manager_service_factory.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",
@@ -34,8 +38,13 @@ static_library("sparky") {
     "//components/manta",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",
+    "//ui/aura",
+    "//ui/display",
     "//ui/display/types",
     "//ui/events:event_constants",
+    "//ui/events:events_base",
+    "//ui/gfx/geometry",
+    "//ui/wm",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
@@ -53,6 +62,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/spaced:spaced",
+    "//chromeos/ash/components/disks:test_support",
     "//components/manta",
     "//components/prefs",
     "//content/test:test_support",

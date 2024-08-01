@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -63,7 +62,7 @@ public class CardPreference extends TextMessagePreference {
         mCloseIcon.setOnClickListener(mOnCloseClickListener);
 
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
-        ApiCompatibilityUtils.setTextAppearance(titleView, R.style.TextAppearance_Headline2Thick);
+        titleView.setTextAppearance(R.style.TextAppearance_Headline2Thick);
     }
 
     /**

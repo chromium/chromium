@@ -50,7 +50,7 @@ class LengthUtilsTest : public testing::Test {
       ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300)) {
     return ::blink::ResolveMainInlineLength(
         constraint_space, *initial_style_, /* border_padding */ BoxStrut(),
-        [&](MinMaxSizesType) -> MinMaxSizesResult {
+        [&](SizeType) -> MinMaxSizesResult {
           return {*sizes, /* depends_on_block_constraints */ false};
         },
         length, /* auto_length */ nullptr);
@@ -62,7 +62,7 @@ class LengthUtilsTest : public testing::Test {
       ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300)) {
     return ::blink::ResolveMinInlineLength(
         constraint_space, *initial_style_, /* border_padding */ BoxStrut(),
-        [&](MinMaxSizesType) -> MinMaxSizesResult {
+        [&](SizeType) -> MinMaxSizesResult {
           return {*sizes, /* depends_on_block_constraints */ false};
         },
         length);
@@ -74,7 +74,7 @@ class LengthUtilsTest : public testing::Test {
       ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300)) {
     return ::blink::ResolveMaxInlineLength(
         constraint_space, *initial_style_, /* border_padding */ BoxStrut(),
-        [&](MinMaxSizesType) -> MinMaxSizesResult {
+        [&](SizeType) -> MinMaxSizesResult {
           return {*sizes, /* depends_on_block_constraints */ false};
         },
         length);
@@ -110,11 +110,10 @@ class LengthUtilsTestWithNode : public RenderingTest {
       ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300),
       LayoutUnit content_size = LayoutUnit(),
       LayoutUnit inline_size = kIndefiniteSize) {
-    const auto& style = node.Style();
     BoxStrut border_padding = ComputeBorders(constraint_space, node) +
-                              ComputePadding(constraint_space, style);
+                              ComputePadding(constraint_space, node.Style());
     return ::blink::ComputeBlockSizeForFragment(
-        constraint_space, style, border_padding, content_size, inline_size);
+        constraint_space, node, border_padding, content_size, inline_size);
   }
 };
 

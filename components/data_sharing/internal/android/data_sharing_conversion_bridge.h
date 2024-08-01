@@ -24,6 +24,11 @@ class DataSharingConversionBridge {
       JNIEnv* env,
       const GroupMember& member);
 
+  // Creates an object of org.chromium.components.data_sharing.GroupToken.
+  static ScopedJavaLocalRef<jobject> CreateJavaGroupToken(
+      JNIEnv* env,
+      const GroupToken& token);
+
   // Creates an object of org.chromium.components.data_sharing.GroupData.
   static ScopedJavaLocalRef<jobject> CreateJavaGroupData(
       JNIEnv* env,
@@ -48,6 +53,12 @@ class DataSharingConversionBridge {
   // support primitive type int.
   static ScopedJavaLocalRef<jobject> CreatePeopleGroupActionOutcome(JNIEnv* env,
                                                                     int value);
+
+  // Creates an object of
+  // org.chromium.components.data_sharing.DataSharingService.ParseURLResult.
+  static ScopedJavaLocalRef<jobject> CreateParseURLResult(
+      JNIEnv* env,
+      const DataSharingService::ParseURLResult& data);
 };
 
 }  // namespace data_sharing

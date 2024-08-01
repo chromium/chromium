@@ -78,8 +78,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   const base::WritableSharedMemoryMapping shmem =
       reader.TakeSharedMemoryRegion().Map();
   ASSERT_TRUE(shmem.IsValid());
-  auto* const buffer =
-      reinterpret_cast<media::AudioOutputBuffer*>(shmem.memory());
+  auto* const buffer = shmem.GetMemoryAs<media::AudioOutputBuffer>();
   ASSERT_TRUE(buffer);
   reader.RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
 
@@ -158,7 +157,7 @@ class SyncReaderTest : public ::testing::Test {
     reader_->set_max_wait_timeout_for_test(base::Milliseconds(999));
     shmem_ = reader_->TakeSharedMemoryRegion().Map();
     CHECK(shmem_.IsValid());
-    buffer_ = reinterpret_cast<media::AudioOutputBuffer*>(shmem_.memory());
+    buffer_ = shmem_.GetMemoryAs<media::AudioOutputBuffer>();
     CHECK(buffer_);
   }
 

@@ -93,7 +93,7 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
       horizontal ? IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_HORIZONTAL
                  : IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_VERTICAL));
   TooltipTextChanged();
-  SetAccessibleRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
 
   views::FocusRing::Install(this);
 }

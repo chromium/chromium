@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/multipart_parser.h"
 
 #include <algorithm>
@@ -57,21 +52,19 @@ MultipartParser::MultipartParser(Vector<char> boundary, Client* client)
   matcher_ = DelimiterMatcher(kDashBoundaryOffset);
 }
 
-bool MultipartParser::AppendData(const char* bytes, size_t size) {
+bool MultipartParser::AppendData(base::span<const char> bytes) {
   DCHECK_NE(State::kFinished, state_);
   DCHECK_NE(State::kCancelled, state_);
 
-  const char* const bytes_end = bytes + size;
-
-  while (bytes < bytes_end) {
+  while (!bytes.empty()) {
     switch (state_) {
       case State::kParsingPreamble:
         // Parse either a preamble and a delimiter or a dash boundary.
-        ParseDelimiter(&bytes, bytes_end);
-        if (!matcher_.IsMatchComplete() && bytes < bytes_end) {
+        ParseDelimiter(bytes);
+        if (!matcher_.IsMatchComplete() && !bytes.empty()) {
           // Parse a preamble data (by ignoring it) and then a delimiter.
           matcher_.SetNumMatchedBytes(0u);
-          ParseDataAndDelimiter(&bytes, bytes_end);
+          ParseDataAndDelimiter(bytes);
         }
         if (matcher_.IsMatchComplete()) {
           // Prepare for a delimiter suffix.
@@ -84,11 +77,14 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
         // Parse transport padding and "\r\n" after a delimiter.
         // This state can be reached after either a preamble or part
         // octets are parsed.
-        if (matcher_.NumMatchedBytes() == 0u)
-          ParseTransportPadding(&bytes, bytes_end);
-        while (bytes < bytes_end) {
-          if (!matcher_.Match(*bytes++))
+        if (matcher_.NumMatchedBytes() == 0u) {
+          ParseTransportPadding(bytes);
+        }
+        while (!bytes.empty()) {
+          if (!matcher_.Match(bytes.front())) {
             return false;
+          }
+          bytes = bytes.subspan(1u);
           if (matcher_.IsMatchComplete()) {
             // Prepare for part header fields.
             state_ = State::kParsingPartHeaderFields;
@@ -103,7 +99,7 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
         // This state can be reached after a delimiter and a delimiter
         // suffix after either a preamble or part octets are parsed.
         HTTPHeaderMap header_fields;
-        if (ParseHeaderFields(&bytes, bytes_end, &header_fields)) {
+        if (ParseHeaderFields(bytes, &header_fields)) {
           // Prepare for part octets.
           matcher_ = DelimiterMatcher();
           state_ = State::kParsingPartOctets;
@@ -117,29 +113,29 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
         // This state can be reached only after part header fields are
         // parsed.
         const size_t num_initially_matched_bytes = matcher_.NumMatchedBytes();
-        const char* octets_begin = bytes;
-        ParseDelimiter(&bytes, bytes_end);
-        if (!matcher_.IsMatchComplete() && bytes < bytes_end) {
+        auto bytes_before = bytes;
+        ParseDelimiter(bytes);
+        if (!matcher_.IsMatchComplete() && !bytes.empty()) {
           if (matcher_.NumMatchedBytes() >= num_initially_matched_bytes &&
               num_initially_matched_bytes > 0u) {
             // Since the matched bytes did not form a complete
             // delimiter, the matched bytes turned out to be octet
             // bytes instead of being delimiter bytes. Additionally,
             // some of the matched bytes are from the previous call and
-            // are therefore not in the range [octetsBegin, bytesEnd[.
-            auto matched_data = matcher_.MatchedData();
-            client_->PartDataInMultipartReceived(matched_data.data(),
-                                                 matched_data.size());
+            // are therefore not in the `bytes_before` span.
+            client_->PartDataInMultipartReceived(matcher_.MatchedData());
             if (state_ != State::kParsingPartOctets)
               break;
-            octets_begin = bytes;
+            bytes_before = bytes;
           }
           matcher_.SetNumMatchedBytes(0u);
-          ParseDataAndDelimiter(&bytes, bytes_end);
-          const char* const octets_end = bytes - matcher_.NumMatchedBytes();
-          if (octets_begin < octets_end) {
-            client_->PartDataInMultipartReceived(
-                octets_begin, static_cast<size_t>(octets_end - octets_begin));
+          ParseDataAndDelimiter(bytes);
+
+          const size_t skipped_size = bytes_before.size() - bytes.size();
+          if (skipped_size > matcher_.NumMatchedBytes()) {
+            size_t payload_size = skipped_size - matcher_.NumMatchedBytes();
+            auto payload = bytes_before.first(payload_size);
+            client_->PartDataInMultipartReceived(payload);
             if (state_ != State::kParsingPartOctets)
               break;
           }
@@ -155,7 +151,7 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
         // Determine whether this is a delimiter suffix or a close
         // delimiter suffix.
         // This state can be reached only after part octets are parsed.
-        if (*bytes == '-') {
+        if (bytes.front() == '-') {
           // Prepare for a close delimiter suffix.
           matcher_ = CloseDelimiterSuffixMatcher();
           state_ = State::kParsingCloseDelimiterSuffix;
@@ -171,12 +167,16 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
         // (a delimiter and "--" constitute a close delimiter).
         // This state can be reached only after part octets are parsed.
         for (;;) {
-          if (matcher_.NumMatchedBytes() == 2u)
-            ParseTransportPadding(&bytes, bytes_end);
-          if (bytes >= bytes_end)
+          if (matcher_.NumMatchedBytes() == 2u) {
+            ParseTransportPadding(bytes);
+          }
+          if (bytes.empty()) {
             break;
-          if (!matcher_.Match(*bytes++))
+          }
+          if (!matcher_.Match(bytes.front())) {
             return false;
+          }
+          bytes = bytes.subspan(1u);
           if (matcher_.IsMatchComplete()) {
             // Prepare for an epilogue.
             state_ = State::kParsingEpilogue;
@@ -198,8 +198,7 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
     }
   }
 
-  DCHECK_EQ(bytes_end, bytes);
-
+  DCHECK(bytes.empty());
   return true;
 }
 
@@ -220,9 +219,7 @@ bool MultipartParser::Finish() {
         // Since the matched bytes did not form a complete delimiter,
         // the matched bytes turned out to be octet bytes instead of being
         // delimiter bytes.
-        auto matched_data = matcher_.MatchedData();
-        client_->PartDataInMultipartReceived(matched_data.data(),
-                                             matched_data.size());
+        client_->PartDataInMultipartReceived(matcher_.MatchedData());
       }
       return false;
     case State::kParsingCloseDelimiterSuffix:
@@ -249,27 +246,25 @@ MultipartParser::Matcher MultipartParser::DelimiterSuffixMatcher() const {
   return Matcher(base::span_from_cstring(kDelimiterSuffix), 0u);
 }
 
-void MultipartParser::ParseDataAndDelimiter(const char** bytes_pointer,
-                                            const char* bytes_end) {
+void MultipartParser::ParseDataAndDelimiter(base::span<const char>& bytes) {
   DCHECK_EQ(0u, matcher_.NumMatchedBytes());
 
   // Search for a complete delimiter within the bytes.
-  const char* delimiter_begin = std::search(
-      *bytes_pointer, bytes_end, delimiter_.begin(), delimiter_.end());
-  if (delimiter_begin != bytes_end) {
+  auto delimiter_begin = base::ranges::search(bytes, delimiter_);
+  if (delimiter_begin != bytes.end()) {
     // A complete delimiter was found. The bytes before that are octet
     // bytes.
-    const bool matched =
-        matcher_.Match(base::span(delimiter_begin, delimiter_.size()));
+    auto delimiter_and_rest =
+        bytes.subspan(std::distance(bytes.begin(), delimiter_begin));
+    auto [delimiter, rest] = delimiter_and_rest.split_at(delimiter_.size());
+    const bool matched = matcher_.Match(delimiter);
     DCHECK(matched);
     DCHECK(matcher_.IsMatchComplete());
-    *bytes_pointer = delimiter_begin + delimiter_.size();
+    bytes = rest;
   } else {
     // Search for a partial delimiter in the end of the bytes.
-    const size_t size = static_cast<size_t>(bytes_end - *bytes_pointer);
-    auto remaining_bytes = base::span(*bytes_pointer, size);
-    auto maybe_delimiter_span = remaining_bytes.last(std::min(
-        static_cast<size_t>(delimiter_.size() - 1u), remaining_bytes.size()));
+    auto maybe_delimiter_span = bytes.last(
+        std::min(static_cast<size_t>(delimiter_.size() - 1u), bytes.size()));
     while (!maybe_delimiter_span.empty()) {
       if (matcher_.Match(maybe_delimiter_span)) {
         break;
@@ -283,58 +278,66 @@ void MultipartParser::ParseDataAndDelimiter(const char** bytes_pointer,
     // If a partial delimiter was not found in the end of bytes, all bytes
     // are definitely octets bytes.
     // In all cases, all bytes are parsed now.
-    *bytes_pointer = bytes_end;
+    bytes = {};
   }
 
-  DCHECK(matcher_.IsMatchComplete() || *bytes_pointer == bytes_end);
+  DCHECK(matcher_.IsMatchComplete() || bytes.empty());
 }
 
-void MultipartParser::ParseDelimiter(const char** bytes_pointer,
-                                     const char* bytes_end) {
+void MultipartParser::ParseDelimiter(base::span<const char>& bytes) {
   DCHECK(!matcher_.IsMatchComplete());
-  while (*bytes_pointer < bytes_end && matcher_.Match(*(*bytes_pointer))) {
-    ++(*bytes_pointer);
+  size_t matched = 0;
+  while (matched < bytes.size() && matcher_.Match(bytes[matched])) {
+    ++matched;
     if (matcher_.IsMatchComplete())
       break;
   }
+  bytes = bytes.subspan(matched);
 }
 
-bool MultipartParser::ParseHeaderFields(const char** bytes_pointer,
-                                        const char* bytes_end,
+bool MultipartParser::ParseHeaderFields(base::span<const char>& bytes,
                                         HTTPHeaderMap* header_fields) {
   // Combine the current bytes with buffered header bytes if needed.
-  const char* header_bytes = *bytes_pointer;
-  if ((bytes_end - *bytes_pointer) > std::numeric_limits<wtf_size_t>::max())
+  if (bytes.size() > std::numeric_limits<wtf_size_t>::max()) {
     return false;
+  }
 
-  wtf_size_t header_size = static_cast<wtf_size_t>(bytes_end - *bytes_pointer);
+  auto header_bytes = bytes;
   if (!buffered_header_bytes_.empty()) {
-    buffered_header_bytes_.Append(header_bytes, header_size);
-    header_bytes = buffered_header_bytes_.data();
-    header_size = buffered_header_bytes_.size();
+    buffered_header_bytes_.Append(
+        header_bytes.data(),
+        base::checked_cast<wtf_size_t>(header_bytes.size()));
+    header_bytes = buffered_header_bytes_;
   }
 
   wtf_size_t end = 0u;
-  if (!ParseMultipartFormHeadersFromBody(header_bytes, header_size,
-                                         header_fields, &end)) {
+  if (!ParseMultipartFormHeadersFromBody(
+          header_bytes.data(),
+          base::checked_cast<wtf_size_t>(header_bytes.size()), header_fields,
+          &end)) {
     // Store the current header bytes for the next call unless that has
     // already been done.
-    if (buffered_header_bytes_.empty())
-      buffered_header_bytes_.Append(header_bytes, header_size);
-    *bytes_pointer = bytes_end;
+    if (buffered_header_bytes_.empty()) {
+      buffered_header_bytes_.Append(
+          header_bytes.data(),
+          base::checked_cast<wtf_size_t>(header_bytes.size()));
+    }
+    bytes = {};
     return false;
   }
   buffered_header_bytes_.clear();
-  *bytes_pointer = bytes_end - (header_size - end);
-
+  bytes = bytes.last(header_bytes.size() - end);
   return true;
 }
 
-void MultipartParser::ParseTransportPadding(const char** bytes_pointer,
-                                            const char* bytes_end) const {
-  while (*bytes_pointer < bytes_end &&
-         (*(*bytes_pointer) == '\t' || *(*bytes_pointer) == ' '))
-    ++(*bytes_pointer);
+void MultipartParser::ParseTransportPadding(
+    base::span<const char>& bytes) const {
+  size_t matched = 0;
+  while (matched < bytes.size() &&
+         (bytes[matched] == '\t' || bytes[matched] == ' ')) {
+    ++matched;
+  }
+  bytes = bytes.subspan(matched);
 }
 
 void MultipartParser::Trace(Visitor* visitor) const {

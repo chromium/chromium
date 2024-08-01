@@ -56,7 +56,7 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
       break;
     case BirchItemType::kFile:
       items.push_back(std::make_unique<BirchFileItem>(
-          /*file_path=*/base::FilePath("test path"),
+          /*file_path=*/base::FilePath("test path"), /*title=*/std::nullopt,
           /*justification=*/u"suggestion",
           /*timestamp=*/base::Time(),
           /*file_id=*/"file_id_0",
@@ -89,6 +89,7 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*url=*/kTestURL,
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
           /*backup_icon=*/kTestIcon,
+          /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing()));
       break;
     case BirchItemType::kMostVisited:
@@ -110,12 +111,14 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*media_title=*/u"lost media",
           /*is_video_conference_tab=*/true,
           /*backup_icon=*/kTestIcon,
+          /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
           /*activation_callback=*/base::DoNothing()));
       items.push_back(std::make_unique<BirchLostMediaItem>(
           /*source_url=*/kTestURL,
           /*media_title=*/u"lost media",
           /*is_video_conference_tab=*/false,
-          /**backup_icon=*/kTestIcon,
+          /*backup_icon=*/kTestIcon,
+          /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing()));
       break;
     case BirchItemType::kTest:
@@ -203,7 +206,7 @@ TEST_P(BirchBarPixelTest, DISABLED_VerifyBirchChips) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      param.name, /*revision_number=*/0, birch_bar_view));
+      param.name, /*revision_number=*/1, birch_bar_view));
 
   // Manually shut down chips of birch bar to avoid dangling ptrs of the fake
   // birch items.

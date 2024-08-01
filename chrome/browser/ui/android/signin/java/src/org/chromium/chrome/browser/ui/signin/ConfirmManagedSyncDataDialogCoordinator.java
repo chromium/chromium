@@ -24,10 +24,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class ConfirmManagedSyncDataDialogCoordinator {
     /**
-     * A listener to allow the Dialog to report on the action taken. Either
-     * {@link Listener#onConfirm} or {@link Listener#onCancel} will be called once.
+     * A listener to allow the Dialog to report on the action taken. Either {@link
+     * Listener#onConfirm} or {@link Listener#onCancel} will be called once.
      */
-    interface Listener {
+    public interface Listener {
         /** The user has accepted the dialog. */
         void onConfirm();
 

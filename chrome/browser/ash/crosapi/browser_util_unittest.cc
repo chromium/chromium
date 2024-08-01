@@ -126,6 +126,7 @@ class BrowserUtilTest : public testing::Test {
       fake_user_manager_;
 };
 
+// TODO(b/354842935): Remove this test when removing `features::kLacrosOnly`.
 TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
   const user_manager::User* const user = AddRegularUser("user@test.com");
   ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
@@ -177,9 +178,9 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
 
   // Lacros is enabled only after profile migration for LacrosOnly mode.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
 
     EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
         user,
@@ -227,16 +228,14 @@ TEST_F(BrowserUtilTest, LacrosEnabled) {
 
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacros) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   const user_manager::User* const user =
       AddRegularUser("user@managedchrome.com");
   ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
@@ -298,9 +297,9 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
 
   // Lacros is allowed and enabled by flag.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        ash::standalone_browser::features::kLacrosOnly);
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kUserChoice);
 
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
@@ -348,10 +347,8 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
       ash::standalone_browser::migrator_util::MigrationMode::kMove);
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
 
-  // Just enabling LacrosOnly feature is enough.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ash::standalone_browser::features::kLacrosOnly);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
   EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user,
@@ -366,16 +363,14 @@ TEST_F(BrowserUtilTest, LacrosOnlyBrowserByFlags) {
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
 
   // Just setting LacrosOnly should work.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
 TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   const user_manager::User* const user = AddRegularUser("user@test.com");
   ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
@@ -395,9 +390,8 @@ TEST_F(BrowserUtilTest, LacrosOnlyBrowserAllowed) {
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   const user_manager::User* const user =
       AddRegularUser("user@managedchrome.com");
   ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
@@ -539,9 +533,8 @@ TEST_F(BrowserUtilTest, GetMigrationStatusForUser) {
   EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
             MigrationStatus::kLacrosNotEnabled);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
             MigrationStatus::kUncompleted);
@@ -615,9 +608,9 @@ TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
   }
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
     EXPECT_FALSE(browser_util::IsAshBrowserSyncEnabled());
@@ -731,9 +724,8 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutUserChoice) {
   // Lacros availability is set by policy to user choice.
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kUserChoice);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   // Check that Lacros is allowed, enabled, and set to lacros-only.
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
@@ -750,9 +742,8 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   // Lacros availability is set by policy to only.
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   // Check that Lacros is allowed, enabled, and set to lacros-only.
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());

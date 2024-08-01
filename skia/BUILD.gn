@@ -139,6 +139,9 @@ config("skia_config") {
       defines += [ "SK_METAL" ]
     }
   }
+  if(current_cpu == "loong64") {
+    cflags = [ "-mlsx", "-flax-vector-conversions=all"]
+  }
 }
 
 # Internal-facing config for Skia library code.
@@ -309,6 +312,11 @@ component("skia") {
         "ext/convolver_neon.h",
       ]
     }
+  } else if (current_cpu == "loong64") {
+    sources += [
+      "ext/convolver_LSX.cc",
+      "ext/convolver_LSX.h",
+    ]
   }
 
   if (is_win) {
@@ -682,6 +690,17 @@ if (current_cpu == "x86" || current_cpu == "x64") {
   }
 }
 
+if (current_cpu == "loong64") {
+  skia_source_set("skia_opts_lasx") {
+    sources = skia_opts.lasx_sources
+    cflags = [
+      "-mlasx",
+      "-flax-vector-conversions=all",
+    ]
+    visibility = [ ":skia_opts" ]
+  }
+}
+
 skia_source_set("skia_opts") {
   cflags = []
   defines = []
@@ -720,7 +739,7 @@ skia_source_set("skia_opts") {
   } else if (current_cpu == "riscv64") {
     # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "loong64") {
-    # Conditional and empty body needed to avoid assert() below.
+    deps += [ ":skia_opts_lasx" ]
   } else {
     assert(false, "Unknown cpu target")
   }
@@ -786,6 +805,9 @@ source_set("skcms_TransformBaseline_and_public") {
   # for half-precision floating point data types used by SKCMS on ARM.
   if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
     cflags += [ "-mfp16-format=ieee" ]
+  }
+  if (current_cpu == "loong64") {
+    cflags += [ "-mlsx" ]
   }
 
   sources = rebase_path(skcms_TransformBaseline + skcms_public,

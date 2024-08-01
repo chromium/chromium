@@ -25,6 +25,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -65,18 +66,15 @@ enum class ResultIconType {
   kLoaded,
 };
 
-// A callback that returns a FileMetadata which will be used by the image search
-// result list.
-ash::FileMetadata MetadataLoaderForTest() {
-  ash::FileMetadata metadata;
+// A callback that returns a base::File::Info which will be used by the image
+// search result list.
+base::File::Info MetadataLoaderForTest() {
+  base::File::Info info;
   base::Time last_modified;
   EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00", &last_modified));
 
-  metadata.file_info.last_modified = last_modified;
-  metadata.file_path = base::FilePath("full file path");
-  metadata.file_name = base::FilePath("file name");
-  metadata.displayable_folder_path = base::FilePath("displayable folder");
-  return metadata;
+  info.last_modified = last_modified;
+  return info;
 }
 
 }  // namespace
@@ -130,7 +128,8 @@ class AppListSearchViewTest : public AshTestBase {
       int init_id,
       int new_result_count,
       ResultIconType icon_type = ResultIconType::kLoaded,
-      FileMetadataLoader* metadata_loader = nullptr) {
+      FileMetadataLoader* metadata_loader = nullptr,
+      base::FilePath displayable_file_path = base::FilePath()) {
     for (int i = 0; i < new_result_count; ++i) {
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
@@ -160,6 +159,9 @@ class AppListSearchViewTest : public AshTestBase {
       result->set_category(SearchResult::Category::kFiles);
       if (metadata_loader) {
         result->set_file_metadata_loader_for_test(metadata_loader);
+      }
+      if (!displayable_file_path.empty()) {
+        result->set_displayable_file_path(std::move(displayable_file_path));
       }
       results->Add(std::move(result));
     }
@@ -375,12 +377,12 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
 TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   GetAppListTestHelper()->ShowAppList();
   FileMetadataLoader loader;
-  base::RunLoop file_metadata_load_waiter;
+  base::RunLoop file_info_load_waiter;
   loader.SetLoaderCallback(
-      base::BindLambdaForTesting([&file_metadata_load_waiter]() {
-        FileMetadata metadata = MetadataLoaderForTest();
-        file_metadata_load_waiter.Quit();
-        return metadata;
+      base::BindLambdaForTesting([&file_info_load_waiter]() {
+        base::File::Info info = MetadataLoaderForTest();
+        file_info_load_waiter.Quit();
+        return info;
       }));
 
   TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
@@ -395,8 +397,9 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
         auto* test_helper = GetAppListTestHelper();
         SearchModel::SearchResults* results = test_helper->GetSearchResults();
         // Only shows 1 result.
-        SetUpImageSearchResults(results, 1, 1, ResultIconType::kLoaded,
-                                &loader);
+        SetUpImageSearchResults(
+            results, 1, 1, ResultIconType::kLoaded, &loader,
+            base::FilePath("displayable folder").Append("file name"));
       }));
 
   // Press a key to start a search.
@@ -418,7 +421,7 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   // The file metadata, when requested, gets loaded on a worker thread.
   // Wait for the file metadata request to get handled, and then run main
   // loop to make sure load response posted on the main thread runs.
-  file_metadata_load_waiter.Run();
+  file_info_load_waiter.Run();
   base::RunLoop().RunUntilIdle();
 
   // Verify that the info container of the search result is visible.

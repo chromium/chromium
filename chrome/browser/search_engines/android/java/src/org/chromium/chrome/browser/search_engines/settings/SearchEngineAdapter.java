@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallback;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
@@ -144,8 +143,6 @@ public class SearchEngineAdapter extends BaseAdapter
     private boolean mIsLocationPermissionChanged;
 
     @Nullable private Runnable mDisableAutoSwitchRunnable;
-
-    @Nullable private SettingsLauncher mSettingsLauncher;
 
     /**
      * Construct a SearchEngineAdapter.
@@ -593,9 +590,5 @@ public class SearchEngineAdapter extends BaseAdapter
 
     void setDisableAutoSwitchRunnable(@NonNull Runnable runnable) {
         mDisableAutoSwitchRunnable = runnable;
-    }
-
-    void setSettingsLauncher(@NonNull SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
     }
 }

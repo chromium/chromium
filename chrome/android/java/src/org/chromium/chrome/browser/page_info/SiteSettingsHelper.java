@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -49,7 +49,7 @@ public class SiteSettingsHelper {
     /** Show the single category settings page for given category and type. */
     public static void showCategorySettings(
             Context context, @SiteSettingsCategory.Type int category) {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         Bundle extras = new Bundle();
         extras.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,

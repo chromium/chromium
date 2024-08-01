@@ -119,6 +119,7 @@
 using base::RecordAction;
 using base::UserMetricsAction;
 using content::BrowserThread;
+using enum safe_browsing::ExtendedReportingLevel;
 using sync_pb::GaiaPasswordReuse;
 using sync_pb::UserEventSpecifics;
 using GaiaPasswordCaptured = UserEventSpecifics::GaiaPasswordCaptured;
@@ -733,6 +734,10 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
     case SBER_LEVEL_SCOUT:
       status->set_safe_browsing_reporting_population(SafeBrowsingStatus::SCOUT);
       break;
+    case SBER_LEVEL_ENHANCED_PROTECTION:
+      status->set_safe_browsing_reporting_population(
+          SafeBrowsingStatus::ENHANCED_PROTECTION);
+      break;
   }
 
   WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
@@ -1289,6 +1294,9 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     if (router) {
       router->OnPolicySpecifiedPasswordReuseDetected(
           main_frame_url, username_or_email, is_phishing_url, warning_shown);
+      base::UmaHistogramBoolean(
+          "PasswordProtection.GmailReportSent",
+          base::EndsWith(username_or_email, "@gmail.com"));
     }
   }
 }

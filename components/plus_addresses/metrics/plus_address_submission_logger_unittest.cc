@@ -37,7 +37,8 @@ using ::autofill::SuggestionType;
 using ::autofill::test::FormDescription;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
-using PasswordFormType = autofill::AutofillClient::PasswordFormType;
+using PasswordFormType =
+    autofill::AutofillClient::PasswordFormClassification::Type;
 using SuggestionContext =
     autofill::AutofillPlusAddressDelegate::SuggestionContext;
 

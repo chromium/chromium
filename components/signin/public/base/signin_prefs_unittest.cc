@@ -6,13 +6,19 @@
 
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SigninPrefsTest : public ::testing::Test {
  public:
   SigninPrefsTest() : signin_prefs_(pref_service_) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kExplicitBrowserSigninUIOnDesktop,
+        {{"clear_account_prefs_when_clearing_cookies", "true"}});
+
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
     pref_registrar_.Init(&pref_service_);
   }
@@ -26,6 +32,8 @@ class SigninPrefsTest : public ::testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   TestingPrefServiceSimple pref_service_;
   PrefChangeRegistrar pref_registrar_;
   SigninPrefs signin_prefs_;
@@ -231,4 +239,30 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionRepromptCount) {
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id2), 0);
+}
+
+TEST_F(SigninPrefsTest, RemovingAllAccountPrefsWithDoNotRemove) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kExplicitBrowserSigninUIOnDesktop,
+      {{"clear_account_prefs_when_clearing_cookies", "false"}});
+
+  const std::string gaia_id1 = "gaia_id1";
+  const std::string gaia_id2 = "gaia_id2";
+  const std::string gaia_id3 = "gaia_id3";
+
+  // Setting any value should create the dict entry for the given gaia id.
+  signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id1);
+  signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id2);
+  signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id3);
+  ASSERT_TRUE(HasAccountPrefs(gaia_id1));
+  ASSERT_TRUE(HasAccountPrefs(gaia_id2));
+  ASSERT_TRUE(HasAccountPrefs(gaia_id3));
+
+  // No accounts prefs should be removed when
+  // `clear_account_prefs_when_clearing_cookies` is set to false.
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({}), 3u);
+  EXPECT_TRUE(HasAccountPrefs(gaia_id1));
+  EXPECT_TRUE(HasAccountPrefs(gaia_id2));
+  EXPECT_TRUE(HasAccountPrefs(gaia_id3));
 }

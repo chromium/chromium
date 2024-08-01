@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 
 #include <string>
@@ -9,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -19,6 +23,7 @@
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
@@ -26,7 +31,7 @@
 
 #if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
 #endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 

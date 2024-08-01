@@ -33,7 +33,7 @@ class DataSharingServiceFactoryTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(DataSharingServiceFactory::GetInstance(),
                               DataSharingServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
   }
 
   void TearDown() override { web_task_env_.RunUntilIdle(); }

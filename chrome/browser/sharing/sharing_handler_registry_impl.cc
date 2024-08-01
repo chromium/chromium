@@ -6,13 +6,13 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/sharing/ack_message_handler.h"
 #include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
-#include "chrome/browser/sharing/ping_message_handler.h"
-#include "chrome/browser/sharing/sharing_device_registration.h"
-#include "chrome/browser/sharing/sharing_message_handler.h"
-#include "chrome/browser/sharing/sharing_message_sender.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/sharing_message/ack_message_handler.h"
+#include "components/sharing_message/ping_message_handler.h"
+#include "components/sharing_message/sharing_device_registration.h"
+#include "components/sharing_message/sharing_message_handler.h"
+#include "components/sharing_message/sharing_message_sender.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sharing/click_to_call/click_to_call_message_handler_android.h"

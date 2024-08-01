@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -661,10 +662,11 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
-  WebTransportCloseInfo close_info;
-  close_info.setCloseCode(42);
-  close_info.setReason("because");
-  web_transport->close(&close_info);
+  WebTransportCloseInfo* close_info =
+      MakeGarbageCollected<WebTransportCloseInfo>();
+  close_info->setCloseCode(42);
+  close_info->setReason("because");
+  web_transport->close(close_info);
 
   test::RunPendingTasks();
 
@@ -711,9 +713,10 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
-  WebTransportCloseInfo close_info;
-  close_info.setReason("because");
-  web_transport->close(&close_info);
+  WebTransportCloseInfo* close_info =
+      MakeGarbageCollected<WebTransportCloseInfo>();
+  close_info->setReason("because");
+  web_transport->close(close_info);
 
   test::RunPendingTasks();
 }

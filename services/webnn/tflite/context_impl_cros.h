@@ -21,8 +21,7 @@ class ContextImplCrOS final : public WebNNContextImpl {
  public:
   ContextImplCrOS(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                   WebNNContextProviderImpl* context_provider,
-                  mojom::CreateContextOptionsPtr options,
-                  base::UnguessableToken context_handle);
+                  mojom::CreateContextOptionsPtr options);
 
   ContextImplCrOS(const ContextImplCrOS&) = delete;
   ContextImplCrOS& operator=(const ContextImplCrOS&) = delete;
@@ -43,10 +42,10 @@ class ContextImplCrOS final : public WebNNContextImpl {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+  void CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override;
+      CreateBufferImplCallback callback) override;
 
   // The TFLite model will be loaded in the callback when creating `ModelLoader`
   // interface successfully.

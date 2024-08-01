@@ -39,7 +39,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -243,22 +242,12 @@ class LookalikeUrlNavigationThrottleBrowserTest
  protected:
   LookalikeUrlNavigationThrottleBrowserTest()
       : https_server_(
-            new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS)) {}
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.emplace_back(features::kSignedHTTPExchange);
-
+            new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS)) {
     if (GetParam() == PrewarmLookalike::kPrewarm) {
-      enabled_features.emplace_back(kPrewarmLookalikeCheck);
+      feature_list_.InitAndEnableFeature(kPrewarmLookalikeCheck);
     } else {
-      disabled_features.emplace_back(kPrewarmLookalikeCheck);
+      feature_list_.InitAndDisableFeature(kPrewarmLookalikeCheck);
     }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {

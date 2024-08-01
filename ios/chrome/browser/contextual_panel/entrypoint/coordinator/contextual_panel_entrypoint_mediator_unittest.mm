@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -68,6 +70,9 @@
 
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened {
   self.contextualPanelIsOpen = opened;
+}
+
+- (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
 }
 
 @end
@@ -175,6 +180,8 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
     auto web_state = std::make_unique<web::FakeWebState>();
     std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
     FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
+    InfoBarManagerImpl::CreateForWebState(web_state.get());
+    InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
     web_state_list_.InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
@@ -468,4 +475,25 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   histogram_tester.ExpectUniqueSample(
       "IOS.ContextualPanel.Entrypoint.IPH.SamplePanelItem",
       EntrypointInteractionType::Displayed, 1);
+}
+
+// Tests a change in the active WebState.
+TEST_F(ContextualPanelEntrypointMediatorTest, TestWebStateListChanged) {
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+  FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
+
+  web_state_list_.InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+
+  [mocked_entrypoint_help_handler_ verify];
 }

@@ -161,9 +161,7 @@ test("shell_dialogs_unittests") {
 
   if (is_mac) {
     sources += [ "select_file_dialog_mac_unittest.mm" ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
-    ]
+    frameworks = [ "UniformTypeIdentifiers.framework" ]
   }
 
   if (is_win) {

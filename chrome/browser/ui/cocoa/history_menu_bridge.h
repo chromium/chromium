@@ -250,6 +250,8 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   friend class ::HistoryMenuBridgeLifetimeTest;
   friend class HistoryMenuCocoaControllerTest;
 
+  void FinishCreateMenu();
+
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
                     const history::URLRow& url_row,
@@ -281,6 +283,9 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   std::unique_ptr<ScopedProfileKeepAlive> tab_restore_service_keep_alive_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // A timer used to coalesce repeated calls to CreateMenu().
+  base::OneShotTimer finish_create_menu_timer_;
 
   // Mapping of NSMenuItems to HistoryItems.
   std::map<NSMenuItem*, std::unique_ptr<HistoryItem>> menu_item_map_;

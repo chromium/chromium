@@ -14,13 +14,18 @@ source_set("lens") {
   sources = [
     "lens_overlay_controller.cc",
     "lens_overlay_controller.h",
+    "lens_overlay_controller_glue.cc",
+    "lens_overlay_controller_glue.h",
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_entry_point_controller.h",
     "lens_overlay_side_panel_coordinator.cc",
     "lens_overlay_side_panel_coordinator.h",
     "lens_overlay_side_panel_web_view.cc",
+    "lens_search_bubble_controller.cc",
+    "lens_search_bubble_controller.h",
     "lens_untrusted_ui.cc",
     "lens_untrusted_ui.h",
+    "search_bubble_ui.cc",
   ]
 
   # TODO(crbug.com/339497734): It doesn't make sense to try to set up
@@ -29,6 +34,7 @@ source_set("lens") {
     ":lens_internal",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/side_panel",
     "//components/lens:enterprise_policy",
   ]
@@ -39,19 +45,24 @@ source_set("lens") {
   deps = [
     "//base",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser/feedback",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/lens/overlay:resources",
     "//chrome/browser/resources/lens/overlay:resources_grit",
     "//chrome/browser/resources/lens/overlay/search_bubble:resources",
     "//chrome/browser/resources/lens/overlay/search_bubble:resources_grit",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:constants",
@@ -128,12 +139,9 @@ source_set("lens_internal") {
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.cc",
     "lens_preselection_bubble.h",
-    "lens_search_bubble_controller.cc",
-    "lens_search_bubble_controller.h",
     "lens_untrusted_ui_config.cc",
     "search_bubble_page_handler.cc",
     "search_bubble_page_handler.h",
-    "search_bubble_ui.cc",
   ]
 
   public_deps = [

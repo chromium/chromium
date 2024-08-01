@@ -10,6 +10,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
@@ -48,10 +50,15 @@
     SignoutActionSheetCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
+
+// The view controller.
+@property(nonatomic, strong) AccountMenuViewController* viewController;
+// The mediator.
+@property(nonatomic, strong) AccountMenuMediator* mediator;
+
 @end
 
 @implementation AccountMenuCoordinator {
-  AccountMenuViewController* _viewController;
   UINavigationController* _navigationController;
   AuthenticationService* _authenticationService;
   // Dismiss callback for account details view.
@@ -59,11 +66,12 @@
       _accountDetailsControllerDismissCallback;
   // The coordinators for the "Edit account list"
   AccountsCoordinator* _accountsCoordinator;
-  AccountMenuMediator* _mediator;
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
   raw_ptr<syncer::SyncService> _syncService;
-
+  SyncEncryptionTableViewController* _syncEncryptionTableViewController;
+  SyncEncryptionPassphraseTableViewController*
+      _syncEncryptionPassphraseTableViewController;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
 }
@@ -134,6 +142,10 @@
   _viewController.dataSource = nil;
   _viewController.delegate = nil;
   _viewController.mutator = nil;
+  [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
+  _syncEncryptionPassphraseTableViewController = nil;
+  [_syncEncryptionTableViewController settingsWillBeDismissed];
+  _syncEncryptionTableViewController = nil;
   _viewController = nil;
   [_mediator disconnect];
   _mediator.consumer = nil;
@@ -181,7 +193,8 @@
   [_accountsCoordinator start];
 }
 
-- (void)signOutFromTargetRect:(CGRect)targetRect {
+- (void)signOutFromTargetRect:(CGRect)targetRect
+                     callback:(void (^)(BOOL))callback {
   if (_mediator.signOutFlowInProgress ||
       _mediator.addAccountOperationInProgress) {
     return;
@@ -205,6 +218,9 @@
     [weakSelf stopSignoutActionSheetCoordinator];
     if (success) {
       [weakSelf.delegate acountMenuCoordinatorShouldStop:weakSelf];
+    }
+    if (callback) {
+      callback(success);
     }
   };
   [_signoutActionSheetCoordinator start];
@@ -325,29 +341,33 @@
 
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally {
   if (presentModally) {
-    SyncEncryptionPassphraseTableViewController* controllerToPresent =
+    _syncEncryptionPassphraseTableViewController =
         [[SyncEncryptionPassphraseTableViewController alloc]
             initWithBrowser:self.browser];
-    controllerToPresent.presentModally = YES;
+    _syncEncryptionPassphraseTableViewController.presentModally = YES;
     UINavigationController* navigationController =
         [[UINavigationController alloc]
-            initWithRootViewController:controllerToPresent];
+            initWithRootViewController:
+                _syncEncryptionPassphraseTableViewController];
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self configureHandlersForRootViewController:controllerToPresent];
+    [self configureHandlersForRootViewController:
+              _syncEncryptionPassphraseTableViewController];
     [_navigationController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
     return;
   }
-  UIViewController<SettingsRootViewControlling>* controllerToPush;
   // If there was a sync error, prompt the user to enter the passphrase.
   // Otherwise, show the full encryption options.
+  UIViewController<SettingsRootViewControlling>* controllerToPush;
   if (_syncService->GetUserSettings()->IsPassphraseRequired()) {
-    controllerToPush = [[SyncEncryptionPassphraseTableViewController alloc]
-        initWithBrowser:self.browser];
+    controllerToPush = _syncEncryptionPassphraseTableViewController =
+        [[SyncEncryptionPassphraseTableViewController alloc]
+            initWithBrowser:self.browser];
   } else {
-    controllerToPush = [[SyncEncryptionTableViewController alloc]
-        initWithBrowser:self.browser];
+    controllerToPush = _syncEncryptionTableViewController =
+        [[SyncEncryptionTableViewController alloc]
+            initWithBrowser:self.browser];
   }
 
   [self configureHandlersForRootViewController:controllerToPush];
@@ -358,12 +378,15 @@
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
   [applicationCommands
       showTrustedVaultReauthForFetchKeysFromViewController:_navigationController
+                                          securityDomainID:securityDomainID
                                                    trigger:trigger
                                                accessPoint:accessPoint];
 }
@@ -372,6 +395,8 @@
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
@@ -379,6 +404,8 @@
   [applicationCommands
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
           _navigationController
+                                                       securityDomainID:
+                                                           securityDomainID
                                                                 trigger:trigger
                                                             accessPoint:
                                                                 accessPoint];

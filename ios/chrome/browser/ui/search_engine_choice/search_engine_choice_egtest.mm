@@ -61,7 +61,8 @@
 
 // Tests that the search engine choice dialog is always visible when the app
 // goes to background and foreground.
-- (void)testMoveToBackgroundAndToForeground {
+// TODO(crbug.com/356534232): Re-enable after fixing flakiness.
+- (void)DISABLED_testMoveToBackgroundAndToForeground {
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
@@ -203,10 +204,9 @@
   [[[EarlGrey selectElementWithMatcher:learnMoreLinkMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   // Verify the Learn More view was presented.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSearchEngineChoiceLearnMoreAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kSearchEngineChoiceLearnMoreAccessibilityIdentifier)];
   GREYAssertNil([MetricsAppInterface expectTotalCount:1
                                          forHistogram:eventHistogram],
                 @"Failed to record event histogram");

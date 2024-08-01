@@ -10,16 +10,17 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "ip_protection_proxy_list_manager.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
-#include "services/network/public/mojom/network_context.mojom-shared.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
@@ -64,26 +65,28 @@ std::vector<net::ProxyChain> MakeQuicProxyList(
 }  // namespace
 
 IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
-    mojo::PendingRemote<network::mojom::IpProtectionConfigGetter> config_getter)
+    std::unique_ptr<IpProtectionConfigGetter> config_getter)
     : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()) {
   // Proxy list is null upon cache creation.
   ipp_proxy_list_manager_ = nullptr;
 
-  // This type may be constructed without a getter, for testing/experimental
-  // purposes. In that case, the list manager and cache managers do not exist.
-  if (config_getter.is_valid()) {
-    config_getter_.Bind(std::move(config_getter));
+  // This type may be constructed with the `config_getter` being a `nullptr`,
+  // for testing/experimental purposes. In that case, the list manager and cache
+  // managers should not be created.
+  if (config_getter.get() != nullptr && config_getter->IsAvailable()) {
+    config_getter_ = std::move(config_getter);
 
     ipp_proxy_list_manager_ =
-        std::make_unique<IpProtectionProxyListManagerImpl>(&config_getter_);
+        std::make_unique<IpProtectionProxyListManagerImpl>(
+            config_getter_.get());
 
-    ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyA] =
+    ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyA] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyA);
+            this, config_getter_.get(), IpProtectionProxyLayer::kProxyA);
 
-    ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyB] =
+    ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyB] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyB);
+            this, config_getter_.get(), IpProtectionProxyLayer::kProxyB);
   }
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
@@ -107,12 +110,11 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
   return all_caches_have_tokens;
 }
 
-std::optional<network::mojom::BlindSignedAuthTokenPtr>
-IpProtectionConfigCacheImpl::GetAuthToken(size_t chain_index) {
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> result;
-  auto proxy_layer = chain_index == 0
-                         ? network::mojom::IpProtectionProxyLayer::kProxyA
-                         : network::mojom::IpProtectionProxyLayer::kProxyB;
+std::optional<BlindSignedAuthToken> IpProtectionConfigCacheImpl::GetAuthToken(
+    size_t chain_index) {
+  std::optional<BlindSignedAuthToken> result;
+  auto proxy_layer = chain_index == 0 ? IpProtectionProxyLayer::kProxyA
+                                      : IpProtectionProxyLayer::kProxyB;
   if (ipp_token_cache_managers_.count(proxy_layer) > 0) {
     result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken();
   }
@@ -126,20 +128,25 @@ void IpProtectionConfigCacheImpl::InvalidateTryAgainAfterTime() {
 }
 
 void IpProtectionConfigCacheImpl::SetIpProtectionTokenCacheManagerForTesting(
-    network::mojom::IpProtectionProxyLayer proxy_layer,
+    IpProtectionProxyLayer proxy_layer,
     std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager) {
   ipp_token_cache_managers_[proxy_layer] = std::move(ipp_token_cache_manager);
 }
 
 IpProtectionTokenCacheManager*
 IpProtectionConfigCacheImpl::GetIpProtectionTokenCacheManagerForTesting(
-    network::mojom::IpProtectionProxyLayer proxy_layer) {
+    IpProtectionProxyLayer proxy_layer) {
   return ipp_token_cache_managers_[proxy_layer].get();
 }
 
 void IpProtectionConfigCacheImpl::SetIpProtectionProxyListManagerForTesting(
     std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager) {
   ipp_proxy_list_manager_ = std::move(ipp_proxy_list_manager);
+}
+
+IpProtectionProxyListManager*
+IpProtectionConfigCacheImpl::GetIpProtectionProxyListManagerForTesting() {
+  return ipp_proxy_list_manager_.get();
 }
 
 bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
@@ -172,6 +179,21 @@ void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
   if (ipp_proxy_list_manager_ != nullptr) {
     ipp_proxy_list_manager_->RequestRefreshProxyList();
   }
+}
+
+void IpProtectionConfigCacheImpl::GeoChangeObserved(const std::string& geo_id) {
+  if (ipp_proxy_list_manager_ != nullptr &&
+      ipp_proxy_list_manager_->GeoId() != geo_id) {
+    RequestRefreshProxyList();
+  }
+
+  for (auto& [_, token_manager] : ipp_token_cache_managers_) {
+    if (token_manager->CurrentGeo() != geo_id) {
+      token_manager->SetCurrentGeo(geo_id);
+    }
+  }
+
+  current_geo_id_ = geo_id;
 }
 
 void IpProtectionConfigCacheImpl::OnNetworkChanged(

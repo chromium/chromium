@@ -43,6 +43,8 @@
   E_CPONLY(kColorAvatarButtonIncognitoHover) \
   E_CPONLY(kColorAvatarButtonNormalRipple) \
   E_CPONLY(kColorAvatarStrokeLight) \
+  E_CPONLY(kColorAvatarStroke) \
+  E_CPONLY(kColorAvatarFillForContrast) \
   /* Bookmark bar colors. */ \
   E_CPONLY(kColorBookmarkBarBackground) \
   E_CPONLY(kColorBookmarkBarForeground) \
@@ -390,6 +392,7 @@
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
+  E_CPONLY(kColorProductSpecificationsCitationBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
   E_CPONLY(kColorProductSpecificationsDisclosureGradientEnd) \

@@ -15,6 +15,8 @@
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/sync/model/model_type_store.h"
@@ -27,6 +29,7 @@ namespace tab_groups {
 
 namespace {
 
+using testing::_;
 using testing::InvokeWithoutArgs;
 using testing::Return;
 
@@ -87,9 +90,15 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
 
   SavedTabGroupModel& model() { return *model_; }
   TabGroupSyncBridgeMediator& bridge_mediator() { return *bridge_mediator_; }
+
   testing::NiceMock<syncer::MockModelTypeChangeProcessor>&
   mock_saved_processor() {
     return mock_saved_processor_;
+  }
+
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor>&
+  mock_shared_processor() {
+    return mock_shared_processor_;
   }
 
  private:
@@ -159,6 +168,33 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldReturnSavedBridgeNotSyncing) {
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(bridge_mediator().IsSavedBridgeSyncing());
   EXPECT_EQ(bridge_mediator().GetLocalCacheGuidForSavedBridge(), std::nullopt);
+}
+
+TEST_F(TabGroupSyncBridgeMediatorTest, ShouldTransitionSavedTabGroupToShared) {
+  ON_CALL(mock_saved_processor(), IsTrackingMetadata)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_shared_processor(), IsTrackingMetadata)
+      .WillByDefault(Return(true));
+
+  SavedTabGroup group(u"group title", TabGroupColorId::kBlue, {}, 0);
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  SavedTabGroupTab tab(GURL("https://google.com"), u"tab title",
+                       group.saved_guid(),
+                       /*position=*/std::nullopt);
+  group.AddTabLocally(tab);
+  model().Add(group);
+  ASSERT_TRUE(model().Get(group.saved_guid()));
+  ASSERT_FALSE(model().Get(group.saved_guid())->is_shared_tab_group());
+
+  // Both the tab and the group are expected to be added to the shared tab group
+  // bridge, but only the group should be removed from the saved tab group
+  // bridge.
+  EXPECT_CALL(mock_saved_processor(), Delete);
+  EXPECT_CALL(mock_shared_processor(),
+              Put(group.saved_guid().AsLowercaseString(), _, _));
+  EXPECT_CALL(mock_shared_processor(),
+              Put(tab.saved_tab_guid().AsLowercaseString(), _, _));
+  model().MakeTabGroupShared(group.local_group_id().value(), "collaboration");
 }
 
 }  // namespace

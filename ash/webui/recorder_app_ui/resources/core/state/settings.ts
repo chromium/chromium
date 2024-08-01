@@ -79,6 +79,44 @@ export enum SummaryEnableState {
   UNKNOWN = 'UNKNOWN',
 }
 
+/**
+ * The state of whether user have enabled speaker ID.
+ *
+ * We need to ask for consent when user first transitions from UNKNOWN to
+ * ENABLED.
+ *
+ * Valid state transitions:
+ * * ENABLED -> DISABLED
+ * * DISABLED -> ENABLED
+ * * DISABLED_FIRST -> ENABLED
+ * * UNKNOWN -> DISABLED_FIRST, ENABLED.
+ */
+export enum SpeakerIdEnableState {
+  /**
+   * Speaker ID is enabled by user.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * The speaker ID is disabled by user and user have never enabled
+   * speaker ID.
+   *
+   * This is a separate state since an additional confirmation dialog will be
+   * shown only when user never enabled speaker ID before.
+   */
+  DISABLED_FIRST = 'DISABLED_FIRST',
+
+  /**
+   * Speaker ID is disabled by user.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Speaker ID enable/disable preference is still unknown.
+   */
+  UNKNOWN = 'UNKNOWN',
+}
+
 export enum ExportAudioFormat {
   // TODO: b/344784478 - Add other supported formats. Might need ffmpeg to
   // convert.
@@ -113,6 +151,10 @@ export const settingsSchema = z.object({
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
   summaryEnabled: z.nativeEnum(SummaryEnableState),
+  speakerIdEnabled: z.withDefault(
+    z.nativeEnum(SpeakerIdEnableState),
+    SpeakerIdEnableState.UNKNOWN,
+  ),
 });
 
 type Settings = Infer<typeof settingsSchema>;
@@ -129,6 +171,7 @@ const defaultSettings: Settings = {
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
   summaryEnabled: SummaryEnableState.UNKNOWN,
+  speakerIdEnabled: SpeakerIdEnableState.UNKNOWN,
 };
 
 export const settings = signal(defaultSettings);

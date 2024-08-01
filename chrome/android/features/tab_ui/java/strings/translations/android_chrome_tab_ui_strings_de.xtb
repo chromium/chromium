@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>
+<translation id="2677748264148917807">Verlassen</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vor <ph name="NUM_HOURS_ONE" /> Stunde erstellt}other{Vor <ph name="NUM_HOURS_MANY" /> Stunden erstellt}}</translation>
 <translation id="2801787514987684416">Geschäftsinformationen anzeigen?</translation>
 <translation id="2928243913527329289">Google | Informationen zu diesem Händler</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
 <translation id="3008554597174452548">Produkt nicht mehr beobachten</translation>
 <translation id="3026391124054406831">Erstelle Gruppen, um deine Tabs zu organisieren.</translation>
+<translation id="3051031624272448591">Du kannst sie jederzeit im Verlauf wiederherstellen</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3078350928901129212">Farbe des Symbols für Tabgruppe (<ph name="COLOR_NAME" />)</translation>
 <translation id="3194464645767632461">Bewertung</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Violett</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="427987768447457592">Neue Tabgruppe</translation>
-<translation id="4338724047016295066">Inaktive Tabs werden automatisch geschlossen. Du kannst sie jederzeit im Verlauf finden.</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
+<translation id="4590027107044272416">Du kannst jetzt hier einen neuen Tab öffnen</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 inaktiven Tab schließen?}other{<ph name="TAB_COUNT_MANY" /> inaktive Tabs schließen?}}</translation>
 <translation id="4648718555153979859">Deine Tabs werden hier in Gruppen zusammengefasst</translation>
 <translation id="4686942373615810936">Gerade eben erstellt</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Nach 1 Tag schließen}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen schließen}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
+<translation id="4871719318659334896">Gruppe schließen</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> Gruppen gespeichert (dadurch werden Tabs geschlossen und Gruppen gelöscht)</translation>
@@ -100,6 +104,7 @@
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>
 <translation id="6017514345406065928">Grün</translation>
 <translation id="6040143037577758943">Schließen</translation>
+<translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
@@ -115,7 +120,6 @@
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
-<translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, halte einen Tab gedrückt. Ziehe ihn dann auf einen anderen Tab.</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>
 <translation id="7129458170538955174">Informationen zu diesem Händler sind halb geöffnet</translation>
@@ -152,12 +156,14 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
 <translation id="8398929769197326728">Neuer Ordner – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Einstellungen</translation>
+<translation id="870736955561925754">Tab schließen und Gruppe löschen?</translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8730999928494395583">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_MONTHS_ONE" /> Monat erstellt}other{Vor <ph name="NUM_MONTHS_MANY" /> Monaten erstellt}}</translation>
 <translation id="8820741577754260431">Preisnachlässe auf deinen Tabs sehen</translation>
 <translation id="8887921976452567404">Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden.</translation>
+<translation id="8915916167043355778">Alle schließen</translation>
 <translation id="8926389886865778422">Nicht mehr fragen</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="9090098097337832354">Informationen zu diesem Händler sind geschlossen</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>
 <translation id="9216898458513705996">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird auf allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
-<translation id="959682366969460160">Besser organisiert</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/image_writer_private/operation.h"
+
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
-#include "chrome/browser/extensions/api/image_writer_private/operation.h"
 #include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"

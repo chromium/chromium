@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/html.star", "linkify_builder")
 
 ci.defaults.set(
     bucket = "build",
@@ -71,9 +72,9 @@ ci.builder(
 ci.thin_tester(
     name = "Mac Tests Siso FYI",
     description_html = """\
-This builder is intended to shadow <a href="https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests">mac14-tests</a>.<br/>\
-But, the tests are built by <a ref="https://ci.chromium.org/ui/p/chromium/builders/build/Mac%20Builder%20Siso%20FYI">Mac Builder Siso FYI</a>.\
-""",
+This builder is intended to shadow {}.<br/>\
+But, the tests are built by {}.\
+""".format(linkify_builder("ci", "mac14-tests"), linkify_builder("build", "Mac Builder Siso FYI")),
     triggered_by = ["build/Mac Builder Siso FYI"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

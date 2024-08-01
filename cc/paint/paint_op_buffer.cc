@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
@@ -20,6 +25,7 @@
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_serialization_history.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
 
 namespace cc {
 
@@ -218,11 +224,20 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       continue;
 
     if (op->IsPaintOpWithFlags()) {
+      int max_texture_size;
+      if (auto* context = canvas->recordingContext()) {
+        max_texture_size = context->maxTextureSize();
+      } else if (auto* recorder = canvas->recorder()) {
+        max_texture_size = recorder->maxTextureSize();
+      } else {
+        // This can happen in tests.
+        max_texture_size = 0;
+      }
+
       const auto& flags_op = static_cast<const PaintOpWithFlags&>(*op);
-      auto* context = canvas->recordingContext();
       const ScopedRasterFlags scoped_flags(
           &flags_op.flags, new_params.image_provider, canvas->getTotalMatrix(),
-          context ? context->maxTextureSize() : 0, iter.alpha());
+          max_texture_size, iter.alpha());
       if (const auto* raster_flags = scoped_flags.flags())
         flags_op.RasterWithFlags(canvas, raster_flags, new_params);
     } else {

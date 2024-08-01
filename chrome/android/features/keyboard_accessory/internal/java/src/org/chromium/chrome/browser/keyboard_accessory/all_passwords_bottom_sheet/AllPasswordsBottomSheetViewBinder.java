@@ -23,9 +23,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
-import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.utils.InsecureFillingDialogUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -169,6 +169,12 @@ class AllPasswordsBottomSheetViewBinder {
                         credential.getOriginUrl(), icon -> setIconForBitmap(iconView, icon));
             }
 
+            if (credential.isPlusAddressUsername()) {
+                usernameChip.setIcon(
+                        R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+            } else {
+                usernameChip.setIcon(ChipView.INVALID_ICON_ID, /* tintWithTextColor= */ false);
+            }
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

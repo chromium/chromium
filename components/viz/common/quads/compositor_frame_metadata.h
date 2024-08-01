@@ -17,6 +17,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -215,6 +216,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // List of values for tags that apply to tagged quads in an embedding
   // CompositorFrame.
   std::vector<OffsetTagValue> offset_tag_values;
+
+  // Information used to compute overall ideal frame interval.
+  FrameIntervalInputs frame_interval_inputs;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

@@ -22,8 +22,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/web_applications/app_service/browser_shortcuts.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #endif
 

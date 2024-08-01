@@ -91,6 +91,9 @@ class PageLoadMetricsForwardObserver final
   void OnLoadEventStart(const mojom::PageLoadTiming& timing) override;
   void OnParseStart(const mojom::PageLoadTiming& timing) override;
   void OnParseStop(const mojom::PageLoadTiming& timing) override;
+  void OnConnectStart(const mojom::PageLoadTiming& timing) override;
+  void OnDomainLookupStart(const mojom::PageLoadTiming& timing) override;
+  void OnDomainLookupEnd(const mojom::PageLoadTiming& timing) override;
   void OnFirstPaintInPage(const mojom::PageLoadTiming& timing) override;
   void OnFirstImagePaintInPage(const mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(

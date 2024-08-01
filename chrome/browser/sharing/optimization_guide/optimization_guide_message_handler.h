@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/sharing/sharing_message_handler.h"
+#include "components/sharing_message/sharing_message_handler.h"
 
 class OptimizationGuideLogger;
 class Profile;

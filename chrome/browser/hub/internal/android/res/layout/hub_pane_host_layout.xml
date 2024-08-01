@@ -14,7 +14,7 @@ found in the LICENSE file.
   <FrameLayout
     android:id="@+id/pane_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"/>
 
   <ImageView
     android:id="@+id/pane_top_hairline"
@@ -32,7 +32,7 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="56dp"
     android:layout_gravity="end|bottom"
-    android:layout_margin="16dp"
+    android:layout_margin="@dimen/floating_action_button_margin"
     android:drawablePadding="12dp"
     android:drawableTint="@macro/default_icon_color"
     android:paddingStart="16dp"
@@ -43,6 +43,12 @@ found in the LICENSE file.
     app:rippleCornerRadiusBottomStart="@dimen/hub_button_radius"
     app:rippleCornerRadiusTopEnd="@dimen/hub_button_radius"
     app:rippleCornerRadiusTopStart="@dimen/hub_button_radius"
-    app:verticalInset="0dp" />
+    app:verticalInset="0dp"/>
+
+  <FrameLayout
+    android:id="@+id/pane_host_view_snackbar_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"/>
 
 </org.chromium.chrome.browser.hub.HubPaneHostView>

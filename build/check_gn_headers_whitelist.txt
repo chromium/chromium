@@ -184,7 +184,6 @@ third_party/khronos/KHR/khrplatform.h
 third_party/leveldatabase/chromium_logger.h
 third_party/libaddressinput/chromium/addressinput_util.h
 third_party/libphonenumber/phonenumber_api.h
-third_party/libudev/libudev0.h
 third_party/libudev/libudev1.h
 third_party/libvpx/source/config/linux/x64/vp8_rtcd.h
 third_party/libvpx/source/config/linux/x64/vp9_rtcd.h

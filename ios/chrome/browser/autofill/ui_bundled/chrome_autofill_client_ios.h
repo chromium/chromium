@@ -69,6 +69,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   version_info::Channel GetChannel() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
@@ -103,10 +104,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ShowDeleteAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  bool ShowTouchToFillCreditCard(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilities) override;
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
@@ -134,7 +131,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
                                 PlusAddressCallback callback) override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
-  PasswordFormType ClassifyAsPasswordForm(
+  PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const override;

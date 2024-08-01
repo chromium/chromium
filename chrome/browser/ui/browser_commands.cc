@@ -37,6 +37,7 @@
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -72,7 +73,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -1083,6 +1083,20 @@ void MoveActiveTabToNewWindow(Browser* browser) {
   MoveTabsToNewWindow(browser,
                       std::vector<int>(selection.begin(), selection.end()));
 }
+
+void ToggleCompactMode(Browser* browser) {
+  const bool current_pref =
+      browser->profile()->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
+  browser->profile()->GetPrefs()->SetBoolean(prefs::kCompactModeEnabled,
+                                             !current_pref);
+}
+
+bool ShouldUseCompactMode(Profile* profile) {
+  CHECK(profile);
+  return base::FeatureList::IsEnabled(features::kCompactMode) &&
+         profile->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
+}
+
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices) {
   if (browser->is_type_app()) {
@@ -2303,7 +2317,7 @@ void ExecLensRegionSearch(Browser* browser) {
         std::make_unique<lens::LensRegionSearchController>();
     lens_region_search_controller_data->lens_region_search_controller->Start(
         contents, lens::features::IsLensFullscreenSearchEnabled(),
-        is_google_dsp, entry_point);
+        /*force_open_in_new_tab=*/false, is_google_dsp, entry_point);
     browser->SetUserData(lens::LensRegionSearchControllerData::kDataKey,
                          std::move(lens_region_search_controller_data));
   }

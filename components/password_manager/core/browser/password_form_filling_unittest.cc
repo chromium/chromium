@@ -161,7 +161,8 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       nullptr, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kNoFilling, likely_form_filling);
 }
 
@@ -185,7 +186,8 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       &saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
 
   // On Android, Mac and Win authentication will prevent autofilling credentials
   // on page load. On iOS Reauth is always required.
@@ -265,7 +267,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
         &saved_match_, metrics_recorder_.get(),
-        /*webauthn_suggestions_available=*/false);
+        /*webauthn_suggestions_available=*/false,
+        /*suggestion_banned_fields=*/{});
 
     // In all cases where a current password exists, fill on load should be
     // permitted. Otherwise, the renderer will not fill anyway and return
@@ -294,7 +297,8 @@ TEST_F(PasswordFormFillingTest, FillWithOnlyWebAuthnCredentials) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       &saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
@@ -354,7 +358,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
         &preferred_match, metrics_recorder_.get(),
-        /*webauthn_suggestions_available=*/false);
+        /*webauthn_suggestions_available=*/false,
+        /*suggestion_banned_fields=*/{});
 
     EXPECT_EQ(test_case.likely_form_filling, likely_form_filling);
   }
@@ -372,7 +377,8 @@ TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       &psl_saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 
   // Check that the message to the renderer (i.e. |fill_data|) is filled
@@ -414,7 +420,8 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_http_form, best_matches, federated_matches_,
       &saved_http_match, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 
@@ -425,7 +432,8 @@ TEST_F(PasswordFormFillingTest, TouchToFill) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       &saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
@@ -450,7 +458,8 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       &affiliated_match, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 
   // Check that the message to the renderer (i.e. |fill_data|) is filled
@@ -480,7 +489,8 @@ TEST_F(PasswordFormFillingTest,
   SendFillInformationToRenderer(&client_, &driver_, observed_form_,
                                 best_matches, federated_matches_, nullptr,
                                 metrics_recorder_.get(),
-                                /*webauthn_suggestions_available=*/false);
+                                /*webauthn_suggestions_available=*/false,
+                                /*suggestion_banned_fields=*/{});
 }
 
 TEST_F(PasswordFormFillingTest,
@@ -495,7 +505,8 @@ TEST_F(PasswordFormFillingTest,
   SendFillInformationToRenderer(&client_, &driver_, observed_form_,
                                 best_matches, federated_matches_, nullptr,
                                 metrics_recorder_.get(),
-                                /*webauthn_suggestions_available=*/false);
+                                /*webauthn_suggestions_available=*/false,
+                                /*suggestion_banned_fields=*/{});
 }
 
 // Exclude Android and iOS, because there credentials are not filled on
@@ -516,7 +527,8 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches,
       &saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false);
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FirstWaitForUsernameReason",
@@ -558,7 +570,8 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
   std::vector<PasswordForm> matches;
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, matches, preferred_match, page_origin, true);
+      form_on_page, matches, preferred_match, page_origin,
+      /*wait_for_username=*/true, /*suggestion_banned_fields=*/{});
 
   // |wait_for_username| should reflect the |wait_for_username| argument passed
   // to the constructor, which in this case is true.
@@ -568,7 +581,8 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
   EXPECT_EQ(std::string(), result.preferred_login.realm);
 
   PasswordFormFillData result2 = CreatePasswordFormFillData(
-      form_on_page, matches, preferred_match, page_origin, false);
+      form_on_page, matches, preferred_match, page_origin,
+      /*wait_for_username=*/false, /*suggestion_banned_fields=*/{});
 
   // |wait_for_username| should reflect the |wait_for_username| argument passed
   // to the constructor, which in this case is false.
@@ -637,7 +651,8 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   std::vector<PasswordForm> matches = {exact_match, public_suffix_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, matches, preferred_match, page_origin, true);
+      form_on_page, matches, preferred_match, page_origin,
+      /*wait_for_username=*/true, /*suggestion_banned_fields=*/{});
   EXPECT_TRUE(result.wait_for_username);
   // The preferred realm should match the signon realm from the
   // preferred match so the user can see where the result came from.
@@ -710,7 +725,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   std::vector<PasswordForm> matches = {exact_match, affiliated_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, matches, preferred_match, page_origin, false);
+      form_on_page, matches, preferred_match, page_origin,
+      /*wait_for_username=*/false, /*suggestion_banned_fields=*/{});
   EXPECT_FALSE(result.wait_for_username);
   // The preferred realm should match the signon realm from the
   // preferred match so the user can see where the result came from.
@@ -758,7 +774,8 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, {}, preferred_match, page_origin, true);
+      form_on_page, {}, preferred_match, page_origin,
+      /*wait_for_username=*/true, /*suggestion_banned_fields=*/{});
 
   EXPECT_EQ(form_data.renderer_id(), result.form_renderer_id);
   EXPECT_EQ(form_on_page.username_element_renderer_id,
@@ -792,7 +809,8 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
   Origin page_origin = Origin::Create(GURL("https://foo.com/"));
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, {} /* matches */, preferred_match, page_origin, true);
+      form_on_page, {} /* matches */, preferred_match, page_origin,
+      /*wait_for_username=*/true, /*suggestion_banned_fields=*/{});
 
   // Check that nor username nor password fields are set.
   EXPECT_TRUE(result.username_element_renderer_id.is_null());
@@ -831,7 +849,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   std::vector<PasswordForm> matches = {affiliated_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, matches, affiliated_match, page_origin, false);
+      form_on_page, matches, affiliated_match, page_origin,
+      /*wait_for_username=*/false, /*suggestion_banned_fields=*/{});
   EXPECT_FALSE(result.wait_for_username);
   // The preferred realm should match the app name from the affiliated match so
   // the user can see and understand where the result came from.
@@ -864,7 +883,8 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   std::vector<PasswordForm> matches = {additional_match};
 
   PasswordFormFillData result = CreatePasswordFormFillData(
-      form_on_page, matches, form_on_page, page_origin, false);
+      form_on_page, matches, form_on_page, page_origin,
+      /*wait_for_username=*/false, /*suggestion_banned_fields=*/{});
   EXPECT_FALSE(result.wait_for_username);
 
   // The preferred realm should match the form signon_realm.

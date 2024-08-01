@@ -9,6 +9,11 @@
 //
 // See media::VP9Decoder for example usage.
 //
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #ifndef MEDIA_PARSERS_VP9_PARSER_H_
 #define MEDIA_PARSERS_VP9_PARSER_H_
 
@@ -20,7 +25,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
@@ -192,13 +197,6 @@ struct MEDIA_EXPORT Vp9FrameHeader {
     INTERFRAME = 1,
   };
 
-  Vp9FrameHeader();
-  Vp9FrameHeader(const Vp9FrameHeader&);
-  Vp9FrameHeader(Vp9FrameHeader&&);
-  Vp9FrameHeader& operator=(const Vp9FrameHeader&);
-  Vp9FrameHeader& operator=(Vp9FrameHeader&&);
-  ~Vp9FrameHeader();
-
   bool IsKeyframe() const;
   bool IsIntra() const;
   bool RefreshFlag(size_t i) const {
@@ -206,67 +204,72 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   }
   VideoColorSpace GetColorSpace() const;
 
-  uint8_t profile = 0;
+  uint8_t profile;
 
-  bool show_existing_frame = false;
-  uint8_t frame_to_show_map_idx = 0;
+  bool show_existing_frame;
+  uint8_t frame_to_show_map_idx;
 
-  FrameType frame_type{KEYFRAME};
+  FrameType frame_type;
 
-  bool show_frame = false;
-  bool error_resilient_mode = false;
+  bool show_frame;
+  bool error_resilient_mode;
 
-  uint8_t bit_depth = 0;
-  Vp9ColorSpace color_space{Vp9ColorSpace::UNKNOWN};
-  bool color_range = false;
-  uint8_t subsampling_x = 0;
-  uint8_t subsampling_y = 0;
+  uint8_t bit_depth;
+  Vp9ColorSpace color_space;
+  bool color_range;
+  uint8_t subsampling_x;
+  uint8_t subsampling_y;
 
   // The range of frame_width and frame_height is 1..2^16.
-  uint32_t frame_width = 0;
-  uint32_t frame_height = 0;
-  uint32_t render_width = 0;
-  uint32_t render_height = 0;
+  uint32_t frame_width;
+  uint32_t frame_height;
+  uint32_t render_width;
+  uint32_t render_height;
 
-  bool intra_only = false;
-  uint8_t reset_frame_context = 0;
-  uint8_t refresh_frame_flags = 0;
-  uint8_t ref_frame_idx[kVp9NumRefsPerFrame] = {0};
-  bool ref_frame_sign_bias[Vp9RefType::VP9_FRAME_MAX] = {false};
-  bool allow_high_precision_mv = false;
-  Vp9InterpolationFilter interpolation_filter{Vp9InterpolationFilter::EIGHTTAP};
+  bool intra_only;
+  uint8_t reset_frame_context;
+  uint8_t refresh_frame_flags;
+  uint8_t ref_frame_idx[kVp9NumRefsPerFrame];
+  bool ref_frame_sign_bias[Vp9RefType::VP9_FRAME_MAX];
+  bool allow_high_precision_mv;
+  Vp9InterpolationFilter interpolation_filter;
 
-  bool refresh_frame_context = false;
-  bool frame_parallel_decoding_mode = false;
-  uint8_t frame_context_idx = 0;
+  bool refresh_frame_context;
+  bool frame_parallel_decoding_mode;
+  uint8_t frame_context_idx;
   // |frame_context_idx_to_save_probs| is to be used by save_probs() only, and
   // |frame_context_idx| otherwise.
-  uint8_t frame_context_idx_to_save_probs = 0;
+  uint8_t frame_context_idx_to_save_probs;
 
-  Vp9QuantizationParams quant_params = {};
+  Vp9QuantizationParams quant_params;
 
-  uint8_t tile_cols_log2 = 0;
-  uint8_t tile_rows_log2 = 0;
+  uint8_t tile_cols_log2;
+  uint8_t tile_rows_log2;
 
-  // Frame data. It is a responsibility of the client of the Vp9Parser to
-  // maintain validity of this data while it is being used outside of that
-  // class.
-  base::raw_span<const uint8_t, DanglingUntriaged> data;
+  // Pointer to the beginning of frame data. It is a responsibility of the
+  // client of the Vp9Parser to maintain validity of this data while it is
+  // being used outside of that class.
+  // RAW_PTR_EXCLUSION: Rewriting causes unrelated test failures.
+  // TODO(crbug.com/349424269): Fix tests and rewrite.
+  RAW_PTR_EXCLUSION const uint8_t* data;
+
+  // Size of |data| in bytes.
+  size_t frame_size;
 
   // Size of compressed header in bytes.
-  size_t header_size_in_bytes = 0;
+  size_t header_size_in_bytes;
 
   // Size of uncompressed header in bytes.
-  size_t uncompressed_header_size = 0;
+  size_t uncompressed_header_size;
 
-  Vp9CompressedHeader compressed_header = {};
+  Vp9CompressedHeader compressed_header;
 
   // Current frame entropy context after header parsing.
-  Vp9FrameContext frame_context = {};
+  Vp9FrameContext frame_context;
 
   // Segmentation and loop filter params from uncompressed header
-  Vp9SegmentationParams segmentation = {};
-  Vp9LoopFilterParams loop_filter = {};
+  Vp9SegmentationParams segmentation;
+  Vp9LoopFilterParams loop_filter;
 };
 
 // A parser for VP9 bitstream.

@@ -69,6 +69,24 @@ power_manager::BacklightBrightnessChange_Cause RequestCauseToChangeCause(
   return power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
 }
 
+power_manager::AmbientLightSensorChange_Cause
+AmbientLightSensorRequestCauseToChangeCause(
+    power_manager::SetAmbientLightSensorEnabledRequest_Cause cause) {
+  switch (cause) {
+    case power_manager::
+        SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP:
+      return power_manager::
+          AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP;
+    case power_manager::
+        SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE:
+      return power_manager::
+          AmbientLightSensorChange_Cause_RESTORED_FROM_USER_PREFERENCE;
+  }
+  NOTREACHED_IN_MIGRATION() << "Unhandled brightness request cause " << cause;
+  return power_manager::
+      AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP;
+}
+
 // Copied from Chrome's //base/time/time_now_posix.cc.
 // Returns count of |clk_id| in the form of a time delta. Returns an empty
 // time delta if |clk_id| isn't present on the system.
@@ -133,13 +151,17 @@ void FakePowerManagerClient::SetRenderProcessManagerDelegate(
 void FakePowerManagerClient::DecreaseScreenBrightness(bool allow_off) {
   // Simulate the real behavior of the platform by disabling the ambient light
   // sensor when the brightness is manually changed.
-  SetAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  SetAmbientLightSensorEnabled(set_als_request);
 }
 
 void FakePowerManagerClient::IncreaseScreenBrightness() {
   // Simulate the real behavior of the platform by disabling the ambient light
   // sensor when the brightness is manually changed.
-  SetAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  SetAmbientLightSensorEnabled(set_als_request);
 }
 
 void FakePowerManagerClient::SetScreenBrightness(
@@ -158,7 +180,9 @@ void FakePowerManagerClient::SetScreenBrightness(
 
   // Simulate the real behavior of the platform by disabling the ambient light
   // sensor when the brightness is manually changed.
-  SetAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  SetAmbientLightSensorEnabled(set_als_request);
 }
 
 void FakePowerManagerClient::GetScreenBrightnessPercent(
@@ -168,20 +192,21 @@ void FakePowerManagerClient::GetScreenBrightnessPercent(
       base::BindOnce(std::move(callback), screen_brightness_percent_));
 }
 
-void FakePowerManagerClient::SetAmbientLightSensorEnabled(bool enabled) {
+void FakePowerManagerClient::SetAmbientLightSensorEnabled(
+    const power_manager::SetAmbientLightSensorEnabledRequest& request) {
+  bool enabled = request.sensor_enabled();
   // If this is a no-op, don't emit a signal.
   if (is_ambient_light_sensor_enabled_ == enabled) {
     return;
   }
 
   is_ambient_light_sensor_enabled_ = enabled;
+  requested_ambient_light_sensor_enabled_cause_ = request.cause();
 
   power_manager::AmbientLightSensorChange change;
-  change.set_sensor_enabled(is_ambient_light_sensor_enabled_);
-  // Changes to the Ambient Light Sensor status that are triggered via the
-  // PowerManagerClient are assumed to be caused by the Settings app.
+  change.set_sensor_enabled(request.sensor_enabled());
   change.set_cause(
-      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+      AmbientLightSensorRequestCauseToChangeCause(request.cause()));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -213,14 +238,18 @@ void FakePowerManagerClient::HasKeyboardBacklight(
 void FakePowerManagerClient::DecreaseKeyboardBrightness() {
   // Simulate the real behavior of the platform by disabling the keyboard
   // ambient light sensor when the brightness is manually changed.
-  SetKeyboardAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  SetKeyboardAmbientLightSensorEnabled(set_als_request);
 }
 
 void FakePowerManagerClient::IncreaseKeyboardBrightness() {
   ++num_increase_keyboard_brightness_calls_;
   // Simulate the real behavior of the platform by disabling the keyboard
   // ambient light sensor when the brightness is manually changed.
-  SetKeyboardAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  SetKeyboardAmbientLightSensorEnabled(set_als_request);
 }
 
 void FakePowerManagerClient::GetKeyboardBrightnessPercent(
@@ -244,13 +273,16 @@ void FakePowerManagerClient::SetKeyboardBrightness(
                      weak_ptr_factory_.GetWeakPtr(), change));
   // Simulate the real behavior of the platform by disabling the keyboard
   // ambient light sensor when the brightness is manually changed.
-  SetKeyboardAmbientLightSensorEnabled(false);
+  power_manager::SetAmbientLightSensorEnabledRequest set_als_request;
+  set_als_request.set_sensor_enabled(false);
+  SetKeyboardAmbientLightSensorEnabled(set_als_request);
 }
 
 void FakePowerManagerClient::ToggleKeyboardBacklight() {}
 
 void FakePowerManagerClient::SetKeyboardAmbientLightSensorEnabled(
-    bool enabled) {
+    const power_manager::SetAmbientLightSensorEnabledRequest& request) {
+  bool enabled = request.sensor_enabled();
   // If this is a no-op, don't emit a signal.
   if (keyboard_ambient_light_sensor_enabled_ == enabled) {
     return;
@@ -258,9 +290,9 @@ void FakePowerManagerClient::SetKeyboardAmbientLightSensorEnabled(
   keyboard_ambient_light_sensor_enabled_ = enabled;
 
   power_manager::AmbientLightSensorChange change;
-  change.set_sensor_enabled(keyboard_ambient_light_sensor_enabled_);
+  change.set_sensor_enabled(request.sensor_enabled());
   change.set_cause(
-      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+      AmbientLightSensorRequestCauseToChangeCause(request.cause()));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

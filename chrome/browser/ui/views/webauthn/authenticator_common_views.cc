@@ -20,7 +20,7 @@
 
 namespace {
 constexpr int kGapSize = 8;
-constexpr int kGpmIconSize = 16;
+constexpr int kGpmIconSize = 20;
 constexpr int kSmallIconSize = 20;
 constexpr int kMediumIconSize = 26;
 constexpr int kHorizontalInset = 8;

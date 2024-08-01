@@ -521,3 +521,16 @@ TEST_F(SessionControllerClientImplTest, SessionLengthLimit) {
   EXPECT_EQ(length_limit, session_controller.last_session_length_limit());
   EXPECT_EQ(start_time, session_controller.last_session_start_time());
 }
+
+TEST_F(SessionControllerClientImplTest, FirstSessionReady) {
+  SessionControllerClientImpl client;
+  TestSessionController session_controller;
+  client.Init();
+
+  ASSERT_EQ(0, session_controller.first_session_ready_count());
+
+  // Simulate post login tasks finish.
+  session_manager().HandleUserSessionStartUpTaskCompleted();
+
+  EXPECT_EQ(1, session_controller.first_session_ready_count());
+}

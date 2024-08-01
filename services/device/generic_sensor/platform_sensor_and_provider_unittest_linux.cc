@@ -531,7 +531,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckAmbientLightReadings) {
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(mojom::SensorType::AMBIENT_LIGHT),
+      GetSensorReadingSharedBufferOffset(mojom::SensorType::AMBIENT_LIGHT),
       sizeof(SensorReadingSharedBuffer));
 
   double sensor_value[kSensorValuesSize] = {50};
@@ -552,7 +552,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckAmbientLightReadings) {
   WaitOnSensorReadingChangedEvent(client.get(), sensor->GetType());
 
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.als.value, 50);
 
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
@@ -564,7 +564,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(SensorType::ACCELEROMETER),
+      GetSensorReadingSharedBufferOffset(SensorType::ACCELEROMETER),
       sizeof(SensorReadingSharedBuffer));
 
   // As long as WaitOnSensorReadingChangedEvent() waits until client gets a
@@ -594,7 +594,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
   WaitOnSensorReadingChangedEvent(client.get(), sensor->GetType());
 
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   double scaling = kAccelerometerScalingValue;
   EXPECT_THAT(buffer->reading.accel.x,
               RoundAccelerometerValue(
@@ -624,7 +624,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckLinearAcceleration) {
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(SensorType::LINEAR_ACCELERATION),
+      GetSensorReadingSharedBufferOffset(SensorType::LINEAR_ACCELERATION),
       sizeof(SensorReadingSharedBuffer));
   double sensor_values[kSensorValuesSize] = {0, 0, -base::kMeanGravityDouble};
   InitializeSupportedSensor(SensorType::ACCELEROMETER,
@@ -648,7 +648,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckLinearAcceleration) {
   WaitOnSensorReadingChangedEvent(client.get(), sensor->GetType());
 
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.accel.x, 0.0);
   EXPECT_THAT(buffer->reading.accel.y, 0.0);
   EXPECT_THAT(static_cast<int>(buffer->reading.accel.z),
@@ -662,7 +662,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckGyroscopeReadingConversion) {
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping =
-      region.MapAt(SensorReadingSharedBuffer::GetOffset(SensorType::GYROSCOPE),
+      region.MapAt(GetSensorReadingSharedBufferOffset(SensorType::GYROSCOPE),
                    sizeof(SensorReadingSharedBuffer));
 
   // As long as WaitOnSensorReadingChangedEvent() waits until client gets a
@@ -691,7 +691,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckGyroscopeReadingConversion) {
   WaitOnSensorReadingChangedEvent(client.get(), sensor->GetType());
 
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   double scaling = kGyroscopeScalingValue;
   EXPECT_THAT(buffer->reading.gyro.x,
               RoundGyroscopeValue(scaling *
@@ -710,9 +710,9 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckGyroscopeReadingConversion) {
 TEST_F(PlatformSensorAndProviderLinuxTest, CheckMagnetometerReadingConversion) {
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
-  base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(SensorType::MAGNETOMETER),
-      sizeof(SensorReadingSharedBuffer));
+  base::ReadOnlySharedMemoryMapping mapping =
+      region.MapAt(GetSensorReadingSharedBufferOffset(SensorType::MAGNETOMETER),
+                   sizeof(SensorReadingSharedBuffer));
 
   // As long as WaitOnSensorReadingChangedEvent() waits until client gets a
   // a notification about readings changed, the frequency file must not be
@@ -741,7 +741,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckMagnetometerReadingConversion) {
   WaitOnSensorReadingChangedEvent(client.get(), sensor->GetType());
 
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   double scaling = kMagnetometerScalingValue * kMicroteslaInGauss;
   EXPECT_THAT(buffer->reading.magn.x,
               RoundMagnetometerValue(
@@ -764,7 +764,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(SensorType::AMBIENT_LIGHT),
+      GetSensorReadingSharedBufferOffset(SensorType::AMBIENT_LIGHT),
       sizeof(SensorReadingSharedBuffer));
 
   double sensor_value[kSensorValuesSize] = {50};
@@ -790,7 +790,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
   WaitOnSensorReadingChangedEvent(client.get(), sensor->GetType());
 
   const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+      mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.als.value, 50);
 
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));

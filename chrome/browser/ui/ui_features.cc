@@ -103,11 +103,6 @@ BASE_FEATURE(kAccessCodeCastUI,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables showing the EV certificate details in the Page Info bubble.
-BASE_FEATURE(kEvDetailsInPageInfo,
-             "EvDetailsInPageInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables the feature to remove the last confirmation dialog when relaunching
 // to update Chrome.
@@ -442,10 +437,6 @@ BASE_FEATURE(kViewsFirstRunDialog,
              "ViewsFirstRunDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kViewsTaskManager,
-             "ViewsTaskManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kViewsJSAppModalDialog,
              "ViewsJSAppModalDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -462,5 +453,7 @@ BASE_FEATURE(kUsePortalAccentColor,
              "UsePortalAccentColor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kCompactMode, "CompactMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

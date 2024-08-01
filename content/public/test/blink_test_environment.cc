@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/test/test_suite_helper.h"
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_switches.h"
@@ -36,6 +37,7 @@ BlinkTestEnvironment::BlinkTestEnvironment() = default;
 BlinkTestEnvironment::~BlinkTestEnvironment() = default;
 
 void BlinkTestEnvironment::SetUp() {
+  base::test::InitScopedFeatureListForTesting(scoped_feature_list_);
   blink::WebRuntimeFeatures::EnableExperimentalFeatures(true);
   blink::WebRuntimeFeatures::EnableTestOnlyFeatures(true);
 
@@ -79,6 +81,7 @@ void BlinkTestEnvironment::InitializeBlinkTestSupport() {
 void BlinkTestEnvironment::TearDown() {
   blink_test_support_.reset();
   content_initializer_.reset();
+  scoped_feature_list_.Reset();
 }
 
 void BlinkTestEnvironmentWithIsolate::TearDown() {

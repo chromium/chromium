@@ -84,7 +84,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void SetIsUserOwner(bool is_user_owner);
 
   // Select action performer based on the given `action`. Action includes the
-  // action type and action params for performing action.
+  // action type and action params for performing action. The caller should
+  // check if action is defined before calling this method.
   void PerformAction(int campaign_id,
                      std::optional<int> group_id,
                      const Action* action);

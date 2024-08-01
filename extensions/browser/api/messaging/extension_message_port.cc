@@ -151,7 +151,8 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
       port_->UnregisterFrame(render_frame_host);
   }
 
-  void OnServiceWorkerUnregistered(const WorkerId& worker_id) override {
+  void OnStoppedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override {
     port_->UnregisterWorker(worker_id);
   }
 

@@ -47,12 +47,18 @@ class MockDataSharingService : public DataSharingService {
                void(const GroupId&,
                     const std::string&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
+  MOCK_METHOD3(AddMember,
+               void(const GroupId&,
+                    const std::string&,
+                    base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD3(RemoveMember,
                void(const GroupId&,
                     const std::string&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD1(ShouldInterceptNavigationForShareURL, bool(const GURL&));
   MOCK_METHOD1(HandleShareURLNavigationIntercepted, void(const GURL&));
+  MOCK_METHOD1(GetDataSharingURL, std::unique_ptr<GURL>(const GroupData&));
+  MOCK_METHOD1(ParseDataSharingURL, ParseURLResult(const GURL&));
 };
 
 }  // namespace data_sharing

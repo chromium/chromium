@@ -730,7 +730,7 @@ class BidderWorkletTest : public testing::Test {
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
         /*trusted_bidding_signals_slot_size_param=*/"", top_window_origin_,
-        permissions_policy_state_.Clone(), experiment_group_id_);
+        permissions_policy_state_.Clone(), experiment_group_id_, nullptr);
 
     shared_storage_hosts_.resize(NumThreads());
 

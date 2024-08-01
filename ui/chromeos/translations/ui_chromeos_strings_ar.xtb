@@ -133,7 +133,7 @@
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2084108471225856927">إعدادات الجهاز</translation>
 <translation id="2084809735218147718">شخص يقول "شكرًا لك" بلغة الإشارة</translation>
-<translation id="2088690981887365033">الشبكة الافتراضية الخاصة</translation>
+<translation id="2088690981887365033">‏شبكة VPN</translation>
 <translation id="209653272837065803">لا تتوفّر مساحة تخزين كافية لمواصلة مزامنة الملفات.</translation>
 <translation id="2111134541987263231">تفعيل <ph name="BEGIN_BOLD" />السماح بالإضافة في وضع التصفّح المتخفي<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، ولن تتمكّن من استعادتها.</translation>
@@ -377,7 +377,6 @@
 <translation id="3999574733850440202">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في OneDrive.</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4017788180641807848">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman</translation>
-<translation id="4019998208269143058">التثبيت في قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="4040753847560036377">‏رمز PUK غير صحيح.</translation>
 <translation id="4057991113334098539">تفعيل...</translation>
 <translation id="4092890906744441904">الأيرلندية</translation>
@@ -696,7 +695,6 @@
 <translation id="6320212353742551423">أرشيف <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">تلويح باليد</translation>
 <translation id="6327785803543103246">اكتشاف الخادم الوكيل للويب تلقائيًا</translation>
-<translation id="6337014272874260727">إزالة التثبيت من قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="6339145975392024142">الأمريكية الدولية (الكمبيوتر الشخصي)</translation>
 <translation id="6356685157277930264">نافذة التعليقات على الملفات</translation>
 <translation id="6358884629796491903">تنين</translation>

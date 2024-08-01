@@ -39,8 +39,8 @@
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sync/password_local_data_batch_uploader.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/sync_utils/plus_address_model_type_controller.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -556,17 +556,16 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
       plus_address_webdata_service_.value() && google_groups_manager_.value() &&
-      google_groups_manager_.value()->IsFeatureEnabledForProfile(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
-           .empty() &&
       base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::PLUS_ADDRESS,
-        /*delegate_for_full_sync_mode=*/
-        plus_address_webdata_service_.value()->GetSyncControllerDelegate(),
-        /*delegate_for_transport_mode=*/
-        plus_address_webdata_service_.value()->GetSyncControllerDelegate()));
+    controllers.push_back(
+        std::make_unique<plus_addresses::PlusAddressModelTypeController>(
+            syncer::PLUS_ADDRESS,
+            /*delegate_for_full_sync_mode=*/
+            plus_address_webdata_service_.value()->GetSyncControllerDelegate(),
+            /*delegate_for_transport_mode=*/
+            plus_address_webdata_service_.value()->GetSyncControllerDelegate(),
+            sync_service, identity_manager_.value(),
+            google_groups_manager_.value()));
   }
 
   // `plus_address_setting_service_` is null on iOS WebView.
@@ -574,17 +573,16 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING) &&
       plus_address_setting_service_.value() && google_groups_manager_.value() &&
-      google_groups_manager_.value()->IsFeatureEnabledForProfile(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
-           .empty() &&
       base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::PLUS_ADDRESS_SETTING,
-        /*delegate_for_full_sync_mode=*/
-        plus_address_setting_service_.value()->GetSyncControllerDelegate(),
-        /*delegate_for_transport_mode=*/
-        plus_address_setting_service_.value()->GetSyncControllerDelegate()));
+    controllers.push_back(
+        std::make_unique<plus_addresses::PlusAddressModelTypeController>(
+            syncer::PLUS_ADDRESS_SETTING,
+            /*delegate_for_full_sync_mode=*/
+            plus_address_setting_service_.value()->GetSyncControllerDelegate(),
+            /*delegate_for_transport_mode=*/
+            plus_address_setting_service_.value()->GetSyncControllerDelegate(),
+            sync_service, identity_manager_.value(),
+            google_groups_manager_.value()));
   }
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {
@@ -743,12 +741,6 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
             delegate)));
   }
-
-  // TODO(crbug.com/335688372): Temporary workaround to avoid test failures in
-  // some browser tests that override factories late, which otherwise runs into
-  // dangling raw pointers.
-  passkey_model_.Reset();
-  consent_auditor_.Reset();
 
   return controllers;
 }

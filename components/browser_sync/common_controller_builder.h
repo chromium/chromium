@@ -213,8 +213,6 @@ class CommonControllerBuilder {
       return ptr_.value();
     }
 
-    void Reset() { ptr_.reset(); }
-
    private:
     std::optional<Ptr> ptr_;
   };

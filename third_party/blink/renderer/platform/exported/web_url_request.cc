@@ -471,8 +471,8 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
     load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
   }
   if (resource_request_->PrefetchMaybeForTopLeveNavigation()) {
-    DCHECK_EQ(resource_request_->GetRequestContext(),
-              blink::mojom::blink::RequestContextType::PREFETCH);
+    CHECK_EQ(resource_request_->GetRequestContext(),
+             blink::mojom::blink::RequestContextType::PREFETCH);
     if (!resource_request_->RequestorOrigin()->IsSameOriginWith(
             SecurityOrigin::Create(resource_request_->Url()).get())) {
       load_flags |= net::LOAD_RESTRICTED_PREFETCH;

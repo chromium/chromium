@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
+#include "chrome/browser/ash/policy/skyvault/skyvault_capture_upload_notification.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -70,6 +71,8 @@ bool IsScreenCaptureDisabledByPolicy() {
 void CaptureFileFinalized(
     const base::FilePath& original_path,
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
+    std::unique_ptr<policy::skyvault::SkyvaultCaptureUploadNotification>
+        upload_notification,
     bool success,
     storage::FileSystemURL file_url) {
   std::move(callback).Run(success, file_url.path());
@@ -384,12 +387,23 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
   auto* profile = ProfileManager::GetActiveUserProfile();
   if (!odfs_temp_dir_.GetPath().empty() &&
       odfs_temp_dir_.GetPath().IsParent(path) && profile) {
-    // TODO(b/348177318): Show notification with progress during upload.
-    ash::cloud_upload::OdfsSkyvaultUploader::Upload(
+    // Passing the notification to the callback so that it's destructed once
+    // file upload finishes.
+    auto notification =
+        std::make_unique<policy::skyvault::SkyvaultCaptureUploadNotification>(
+            path);
+    auto notification_ptr = notification.get();
+    auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
         profile, path,
         ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
-        /*progress_callback=*/base::DoNothing(),
-        base::BindOnce(&CaptureFileFinalized, path, std::move(callback)));
+        base::BindRepeating(
+            &policy::skyvault::SkyvaultCaptureUploadNotification::
+                UpdateProgress,
+            notification->GetWeakPtr()),
+        base::BindOnce(&CaptureFileFinalized, path, std::move(callback),
+                       std::move(notification)));
+    notification_ptr->SetCancelClosure(base::BindOnce(
+        &ash::cloud_upload::OdfsSkyvaultUploader::Cancel, uploader));
     return;
   }
   std::move(callback).Run(/*success=*/true, path);

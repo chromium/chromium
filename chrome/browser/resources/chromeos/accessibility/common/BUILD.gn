@@ -28,8 +28,6 @@ group("build") {
 }
 
 js_sources = [
-  "async_util.js",
-  "browser_util.js",
   "gdocs_script.js",
   "testing/accessibility_test_base.js",
   "testing/test_node_generator.js",
@@ -54,10 +52,12 @@ ts_modules = [
   "action_fulfillment/macros/smart_select_between_macro.ts",
   "action_fulfillment/macros/toggle_dictation_macro.ts",
   "array_util.ts",
+  "async_util.ts",
   "automation_predicate.ts",
   "automation_util.ts",
   "bridge_callback_manager.ts",
   "bridge_helper.ts",
+  "browser_util.ts",
   "chrome_event_handler.ts",
   "constants.ts",
   "cursors/cursor.ts",
@@ -98,8 +98,8 @@ ts_definitions = [
   "../definitions/storage_mv2.d.ts",
   "../definitions/tabs.d.ts",
   "../definitions/tts.d.ts",
+  "../definitions/windows.d.ts",
   "//tools/typescript/definitions/chrome_event.d.ts",
-  "//tools/typescript/definitions/windows.d.ts",
 ]
 
 # Copy all JS and TS sources to a staging folder. All generated TS/JS files

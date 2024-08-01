@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 
 #include <wayland-cursor.h>
@@ -128,6 +133,7 @@ void WaylandCursor::SetPlatformShapeInternal() {
   if (current_image_index_ >= cursor_data_->image_count)
     current_image_index_ = 0;
 
+  // SAFETY: TODO(crbug.com/353039516): fix unsafe buffer access.
   wl_cursor_image* const cursor_image =
       cursor_data_->images[current_image_index_];
 

@@ -15,15 +15,18 @@ static_library("privacy_hub") {
     "privacy_hub_util.cc",
     "privacy_hub_util.h",
   ]
+
   deps = [
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
     "//components/session_manager/core",
   ]
+
   public_deps = [
     "//ash",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
   ]
 }
 

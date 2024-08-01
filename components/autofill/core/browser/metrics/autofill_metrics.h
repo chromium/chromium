@@ -609,7 +609,10 @@ class AutofillMetrics {
   // numeric values should never be reused.
   enum class AutofillStatus {
     kIsFocusable = 0,
-    kWasFocused = 1,
+    // kWasFocusedByTapOrClick indicates that autofill was queried to
+    // potentially show a suggestions (a focus-by-tab-key or focus-on-pageload
+    // is insufficient).
+    kWasFocusedByTapOrClick = 1,
     kWasAutofillTriggered = 2,
     // Note that this is set before checking the iframe security policy.
     // This value is true even when the filling was prevented because of the
@@ -629,7 +632,8 @@ class AutofillMetrics {
     // The field was sent to the renderer for autofilling. Note that this is
     // still true if the user later edited the autofilled value.
     kWasAutofilledAfterSecurityPolicy = 14,
-    kMaxValue = kWasAutofilledAfterSecurityPolicy
+    kWasFocused = 15,
+    kMaxValue = kWasFocused
   };
 
   struct FormEventSetTraits {
@@ -747,6 +751,8 @@ class AutofillMetrics {
         FormEventSet form_events,
         base::TimeTicks initial_interaction_timestamp,
         base::TimeTicks form_submitted_timestamp);
+    void LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+        const FormStructure& form_structure);
     void LogFocusedComplexFormAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,

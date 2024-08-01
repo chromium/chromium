@@ -2,4 +2,5 @@ include_rules = [
   "+components/keyed_service/core/keyed_service.h",
   "+components/language/core/browser",
   "+components/ukm/ios",
+  "+components/language_detection/core",
 ]

@@ -429,7 +429,8 @@ void CertProvisioningWorkerStatic::OnGenerateKeyForVaDone(
     LOG(WARNING) << "Failed to get certificate for a key" + GetLogInfoBlock();
     request_backoff_.InformOfRequest(false);
     // Next DoStep will retry generating the key.
-    ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
+    ScheduleNextStep(request_backoff_.GetTimeUntilRelease(),
+                     /*try_provisioning_on_timeout=*/true);
     return;
   }
 
@@ -691,7 +692,9 @@ void CertProvisioningWorkerStatic::OnFinishCsrDone(
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
   // No need to check with the backend immediately - the certificate cannot be
   // issued yet because the backend needs to reach out to the CA.
-  ScheduleNextStep(kDownloadCertRequestInitialDelay);
+  ScheduleNextStep(
+      kDownloadCertRequestInitialDelay,
+      /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
 }
 
 void CertProvisioningWorkerStatic::DownloadCert() {
@@ -803,7 +806,8 @@ bool CertProvisioningWorkerStatic::ProcessResponseErrors(
     last_backend_server_error_ =
         BackendServerError(status, base::Time::NowFromSystemTime());
     request_backoff_.InformOfRequest(false);
-    ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
+    ScheduleNextStep(request_backoff_.GetTimeUntilRelease(),
+                     /*try_provisioning_on_timeout=*/true);
     return false;
   }
 
@@ -817,7 +821,9 @@ bool CertProvisioningWorkerStatic::ProcessResponseErrors(
                << " will be retried after: " << try_later_delay
                << GetLogInfoBlock();
 
-    ScheduleNextStep(std::move(try_later_delay));
+    ScheduleNextStep(
+        std::move(try_later_delay),
+        /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
     return false;
   }
 
@@ -856,27 +862,31 @@ bool CertProvisioningWorkerStatic::ProcessResponseErrors(
   }
 
   if (try_later.has_value()) {
-    ScheduleNextStep(base::Milliseconds(try_later.value()));
+    ScheduleNextStep(
+        base::Milliseconds(try_later.value()),
+        /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
     return false;
   }
 
   return true;
 }
 
-void CertProvisioningWorkerStatic::ScheduleNextStep(base::TimeDelta delay) {
+void CertProvisioningWorkerStatic::ScheduleNextStep(
+    base::TimeDelta delay,
+    bool try_provisioning_on_timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  delay = std::max(delay, kMinumumTryAgainLaterDelay);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CertProvisioningWorkerStatic::OnShouldContinue,
-                     weak_factory_.GetWeakPtr(), ContinueReason::kTimeout),
-      delay);
+  if (try_provisioning_on_timeout) {
+    delay = std::max(delay, kMinumumTryAgainLaterDelay);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CertProvisioningWorkerStatic::OnShouldContinue,
+                       weak_factory_.GetWeakPtr(), ContinueReason::kTimeout),
+        delay);
+    VLOG(0) << "Next step scheduled in " << delay << GetLogInfoBlock();
+  }
 
   is_waiting_ = true;
-  VLOG(0) << "Next step scheduled in " << delay << GetLogInfoBlock();
-
   last_update_time_ = base::Time::NowFromSystemTime();
   state_change_callback_.Run();
 }

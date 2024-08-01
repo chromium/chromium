@@ -51,8 +51,9 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
 
     ExternalRegistryLoader::LoadFinished(std::move(prefs));
 
-    if (load_finished_count_ == 2)
+    if (load_finished_count_ == 2) {
       run_loop_.Quit();
+    }
   }
 
   base::RunLoop run_loop_;
@@ -65,7 +66,7 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
 
 class ExternalRegistryLoaderUnittest : public testing::Test {
  public:
-  ExternalRegistryLoaderUnittest() {}
+  ExternalRegistryLoaderUnittest() = default;
 
   ExternalRegistryLoaderUnittest(const ExternalRegistryLoaderUnittest&) =
       delete;

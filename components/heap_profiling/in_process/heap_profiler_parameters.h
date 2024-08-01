@@ -9,8 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/json/json_value_converter.h"
+#include "base/profiler/process_type.h"
 #include "base/time/time.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 
 namespace heap_profiling {
 
@@ -64,7 +64,7 @@ HeapProfilerParameters GetDefaultHeapProfilerParameters();
 // identical to the result of GetDefaultHeapProfilerParameters() unless
 // overridden by a field trial.
 HeapProfilerParameters GetHeapProfilerParametersForProcess(
-    metrics::CallStackProfileParams::Process process_type);
+    base::ProfilerProcessType process_type);
 
 }  // namespace heap_profiling
 

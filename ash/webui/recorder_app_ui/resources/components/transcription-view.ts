@@ -23,7 +23,7 @@ import {
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {TextPart, TextToken} from '../core/soda/soda.js';
+import {TextPart, Transcription} from '../core/soda/soda.js';
 import {
   assert,
   assertExists,
@@ -33,6 +33,11 @@ import {formatDuration} from '../core/utils/datetime.js';
 import {clamp, parseNumber, sliceWhen} from '../core/utils/utils.js';
 
 const SCROLL_MARGIN = 3;
+
+/**
+ * Maximum number of the speaker colors before the color starts cycling.
+ */
+const MAX_SPEAKER_COLORS = 5;
 
 function inBetween(x: number, [low, high]: [number, number]): boolean {
   // Note that .scrollTo sometimes scroll slightly off to what's given as an
@@ -107,6 +112,47 @@ export class TranscriptionView extends ReactiveLitElement {
       text-decoration: underline;
     }
 
+    .speaker-label {
+      font: var(--cros-button-2-font);
+      margin: 0 0 4px;
+
+      .speaker-single & {
+        display: none;
+      }
+
+      .speaker-duo & {
+        &.speaker-1 {
+          color: var(--cros-sys-primary);
+        }
+
+        &.speaker-2 {
+          color: var(--cros-sys-tertiary);
+        }
+      }
+
+      .speaker-multiple & {
+        &.speaker-1 {
+          color: var(--cros-sys-illo-card-on_color1);
+        }
+
+        &.speaker-2 {
+          color: var(--cros-sys-illo-card-on_color2);
+        }
+
+        &.speaker-3 {
+          color: var(--cros-sys-illo-card-on_color3);
+        }
+
+        &.speaker-4 {
+          color: var(--cros-sys-illo-card-on_color4);
+        }
+
+        &.speaker-5 {
+          color: var(--cros-sys-illo-card-on_color5);
+        }
+      }
+    }
+
     .sentence {
       border-radius: 4px;
       box-decoration-break: clone;
@@ -130,7 +176,7 @@ export class TranscriptionView extends ReactiveLitElement {
         }
       }
 
-      .seekable .timestamp:hover + .paragraph > &:first-child {
+      .seekable .timestamp:hover + .paragraph > &:first-of-type {
         background: var(--cros-sys-highlight_shape);
       }
     }
@@ -150,12 +196,12 @@ export class TranscriptionView extends ReactiveLitElement {
   `;
 
   static override properties: PropertyDeclarations = {
-    textTokens: {attribute: false},
+    transcription: {attribute: false},
     currentTime: {type: Number},
     seekable: {type: Boolean},
   };
 
-  textTokens: TextToken[] = [];
+  transcription: Transcription|null = null;
 
   currentTime: number|null = null;
 
@@ -316,25 +362,44 @@ export class TranscriptionView extends ReactiveLitElement {
     );
   }
 
-  private renderParagraph(parts: TextPart[]) {
+  private renderSpeakerLabel(
+    speakerLabels: string[],
+    speakerLabel: string|null,
+  ) {
+    if (speakerLabel === null) {
+      return nothing;
+    }
+    const speakerLabelId =
+      speakerLabels.indexOf(speakerLabel) % MAX_SPEAKER_COLORS;
+    assert(speakerLabelId !== -1);
+    return html`<div class="speaker-label speaker-${speakerLabelId + 1}">
+      Speaker ${speakerLabel}
+    </div>`;
+  }
+
+  private renderParagraph(speakerLabels: string[], parts: TextPart[]) {
     // TODO: b/341014241 - Better heuristic for cutting sentences.
     const sentences = sliceWhen(parts, ({text}) => {
       return text.endsWith('.') || text.endsWith('?') || text.endsWith('!');
     });
-    return repeat(
-      sentences,
-      (_v, i) => i,
-      (sentence, i) => {
-        // Use the leadingSpace field for the first word. If the leadingSpace
-        // field is missing, add space after the first sentence.
-        const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
-        return html`${leadingSpace ? ' ' : ''}<span
-            class="sentence"
-            data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
-            >${this.renderSentence(sentence)}</span
-          >`;
-      },
-    );
+    const {speakerLabel} = assertExists(parts[0]);
+    return [
+      this.renderSpeakerLabel(speakerLabels, speakerLabel),
+      repeat(
+        sentences,
+        (_v, i) => i,
+        (sentence, i) => {
+          // Use the leadingSpace field for the first word. If the leadingSpace
+          // field is missing, add space after the first sentence.
+          const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
+          return html`${leadingSpace ? ' ' : ''}<span
+              class="sentence"
+              data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
+              >${this.renderSentence(sentence)}</span
+            >`;
+        },
+      ),
+    ];
   }
 
   private onTextClick(ev: MouseEvent) {
@@ -361,7 +426,13 @@ export class TranscriptionView extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    const paragraphs = sliceWhen(this.textTokens, (a, b) => {
+    if (this.transcription === null) {
+      return nothing;
+    }
+
+    const speakerLabels = this.transcription.getSpeakerLabels();
+
+    const paragraphs = sliceWhen(this.transcription.textTokens, (a, b) => {
       if (a.kind === 'textSeparator' || b.kind === 'textSeparator') {
         return true;
       }
@@ -372,6 +443,9 @@ export class TranscriptionView extends ReactiveLitElement {
         // TODO(pihsun): This currently is not used since we already split
         // across result border, and within the same result the time ranges are
         // always continuous.
+        return true;
+      }
+      if (a.speakerLabel !== b.speakerLabel) {
         return true;
       }
       return false;
@@ -408,14 +482,28 @@ export class TranscriptionView extends ReactiveLitElement {
               ${startTimeDisplay}
               <md-focus-ring></md-focus-ring>
             </span>
-            <div class="paragraph">${this.renderParagraph(parts)}</div>
+            <div class="paragraph">
+              ${this.renderParagraph(speakerLabels, parts)}
+            </div>
           </div>
         `;
       },
     );
+
+    const numSpeakers = speakerLabels.length;
+    let speakerNumClass: string;
+    if (numSpeakers <= 1) {
+      speakerNumClass = 'speaker-single';
+    } else if (numSpeakers === 2) {
+      speakerNumClass = 'speaker-duo';
+    } else {
+      speakerNumClass = 'speaker-multiple';
+    }
+
     const classes = {
       seekable: this.seekable,
       autoscroll: this.autoscrollEnabled.value,
+      [speakerNumClass]: true,
     };
     // TODO(pihsun): @click on #transcript is a performance optimization to
     // only have the click handler on the container. Need to adjust this

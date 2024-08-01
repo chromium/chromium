@@ -95,9 +95,8 @@ class ReportingServerConnectorTest : public ::testing::Test {
     const net::HttpRequestHeaders& headers =
         test_env_->url_loader_factory()->GetPendingRequest(0)->request.headers;
     ASSERT_TRUE(headers.HasHeader(policy::dm_protocol::kAuthHeader));
-    std::string auth_header;
-    headers.GetHeader(policy::dm_protocol::kAuthHeader, &auth_header);
-    EXPECT_THAT(auth_header, HasSubstr(kFakeDmToken));
+    EXPECT_THAT(headers.GetHeader(policy::dm_protocol::kAuthHeader),
+                testing::Optional(HasSubstr(kFakeDmToken)));
   }
 
   void ComposePayload(int64_t count, Priority priority = Priority::SLOW_BATCH) {

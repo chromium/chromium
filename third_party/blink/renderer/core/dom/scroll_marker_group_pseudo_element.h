@@ -1,0 +1,51 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_MARKER_GROUP_PSEUDO_ELEMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_MARKER_GROUP_PSEUDO_ELEMENT_H_
+
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
+
+namespace blink {
+
+// Represents ::scroll-marker-group pseudo element and manages
+// implicit focus group, formed by ::scroll-marker pseudo elements.
+// This focus group is needed to cycle through its element with
+// arrow keys.
+class ScrollMarkerGroupPseudoElement : public PseudoElement {
+ public:
+  // pseudo_id is needed, as ::scroll-marker-group can be after or before.
+  ScrollMarkerGroupPseudoElement(Element* originating_element,
+                                 PseudoId pseudo_id)
+      : PseudoElement(originating_element, pseudo_id) {}
+
+  bool IsScrollMarkerGroupPseudoElement() const final { return true; }
+
+  void AddToFocusGroup(ScrollMarkerPseudoElement& scroll_marker);
+  void RemoveFromFocusGroup(const ScrollMarkerPseudoElement& scroll_marker);
+  void ClearFocusGroup();
+  ScrollMarkerPseudoElement* FindFocusableElementForward(
+      const Element& current);
+  ScrollMarkerPseudoElement* FindFocusableElementBackward(
+      const Element& current);
+
+  void Dispose() final;
+  void Trace(Visitor* v) const final;
+
+ private:
+  // TODO(332396355): Add spec link, once it's created.
+  HeapVector<Member<ScrollMarkerPseudoElement>> focus_group_;
+};
+
+template <>
+struct DowncastTraits<ScrollMarkerGroupPseudoElement> {
+  static bool AllowFrom(const Node& node) {
+    return node.IsScrollMarkerGroupPseudoElement();
+  }
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_MARKER_GROUP_PSEUDO_ELEMENT_H_

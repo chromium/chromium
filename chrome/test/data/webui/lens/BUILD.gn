@@ -8,10 +8,10 @@ build_webui_tests("build") {
   is_chrome_untrusted = true
   files = [
     "overlay/find_words_in_region_test.ts",
-    "overlay/cursor_tooltip_test.ts",
     "overlay/object_selection_test.ts",
     "overlay/overlay_background_scrim_test.ts",
     "overlay/overlay_close_button_test.ts",
+    "overlay/overlay_cursor_test.ts",
     "overlay/overlay_more_options_button_test.ts",
     "overlay/overlay_screenshot_test.ts",
     "overlay/overlay_theme_test.ts",

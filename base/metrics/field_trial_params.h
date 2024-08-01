@@ -10,6 +10,7 @@
 #ifndef BASE_METRICS_FIELD_TRIAL_PARAMS_H_
 #define BASE_METRICS_FIELD_TRIAL_PARAMS_H_
 
+#include <array>
 #include <map>
 #include <string>
 
@@ -293,6 +294,19 @@ struct FeatureParam<Enum, true> {
     const Enum value;
     const char* const name;
   };
+
+  template <size_t option_count>
+  constexpr FeatureParam(const Feature* feature,
+                         const char* name,
+                         const Enum default_value,
+                         const std::array<Option, option_count>& options)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        options(options.data()),
+        option_count(option_count) {
+    static_assert(option_count >= 1, "FeatureParam<enum> has no options");
+  }
 
   template <size_t option_count>
   constexpr FeatureParam(const Feature* feature,

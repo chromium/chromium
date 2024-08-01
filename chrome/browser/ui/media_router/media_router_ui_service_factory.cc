@@ -41,7 +41,7 @@ MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(ChromeMediaRouterFactory::GetInstance());
-  // MediaRouterUIService owns a MediaRouterActionController that depends on
+  // MediaRouterUIService owns a CastToolbarButtonController that depends on
   // ToolbarActionsModel.
   DependsOn(ToolbarActionsModelFactory::GetInstance());
 }

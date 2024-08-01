@@ -37,6 +37,9 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
   DeskActionView& operator=(const DeskActionView&) = delete;
   ~DeskActionView() override;
 
+  const DeskActionButton* context_menu_button() const {
+    return context_menu_button_;
+  }
   DeskActionButton* context_menu_button() { return context_menu_button_; }
 
   const DeskActionButton* close_all_button() const { return close_all_button_; }
@@ -54,12 +57,12 @@ class ASH_EXPORT DeskActionView : public views::BoxLayoutView,
   // focus.
   bool ChildHasFocus() const;
 
-  void OnFocusChange();
-
  private:
   // views::ViewObserver:
   void OnViewFocused(views::View* observed) override;
   void OnViewBlurred(views::View* observed) override;
+
+  void OnFocusChange();
 
   // Only one of the following two buttons will be shown, based on if the Forest
   // feature is enabled.

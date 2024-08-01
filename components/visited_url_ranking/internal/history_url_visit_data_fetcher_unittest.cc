@@ -14,6 +14,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,14 +121,15 @@ class HistoryURLVisitDataFetcherTest
     FetchResult result = FetchResult(FetchResult::Status::kError, {});
     base::RunLoop wait_loop;
     history_url_visit_fetcher_->FetchURLVisitData(
-        options, base::BindOnce(
-                     [](base::OnceClosure stop_waiting, FetchResult* result,
-                        FetchResult result_arg) {
-                       result->status = result_arg.status;
-                       result->data = std::move(result_arg.data);
-                       std::move(stop_waiting).Run();
-                     },
-                     wait_loop.QuitClosure(), &result));
+        options, FetcherConfig(),
+        base::BindOnce(
+            [](base::OnceClosure stop_waiting, FetchResult* result,
+               FetchResult result_arg) {
+              result->status = result_arg.status;
+              result->data = std::move(result_arg.data);
+              std::move(stop_waiting).Run();
+            },
+            wait_loop.QuitClosure(), &result));
     wait_loop.Run();
     return result;
   }

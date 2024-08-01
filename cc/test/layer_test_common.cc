@@ -163,7 +163,8 @@ void UpdateDrawProperties(LayerTreeImpl* layer_tree_impl,
                           LayerImplList* output_update_layer_list) {
   PrepareForUpdateDrawProperties(layer_tree_impl);
   layer_tree_impl->UpdateDrawProperties(
-      /*update_image_animation_controller*/ true, output_update_layer_list);
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true,
+      output_update_layer_list);
 }
 
 void UpdateDrawProperties(LayerTreeHost* layer_tree_host,

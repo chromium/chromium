@@ -305,6 +305,7 @@ tag, an unsigned (and untrusted) piece of data that is embedded in the
 executable which communicates the installation parameters for the software the
 user is trying to install.
 
+###### Elevation
 Online installers are typically run by the end user after being downloaded from
 the Internet. When the installer is executed, the OS launches it at
 [medium integrity](https://docs.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control).
@@ -322,6 +323,38 @@ a system-wide installation.
 The metainstaller appends the `--expect-elevated` switch to the relaunch command
 line, to allow the relaunched process to exit with an error if it is not running
 at the correct integrity level.
+
+###### De-elevation
+The updater metainstaller re-launches itself at medium integrity if a per-user
+installer is run at high integrity with UAC on. For example, if a per-user
+Chrome installer is run by right-clicking it in Windows explorer and choosing to
+`Run as administrator`.
+
+De-elevation uses Windows explorer to run the child process at Medium integrity.
+Explorer does not provide a way to get the child process pid or handle. To allow
+waiting for the child process, the updater metainstaller uses an IPC mechanism
+via the command line and registry.
+
+The parent process takes the following steps:
+* Creates a unique guid, and sends it to the child process via command line
+parameter `--de-elevation-id={guid}`, to allow for identifying the child process
+`pid` and waiting for it.
+* Waits for the child process to write a default REG_DWORD value under
+`HKEY_CURRENT_USER\Software\Google\Update{guid}` that contains the child process
+pid.
+* Gets a handle to the child process via the pid.
+* Cleans up the `HKEY_CURRENT_USER\Software\Google\Update{guid}` key, which also
+signals to the child process to proceed with installing at Medium integrity.
+* waits for the child process to complete, and returns the exit code from the
+child process.
+
+The de-elevated metainstaller takes the following steps:
+* Reads the guid from the command line parameter `--de-elevation-id={guid}`.
+* Writes the pid for the current process under
+`HKEY_CURRENT_USER\Software\Google\Update{guid}`.
+* Waits for the parent process to clean up the
+`HKEY_CURRENT_USER\Software\Google\Update{guid}` key.
+* Finally, proceeds with installing at Medium integrity.
 
 ##### Offline Installers
 Offline install performs the installation with no update check or file download

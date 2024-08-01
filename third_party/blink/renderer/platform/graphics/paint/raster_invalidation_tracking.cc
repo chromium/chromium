@@ -93,7 +93,7 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json, bool detailed) const {
     std::sort(sorted.begin(), sorted.end(), &CompareRasterInvalidationInfo);
     auto invalidations_json = std::make_unique<JSONArray>();
     gfx::Rect last_rect;
-    for (auto* it = sorted.begin(); it != sorted.end(); it++) {
+    for (auto it = sorted.begin(); it != sorted.end(); ++it) {
       const auto& info = *it;
       if (detailed) {
         auto info_json = std::make_unique<JSONObject>();

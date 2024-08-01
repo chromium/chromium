@@ -46,7 +46,10 @@ static_library("enrollment") {
     "tpm_enrollment_key_signing_service.h",
   ]
 
-  public_deps = [ "//third_party/private_membership" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//third_party/private_membership",
+  ]
 
   deps = [
     "//ash/constants",
@@ -57,6 +60,9 @@ static_library("enrollment") {
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/cuttlefish:buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/dev_mode",
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:constants",
@@ -149,6 +155,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment/psm:test_support",
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/browser/ash/settings",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/attestation",

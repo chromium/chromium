@@ -293,7 +293,7 @@ FindBarView::FindBarView(FindBarHost* host) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-        vector_icons::kSearchIcon;
+        vector_icons::kSearchChromeRefreshIcon;
 #endif
     views::Label* hint_text;
     auto lens_container =

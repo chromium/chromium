@@ -71,11 +71,15 @@ bool HasTertiaryActionButton(UIView* view) {
 
 // Test view creation with subtitle.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSubtitleTest) {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   DefaultBrowserInstructionsView* instructionsView =
       [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
                                                    hasRemindMeLater:NO
                                                            hasSteps:NO
-                                                      actionHandler:nil];
+                                                      actionHandler:nil
+                                          alertScreenViewController:alertScreen
+                                                          titleText:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));
@@ -87,11 +91,15 @@ TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSubtitleTest) {
 
 // Test view creation with instruction steps.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithStepsTest) {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   DefaultBrowserInstructionsView* instructionsView =
       [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
                                                    hasRemindMeLater:NO
                                                            hasSteps:YES
-                                                      actionHandler:nil];
+                                                      actionHandler:nil
+                                          alertScreenViewController:alertScreen
+                                                          titleText:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_FALSE(HasSubTitle(instructionsView));
@@ -103,11 +111,15 @@ TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithStepsTest) {
 
 // Test view creation with secondary button.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSecondaryButtonTest) {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   DefaultBrowserInstructionsView* instructionsView =
       [[DefaultBrowserInstructionsView alloc] initWithDismissButton:YES
                                                    hasRemindMeLater:NO
                                                            hasSteps:NO
-                                                      actionHandler:nil];
+                                                      actionHandler:nil
+                                          alertScreenViewController:alertScreen
+                                                          titleText:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));
@@ -119,11 +131,15 @@ TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSecondaryButtonTest) {
 
 // Test view creation with tertiary button.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithTertiaryButtonTest) {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   DefaultBrowserInstructionsView* instructionsView =
       [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
                                                    hasRemindMeLater:YES
                                                            hasSteps:NO
-                                                      actionHandler:nil];
+                                                      actionHandler:nil
+                                          alertScreenViewController:alertScreen
+                                                          titleText:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));
@@ -135,11 +151,15 @@ TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithTertiaryButtonTest) {
 
 // Test the animation view.
 TEST_F(DefaultBrowserInstructionsViewTest, AnimationViewTest) {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   DefaultBrowserInstructionsView* instructionsView =
       [[DefaultBrowserInstructionsView alloc] initWithDismissButton:YES
                                                    hasRemindMeLater:NO
                                                            hasSteps:NO
-                                                      actionHandler:nil];
+                                                      actionHandler:nil
+                                          alertScreenViewController:alertScreen
+                                                          titleText:nil];
   ASSERT_NE(instructionsView, nil);
 
   UIView* animationView = GetAnimationSubview(instructionsView);

@@ -237,6 +237,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_BLUR_GRAPHITE
 
+#define SK_USE_SRCOVER_FOR_FILTERS
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

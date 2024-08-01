@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">値下げカードを非表示にする</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> により保存されたデータと Cookie がすべて削除されます。</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 件のサイト}other{<ph name="SITE_COUNT" /> 件のサイト}}</translation>
+<translation id="1500473259453106018">タブカードで値下げ情報を非表示にする</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1568470248891039841">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。サイトを閲覧する際、それらのサイトから、保存したあなたに関する情報の使用許可を求められることがあります。<ph name="BEGIN_LINK" />埋め込みコンテンツの詳細<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">ヘルプとフィードバック</translation>
 <translation id="2501278716633472235">戻る</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
-<translation id="2550801787432930915">値下げカード</translation>
 <translation id="2570922361219980984">位置情報へのアクセスがデバイスでもオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3232293466644486101">閲覧履歴データを削除...</translation>
 <translation id="3242646949159196181">オンにすると、サイトは音声を再生できます。オフにすると、サイトは音声を再生できません。</translation>
+<translation id="3273479183583863618">タブの値下げ情報</translation>
 <translation id="3277252321222022663">サイトによるセンサーへのアクセスを許可する（推奨）</translation>
 <translation id="3285500645985761267">関連サイトにグループ内のアクティビティの確認を許可する</translation>
 <translation id="3295019059349372795">第 11 章: オズの不思議なエメラルド シティ</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="3859306556332390985">前方にシーク再生</translation>
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
+<translation id="3905475044299942653">頻繁な通知をブロック</translation>
 <translation id="3908288065506437185">シークレット モードでサードパーティ Cookie をブロックする</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">一部の機能が動作しない可能性があります。関連サイトでは引き続きサードパーティ Cookie を使用できます。</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">保護されたコンテンツ</translation>
 <translation id="662080504995468778">とどまる</translation>
 <translation id="6653342741369270081">全画面表示を終了するには戻るボタンを押します。</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{[このタブを続行] を非表示にする}other{[これらのタブを続行] を非表示にする}}</translation>
 <translation id="6689172468748959065">プロフィール写真</translation>
 <translation id="6697925417670533197">アクティブなダウンロード</translation>
 <translation id="6722828510648505498">ID サービスからのログイン メッセージをブロックします。</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> に対する設定を選択してください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
+<translation id="6840760312327750441">タブをグループ化するには、タブを押しながら別のタブにドラッグします。</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
+<translation id="6870169401250095575">安全確認カードを非表示にする</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{[このタブを続行] カードを非表示にする}other{[これらのタブを続行] カードを非表示にする}}</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8067883171444229417">動画を再生します</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="930525582205581608">このサイトに関する情報をすべて削除しますか？</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
+<translation id="959682366969460160">タブを整理</translation>
 <translation id="967624055006145463">保存データ</translation>
 </translationbundle>

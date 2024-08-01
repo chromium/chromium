@@ -89,12 +89,17 @@ class TouchToFillKeyboardSuppressor
       ContentAutofillDriverFactory& factory) override;
   void OnContentAutofillDriverCreated(ContentAutofillDriverFactory& factory,
                                       ContentAutofillDriver& driver) override;
-  void OnContentAutofillDriverWillBeDeleted(
+  void OnContentAutofillDriverStateChanged(
       ContentAutofillDriverFactory& factory,
-      ContentAutofillDriver& driver) override;
+      ContentAutofillDriver& driver,
+      AutofillDriver::LifecycleState old_state,
+      AutofillDriver::LifecycleState new_state) override;
 
   // AutofillManager::Observer:
-  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form_id,
                                   FieldGlobalId field_id,
@@ -127,8 +132,8 @@ class TouchToFillKeyboardSuppressor
 
   // The single AutofillManager whose keyboard is currently suppressed by this
   // suppressor; `nullptr` if no AutofillManager's keyboard is suppressed.
-  // A raw pointer suffices because because OnAutofillManagerDestroyed() resets
-  // it if necessary.
+  // A raw pointer suffices because because OnAutofillManagerStateChanged()
+  // resets it if necessary.
   raw_ptr<AutofillManager> suppressed_manager_ = nullptr;
 
   // Unsuppresses the keyboard after `timeout_`.

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// TODO(crbug.com/40943652) Remove Polymer from file once the profile picker has
+// been fully migrated to Lit.
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -233,6 +236,36 @@ export const NavigationMixin = dedupingMixin(
 
       return NavigationMixin;
     });
+
+export const NavigationMixinLit =
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
+    Constructor<NavigationMixinInterface> => {
+      class NavigationMixinLit extends superClass {
+        override connectedCallback() {
+          super.connectedCallback();
+
+          assert(!routeObservers.has(this));
+          routeObservers.add(this);
+
+          // history state was set when page loaded, so when the element first
+          // attaches, call the route-change handler to initialize first.
+          this.onRouteChange(history.state.route, history.state.step);
+        }
+
+        override disconnectedCallback() {
+          super.disconnectedCallback();
+
+          assert(routeObservers.delete(this));
+        }
+
+        /**
+         * Elements can override onRouteChange to handle route changes.
+         */
+        onRouteChange(_route: Routes, _step: string) {}
+      }
+
+      return NavigationMixinLit;
+    };
 
 export interface NavigationMixinInterface {
   onRouteChange(route: Routes, step: string): void;

@@ -10,8 +10,6 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:background="@color/google_bottom_bar_background_color"
     android:gravity="center"
-    android:paddingTop="@dimen/google_bottom_bar_vertical_padding"
     android:paddingStart="@dimen/google_bottom_bar_searchbox_horizontal_padding"
     android:paddingEnd="@dimen/google_bottom_bar_searchbox_horizontal_padding"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/google_bottom_bar_height"/>
+    android:layout_width="match_parent"/>

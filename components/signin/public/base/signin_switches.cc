@@ -123,6 +123,10 @@ const base::FeatureParam<bool> kInterceptBubblesDismissibleByAvatarButton{
     &kExplicitBrowserSigninUIOnDesktop,
     /*name=*/"bubble_dismissible_by_avatar_button",
     /*default_value=*/true};
+const base::FeatureParam<bool> kClearAccountPrefsWhenClearingCookies{
+    &kExplicitBrowserSigninUIOnDesktop,
+    /*name=*/"clear_account_prefs_when_clearing_cookies",
+    /*default_value=*/false};
 
 bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);

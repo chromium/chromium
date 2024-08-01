@@ -988,6 +988,9 @@ TEST_F(InputDeviceSettingsControllerTest, PrefsInitializedBasedOnLoginState) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, UpdateLoginScreenSettings) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
   controller_->OnLoginScreenFocusedPodChanged(kAccountId1);
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardUsb});
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
@@ -2007,6 +2010,38 @@ TEST_F(InputDeviceSettingsControllerTest,
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardSplitModifierTopRowAreKeysUpdated) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleSplitModifierKeyboard,
+                                        kKbdTopRowLayout1Tag);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(controller_->GetKeyboard(kSampleSplitModifierKeyboard.id)
+                ->settings->top_row_are_fkeys,
+            !kDefaultTopRowAreFKeys);
+
+  // Change session from oobe to login primary will update the
+  // kKeyboardHasSplitModifierKeyboard pref value.
+  ASSERT_EQ(
+      active_pref_service->GetBoolean(prefs::kKeyboardHasSplitModifierKeyboard),
+      false);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  ASSERT_EQ(
+      active_pref_service->GetBoolean(prefs::kKeyboardHasSplitModifierKeyboard),
+      true);
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
        KeyboardSplitModifierDefaultsUpdatedDuringOobe) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::OOBE);
@@ -2124,6 +2159,26 @@ TEST_F(InputDeviceSettingsControllerTest, CompanionAppStateUpdated) {
   // Simulate installing the companion app.
   SendAppUpdate(expected_package_id, apps::Readiness::kReady);
   ASSERT_EQ(mojom::CompanionAppState::kInstalled, mouse->app_info->state);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, MarketingNameOverridesGeneric) {
+  const ui::InputDevice kMouseWithMarketingName(44, ui::INPUT_DEVICE_USB,
+                                                "kMouseWithMarketingName",
+                                                /*phys=*/"",
+                                                /*sys_path=*/base::FilePath(),
+                                                /*vendor=*/0x046d,
+                                                /*product=*/0x405e,
+                                                /*version=*/0x0003);
+  // Add two mice, one with a known marketing name and one without.
+  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
+  fake_device_manager_->AddFakeMouse(kMouseWithMarketingName);
+
+  auto* sample_mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  auto* mouse_with_marketing_name =
+      controller_->GetMouse(kMouseWithMarketingName.id);
+
+  ASSERT_EQ(kSampleMouseUsb.name, sample_mouse->name);
+  ASSERT_EQ("M720 Triathlon", mouse_with_marketing_name->name);
 }
 
 }  // namespace ash

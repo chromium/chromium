@@ -56,14 +56,14 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void SetTrackRect(gfx::Rect track_rect);
   void SetScrollbarPaintedOpacity(float opacity);
   void SetThumbColor(SkColor4f thumb_color);
-  void SetTrackImageBounds(const gfx::Size& bounds);
-  void SetTrackAperture(const gfx::Rect& aperture);
+  void SetTrackAndButtonsImageBounds(const gfx::Size& bounds);
+  void SetTrackAndButtonsAperture(const gfx::Rect& aperture);
 
   void set_uses_nine_patch_track_and_buttons(bool uses_nine_patch) {
     uses_nine_patch_track_and_buttons_ = uses_nine_patch;
   }
-  void set_track_ui_resource_id(UIResourceId uid) {
-    track_ui_resource_id_ = uid;
+  void set_track_and_buttons_ui_resource_id(UIResourceId uid) {
+    track_and_buttons_ui_resource_id_ = uid;
   }
   void set_thumb_ui_resource_id(UIResourceId uid) {
     thumb_ui_resource_id_ = uid;
@@ -102,41 +102,42 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
  private:
   void AppendThumbQuads(viz::CompositorRenderPass* render_pass,
                         AppendQuadsData* append_quads_data) const;
-  void AppendTrackQuads(viz::CompositorRenderPass* render_pass,
-                        AppendQuadsData* append_quads_data);
-  void AppendNinePatchScaledTrack(viz::CompositorRenderPass* render_pass,
-                                  viz::SharedQuadState* shared_quad_state,
-                                  gfx::Rect& track_quad_rect);
+  void AppendTrackAndButtonsQuads(viz::CompositorRenderPass* render_pass,
+                                  AppendQuadsData* append_quads_data);
+  void AppendNinePatchScaledTrackAndButtons(
+      viz::CompositorRenderPass* render_pass,
+      viz::SharedQuadState* shared_quad_state,
+      gfx::Rect& track_and_buttons_quad_rect);
   // Expand the scrollbar thumb's hit testable rect to be able to capture the
   // thumb across the entire width of the track rect.
   gfx::Rect ExpandSolidColorThumb(gfx::Rect thumb_rect) const;
   // Position composited scrollbar thumb in the center of the track.
   gfx::Rect CenterSolidColorThumb(gfx::Rect thumb_rect) const;
 
-  UIResourceId track_ui_resource_id_;
-  UIResourceId thumb_ui_resource_id_;
+  UIResourceId track_and_buttons_ui_resource_id_ = 0;
+  UIResourceId thumb_ui_resource_id_ = 0;
 
   // This is relevant in case of Mac overlay scrollbars because they fade out by
   // animating the opacity via Blink paint.
-  float painted_opacity_;
+  float painted_opacity_ = 1.f;
 
-  float internal_contents_scale_;
+  float internal_contents_scale_ = 1.f;
   gfx::Size internal_content_bounds_;
 
-  bool jump_on_track_click_;
-  bool supports_drag_snap_back_;
-  int thumb_thickness_;
-  int thumb_length_;
+  bool jump_on_track_click_ = false;
+  bool supports_drag_snap_back_ = false;
+  int thumb_thickness_ = 0;
+  int thumb_length_ = 0;
   gfx::Rect back_button_rect_;
   gfx::Rect forward_button_rect_;
   gfx::Rect track_rect_;
   std::optional<SkColor4f> thumb_color_;
 
   bool uses_nine_patch_track_and_buttons_ = false;
-  gfx::Size track_image_bounds_;
-  gfx::Rect track_aperture_;
-  NinePatchGenerator track_patch_generator_;
-  std::vector<NinePatchGenerator::Patch> track_patches_;
+  gfx::Size track_and_buttons_image_bounds_;
+  gfx::Rect track_and_buttons_aperture_;
+  NinePatchGenerator track_and_buttons_patch_generator_;
+  std::vector<NinePatchGenerator::Patch> track_and_buttons_patches_;
 };
 
 }  // namespace cc

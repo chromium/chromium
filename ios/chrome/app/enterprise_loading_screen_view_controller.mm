@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 
-#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"

@@ -92,7 +92,7 @@ using chrome_test_util::SecondarySignInButton;
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   // Sign-in with identity1.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+  [ChromeEarlGrey signOutAndClearIdentities];
   // Sign-in with bookmark account storage with identity2.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];

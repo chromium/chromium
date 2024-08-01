@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -77,6 +76,7 @@ class Isolate;
 class Value;
 template <class T>
 class Local;
+class String;
 }  // namespace v8
 
 namespace blink {
@@ -217,8 +217,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void beginPath();
 
-  void fill(const String& winding = "nonzero");
-  void fill(Path2D*, const String& winding = "nonzero");
+  void fill();
+  void fill(const String& winding);
+  void fill(Path2D*);
+  void fill(Path2D*, const String& winding);
   void stroke();
   void stroke(Path2D*);
   void clip(const String& winding = "nonzero");
@@ -685,6 +687,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasRenderingContext::kNotLostContext};
 
  private:
+  void FillImpl(SkPathFillType winding_rule);
+  void FillPathImpl(Path2D* dom_path, SkPathFillType winding_rule);
+
   void DrawTextInternal(const String& text,
                         double x,
                         double y,

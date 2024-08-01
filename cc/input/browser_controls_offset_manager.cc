@@ -504,8 +504,9 @@ void BrowserControlsOffsetManager::ScrollEnd() {
     return;
 
   // See if we should animate the top bar in, in case there was a race between
-  // chrome showing the controls and the user performing a scroll.
-  if (show_controls_when_scroll_completes_) {
+  // chrome showing the controls and the user performing a scroll. We only need
+  // to animate the top control if it's not fully shown.
+  if (show_controls_when_scroll_completes_ && TopControlsShownRatio() != 1.f) {
     SetupAnimation(AnimationDirection::kShowingControls);
     return;
   }

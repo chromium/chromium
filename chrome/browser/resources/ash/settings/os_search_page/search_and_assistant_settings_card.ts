@@ -116,6 +116,9 @@ export class SearchAndAssistantSettingsCardElement extends
             assistant: '',
             contentRecommendations: '',
             mahi: '',
+            magicBoost: '',
+            helpMeRead: '',
+            helpMeWrite: '',
           };
         },
       },

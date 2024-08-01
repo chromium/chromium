@@ -5,10 +5,8 @@
 -org.chromium.components.paintpreview.player.PaintPreviewPlayerTest.overscrollRefreshTest
 
 # crbug.com/350394860
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect_ForIncognitoCCT__EphemeralTab
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect_ForIncognitoCCT__IncognitoTab
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect__EphemeralTab
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect__IncognitoTab
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect
 -org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTP
 -org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTPS
 -org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
@@ -33,6 +31,19 @@
 -org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab
 -org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_InCurrentTab
 
-# crbug.com/355058925
--org.chromium.chrome.browser.InputHintCheckerTest.testInitFailureRecordsHistogram
--org.chromium.chrome.browser.InputHintCheckerTest.testInitFailureReturnsFalse
+# crbug.com/351025215
+-org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
+
+# crbug.com/351026514
+-org.chromium.chrome.browser.gsa.GSAAccountChangeListenerTest.testReceivesBroadcastIntents
+
+# crbug.com/326040498
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionOther
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPassword
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther
+
+# crbug.com/356175432
+-org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInTab
+
+# crbug.com/352811552
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitSubframe

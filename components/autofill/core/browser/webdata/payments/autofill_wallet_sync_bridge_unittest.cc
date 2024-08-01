@@ -22,13 +22,13 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
@@ -699,7 +699,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   StartSyncing(
       {card_specifics, customer_data_specifics, cloud_token_data_specifics});
 
-  std::vector<AutofillMetadata> cards_metadata;
+  std::vector<PaymentsMetadata> cards_metadata;
   ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
   EXPECT_EQ(0u, cards_metadata.size());
 
@@ -730,7 +730,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
   StartSyncing({iban_specifics});
 
-  std::vector<AutofillMetadata> ibans_metadata;
+  std::vector<PaymentsMetadata> ibans_metadata;
   ASSERT_TRUE(table()->GetServerIbansMetadata(ibans_metadata));
   EXPECT_EQ(0u, ibans_metadata.size());
 
@@ -833,7 +833,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletCard) {
 
   // This bridge should not touch the metadata; should get deleted by the
   // metadata bridge.
-  std::vector<AutofillMetadata> cards_metadata;
+  std::vector<PaymentsMetadata> cards_metadata;
   ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
   EXPECT_EQ(1u, cards_metadata.size());
 
@@ -1142,7 +1142,7 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges_Cards) {
 
   // This bridge should not touch the metadata; should get deleted by the
   // metadata bridge.
-  std::vector<AutofillMetadata> cards_metadata;
+  std::vector<PaymentsMetadata> cards_metadata;
   ASSERT_TRUE(table()->GetServerCardsMetadata(cards_metadata));
   EXPECT_EQ(1u, cards_metadata.size());
 

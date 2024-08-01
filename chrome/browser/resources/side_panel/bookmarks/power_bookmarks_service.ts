@@ -417,7 +417,17 @@ export class PowerBookmarksService {
   private onChanged_(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
     const bookmark = this.findBookmarkWithId(id)!;
     Object.assign(bookmark, changedInfo);
-    this.findBookmarkImageUrls_(bookmark, false, true);
+    // Deep copy is necessary to ensure that the original bookmark object is
+    // not directly mutated. This helps LitElement's change detection recognize
+    // the changes since the reference to the object will change.
+    const deepCopyBookmark = structuredClone(bookmark);
+    const parent = this.findBookmarkWithId(bookmark.parentId);
+    if (parent) {
+      const index =
+          parent.children!.findIndex(child => child.id === bookmark.id);
+      parent.children![index] = deepCopyBookmark;
+    }
+    this.findBookmarkImageUrls_(deepCopyBookmark, false, true);
     this.delegate_.onBookmarkChanged(id, changedInfo);
   }
 

@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
 #include <type_traits>
 
 #include "base/logging.h"
-#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -926,7 +930,8 @@ bool Vp9UncompressedHeaderParser::Parse(const uint8_t* stream,
   DVLOG(2) << "Vp9UncompressedHeaderParser::Parse";
   reader_.Initialize(stream, frame_size);
 
-  fhdr->data = base::span(stream, base::checked_cast<size_t>(frame_size));
+  fhdr->data = stream;
+  fhdr->frame_size = frame_size;
 
   // frame marker
   if (reader_.ReadLiteral(2) != 0x2) {

@@ -34,6 +34,10 @@
 
 // Sets whether the activity indicator should be visible in the alert view.
 - (void)setShouldShowActivityIndicator:(BOOL)shouldShowActivityIndicator;
+
+// Sets whether the action buttons should initially be disabled.
+- (void)setActionButtonsAreInitiallyDisabled:
+    (BOOL)actionButtonsAreInitiallyDisabled;
 @end
 
 #endif  // IOS_CHROME_BROWSER_ALERT_VIEW_UI_BUNDLED_ALERT_CONSUMER_H_

@@ -175,6 +175,7 @@ struct PartitionOptions {
 
   struct {
     EnableToggle enabled = kDisabled;
+    EnableToggle random_memory_tagging = kDisabled;
     TagViolationReportingMode reporting_mode =
         TagViolationReportingMode::kUndefined;
   } memory_tagging;
@@ -206,7 +207,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using Bucket = internal::PartitionBucket;
   using FreeListEntry = internal::PartitionFreelistEntry;
   using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
-  using DirectMapExtent = internal::PartitionDirectMapExtent;
+  using WritableDirectMapExtent = internal::WritablePartitionDirectMapExtent;
+  using ReadOnlyDirectMapExtent = internal::ReadOnlyPartitionDirectMapExtent;
 
   enum class QuarantineMode : uint8_t {
     kAlwaysDisabled,
@@ -262,6 +264,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool scheduler_loop_quarantine = false;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
+    bool use_random_memory_tagging_ = false;
     TagViolationReportingMode memory_tagging_reporting_mode_ =
         TagViolationReportingMode::kUndefined;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -351,7 +354,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   uintptr_t next_partition_page_end = 0;
   SuperPageExtentEntry* current_extent = nullptr;
   SuperPageExtentEntry* first_extent = nullptr;
-  DirectMapExtent* direct_map_list
+  ReadOnlyDirectMapExtent* direct_map_list
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = nullptr;
   SlotSpanMetadata*
       global_empty_slot_span_ring[internal::kMaxFreeableSpans] PA_GUARDED_BY(
@@ -593,6 +596,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
+  PA_ALWAYS_INLINE bool UseRandomMemoryTagging() const;
   PA_ALWAYS_INLINE TagViolationReportingMode
   memory_tagging_reporting_mode() const;
 
@@ -910,6 +914,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  // TODO(crbug.com/40238514) This is an unused function. Start using it in
+  // tests and/or in production code.
   static void EnableShadowMetadata(internal::PoolHandleMask mask);
 
   PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset() const {
@@ -1140,7 +1146,7 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   uintptr_t slot_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   auto* direct_map_metadata =
-      PartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
+      ReadOnlyPartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
   size_t padding_for_alignment =
       direct_map_metadata->direct_map_extent.padding_for_alignment;
   PA_DCHECK(padding_for_alignment ==
@@ -1413,6 +1419,14 @@ PA_ALWAYS_INLINE bool PartitionRoot::IsMemoryTaggingEnabled() const {
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
+PA_ALWAYS_INLINE bool PartitionRoot::UseRandomMemoryTagging() const {
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  return settings.use_random_memory_tagging_;
+#else
+  return false;
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+}
+
 PA_ALWAYS_INLINE TagViolationReportingMode
 PartitionRoot::memory_tagging_reporting_mode() const {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -1494,7 +1508,15 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       // Retag the `object` to provide MTE UaF mitigation. Doing so
       // invalidates the tag in the address of `object`, so it must
       // be refreshed.
-      object = internal::TagMemoryRangeIncrement(object, slot_size);
+      if (UseRandomMemoryTagging()) {
+        // Exclude the previous tag so that immediate use after free is detected
+        // 100% of the time.
+        uint8_t previous_tag = internal::ExtractTagFromPtr(object);
+        object = internal::TagMemoryRangeRandomly(object, slot_size,
+                                                  1 << previous_tag);
+      } else {
+        object = internal::TagMemoryRangeIncrement(object, slot_size);
+      }
     }
   }
 #else   // PA_BUILDFLAG(HAS_MEMORY_TAGGING)

@@ -60,9 +60,12 @@ static_library("system_logs") {
     "//ash",
     "//ash/keyboard/ui",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/net/network_health",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/cryptohome",
@@ -86,6 +89,8 @@ static_library("system_logs") {
     "//components/feedback",
     "//components/feedback/redaction_tool",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/webui/ash" ]
 }
 
 source_set("unit_tests") {

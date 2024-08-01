@@ -47,9 +47,11 @@ class ModelExecutionFeaturesController
     kNotVisibleModelExecutionCapability = 6,
     // Not visible because the feature is already graduated.
     kNotVisibleGraduatedFeature = 7,
+    // Not visible because the device is unsupported by the feature.
+    kNotVisibleHardwareUnsupported = 8,
     // Updates should match with FeaturesSettingsVisibilityResult enum in
     // enums.xml.
-    kMaxValue = kNotVisibleGraduatedFeature
+    kMaxValue = kNotVisibleHardwareUnsupported
   };
 
   enum class DogfoodStatus {
@@ -60,6 +62,7 @@ class ModelExecutionFeaturesController
   // Must be created only for non-incognito browser contexts.
   ModelExecutionFeaturesController(PrefService* browser_context_profile_service,
                                    signin::IdentityManager* identity_manager,
+                                   PrefService* local_state,
                                    DogfoodStatus dogfood_status);
 
   ~ModelExecutionFeaturesController() override;
@@ -132,6 +135,10 @@ class ModelExecutionFeaturesController
   model_execution::prefs::ModelExecutionEnterprisePolicyValue
   GetEnterprisePolicyValue(UserVisibleFeatureKey feature) const;
 
+  // Returns true if the given performance class meets the minimum requirement
+  // for history search.
+  bool IsDeviceCapableForHistorySearch() const;
+
   // Initializes the state of the different features at startup.
   void InitializeFeatureSettings();
 
@@ -157,9 +164,12 @@ class ModelExecutionFeaturesController
 
   // Obtained from the user account capability. Updated whenever sign-in changes
   // or account capability changes.
-  bool can_use_model_execution_features_ = false;
+  bool account_allows_model_execution_features_ = false;
 
   base::ObserverList<SettingsEnabledObserver> observers_;
+
+  // The PrefService is guaranteed to outlive `this`.
+  raw_ptr<PrefService> local_state_;
 
   // Set of features that are visible to unsigned users.
   const base::flat_set<UserVisibleFeatureKey>

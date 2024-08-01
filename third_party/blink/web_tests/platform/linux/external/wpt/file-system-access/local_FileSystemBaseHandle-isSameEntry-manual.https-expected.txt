@@ -1,29 +1,29 @@
 This is a testharness.js-based test.
 [FAIL] User succesfully selected an empty directory.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] User granted write access.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry for identical directory handles returns true
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry for different directories returns false
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry for different handles for the same directory
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry for identical file handles returns true
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry for different files returns false
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry for different handles for the same file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry comparing a file to a file in a different directory returns false
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry comparing a file to a directory returns false
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry comparing two files pointing to the same path returns true
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry comparing two directories pointing to the same path returns true
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] isSameEntry comparing a file to a directory of the same path returns false
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 Harness: the test ran to completion.
 

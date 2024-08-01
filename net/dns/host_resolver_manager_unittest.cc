@@ -8611,8 +8611,8 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithExclusion) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          GetDohProviderEntryForTesting("CleanBrowsingSecure").feature,
-          GetDohProviderEntryForTesting("Cloudflare").feature});
+          GetDohProviderEntryForTesting("CleanBrowsingSecure").feature.get(),
+          GetDohProviderEntryForTesting("Cloudflare").feature.get()});
 
   // Create a DnsConfig containing IP addresses associated with Cloudflare,
   // SafeBrowsing family filter, SafeBrowsing security filter, and other IPs

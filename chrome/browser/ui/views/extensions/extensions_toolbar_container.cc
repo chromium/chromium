@@ -977,10 +977,10 @@ void ExtensionsToolbarContainer::OnMenuClosed() {
 void ExtensionsToolbarContainer::UpdateSidePanelState(bool is_active) {
   close_side_panel_button_->SetVisible(is_active);
   if (is_active) {
-    close_side_panel_button_anchor_higlight_ =
+    close_side_panel_button_anchor_highlight_ =
         close_side_panel_button_->AddAnchorHighlight();
   } else {
-    close_side_panel_button_anchor_higlight_.reset();
+    close_side_panel_button_anchor_highlight_.reset();
   }
 }
 

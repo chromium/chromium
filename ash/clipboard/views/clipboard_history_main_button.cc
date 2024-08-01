@@ -90,11 +90,7 @@ void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
 
-  const auto color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
-          : kColorAshInkDrop;
-  flags.setColor(GetColorProvider()->GetColor(color_id));
+  flags.setColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawRect(GetLocalBounds(), flags);
 }

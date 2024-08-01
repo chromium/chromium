@@ -63,7 +63,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -104,7 +104,9 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     return signout_coordinator_;
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   PrefService* GetPrefs() { return browser_state_->GetPrefs(); }
 

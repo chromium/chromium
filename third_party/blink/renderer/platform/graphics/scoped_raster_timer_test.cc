@@ -69,7 +69,7 @@ class ScopedRasterTimerTest : public Test {
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
   }
 
-  void TearDown() override { SharedGpuContext::ResetForTesting(); }
+  void TearDown() override { SharedGpuContext::Reset(); }
 
  protected:
   test::TaskEnvironment task_environment_;
@@ -114,7 +114,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
   histograms.ExpectTotalCount(
       ScopedRasterTimer::kRasterDurationAcceleratedTotalHistogram, 0);
 
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
 }
 
 TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {

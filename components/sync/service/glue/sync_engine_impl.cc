@@ -428,7 +428,7 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
   bool is_first_time_sync_configure = false;
 
   // NOTE: Keep this logic consistent with how
-  // SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync()
+  // SyncEngineFactoryImpl::HasTransportDataIncludingFirstSync()
   // determines whether transport data exists.
   if (prefs_->GetLastSyncedTime().is_null()) {
     is_first_time_sync_configure = true;

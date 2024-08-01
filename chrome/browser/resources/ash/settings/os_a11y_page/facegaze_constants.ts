@@ -8,20 +8,23 @@ import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names
 export const FACE_GAZE_GESTURE_TO_MACROS_PREF =
     'prefs.settings.a11y.face_gaze.gestures_to_macros.value';
 
+export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT =
+    'settings.a11y.face_gaze.gestures_to_confidence';
+
+export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF =
+    `prefs.${FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT}.value`;
+
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_CLICK_LEFT,
+  MacroName.MOUSE_CLICK_LEFT_DOUBLE,
   MacroName.MOUSE_CLICK_RIGHT,
   MacroName.MOUSE_LONG_CLICK_LEFT,
   MacroName.RESET_CURSOR,
   MacroName.TOGGLE_DICTATION,
-  MacroName.KEY_PRESS_SPACE,
-  MacroName.KEY_PRESS_DOWN,
-  MacroName.KEY_PRESS_LEFT,
-  MacroName.KEY_PRESS_RIGHT,
-  MacroName.KEY_PRESS_UP,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
+  MacroName.TOGGLE_VIRTUAL_KEYBOARD,
 ];
 
 // All possible facial gestures.
@@ -58,35 +61,41 @@ export class FaceGazeUtils {
     // TODO(b:341770655): Localize these strings.
     switch (gesture) {
       case FacialGesture.BROW_INNER_UP:
-        return 'Brow inner up';
+        return 'Raise eyebrows';
       case FacialGesture.BROWS_DOWN:
-        return 'Brows down';
+        return 'Lower eyebrows';
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Squint left eye';
+        return 'Close left eye';
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Squint right eye';
+        return 'Close right eye';
       case FacialGesture.EYES_BLINK:
-        return 'Eyes blink';
+        return 'Blink both eyes';
       case FacialGesture.EYES_LOOK_DOWN:
-        return 'Eyes look down';
+        return 'Look down';
       case FacialGesture.EYES_LOOK_LEFT:
-        return 'Eyes look left';
+        return 'Look left';
       case FacialGesture.EYES_LOOK_RIGHT:
-        return 'Eyes look right';
+        return 'Look right';
       case FacialGesture.EYES_LOOK_UP:
-        return 'Eyes look up';
+        return 'Look up';
+      case FacialGesture.JAW_LEFT:
+        return 'Open mouth shift left';
       case FacialGesture.JAW_OPEN:
-        return 'Jaw open';
+        return 'Open your mouth wide';
+      case FacialGesture.JAW_RIGHT:
+        return 'Open mouth shift left';
+      case FacialGesture.MOUTH_FUNNEL:
+        return 'Mouth funnel shape';
       case FacialGesture.MOUTH_LEFT:
-        return 'Mouth left';
+        return 'Stretch left corner of your mouth';
       case FacialGesture.MOUTH_PUCKER:
-        return 'Mouth pucker';
+        return 'Put lips together (like a kiss)';
       case FacialGesture.MOUTH_RIGHT:
-        return 'Mouth right';
+        return 'Stretch right corner of your mouth';
       case FacialGesture.MOUTH_SMILE:
-        return 'Mouth smile';
+        return 'Smile';
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'Mouth upper up';
+        return 'Wrinkle your nose';
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);
@@ -103,28 +112,22 @@ export class FaceGazeUtils {
     switch (macro) {
       case MacroName.MOUSE_CLICK_LEFT:
         return 'Click a mouse button';
+      case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
+        return 'Double click the mouse';
       case MacroName.MOUSE_CLICK_RIGHT:
         return 'Right-click the mouse';
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        return 'Long click mouse';
+        return 'Drag and drop';
       case MacroName.RESET_CURSOR:
         return 'Reset cursor to center';
       case MacroName.TOGGLE_DICTATION:
         return 'Start or stop dictation';
-      case MacroName.KEY_PRESS_SPACE:
-        return 'Press space key';
-      case MacroName.KEY_PRESS_DOWN:
-        return 'Press down key';
-      case MacroName.KEY_PRESS_LEFT:
-        return 'Press left key';
-      case MacroName.KEY_PRESS_RIGHT:
-        return 'Press right key';
-      case MacroName.KEY_PRESS_UP:
-        return 'Press up key';
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
-        return 'Toggle overview';
+        return 'Open overview of windows';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return 'Play or pause media';
+      case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
+        return 'Show or hide the virtual keyboard';
       default:
         // Other macros are not supported in FaceGaze.
         console.error('Display text requested for unsupported macro ' + macro);

@@ -1104,7 +1104,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   bool is_end_paragraph = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
-  const auto* opportunities_it = opportunities.begin();
+  auto opportunities_it = opportunities.begin();
   while (opportunities_it != opportunities.end()) {
     const LayoutOpportunity& opportunity = *opportunities_it;
 

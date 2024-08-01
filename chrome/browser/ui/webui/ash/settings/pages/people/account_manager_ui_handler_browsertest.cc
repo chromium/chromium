@@ -137,7 +137,10 @@ class AccountManagerUIHandlerTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
-  AccountManagerUIHandlerTest() = default;
+  AccountManagerUIHandlerTest() {
+    feature_list_.InitWithFeatures(
+        {}, {ash::features::kSecondaryAccountAllowedInArcPolicy});
+  }
   AccountManagerUIHandlerTest(const AccountManagerUIHandlerTest&) = delete;
   AccountManagerUIHandlerTest& operator=(const AccountManagerUIHandlerTest&) =
       delete;
@@ -148,10 +151,12 @@ class AccountManagerUIHandlerTest
 
     auto* account_manager_facade =
         ::GetAccountManagerFacade(profile_->GetPath().value());
+    account_apps_availability_ =
+        AccountAppsAvailabilityFactory::GetForProfile(profile());
 
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
-        account_manager_, account_manager_facade, identity_manager_, nullptr,
-        &web_ui_);
+        account_manager_, account_manager_facade, identity_manager_,
+        account_apps_availability_, &web_ui_);
     handler_->SetProfileForTesting(profile_.get());
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
@@ -159,6 +164,7 @@ class AccountManagerUIHandlerTest
   }
 
   void TearDownOnMainThread() override {
+    account_apps_availability_ = nullptr;
     handler_.reset();
     GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     profile_.reset();
@@ -251,6 +257,8 @@ class AccountManagerUIHandlerTest
   content::TestWebUI web_ui_;
   AccountId primary_account_id_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<AccountAppsAvailability> account_apps_availability_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
@@ -394,7 +402,8 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
       lacros.push_back(
           ash::standalone_browser::features::kLacrosForSupervisedUsers);
     }
-    feature_list_.InitWithFeatures(lacros, {});
+    feature_list_.InitWithFeatures(
+        lacros, {ash::features::kSecondaryAccountAllowedInArcPolicy});
   }
 
   void SetUpOnMainThread() override {

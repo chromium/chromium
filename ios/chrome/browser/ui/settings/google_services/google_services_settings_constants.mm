@@ -22,5 +22,8 @@ NSString* const kSafeBrowsingItemAccessibilityIdentifier =
 NSString* const kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier =
     @"SyncEncryptionPassphraseTextFieldAccessibilityIdentifier";
 
+NSString* const kSyncEncryptionPassphraseTableViewAccessibilityIdentifier =
+    @"SyncEncryptionPassphraseTableViewAccessibilityIdentifier";
+
 NSString* const kAllowSigninItemAccessibilityIdentifier =
     @"AllowSigninItemAccessibilityIdentifier";

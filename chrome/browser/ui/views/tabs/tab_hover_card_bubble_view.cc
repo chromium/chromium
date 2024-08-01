@@ -535,7 +535,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   domain_label_->SetData({domain, false});
 
   const bool show_discard_status = tab_data.should_show_discard_status;
-  const uint64_t tab_memory_usage_in_bytes =
+  const int64_t tab_memory_usage_in_bytes =
       tab_data.tab_resource_usage
           ? tab_data.tab_resource_usage->memory_usage_in_bytes()
           : 0;

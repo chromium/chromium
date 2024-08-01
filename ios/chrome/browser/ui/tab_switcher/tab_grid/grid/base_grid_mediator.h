@@ -98,6 +98,11 @@ class WebState;
 // Returns the active grid item identifier.
 - (GridItemIdentifier*)activeIdentifier;
 
+// Called when a tab has been inserted, leaving an opportunity for the
+// subclasses to update. Can be called during a batch update. Default
+// implementation is no op.
+- (void)updateForTabInserted;
+
 // Adds an observation to every non-pinned WebState. Subclasses can override
 // this to observe a different set of `WebState`s. It's not necessary to call
 // the parent class implementation if not desired.

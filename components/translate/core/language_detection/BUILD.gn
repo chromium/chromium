@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//components/optimization_guide/features.gni")
+import("//testing/test.gni")
 
 static_library("chinese_script_classifier") {
   sources = [
@@ -19,39 +19,29 @@ static_library("chinese_script_classifier") {
 
 static_library("language_detection") {
   sources = [
-    "embedding_lookup.cc",
-    "embedding_lookup.h",
     "language_detection_model.cc",
     "language_detection_model.h",
-    "language_detection_resolver.h",
     "language_detection_util.cc",
     "language_detection_util.h",
-    "ngram_hash.cc",
-    "ngram_hash.h",
-    "ngram_hash_ops_utils.cc",
-    "ngram_hash_ops_utils.h",
-    "quantization_utils.cc",
-    "quantization_utils.h",
   ]
 
   deps = [
     ":chinese_script_classifier",
     "//base",
     "//components/language/core/common",
-    "//components/optimization_guide/core:features",
     "//components/translate/core/common",
     "//third_party/cld_3/src/src:cld_3",
-    "//third_party/flatbuffers",
     "//third_party/icu",
+    "//third_party/libphonenumber",
     "//third_party/libphonenumber:libphonenumber_without_metadata",
     "//third_party/smhasher:murmurhash2",
     "//third_party/tflite",
-    "//third_party/tflite:tflite_public_headers",
     "//third_party/tflite_support",
     "//third_party/tflite_support:tflite_support_proto",
-    "//third_party/utf",
-    "//url",
   ]
+  if (build_with_tflite_lib) {
+    deps += [ "//components/language_detection/core" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -61,8 +51,6 @@ source_set("unit_tests") {
     sources += [
       "language_detection_model_unittest.cc",
       "language_detection_util_unittest.cc",
-      "ngram_hash_ops_utils_unittest.cc",
-      "quantization_utils_unittest.cc",
     ]
   }
 
@@ -74,17 +62,23 @@ source_set("unit_tests") {
     "//components/translate/core/common",
     "//testing/gtest",
     "//third_party/icu",
-    "//url",
   ]
   if (build_with_tflite_lib) {
-    deps += [ ":unit_tests_bundle_data" ]
+    deps += [
+      "//components/language_detection/core",
+      "//components/language_detection/testing",
+    ]
   }
 }
 
-bundle_data("unit_tests_bundle_data") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [ "//components/test/data/translate/valid_model.tflite" ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+test("language_detection_util_fuzztest") {
+  sources = [ "language_detection_util_fuzztest.cc" ]
+  fuzztests =
+      [ "LanguageDetectionUtilFuzzTest.DeterminePageLanguageDoesNotCrash" ]
+
+  deps = [
+    ":language_detection",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

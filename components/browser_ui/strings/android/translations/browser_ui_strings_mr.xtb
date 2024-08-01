@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1044891598689252897">साइट सामान्यपणे काम करतील</translation>
 <translation id="1073417869336441572">तुम्ही तृतीय पक्ष कुकीना अनुमती का दिली हे सांगून Chrome मध्ये सुधारणा करण्यात आम्हाला मदत करा. <ph name="BEGIN_LINK" />फीडबॅक पाठवणे<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">किमतीमधील घट दाखवणारे कार्ड लपवा</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1192844206376121885">यामुळे <ph name="ORIGIN" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी हटवल्या जातील.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL कापली गेली</translation>
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइट}}</translation>
+<translation id="1500473259453106018">टॅब कार्डवरील किंमत कमी झाल्याची सूचना लपवा</translation>
 <translation id="1510341833810331442">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती नाही</translation>
 <translation id="1547123415014299762">तृतीय पक्ष कुकीना अनुमती आहे</translation>
 <translation id="1568470248891039841">तुम्ही भेट दिलेल्या साइट या इतर साइटवरून आशय एंबेड करू शकतात, उदाहरणार्थ, इमेज, जाहिराती आणि मजकूर. तुम्ही साइट ब्राउझ करताना या इतर साइट त्यांनी तुमच्याविषयी सेव्ह केलेली माहिती वापरण्याची परवानगी मागू शकतात. <ph name="BEGIN_LINK" />एंबेड केलेल्या आशयाविषयी अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">मदत आणि अभिप्राय</translation>
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
-<translation id="2550801787432930915">किमतीमधील घट दाखवणारे कार्ड</translation>
 <translation id="2570922361219980984">या डिव्हाइसाठी स्थान अ‍ॅक्सेस देखील बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="257931822824936280">विस्‍तृत केले - संकुचित करण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3232293466644486101">ब्राउझिंग डेटा हटवा…</translation>
 <translation id="3242646949159196181">सुरू असताना, साइट आवाज प्ले करू शकतात. बंद असताना, साइट आवाज प्ले करू शकत नाहीत.</translation>
+<translation id="3273479183583863618">टॅबवरील किंमत कमी झाल्याची सूचना</translation>
 <translation id="3277252321222022663">साइटना सेन्सर ॲक्सेस करण्याची अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="3285500645985761267">संबंधित साइटना गटामधील तुमच्या अ‍ॅक्टिव्हिटी पाहण्याची अनुमती द्या</translation>
 <translation id="3295019059349372795">धडा ११: द वंडरफुल एमराल्ड सिटी ऑफ ओझ</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="3859306556332390985">पुढे शोधा</translation>
 <translation id="3895926599014793903">झूम सुरू करण्याची सक्ती</translation>
+<translation id="3905475044299942653">खूप नोटिफिकेशन थांबवा</translation>
 <translation id="3908288065506437185">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">काही वैशिष्ट्ये कदाचित काम करणार नाहीत. संबंधित साइट तरीही तृतीय पक्ष कुकी वापरू शकतात.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">संरक्षित आशय</translation>
 <translation id="662080504995468778">यावर रहा</translation>
 <translation id="6653342741369270081">फुल स्क्रीनमधून बाहेर पडण्यासाठी मागे जा बटण प्रेस करा.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{या टॅबसह लपवणे सुरू ठेवा}other{या टॅबसह लपवणे सुरू ठेवा}}</translation>
 <translation id="6689172468748959065">प्रोफाइल फोटो</translation>
 <translation id="6697925417670533197">सुरू असलेली डाउनलोड</translation>
 <translation id="6722828510648505498">ओळखीच्या सेवांकडून मिळणाऱ्या साइन इन सूचना ब्लॉक करा.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> साठी एखादा पर्याय निवडा</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6818926723028410516">आयटम निवडा</translation>
+<translation id="6840760312327750441">टॅबचा गट करण्यासाठी, टॅबला स्पर्श करा आणि धरून ठेवा. नंतर, तो दुसऱ्या टॅबवर ड्रॅग करा.</translation>
 <translation id="6864395892908308021">हे डिव्हाइस NFC रीड करू शकत नाही</translation>
+<translation id="6870169401250095575">सुरक्षितता तपासणी कार्ड लपवा</translation>
 <translation id="6912998170423641340">साइटचे क्लिपबोर्डवरील मजकूर आणि इमेज रीड करणे ब्लॉक करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6950072572526089586">तुम्ही भेट दिलेली साइट ही तुम्ही काय करत आहात याबद्दलची माहिती सेव्ह करू शकते, जेणेकरून ती अपेक्षेप्रमाणे काम करेल — उदाहरणार्थ, तुम्हाला साइटवर साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम सेव्ह करण्यासाठी. साइट या बरेचदा तुमच्या डिव्हाइसवर ही माहिती तात्पुरती सेव्ह करतात.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">संपर्क निवडा</translation>
 <translation id="7990211076305263060">सुरू असताना, साइट तुमचा मायक्रोफोन वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमचा मायक्रोफोन वापरू शकत नाहीत.</translation>
 <translation id="8007176423574883786">या डिव्हाइससाठी बंद करा</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{हा टॅब वापरणे पुढे सुरू ठेवा कार्ड लपवा}other{हे टॅब वापरणे पुढे सुरू ठेवा कार्ड लपवा}}</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8042586301629853791">यानुसार क्रमाने लावा:</translation>
 <translation id="8067883171444229417">व्हिडिओ प्ले करा</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
 <translation id="930525582205581608">ही साइट विसरायची का?</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
+<translation id="959682366969460160">व्यवस्‍थापित करा</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 </translationbundle>

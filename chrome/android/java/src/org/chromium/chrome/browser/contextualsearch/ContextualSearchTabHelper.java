@@ -30,6 +30,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
@@ -193,6 +194,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         if (window != null) {
             updateHooksForTab(tab);
+            maybeObserveManagerCreation();
         } else {
             removeContextualSearchHooks(mWebContents);
             mContextualSearchManager = null;
@@ -313,8 +315,16 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             if (mSelectionClientManager != null) {
                 SelectionPopupController controller =
                         SelectionPopupController.fromWebContents(webContents);
-                controller.setSelectionClient(
-                        mSelectionClientManager.removeContextualSearchSelectionClient());
+                SelectionClient client =
+                        mSelectionClientManager.removeContextualSearchSelectionClient();
+                if (isReadAloudTapToSeekEnabled()) {
+                    if (controller.getSelectionClient()
+                            == mSelectionClientManager.getSelectionClient()) {
+                        controller.setSelectionClient(client);
+                    }
+                } else {
+                    controller.setSelectionClient(client);
+                }
             }
             // Also make sure the UI is hidden if the device is offline.
             ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);
@@ -336,18 +346,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                 && mTab != null) {
             return false;
         }
-        boolean isCct = mTab.isCustomTab();
-        ContextualSearchManager manager = getContextualSearchManager(mTab);
-        if (manager == null) {
-            if (isCct) Log.w(TAG, "No manager!");
-            ObservableSupplier<ContextualSearchManager> supplier =
-                    getContextualSearchManagerSupplier(mTab);
-            if (supplier != null) {
-                supplier.addObserver(mManagerCallback);
-            }
-            return false;
-        }
+        if (maybeObserveManagerCreation()) return false;
 
+        ContextualSearchManager manager = getContextualSearchManager(mTab);
         Profile profile = Profile.fromWebContents(webContents);
         boolean isDseGoogle =
                 TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
@@ -363,7 +364,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         && !manager.isRunningInCompatibilityMode()
                         && !(mTab.isShowingErrorPage())
                         && isDeviceOnline(manager);
-        if (isCct && !isActive) {
+        if (mTab.isCustomTab() && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
             Log.w(TAG, "Not allowed to be active! Checking reasons:");
             Log.w(
@@ -388,7 +389,28 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         return isActive;
     }
 
-    /** @return Whether the device is online, or we have disabled online-detection. */
+    /**
+     * Observe {@link ContextualSearchManager} creation if not available.
+     *
+     * @return {@code True} if the observer is installed. {@code false} if manager already exists,
+     *     thus no observer was installed.
+     */
+    private boolean maybeObserveManagerCreation() {
+        ContextualSearchManager manager = getContextualSearchManager(mTab);
+        if (manager != null) return false;
+
+        if (mTab.isCustomTab()) Log.w(TAG, "No manager!");
+        ObservableSupplier<ContextualSearchManager> supplier =
+                getContextualSearchManagerSupplier(mTab);
+        if (supplier != null) {
+            supplier.addObserver(mManagerCallback);
+        }
+        return true;
+    }
+
+    /**
+     * @return Whether the device is online, or we have disabled online-detection.
+     */
     private boolean isDeviceOnline(ContextualSearchManager manager) {
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)

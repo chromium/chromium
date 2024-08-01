@@ -19,11 +19,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-struct AutofillMetadata;
 class AutofillWebDataService;
 class CreditCard;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
+struct PaymentsMetadata;
 class PersonalDataManager;
 struct ServerCvc;
 }  // namespace autofill
@@ -78,7 +78,7 @@ void UpdateServerCardCredentialData(int profile,
 void UpdateServerCardMetadata(int profile,
                               const autofill::CreditCard& credit_card);
 
-std::vector<autofill::AutofillMetadata> GetServerCardsMetadata(int profile);
+std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(int profile);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
 sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,

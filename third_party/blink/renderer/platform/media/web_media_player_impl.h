@@ -278,6 +278,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // WebMediaPlayerDelegate::Observer implementation.
   void OnPageHidden() override;
   void OnPageShown() override;
+  void OnFrameHidden() override;
+  void OnFrameShown() override;
   void OnIdleTimeout() override;
 
   void RequestRemotePlaybackDisabled(bool disabled) override;

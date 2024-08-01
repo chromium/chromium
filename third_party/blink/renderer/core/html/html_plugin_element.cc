@@ -116,7 +116,7 @@ void PluginParameters::MapDataParamToSrc() {
     return;
   }
 
-  auto* data = base::ranges::find_if(
+  auto data = base::ranges::find_if(
       names_, [](auto name) { return EqualIgnoringASCIICase(name, "data"); });
 
   if (data != names_.end()) {

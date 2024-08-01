@@ -37,7 +37,7 @@ void EchoService::EchoStringToSharedMemory(
     const std::string& input,
     base::UnsafeSharedMemoryRegion region) {
   base::WritableSharedMemoryMapping mapping = region.Map();
-  memcpy(mapping.memory(), input.data(), input.size());
+  base::span(mapping).copy_prefix_from(base::as_byte_span(input));
 }
 
 void EchoService::Quit() {

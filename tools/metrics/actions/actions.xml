@@ -19442,6 +19442,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManagementBubble_OpenedFromManagementToolbarButton">
+  <owner>ydago@chromium.org</owner>
+  <description>
+    The management bubble was opened by clicking on the management toolbar
+    button.
+  </description>
+</action>
+
+<action name="ManagementPage_OpenedFromManagementBubbleLearnMore">
+  <owner>ydago@chromium.org</owner>
+  <description>
+    The chrome://management page was opened using the learn more button from the
+    management bubble.
+  </description>
+</action>
+
 <action name="ManagementPageViewed">
   <owner>hunyadym@chromium.org</owner>
   <description>The chrome://management page was viewed.</description>
@@ -22556,6 +22572,11 @@ should be able to be added at any place in this file.
   <owner>hujasonx@google.com</owner>
   <owner>schechter@google.com</owner>
   <description>User pressed 'Lens Copied Image' in the app menu.</description>
+</action>
+
+<action name="MobileMenuLensOverlay">
+  <owner>ameurhosni@google.com</owner>
+  <description>User opened lens overlay from the app overflow menu</description>
 </action>
 
 <action name="MobileMenuMoveToOtherWindow">
@@ -35551,6 +35572,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountMenu_Close">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on the Close button in the account menu. iOS
+    only.
+  </description>
+</action>
+
 <action name="Signin_AccountMenu_EditAccountList">
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -40372,6 +40402,87 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGridDialogMenu.Close">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the close group menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.Delete">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete group menu item in the tab grid
+    dialog menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.DeleteShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete group menu item in the tab grid
+    dialog menu for a group with a collaboration.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.EditColor">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the edit color menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.LeaveShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the leave group menu item in the tab grid dialog
+    menu for a group with a collaboration.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.ManageSharing">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the manage sharing menu item in the tab grid
+    dialog menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.RecentActivity">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the recent activity menu item in the tab grid
+    dialog menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.Rename">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the edit title menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.SelectTabs">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the select tabs menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
 <action name="TabGridSheet.UndoCloseTab">
   <obsolete>Deprecated as of 11/2019. Sheet UI is no longer used.</obsolete>
   <owner>yusufo@chromium.org</owner>
@@ -40421,6 +40532,60 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroupConfirmation.CloseTab.Abort">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts a full tab group removal in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTab.Proceed">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with a full tab group removal in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTab.StopShowing">
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    removing a full tab group.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTabFullGroup.Abort">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts a full tab group closure in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTabFullGroup.Proceed">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with a full tab group closure in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CloseTabFullGroup.StopShowing">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    closing a full tab group.
+  </description>
+</action>
+
 <action name="TabGroupConfirmation.DeleteGroup.Abort">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -40444,6 +40609,42 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a user requests to stop seeing a confirmation dialog when
     deleting a tab group.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.DeleteSharedGroup.Abort">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts deleting a shared tab group closure in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.DeleteSharedGroup.Proceed">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with deleting a shared tab group closure in
+    the confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.LeaveGroup.Abort">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts leaving a shared tab group in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.LeaveGroup.Proceed">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with leaving a shared tab group in the
+    confirmation dialog.
   </description>
 </action>
 
@@ -40541,6 +40742,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a user clicks the delete option on a tab group item in the tab
     switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.DeleteShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete option on a collaboration tab group
+    item in the tab switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.LeaveShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the leave option on a collaboration tab group
+    item in the tab switcher.
   </description>
 </action>
 
@@ -40970,6 +41189,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Tabs.ArchivedTabAutoDeleted">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab is deleted. This happens when the tab's last
+    archived tab exceeds the limit for auto-deletion.
+  </description>
+</action>
+
+<action name="Tabs.ArchivedTabRescued">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab was rescued. This happens when the feature
+    flag is turned off while there are still archived tabs.
+  </description>
+</action>
+
+<action name="Tabs.ArchivedTabRestored">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab is restored. This happens when a user manually
+    restores the tab through the archived tabs dialog.
+  </description>
+</action>
+
 <action name="Tabs.ArchivedTabsDialogIphClicked">
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -40992,6 +41238,12 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the archived tabs dialog IPH is shown.
   </description>
+</action>
+
+<action name="Tabs.ArchivedTabsDialogShown">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Recorded when the archived tabs dialog is shown.</description>
 </action>
 
 <action name="Tabs.CloseAllArchivedTabsMenuItem">
@@ -41051,6 +41303,15 @@ should be able to be added at any place in this file.
   <owner>clank-tab-dev@google.com</owner>
   <description>
     Recorded when the select tabs menu item is clicked by a user.
+  </description>
+</action>
+
+<action name="Tabs.TabArchived">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a tab is archived. This happens when a tab's last used time
+    exceeds the limit for archived tabs.
   </description>
 </action>
 
@@ -43657,7 +43918,18 @@ should be able to be added at any place in this file.
 </action>
 
 <action-suffix separator="." ordering="suffix">
-  <suffix name="TestModule" label="Test module."/>
+  <suffix name="FamilyLink" label="Family Link"/>
+  <suffix name="GeminiSiteSearchShortcut" label="Gemini Site Search Shortcut"/>
+  <suffix name="GenerativeTheming" label="Generative Theming"/>
+  <suffix name="GoogleLens" label="Google Lens"/>
+  <suffix name="HelpMeWrite" label="Help Me Write"/>
+  <suffix name="SafetyCheck" label="Safety Check"/>
+  <suffix name="SaveTabGroups" label="Saved Tab Groups"/>
+  <suffix name="SearchBoxSuggestions" label="Search Box Suggestions"/>
+  <suffix name="SidePanelPinning" label="Side Panel Pinning"/>
+  <suffix name="TabOrganizer" label="Tab Organizer"/>
+  <suffix name="TestModule" label="Test module"/>
+  <suffix name="TranslationSettings" label="Translation Settings"/>
   <affected-action name="UserEducation.WhatsNew.ModuleLinkClicked"/>
   <affected-action name="UserEducation.WhatsNew.ModuleShown"/>
 </action-suffix>
@@ -44174,8 +44446,8 @@ should be able to be added at any place in this file.
   <suffix name="TabPinnedFeature" label="For tab pinned overflow hint."/>
   <suffix name="TabSearch" label="For the tab search feature."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
-  <suffix name="TrackingProtectionFullOnboarding"
-      label="for tracking protection full onboarding notice"/>
+  <suffix name="TabSwitcherFloatingActionButton"
+      label="For tab switcher new tab floating action button."/>
   <suffix name="TrackingProtectionOffboarding"
       label="for tracking protection offboarding notice (obsolete)"/>
   <suffix name="TrackingProtectionOnboarding"

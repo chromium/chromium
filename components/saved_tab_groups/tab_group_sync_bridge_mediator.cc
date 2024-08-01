@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/uuid.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -127,6 +128,26 @@ void TabGroupSyncBridgeMediator::SavedTabGroupUpdatedLocally(
     CHECK(saved_bridge_);
     saved_bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
   }
+}
+
+void TabGroupSyncBridgeMediator::SavedTabGroupSharedStateUpdatedLocally(
+    const base::Uuid& group_guid) {
+  const SavedTabGroup* group = model_->Get(group_guid);
+  CHECK(group);
+
+  // Currently, only the transition from saved to shared tab group is possible.
+  CHECK(group->is_shared_tab_group());
+
+  // The bridge for the shared tab groups must exist to support them.
+  CHECK(shared_bridge_);
+  CHECK(saved_bridge_);
+
+  // TODO(crbug.com/351022699): update the following code once agreed on the
+  // approach. Currently, just move the tab group to the shared tab group
+  // bridge. Simulate removal of the group from the saved tab group bridge and
+  // adding the group to the shared bridge.
+  saved_bridge_->SavedTabGroupRemovedLocally(*group);
+  shared_bridge_->SavedTabGroupAddedLocally(group_guid);
 }
 
 void TabGroupSyncBridgeMediator::SavedTabGroupTabsReorderedLocally(

@@ -143,8 +143,6 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
                                   NowTicks(), source_device);
     scroll_update.data.scroll_update.delta_x = delta.x();
     scroll_update.data.scroll_update.delta_y = delta.y();
-    scroll_update.data.scroll_update.velocity_x = delta.x();
-    scroll_update.data.scroll_update.velocity_y = delta.y();
     scroll_update.data.scroll_update.inertial_phase =
         WebGestureEvent::InertialPhaseState::kNonMomentum;
     scroll_update.data.scroll_update.delta_units =

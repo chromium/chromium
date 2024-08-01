@@ -47,13 +47,12 @@ bool SupportsH264() {
 
 bool InitializeVP9() {
 #if BUILDFLAG(IS_MAC)
+  VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
+  return VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9);
+#else
   // TODO(crbug.com/40269929): Enable VP9 on iOS.
-  if (__builtin_available(macOS 11.0, *)) {
-    VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
-    return VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9);
-  }
-#endif
   return false;
+#endif
 }
 
 bool SupportsVP9() {
@@ -67,14 +66,7 @@ bool SupportsAV1() {
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 bool SupportsHEVC() {
-  // HEVC should be supported with 10.13+, but per crbug.com/1300444#c9 it is
-  // only reliable on Intel hardware with 11+.
-  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
-    if (__builtin_available(macOS 11.0, *)) {
-      return true;
-    }
-  }
-  return false;
+  return base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport);
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 

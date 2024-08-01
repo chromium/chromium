@@ -187,6 +187,10 @@
       case PushNotificationClientId::kSports:
         // Content and sports are enabled together.
         break;
+      case PushNotificationClientId::kSafetyCheck:
+        base::RecordAction(base::UserMetricsAction(
+            kNotificationsOptInPromptSafetyCheckEnabled));
+        break;
     }
   }
 }

@@ -208,13 +208,13 @@ void PowerButtonMenuView::RecreateItems() {
       kSystemPowerButtonMenuPowerOffIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON),
       &power_off_item_);
-  add_remove_item(
-      create_sign_out, PowerButtonMenuActionType::kSignOut,
-      base::BindRepeating(&SessionControllerImpl::RequestSignOut,
-                          base::Unretained(Shell::Get()->session_controller())),
-      kSystemPowerButtonMenuSignOutIcon,
-      user::GetLocalizedSignOutStringForStatus(login_status, false),
-      &sign_out_item_);
+  add_remove_item(create_sign_out, PowerButtonMenuActionType::kSignOut,
+                  base::BindRepeating(
+                      &LockStateController::RequestSignOut,
+                      base::Unretained(Shell::Get()->lock_state_controller())),
+                  kSystemPowerButtonMenuSignOutIcon,
+                  user::GetLocalizedSignOutStringForStatus(login_status, false),
+                  &sign_out_item_);
   add_remove_item(
       create_lock_screen, PowerButtonMenuActionType::kLockScreen,
       base::BindRepeating(&SessionControllerImpl::LockScreen,

@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/privacy_sandbox/masked_domain_list",
   "+net",
   "+net/third_party/quiche/src",
   "+services/network/public/cpp",

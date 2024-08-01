@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -81,6 +82,9 @@ class DrmDisplay {
   uint32_t connector() const;
   const std::vector<drmModeModeInfo>& modes() const { return modes_; }
   const gfx::Point& origin() { return origin_; }
+  const std::optional<uint16_t>& vsync_rate_min_from_edid() const {
+    return vsync_rate_min_from_edid_;
+  }
 
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
   bool SetHdcpKeyProp(const std::string& key);
@@ -96,10 +100,9 @@ class DrmDisplay {
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
   bool SetColorspaceProperty(const gfx::ColorSpace color_space);
+  bool IsVrrCapable() const;
 
   void set_crtc(uint32_t crtc_id) { crtc_ = crtc_id; }
-
-  void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
 
  private:
   gfx::HDRStaticMetadata::Eotf GetEotf(
@@ -113,9 +116,9 @@ class DrmDisplay {
   const ScopedDrmConnectorPtr connector_;
   std::vector<drmModeModeInfo> modes_;
   gfx::Point origin_;
-  bool is_hdr_capable_ = false;
   std::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   std::unique_ptr<PrivacyScreenProperty> privacy_screen_property_;
+  std::optional<uint16_t> vsync_rate_min_from_edid_;
 };
 
 }  // namespace ui

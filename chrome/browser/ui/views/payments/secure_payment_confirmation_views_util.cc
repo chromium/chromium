@@ -30,6 +30,9 @@
 #include "ui/views/view_class_properties.h"
 
 namespace payments {
+
+using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
+
 namespace {
 
 const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {
@@ -149,8 +152,8 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
   // UX, we don't draw an additional logo on top. For the no matching
   // credentials UX, where we use the cart image, we still draw it.
   if (use_cart_image ||
-      !base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
+      features::GetNetworkAndIssuerIconsTreatment() !=
+          SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
     // Header icon
     auto image_view =
         std::make_unique<SecurePaymentConfirmationIconView>(use_cart_image);

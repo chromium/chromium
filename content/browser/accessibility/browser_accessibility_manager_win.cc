@@ -62,15 +62,19 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
-  return new BrowserAccessibilityManagerWin(initial_tree, delegate);
+  return new BrowserAccessibilityManagerWin(initial_tree, node_id_delegate,
+                                            delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerWin(
-      BrowserAccessibilityManagerWin::GetEmptyDocument(), delegate);
+      BrowserAccessibilityManagerWin::GetEmptyDocument(), node_id_delegate,
+      delegate);
 }
 
 BrowserAccessibilityManagerWin*
@@ -80,8 +84,9 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerWin() {
 
 BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     const ui::AXTreeUpdate& initial_tree,
+    ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
-    : BrowserAccessibilityManager(delegate) {
+    : BrowserAccessibilityManager(node_id_delegate, delegate) {
   ui::win::CreateATLModuleIfNeeded();
   Initialize(initial_tree);
 }

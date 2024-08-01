@@ -13,10 +13,11 @@ import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {SEA_PEN_SAMPLES, SeaPenSamplePrompt} from './constants.js';
-import {SeaPenQuery} from './sea_pen.mojom-webui.js';
+import {SeaPenSamplePrompt} from './constants.js';
+import {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
 
 /** Enumeration of supported tabs. */
@@ -50,17 +51,26 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         type: Array,
         value: SEA_PEN_SAMPLES,
       },
+
+      thumbnailResponseStatusCode_: {
+        type: Object,
+        observer: 'onThumbnailResponseStatusCodeChanged_',
+      },
     };
   }
 
   samples: SeaPenSamplePrompt[];
   private freeformTab_: FreeformTab;
   private seaPenQuery_: SeaPenQuery|null;
+  private thumbnailResponseStatusCode_: MantaStatusCode|null;
 
   override connectedCallback() {
     super.connectedCallback();
     this.watch<SeaPenFreeformElement['seaPenQuery_']>(
         'seaPenQuery_', state => state.currentSeaPenQuery);
+    this.watch<SeaPenFreeformElement['thumbnailResponseStatusCode_']>(
+        'thumbnailResponseStatusCode_',
+        state => state.thumbnailResponseStatusCode);
     this.updateFromStore();
     this.onShuffleClicked_();
   }
@@ -87,8 +97,17 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         query?.textQuery ? FreeformTab.RESULTS : FreeformTab.SAMPLE_PROMPTS;
   }
 
-  private isTabContainerEnabled_(query: SeaPenQuery) {
-    return !!query?.textQuery;
+  private onThumbnailResponseStatusCodeChanged_(statusCode: MantaStatusCode|
+                                                null): void {
+    if (statusCode) {
+      this.freeformTab_ = FreeformTab.RESULTS;
+    }
+  }
+
+  private isTabContainerEnabled_(
+      query: SeaPenQuery,
+      thumbnailResponseStatusCode: MantaStatusCode|null): boolean {
+    return !!query?.textQuery || !!thumbnailResponseStatusCode;
   }
 
   private isSamplePromptsTabSelected_(tab: FreeformTab): boolean {

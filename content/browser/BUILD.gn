@@ -107,6 +107,7 @@ source_set("browser") {
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
+    "//components/optimization_guide/core:features",
     "//components/os_crypt/sync",
     "//components/payments/content/icon",
     "//components/payments/mojom",
@@ -1128,6 +1129,8 @@ source_set("browser") {
     "idle/idle_manager_impl.h",
     "image_capture/image_capture_impl.cc",
     "image_capture/image_capture_impl.h",
+    "in_memory_federated_permission_context.cc",
+    "in_memory_federated_permission_context.h",
     "indexed_db/indexed_db_internals_ui.cc",
     "indexed_db/indexed_db_internals_ui.h",
     "installedapp/fetch_related_apps_task.h",
@@ -1424,8 +1427,6 @@ source_set("browser") {
     "network_service_client.h",
     "network_service_instance_impl.cc",
     "network_service_instance_impl.h",
-    "notification_service_impl.cc",
-    "notification_service_impl.h",
     "notifications/blink_notification_service_impl.cc",
     "notifications/blink_notification_service_impl.h",
     "notifications/devtools_event_logging.cc",
@@ -2670,9 +2671,7 @@ source_set("browser") {
       "CoreGraphics.framework",
       "QuartzCore.framework",
       "IOSurface.framework",
-    ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
+      "UniformTypeIdentifiers.framework",
     ]
   } else if (is_ios) {
     sources += [
@@ -2780,7 +2779,7 @@ source_set("browser") {
         "//sandbox/mac:seatbelt_extension",
       ]
       frameworks += [ "CoreMedia.framework" ]
-      weak_frameworks += [ "ScreenCaptureKit.framework" ]  # macOS 12.3
+      weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
     }
     if (is_chromeos_ash) {
       sources += [

@@ -19,7 +19,9 @@
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
-class Gamepad;
+template <class T>
+class GamepadImpl;
+using Gamepad = GamepadImpl<void>;
 }
 
 namespace blink {

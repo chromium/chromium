@@ -35,18 +35,21 @@ void UnmapNow(uintptr_t reservation_start,
 PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   PartitionRootLock(root).AssertAcquired();
-  auto* extent = PartitionDirectMapExtent::FromSlotSpanMetadata(slot_span);
+  auto* extent =
+      ReadOnlyPartitionDirectMapExtent::FromSlotSpanMetadata(slot_span);
 
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
     PA_DCHECK(extent->prev_extent->next_extent == extent);
-    extent->prev_extent->next_extent = extent->next_extent;
+    extent->prev_extent->ToWritable(root->ShadowPoolOffset())->next_extent =
+        extent->next_extent;
   } else {
     root->direct_map_list = extent->next_extent;
   }
   if (extent->next_extent) {
     PA_DCHECK(extent->next_extent->prev_extent == extent);
-    extent->next_extent->prev_extent = extent->prev_extent;
+    extent->next_extent->ToWritable(root->ShadowPoolOffset())->prev_extent =
+        extent->prev_extent;
   }
 
   // The actual decommit is deferred below after releasing the lock.

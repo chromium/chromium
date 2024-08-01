@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
 <translation id="1073417869336441572">Дапамажыце нам палепшыць Chrome – раскажыце, чаму вы дазволілі староннія файлы cookie. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Схаваць картку з апавяшчэннем пра зніжэнне цаны</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1192844206376121885">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтам <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Даведка і водгукі</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
-<translation id="2550801787432930915">Картка з апавяшчэннем пра зніжэнне цаны</translation>
 <translation id="2570922361219980984">Доступ да месцазнаходжання для гэтай прылады таксама выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгорнута. Націсніце, каб згарнуць.</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Перайсці ўперад</translation>
 <translation id="3895926599014793903">Прымусовае ўключэнне павелічэння</translation>
+<translation id="3905475044299942653">Выяўлена адпраўка вялікай колькасці апавяшчэнняў</translation>
 <translation id="3908288065506437185">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Некаторыя функцыі могуць не працаваць. Пры гэтым звязаныя сайты па-ранейшаму могуць выкарыстоўваць староннія файлы cookie.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Абароненае змесціва</translation>
 <translation id="662080504995468778">Застацца</translation>
 <translation id="6653342741369270081">Каб выйсці з поўнаэкраннага рэжыму, націсніце кнопку "Назад".</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Не працягваць прагляд гэтай укладкі}one{Не працягваць прагляд гэтых укладак}few{Не працягваць прагляд гэтых укладак}many{Не працягваць прагляд гэтых укладак}other{Не працягваць прагляд гэтых укладак}}</translation>
 <translation id="6689172468748959065">Фота профілю</translation>
 <translation id="6697925417670533197">Актыўныя спампоўкі</translation>
 <translation id="6722828510648505498">Блакіраваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Выберыце адзін з варыянтаў для сайта <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6818926723028410516">Выберыце элементы</translation>
+<translation id="6840760312327750441">Каб згрупаваць укладкі, дакраніцеся да адной укладкі і ўтрымлівайце яе, затым перацягніце на іншую.</translation>
 <translation id="6864395892908308021">Гэта прылада не падтрымлівае функцыю NFC</translation>
 <translation id="6912998170423641340">Заблакіраваць сайтам доступ да чытання тэксту і відарысаў з буфера абмену</translation>
 <translation id="6945221475159498467">Выбраць</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Гэта старонка небяспечная</translation>
 <translation id="930525582205581608">Забыць гэты сайт?</translation>
 <translation id="947156494302904893">Наведаныя вамі сайты могуць правяраць, ці вы не бот</translation>
+<translation id="959682366969460160">Навядзіце парадак</translation>
 <translation id="967624055006145463">Захаваныя даныя</translation>
 </translationbundle>

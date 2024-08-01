@@ -45,6 +45,8 @@ static_library("extensions") {
     "url_constants.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",
@@ -133,6 +135,7 @@ source_set("unit_tests") {
     "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions:test_support",
     "//chrome/common",
     "//chrome/test:test_support",

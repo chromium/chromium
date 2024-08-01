@@ -331,9 +331,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   expected_notice2.notice_action_taken_time =
       base::Time::FromMillisecondsSinceUnixEpoch(300);
   expected_notice2.notice_shown_duration = base::Milliseconds(200);
-  SaveNoticeData(expected_notice2, kFull3PCDIPH);
+  SaveNoticeData(expected_notice2, kTopicsConsentModalClankCCT);
   const auto actual_notice2 =
-      notice_storage()->ReadNoticeData(prefs(), kFull3PCDIPH);
+      notice_storage()->ReadNoticeData(prefs(), kTopicsConsentModalClankCCT);
 
   CompareNoticeData(expected_notice1, *actual_notice1);
   histogram_tester_.ExpectBucketCount(
@@ -351,18 +351,20 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
       "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
   CompareNoticeData(expected_notice2, *actual_notice2);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeAction.Full3PCDDesktopIPH",
+      "PrivacySandbox.Notice.NoticeAction.TopicsConsentModalClankCCT",
       NoticeActionTaken::kSettings, 1);
   histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.FirstShownToInteractedDuration.Full3PCDDesktopIPH_"
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration."
+      "TopicsConsentModalClankCCT_"
       "Settings",
       base::Milliseconds(200), 1);
   histogram_tester_.ExpectTimeBucketCount(
-      "PrivacySandbox.Notice.LastShownToInteractedDuration.Full3PCDDesktopIPH_"
+      "PrivacySandbox.Notice.LastShownToInteractedDuration."
+      "TopicsConsentModalClankCCT_"
       "Settings",
       base::Milliseconds(200), 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeShown.Full3PCDDesktopIPH", true, 1);
+      "PrivacySandbox.Notice.NoticeShown.TopicsConsentModalClankCCT", true, 1);
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest,

@@ -12,19 +12,20 @@ import java.util.List;
 /** Information about a group. */
 @JNINamespace("data_sharing")
 public class GroupData {
-    public final String groupId;
     public final String displayName;
     public final List<GroupMember> members;
+    public final GroupToken groupToken;
 
-    GroupData(String groupId, String displayName, GroupMember[] members) {
-        this.groupId = groupId;
+    public GroupData(
+            String groupId, String displayName, GroupMember[] members, String accessToken) {
         this.displayName = displayName;
         this.members = members == null ? null : List.of(members);
+        this.groupToken = new GroupToken(groupId, accessToken);
     }
 
     @CalledByNative
     private static GroupData createGroupData(
-            String groupId, String displayName, GroupMember[] members) {
-        return new GroupData(groupId, displayName, members);
+            String groupId, String displayName, GroupMember[] members, String accessToken) {
+        return new GroupData(groupId, displayName, members, accessToken);
     }
 }

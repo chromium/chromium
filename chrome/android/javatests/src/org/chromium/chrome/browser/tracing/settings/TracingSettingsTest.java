@@ -39,7 +39,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.browser.tracing.TracingNotificationManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -323,7 +323,7 @@ public class TracingSettingsTest {
             Context context = ApplicationProvider.getApplicationContext();
             Assert.assertNotNull(categoriesPref.getExtras());
             Assert.assertFalse(categoriesPref.getExtras().isEmpty());
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
             Intent intent =
                     settingsLauncher.createSettingsActivityIntent(
                             context, TracingCategoriesSettings.class, categoriesPref.getExtras());

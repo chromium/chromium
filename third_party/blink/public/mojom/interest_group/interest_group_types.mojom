@@ -162,6 +162,9 @@ struct InterestGroup {
   array<string>? trusted_bidding_signals_keys;
   // Must not be a negative value.
   int32 max_trusted_bidding_signals_url_length = 0;
+  // An optional field for matching the encryption key, and indicating which
+  // version of the key-value server this interest group uses.
+  url.mojom.Origin? trusted_bidding_signals_coordinator;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? user_bidding_signals;
   array<InterestGroupAd>? ads;

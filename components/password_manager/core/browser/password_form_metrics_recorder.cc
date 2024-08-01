@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,6 +59,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
     case metrics_util::CLICKED_MANAGE_PASSWORD:
     case metrics_util::CLICKED_PASSWORDS_DASHBOARD:
     case metrics_util::AUTO_SIGNIN_TOAST_TIMEOUT:
+    case metrics_util::CLICKED_GOT_IT:
       break;
 
     // These should not reach here:
@@ -425,6 +427,13 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
   }
 
   ukm_entry_builder_.Record(ukm::UkmRecorder::Get());
+
+#if BUILDFLAG(IS_ANDROID)
+  if (form_submission_reached_) {
+    LogFormSubmissionsVsSavePromptsHistogram(
+        metrics_util::SaveFlowStep::kFormSubmitted);
+  }
+#endif
 }
 
 void PasswordFormMetricsRecorder::MarkGenerationAvailable() {
@@ -585,50 +594,22 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
       match_type = FormMatchType::kPublicSuffixMatch;
       break;
     case password_manager_util::GetLoginMatchType::kGrouped:
-      match_type = FormMatchType::kGrouped;
-      break;
+      // Grouped credentials are never filled on page load.
+      NOTREACHED_NORETURN();
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", match_type);
 }
 
 void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
-    const PasswordForm* preferred_match,
-    const bool were_grouped_credentials_availible) {
+    std::optional<MatchedFormType> form_type) {
+  if (!form_type) {
+    return;
+  }
   if (std::exchange(recorded_potential_preferred_matched_password_type, true)) {
     return;
   }
-
-  using FormMatchType =
-      password_manager::PasswordFormMetricsRecorder::MatchedFormType;
-  FormMatchType match_type;
-
-  if (!preferred_match) {
-    if (were_grouped_credentials_availible) {
-      UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
-                                FormMatchType::kGrouped);
-    }
-    return;
-  }
-
-  switch (password_manager_util::GetMatchType(*preferred_match)) {
-    case password_manager_util::GetLoginMatchType::kExact:
-      match_type = FormMatchType::kExactMatch;
-      break;
-    case password_manager_util::GetLoginMatchType::kAffiliated:
-      match_type =
-          affiliations::IsValidAndroidFacetURI(preferred_match->signon_realm)
-              ? FormMatchType::kAffiliatedApp
-              : FormMatchType::kAffiliatedWebsites;
-      break;
-    case password_manager_util::GetLoginMatchType::kPSL:
-      match_type = FormMatchType::kPublicSuffixMatch;
-      break;
-    case password_manager_util::GetLoginMatchType::kGrouped:
-      match_type = FormMatchType::kGrouped;
-      break;
-  }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
-                            match_type);
+                            form_type.value());
 }
 
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
@@ -946,6 +927,8 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_RELAUNCH_CHROME_BUBBLE:
     case metrics_util::AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE:
     case metrics_util::AUTOMATIC_PASSKEY_SAVED_CONFIRMATION:
+    case metrics_util::AUTOMATIC_PASSKEY_DELETED_CONFIRMATION:
+    case metrics_util::MANUAL_PASSKEY_DELETED_CONFIRMATION:
       // Do nothing.
       return;
 

@@ -64,6 +64,18 @@ SharedGpuContext::ContextProviderWrapper() {
   return this_ptr->context_provider_wrapper_->GetWeakPtr();
 }
 
+// static
+WebGraphicsSharedImageInterfaceProvider*
+SharedGpuContext::SharedImageInterfaceProvider() {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  this_ptr->CreateSharedImageInterfaceProviderIfNeeded();
+  if (!this_ptr->shared_image_interface_provider_) {
+    return nullptr;
+  }
+
+  return this_ptr->shared_image_interface_provider_.get();
+}
+
 gpu::GpuMemoryBufferManager* SharedGpuContext::GetGpuMemoryBufferManager() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   if (!this_ptr->gpu_memory_buffer_manager_) {
@@ -75,7 +87,7 @@ gpu::GpuMemoryBufferManager* SharedGpuContext::GetGpuMemoryBufferManager() {
 void SharedGpuContext::SetGpuMemoryBufferManagerForTesting(
     gpu::GpuMemoryBufferManager* mgr) {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  DCHECK(!!this_ptr->gpu_memory_buffer_manager_ == !mgr);
+  DCHECK(!this_ptr->gpu_memory_buffer_manager_ || !mgr);
   this_ptr->gpu_memory_buffer_manager_ = mgr;
 }
 
@@ -181,6 +193,48 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
   }
 }
 
+static void CreateSharedImageInterfaceProviderOnMainThread(
+    std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>* provider,
+    base::WaitableEvent* waitable_event) {
+  DCHECK(IsMainThread());
+
+  *provider = Platform::Current()->CreateSharedImageInterfaceProvider();
+  waitable_event->Signal();
+}
+
+void SharedGpuContext::CreateSharedImageInterfaceProviderIfNeeded() {
+  // If the feature is not enabled, |shared_image_interface_provider_| is always
+  // nullptr.
+  if (!features::IsCanvasSharedBitmapConversionEnabled()) {
+    return;
+  }
+
+  // Use the current |shared_image_interface_provider_|.
+  if (shared_image_interface_provider_ &&
+      !shared_image_interface_provider_->SharedImageInterface()) {
+    return;
+  }
+
+  // Delete and recreate |shared_image_interface_provider_|.
+  shared_image_interface_provider_.reset();
+
+  if (IsMainThread()) {
+    shared_image_interface_provider_ =
+        Platform::Current()->CreateSharedImageInterfaceProvider();
+  } else {
+    base::WaitableEvent waitable_event;
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            &CreateSharedImageInterfaceProviderOnMainThread,
+            CrossThreadUnretained(&shared_image_interface_provider_),
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+  }
+}
+
 // static
 void SharedGpuContext::SetContextProviderFactoryForTesting(
     ContextProviderFactory factory) {
@@ -192,11 +246,13 @@ void SharedGpuContext::SetContextProviderFactoryForTesting(
 }
 
 // static
-void SharedGpuContext::ResetForTesting() {
+void SharedGpuContext::Reset() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   this_ptr->is_gpu_compositing_disabled_ = false;
+  this_ptr->shared_image_interface_provider_.reset();
   this_ptr->context_provider_wrapper_.reset();
   this_ptr->context_provider_factory_.Reset();
+  this_ptr->gpu_memory_buffer_manager_ = nullptr;
 }
 
 bool SharedGpuContext::IsValidWithoutRestoring() {

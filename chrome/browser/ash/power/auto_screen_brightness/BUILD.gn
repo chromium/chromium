@@ -50,6 +50,8 @@ static_library("auto_screen_brightness") {
     "utils.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

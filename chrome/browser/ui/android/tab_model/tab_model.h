@@ -119,6 +119,9 @@ class TabModel {
     UNSET,
     // Used when creating a tab to keep synced tab groups up to date.
     FROM_SYNC_BACKGROUND,
+    // Open most recent tab in foregroud, used by ctrl-shift-t to restore
+    // most recently closed tab or tabs.
+    FROM_RECENT_TABS_FOREGROUND,
     // Must be last.
     SIZE
   };
@@ -184,7 +187,8 @@ class TabModel {
 
   // Used for restoring tabs from synced foreign sessions.
   virtual void CreateTab(TabAndroid* parent,
-                         content::WebContents* web_contents) = 0;
+                         content::WebContents* web_contents,
+                         bool select) = 0;
 
   virtual void HandlePopupNavigation(TabAndroid* parent,
                                      NavigateParams* params) = 0;

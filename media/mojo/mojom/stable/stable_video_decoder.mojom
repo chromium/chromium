@@ -227,12 +227,8 @@ interface StableVideoDecoderFactory {
 EnableIf=is_linux_or_chromeos_ash]
 interface StableVideoDecoderFactoryProcess {
   // Initializes a StableVideoDecoderFactory using |gpu_feature_info| to
-  // restrict the supported video decode configurations. If
-  // |enable_direct_video_decoder| is true, the StableVideoDecoderFactory shall
-  // create video decoders backed by the direct video decoder stack. Otherwise,
-  // it will use the legacy VDA implementations.
+  // restrict the supported video decode configurations.
   InitializeStableVideoDecoderFactory(
       gpu.mojom.GpuFeatureInfo gpu_feature_info,
-      bool enable_direct_video_decoder,
       pending_receiver<StableVideoDecoderFactory> receiver);
 };

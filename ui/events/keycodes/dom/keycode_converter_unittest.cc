@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 #include <stddef.h>
@@ -24,8 +29,8 @@ namespace {
 // These are in the same order as the columns in dom_code_data.inc
 // as reflected in the DOM_CODE() macro below.
 const size_t expected_mapped_key_count[] = {
-    222,  // evdev
-    222,  // xkb
+    223,  // evdev
+    223,  // xkb
     157,  // windows
     119,  // mac
 };

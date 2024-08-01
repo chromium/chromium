@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+
 namespace blink {
 
 ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler() =
@@ -32,18 +33,35 @@ ScriptedIdleTaskController::DelayedTaskCanceler::~DelayedTaskCanceler() {
   delayed_task_handle_.CancelTask();
 }
 
+const char ScriptedIdleTaskController::kSupplementName[] =
+    "ScriptedIdleTaskController";
+
+// static
+ScriptedIdleTaskController& ScriptedIdleTaskController::From(
+    ExecutionContext& context) {
+  ScriptedIdleTaskController* controller =
+      Supplement<ExecutionContext>::From<ScriptedIdleTaskController>(&context);
+  if (!controller) {
+    controller = MakeGarbageCollected<ScriptedIdleTaskController>(&context);
+    Supplement<ExecutionContext>::ProvideTo(context, controller);
+  }
+  return *controller;
+}
+
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
-      scheduler_(ThreadScheduler::Current()),
-      next_callback_id_(0),
-      paused_(false) {}
+      Supplement<ExecutionContext>(*context),
+      scheduler_(ThreadScheduler::Current()) {
+  UpdateStateIfNeeded();
+}
 
 ScriptedIdleTaskController::~ScriptedIdleTaskController() = default;
 
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
   visitor->Trace(idle_tasks_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 int ScriptedIdleTaskController::NextCallbackId() {
@@ -62,8 +80,11 @@ ScriptedIdleTaskController::CallbackId
 ScriptedIdleTaskController::RegisterCallback(
     IdleTask* idle_task,
     const IdleRequestOptions* options) {
-  DCHECK(idle_task);
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+    return 0;
+  }
 
+  DCHECK(idle_task);
   CallbackId id = NextCallbackId();
   idle_tasks_.Set(id, idle_task);
   uint32_t timeout_millis = options->timeout();
@@ -107,6 +128,10 @@ void ScriptedIdleTaskController::ScheduleCallback(CallbackId id,
 }
 
 void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+    return;
+  }
+
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "CancelIdleCallback", inspector_idle_callback_cancel_event::Data,
       GetExecutionContext(), id);

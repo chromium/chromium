@@ -123,6 +123,12 @@ bool RestrictionBlocksRemapping(
         return false;
       }
       return remapping.button->get_vkey() != ui::VKEY_TAB;
+    case mojom::CustomizationRestriction::kAllowFKeyRewrites:
+      if (remapping.button->is_customizable_button()) {
+        return false;
+      }
+      return !(remapping.button->get_vkey() >= ui::VKEY_F1 &&
+               remapping.button->get_vkey() <= ui::VKEY_F15);
   }
 }
 

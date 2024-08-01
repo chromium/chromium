@@ -20,9 +20,9 @@
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
-#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace display::test {
@@ -40,8 +40,8 @@ std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                              int height,
                                              bool is_interlaced,
                                              float refresh_rate) {
-  return CreateDisplayModePtrForTest({width, height}, is_interlaced,
-                                     refresh_rate);
+  return std::make_unique<DisplayMode>(gfx::Size{width, height}, is_interlaced,
+                                       refresh_rate);
 }
 
 enum CallbackResult {
@@ -262,7 +262,6 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetBaseConnectorId(kEdpConnectorId)
                       .SetIsAspectPreservingScaling(true)
                       .SetVariableRefreshRateState(kVrrDisabled)
-                      .SetVsyncRateMin(40)
                       .Build();
 
     outputs_[1] = FakeDisplaySnapshot::Builder()
@@ -294,10 +293,8 @@ class DisplayConfiguratorTest : public testing::Test {
   }
 
   // Predefined modes that can be used by outputs.
-  const DisplayMode small_mode_ =
-      CreateDisplayModeForTest({1366, 768}, false, 60.0f);
-  const DisplayMode big_mode_ =
-      CreateDisplayModeForTest({2560, 1600}, false, 60.0f);
+  const DisplayMode small_mode_ = DisplayMode({1366, 768}, false, 60.0f);
+  const DisplayMode big_mode_ = DisplayMode({2560, 1600}, false, 60.0f);
 
  protected:
   // Returns the output at the specified |index| as it currently exists within
@@ -2353,7 +2350,6 @@ TEST_F(DisplayConfiguratorTest,
                    .SetBaseConnectorId(kEdpConnectorId)
                    .SetIsAspectPreservingScaling(true)
                    .SetVariableRefreshRateState(kVrrDisabled)
-                   .SetVsyncRateMin(40)
                    .Build());
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
   UpdateOutputs(1, true);
@@ -2589,7 +2585,6 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_VrrEnabled) {
                    .SetBaseConnectorId(kEdpConnectorId)
                    .SetIsAspectPreservingScaling(true)
                    .SetVariableRefreshRateState(kVrrDisabled)
-                   .SetVsyncRateMin(40)
                    .Build());
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
   UpdateOutputs(1, true);
@@ -2668,7 +2663,6 @@ TEST_F(DisplayConfiguratorTest,
                    .SetBaseConnectorId(kSecondConnectorId)
                    .SetIsAspectPreservingScaling(true)
                    .SetVariableRefreshRateState(kVrrDisabled)
-                   .SetVsyncRateMin(40)
                    .Build());
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   UpdateOutputs(2, true);

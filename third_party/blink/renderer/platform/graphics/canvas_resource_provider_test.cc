@@ -114,7 +114,7 @@ class CanvasResourceProviderTest : public Test {
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
   }
 
-  void TearDown() override { SharedGpuContext::ResetForTesting(); }
+  void TearDown() override { SharedGpuContext::Reset(); }
 
  protected:
   test::TaskEnvironment task_environment_{
@@ -528,7 +528,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      resource_dispatcher.GetWeakPtr());
+      resource_dispatcher.GetWeakPtr(),
+      /*shared_image_interface_provider=*/nullptr);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());

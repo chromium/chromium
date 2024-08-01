@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.SampleNonProxy
 
-#ifndef org_jni_zero_SampleNonProxy_JNI
-#define org_jni_zero_SampleNonProxy_JNI
+#ifndef org_jni_1zero_SampleNonProxy_JNI
+#define org_jni_1zero_SampleNonProxy_JNI
 
 #include <jni.h>
 
@@ -299,4 +299,4 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRec
 }
 
 
-#endif  // org_jni_zero_SampleNonProxy_JNI
+#endif  // org_jni_1zero_SampleNonProxy_JNI

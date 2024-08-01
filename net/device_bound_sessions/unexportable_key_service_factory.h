@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "net/base/net_export.h"
 
 namespace unexportable_keys {
 class UnexportableKeyService;
@@ -15,8 +16,9 @@ class UnexportableKeyService;
 
 namespace net::device_bound_sessions {
 
-class UnexportableKeyServiceFactory {
+class NET_EXPORT UnexportableKeyServiceFactory {
  public:
+  ~UnexportableKeyServiceFactory();
   // Returns nullptr if unexportable key provider is not supported by the
   // platform or the device.
   // It should consistently return nullptr or not while chrome is running,
@@ -29,6 +31,11 @@ class UnexportableKeyServiceFactory {
   UnexportableKeyServiceFactory& operator=(
       const UnexportableKeyServiceFactory&) = delete;
 
+  void SetUnexportableKeyFactoryForTesting(
+      unexportable_keys::UnexportableKeyService* (*func)());
+
+  static UnexportableKeyServiceFactory* GetInstanceForTesting();
+
  private:
   friend class base::NoDestructor<UnexportableKeyServiceFactory>;
   std::unique_ptr<unexportable_keys::UnexportableKeyService>
@@ -36,7 +43,6 @@ class UnexportableKeyServiceFactory {
   bool has_created_service_ = false;
 
   UnexportableKeyServiceFactory();
-  ~UnexportableKeyServiceFactory();
 };
 
 }  // namespace net::device_bound_sessions

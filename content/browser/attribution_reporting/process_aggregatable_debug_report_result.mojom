@@ -21,4 +21,4 @@ enum ProcessAggregatableDebugReportResult {
   kBothRateLimitsReached = 6,
   kInternalError = 7,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionAggregatableDebugReportProcessResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionAggregatableDebugReportProcessResult)

@@ -34,7 +34,7 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
   }
 
   syncer::MockSyncService* mock_sync_service() {

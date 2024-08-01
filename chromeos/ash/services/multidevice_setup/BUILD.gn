@@ -93,6 +93,8 @@ static_library("multidevice_setup") {
     "//chrome/browser/chromeos",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp:unit_tests",
   ]

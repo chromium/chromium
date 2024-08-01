@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
+import android.os.Process;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
@@ -32,7 +34,6 @@ import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -172,7 +173,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         // some reason).
         assertTrue("Should have some application_locale", systemProfile.hasApplicationLocale());
 
-        assertEquals(ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
+        assertEquals(Process.is64Bit(), systemProfile.getAppVersion().contains("-64"));
         assertTrue("Should have some low_entropy_source", systemProfile.hasLowEntropySource());
         assertTrue(
                 "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());

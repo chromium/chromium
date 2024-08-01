@@ -13,10 +13,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/profiler/process_type.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/variations/variations_switches.h"
 
 namespace heap_profiling {
@@ -165,8 +165,8 @@ HeapProfilerParameters GetDefaultHeapProfilerParameters() {
 }
 
 HeapProfilerParameters GetHeapProfilerParametersForProcess(
-    metrics::CallStackProfileParams::Process process_type) {
-  using Process = metrics::CallStackProfileParams::Process;
+    base::ProfilerProcessType process_type) {
+  using Process = base::ProfilerProcessType;
 
   HeapProfilerParameters params = kDefaultHeapProfilerParameters;
 

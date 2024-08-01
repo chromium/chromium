@@ -49,6 +49,7 @@ static_library("fetcher") {
     "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//google_apis",
+    "//google_apis/common",
     "//net/traffic_annotation",
     "//url",
   ]
@@ -135,10 +136,6 @@ static_library("browser") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_android) {
-    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
-  }
 }
 
 if (is_android) {
@@ -158,6 +155,7 @@ source_set("unit_tests") {
     "list_family_members_service_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
+    "supervised_user_capabilities_unittest.cc",
     "supervised_user_content_settings_provider_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_metrics_service_unittest.cc",
@@ -192,6 +190,7 @@ source_set("unit_tests") {
     "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
+    "//google_apis/common",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

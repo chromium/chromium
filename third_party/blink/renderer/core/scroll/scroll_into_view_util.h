@@ -7,7 +7,10 @@
 
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 
 namespace gfx {
 class RectF;
@@ -15,9 +18,13 @@ class RectF;
 
 namespace blink {
 
+class LayoutBox;
 class LayoutObject;
 class LayoutView;
+class ComputedStyle;
 struct PhysicalRect;
+class ScrollableArea;
+class ScrollIntoViewOptions;
 
 namespace scroll_into_view_util {
 
@@ -47,6 +54,41 @@ void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
                                 const gfx::RectF& caret_rect_in_src,
                                 const LayoutObject& src_frame,
                                 const LayoutView& dest_frame);
+
+// Returns the scroll offset the scroller needs to scroll to in order to put
+// |expose_rect| (relative to the scroll origin of the scrollable area) into
+// |scrollable_area|'s visible scroll snapport rect aligned by |align_x| and
+// |align_y|.
+ScrollOffset GetScrollOffsetToExpose(
+    const ScrollableArea& scrollable_area,
+    const PhysicalRect& expose_rect,
+    const PhysicalBoxStrut& expose_scroll_margin,
+    const mojom::blink::ScrollAlignment& align_x,
+    const mojom::blink::ScrollAlignment& align_y);
+
+CORE_EXPORT mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+    const mojom::blink::ScrollAlignment& align_x =
+        ScrollAlignment::CenterIfNeeded(),
+    const mojom::blink::ScrollAlignment& align_y =
+        ScrollAlignment::CenterIfNeeded(),
+    mojom::blink::ScrollType scroll_type =
+        mojom::blink::ScrollType::kProgrammatic,
+    bool make_visible_in_visual_viewport = true,
+    mojom::blink::ScrollBehavior scroll_behavior =
+        mojom::blink::ScrollBehavior::kAuto,
+    bool is_for_scroll_sequence = false,
+    bool cross_origin_boundaries = true);
+
+mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+    const ScrollIntoViewOptions& options,
+    const ComputedStyle& computed_style);
+
+mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+    const ComputedStyle& computed_style);
+
+mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
+    const LayoutBox& box,
+    ScrollOrientation axis);
 
 }  // namespace scroll_into_view_util
 

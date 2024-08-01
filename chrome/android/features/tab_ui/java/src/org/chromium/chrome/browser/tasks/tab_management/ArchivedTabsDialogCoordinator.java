@@ -5,16 +5,20 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Function;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -25,7 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
@@ -42,15 +46,20 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.FadingShadow;
+import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArchivedTabsDialogCoordinator {
+public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
 
     /** Interface exposing functionality to the menu items for the archived tabs dialog */
     public interface ArchiveDelegate {
@@ -84,7 +93,7 @@ public class ArchivedTabsDialogCoordinator {
 
                 @Override
                 public void openArchiveSettings() {
-                    new SettingsLauncherImpl()
+                    SettingsLauncherFactory.createSettingsLauncher()
                             .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
                     RecordUserAction.record("Tabs.OpenArchivedTabsSettingsMenuItem");
                 }
@@ -107,11 +116,7 @@ public class ArchivedTabsDialogCoordinator {
 
                 @Override
                 public void closeArchivedTabs(List<Tab> tabs) {
-                    int tabCount = tabs.size();
                     ArchivedTabsDialogCoordinator.this.closeArchivedTabs(tabs);
-                    RecordHistogram.recordCount1000Histogram(
-                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabCount);
-                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
                 }
             };
 
@@ -134,7 +139,8 @@ public class ArchivedTabsDialogCoordinator {
     private final Callback<Integer> mTabCountObserver =
             (count) -> {
                 if (count <= 0) {
-                    hide();
+                    // Post task to allow the last tab to be unregistered.
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> hide());
                     return;
                 }
                 updateTitle();
@@ -184,12 +190,26 @@ public class ArchivedTabsDialogCoordinator {
             new TabListEditorCoordinator.LifecycleObserver() {
                 @Override
                 public void willHide() {
+                    mRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
                     mRootView.removeView(mView);
+                    mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
                 }
 
                 @Override
                 public void didHide() {
                     ArchivedTabsDialogCoordinator.this.hideInternal();
+                }
+            };
+
+    private final RecyclerView.OnScrollListener mRecyclerScrollListener =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    mShadowView.setVisibility(
+                            recyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
                 }
             };
 
@@ -204,12 +224,18 @@ public class ArchivedTabsDialogCoordinator {
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
     private final @NonNull TabArchiveSettings mTabArchiveSettings;
+    private final @NonNull ModalDialogManager mModalDialogManager;
+    private final @NonNull UndoBarController mUndoBarController;
+    private final @NonNull ActionConfirmationDialog mActionConfirmationDialog;
+    private final @NonNull ViewGroup mView;
+    private final @NonNull FadingShadowView mShadowView;
 
-    private ViewGroup mView;
+    private RecyclerView mRecyclerView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private OnTabSelectingListener mOnTabSelectingListener;
     private PropertyModel mIphMessagePropertyModel;
+    private int mSnackbarOverrideToken;
 
     /**
      * @param context The android context.
@@ -222,6 +248,7 @@ public class ArchivedTabsDialogCoordinator {
      * @param regularTabCreator Handles the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers throughout the app.
      * @param tabArchiveSettings The settings manager for tab archive.
+     * @param modalDialogManager Used for managing the modal dialogs.
      */
     public ArchivedTabsDialogCoordinator(
             @NonNull Context context,
@@ -233,7 +260,8 @@ public class ArchivedTabsDialogCoordinator {
             @NonNull SnackbarManager snackbarManager,
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
-            @NonNull TabArchiveSettings tabArchiveSettings) {
+            @NonNull TabArchiveSettings tabArchiveSettings,
+            @NonNull ModalDialogManager modalDialogManager) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -243,18 +271,37 @@ public class ArchivedTabsDialogCoordinator {
         mRegularTabCreator = regularTabCreator;
         mBackPressManager = backPressManager;
         mTabArchiveSettings = tabArchiveSettings;
+        mModalDialogManager = modalDialogManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mArchivedTabModel =
                 mArchivedTabModelOrchestrator
                         .getTabModelSelector()
                         .getModel(/* incognito= */ false);
+        mUndoBarController =
+                new UndoBarController(
+                        mContext,
+                        mArchivedTabModelOrchestrator.getTabModelSelector(),
+                        /* snackbarManageable= */ this,
+                        /* dialogVisibilitySupplier= */ null);
         mView =
                 (ViewGroup)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
         mView.findViewById(R.id.close_all_tabs_button)
-                .setOnClickListener(this::closeAllInactiveTabs);
+                .setOnClickListener(this::onCloseAllInactiveTabsButtonClicked);
+        mShadowView = mView.findViewById(R.id.close_all_tabs_button_container_shadow);
+        mShadowView.init(
+                mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_BOTTOM);
+        mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
+    }
+
+    /** Hides the dialog. */
+    public void destroy() {
+        if (mTabListEditorCoordinator != null
+                && mTabListEditorCoordinator.getController().isVisible()) {
+            hide();
+        }
     }
 
     /**
@@ -271,19 +318,27 @@ public class ArchivedTabsDialogCoordinator {
 
         mOnTabSelectingListener = onTabSelectingListener;
         mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
+        mUndoBarController.initialize();
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
         controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), 0, null);
         controller.setNavigationProvider(mNavigationProvider);
+        mTabListEditorCoordinator.overrideContentDescriptions(
+                R.string.accessibility_archived_tabs_dialog,
+                R.string.accessibility_archived_tabs_dialog_back_button);
+
+        mRecyclerView = mView.findViewById(R.id.tab_list_recycler_view);
+        mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
 
-        // Add the dialog view.
-        mRootView.addView(mView);
+        FrameLayout snackbarContainer = mView.findViewById(R.id.snackbar_container);
+        mSnackbarOverrideToken = mSnackbarManager.pushParentViewToOverrideStack(snackbarContainer);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
+        snackbarContainer.bringToFront();
 
         // Add the IPH to the TabListEditor.
         if (mTabArchiveSettings.shouldShowDialogIph()) {
@@ -304,21 +359,24 @@ public class ArchivedTabsDialogCoordinator {
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
 
         moveToState(TabActionState.CLOSABLE);
+        // Add the dialog view.
+        mRootView.addView(mView);
+        RecordUserAction.record("Tabs.ArchivedTabsDialogShown");
     }
 
     /** Hides the dialog. */
     public void hide() {
-        mRootView.removeView(mView);
-        hideInternal();
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
+        controller.hide();
     }
 
     void hideInternal() {
         TabListEditorController controller = mTabListEditorCoordinator.getController();
-        controller.hide();
         controller.setLifecycleObserver(null);
         mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
-        mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
+        mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
     }
 
     void moveToState(@TabActionState int tabActionState) {
@@ -363,7 +421,7 @@ public class ArchivedTabsDialogCoordinator {
                 new TabListEditorCoordinator(
                         mContext,
                         mRootView,
-                        /* parentView= */ mView,
+                        /* parentView= */ mView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
                         mArchivedTabModelOrchestrator
                                 .getTabModelSelector()
@@ -372,23 +430,75 @@ public class ArchivedTabsDialogCoordinator {
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ null,
                         mMode,
-                        /* displayGroups= */ false,
+                        /* displayGroups= */ true,
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.CLOSABLE,
-                        mGridCardOnCLickListenerProvider);
+                        mGridCardOnCLickListenerProvider,
+                        mModalDialogManager);
     }
 
     @VisibleForTesting
-    void closeAllInactiveTabs(View view) {
+    void onCloseAllInactiveTabsButtonClicked(View view) {
         int tabCount = mArchivedTabModel.getCount();
-        mArchivedTabModel.closeAllTabs(false);
-        RecordHistogram.recordCount1000Histogram("Tabs.CloseAllArchivedTabs.TabCount", tabCount);
-        RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+        showCloseAllArchivedTabsConfirmation(
+                tabCount,
+                () -> {
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.CloseAllArchivedTabs.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+                });
     }
 
     private void closeArchivedTabs(List<Tab> tabs) {
-        mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
+        int tabCount = tabs.size();
+        Runnable metricsRunnable =
+                () -> {
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
+                };
+
+        if (tabCount == mArchivedTabModel.getTabCountSupplier().get()) {
+            showCloseAllArchivedTabsConfirmation(tabCount, metricsRunnable);
+        } else {
+            mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
+            metricsRunnable.run();
+        }
+    }
+
+    /**
+     * Shows a confirmation dialog when the close operation cannot be undone.
+     *
+     * @param onConfirmRunnable A runnable which is run if the dialog is confirmed.
+     */
+    private void showCloseAllArchivedTabsConfirmation(int tabCount, Runnable onConfirmRunnable) {
+        Function<Resources, String> titleResolver =
+                (res) -> {
+                    return res.getQuantityString(
+                            R.plurals.archive_dialog_close_all_inactive_tabs_confirmation_title,
+                            tabCount,
+                            tabCount);
+                };
+        Function<Resources, String> descriptionResolver =
+                (res) -> {
+                    return res.getString(
+                            R.string
+                                    .archive_dialog_close_all_inactive_tabs_confirmation_description);
+                };
+        mActionConfirmationDialog.show(
+                titleResolver,
+                descriptionResolver,
+                R.string.archive_dialog_close_all_inactive_tabs_confirmation,
+                /* supportStopShowing= */ false,
+                (isPositive, stopShowing) -> {
+                    if (isPositive) {
+                        mArchivedTabModel.closeMultipleTabs(
+                                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
+                                /* canUndo= */ false);
+                        onConfirmRunnable.run();
+                    }
+                });
     }
 
     private void restoreArchivedTabs(List<Tab> tabs) {
@@ -400,7 +510,7 @@ public class ArchivedTabsDialogCoordinator {
     }
 
     private void onIphReviewClicked() {
-        new SettingsLauncherImpl()
+        SettingsLauncherFactory.createSettingsLauncher()
                 .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
         RecordUserAction.record("Tabs.ArchivedTabsDialogIphClicked");
     }
@@ -441,7 +551,14 @@ public class ArchivedTabsDialogCoordinator {
         return true;
     }
 
-    // Testing-specific methods
+    // SnackbarManageable implementation.
+
+    @Override
+    public SnackbarManager getSnackbarManager() {
+        return mSnackbarManager;
+    }
+
+    // Testing-specific methods.
 
     void setTabListEditorCoordinatorForTesting(TabListEditorCoordinator tabListEditorCoordinator) {
         mTabListEditorCoordinator = tabListEditorCoordinator;
@@ -453,5 +570,9 @@ public class ArchivedTabsDialogCoordinator {
 
     TabListEditorCoordinator.LifecycleObserver getTabListEditorLifecycleObserver() {
         return mTabListEditorLifecycleObserver;
+    }
+
+    View getViewForTesting() {
+        return mView;
     }
 }

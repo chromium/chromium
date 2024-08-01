@@ -100,14 +100,6 @@ std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
   return ParseDisplayPanelRadii(&display_switch_value.value());
 }
 
-std::optional<float> GetVSyncRateMin(const DisplaySnapshot* snapshot,
-                                     const DisplayMode* mode_info) {
-  if (snapshot->vsync_rate_min().has_value()) {
-    return mode_info->GetVSyncRateMin(snapshot->vsync_rate_min().value());
-  }
-  return std::nullopt;
-}
-
 }  // namespace
 
 // static
@@ -353,7 +345,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 
   new_info.set_refresh_rate(mode_info->refresh_rate());
   new_info.set_is_interlaced(mode_info->is_interlaced());
-  new_info.set_vsync_rate_min(GetVSyncRateMin(snapshot, mode_info));
+  new_info.set_vsync_rate_min(mode_info->vsync_rate_min());
   new_info.set_variable_refresh_rate_state(
       snapshot->variable_refresh_rate_state());
   new_info.set_connection_type(snapshot->type());

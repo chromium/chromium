@@ -14,6 +14,8 @@ const CGFloat kCornerRadius = 16;
 const CGFloat kMargin = 16;
 const CGFloat kSpacing = 8;
 const CGFloat kDotSize = 14;
+const CGFloat kHighlightAlpha = 0.6;
+const CGFloat kHighlightBackgroundColorAlpha = 0.3;
 
 }  // namespace
 
@@ -86,12 +88,28 @@ const CGFloat kDotSize = 14;
   return self;
 }
 
+- (void)setHighlighted:(BOOL)highlighted {
+  [super setHighlighted:highlighted];
+  if (highlighted) {
+    self.backgroundColor = [UIColor.whiteColor
+        colorWithAlphaComponent:kHighlightBackgroundColorAlpha];
+    self.contentView.alpha = kHighlightAlpha;
+  } else {
+    self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+    self.contentView.alpha = 1;
+  }
+}
+
 - (void)prepareForReuse {
   [super prepareForReuse];
   _titleLabel.text = nil;
   _subtitleLabel.text = nil;
   _dot.backgroundColor = nil;
-  _faviconsGrid.favicons = nil;
+  _faviconsGrid.numberOfTabs = 0;
+  _faviconsGrid.favicon1 = nil;
+  _faviconsGrid.favicon2 = nil;
+  _faviconsGrid.favicon3 = nil;
+  _faviconsGrid.favicon4 = nil;
   self.item = nil;
 }
 

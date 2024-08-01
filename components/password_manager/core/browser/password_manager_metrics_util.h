@@ -51,6 +51,8 @@ enum UIDisplayDisposition {
   AUTOMATIC_RELAUNCH_CHROME_BUBBLE = 19,
   AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE = 20,
   AUTOMATIC_PASSKEY_SAVED_CONFIRMATION = 21,
+  AUTOMATIC_PASSKEY_DELETED_CONFIRMATION = 22,
+  MANUAL_PASSKEY_DELETED_CONFIRMATION = 23,
   NUM_DISPLAY_DISPOSITIONS,
 };
 
@@ -74,6 +76,7 @@ enum UIDismissalReason {
   CLICKED_BRAND_NAME_OBSOLETE = 11,         // obsolete.
   CLICKED_PASSWORDS_DASHBOARD = 12,
   CLICKED_MANAGE_PASSWORD = 13,
+  CLICKED_GOT_IT = 14,
   NUM_UI_RESPONSES,
 };
 
@@ -417,6 +420,18 @@ enum class PasswordCheckInteraction {
   // Must be last.
   kMaxValue = kChangePasswordAutomatically,
 };
+
+#if BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Should be kept in sync with SaveFlowStep in enums.xml.
+enum class SaveFlowStep {
+  // The form was submitted. Does not strictly require a successful submission.
+  kFormSubmitted = 0,
+  kSavePromptShown = 1,
+  kMaxValue = kSavePromptShown,
+};
+#endif
 
 // Represents different user interactions related to adding credential from the
 // setting. These values are persisted to logs. Entries should not be renumbered
@@ -936,6 +951,7 @@ base::OnceCallback<R(Args...)> TimeCallbackMediumTimes(
 #if BUILDFLAG(IS_ANDROID)
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
+void LogFormSubmissionsVsSavePromptsHistogram(SaveFlowStep save_flow_step);
 #endif
 
 // Record that password deletion from Chrome settings happened.

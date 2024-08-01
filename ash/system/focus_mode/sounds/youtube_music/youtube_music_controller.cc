@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "base/check.h"
@@ -105,6 +106,19 @@ bool YouTubeMusicController::PlaybackQueueNext(
     return false;
   }
   client->PlaybackQueueNext(playback_queue_id, std::move(callback));
+  return true;
+}
+
+bool YouTubeMusicController::ReportPlayback(
+    const std::string& playback_reporting_token,
+    const PlaybackData& playback_data,
+    ReportPlaybackCallback callback) {
+  auto* client = GetActiveClient();
+  if (!client) {
+    return false;
+  }
+  client->ReportPlayback(playback_reporting_token, playback_data,
+                         std::move(callback));
   return true;
 }
 

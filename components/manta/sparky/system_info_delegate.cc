@@ -9,9 +9,9 @@
 
 namespace manta {
 
-StorageData::StorageData(const std::string& in_use_bytes,
+StorageData::StorageData(const std::string& free_bytes,
                          const std::string& total_bytes)
-    : in_use_bytes(in_use_bytes), total_bytes(total_bytes) {}
+    : free_bytes(free_bytes), total_bytes(total_bytes) {}
 
 StorageData::~StorageData() = default;
 StorageData::StorageData(const StorageData&) = default;
@@ -54,10 +54,12 @@ MemoryData& MemoryData::operator=(const MemoryData&) = default;
 
 DiagnosticsData::DiagnosticsData(std::optional<BatteryData> battery_data,
                                  std::optional<CpuData> cpu_data,
-                                 std::optional<MemoryData> memory_data)
+                                 std::optional<MemoryData> memory_data,
+                                 std::optional<StorageData> storage_data)
     : battery_data(std::move(battery_data)),
       cpu_data(std::move(cpu_data)),
-      memory_data(std::move(memory_data)) {}
+      memory_data(std::move(memory_data)),
+      storage_data(std::move(storage_data)) {}
 
 DiagnosticsData::~DiagnosticsData() = default;
 

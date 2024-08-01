@@ -436,6 +436,13 @@ bool BrowserViewRenderer::OnDrawSoftware(SkCanvas* canvas) {
   return CanOnDraw() && CompositeSW(canvas, /*software_canvas=*/true);
 }
 
+float BrowserViewRenderer::GetVelocityInPixelsPerSecond() {
+  if (!compositor_) {
+    return 0.f;
+  }
+  return compositor_->GetVelocityInPixelsPerSecond();
+}
+
 bool BrowserViewRenderer::NeedToDrawBackgroundColor() {
   return !has_rendered_frame_;
 }

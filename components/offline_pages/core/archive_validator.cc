@@ -47,7 +47,8 @@ std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
   base::File file;
 #if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
-    file = base::OpenContentUriForRead(file_path);
+    file = base::OpenContentUri(file_path,
+                                base::File::FLAG_OPEN | base::File::FLAG_READ);
   } else {
 #endif  // BUILDFLAG(IS_ANDROID)
     file.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);

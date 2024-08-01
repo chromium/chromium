@@ -49,15 +49,14 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
                                             SuggestionType type) override {}
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       SuggestionType type) override;
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
 
  private:
   // Records metrics related to the IBAN suggestions popup.
   class UmaRecorder {
    public:
     void OnIbanSuggestionsShown(FieldGlobalId field_global_id);
-    void OnIbanSuggestionSelected(const std::u16string& value);
+    void OnIbanSuggestionSelected(const Suggestion& suggestion);
 
    private:
     // The global id of the field that most recently had IBAN suggestions shown.

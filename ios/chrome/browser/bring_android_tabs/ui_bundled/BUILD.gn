@@ -16,9 +16,9 @@ source_set("coordinator") {
     "tab_list_from_android_mediator.mm",
   ]
   deps = [
+    ":constants",
     ":ui",
     ":ui_swift",
-    ":constants",
     "//base",
     "//components/favicon/core",
     "//ios/chrome/browser/bring_android_tabs/model",
@@ -70,11 +70,11 @@ swift_source_set("ui_swift") {
   sources =
       [ "bring_android_tabs_prompt_confirmation_alert_view_controller.swift" ]
   deps = [
-    ":ui",
     ":constants",
+    ":ui",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/bring_android_tabs/ui_bundled/resources",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
   ]
@@ -160,9 +160,9 @@ source_set("eg2_tests") {
     "//base",
     "//components/sync/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/first_run:eg_test_support+eg2",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

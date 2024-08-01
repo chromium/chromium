@@ -19,7 +19,7 @@
 
 namespace {
 
-constexpr float kOverlayViewOpacity = 0.99f;
+constexpr float kOverlayViewOpacity = 0.60f;
 
 // The time duration for |background_| to fade in.
 constexpr int kFadeInDurationMs = 500;
@@ -50,10 +50,17 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       AddChildView(views::Builder<views::View>()
                        .SetPaintToLayer()
                        .SetBackground(views::CreateThemedSolidBackground(
-                           ui::kColorSysStateScrim))
+                           kColorPipWindowBackground))
                        .Build());
   background_->layer()->SetOpacity(0.0f);
-  background_->layer()->SetBackgroundBlur(4.0f);
+
+  // TODO(crbug.com/356210387): Apply blur directly to `background_` layer.
+  //
+  // Add layer to blur the web contents.
+  blur_view_ =
+      AddChildView(views::Builder<views::View>().SetPaintToLayer().Build());
+  blur_view_->layer()->SetBackgroundBlur(4.0f);
+
   FadeInLayer(background_->layer());
 }
 
@@ -79,7 +86,7 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
 }
 
 void AutoPipSettingOverlayView::OnHideView() {
-  // Hide the semi-opaque background layer.
+  // Hide the overlay view.
   SetVisible(false);
 
   // No longer block input events, if we were doing that.
@@ -136,6 +143,7 @@ AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
         views::Widget::ClosedReason::kUnspecified);
   }
   background_ = nullptr;
+  blur_view_ = nullptr;
   auto_pip_setting_view_ = nullptr;
 }
 

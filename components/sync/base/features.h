@@ -196,12 +196,6 @@ BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 // If enabled, SyncTransportDataPrefs are account-keyed (instead of just for the
 // currently-signed-in account).
 BASE_DECLARE_FEATURE(kSyncAccountKeyedTransportPrefs);
-
-// Kill switch for a change in the internal implementation of
-// SyncService::GetLocalDataDescriptions() and TriggerLocalDataMigration(),
-// which is expected to be a no-op.
-BASE_DECLARE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

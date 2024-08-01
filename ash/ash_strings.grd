@@ -853,6 +853,21 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" desc="The text used for the ending moment, as well as the tooltip.">
         Time's up. Great job!
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_1" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+        Time’s up. You did it!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_2" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+        Time’s up. You’re on a roll!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_3" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+        All done. Way to go!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_4" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+        All done. Keep it up!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_5" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+        Time’s up. Done and done!
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT" desc="The accessibility alert for the ending moment nudge.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> You've just focused for <ph name="FOCUSED_TIME">$2<ex>24 minutes</ex></ph>. Open Quick settings to focus again.
       </message>
@@ -1596,9 +1611,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_HOLDING_SPACE_TITLE" desc="Title of the holding space tray and bubble.">
         Tote
       </message>
-      <message name="IDS_ASH_HOLDING_SPACE_TITLE_REFRESH" desc="Title of the holding space tray and bubble when refresh is enabled.">
-        Quick files
-      </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_TITLE" desc="Title of the pinned files area in the holding space bubble.">
         Pinned files
       </message>
@@ -1616,9 +1628,6 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE" desc="Title of the suggestions area in the holding space bubble.">
         Suggested files
-      </message>
-      <message name="IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER" desc="Text displayed in the holding space recent files bubble when the user has no downloads or screen captures.">
-        You'll find your recent downloads and screen captures here
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE" desc="Title of the downloads area in the holding space bubble.">
         Downloads
@@ -2221,6 +2230,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_STYLUS_TOOLS_MAGNIFIER_MODE" desc="Title of the magnification mode in the stylus tools. Clicking this button opens up a magnifier. The magnifier remains active until the user turns it off by tapping the same button again.">
         Magnifying glass
+      </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_MARKER_MODE" desc="Title of the marker mode in the stylus tools. Clicking this button turns the mouse into a marker. The marker remains active until the user turns it off by tapping the same button again.">
+        Marker tool
       </message>
       <message name="IDS_ASH_STYLUS_TOOLS_TITLE" desc="The title of the stylus tools dialog in the ash shelf.">
         Stylus tools
@@ -4232,6 +4244,10 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_EMOJI_PICKER" desc="Label for accelerator action - Open Emoji Picker.">
         Open Emoji Picker
       </message>
+      <!-- TODO(b/286268215): Translate this string -->
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_PICKER" translateable="false" desc="Label for accelerator action - Open Picker.">
+        Open Picker
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_STOP_SCREEN_RECORDING" desc="Label for accelerator action - Stop screen recording.">
         Stop screen recording
       </message>
@@ -5235,6 +5251,12 @@ No devices connected.
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE" desc="Accessibility text read by chromevox to indicate which website / app we are authenticating for.">
         Verify your identity: <ph name="ORIGIN_NAME">$1<ex>example.com</ex></ph> would like to confirm it's you
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT" desc="Text shown in the settings auth dialog.">
+        ChromeOS Settings would like to confirm it's you
+      </message>
+      <message name="IDS_ASH_IN_SESSION_AUTH_PASSWORD_MANAGER_PROMPT" desc="Text shown in the password manager auth dialog.">
+        ChromeOS Password Manager would like to confirm it's you
       </message>
       <message name="IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER" desc="Text to display as placeholder in the password input field.">
         Password
@@ -6878,6 +6900,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_A11Y_DICTATION_NOTIFICATION_ONLY_SODA_DOWNLOADED_DESC" desc="The description for a notification that is shown when speech recognition files download successfully. This notification is only shown if speech recognition assets are downloaded and command parsing assets are not.">
         Speech is processed locally and dictation works offline, but some voice commands won’t work.
       </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_TITLE" desc="The title for a notification that is shown when the facegaze-assets DLC is successfully downloaded.">
+        Face control files downloaded
+      </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_DESC" desc="The description for a notification that is shown when the facegaze-assets DLC is successfully downloaded.">
+        Face control will be available to other users on the device
+      </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_FAILED_TITLE" desc="The title for a notification that is shown when the facegaze-assets DLC fails to download.">
+        Couldn't download face control files
+      </message>
+      <message name="IDS_ASH_A11Y_FACEGAZE_ASSETS_FAILED_DESC" desc="The description for a notification that is shown when the facegaze-assets DLC fails to download.">
+        Try again later
+      </message>
 
       <!-- Debugd notification strings -->
       <message name="IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED" desc="The label used for the notification to indicate network packet capture operation has started and network information is being collected on the device.">
@@ -7346,55 +7380,64 @@ New install
       <message name="IDS_PICKER_LOWER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to lower case.">
         lowercase
       </message>
-      <message name="IDS_PICKER_SENTENCE_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to sentence case.">
-        Sentence case
-      </message>
       <message name="IDS_PICKER_TITLE_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to title case.">
         Title Case
       </message>
       <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
         Search browsing history
       </message>
-      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the drive files category is selected.">
+      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Google Drive.">
         Search Google Drive
       </message>
-      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the local files category is selected.">
+      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Chromebook.">
         Search Files app
       </message>
       <message name="IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the date and times category is selected.">
         Search date
       </message>
-      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the units and maths category is selected.">
+      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type mathematical formulas or unit conversions to calculate the resutl (e.g. '1 + 1' or '1 meter to feet').">
         Search to calculate
       </message>
-      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the clipboard category is selected.">
+      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard.">
         Search Clipboard
       </message>
       <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains general categories, i.e. expressions, browsing history, files.">
         Content
       </message>
-      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL" translateable="false" desc="Label of a Picker item that lets the user change the length of the selected text.">
+      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the length of the highlighted text in various ways. For example, an option might shorten the text by deleting redundant words.">
         Change length
       </message>
-      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL" translateable="false" desc="Label of a Picker item that lets the user change the tone of the selected text.">
+      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the tone of the highlighted text in various ways. For example, an option might make the text more casual by using a different vocabulary.">
         Change tone
       </message>
-      <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL" translateable="false" desc="Label of a Picker item that lets the user change the capitalization of the selected text.">
+      <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to change the capitalization of the text. For example, one of the submenu options might convert the text into uppercase.">
         Change capitalization
       </message>
-      <message name="IDS_PICKER_NEW_MENU_LABEL" translateable="false" desc="Label of a Picker item which shows a submenu of options to create something new.">
+      <message name="IDS_PICKER_NEW_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a menu. When the user hovers over this item, it opens a submenu with various options to create new documents or Chrome tabs. The submenu options are: 'Google Doc', 'Google Sheet', 'Google Slide', and 'Chrome window'.">
         New
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Google Doc.">
+      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Doc.">
         Google Doc
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Google Sheet.">
+      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Sheet.">
         Google Sheet
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Google Slide.">
+      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Slide.">
         Google Slide
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Chrome window.">
+      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL" translateable="false"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a new Chrome tab.">
         Chrome window
       </message>
       <message name="IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains calculation categories, e.g. Dates and Maths.">
@@ -7480,6 +7523,9 @@ New install
       </message>
       <message name="IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoticon result.">
         <ph name="ITEM_TEXT">$1<ex>sparkles</ex></ph> emoticon
+      </message>
+      <message name="IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when there are no results in the main section but there are emoji results.">
+        <ph name="NUM_RESULTS">$1<ex>5</ex></ph> emojis. No other results.
       </message>
 
       <!-- WM -->
@@ -7993,6 +8039,18 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" desc="The display name for the Game Dashboard screen size settings.">
         Screen size
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_EXIT_FULLSCREEN" desc="The text displayed within the screen size settings row to indicate that a user must exit fullscreen to resize this game.">
+        Exit fullscreen to resize
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_FULLSCREEN" desc="The text displayed within the screen size settings row to indicate that this game is only available in fullscreen.">
+        Only fullscreen available
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_PORTRAIT" desc="The text displayed within the screen size settings row to indicate that only the portrait size is available for this game.">
+        Only portrait available
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_ONLY_LANDSCAPE" desc="The text displayed within the screen size settings row to indicate that only the landscape size is available for this game.">
+        Only landscape available
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE" desc="The display name for the Game Dashboard send feedback button.">
         Send feedback
       </message>
@@ -8318,13 +8376,11 @@ To shut down the device, press and hold the power button on the device again.
       </message>
 
       <!-- Post login glanceables -->
-      <message name="IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT" translateable="false" desc="Text summarizing how many windows left to restore. [ICU Syntax]">
-        {NUM_OVERFLOW, plural,
-         =1 {1 more window}
-         other {# more windows}}
+      <message name="IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT" desc="Text summarizing how many windows left to restore.">
+        <ph name="WINDOWS">$1<ex>2</ex></ph> more
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE" translateable="false" desc="Label of the title for the informed restore dialog.">
-        Welcome Back
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE" desc="Label of the title for the informed restore dialog.">
+        Welcome Recap
       </message>
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_DESCRIPTION" desc="Label of the description for the informed restore dialog. Gives a little more information than the title.">
         Open your previous windows and apps
@@ -8341,13 +8397,13 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_RESTORE_BUTTON" desc="Label of the restore button for the informed restore dialog.">
         Open
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION" translateable="false" desc="Ask every time option for the informed restore dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION" desc="Ask every time option for the informed restore dialog context menu.">
         Ask every time
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" translateable="false" desc="Always restore option for the informed restore dialog context menu.">
-        Always restore
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" desc="Always restore option for the informed restore dialog context menu.">
+        Always open
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION" translateable="false" desc="Do not restore option for the informed restore dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION"  desc="Do not restore option for the informed restore dialog context menu.">
         Off
       </message>
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_EXTRA_INFO" desc="Text in the informed restore dialog's context menu. Gives users some information about the full restore setting.">

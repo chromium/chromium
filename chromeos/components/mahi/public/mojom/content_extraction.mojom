@@ -66,15 +66,21 @@ struct ContentSizeResponse {
 // Provides a way to extract contents from in a sandboxed utility process, since
 // the inputs is the accessibility tree from web contents which is treated as
 // untrustworthy.
+// `ExtractRequest` contains `AXTreeUpdate` that can be quite large, hence the
+// [UnlimitedSize] tag. It may be possible to remove this if AXTreeUpdate can be
+// reworked to avoid very large serialized values.
+// TODO(b:355293229): figure out how to remove the `[UnlimitedSize]` tags.
 [ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface ContentExtractionService {
   // Receives a content extraction request, and returns the main content of the
   // given tree.
+  [UnlimitedSize]
   ExtractContent@0(ExtractionRequest extraction_request)
     => (ExtractionResponse extraction_response);
 
   // Receives a content extraction request, and returns the word count of the
   // given tree.
+  [UnlimitedSize]
   GetContentSize@1(ExtractionRequest extraction_request)
     => (ContentSizeResponse contents_size_response);
 };

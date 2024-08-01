@@ -16,13 +16,6 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/prefs/android/pref_service_android.h"
-
-// Must come after other includes, because FromJniType() uses PrefService.
-#include "components/supervised_user/android/supervised_user_preferences_jni_headers/SupervisedUserPreferences_jni.h"
-#endif
-
 namespace supervised_user {
 
 namespace {
@@ -181,11 +174,6 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
 
-bool IsSafeSitesEnabled(const PrefService& pref_service) {
-  return supervised_user::IsSubjectToParentalControls(pref_service) &&
-         pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
-}
-
 bool IsSubjectToParentalControls(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
@@ -215,11 +203,3 @@ bool SupervisedUserCanSkipExtensionParentApprovals(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 }  // namespace supervised_user
-
-#if BUILDFLAG(IS_ANDROID)
-static jboolean JNI_SupervisedUserPreferences_IsSubjectToParentalControls(
-    JNIEnv* env,
-    PrefService* prefs) {
-  return prefs && supervised_user::IsSubjectToParentalControls(*prefs);
-}
-#endif

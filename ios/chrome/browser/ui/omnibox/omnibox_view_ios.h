@@ -149,6 +149,7 @@ class OmniboxViewIOS : public OmniboxView,
                                  const GURL& alternate_nav_url,
                                  const std::u16string& pasted_text,
                                  size_t index) override;
+  void OnCallActionTap() override;
 
   // Updates this edit view to show the proper text, highlight and images.
   void UpdateAppearance();

@@ -62,10 +62,9 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
     // BrowserTestBase sets ContentMainParams::ui_task before this, but the
     // ui_task isn't actually Run() until after the dialog is spawned in
     // ChromeBrowserMainParts::PreMainMessageLoopRunImpl(). Instead, try to
-    // inspect state by posting a task to run in that nested RunLoop.
-    // There's no MessageLoop to enqueue a task on yet, there's also no
-    // content::NotificationService, or anything else sensible that would allow
-    // us to hook in a task. So use a testing-only Closure.
+    // inspect state by posting a task to run in that nested RunLoop. There's no
+    // MessageLoop to enqueue a task on yet or anything else sensible that would
+    // allow us to hook in a task. So use a testing-only Closure.
     GetBeforeShowFirstRunDialogHookForTesting() = base::BindOnce(
         &FirstRunInternalPosixTest::SetupNestedTask, base::Unretained(this));
     EXPECT_FALSE(inspected_state_);

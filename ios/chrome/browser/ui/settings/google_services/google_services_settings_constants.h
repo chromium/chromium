@@ -26,6 +26,10 @@ extern NSString* const kSafeBrowsingItemAccessibilityIdentifier;
 extern NSString* const
     kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier;
 
+// Accessibility identifier for the encryption passphrase table view.
+extern NSString* const
+    kSyncEncryptionPassphraseTableViewAccessibilityIdentifier;
+
 // Accessibility identifier for the Allow Chrome Sign-in cell.
 extern NSString* const kAllowSigninItemAccessibilityIdentifier;
 

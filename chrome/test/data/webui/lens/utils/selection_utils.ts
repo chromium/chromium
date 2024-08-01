@@ -46,3 +46,14 @@ export function simulateDrag(
   selectionOverlayElement.dispatchEvent(pointerUpEvent);
   return flushTasks();
 }
+
+export function simulateStartDrag(
+    selectionOverlayElement: SelectionOverlayElement, fromPoint: Point,
+    toPoint: Point) {
+  const pointerDownEvent = createPointerEvent('pointerdown', fromPoint);
+  const pointerMoveEvent = createPointerEvent('pointermove', toPoint);
+
+  selectionOverlayElement.dispatchEvent(pointerDownEvent);
+  selectionOverlayElement.dispatchEvent(pointerMoveEvent);
+  return flushTasks();
+}

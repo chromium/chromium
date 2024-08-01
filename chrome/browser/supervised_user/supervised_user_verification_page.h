@@ -27,10 +27,11 @@ class SupervisedUserVerificationPage
   // a main frame or a subresource URL.
   SupervisedUserVerificationPage(
       content::WebContents* web_contents,
+      const std::string& email_to_reauth,
       const GURL& request_url,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
-          controller);
+          controller_client);
 
   SupervisedUserVerificationPage(const SupervisedUserVerificationPage&) =
       delete;
@@ -44,13 +45,16 @@ class SupervisedUserVerificationPage
       override;
 
  protected:
-  // TODO(b/280798429): Implement CommandReceived.
+  void CommandReceived(const std::string& command) override;
   void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
   void OnInterstitialClosing() override;
   int GetHTMLTemplateId() override;
 
  private:
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
+
+  const std::string email_to_reauth_;
+  const GURL request_url_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_VERIFICATION_PAGE_H_

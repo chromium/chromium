@@ -289,17 +289,19 @@ bool FontUniqueNameLookup::IsValid() {
 
 bool FontUniqueNameLookup::UpdateTableIfNeeded() {
   TRACE_EVENT0("fonts", "FontUniqueNameLookup::UpdateTableIfNeeded");
-  blink::FontUniqueNameTable font_table;
-  bool update_needed =
-      !proto_storage_.IsValid() || !proto_storage_.mapping.size() ||
-      !font_table.ParseFromArray(proto_storage_.mapping.memory(),
-                                 proto_storage_.mapping.size()) ||
-      font_table.stored_for_platform_version_identifier() !=
-          GetAndroidBuildFingerprint();
+  if (proto_storage_.IsValid() && proto_storage_.mapping.size()) {
+    blink::FontUniqueNameTable font_table;
+    base::span<const uint8_t> mem(proto_storage_.mapping);
+    if (font_table.ParseFromArray(mem.data(), mem.size())) {
+      if (font_table.stored_for_platform_version_identifier() ==
+          GetAndroidBuildFingerprint()) {
+        return false;
+      }
+    }
+  }
 
-  if (update_needed)
-    UpdateTable();
-  return update_needed;
+  UpdateTable();
+  return true;
 }
 
 bool FontUniqueNameLookup::UpdateTable() {
@@ -324,8 +326,8 @@ bool FontUniqueNameLookup::UpdateTable() {
   if (!proto_storage_.IsValid() || !proto_storage_.mapping.size())
     return false;
 
-  if (!font_table.SerializeToArray(proto_storage_.mapping.memory(),
-                                   proto_storage_.mapping.size())) {
+  base::span<uint8_t> mem(proto_storage_.mapping);
+  if (!font_table.SerializeToArray(mem.data(), mem.size())) {
     proto_storage_ = base::MappedReadOnlyRegion();
     return false;
   }

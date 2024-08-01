@@ -151,6 +151,15 @@ gpu_android_builder(
     pool = "luci.chromium.gpu.android.nexus5x.try",
 )
 
+gpu_android_builder(
+    name = "gpu-try-android-pixel-2-64",
+    mirrors = [
+        "ci/Android Release (Pixel 2)",
+    ],
+    gn_args = "ci/Android Release (Pixel 2)",
+    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
+)
+
 def gpu_chromeos_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
@@ -614,6 +623,17 @@ gpu_win_builder(
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Release (NVIDIA)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win10-nvidia-4070-rel-64",
+    description_html = "Runs GPU tests on NVIDIA RTX 4070 Super GPUs",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
     pool = "luci.chromium.gpu.win10.nvidia.try",

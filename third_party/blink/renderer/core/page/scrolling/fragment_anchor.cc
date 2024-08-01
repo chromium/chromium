@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/page/scrolling/element_fragment_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -51,7 +52,7 @@ void FragmentAnchor::ScrollElementIntoViewWithOptions(
   if (element_to_scroll->GetLayoutObject()) {
     DCHECK(element_to_scroll->GetComputedStyle());
     mojom::blink::ScrollIntoViewParamsPtr params =
-        ScrollAlignment::CreateScrollIntoViewParams(
+        scroll_into_view_util::CreateScrollIntoViewParams(
             *options, *element_to_scroll->GetComputedStyle());
     params->cross_origin_boundaries = false;
     element_to_scroll->ScrollIntoViewNoVisualUpdate(std::move(params));

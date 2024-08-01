@@ -50,7 +50,6 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
               HoldingSpaceItem::Type::kScan,
               HoldingSpaceItem::Type::kPhoneHubCameraRoll,
           }),
-          /*max_item_count=*/std::make_optional<size_t>(50u),
           /*max_visible_item_count=*/
           std::make_optional<size_t>(4u)));
 
@@ -64,7 +63,6 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
           std::set<HoldingSpaceItem::Type>({
               HoldingSpaceItem::Type::kPinnedFile,
           }),
-          /*max_item_count=*/std::optional<size_t>(),
           /*max_visible_item_count=*/std::optional<size_t>()));
 
   // Screen captures.
@@ -79,7 +77,6 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
               HoldingSpaceItem::Type::kScreenRecordingGif,
               HoldingSpaceItem::Type::kScreenshot,
           }),
-          /*max_item_count=*/std::make_optional<size_t>(50u),
           /*max_visible_item_count=*/
           std::make_optional<size_t>(3u)));
 
@@ -94,7 +91,6 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
               HoldingSpaceItem::Type::kDriveSuggestion,
               HoldingSpaceItem::Type::kLocalSuggestion,
           }),
-          /*max_item_count=*/std::optional<size_t>(),
           /*max_visible_item_count=*/
           std::make_optional<size_t>(4u)));
 
@@ -117,11 +113,9 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection>& GetSectionsById() {
 HoldingSpaceSection::HoldingSpaceSection(
     HoldingSpaceSectionId id,
     std::set<HoldingSpaceItem::Type> supported_types,
-    std::optional<size_t> max_item_count,
     std::optional<size_t> max_visible_item_count)
     : id(id),
       supported_types(std::move(supported_types)),
-      max_item_count(max_item_count),
       max_visible_item_count(max_visible_item_count) {}
 
 HoldingSpaceSection::~HoldingSpaceSection() = default;

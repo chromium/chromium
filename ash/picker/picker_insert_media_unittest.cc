@@ -8,8 +8,10 @@
 #include <string>
 
 #include "ash/picker/picker_rich_media.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +67,7 @@ TEST_P(PickerInsertMediaTest, InsertsMediaWithNoError) {
 
   base::test::TestFuture<InsertMediaResult> future;
   InsertMediaToInputField(GetParam().media_to_insert, client,
-                          future.GetCallback());
+                          /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kSuccess);
   EXPECT_EQ(client.text(), GetParam().expected_text);
@@ -81,7 +83,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"hello",
         },
         TestCase{
-            .media_to_insert = PickerLinkMedia(GURL("http://foo.com")),
+            .media_to_insert = PickerLinkMedia(GURL("http://foo.com"), "foo"),
             .expected_text = u"http://foo.com/",
         }));
 
@@ -110,7 +112,7 @@ TEST(PickerInsertLocalFileMediaTest, InsertsAsynchronously) {
 
   base::test::TestFuture<InsertMediaResult> future;
   InsertMediaToInputField(PickerLocalFileMedia(file.path()), client,
-                          future.GetCallback());
+                          /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kSuccess);
   EXPECT_EQ(client.text(), u"");
@@ -127,7 +129,7 @@ TEST(PickerInsertLocalFileMediaTest, InsertingInUnsupportedClientReturnsError) {
 
   base::test::TestFuture<InsertMediaResult> future;
   InsertMediaToInputField(PickerLocalFileMedia(file.path()), client,
-                          future.GetCallback());
+                          /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
   EXPECT_EQ(client.text(), u"");
@@ -144,7 +146,7 @@ TEST(PickerInsertLocalFileMediaTest,
 
   base::test::TestFuture<InsertMediaResult> future;
   InsertMediaToInputField(PickerLocalFileMedia(file.path()), client,
-                          future.GetCallback());
+                          /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
   EXPECT_EQ(client.text(), u"");
@@ -158,7 +160,8 @@ TEST(PickerInsertLocalFileMediaTest, InsertingNonExistentFileReturnsError) {
 
   base::test::TestFuture<InsertMediaResult> future;
   InsertMediaToInputField(PickerLocalFileMedia(base::FilePath("foo.txt")),
-                          client, future.GetCallback());
+                          client,
+                          /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kNotFound);
   EXPECT_EQ(client.text(), u"");

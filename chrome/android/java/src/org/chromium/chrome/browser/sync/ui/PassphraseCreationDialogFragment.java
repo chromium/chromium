@@ -22,8 +22,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -34,20 +32,14 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Dialog to ask the user to enter a new custom passphrase. */
 public class PassphraseCreationDialogFragment extends DialogFragment
-        implements FragmentHelpAndFeedbackLauncher, ProfileDependentSetting {
+        implements ProfileDependentSetting {
     public interface Listener {
         void onPassphraseCreated(String passphrase);
     }
 
     private Profile mProfile;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private EditText mEnterPassphrase;
     private EditText mConfirmPassphrase;
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
-    }
 
     @Override
     public void setProfile(@NonNull Profile profile) {

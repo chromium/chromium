@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -217,7 +222,7 @@ TEST_F(ScrollbarLayerTest, RepaintNinePatchWhenResourceDisposed) {
   // First call to update should create a resource. The scrollbar itself thinks
   // it needs a repaint.
   {
-    fake_scrollbar->set_needs_repaint_thumb(true);
+    fake_scrollbar->set_thumb_needs_repaint(true);
     EXPECT_EQ(0u, fake_ui_resource_manager_->UIResourceCount());
     EXPECT_TRUE(scrollbar_layer->Update());
     EXPECT_EQ(1u, fake_ui_resource_manager_->UIResourceCount());
@@ -226,7 +231,7 @@ TEST_F(ScrollbarLayerTest, RepaintNinePatchWhenResourceDisposed) {
   // Now the scrollbar has been painted and nothing else has changed, calling
   // Update() shouldn't have an effect.
   {
-    fake_scrollbar->set_needs_repaint_thumb(false);
+    fake_scrollbar->set_thumb_needs_repaint(false);
     EXPECT_FALSE(scrollbar_layer->Update());
     EXPECT_EQ(1u, fake_ui_resource_manager_->UIResourceCount());
   }
@@ -273,8 +278,8 @@ TEST_F(ScrollbarLayerTest,
       scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get(),
       *layer_tree_host_->GetPendingCommitState(),
       layer_tree_host_->GetThreadUnsafeCommitState());
-  scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
-  scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
+  scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(false);
+  scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(false);
 
   EXPECT_FALSE(scrollbar_layer->Update());
 
@@ -286,17 +291,18 @@ TEST_F(ScrollbarLayerTest,
 
   // Needing a thumb repaint should cause an update.
   {
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(true);
+    scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(true);
     EXPECT_TRUE(scrollbar_layer->Update());
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
+    scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(false);
     EXPECT_FALSE(scrollbar_layer->Update());
   }
 
   // Needing a track repaint should cause an update.
   {
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(true);
+    scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(true);
     EXPECT_TRUE(scrollbar_layer->Update());
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
+    scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(
+        false);
     EXPECT_FALSE(scrollbar_layer->Update());
   }
 
@@ -338,30 +344,31 @@ TEST_F(ScrollbarLayerTest,
       scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get(),
       *layer_tree_host_->GetPendingCommitState(),
       layer_tree_host_->GetThreadUnsafeCommitState());
-  scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
-  scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
+  scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(false);
+  scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(false);
 
   EXPECT_FALSE(scrollbar_layer->Update());
 
   // Needing a thumb repaint and change of thumb color should cause an update.
   {
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(true);
+    scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(true);
     EXPECT_FALSE(scrollbar_layer->Update());
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(true);
+    scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(true);
     scrollbar_layer->fake_scrollbar()->set_thumb_color(SkColors::kGreen);
     EXPECT_TRUE(scrollbar_layer->Update());
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(true);
+    scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(true);
     scrollbar_layer->fake_scrollbar()->set_thumb_color(SkColors::kGreen);
     EXPECT_FALSE(scrollbar_layer->Update());
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
+    scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(false);
     EXPECT_FALSE(scrollbar_layer->Update());
   }
 
   // Needing a track repaint should cause an update.
   {
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(true);
+    scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(true);
     EXPECT_TRUE(scrollbar_layer->Update());
-    scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
+    scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(
+        false);
     EXPECT_FALSE(scrollbar_layer->Update());
   }
 
@@ -1402,7 +1409,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   expected_created = 2;
   expected_deleted = 0;
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_NE(0, scrollbar_layer->track_resource_id());
+  EXPECT_NE(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_NE(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1416,7 +1423,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   scrollbar_layer->SetBounds(gfx::Size(0, 0));
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 0, 0, 0));
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_EQ(0, scrollbar_layer->track_resource_id());
+  EXPECT_EQ(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_EQ(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1429,7 +1436,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   expected_deleted = 2;
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 0, 0, 0));
   EXPECT_FALSE(scrollbar_layer->Update());
-  EXPECT_EQ(0, scrollbar_layer->track_resource_id());
+  EXPECT_EQ(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_EQ(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1443,7 +1450,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   scrollbar_layer->SetBounds(gfx::Size(100, 15));
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(30, 10, 50, 10));
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_NE(0, scrollbar_layer->track_resource_id());
+  EXPECT_NE(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_NE(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1456,7 +1463,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   expected_deleted = 4;
   scrollbar_layer->fake_scrollbar()->set_has_thumb(false);
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_NE(0, scrollbar_layer->track_resource_id());
+  EXPECT_NE(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_EQ(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1470,7 +1477,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   scrollbar_layer->SetBounds(gfx::Size(0, 0));
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 0, 0, 0));
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_EQ(0, scrollbar_layer->track_resource_id());
+  EXPECT_EQ(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_EQ(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1485,7 +1492,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(30, 10, 50, 10));
   scrollbar_layer->fake_scrollbar()->set_has_thumb(true);
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_NE(0, scrollbar_layer->track_resource_id());
+  EXPECT_NE(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_NE(0, scrollbar_layer->thumb_resource_id());
 
   resource_count = 2;
@@ -1493,7 +1500,7 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
   expected_deleted = 7;
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 0, 0, 0));
   EXPECT_TRUE(scrollbar_layer->Update());
-  EXPECT_NE(0, scrollbar_layer->track_resource_id());
+  EXPECT_NE(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_NE(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1513,19 +1520,20 @@ TEST_F(ScrollbarLayerTestResourceCreationAndRelease, TestResourceUpdate) {
             fake_ui_resource_manager_->TotalUIResourceCreated());
   EXPECT_EQ(expected_deleted,
             fake_ui_resource_manager_->TotalUIResourceDeleted());
-  EXPECT_EQ(gfx::Size(90, 15), fake_ui_resource_manager_->ui_resource_size(
-                                   scrollbar_layer->track_resource_id()));
+  EXPECT_EQ(gfx::Size(90, 15),
+            fake_ui_resource_manager_->ui_resource_size(
+                scrollbar_layer->track_and_buttons_resource_id()));
 
   // Simulate commit to compositor thread.
   scrollbar_layer->PushPropertiesTo(
       scrollbar_layer->CreateLayerImpl(layer_tree_host_->active_tree()).get(),
       *layer_tree_host_->GetPendingCommitState(),
       layer_tree_host_->GetThreadUnsafeCommitState());
-  scrollbar_layer->fake_scrollbar()->set_needs_repaint_thumb(false);
-  scrollbar_layer->fake_scrollbar()->set_needs_repaint_track(false);
+  scrollbar_layer->fake_scrollbar()->set_thumb_needs_repaint(false);
+  scrollbar_layer->fake_scrollbar()->set_track_and_buttons_need_repaint(false);
 
   EXPECT_FALSE(scrollbar_layer->Update());
-  EXPECT_NE(0, scrollbar_layer->track_resource_id());
+  EXPECT_NE(0, scrollbar_layer->track_and_buttons_resource_id());
   EXPECT_EQ(0, scrollbar_layer->thumb_resource_id());
   EXPECT_EQ(resource_count, fake_ui_resource_manager_->UIResourceCount());
   EXPECT_EQ(expected_created,
@@ -1570,7 +1578,7 @@ class ScaledScrollbarLayerTestResourceCreation : public ScrollbarLayerTest {
     // than their destination textures.
 
     gfx::Size track_size = fake_ui_resource_manager_->ui_resource_size(
-        scrollbar_layer->track_resource_id());
+        scrollbar_layer->track_and_buttons_resource_id());
     gfx::Size thumb_size = fake_ui_resource_manager_->ui_resource_size(
         scrollbar_layer->thumb_resource_id());
 
@@ -1633,7 +1641,7 @@ class ScaledScrollbarLayerTestScaledRasterization : public ScrollbarLayerTest {
     scrollbar_layer->Update();
 
     UIResourceBitmap* bitmap = fake_ui_resource_manager_->ui_resource_bitmap(
-        scrollbar_layer->track_resource_id());
+        scrollbar_layer->track_and_buttons_resource_id());
 
     DCHECK(bitmap);
 

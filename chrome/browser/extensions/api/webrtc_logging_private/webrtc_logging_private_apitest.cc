@@ -240,8 +240,9 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     std::optional<base::Value> value =
         RunNoArgsFunction<WebrtcLoggingPrivateUploadFunction>();
     const bool value_returned = value.has_value();
-    if (value_returned)
+    if (value_returned) {
       *report_id = *value->GetDict().FindString("reportId");
+    }
     return value_expected == value_returned;
   }
 
@@ -317,8 +318,9 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     std::optional<base::Value> value =
         RunFunction<WebrtcLoggingPrivateUploadStoredFunction>(params);
     const bool value_returned = value.has_value();
-    if (value_returned)
+    if (value_returned) {
       *report_id = *value->GetDict().FindString("reportId");
+    }
     return value_expected == value_returned;
   }
 

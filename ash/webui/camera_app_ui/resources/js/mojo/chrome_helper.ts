@@ -31,6 +31,7 @@ import {
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
+  SWPrivacySwitchMonitorCallbackRouter,
   TabletModeMonitorCallbackRouter,
   WifiConfig,
 } from './type.js';
@@ -271,6 +272,9 @@ export abstract class ChromeHelper {
 
   abstract initLidStateMonitor(onChange: (lidStatus: LidState) => void):
       Promise<LidState>;
+
+  abstract initSWPrivacySwitchMonitor(
+      onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean>;
 
   abstract getEventsSender(): Promise<EventsSenderRemote>;
 
@@ -518,6 +522,17 @@ class ChromeHelperImpl extends ChromeHelper {
     const {lidStatus} = await this.remote.setLidStateMonitor(
         monitorCallbackRouter.$.bindNewPipeAndPassRemote());
     return lidStatus;
+  }
+
+  override async initSWPrivacySwitchMonitor(
+      onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean> {
+    const monitorCallbackRouter =
+        wrapEndpoint(new SWPrivacySwitchMonitorCallbackRouter());
+    monitorCallbackRouter.update.addListener(onChange);
+
+    const {isSwPrivacySwitchOn} = await this.remote.setSWPrivacySwitchMonitor(
+        monitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    return isSwPrivacySwitchOn;
   }
 
   override async getEventsSender(): Promise<EventsSenderRemote> {

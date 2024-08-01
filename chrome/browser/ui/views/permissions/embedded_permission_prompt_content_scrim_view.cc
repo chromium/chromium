@@ -37,6 +37,9 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
   auto* web_content = permission_prompt_delegate->GetAssociatedWebContents();
   auto* top_level_widget = views::Widget::GetTopLevelWidgetForNativeView(
       web_content->GetContentNativeView());
+  if (!top_level_widget) {
+    return nullptr;
+  }
   params.parent = top_level_widget->GetNativeView();
   params.bounds = web_content->GetContainerBounds();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

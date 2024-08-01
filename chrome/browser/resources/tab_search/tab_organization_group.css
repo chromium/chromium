@@ -16,7 +16,7 @@
 cr-icon-button {
   --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 16px;
+  --cr-icon-button-size: 24px;
   margin: 0
 }
 
@@ -78,7 +78,7 @@ tab-search-item {
 }
 
 .icon-edit {
-  margin-inline-end: 4px;
+  margin-inline-end: -4px;
 }
 
 :host(:not([show-reject])) .icon-edit,

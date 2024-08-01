@@ -55,7 +55,7 @@ OverlayUserPrefStore::OverlayUserPrefStore(PersistentPrefStore* ephemeral,
       persistent_pref_store_observer_.get());
 }
 
-bool OverlayUserPrefStore::IsSetInOverlay(const std::string& key) const {
+bool OverlayUserPrefStore::IsSetInOverlay(std::string_view key) const {
   return ephemeral_user_pref_store_->GetValue(key, nullptr);
 }
 
@@ -204,11 +204,11 @@ void OverlayUserPrefStore::ReportValueChanged(std::string_view key,
     observer.OnPrefValueChanged(key);
 }
 
-void OverlayUserPrefStore::RegisterPersistentPref(const std::string& key) {
+void OverlayUserPrefStore::RegisterPersistentPref(std::string_view key) {
   DCHECK(!key.empty()) << "Key is empty";
   DCHECK(persistent_names_set_.find(key) == persistent_names_set_.end())
       << "Key already registered: " << key;
-  persistent_names_set_.insert(key);
+  persistent_names_set_.insert(std::string(key));
 }
 
 void OverlayUserPrefStore::OnStoreDeletionFromDisk() {

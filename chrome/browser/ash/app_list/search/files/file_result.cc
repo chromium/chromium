@@ -88,23 +88,18 @@ gfx::Size GetIconSizeForDisplayType(ash::SearchResultDisplayType display_type) {
   }
 }
 
-// Generates ash::FileMetadata for the result at `file_path`.
+// Generates base::File::Info for the result at `file_path`.
 // Performs blocking File IO, so should not be run on UI thread.
-ash::FileMetadata GetFileMetadata(base::FilePath file_path,
-                                  base::FilePath displayable_path) {
+base::File::Info GetFileInfo(base::FilePath file_path) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
       << "FileIO attempted on UI thread.";
 
-  ash::FileMetadata metadata;
   base::File::Info info;
-  if (base::GetFileInfo(file_path, &info)) {
-    metadata.file_info = info;
+  if (!base::GetFileInfo(file_path, &info)) {
+    return base::File::Info();
   }
-  metadata.file_path = file_path;
-  metadata.file_name = displayable_path.BaseName();
-  metadata.displayable_folder_path = displayable_path.DirName();
 
-  return metadata;
+  return info;
 }
 
 void LogRelevance(ChromeSearchResult::ResultType result_type,
@@ -195,11 +190,10 @@ FileResult::FileResult(const std::string& id,
   // Initialize the file metadata.
   SetFilePath(filepath_);
   if (result_type == ash::AppListSearchResultType::kImageSearch) {
-    auto displayable_path =
+    SetDisplayableFilePath(
         file_manager::util::GetDisplayablePath(profile_, filepath_)
-            .value_or(filepath_);
-    SetMetadataLoaderCallback(
-        base::BindRepeating(&GetFileMetadata, filepath_, displayable_path));
+            .value_or(filepath_));
+    SetMetadataLoaderCallback(base::BindRepeating(&GetFileInfo, filepath_));
   }
 
   if (display_type == DisplayType::kContinue) {

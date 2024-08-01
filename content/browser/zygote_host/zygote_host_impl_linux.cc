@@ -14,6 +14,7 @@
 #include "base/process/kill.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/zygote/zygote_commands_linux.h"
@@ -45,15 +46,16 @@ bool ReceiveFixedMessage(int fd,
                          base::ProcessId* sender_pid) {
   // Allocate an extra byte of buffer space so we can check that we received
   // exactly |expect_len| bytes, and the message wasn't just truncated to fit.
-  char buf[expect_len + 1];
+  base::FixedArray<char> buf(expect_len + 1);
   std::vector<base::ScopedFD> fds_vec;
 
   const ssize_t len = base::UnixDomainSocket::RecvMsgWithPid(
-      fd, buf, sizeof(buf), &fds_vec, sender_pid);
+      fd, buf.data(), buf.memsize(), &fds_vec, sender_pid);
   if (static_cast<size_t>(len) != expect_len)
     return false;
-  if (memcmp(buf, expect_msg, expect_len) != 0)
+  if (memcmp(buf.data(), expect_msg, expect_len) != 0) {
     return false;
+  }
   if (!fds_vec.empty())
     return false;
   return true;

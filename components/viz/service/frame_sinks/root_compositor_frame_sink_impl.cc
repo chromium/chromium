@@ -160,6 +160,8 @@ RootCompositorFrameSinkImpl::Create(
 #if BUILDFLAG(IS_WIN)
       // ExternalBeginFrameSourceWin also uses the D3D11 device used by dcomp.
       if (output_surface->capabilities().supports_dc_layers) {
+        hw_support_for_multiple_refresh_rates =
+            params->set_present_duration_allowed;
         // Vsync updates are required to update the FrameRateDecider with
         // supported refresh rates.
         wants_vsync_updates = true;
@@ -638,6 +640,16 @@ base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
 void RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates(
     bool support) {
   display_->SetHwSupportForMultipleRefreshRates(support);
+}
+
+void RootCompositorFrameSinkImpl::StartOverdrawTracking(
+    int interval_length_in_seconds) {
+  display_->StartTrackingOverdraw(interval_length_in_seconds);
+}
+
+OverdrawTracker::OverdrawTimeSeries
+RootCompositorFrameSinkImpl::StopOverdrawTracking() {
+  return display_->StopTrackingOverdraw();
 }
 
 void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(

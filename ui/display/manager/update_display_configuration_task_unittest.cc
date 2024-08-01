@@ -16,7 +16,6 @@
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
-#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display::test {
@@ -157,15 +156,15 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
  public:
   UpdateDisplayConfigurationTaskTest()
       : delegate_(&log_),
-        small_mode_(CreateDisplayModeForTest({1366, 768}, false, 60.0f)),
-        big_mode_(CreateDisplayModeForTest({2560, 1600}, false, 60.0f)) {
+        small_mode_({1366, 768}, false, 60.0f),
+        big_mode_({2560, 1600}, false, 60.0f, 40.0f) {
     displays_[0] = FakeDisplaySnapshot::Builder()
                        .SetId(123)
                        .SetNativeMode(small_mode_.Clone())
                        .SetCurrentMode(small_mode_.Clone())
                        .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
                        .SetBaseConnectorId(kEdpConnectorId)
-                       .SetVariableRefreshRateState(kVrrNotCapable)
+                       .SetVariableRefreshRateState(kVrrDisabled)
                        .Build();
 
     displays_[1] = FakeDisplaySnapshot::Builder()
@@ -175,8 +174,7 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
                        .AddMode(small_mode_.Clone())
                        .SetBaseConnectorId(kSecondConnectorId)
-                       .SetVariableRefreshRateState(kVrrDisabled)
-                       .SetVsyncRateMin(40)
+                       .SetVariableRefreshRateState(kVrrNotCapable)
                        .Build();
   }
 
@@ -643,19 +641,19 @@ TEST_F(UpdateDisplayConfigurationTaskTest, VrrConfiguration) {
   EXPECT_EQ(
       JoinActions(kTestModesetStr,
                   GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                 &small_mode_, /*enable_vrr=*/false})
+                                 &small_mode_, /*enable_vrr=*/true})
                       .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
-                                 &big_mode_, /*enable_vrr=*/true})
+                                 &big_mode_, /*enable_vrr=*/false})
                       .c_str(),
                   kModesetOutcomeSuccess, kCommitModesetStr,
                   GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
-                                 &small_mode_, /*enable_vrr=*/false})
+                                 &small_mode_, /*enable_vrr=*/true})
                       .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
-                                 &big_mode_, /*enable_vrr=*/true})
+                                 &big_mode_, /*enable_vrr=*/false})
                       .c_str(),
                   kModesetOutcomeSuccess, nullptr),
       log_.GetActionsAndClear());

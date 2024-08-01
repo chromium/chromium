@@ -197,8 +197,7 @@ class GpuMojoMediaClientLinux final : public GpuMojoMediaClient {
   }
 
   std::optional<SupportedVideoDecoderConfigs>
-  GetPlatformSupportedVideoDecoderConfigs(
-      GetVdaConfigsCB get_vda_configs) final {
+  GetPlatformSupportedVideoDecoderConfigs() final {
     VideoDecoderType decoder_implementation =
         GetActualPlatformDecoderImplementation(gpu_preferences_, gpu_info_);
     base::UmaHistogramEnumeration("Media.VaapiLinux.SupportedVideoDecoder",

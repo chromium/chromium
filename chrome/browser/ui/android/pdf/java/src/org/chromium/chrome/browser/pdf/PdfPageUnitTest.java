@@ -27,16 +27,19 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 
 import java.net.URL;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
 public class PdfPageUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -157,7 +160,7 @@ public class PdfPageUnitTest {
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
 
         // Simulate download complete
-        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());

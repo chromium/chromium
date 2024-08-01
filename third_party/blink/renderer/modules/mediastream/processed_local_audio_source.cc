@@ -638,8 +638,11 @@ void ProcessedLocalAudioSource::DeliverProcessedAudio(
     const media::AudioBus& processed_audio,
     base::TimeTicks audio_capture_time,
     std::optional<double> new_volume) {
-  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::DeliverProcessedAudio",
-               "capture-time", audio_capture_time);
+  TRACE_EVENT("audio", "ProcessedLocalAudioSource::DeliverProcessedAudio",
+              "capture_time (ms)",
+              (audio_capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - audio_capture_time).InMillisecondsF());
   level_calculator_.Calculate(processed_audio, force_report_nonzero_energy_);
   DeliverDataToTracks(processed_audio, audio_capture_time,
                       glitch_info_accumulator_.GetAndReset());

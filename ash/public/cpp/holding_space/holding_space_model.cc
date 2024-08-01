@@ -193,22 +193,6 @@ void HoldingSpaceModel::AddItems(
 
   for (auto& observer : observers_)
     observer.OnHoldingSpaceItemsAdded(item_ptrs);
-
-  if (!features::IsHoldingSpacePredictabilityEnabled())
-    return;
-
-  // When the predictability feature flag is enabled, holding space items do
-  // not automatically expire. Instead, a maximum item count for each section
-  // is enforced such that adding new items may result in removing the oldest
-  // items from the same section.
-  RemoveIf(base::BindRepeating(
-      [](std::map<HoldingSpaceSectionId, size_t>& item_counts_per_section_id,
-         const HoldingSpaceItem* item) {
-        const auto* section = GetHoldingSpaceSection(item->type());
-        const auto item_count = ++item_counts_per_section_id[section->id];
-        return section->max_item_count && item_count > *section->max_item_count;
-      },
-      base::OwnedRef(std::map<HoldingSpaceSectionId, size_t>())));
 }
 
 void HoldingSpaceModel::RemoveItem(const std::string& id) {

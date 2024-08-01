@@ -293,11 +293,6 @@ class Member(object):
     if value is not None:
       # IDL always returns values as strings, so cast to their real type.
       properties['value'] = self.cast_from_json_type(properties['type'], value)
-    enum_values = self.node.GetProperty('legalValues')
-    if enum_values:
-      # IDL always returns enum values as strings, so cast to their real type.
-      properties['enum'] = [self.cast_from_json_type(properties['type'], enum)
-                            for enum in enum_values]
     return name, properties
 
   def cast_from_json_type(self, json_type, string_value):

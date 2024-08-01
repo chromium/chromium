@@ -596,6 +596,10 @@
       base_feature: "none",
     },
     {
+      name: "CallExitNodeWithoutLayoutObject",
+      status: "stable",
+    },
+    {
       name: "Canvas2dCanvasFilter",
       status: "experimental",
     },
@@ -707,7 +711,7 @@
       // to do that for the target according to the new spec:
       // https://w3c.github.io/selection-api/#scheduling-selectionhange-event
       name: "CoalesceSelectionchangeEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CoepReflection",
@@ -777,6 +781,10 @@
     {
       name: "ContactsManagerExtraProperties",
       status:  {"Android": "stable", "default": "test"},
+    },
+    {
+      name: "ContainerTypeNoLayoutContainment",
+      status: "stable",
     },
     {
       name: "ContentIndex",
@@ -876,8 +884,10 @@
     },
     {
       // https://chromestatus.com/feature/5196713071738880
+      // Shipped in M129.  Should be safe to remove the flag a bit after
+      // M129 has shipped to stable.
       name: "CSSCalcSizeFunction",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support case-sensitive attribute selector modifier
@@ -935,6 +945,11 @@
     },
     {
       name: "CSSDisplayModePictureInPicture",
+      status: "stable",
+    },
+    {
+      // crbug.com/353228153
+      name: "CssDisplaySerialziationFix",
       status: "stable",
     },
     {
@@ -1023,16 +1038,19 @@
     },
     {
       // position-try-options has been renamed to position-try-fallbacks.
+      // This feature was shipped in M128, so this flag can be removed in M130.
       name: "CSSPositionTryFallbacks",
       depends_on: ["CSSAnchorPositioning"],
-      status: "experimental",
+      status: "stable",
     },
     {
-      // position-try-options has been renamed to position-try-fallbacks. Will
-      // be removed, but kept as a surrogate for now.
+      // Kill switch (inverted logic) to re-enable `position-try-options`. That
+      // property was renamed to `position-try-fallbacks` which is enabled via
+      // the CSSPositionTryFallbacks flag.
+      // This feature was disabled in M128, so this flag (and the code to
+      // implement `position-try-options`) can be removed in M130.
       name: "CSSPositionTryOptions",
       depends_on: ["CSSAnchorPositioning"],
-      status: "stable",
     },
     {
       // Support the position-try-order property.
@@ -1314,6 +1332,8 @@
       name: "DirectSockets",
       public: true,
       status: "experimental",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       // Shipping in M121.  Flag should be removed after M121 has been
@@ -1578,8 +1598,17 @@
       status: "experimental",
     },
     {
+      name: "EventTimingHandleKeyboardEventSimulatedClick",
+      status: "experimental",
+    },
+    {
       name: "EventTimingInteractionCount",
       status: "experimental",
+    },
+    // Killswitch. Remove after 1-2 stable releases.
+    {
+      name: "ExcludePopupMainThreadScrollingReason",
+      status: "stable",
     },
     {
       name: "ExcludeTransparentTextsFromBeingLcpEligible",
@@ -1593,6 +1622,11 @@
     {
       name: "ExperimentalJSProfilerMarkers",
       status: "experimental",
+    },
+    {
+      name: "ExperimentalMachineLearningNeuralNetwork",
+      // Enabled by webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork.
+      base_feature: "none",
     },
     {
       name: "ExperimentalPolicies",
@@ -1899,7 +1933,8 @@
       // experiment that enters trials after it got created; this makes it easy
       // to polyfill by only checking older things, and makes it serve its
       // purpose of modularly advertising new things.
-      implied_by: ["FledgePermitCrossOriginTrustedSignals"],
+      implied_by: ["FledgePermitCrossOriginTrustedSignals",
+                   "FledgeRealTimeReporting"],
       base_feature: "none",
     },
     {
@@ -1909,6 +1944,7 @@
       implied_by: ["FledgeCustomMaxAuctionAdComponents",
                    "FledgeDeprecatedRenderURLReplacements",
                    "FledgePermitCrossOriginTrustedSignals",
+                   "FledgeRealTimeReporting",
                    "FledgeReportingTimeout"],
       base_feature: "none",
     },
@@ -1942,6 +1978,10 @@
     {
       name: "FledgeTrustedBiddingSignalsSlotSize",
       status: "stable",
+    },
+    {
+      name: "FledgeTrustedSignalsKVv2Support",
+      status: "test",
     },
     {
       name: "FluentOverlayScrollbars",
@@ -2594,6 +2634,10 @@
       status: "test",
     },
     {
+      name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
+      status: "test",
+    },
+    {
       name: "MediaPreviewsOptOut",
       base_feature: "none",
       origin_trial_feature_name: "MediaPreviewsOptOutPersistent",
@@ -2700,6 +2744,10 @@
       status: "stable",
     },
     {
+      name: "MoveToParagraphStartOrEndSkipsNonEditable",
+      status: "stable",
+    },
+    {
       name: "MultiSelectDeselectWhenOnlyOption",
       status: "test",
     },
@@ -2798,6 +2846,13 @@
     {
       name: "NonEmptyBlockquotesOnOutdenting",
       status: "stable",
+    },
+    {
+      // Input event data for textarea should not be null for certain
+      // inputTypes.
+      // https://issues.chromium.org/issues/40737336
+      name: "NonNullInputEventDataForTextArea",
+      status: "stable"
     },
     {
       // TODO(crbug.com/924486): This feature enables the deprecated values
@@ -3030,13 +3085,11 @@
     },
     {
       name: "PaintHoldingForIframes",
-      status: "test",
-      implied_by: ["ViewTransitionOnNavigationForIframes"],
+      status: "stable",
     },
     {
       name: "PaintHoldingForLocalIframes",
       status: "stable",
-      implied_by: ["ViewTransitionOnNavigationForIframes"],
     },
     {
       name: "PaintUnderInvalidationChecking",
@@ -3968,6 +4021,12 @@
       status: "stable",
     },
     {
+      // Feature for optimizing SVG transform changes. This is a kill switch in
+      // case we encounter issues with these optimizations.
+      name: "SvgTransformOptimization",
+      status: "stable",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },
@@ -4217,7 +4276,7 @@
     // bypass the USB blocklist.
     {
       name: "UnrestrictedUsb",
-      status: "experimental",
+      status: "stable",
       depends_on: ["WebUSB"],
     },
     {
@@ -4278,6 +4337,11 @@
       name: "V8IdleTasks",
       base_feature: "none",
       public: true,
+    },
+    {
+      // crbug.com/356190942
+      name: "VerticalInputRangeKeyOperationFix",
+      status: "stable",
     },
     {
       // Whether a video element should automatically play fullscreen unless

@@ -35,6 +35,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="ai.promptStreaming"/>
   <int value="4" label="ai.defaultTestSessionOptions"/>
   <int value="5" label="ai.sessionDestroy"/>
+  <int value="6" label="ai.sessionClone"/>
+  <int value="7" label="ai.textModelInfo"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
@@ -52,7 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No">The model is not available for this device.</int>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai.h:AIModelAvailability) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_text_session_factory.h:AIModelAvailability) -->
 
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
@@ -87,7 +89,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="ErrorSessionDestroyed">The session was destroyed.</int>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_text_session.mojom:ModelStreamingResponseStatus) -->
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->
 
 </enums>
 

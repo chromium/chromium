@@ -1152,6 +1152,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return std::nullopt;
   }
 
+  void UpdateScrollMarkerControlsAfterScroll() const;
+
   // Sets the min/max sizes for this box.
   void SetIntrinsicLogicalWidths(LayoutUnit initial_block_size,
                                  const MinMaxSizesResult& result) {

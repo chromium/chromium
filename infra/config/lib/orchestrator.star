@@ -5,7 +5,7 @@
 """Library for defining orchestrators and compilators."""
 
 load("@stdlib//internal/graph.star", "graph")
-load("./builder_url.star", "builder_url")
+load("./html.star", "builder_url")
 load("./nodes.star", "nodes")
 
 # The generator in builder_config.star will set the

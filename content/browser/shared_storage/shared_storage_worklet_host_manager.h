@@ -85,6 +85,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
   void CreateWorkletHost(
       SharedStorageDocumentServiceImpl* document_service,
       const url::Origin& frame_origin,
+      const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
@@ -126,6 +127,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
   virtual std::unique_ptr<SharedStorageWorkletHost> CreateWorkletHostHelper(
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
+      const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&

@@ -85,8 +85,6 @@ class ScrollUpdateEventBuilder : public WebGestureEvent {
                         device) {
     data.scroll_update.delta_x = 0.0f;
     data.scroll_update.delta_y = -1.0f;
-    data.scroll_update.velocity_x = 0;
-    data.scroll_update.velocity_y = -1;
     frame_scale_ = 1;
   }
 };

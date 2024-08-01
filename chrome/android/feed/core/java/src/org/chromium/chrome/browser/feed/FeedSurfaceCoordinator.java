@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
@@ -66,9 +65,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.supervised_user.SupervisedUserPreferences;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -105,7 +101,6 @@ public class FeedSurfaceCoordinator
     private final boolean mOverScrollDisabled;
     private final ObserverList<SurfaceCoordinator.Observer> mObservers = new ObserverList<>();
     private final FeedActionDelegate mActionDelegate;
-    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private final boolean mUseStaggeredLayout;
 
     // FeedReliabilityLogger params.
@@ -178,7 +173,10 @@ public class FeedSurfaceCoordinator
         @Override
         protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
             super.onSizeChanged(width, height, oldWidth, oldHeight);
-            mRecyclerView.post(mRecyclerView::invalidateItemDecorations);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
+                mRecyclerView.post(mRecyclerView::invalidateItemDecorations);
+                updateNtpHeaderMargins();
+            }
         }
 
         @Override
@@ -376,7 +374,6 @@ public class FeedSurfaceCoordinator
      * @param viewportView The view that should be used as a container for viewport measurement
      *     purposes, or |null| if the view returned by HybridListRenderer is to be used.
      * @param actionDelegate Implements some Feed actions.
-     * @param helpAndFeedbackLauncher A HelpAndFeedbackLauncher.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public FeedSurfaceCoordinator(
@@ -401,7 +398,6 @@ public class FeedSurfaceCoordinator
             boolean overScrollDisabled,
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -420,7 +416,6 @@ public class FeedSurfaceCoordinator
         mOverScrollDisabled = overScrollDisabled;
         mViewportView = viewportView;
         mActionDelegate = actionDelegate;
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
         mEmbeddingSurfaceCreatedTimeNs = embeddingSurfaceCreatedTimeNs;
         mWebFeedHasContent = false;
         mSectionHeaderIndex = 0;
@@ -503,22 +498,7 @@ public class FeedSurfaceCoordinator
                     mNtpHeader.getPaddingRight(),
                     bottomPadding);
 
-            // Apply negative margins to the NTP header in order to compensate the containment
-            // paddings applied to the whole NTP. This is to allow all the elements in the NTP
-            // header to keep using their existing margins/paddings settings.
-            if (!mUseStaggeredLayout) {
-                int margin =
-                        -mActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.feed_containment_margin);
-                ViewGroup.MarginLayoutParams layoutParams =
-                        new ViewGroup.MarginLayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.setMarginStart(margin);
-                layoutParams.setMarginEnd(margin);
-                mNtpHeader.setLayoutParams(layoutParams);
-            }
+            updateNtpHeaderMargins();
         }
 
         // Mediator should be created before any Stream changes.
@@ -539,6 +519,25 @@ public class FeedSurfaceCoordinator
 
         // Creates streams, initiates content changes.
         mMediator.updateContent();
+    }
+
+    void updateNtpHeaderMargins() {
+        if (mNtpHeader == null) {
+            return;
+        }
+
+        // Apply negative margins to the NTP header in order to compensate the containment paddings
+        // applied to the whole NTP for non-wide display. This is to allow all the elements in the
+        // NTP header to keep using their existing margins/paddings settings.
+        int feed_containment_margin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.feed_containment_margin);
+        int margin = mUiConfig.getCurrentDisplayStyle().isWide() ? 0 : -feed_containment_margin;
+        FrameLayout.LayoutParams layoutParams =
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMarginStart(margin);
+        layoutParams.setMarginEnd(margin);
+        mNtpHeader.setLayoutParams(layoutParams);
     }
 
     int getToolbarHeight() {
@@ -784,9 +783,7 @@ public class FeedSurfaceCoordinator
      * Returns true if the supervised user feed should be displayed.
      */
     public boolean shouldDisplaySupervisedFeed() {
-        PrefService prefService = UserPrefs.get(mProfile);
-        return SupervisedUserPreferences.isSubjectToParentalControls(prefService)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED);
+        return mProfile.isChild();
     }
 
     /**
@@ -964,13 +961,13 @@ public class FeedSurfaceCoordinator
     FeedStream createFeedStream(@StreamKind int kind, Stream.StreamsMediator streamsMediator) {
         return new FeedStream(
                 mActivity,
+                mProfile,
                 mSnackbarManager,
                 mBottomSheetController,
                 mWindowAndroid,
                 mShareSupplier,
                 kind,
                 mActionDelegate,
-                mHelpAndFeedbackLauncher,
                 /* feedContentFirstLoadWatcher= */ this,
                 streamsMediator,
                 /* singleWebFeedParameters= */ null,

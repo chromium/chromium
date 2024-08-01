@@ -58,11 +58,6 @@ bool PageActionIconView::Delegate::ShouldHidePageActionIcon(
   return false;
 }
 
-const OmniboxView* PageActionIconView::Delegate::GetOmniboxView() const {
-  // Should not reach here: should call subclass's implementation.
-  NOTREACHED_NORETURN();
-}
-
 PageActionIconView::PageActionIconView(
     CommandUpdater* command_updater,
     int command_id,

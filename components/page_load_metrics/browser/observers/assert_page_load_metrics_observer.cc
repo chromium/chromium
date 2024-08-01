@@ -287,6 +287,13 @@ void AssertPageLoadMetricsObserver::OnParseStop(
   CHECK(timing.parse_timing->parse_stop.has_value());
 }
 
+void AssertPageLoadMetricsObserver::OnConnectStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
+void AssertPageLoadMetricsObserver::OnDomainLookupStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
+void AssertPageLoadMetricsObserver::OnDomainLookupEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
+
 void AssertPageLoadMetricsObserver::OnDomContentLoadedEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(started_);

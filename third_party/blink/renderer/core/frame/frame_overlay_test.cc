@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -148,11 +149,12 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
             state, nullptr, gfx::Rect(0, 0, 800, 600))));
   };
 
-  PaintController paint_controller(PaintController::kTransient);
-  GraphicsContext context(paint_controller);
+  PaintController* paint_controller =
+      MakeGarbageCollected<PaintController>(PaintController::kTransient);
+  GraphicsContext context(*paint_controller);
   frame_overlay->Paint(context);
-  paint_controller.CommitNewDisplayItems();
-  check_paint_results(paint_controller);
+  paint_controller->CommitNewDisplayItems();
+  check_paint_results(*paint_controller);
   frame_overlay->Destroy();
 }
 

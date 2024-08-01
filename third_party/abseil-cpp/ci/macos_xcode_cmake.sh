@@ -23,11 +23,6 @@ ABSEIL_ROOT=$(realpath ${ABSEIL_ROOT})
 
 source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 
-# The MacOS build doesn't run in a docker container, so we have to override ABSL_GOOGLETEST_DOWNLOAD_URL.
-if [[ -r "${KOKORO_GFILE_DIR}/distdir/${ABSL_GOOGLETEST_COMMIT}.zip" ]]; then
-  ABSL_GOOGLETEST_DOWNLOAD_URL="file://${KOKORO_GFILE_DIR}/distdir/${ABSL_GOOGLETEST_COMMIT}.zip"
-fi
-
 if [[ -z ${ABSL_CMAKE_BUILD_TYPES:-} ]]; then
   ABSL_CMAKE_BUILD_TYPES="Debug"
 fi

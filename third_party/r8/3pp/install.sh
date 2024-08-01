@@ -22,8 +22,8 @@ PATH=$SCRIPT_DIR/depot_tools:$PATH tools/gradle.py r8
 # Needs the -D flag to avoid compilation error, see http://b/311202383.
 $DEPS_PREFIX/bin/java -Dcom.android.tools.r8.enableKeepAnnotations=1 \
     -jar build/libs/r8.jar --debug --classfile --output r8.jar \
-    --lib $DEPS_PREFIX --pg-conf src/main/keep.txt \
-    --no-minification --no-desugaring build/libs/r8.jar
+    --pg-conf src/main/keep.txt --pg-conf $SCRIPT_DIR/chromium_keeps.txt \
+    --lib $DEPS_PREFIX --no-minification --no-desugaring build/libs/r8.jar
 
 mkdir -p "$PREFIX/lib"
 cp r8.jar "$PREFIX/lib"

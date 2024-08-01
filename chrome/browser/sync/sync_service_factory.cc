@@ -166,9 +166,14 @@ std::unique_ptr<KeyedService> BuildSyncService(
     AboutSigninInternalsFactory::GetForProfile(profile);
   }
 
+  browser_sync::ChromeSyncClient* client_ptr =
+      static_cast<browser_sync::ChromeSyncClient*>(
+          init_params.sync_client.get());
+
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
-  sync_service->Initialize();
+  sync_service->Initialize(
+      client_ptr->CreateModelTypeControllers(sync_service.get()));
 
   // Notify the PasswordStore of complete initialisation to resolve a circular
   // dependency.

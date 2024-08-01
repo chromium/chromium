@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
@@ -185,7 +186,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   history_embeddings::SearchResult embeddings_result;
   embeddings_result.scored_url_rows = {scored_url_row};
   embeddings_result.query = "search query";
-  embeddings_result.answer = "the answer";
+  embeddings_result.answerer_result.answer.set_text("the answer");
 
   base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
   EXPECT_CALL(page_, SearchResultChanged)

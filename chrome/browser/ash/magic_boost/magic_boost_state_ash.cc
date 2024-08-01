@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -60,7 +61,6 @@ void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kHmrEnabled, enabled);
 }
 
-
 void MagicBoostStateAsh::DisableOrcaFeature() {
   GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
 }
@@ -113,6 +113,10 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
           &MagicBoostStateAsh::OnHMRConsentWindowDismissCountUpdated,
           base::Unretained(this)));
 
+  // Initializes the `magic_boost_enabled_` based on the current prefs settings.
+  UpdateMagicBoostEnabled(pref_change_registrar_->prefs()->GetBoolean(
+      ash::prefs::kMagicBoostEnabled));
+
   OnHMREnabledUpdated();
   OnHMRConsentStatusUpdated();
   OnHMRConsentWindowDismissCountUpdated();
@@ -121,6 +125,8 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
 void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
   bool enabled = pref_change_registrar_->prefs()->GetBoolean(
       ash::prefs::kMagicBoostEnabled);
+
+  UpdateMagicBoostEnabled(enabled);
 
   // Update both HMR and Orca accordingly when `kMagicBoostEnabled` is changed.
   AsyncWriteHMREnabled(enabled);

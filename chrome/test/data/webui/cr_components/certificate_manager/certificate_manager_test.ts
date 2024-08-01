@@ -29,7 +29,7 @@ import type {CertificateSubentryElement} from 'chrome://resources/cr_components/
 import type {CaTrustInfo, CertificatesBrowserProxy, CertificatesError, CertificatesOrgGroup, CertificateSubnode} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
 import { CertificatesBrowserProxyImpl, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

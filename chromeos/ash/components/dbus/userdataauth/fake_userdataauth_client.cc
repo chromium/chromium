@@ -361,6 +361,8 @@ void BuildAuthFactorWithStatus(
     if (auth_factor->pin_metadata().auth_locked()) {
       factor_with_status->mutable_status_info()->set_time_available_in(
           std::numeric_limits<uint64_t>::max());
+      factor_with_status->mutable_status_info()->set_time_expiring_in(
+          std::numeric_limits<uint64_t>::max());
     }
   }
 }
@@ -1890,6 +1892,13 @@ void FakeUserDataAuthClient::GetRecoverableKeyStores(
       *reply.add_key_stores() = std::move(*store);
     }
   }
+}
+
+void FakeUserDataAuthClient::SetUserDataStorageWriteEnabled(
+    const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+    SetUserDataStorageWriteEnabledCallback callback) {
+  ::user_data_auth::SetUserDataStorageWriteEnabledReply reply;
+  std::move(callback).Run(std::move(reply));
 }
 
 }  // namespace ash

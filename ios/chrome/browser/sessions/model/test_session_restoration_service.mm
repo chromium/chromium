@@ -112,10 +112,6 @@ void TestSessionRestorationService::PurgeUnassociatedData(
                                                            std::move(closure));
 }
 
-bool TestSessionRestorationService::PlaceholderTabsEnabled() const {
-  return false;
-}
-
 void TestSessionRestorationService::ParseDataForBrowserAsync(
     Browser* browser,
     WebStateStorageIterationCallback iter_callback,

@@ -165,6 +165,10 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"warningBypassPromptDescription",
        IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_DESCRIPTION},
 
+      // Warning bypass prompt accessibility text.
+      {"warningBypassPromptLearnMoreLinkAccessible",
+       IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK_ACCESSIBLE},
+
       // Warning bypass dialog.
       {"warningBypassDialogTitle", IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE},
       {"warningBypassDialogCancel", IDS_CANCEL},
@@ -190,6 +194,18 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
        IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL},
       {"warningBypassInterstitialSurveyAcceptRisk",
        IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK},
+
+      // Warning bypass interstitial accessibility text.
+      {"warningBypassInterstitialSurveyTitleAccessible",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE_ACCESSIBLE},
+      {"warningBypassInterstitialSurveyCreatedFileAccessible",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE_ACCESSIBLE},
+      {"warningBypassInterstitialSurveyTrustSiteWithoutUrlAccessible",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL_ACCESSIBLE},
+      {"warningBypassInterstitialSurveyTrustSiteWithUrlAccessible",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL_ACCESSIBLE},
+      {"warningBypassInterstitialSurveyAcceptRiskAccessible",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK_ACCESSIBLE},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // ESB Download Row Promo

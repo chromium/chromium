@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/color_util.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -78,10 +77,7 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskIconButton>(view);
           CHECK(v);
-          if (v->is_focused()) {
-            return true;
-          }
-          if (v->HasFocus() && features::IsOverviewNewFocusEnabled()) {
+          if (v->HasFocus()) {
             return true;
           }
           if (v->state_ != State::kActive) {
@@ -137,28 +133,9 @@ bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
   return hit_test_bounds.Contains(screen_location);
 }
 
-gfx::Size DeskIconButton::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  if (state_ == State::kZero) {
-    return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
-  }
-
-  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
-      GetWidget()->GetNativeWindow()->GetRootWindow());
-  if (state_ == State::kExpanded) {
-    return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
-  }
-
-  DCHECK_EQ(state_, State::kActive);
-  return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
-}
-
 void DeskIconButton::UpdateFocusState() {
   auto get_focus_color = [this]() -> std::optional<ui::ColorId> {
-    if (is_focused()) {
-      return ui::kColorAshFocusRing;
-    }
-    if (HasFocus() && features::IsOverviewNewFocusEnabled()) {
+    if (HasFocus()) {
       return ui::kColorAshFocusRing;
     }
     if (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
@@ -182,6 +159,32 @@ void DeskIconButton::UpdateFocusState() {
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(new_focus_color_id);
   focus_ring->SchedulePaint();
+}
+
+void DeskIconButton::OnFocus() {
+  UpdateFocusState();
+  DeskButtonBase::OnFocus();
+}
+
+void DeskIconButton::OnBlur() {
+  UpdateFocusState();
+  DeskButtonBase::OnBlur();
+}
+
+gfx::Size DeskIconButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (state_ == State::kZero) {
+    return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
+  }
+
+  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
+      GetWidget()->GetNativeWindow()->GetRootWindow());
+  if (state_ == State::kExpanded) {
+    return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
+  }
+
+  DCHECK_EQ(state_, State::kActive);
+  return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
 }
 
 void DeskIconButton::OnThemeChanged() {

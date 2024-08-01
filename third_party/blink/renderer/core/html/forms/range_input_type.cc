@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -105,8 +106,7 @@ void RangeInputType::DidRecalcStyle(const StyleRecalcChange) {
         style->EffectiveAppearance() == kSliderVerticalPart) {
       UseCounter::Count(GetElement().GetDocument(),
                         WebFeature::kInputTypeRangeVerticalAppearance);
-    } else if (RuntimeEnabledFeatures::
-                   FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+    } else {
       bool is_horizontal = style->IsHorizontalWritingMode();
       bool is_ltr = style->IsLeftToRightDirection();
       if (is_horizontal && is_ltr) {
@@ -215,20 +215,57 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
   const Decimal big_step =
       std::max((step_range.Maximum() - step_range.Minimum()) / 10, step);
 
-  TextDirection dir = TextDirection::kLtr;
-  if (GetElement().GetLayoutObject()) {
-    dir = ComputedTextDirection();
+  bool is_up = false;
+  bool is_down = false;
+  if (RuntimeEnabledFeatures::VerticalInputRangeKeyOperationFixEnabled()) {
+    WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
+                                              TextDirection::kLtr};
+    if (const auto* style = GetElement().GetComputedStyle()) {
+      writing_direction = style->GetWritingDirection();
+      // `appearance: slider-vertical` is equivalent to `writing-mode:
+      // vertical-rl; direction: rtl`.
+      if (RuntimeEnabledFeatures::
+              NonStandardAppearanceValueSliderVerticalEnabled() &&
+          writing_direction.IsHorizontal() &&
+          style->EffectiveAppearance() == kSliderVerticalPart) {
+        writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
+      }
+    }
+    const PhysicalToLogical<const AtomicString*> key_mapper(
+        writing_direction, &keywords::kArrowUp, &keywords::kArrowRight,
+        &keywords::kArrowDown, &keywords::kArrowLeft);
+    is_up = key == *key_mapper.InlineEnd() || key == *key_mapper.LineOver();
+    is_down =
+        key == *key_mapper.InlineStart() || key == *key_mapper.LineUnder();
+  } else {
+    TextDirection dir = TextDirection::kLtr;
+    if (GetElement().GetLayoutObject()) {
+      dir = ComputedTextDirection();
+    }
+    if (key == keywords::kArrowUp) {
+      is_up = true;
+    } else if (key == keywords::kArrowDown) {
+      is_down = true;
+    } else if (key == keywords::kArrowLeft) {
+      if (dir == TextDirection::kRtl) {
+        is_up = true;
+      } else {
+        is_down = true;
+      }
+    } else if (key == keywords::kArrowRight) {
+      if (dir == TextDirection::kRtl) {
+        is_down = true;
+      } else {
+        is_up = true;
+      }
+    }
   }
 
   Decimal new_value;
-  if (key == keywords::kArrowUp) {
+  if (is_up) {
     new_value = current + step;
-  } else if (key == keywords::kArrowDown) {
+  } else if (is_down) {
     new_value = current - step;
-  } else if (key == keywords::kArrowLeft) {
-    new_value = dir == TextDirection::kRtl ? current + step : current - step;
-  } else if (key == keywords::kArrowRight) {
-    new_value = dir == TextDirection::kRtl ? current - step : current + step;
   } else if (key == keywords::kPageUp) {
     new_value = current + big_step;
   } else if (key == keywords::kPageDown) {

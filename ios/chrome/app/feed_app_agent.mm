@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_refresh_constants.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -68,11 +69,11 @@
       // able to be instantiated here.
       AuthenticationService* authService =
           AuthenticationServiceFactory::GetForBrowserState(
-              self.appState.mainBrowserState);
+              self.appState.mainProfile.browserState);
       if (authService &&
           authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
         DiscoverFeedServiceFactory::GetForBrowserState(
-            self.appState.mainBrowserState);
+            self.appState.mainProfile.browserState);
       }
     }
 
@@ -82,20 +83,21 @@
       // content notification experiment is enabled.
       AuthenticationService* authService =
           AuthenticationServiceFactory::GetForBrowserState(
-              self.appState.mainBrowserState);
+              self.appState.mainProfile.browserState);
       bool isUserSignedIn = authService && authService->HasPrimaryIdentity(
                                                signin::ConsentLevel::kSignin);
 
       const TemplateURL* defaultSearchURLTemplate =
           ios::TemplateURLServiceFactory::GetForBrowserState(
-              self.appState.mainBrowserState)
+              self.appState.mainProfile.browserState)
               ->GetDefaultSearchProvider();
 
       bool isDefaultSearchEngine = defaultSearchURLTemplate &&
                                    defaultSearchURLTemplate->prepopulate_id() ==
                                        TemplateURLPrepopulateData::google.id;
 
-      PrefService* pref_service = self.appState.mainBrowserState->GetPrefs();
+      PrefService* pref_service =
+          self.appState.mainProfile.browserState->GetPrefs();
 
       isContentNotificationProvisionalEnabled =
           IsContentNotificationProvisionalEnabled(
@@ -108,7 +110,7 @@
       // previously disabled notifications.
       AuthenticationService* authService =
           AuthenticationServiceFactory::GetForBrowserState(
-              self.appState.mainBrowserState);
+              self.appState.mainProfile.browserState);
       std::vector<PushNotificationClientId> clientIds = {
           PushNotificationClientId::kContent,
           PushNotificationClientId::kSports};
@@ -149,13 +151,13 @@
   // should create background objects before this method is called. This line is
   // intended to crash if DiscoverFeedService is not available.
   return DiscoverFeedServiceFactory::GetForBrowserState(
-      self.appState.mainBrowserState, /*create=*/true);
+      self.appState.mainProfile.browserState, /*create=*/true);
 }
 
 // Returns the DiscoverFeedService if created.
 - (DiscoverFeedService*)feedServiceIfCreated {
   return DiscoverFeedServiceFactory::GetForBrowserState(
-      self.appState.mainBrowserState, /*create=*/false);
+      self.appState.mainProfile.browserState, /*create=*/false);
 }
 
 // Returns the FeedMetricsRecorder.

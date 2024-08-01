@@ -6,6 +6,7 @@ package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public interface DataSharingService {
     /** Result that contains group data and an outcome of the action that was requested. */
-    public static class GroupDataOrFailureOutcome {
+    class GroupDataOrFailureOutcome {
         /**
          * The group data requested.
          *
@@ -26,14 +27,15 @@ public interface DataSharingService {
         /** Result of the action, UNKNOWN if the action was successful. */
         public final @PeopleGroupActionFailure int actionFailure;
 
-        GroupDataOrFailureOutcome(GroupData groupData, int actionFailure) {
+        public GroupDataOrFailureOutcome(
+                GroupData groupData, @PeopleGroupActionFailure int actionFailure) {
             this.groupData = groupData;
             this.actionFailure = actionFailure;
         }
     }
 
     /** Result that contains a set of groups and an outcome of the action that was requested. */
-    public static class GroupsDataSetOrFailureOutcome {
+    class GroupsDataSetOrFailureOutcome {
         /**
          * The list of groups requested.
          *
@@ -44,9 +46,28 @@ public interface DataSharingService {
         /** Result of the action */
         public final @PeopleGroupActionFailure int actionFailure;
 
-        GroupsDataSetOrFailureOutcome(List<GroupData> groupDataSet, int actionFailure) {
+        public GroupsDataSetOrFailureOutcome(
+                List<GroupData> groupDataSet, @PeopleGroupActionFailure int actionFailure) {
             this.groupDataSet = groupDataSet;
             this.actionFailure = actionFailure;
+        }
+    }
+
+    /** Result that contains a groupToken and an status of the action that was requested. */
+    public static class ParseURLResult {
+        /**
+         * The group data requested.
+         *
+         * <p>Can be null if the action failed. Please check `status` for more info.
+         */
+        public final GroupToken groupToken;
+
+        /** Result of the action */
+        public final @ParseURLStatus int status;
+
+        public ParseURLResult(GroupToken groupToken, int status) {
+            this.groupToken = groupToken;
+            this.status = status;
         }
     }
 
@@ -108,15 +129,15 @@ public interface DataSharingService {
     /**
      * Attempt to delete a group.
      *
-     * @param groupID The group ID to delete.
+     * @param groupId The group ID to delete.
      * @param callback The deletion result as PeopleGroupActionOutcome.
      */
-    void deleteGroup(String groupId, Callback</*PeopleGroupActionOutcome*/ Integer> callback);
+    void deleteGroup(String groupId, Callback</* PeopleGroupActionOutcome= */ Integer> callback);
 
     /**
      * Attempt to invite a new user to the group.
      *
-     * @param groupID The group ID to add to.
+     * @param groupId The group ID to add to.
      * @param inviteeEmail The email of the member to add.
      * @param callback The invite result as PeopleGroupActionOutcome.
      */
@@ -126,10 +147,22 @@ public interface DataSharingService {
             Callback</*PeopleGroupActionOutcome*/ Integer> callback);
 
     /**
+     * Attempt to add the primary account associated with the current profile to the group.
+     *
+     * @param groupId The group ID to add to.
+     * @param accessToken The access token from the group.
+     * @param callback The invite result as PeopleGroupActionOutcome.
+     */
+    void addMember(
+            String groupId,
+            String accessToken,
+            Callback</*PeopleGroupActionOutcome*/ Integer> callback);
+
+    /**
      * Attempts to remove a user from the group.
      *
-     * @param groupID The group ID to remove from.
-     * @param membeEmail The email of the member to remove.
+     * @param groupId The group ID to remove from.
+     * @param memberEmail The email of the member to remove.
      * @param callback The removal result as PeopleGroupActionOutcome.
      */
     void removeMember(
@@ -153,4 +186,20 @@ public interface DataSharingService {
      * @return {@link UserDataHost} that manages {@link UserData} objects attached to.
      */
     UserDataHost getUserDataHost();
+
+    /**
+     * Create a data sharing URL used for sharing.
+     *
+     * @param groupData The group information needed to create the URL.
+     * @return Associated data sharing GURL if successful, else returns null.
+     */
+    GURL getDataSharingURL(GroupData groupData);
+
+    /**
+     * Parse and validate a data sharing URL.
+     *
+     * @param url The url to be parsed.
+     * @return The parsing result as ParseURLResult.
+     */
+    ParseURLResult parseDataSharingURL(GURL url);
 }

@@ -17,7 +17,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace color_change_listener::mojom {
+class PageHandler;
+}  // namespace color_change_listener::mojom
 
 namespace ui {
 class ColorChangeHandler;

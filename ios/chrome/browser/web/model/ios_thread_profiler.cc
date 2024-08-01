@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
+#include "base/profiler/call_stack_profile_params.h"
+#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -32,7 +34,7 @@
 #endif
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
-using CallStackProfileParams = metrics::CallStackProfileParams;
+using CallStackProfileParams = base::CallStackProfileParams;
 using StackSamplingProfiler = base::StackSamplingProfiler;
 
 namespace {
@@ -61,9 +63,10 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
-    CallStackProfileParams::Process process) {
-  if (process != CallStackProfileParams::Process::kRenderer)
+    base::ProfilerProcessType process) {
+  if (process != base::ProfilerProcessType::kRenderer) {
     return base::RepeatingClosure();
+  }
   static const base::SampleMetadata process_backgrounded(
       "ProcessBackgrounded", base::SampleMetadataScope::kProcess);
   return base::BindRepeating(
@@ -150,8 +153,8 @@ IOSThreadProfiler::~IOSThreadProfiler() {
 std::unique_ptr<IOSThreadProfiler>
 IOSThreadProfiler::CreateAndStartOnMainThread() {
   DCHECK(!g_main_thread_instance);
-  auto instance = base::WrapUnique(
-      new IOSThreadProfiler(CallStackProfileParams::Thread::kMain));
+  auto instance =
+      base::WrapUnique(new IOSThreadProfiler(base::ProfilerThreadType::kMain));
   if (!g_main_thread_instance)
     g_main_thread_instance = instance.get();
   return instance;
@@ -165,8 +168,7 @@ void IOSThreadProfiler::SetMainThreadTaskRunner(
 }
 
 // static
-void IOSThreadProfiler::StartOnChildThread(
-    CallStackProfileParams::Thread thread) {
+void IOSThreadProfiler::StartOnChildThread(base::ProfilerThreadType thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
   static base::SequenceLocalStorageSlot<std::unique_ptr<IOSThreadProfiler>>
@@ -220,9 +222,9 @@ IOSThreadProfiler::GetSamplingParams() {
 // The process in previous paragraph continues until the IOSThreadProfiler is
 // destroyed prior to thread exit.
 IOSThreadProfiler::IOSThreadProfiler(
-    CallStackProfileParams::Thread thread,
+    base::ProfilerThreadType thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
-    : process_(CallStackProfileParams::Process::kBrowser),
+    : process_(base::ProfilerProcessType::kBrowser),
       thread_(thread),
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(

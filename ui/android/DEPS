@@ -13,6 +13,7 @@ include_rules = [
   "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test",
   "+services/viz/public/mojom",
   "+skia/ext",
+  "+third_party/android_opengl/etc1",
   "+third_party/skia",
   "+ui/accessibility",
   "+ui/android/ui_android_jni_headers",

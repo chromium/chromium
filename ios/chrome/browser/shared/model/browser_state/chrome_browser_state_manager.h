@@ -9,14 +9,10 @@
 #include <string_view>
 #include <vector>
 
-namespace base {
-class FilePath;
-}
-
 class BrowserStateInfoCache;
 class ChromeBrowserState;
+class ChromeBrowserStateManagerObserver;
 
-namespace ios {
 // Provides methods that allow for various ways of creating non-incognito
 // ChromeBrowserState instances. Owns all instances that it creates.
 class ChromeBrowserStateManager {
@@ -26,6 +22,10 @@ class ChromeBrowserStateManager {
       delete;
 
   virtual ~ChromeBrowserStateManager() {}
+
+  // Registers/unregisters observers.
+  virtual void AddObserver(ChromeBrowserStateManagerObserver* observer) = 0;
+  virtual void RemoveObserver(ChromeBrowserStateManagerObserver* observer) = 0;
 
   // Returns the ChromeBrowserState that was last used. Only use this method for
   // the very specific purpose of finding which of the several available browser
@@ -37,11 +37,6 @@ class ChromeBrowserStateManager {
   // Returns the ChromeBrowserState known by `name` or nullptr if there is
   // no loaded ChromeBrowserState with that `name`.
   virtual ChromeBrowserState* GetBrowserStateByName(std::string_view name) = 0;
-
-  // Returns the ChromeBrowserState associated with `path`, returns nullptr if
-  // there is no loaded ChromeBrowserState at `path`.
-  virtual ChromeBrowserState* GetBrowserStateByPath(
-      const base::FilePath& path) = 0;
 
   // Returns the BrowserStateInfoCache associated with this manager.
   virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;
@@ -55,7 +50,5 @@ class ChromeBrowserStateManager {
  protected:
   ChromeBrowserStateManager() {}
 };
-
-}  // namespace ios
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_

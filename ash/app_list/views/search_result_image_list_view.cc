@@ -16,8 +16,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "base/check_op.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -208,20 +212,14 @@ void SearchResultImageListView::ConfigureLayoutForAvailableWidth(int width) {
   }
 }
 
-void SearchResultImageListView::OnImageMetadataLoaded(
-    ash::FileMetadata metadata) {
+void SearchResultImageListView::OnImageMetadataLoaded(base::File::Info info) {
   if (num_results() != 1) {
     return;
   }
 
   // Check that there are 3 labels in `metadata_content_labels_`.
   CHECK_EQ(metadata_content_labels_.size(), kNumOfContentLabels);
-  metadata_content_labels_[0]->SetText(
-      base::UTF8ToUTF16(metadata.file_name.value()));
-  metadata_content_labels_[1]->SetText(
-      base::UTF8ToUTF16(metadata.displayable_folder_path.value()));
-  metadata_content_labels_[2]->SetText(
-      GetFormattedTime(metadata.file_info.last_modified));
+  metadata_content_labels_[2]->SetText(GetFormattedTime(info.last_modified));
 }
 
 int SearchResultImageListView::DoUpdate() {
@@ -245,8 +243,17 @@ int SearchResultImageListView::DoUpdate() {
   }
 
   if (num_results == 1) {
-    CHECK(display_results[0]->file_metadata_loader());
-    display_results[0]->file_metadata_loader()->RequestFileInfo(
+    SearchResult* display_result = display_results[0];
+    const base::FilePath& displayable_file_path =
+        display_result->displayable_file_path();
+    CHECK_EQ(metadata_content_labels_.size(), kNumOfContentLabels);
+    metadata_content_labels_[0]->SetText(
+        base::UTF8ToUTF16(displayable_file_path.BaseName().value()));
+    metadata_content_labels_[1]->SetText(
+        base::UTF8ToUTF16(displayable_file_path.DirName().value()));
+
+    CHECK(display_result->file_metadata_loader());
+    display_result->file_metadata_loader()->RequestFileInfo(
         base::BindRepeating(&SearchResultImageListView::OnImageMetadataLoaded,
                             weak_ptr_factory_.GetWeakPtr()));
   }

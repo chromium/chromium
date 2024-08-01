@@ -7,10 +7,10 @@
 
 #include <vector>
 
-@class AccountsTableViewController;
-struct CoreAccountInfo;
 @class AccountErrorUIInfo;
+struct CoreAccountInfo;
 enum class IdentityAvatarSize;
+@class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 
 // Identity data source for AccountsTableViewController instance, to manage the

@@ -74,7 +74,6 @@ class ButtonPlaceholder : public views::View, public views::ViewObserver {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  int GetHeightForWidth(int width) const override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -130,19 +129,6 @@ void ButtonPlaceholder::OnViewBoundsChanged(View* observed_view) {
       view_bounds_changed_observer_.Reset();
     }
   }
-}
-
-int ButtonPlaceholder::GetHeightForWidth(int width) const {
-  // The parent for this view (the row's content view) and the placeholder
-  // button uses a `BoxLayout` for its `LayoutManager`. Internally `BoxLayout`
-  // uses `GetHeightForWidth` on each child to define their height when the
-  // orientation is not `kVertical`. Finally these children uses
-  // `BoxLayout::GetPreferredSizeForChildWidth` to tell their parent their
-  // height, however they only return a non 0 value if they have visible
-  // children. This is not the case here because the button is at first no
-  // visible. Therefore we override GetHeightForWidth to return the preferred
-  // height regardless of children being visible or not.
-  return GetPreferredSize(views::SizeBounds(width, {})).height();
 }
 
 BEGIN_METADATA(ButtonPlaceholder)

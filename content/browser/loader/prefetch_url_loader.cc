@@ -61,9 +61,11 @@ PrefetchURLLoader::PrefetchURLLoader(
           signed_exchange_utils::IsSignedExchangeHandlingEnabled(
               browser_context)) {
   DCHECK(network_loader_factory_);
-  DCHECK(!resource_request.trusted_params ||
-         resource_request.trusted_params->isolation_info.request_type() ==
-             net::IsolationInfo::RequestType::kOther);
+  CHECK(!resource_request.trusted_params ||
+        resource_request.trusted_params->isolation_info.request_type() ==
+            net::IsolationInfo::RequestType::kOther ||
+        resource_request.trusted_params->isolation_info.request_type() ==
+            net::IsolationInfo::RequestType::kMainFrame);
 
   if (is_signed_exchange_handling_enabled_) {
     // Set the SignedExchange accept header.

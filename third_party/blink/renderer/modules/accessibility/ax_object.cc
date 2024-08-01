@@ -277,24 +277,6 @@ bool IsValidRole(ax::mojom::blink::Role role) {
 }
 #endif
 
-HashSet<ax::mojom::blink::Role> GetExpectedParentRole(
-    ax::mojom::blink::Role role) {
-  switch (role) {
-      // TODO(crbug.com/341369908): Add other roles that have required parents.
-      // kListItem is a special case, handled in
-      // ComputeFinalRoleForSerialization().
-    case ax::mojom::blink::Role::kRow:
-      return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
-              ax::mojom::blink::Role::kRowGroup,
-              ax::mojom::blink::Role::kTreeGrid};
-    case ax::mojom::blink::Role::kRowGroup:
-      return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
-              ax::mojom::blink::Role::kTreeGrid};
-    default:
-      return {};
-  }
-}
-
 constexpr wtf_size_t kNumRoles =
     static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
 
@@ -1656,7 +1638,7 @@ void AXObject::SerializeInlineTextBoxAttributes(
 void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
   AXObject* parent = ParentObject();
   if (Language().length()) {
-    // TODO(chrishall): should we still trim redundant languages off here?
+    // Trim redundant languages.
     if (!parent || parent->Language() != Language()) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kLanguage, Language());
@@ -2678,7 +2660,7 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // possible to create these internal roles / platform mappings with a listitem
   // (native or ARIA) inside of a doc-bibliography or doc-endnotes section.
   if (role_ == ax::mojom::blink::Role::kListItem) {
-    AXObject* ancestor = ParentObjectUnignoredNonGeneric();
+    AXObject* ancestor = ParentObject();
     if (ancestor && ancestor->RoleValue() == ax::mojom::blink::Role::kList) {
       // Go up to the root, or next list, checking to see if the list item is
       // inside an endnote or bibliography section. If it is, remap the role.
@@ -2695,14 +2677,6 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
         if (ancestor_role == ax::mojom::blink::Role::kDocEndnotes)
           return ax::mojom::blink::Role::kDocEndnote;
       }
-    } else {
-      // If listitem is not the child of a list, return the native role (CORE
-      // AAM 1.2). If the native role is also listitem, return generic container
-      // (HTML AAM 1.0).
-      ax::mojom::blink::Role native_role = NativeRoleIgnoringAria();
-      return native_role == ax::mojom::blink::Role::kListItem
-                 ? ax::mojom::blink::Role::kGenericContainer
-                 : native_role;
     }
   }
 
@@ -2744,19 +2718,6 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
         (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
          ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid)) {
       return ax::mojom::blink::Role::kGridCell;
-    }
-  }
-
-  // CORE-AAM requires that, for elements with roles not contained in the
-  // required context, user agents must ignore the role token and return the
-  // computed role as if the ignored role token had not been included.
-  // See https://w3c.github.io/core-aam/#roleMappingComputedRole
-  HashSet<ax::mojom::blink::Role> expected_parent_role =
-      GetExpectedParentRole(role_);
-  if (!expected_parent_role.empty()) {
-    AXObject* ancestor = ParentObjectUnignoredNonGeneric();
-    if (!ancestor || !expected_parent_role.Contains(ancestor->RoleValue())) {
-      return NativeRoleIgnoringAria();
     }
   }
 
@@ -4619,7 +4580,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
 
     // TODO(crbug.com/1286465): It's not consistent to only check
     // IsEnsuredInDisplayNone() on layoutless elements.
-    return GetNode()->IsElementNode() &&
+    return GetNode() && GetNode()->IsElementNode() &&
            (style->IsEnsuredInDisplayNone() ||
             style->Visibility() != EVisibility::kVisible);
   }
@@ -6015,19 +5976,6 @@ AXObject* AXObject::ParentObjectUnignored() const {
   return parent;
 }
 
-AXObject* AXObject::ParentObjectUnignoredNonGeneric() const {
-  AXObject* parent;
-  // Null check for parent is not needed here since the root is never ignored.
-  for (parent = ParentObject();
-       parent->IsIgnored() ||
-       parent->RoleValue() == ax::mojom::blink::Role::kGenericContainer ||
-       parent->RoleValue() == ax::mojom::blink::Role::kNone;
-       parent = parent->ParentObject()) {
-  }
-
-  return parent;
-}
-
 AXObject* AXObject::ParentObjectIncludedInTree() const {
   AXObject* parent;
   for (parent = ParentObject();
@@ -7328,7 +7276,7 @@ bool AXObject::OnNativeScrollToMakeVisibleAction() const {
   PhysicalRect target_rect(layout_object->AbsoluteBoundingBoxRect());
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));
@@ -7349,7 +7297,7 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
       layout_object->LocalToAbsoluteRect(PhysicalRect(rect));
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           horizontal_scroll_alignment, vertical_scroll_alignment,
           mojom::blink::ScrollType::kProgrammatic,
           false /* make_visible_in_visual_viewport */,
@@ -7369,7 +7317,7 @@ bool AXObject::OnNativeScrollToGlobalPointAction(
   target_rect.Move(-PhysicalOffset(global_point));
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));

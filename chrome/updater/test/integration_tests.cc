@@ -12,6 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -565,6 +566,16 @@ class IntegrationTest : public ::testing::Test {
   void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {
     test_commands_->ExpectPrepareToRunBundleSuccess(bundle_path);
   }
+
+  void ExpectKSAdminFetchTag(bool elevate,
+                             const std::string& product_id,
+                             const base::FilePath& xc_path,
+                             std::optional<UpdaterScope> store_flag,
+                             std::optional<std::string> want_tag) {
+    test_commands_->ExpectKSAdminFetchTag(elevate, product_id, xc_path,
+                                          store_flag, want_tag);
+  }
+
 #endif  // BUILDFLAG(IS_MAC)
 
   void ExpectAppInstalled(const std::string& appid,
@@ -696,26 +707,6 @@ class IntegrationTest : public ::testing::Test {
   ScopedIPCSupportWrapper ipc_support_;
 };
 
-// TODO(crbug.com/40063600): re-enable the tests once they are passing on
-// Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
-#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
-#define MAYBE_OverinstallBrokenSameVersion DISABLED_OverinstallBrokenSameVersion
-#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
-#define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
-#define MAYBE_UninstallIfUnusedSelfAndOldReal \
-  DISABLED_UninstallIfUnusedSelfAndOldReal
-#else
-#define MAYBE_InstallLowerVersion InstallLowerVersion
-#define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
-#define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
-#define MAYBE_OverinstallBrokenSameVersion OverinstallBrokenSameVersion
-#define MAYBE_OverinstallWorking OverinstallWorking
-#define MAYBE_OverinstallBroken OverinstallBroken
-
-#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
 #else
@@ -765,7 +756,7 @@ TEST_F(IntegrationTest, OverinstallRedundant) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
+TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -797,7 +788,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
+TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -820,7 +811,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_OverinstallBrokenSameVersion) {
+TEST_F(IntegrationTest, OverinstallBrokenSameVersion) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1630,6 +1621,7 @@ TEST_F(IntegrationTest, GetAppStates) {
   expected_app_state.Set("brand_code", "");
   expected_app_state.Set("brand_path", "");
   expected_app_state.Set("ecp", "");
+  expected_app_state.Set("cohort", "");
   base::Value::Dict expected_app_states;
   expected_app_states.Set(kAppId, std::move(expected_app_state));
 
@@ -2015,7 +2007,7 @@ TEST_F(IntegrationTest, PrivilegedHelperInstall) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
+TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -2042,7 +2034,7 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
+TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -2076,7 +2068,7 @@ TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
+TEST_F(IntegrationTest, InstallLowerVersion) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
@@ -2313,6 +2305,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   registration.ap = "TestAp";
   registration.version = base::Version("11.22.33.44");
   registration.existence_checker_path = base::FilePath::FromASCII("/");
+  registration.cohort = "cohort_test";
   test_commands_->RegisterApp(registration);
 
   base::Value::Dict expected_app_state;
@@ -2322,6 +2315,10 @@ TEST_F(IntegrationTest, RegisterApp) {
   expected_app_state.Set("ap", "TestAp");
   expected_app_state.Set("version", "11.22.33.44");
   expected_app_state.Set("ecp", "/");
+#if BUILDFLAG(IS_POSIX)
+  // Cohort is only communicated over IPC on POSIX. Refer to crbug.com/40283110.
+  expected_app_state.Set("cohort", "cohort_test");
+#endif
   base::Value::Dict expected_app_states;
   expected_app_states.Set("e595682b-02d5-46d1-b7ab-90034bd6be0f",
                           std::move(expected_app_state));
@@ -3813,6 +3810,36 @@ TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
+#if BUILDFLAG(IS_MAC)
+
+TEST_F(IntegrationTest, KSAdminNoAppNoTag) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ExpectKSAdminFetchTag(false, "no.such.app", {}, {}, {});
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, KSAdminUntaggedApp) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("org.chromium.testapp"));
+  ExpectKSAdminFetchTag(false, "org.chromium.testapp", {}, {}, "");
+  ASSERT_NO_FATAL_FAILURE(UninstallApp("org.chromium.testapp"));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, KSAdminTaggedApp) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("org.chromium.testapp"));
+  ASSERT_NO_FATAL_FAILURE(SetAppTag("org.chromium.testapp", "some-tag"));
+  ExpectKSAdminFetchTag(false, "org.chromium.testapp", {}, {}, "some-tag");
+  ASSERT_NO_FATAL_FAILURE(UninstallApp("org.chromium.testapp"));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+#endif  // BUILDFLAG(IS_MAC)
+
 // Tests that interact with state in both system and user updater configuration
 // are run as part of the system-scope tests.
 class IntegrationTestUserInSystem : public IntegrationTest {
@@ -3821,14 +3848,20 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 
  protected:
   void SetUp() override {
-    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
-      GTEST_SKIP();
+    if (SkipTest()) {
+      GTEST_SKIP() << "The test is skipped in this configuration";
     }
 
     IntegrationTest::SetUp();
     test_server_ = std::make_unique<ScopedServer>();
     test_server_->ConfigureTestMode(user_test_commands_.get());
     test_server_->ConfigureTestMode(test_commands_.get());
+  }
+
+  void TearDown() override {
+    if (!SkipTest()) {
+      IntegrationTest::TearDown();
+    }
   }
 
   void InstallUserUpdater(const base::Value::List& switches = {}) {
@@ -3882,6 +3915,15 @@ class IntegrationTestUserInSystem : public IntegrationTest {
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =
       CreateIntegrationTestCommandsUser(UpdaterScope::kUser);
   std::unique_ptr<ScopedServer> test_server_;
+
+ private:
+  // The test can't run on Windows with UAC on because installing per-user
+  // applications by code running at high integrity levels, such as the
+  // integration test driver is not supported.
+  bool SkipTest() const {
+    return !IsSystemInstall(GetUpdaterScopeForTesting()) ||
+           WrongUser(UpdaterScope::kUser);
+  }
 };
 
 TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
@@ -3910,5 +3952,296 @@ TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
   ExpectUserUninstallPing(test_server_.get());
   UninstallUserUpdater();
 }
+
+#if BUILDFLAG(IS_MAC)
+
+class IntegrationTestKSAdminUserInSystem : public IntegrationTestUserInSystem {
+ protected:
+  void ExpectUserKSAdminFetchTag(bool elevate,
+                                 const std::string& product_id,
+                                 const base::FilePath& xc_path,
+                                 std::optional<UpdaterScope> store_flag,
+                                 std::optional<std::string> want_tag) {
+    user_test_commands_->ExpectKSAdminFetchTag(elevate, product_id, xc_path,
+                                               store_flag, want_tag);
+  }
+
+  void ExpectBothKSAdminFetchTag(bool elevate,
+                                 const std::string& product_id,
+                                 const base::FilePath xc_path,
+                                 std::optional<UpdaterScope> store_flag,
+                                 std::optional<std::string> want_tag) {
+    ExpectUserKSAdminFetchTag(elevate, product_id, xc_path, store_flag,
+                              want_tag);
+    ExpectKSAdminFetchTag(elevate, product_id, xc_path, store_flag, want_tag);
+  }
+};
+
+TEST_F(IntegrationTestKSAdminUserInSystem, KSAdminNoAppNoTagNoMatterWhat) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
+
+  ExpectBothKSAdminFetchTag(false, "no.such.app", {}, {}, {});
+  ExpectBothKSAdminFetchTag(true, "no.such.app", {}, {}, {});
+
+  ExpectUserUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(UninstallUserUpdater());
+  ExpectUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// A set of KSAdmin tests that require apps to be installed in a specific way:
+//
+// * product ID `system-app`, tag `system-tag`, installed at system scope
+// * product ID `user-app`, tag `user-tag`, installed at user scope
+// * product ID `repeat-app`, tag `repeat-system-tag`, installed at system scope
+// * product ID `repeat-app`, tag `repeat-user-tag`, installed at user scope
+//
+// Each installation has a unique existence checker path referring to a temp
+// file created during test setup and deleted during teardown. Test setup and
+// teardown also installs and uninstalls updaters at both user and system scope.
+//
+// Tests may also rely on `nonexistent-app` to test product IDs not registered
+// with any updater. The class also provides an extra temp file that is not
+// the existence checker path of anything, for similar reasons.
+class IntegrationTestKSAdminFourApps
+    : public IntegrationTestKSAdminUserInSystem {
+ protected:
+  void SetUp() override {
+    IntegrationTestKSAdminUserInSystem::SetUp();
+    if (IsSkipped() || HasFailure()) {
+      // If the test should not run, stop without installing the updater.
+      return;
+    }
+
+    ASSERT_NO_FATAL_FAILURE(Install());
+    ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
+    ASSERT_TRUE(WaitForUpdaterExit());
+    ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+    ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
+
+    base::Version v("1.0.0.0");
+
+    ASSERT_NO_FATAL_FAILURE(InstallApp(kSystemAppID, v));
+    ASSERT_NO_FATAL_FAILURE(SetAppTag(kSystemAppID, kSystemAppTag));
+    ASSERT_TRUE(system_app_xcfile_.Create());
+    ASSERT_NO_FATAL_FAILURE(
+        SetExistenceCheckerPath(kSystemAppID, system_app_xcfile_.path()));
+
+    ASSERT_NO_FATAL_FAILURE(InstallApp(kRepeatAppID, v));
+    ASSERT_NO_FATAL_FAILURE(SetAppTag(kRepeatAppID, kRepeatAppSystemTag));
+    ASSERT_TRUE(repeat_app_system_xcfile_.Create());
+    ASSERT_NO_FATAL_FAILURE(SetExistenceCheckerPath(
+        kRepeatAppID, repeat_app_system_xcfile_.path()));
+
+    ASSERT_NO_FATAL_FAILURE(InstallUserApp(kUserAppID, v));
+    ASSERT_NO_FATAL_FAILURE(SetUserAppTag(kUserAppID, kUserAppTag));
+    ASSERT_TRUE(user_app_xcfile_.Create());
+    ASSERT_NO_FATAL_FAILURE(
+        SetUserAppExistenceCheckerPath(kUserAppID, user_app_xcfile_.path()));
+
+    ASSERT_NO_FATAL_FAILURE(InstallUserApp(kRepeatAppID, v));
+    ASSERT_NO_FATAL_FAILURE(SetUserAppTag(kRepeatAppID, kRepeatAppUserTag));
+    ASSERT_TRUE(repeat_app_user_xcfile_.Create());
+    ASSERT_NO_FATAL_FAILURE(SetUserAppExistenceCheckerPath(
+        kRepeatAppID, repeat_app_user_xcfile_.path()));
+
+    ASSERT_TRUE(no_app_xcfile_.Create());
+  }
+
+  void TearDown() override {
+    if (IsSkipped()) {
+      // Did not set up; no setup actions to reverse.
+      return;
+    }
+    if (test_server_) {
+      ExpectUserUninstallPing(test_server_.get());
+    }
+    ASSERT_NO_FATAL_FAILURE(UninstallUserUpdater());
+    if (test_server_) {
+      ExpectUninstallPing(test_server_.get());
+    }
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+
+    IntegrationTestKSAdminUserInSystem::TearDown();
+  }
+
+  static constexpr char kSystemAppID[] = "system-app";
+  static constexpr char kSystemAppTag[] = "system-tag";
+  base::ScopedTempFile system_app_xcfile_;
+
+  static constexpr char kRepeatAppID[] = "repeat-app";
+  static constexpr char kRepeatAppSystemTag[] = "repeat-system-tag";
+  base::ScopedTempFile repeat_app_system_xcfile_;
+  static constexpr char kRepeatAppUserTag[] = "repeat-user-tag";
+  base::ScopedTempFile repeat_app_user_xcfile_;
+
+  static constexpr char kUserAppID[] = "user-app";
+  static constexpr char kUserAppTag[] = "user-tag";
+  base::ScopedTempFile user_app_xcfile_;
+
+  static constexpr char kNonexistentAppID[] = "nonexistent-app";
+  base::ScopedTempFile no_app_xcfile_;
+};
+
+TEST_F(IntegrationTestKSAdminFourApps, ServiceTagSmokeTest) {
+  ExpectAppTag(kSystemAppID, kSystemAppTag);
+  ExpectAppTag(kRepeatAppID, kRepeatAppSystemTag);
+  ExpectUserAppTag(kUserAppID, kUserAppTag);
+  ExpectUserAppTag(kRepeatAppID, kRepeatAppUserTag);
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, UserLookupNoHints) {
+  ExpectBothKSAdminFetchTag(false, kSystemAppID, {}, {}, kSystemAppTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, {}, {}, kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(false, kUserAppID, {}, {}, kUserAppTag);
+  ExpectBothKSAdminFetchTag(false, kNonexistentAppID, {}, {}, {});
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, ElevatedLookupNoHints) {
+  ExpectBothKSAdminFetchTag(true, kSystemAppID, {}, {}, kSystemAppTag);
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, {}, {}, kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(true, kUserAppID, {}, {}, {});
+  ExpectBothKSAdminFetchTag(true, kNonexistentAppID, {}, {}, {});
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, UserStoreFlag) {
+  // When running elevated, ksadmin refuses to use a user store.
+  ExpectBothKSAdminFetchTag(true, kSystemAppID, {}, UpdaterScope::kUser, {});
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, {}, UpdaterScope::kUser, {});
+  ExpectBothKSAdminFetchTag(true, kUserAppID, {}, UpdaterScope::kUser, {});
+  ExpectBothKSAdminFetchTag(true, kNonexistentAppID, {}, UpdaterScope::kUser,
+                            {});
+
+  // In the presence of a user store flag, only search the user store.
+  ExpectBothKSAdminFetchTag(false, kSystemAppID, {}, UpdaterScope::kUser, {});
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, {}, UpdaterScope::kUser,
+                            kRepeatAppUserTag);
+  ExpectBothKSAdminFetchTag(false, kUserAppID, {}, UpdaterScope::kUser,
+                            kUserAppTag);
+  ExpectBothKSAdminFetchTag(false, kNonexistentAppID, {}, UpdaterScope::kUser,
+                            {});
+
+  // Existence checker path hinting does not alter any part of this result.
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, repeat_app_user_xcfile_.path(),
+                            UpdaterScope::kUser, kRepeatAppUserTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID,
+                            repeat_app_system_xcfile_.path(),
+                            UpdaterScope::kUser, kRepeatAppUserTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, no_app_xcfile_.path(),
+                            UpdaterScope::kUser, kRepeatAppUserTag);
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID,
+                            repeat_app_system_xcfile_.path(),
+                            UpdaterScope::kUser, {});
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, repeat_app_user_xcfile_.path(),
+                            UpdaterScope::kUser, {});
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, no_app_xcfile_.path(),
+                            UpdaterScope::kUser, {});
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, SystemStoreFlag) {
+  // In the presence of a system store flag, only search the system store.
+  ExpectBothKSAdminFetchTag(false, kSystemAppID, {}, UpdaterScope::kSystem,
+                            kSystemAppTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, {}, UpdaterScope::kSystem,
+                            kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(false, kUserAppID, {}, UpdaterScope::kSystem, {});
+  ExpectBothKSAdminFetchTag(false, kNonexistentAppID, {}, UpdaterScope::kUser,
+                            {});
+  ExpectBothKSAdminFetchTag(true, kSystemAppID, {}, UpdaterScope::kSystem,
+                            kSystemAppTag);
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, {}, UpdaterScope::kSystem,
+                            kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(true, kUserAppID, {}, UpdaterScope::kSystem, {});
+  ExpectBothKSAdminFetchTag(true, kNonexistentAppID, {}, UpdaterScope::kUser,
+                            {});
+
+  // Existence checker path hinting does not alter elevated results.
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID,
+                            repeat_app_system_xcfile_.path(),
+                            UpdaterScope::kSystem, kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, repeat_app_user_xcfile_.path(),
+                            UpdaterScope::kSystem, kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, no_app_xcfile_.path(),
+                            UpdaterScope::kSystem, kRepeatAppSystemTag);
+}
+
+// TODO: crbug/355246092 - Fix ksadmin's handling of this scenario and enable
+//     this test. Currently, ksadmin will see the `--system-store` switch and
+//     retrieve the registration from the system store, but not check further
+//     to verify the existence checker path match.
+TEST_F(IntegrationTestKSAdminFourApps,
+       DISABLED_SystemStoreFlagXCPathMismatchAsUser) {
+  // Because a non-elevated user can't "fix" a mismatched path for a system
+  // app registration, a mismatching existence checker path causes lookup
+  // to fail; because the store was explicitly specified, ksadmin will not
+  // consider the user store.
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID,
+                            repeat_app_system_xcfile_.path(),
+                            UpdaterScope::kSystem, kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, repeat_app_user_xcfile_.path(),
+                            UpdaterScope::kSystem, {});
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, no_app_xcfile_.path(),
+                            UpdaterScope::kSystem, {});
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, XCPathMatch) {
+  ExpectBothKSAdminFetchTag(true, kSystemAppID, system_app_xcfile_.path(), {},
+                            kSystemAppTag);
+  ExpectBothKSAdminFetchTag(false, kSystemAppID, system_app_xcfile_.path(), {},
+                            kSystemAppTag);
+
+  // Root can't see user stores.
+  ExpectBothKSAdminFetchTag(true, kUserAppID, user_app_xcfile_.path(), {}, {});
+  ExpectBothKSAdminFetchTag(false, kUserAppID, user_app_xcfile_.path(), {},
+                            kUserAppTag);
+
+  // When running as user, XC path disambiguates.
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, repeat_app_user_xcfile_.path(),
+                            {}, kRepeatAppUserTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID,
+                            repeat_app_system_xcfile_.path(), {},
+                            kRepeatAppSystemTag);
+
+  // Root can't see user stores, but it doesn't see the mismatching XC path
+  // as a reason not to retrieve the entry in the system store, because -- since
+  // the user is root -- the user would be able to fix this registration.
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID,
+                            repeat_app_system_xcfile_.path(), {},
+                            kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, repeat_app_user_xcfile_.path(),
+                            {}, kRepeatAppSystemTag);
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchElevated) {
+  // When running as root, ksadmin only considers the system store, and doesn't
+  // consider existence checking path mismatches to stop retrieval.
+  ExpectBothKSAdminFetchTag(true, kSystemAppID, no_app_xcfile_.path(), {},
+                            kSystemAppTag);
+  ExpectBothKSAdminFetchTag(true, kUserAppID, no_app_xcfile_.path(), {}, {});
+  ExpectBothKSAdminFetchTag(true, kRepeatAppID, no_app_xcfile_.path(), {},
+                            kRepeatAppSystemTag);
+  ExpectBothKSAdminFetchTag(true, kNonexistentAppID, no_app_xcfile_.path(), {},
+                            {});
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
+  // ksadmin knows a user can "fix" the existence checker path in a user
+  // registration (and attempting to re-register the app will overwrite that
+  // registration), but cannot "fix" (and therefore does not match) a system
+  // registration with a different existence checking path.
+  ExpectBothKSAdminFetchTag(false, kSystemAppID, no_app_xcfile_.path(), {}, {});
+  ExpectBothKSAdminFetchTag(false, kUserAppID, no_app_xcfile_.path(), {},
+                            kUserAppTag);
+  ExpectBothKSAdminFetchTag(false, kRepeatAppID, no_app_xcfile_.path(), {},
+                            kRepeatAppUserTag);
+  ExpectBothKSAdminFetchTag(false, kNonexistentAppID, no_app_xcfile_.path(), {},
+                            {});
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater::test

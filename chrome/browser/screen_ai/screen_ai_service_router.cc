@@ -311,6 +311,8 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .WithExtraCommandLineSwitches(extra_switches)
 #endif  // BUILDFLAG(IS_WIN)
           .Pass());
+
+  screen_ai_service_factory_.reset_on_disconnect();
 }
 
 void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
@@ -340,6 +342,7 @@ void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
               &ScreenAIServiceRouter::InitializeMainContentExtraction,
               weak_ptr_factory_.GetWeakPtr(), request_id,
               main_content_extraction_service_.BindNewPipeAndPassReceiver()));
+      main_content_extraction_service_.reset_on_disconnect();
       break;
 
     case Service::kOCR:
@@ -350,6 +353,7 @@ void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
           base::BindOnce(&ScreenAIServiceRouter::InitializeOCR,
                          weak_ptr_factory_.GetWeakPtr(), request_id,
                          ocr_service_.BindNewPipeAndPassReceiver()));
+      ocr_service_.reset_on_disconnect();
       break;
   }
 }
@@ -434,6 +438,10 @@ bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {
     case Service::kOCR:
       return ocr_service_.is_bound();
   }
+}
+
+bool ScreenAIServiceRouter::IsProcessRunningForTesting() {
+  return screen_ai_service_factory_.is_bound();
 }
 
 }  // namespace screen_ai

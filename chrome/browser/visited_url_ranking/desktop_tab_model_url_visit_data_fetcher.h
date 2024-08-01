@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 
 class Profile;
@@ -28,6 +29,7 @@ class DesktopTabModelURLVisitDataFetcher : public URLVisitDataFetcher {
 
   // URLVisitDataFetcher:
   void FetchURLVisitData(const FetchOptions& options,
+                         const FetcherConfig& config,
                          FetchResultCallback callback) override;
 
  private:

@@ -226,6 +226,11 @@ void GoogleCalendarPageHandler::OnRequestComplete(
       if (event->all_day_event()) {
         continue;
       }
+      // Do not include declined events in response.
+      if (event->self_response_status() ==
+          google_apis::calendar::CalendarEvent::ResponseStatus::kDeclined) {
+        continue;
+      }
       ntp::calendar::mojom::CalendarEventPtr formatted_event =
           ntp::calendar::mojom::CalendarEvent::New();
       formatted_event->title = event->summary();

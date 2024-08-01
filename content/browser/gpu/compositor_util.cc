@@ -481,6 +481,10 @@ bool IsGpuMemoryBufferCompositorResourcesEnabled() {
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return features::IsDelegatedCompositingEnabled();
+#elif BUILDFLAG(IS_WIN)
+  return features::IsDelegatedCompositingEnabled() &&
+         !base::FeatureList::IsEnabled(
+             features::kDelegatedCompositingLimitToUi);
 #else
   return false;
 #endif

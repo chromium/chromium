@@ -10,9 +10,8 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
-#import "ios/chrome/browser/credential_provider/model/archivable_credential+passkey.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
-#import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -61,7 +60,8 @@ ArchivableCredential* TestPasskeyCredential() {
                                                rpId:@"rpId"
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {
@@ -178,6 +178,8 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   EXPECT_EQ(passkeys[0].user_name(), expected.user_name());
   EXPECT_EQ(passkeys[0].user_display_name(), expected.user_display_name());
   EXPECT_EQ(passkeys[0].creation_time(), expected.creation_time());
+  EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
+            expected.last_used_time_windows_epoch_micros());
 }
 
 }  // namespace

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/platform_test.h"
@@ -45,7 +44,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    return builder.Build();
+    return std::move(builder).Build();
   }
 
   void SignIn() {

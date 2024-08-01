@@ -1405,7 +1405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ConfidentialContentsCount" units="entries"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>aidazolic@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2624,7 +2624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PlatformAuth.GetAuthData.Count" units="count"
-    expires_after="2025-01-05">
+    expires_after="2025-07-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2634,7 +2634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PlatformAuth.GetAuthData.FailureHresult"
-    enum="Hresult" expires_after="2024-09-01">
+    enum="Hresult" expires_after="2025-07-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2645,7 +2645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PlatformAuth.GetAuthData.{Result}Time" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-07-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2826,6 +2826,27 @@ chromium-metrics-reviews@google.com.
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>Tracking the results of policy user verification.</summary>
+</histogram>
+
+<histogram name="Enterprise.ProfileAffiliation.IsAffiliated" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>cbe-magic@google.com</owner>
+  <summary>
+    Whether the current profile is affiliated. Recorded for each active profile
+    every 7 days and upon profile policy service initialization.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ProfileAffiliation.UnaffiliatedReason"
+    enum="EnterpriseProfileUnaffiliatedReason" expires_after="2025-07-01">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>cbe-magic@google.com</owner>
+  <summary>
+    The reason why the current profile is not affiliated. Recorded for each
+    unaffiliated active profile every 7 days and upon profile policy service
+    initialization.
+  </summary>
 </histogram>
 
 <histogram name="Enterprise.ProfileIdentifier.Error"
@@ -3324,7 +3345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
-    enum="GoogleServiceAuthError" expires_after="2024-11-24">
+    enum="GoogleServiceAuthError" expires_after="2025-01-26">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <summary>Failure reason for OAuth token fetch for child user.</summary>

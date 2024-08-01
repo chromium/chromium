@@ -353,17 +353,11 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdAfter;
   }
-  DISABLE_CFI_PERF bool IsScrollMarkerGroupPseudoElement() const {
-    return GetPseudoIdForStyling() == kPseudoIdScrollMarkerGroup;
-  }
   DISABLE_CFI_PERF bool IsScrollMarkerGroupBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupBefore;
   }
   DISABLE_CFI_PERF bool IsScrollMarkerGroupAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupAfter;
-  }
-  DISABLE_CFI_PERF bool IsScrollMarkerPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollMarker;
   }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;
@@ -390,6 +384,8 @@ class CORE_EXPORT Node : public EventTarget {
   void SetCustomElementState(CustomElementState);
 
   virtual bool IsPseudoElement() const { return false; }
+  virtual bool IsScrollMarkerPseudoElement() const { return false; }
+  virtual bool IsScrollMarkerGroupPseudoElement() const { return false; }
   virtual bool IsMediaControlElement() const { return false; }
   virtual bool IsMediaControls() const { return false; }
   virtual bool IsMediaElement() const { return false; }

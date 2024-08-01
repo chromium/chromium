@@ -8,7 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "url/gurl.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -17,9 +20,9 @@ class RenderProcessHost;
 class SiteInstance;
 
 // The worklet driver that starts the worklet service. It first picks or
-// allocates a renderer process based on the calling context and the script url,
-// and then creates a thread on the chosen renderer process. The thread will be
-// used to host the worklet service.
+// allocates a renderer process based on the calling context and the
+// data_origin, and then creates a thread on the chosen renderer process. The
+// thread will be used to host the worklet service.
 //
 // The lifetime of the WorkletDriver is tied to the `SharedStorageWorkletHost`.
 //
@@ -33,7 +36,7 @@ class SharedStorageRenderThreadWorkletDriver
  public:
   explicit SharedStorageRenderThreadWorkletDriver(
       RenderFrameHost& render_frame_host,
-      const GURL& script_url);
+      const url::Origin& data_origin);
   ~SharedStorageRenderThreadWorkletDriver() override;
 
   // SharedStorageWorkletDriver overrides

@@ -163,18 +163,14 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::StartWithLock(
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     base::OnceClosure next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const WebApp* installed_app =
-      lock_->registrar().GetAppById(url_info_.app_id());
-  if (installed_app == nullptr) {
-    ReportFailure("App is no longer installed.");
-    return;
-  }
-  if (!installed_app->isolation_data().has_value()) {
-    ReportFailure("Installed app is not an Isolated Web App.");
-    return;
-  }
 
-  installed_version_ = installed_app->isolation_data()->version;
+  ASSIGN_OR_RETURN(
+      const WebApp& iwa,
+      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
+      [&](const std::string& error) { ReportFailure(error); });
+  const auto& isolation_data = *iwa.isolation_data();
+
+  installed_version_ = isolation_data.version;
   GetMutableDebugValue().Set("installed_version",
                              installed_version_->GetString());
   if (expected_version_.has_value() &&
@@ -186,13 +182,11 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     return;
   }
 
-  if (installed_app->isolation_data()->location.dev_mode() !=
-      update_source_->dev_mode()) {
+  if (isolation_data.location.dev_mode() != update_source_->dev_mode()) {
     std::stringstream s;
     s << "Unable to update between dev-mode and non-dev-mode storage location "
          "types ("
-      << installed_app->isolation_data()->location << " to " << *update_source_
-      << ").";
+      << isolation_data.location << " to " << *update_source_ << ").";
     ReportFailure(s.str());
     return;
   }
@@ -248,7 +242,11 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CreateStoragePartition(
     std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  integrity_block_ = std::move(integrity_block);
+  if (integrity_block) {
+    integrity_block_data_ =
+        IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(*integrity_block);
+  }
+
   // TODO(cmfcmf): Maybe we should log somewhere when the storage partition is
   // unexpectedly missing?
   command_helper_->CreateStoragePartitionIfNotPresent(profile());
@@ -335,11 +333,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
   updated_isolation_data.SetPendingUpdateInfo(
       WebApp::IsolationData::PendingUpdateInfo(
           *destination_storage_location_, info.isolated_web_app_version,
-          integrity_block_
-              ? std::make_optional(
-                    IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(
-                        *integrity_block_))
-              : std::nullopt));
+          std::move(integrity_block_data_)));
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
 }
 

@@ -38,8 +38,9 @@ class TestTextClick extends TestSuite {
 
     const annotation = document.querySelector('chrome_annotation')!;
     const timer = new FakeTaskTimer();
-    const clicker =
-        new TextClick(document.documentElement, this.tapConsumer, timer, 50);
+    const clicker = new TextClick(
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
     const event = new Event('click', {bubbles: true, cancelable: true});
@@ -70,8 +71,8 @@ class TestTextClick extends TestSuite {
     const annotation = document.querySelector('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
-        document.documentElement, this.tapConsumer, timer,
-        /* mutationCheckDelay */ 50);
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
     const event = new Event('click', {bubbles: true, cancelable: true});
@@ -100,8 +101,9 @@ class TestTextClick extends TestSuite {
     });
     const annotation = document.querySelector('chrome_annotation')!;
     const timer = new FakeTaskTimer();
-    const clicker =
-        new TextClick(document.documentElement, this.tapConsumer, timer, 50);
+    const clicker = new TextClick(
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
     const event = new Event('click', {bubbles: true, cancelable: true});
@@ -127,8 +129,8 @@ class TestTextClick extends TestSuite {
     const annotation = document.querySelector('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
-        document.documentElement, this.tapConsumer, timer,
-        /* mutationCheckDelay */ 50);
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
     const event = new Event('click', {bubbles: true, cancelable: true});
@@ -158,8 +160,8 @@ class TestTextClick extends TestSuite {
     const annotation = document.querySelector('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
-        document.documentElement, this.tapConsumer, timer,
-        /* mutationCheckDelay */ 50);
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
     const event = new Event('click', {bubbles: true, cancelable: true});

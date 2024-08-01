@@ -33,6 +33,7 @@
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
@@ -75,8 +76,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
@@ -1299,8 +1298,6 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      web_contents,
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
     // Get the stored geolocation content setting and the system permission
     // state to determine whether geolocation is blocked by a system permission.
     //
@@ -1316,33 +1313,25 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     ContentSetting content_setting =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
             ->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION);
-    auto* geolocation_system_permission_manager =
-        device::GeolocationSystemPermissionManager::GetInstance();
-    DCHECK(geolocation_system_permission_manager);
     if (content_setting == CONTENT_SETTING_ALLOW &&
-        geolocation_system_permission_manager->GetSystemPermission() !=
-            device::LocationSystemPermissionStatus::kAllowed) {
+        !system_permission_settings::IsAllowed(
+            ContentSettingsType::GEOLOCATION)) {
       // If the permission is turned off in system preferences, overwrite the
       // bubble to enable the user to trigger the system dialog.
       InitializeSystemGeolocationPermissionBubble();
     }
-  }
-#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 }
 
 ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
     default;
 
 void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
-  if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
-      show_system_geolocation_bubble_) {
+  if (show_system_geolocation_bubble_) {
     base::RecordAction(UserMetricsAction(
         "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
 
-    auto* geolocation_system_permission_manager =
-        device::GeolocationSystemPermissionManager::GetInstance();
-    DCHECK(geolocation_system_permission_manager);
-    geolocation_system_permission_manager->OpenSystemPermissionSetting();
+    system_permission_settings::OpenSystemSettings(
+        web_contents(), ContentSettingsType::GEOLOCATION);
   }
 }
 
@@ -1357,10 +1346,9 @@ void ContentSettingGeolocationBubbleModel::CommitChanges() {
   ContentSettingSingleRadioGroup::CommitChanges();
 }
 
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
-  if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #if BUILDFLAG(IS_MAC)
       set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
 #elif BUILDFLAG(IS_WIN)
@@ -1381,9 +1369,8 @@ void ContentSettingGeolocationBubbleModel::
     set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
     set_radio_group(RadioGroup());
     show_system_geolocation_bubble_ = true;
-  }
-}
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+}
 
 void ContentSettingGeolocationBubbleModel::SetCustomLink() {
   auto* map = HostContentSettingsMapFactory::GetForProfile(

@@ -80,7 +80,7 @@ mojo::PendingReceiver<mojom::SensorClient> FakeSensor::GetClient() {
 }
 
 uint64_t FakeSensor::GetBufferOffset() {
-  return SensorReadingSharedBuffer::GetOffset(sensor_type_);
+  return GetSensorReadingSharedBufferOffset(sensor_type_);
 }
 
 void FakeSensor::SetReading(SensorReading reading) {
@@ -333,13 +333,19 @@ bool FakeSensorProvider::CreateSharedBufferIfNeeded() {
 SensorReadingSharedBuffer*
 FakeSensorProvider::GetSensorReadingSharedBufferForType(
     mojom::SensorType type) {
-  auto* ptr = static_cast<char*>(mapped_region_.mapping.memory());
-  if (!ptr)
+  base::span<SensorReadingSharedBuffer> buffers =
+      mapped_region_.mapping.GetMemoryAsSpan<SensorReadingSharedBuffer>();
+  if (buffers.empty()) {
     return nullptr;
+  }
 
-  ptr += SensorReadingSharedBuffer::GetOffset(type);
-  memset(ptr, 0, kReadingBufferSize);
-  return reinterpret_cast<SensorReadingSharedBuffer*>(ptr);
+  size_t offset = GetSensorReadingSharedBufferOffset(type);
+  CHECK(offset % sizeof(SensorReadingSharedBuffer) == 0u);
+
+  SensorReadingSharedBuffer& buffer =
+      buffers[offset / sizeof(SensorReadingSharedBuffer)];
+  std::ranges::fill(base::byte_span_from_ref(buffer), 0u);
+  return &buffer;
 }
 
 }  // namespace device

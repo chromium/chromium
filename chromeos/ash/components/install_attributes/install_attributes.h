@@ -106,9 +106,6 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // Checks whether this is a cloud (DM server) managed enterprise device.
   bool IsCloudManaged() const;
 
-  // Checks whether this is a consumer kiosk enabled device.
-  bool IsConsumerKioskDeviceWithAutoLaunch();
-
   // Whether the device is set up to run demo sessions.
   bool IsDeviceInDemoMode() const;
 
@@ -166,7 +163,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   static const char kConsumerDeviceMode[];
   static const char kEnterpriseDeviceMode[];
   static const char kLegacyRetailDeviceMode[];
-  static const char kConsumerKioskDeviceMode[];
+  static const char kLegacyConsumerKioskDeviceMode[];
   static const char kDemoDeviceMode[];
 
   // Field names in the lockbox.

@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.JavapClass
 
-#ifndef org_jni_zero_JavapClass_JNI
-#define org_jni_zero_JavapClass_JNI
+#ifndef org_jni_1zero_JavapClass_JNI
+#define org_jni_1zero_JavapClass_JNI
 
 #include <jni.h>
 
@@ -215,4 +215,4 @@ enum Java_JavapClass_constant_fields {
 
 
 }  // namespace JNI_JavapClass
-#endif  // org_jni_zero_JavapClass_JNI
+#endif  // org_jni_1zero_JavapClass_JNI

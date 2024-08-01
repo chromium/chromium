@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   requested_screen_brightness_cause() const {
     return requested_screen_brightness_cause_;
   }
+  power_manager::SetAmbientLightSensorEnabledRequest_Cause
+  requested_ambient_light_sensor_enabled_cause() const {
+    return requested_ambient_light_sensor_enabled_cause_;
+  }
   double keyboard_brightness_percent() const {
     return keyboard_brightness_percent_.value();
   }
@@ -128,7 +132,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetScreenBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void GetScreenBrightnessPercent(DBusMethodCallback<double> callback) override;
-  void SetAmbientLightSensorEnabled(bool enabled) override;
+  void SetAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override;
   void GetAmbientLightSensorEnabled(DBusMethodCallback<bool> callback) override;
   void HasAmbientLightSensor(DBusMethodCallback<bool> callback) override;
   void HasKeyboardBacklight(DBusMethodCallback<bool> callback) override;
@@ -139,7 +145,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void SetKeyboardBrightness(
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void ToggleKeyboardBacklight() override;
-  void SetKeyboardAmbientLightSensorEnabled(bool enabled) override;
+  void SetKeyboardAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override;
   void GetKeyboardAmbientLightSensorEnabled(
       DBusMethodCallback<bool> callback) override;
   const std::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
@@ -329,6 +337,12 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   power_manager::SetBacklightBrightnessRequest_Cause
       requested_screen_brightness_cause_ =
           power_manager::SetBacklightBrightnessRequest_Cause_MODEL;
+
+  // Last als request cause via SetAmbientLightSensorEnabled().
+  // Initially set to an arbitrary value.
+  power_manager::SetAmbientLightSensorEnabledRequest_Cause
+      requested_ambient_light_sensor_enabled_cause_ = power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP;
 
   // Last keyboard brightness request cause via HandleSetKeyboardBrightness().
   // Initially set to an arbitrary value.

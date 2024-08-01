@@ -31,7 +31,7 @@ constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
 // pageflip, or other atomic property changes that do not require modesetting.
 constexpr uint32_t kSeamlessModesetFlags = 0;
 
-const std::vector<uint32_t> kBlobProperyIds = {kEdidBlobPropId};
+const std::vector<uint32_t> kBlobPropertyIds = {kEdidBlobPropId};
 
 const ResolutionAndRefreshRate kStandardMode =
     ResolutionAndRefreshRate{gfx::Size(1920, 1080), 60u};
@@ -60,6 +60,7 @@ const std::map<uint32_t, std::string> kConnectorRequiredPropertyNames = {
 
 const std::map<uint32_t, std::string> kConnectorOptionalPropertyNames = {
     {kTileBlobPropId, "TILE"},
+    {kVrrCapablePropId, "vrr_capable"},
 };
 
 const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
@@ -132,7 +133,7 @@ uint32_t GetUniqueNumber() {
 }
 
 bool IsPropertyValueBlob(uint32_t prop_id) {
-  return base::Contains(kBlobProperyIds, prop_id);
+  return base::Contains(kBlobPropertyIds, prop_id);
 }
 
 }  // namespace
@@ -547,10 +548,13 @@ ScopedDrmConnectorPtr FakeDrmDevice::GetConnector(uint32_t connector_id) const {
   connector->count_modes = count_modes;
   connector->modes = DrmAllocator<drmModeModeInfo>(count_modes);
   for (uint32_t i = 0; i < count_modes; ++i) {
-    const gfx::Size resoluton = mock_connector->modes[i].first;
+    const gfx::Size resolution = mock_connector->modes[i].first;
     const uint32_t vrefresh = mock_connector->modes[i].second;
-    connector->modes[i].hdisplay = resoluton.width();
-    connector->modes[i].vdisplay = resoluton.height();
+    connector->modes[i].clock = resolution.GetArea() * vrefresh / 1000;
+    connector->modes[i].hdisplay = resolution.width();
+    connector->modes[i].htotal = resolution.width();
+    connector->modes[i].vdisplay = resolution.height();
+    connector->modes[i].vtotal = resolution.height();
     connector->modes[i].vrefresh = vrefresh;
   }
 

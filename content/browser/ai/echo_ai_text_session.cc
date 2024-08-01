@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-params-data.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace content {
 
@@ -55,6 +55,14 @@ void EchoAITextSession::Prompt(
       base::BindOnce(&EchoAITextSession::DoMockExecution,
                      weak_ptr_factory_.GetWeakPtr(), input, responder_id),
       base::Seconds(1));
+}
+
+void EchoAITextSession::Fork(
+    mojo::PendingReceiver<blink::mojom::AITextSession> session,
+    ForkCallback callback) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAITextSession>(),
+                              std::move(session));
+  std::move(callback).Run(true);
 }
 
 void EchoAITextSession::Destroy() {

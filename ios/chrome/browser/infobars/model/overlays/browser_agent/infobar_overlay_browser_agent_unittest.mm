@@ -83,7 +83,7 @@ class InfobarOverlayBrowserAgentTest
     // Create the interaction handler and set up the mock handlers to return
     // fake callback installers.
     std::unique_ptr<InfobarInteractionHandler> interaction_handler =
-        interaction_handler_builder_.Build();
+        std::move(interaction_handler_builder_).Build();
     EXPECT_CALL(*mock_handler(InfobarOverlayType::kBanner), CreateInstaller())
         .WillOnce(Return(ByMove(CreateInstaller(InfobarOverlayType::kBanner))));
     EXPECT_CALL(*mock_handler(InfobarOverlayType::kModal), CreateInstaller())

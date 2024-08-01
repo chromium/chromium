@@ -219,6 +219,16 @@ CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsOne() const {
   return expression_->IsOne();
 }
 
+CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsHundred() const {
+  if (IsCalculatedPercentageWithLength()) {
+    return BoolStatus::kUnresolvable;
+  }
+  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
+    return BoolStatus::kUnresolvable;
+  }
+  return expression_->IsHundred();
+}
+
 CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsNegative() const {
   if (IsCalculatedPercentageWithLength()) {
     return BoolStatus::kUnresolvable;

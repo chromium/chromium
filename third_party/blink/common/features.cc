@@ -168,12 +168,6 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
              "AutofillSendUnidentifiedKeyAfterFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Apply lazy-loading to ad frames which have embeds likely impacting Core Web
-// Vitals.
-BASE_FEATURE(kAutomaticLazyFrameLoadingToAds,
-             "AutomaticLazyFrameLoadingToAds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // https://crbug.com/1472970
 BASE_FEATURE(kAutoSpeculationRules,
              "AutoSpeculationRules",
@@ -182,66 +176,6 @@ const base::FeatureParam<std::string> kAutoSpeculationRulesConfig{
     &kAutoSpeculationRules, "config", "{}"};
 const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
     &kAutoSpeculationRules, "holdback", false};
-
-// The timeout value that forces loading iframes that are lazy loaded by
-// LazyAds. After this timeout, the frame loading is triggered even when the
-// intersection observer does not trigger iframe loading.
-const base::FeatureParam<int> kTimeoutMillisForLazyAds(
-    &features::kAutomaticLazyFrameLoadingToAds,
-    "timeout",
-    0);
-
-// Skip applying LazyAds for the first "skip_frame_count" frames in the
-// document, and apply LazyAds the rest if they are eligible.
-const base::FeatureParam<int> kSkipFrameCountForLazyAds(
-    &features::kAutomaticLazyFrameLoadingToAds,
-    "skip_frame_count",
-    0);
-
-// Apply lazy-loading to frames which have embeds likely impacting Core Web
-// Vitals.
-BASE_FEATURE(kAutomaticLazyFrameLoadingToEmbeds,
-             "AutomaticLazyFrameLoadingToEmbeds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The timeout value that forces loading iframes that are lazy loaded by
-// LazyEmbeds. After this timeout, the frame loading is triggered even when the
-// intersection observer does not trigger iframe loading.
-const base::FeatureParam<int> kTimeoutMillisForLazyEmbeds(
-    &features::kAutomaticLazyFrameLoadingToEmbeds,
-    "timeout",
-    0);
-
-// Skip applying LazyEmbeds for the first "skip_frame_count" frames in the
-// document, and apply LazyEmbeds the rest if they are eligible.
-const base::FeatureParam<int> kSkipFrameCountForLazyEmbeds(
-    &features::kAutomaticLazyFrameLoadingToEmbeds,
-    "skip_frame_count",
-    0);
-
-// Define the allowed websites to use LazyEmbeds. The allowed websites need to
-// be defined separately from kAutomaticLazyFrameLoadingToEmbeds because we want
-// to gather Blink.AutomaticLazyLoadFrame.LazyEmbedFrameCount UKM data even when
-// kAutomaticLazyFrameLoadingToEmbeds is disabled.
-BASE_FEATURE(kAutomaticLazyFrameLoadingToEmbedUrls,
-             "AutomaticLazyFrameLoadingToEmbedUrls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Define the strategy for LazyEmbeds to decide which frames we apply
-// lazy-loading or not. If the loading strategy is kAllowList, the detection
-// logic is based on the allowlist that kAutomaticLazyFrameLoadingToEmbedUrls
-// passes to the client. If the strategy is kNonAds, the detection logic is
-// based on the Ad Tagging in chromium.
-const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>::
-    Option kAutomaticLazyFrameLoadingToEmbedLoadingStrategies[] = {
-        {AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
-         "allow_list"},
-        {AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kNonAds, "non_ads"}};
-const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
-    kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam{
-        &kAutomaticLazyFrameLoadingToEmbedUrls, "strategy",
-        AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
-        &kAutomaticLazyFrameLoadingToEmbedLoadingStrategies};
 
 BASE_FEATURE(kAvifGainmapHdrImages,
              "AvifGainmapHdrImages",
@@ -601,6 +535,39 @@ BASE_FEATURE(kDefaultViewportIsDeviceWidth,
              "DefaultViewportIsDeviceWidth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeferRendererTasksAfterInput,
+             "DeferRendererTasksAfterInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDeferRendererTasksAfterInputPolicyParamName[] = "policy";
+const char kDeferRendererTasksAfterInputMinimalTypesPolicyName[] =
+    "minimal-types";
+const char
+    kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName[] =
+        "non-user-blocking-deferrable-types";
+const char kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyName[] =
+    "non-user-blocking-types";
+const char kDeferRendererTasksAfterInputAllDeferrableTypesPolicyName[] =
+    "all-deferrable-types";
+const char kDeferRendererTasksAfterInputAllTypesPolicyName[] = "all-types";
+
+const base::FeatureParam<TaskDeferralPolicy>::Option kTaskDeferralOptions[] = {
+    {TaskDeferralPolicy::kMinimalTypes,
+     kDeferRendererTasksAfterInputPolicyParamName},
+    {TaskDeferralPolicy::kNonUserBlockingDeferrableTypes,
+     kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName},
+    {TaskDeferralPolicy::kNonUserBlockingTypes,
+     kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyName},
+    {TaskDeferralPolicy::kAllDeferrableTypes,
+     kDeferRendererTasksAfterInputAllDeferrableTypesPolicyName},
+    {TaskDeferralPolicy::kAllTypes,
+     kDeferRendererTasksAfterInputAllTypesPolicyName}};
+
+const base::FeatureParam<TaskDeferralPolicy> kTaskDeferralPolicyParam{
+    &kDeferRendererTasksAfterInput,
+    kDeferRendererTasksAfterInputPolicyParamName,
+    TaskDeferralPolicy::kAllDeferrableTypes, &kTaskDeferralOptions};
+
 BASE_FEATURE(kDelayAsyncScriptExecution,
              "DelayAsyncScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -876,6 +843,13 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
 
 BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
              "FencedFramesReportEventHeaderChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a bug fix that allows a 'src' allowlist in the |allow| parameter of a
+// <fencedframe> or <iframe> loaded with a FencedFrameConfig to behave as
+// expected. See: https://crbug.com/349080952
+BASE_FEATURE(kFencedFramesSrcPermissionsPolicy,
+             "FencedFramesSrcPermissionsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls access to an API to exempt certain URLs from fenced frame
@@ -2200,6 +2174,10 @@ BASE_FEATURE(kSharedStorageCrossOriginScript,
              "SharedStorageCrossOriginScript",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSharedStorageCreateWorkletUseContextOriginByDefault,
+             "SharedStorageCreateWorkletUseContextOriginByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2272,26 +2250,6 @@ const base::FeatureParam<base::TimeDelta>
     kSpeculativeServiceWorkerWarmUpDuration{&kSpeculativeServiceWorkerWarmUp,
                                             "sw_warm_up_duration",
                                             base::Minutes(10)};
-
-// Enable IntersectionObserver to detect anchor's visibility.
-const base::FeatureParam<bool>
-    kSpeculativeServiceWorkerWarmUpIntersectionObserver{
-        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_intersection_observer",
-        true};
-
-// Duration from previous IntersectionObserver event to the next event.
-const base::FeatureParam<int>
-    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay{
-        &kSpeculativeServiceWorkerWarmUp,
-        "sw_warm_up_intersection_observer_delay", 100};
-
-// Warms up service workers when the anchor becomes visible.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnVisible{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_visible", true};
-
-// Warms up service workers when the anchor is inserted into DOM.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_inserted_into_dom", false};
 
 // Warms up service workers when a pointerover event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
@@ -2540,12 +2498,17 @@ BASE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread,
              "WebRtcCombinedNetworkAndWorkerThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
+// should be detangled such that software decoding can be enabled without
+// software encoding.
+#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
+    BUILDFLAG(ENABLE_OPENH264)
 // Run-time feature for the |rtc_use_h264| encoder/decoder.
 BASE_FEATURE(kWebRtcH264WithOpenH264FFmpeg,
              "WebRTC-H264WithOpenH264FFmpeg",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
+        // BUILDFLAG(ENABLE_OPENH264)
 
 // Causes WebRTC to replace host ICE candidate IP addresses with generated
 // names ending in ".local" and resolve them using mDNS.
@@ -2674,5 +2637,14 @@ BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
 BASE_FEATURE(kOptimizeLoadingDataUrls,
              "OptimizeLoadingDataUrls",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCanvasSharedBitmapToSharedImage,
+             "CanvasSharedBitmapToSharedImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsCanvasSharedBitmapConversionEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kCanvasSharedBitmapToSharedImage);
+}
 
 }  // namespace blink::features

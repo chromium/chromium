@@ -41,7 +41,8 @@ ArchivableCredential* TestPasskeyCredential() {
                                                rpId:@"rpId"
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
 }
 
 // Tests that an ArchivableCredential can be created.
@@ -77,7 +78,8 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
                                                rpId:@"rpId"
                                          privateKey:StringToData("test")
                                           encrypted:nil
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 
@@ -92,7 +94,8 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
                                                rpId:@"rpId"
                                          privateKey:nil
                                           encrypted:StringToData("test")
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 }
@@ -234,7 +237,8 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
                   rpId:@"other_rpId"
             privateKey:StringToData("other_privateKey")
              encrypted:StringToData("other_encrypted")
-          creationTime:kJan1st2024 + 10];
+          creationTime:kJan1st2024 + 10
+          lastUsedTime:kJan1st2024 + 10];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
   ArchivableCredential* credentialDiferentIdentifier =
@@ -248,7 +252,8 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
                                                rpId:@"rpId"
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 
   EXPECT_NSNE(credential, nil);

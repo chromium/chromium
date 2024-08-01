@@ -138,11 +138,13 @@ TabletModeController::UiMode GetUiMode() {
   if (command_line->HasSwitch(switches::kAshUiMode)) {
     std::string switch_value =
         command_line->GetSwitchValueASCII(switches::kAshUiMode);
-    if (switch_value == switches::kAshUiModeClamshell)
+    if (switch_value == switches::kAshUiModeClamshell) {
       return TabletModeController::UiMode::kClamshell;
+    }
 
-    if (switch_value == switches::kAshUiModeTablet)
+    if (switch_value == switches::kAshUiModeTablet) {
       return TabletModeController::UiMode::kTabletMode;
+    }
   }
   return TabletModeController::UiMode::kNone;
 }
@@ -282,10 +284,11 @@ const char* ToString(TabletMode tablet_mode) {
 }
 
 void ReportTrasitionSmoothness(bool enter_tablet_mode, int smoothness) {
-  if (enter_tablet_mode)
+  if (enter_tablet_mode) {
     UMA_HISTOGRAM_PERCENTAGE(kTabletModeEnterHistogram, smoothness);
-  else
+  } else {
     UMA_HISTOGRAM_PERCENTAGE(kTabletModeExitHistogram, smoothness);
+  }
 }
 
 }  // namespace
@@ -300,8 +303,9 @@ class TabletModeController::DestroyObserver : public aura::WindowObserver {
     window_->AddObserver(this);
   }
   ~DestroyObserver() override {
-    if (window_)
+    if (window_) {
       window_->RemoveObserver(this);
+    }
   }
 
   // aura::WindowObserver:
@@ -348,8 +352,9 @@ class TabletModeController::ScopedContainerHider {
   ScopedContainerHider& operator=(const ScopedContainerHider&) = delete;
   ~ScopedContainerHider() {
     // Cancel if the root window is deleted while taking a screenshot.
-    if (!base::Contains(Shell::GetAllRootWindows(), root_window_))
+    if (!base::Contains(Shell::GetAllRootWindows(), root_window_)) {
       return;
+    }
 
     for (int id :
          {kShellWindowId_FloatContainer, kShellWindowId_ShelfContainer}) {
@@ -441,8 +446,9 @@ void TabletModeController::Shutdown() {
   }
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 
-  for (auto& observer : tablet_mode_observers_)
+  for (auto& observer : tablet_mode_observers_) {
     observer.OnTabletControllerDestroyed();
+  }
 }
 
 void TabletModeController::AddWindow(aura::Window* window) {
@@ -466,8 +472,9 @@ bool TabletModeController::AreInternalInputDeviceEventsBlocked() const {
 }
 
 bool TabletModeController::TriggerRecordLidAngleTimerForTesting() {
-  if (!record_lid_angle_timer_.IsRunning())
+  if (!record_lid_angle_timer_.IsRunning()) {
     return false;
+  }
 
   record_lid_angle_timer_.user_task().Run();
   return true;
@@ -509,16 +516,19 @@ void TabletModeController::StopObservingAnimation(bool record_stats,
     }
   }
 
-  if (record_stats && transition_tracker_)
+  if (record_stats && transition_tracker_) {
     transition_tracker_->Stop();
+  }
   transition_tracker_.reset();
 
   // Stop other animations (STEP_END), then update the tablet mode ui.
-  if (tablet_mode_window_manager_ && delete_screenshot)
+  if (tablet_mode_window_manager_ && delete_screenshot) {
     tablet_mode_window_manager_->StopWindowAnimations();
+  }
 
-  if (delete_screenshot)
+  if (delete_screenshot) {
     DeleteScreenshot();
+  }
 }
 
 bool TabletModeController::IsInDevTabletMode() const {
@@ -576,8 +586,9 @@ void TabletModeController::OnShellInitialized() {
 }
 
 void TabletModeController::OnDidApplyDisplayChanges() {
-  if (!tablet_mode_behavior_.observe_display_events)
+  if (!tablet_mode_behavior_.observe_display_events) {
     return;
+  }
 
   // Display config changes might be due to entering or exiting docked mode, in
   // which case the availability of an active internal display changes.
@@ -627,8 +638,9 @@ void TabletModeController::OnECLidAngleDriverStatusChanged(bool is_supported) {
   // TabletModeEventReceived function.
   StartTrackingTabletUsageMetricsIfApplicable();
 
-  if (!is_supported)
+  if (!is_supported) {
     return;
+  }
 
   // When ChromeOS EC lid angle driver is supported, EC can handle lid angle
   // calculation, thus Chrome side lid angle calculation is disabled. In this
@@ -638,8 +650,9 @@ void TabletModeController::OnECLidAngleDriverStatusChanged(bool is_supported) {
   // read.
   lid_angle_ = 0.f;
   can_detect_lid_angle_ = false;
-  if (record_lid_angle_timer_.IsRunning())
+  if (record_lid_angle_timer_.IsRunning()) {
     record_lid_angle_timer_.Stop();
+  }
   AccelerometerReader::GetInstance()->RemoveObserver(this);
 }
 
@@ -649,8 +662,9 @@ void TabletModeController::OnAccelerometerUpdated(
   can_detect_lid_angle_ = update.has(ACCELEROMETER_SOURCE_SCREEN) &&
                           update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
   if (!can_detect_lid_angle_) {
-    if (record_lid_angle_timer_.IsRunning())
+    if (record_lid_angle_timer_.IsRunning()) {
       record_lid_angle_timer_.Stop();
+    }
   } else if (HasActiveInternalDisplay() && tablet_mode_behavior_.use_sensor) {
     // Whether or not we enter tablet mode affects whether we handle screen
     // rotation, so determine whether to enter tablet mode first.
@@ -689,8 +703,9 @@ void TabletModeController::LidEventReceived(
     lid_angle_ = 0.f;
   }
 
-  if (!tablet_mode_behavior_.use_sensor)
+  if (!tablet_mode_behavior_.use_sensor) {
     return;
+  }
 
   SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
 }
@@ -729,8 +744,9 @@ void TabletModeController::SuspendImminent(
 
 void TabletModeController::SuspendDone(base::TimeDelta sleep_duration) {
   // We do not want TabletMode usage metrics to include time spent in suspend.
-  if (!tablet_mode_usage_interval_start_time_.is_null())
+  if (!tablet_mode_usage_interval_start_time_.is_null()) {
     tablet_mode_usage_interval_start_time_ = base::Time::Now();
+  }
 
   // Start listening to the input device changes again.
   // It might be possible that the suspend request has been cancelled so
@@ -757,12 +773,15 @@ void TabletModeController::OnInputDeviceConfigurationChanged(
   if (input_device_types & (ui::InputDeviceEventObserver::kMouse |
                             ui::InputDeviceEventObserver::kTouchpad |
                             ui::InputDeviceEventObserver::kPointingStick)) {
-    if (input_device_types & ui::InputDeviceEventObserver::kMouse)
+    if (input_device_types & ui::InputDeviceEventObserver::kMouse) {
       VLOG(1) << "Mouse device configuration changed.";
-    if (input_device_types & ui::InputDeviceEventObserver::kTouchpad)
+    }
+    if (input_device_types & ui::InputDeviceEventObserver::kTouchpad) {
       VLOG(1) << "Touchpad device configuration changed.";
-    if (input_device_types & ui::InputDeviceEventObserver::kPointingStick)
+    }
+    if (input_device_types & ui::InputDeviceEventObserver::kPointingStick) {
       VLOG(1) << "Pointing stick device configuration changed.";
+    }
 
     HandlePointingDeviceAddedOrRemoved();
   }
@@ -780,8 +799,9 @@ void TabletModeController::OnLayerAnimationStarted(
 
 void TabletModeController::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
-  if (!transition_tracker_ || !ShouldObserveSequence(sequence))
+  if (!transition_tracker_ || !ShouldObserveSequence(sequence)) {
     return;
+  }
 
   StopObservingAnimation(/*record_stats=*/false, /*delete_screenshot=*/true);
 }
@@ -793,16 +813,18 @@ void TabletModeController::OnLayerAnimationEnded(
   // stats/screenshot in those cases.
   // TODO(sammiequon): We may want to remove the |transition_tracker_| check and
   // simplify things since those are edge cases.
-  if (!transition_tracker_ || !ShouldObserveSequence(sequence))
+  if (!transition_tracker_ || !ShouldObserveSequence(sequence)) {
     return;
+  }
 
   StopObservingAnimation(/*record_stats=*/true, /*delete_screenshot=*/true);
 }
 
 void TabletModeController::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
-  if (!ShouldObserveSequence(sequence))
+  if (!ShouldObserveSequence(sequence)) {
     return;
+  }
 
   if (!transition_tracker_) {
     transition_tracker_ =
@@ -963,16 +985,18 @@ void TabletModeController::HandleHingeRotation(
   lid_reading.Scale(1.0f - smoothing_ratio);
   lid_smoothed_.Add(lid_reading);
 
-  if (tablet_mode_switch_is_on_)
+  if (tablet_mode_switch_is_on_) {
     return;
+  }
 
   // Do not calculate lid angle when lid is closed to prevent the device
   // accidentally entering tablet mode. The angle calculated when lid is closed
   // is not accurate (the angle between the base and the lid might be a minus
   // value when lid is closed, and since we do adjustment for minus values, the
   // angle might be in the same range as tablet mode angle range).
-  if (lid_is_closed_)
+  if (lid_is_closed_) {
     return;
+  }
 
   // Ignore the component of acceleration parallel to the hinge for the purposes
   // of hinge angle calculation.
@@ -984,8 +1008,9 @@ void TabletModeController::HandleHingeRotation(
   // Compute the angle between the base and the lid.
   lid_angle_ = 180.0f - gfx::ClockwiseAngleBetweenVectorsInDegrees(
                             base_flattened, lid_flattened, hinge_vector);
-  if (lid_angle_ < 0.0f)
+  if (lid_angle_ < 0.0f) {
     lid_angle_ += 360.0f;
+  }
 
   lid_angle_is_stable_ = is_angle_reliable && lid_angle_ >= kMinStableAngle &&
                          lid_angle_ <= kMaxStableAngle;
@@ -1013,8 +1038,9 @@ void TabletModeController::HandleHingeRotation(
 
 void TabletModeController::OnGetSwitchStates(
     std::optional<chromeos::PowerManagerClient::SwitchStates> result) {
-  if (!result.has_value())
+  if (!result.has_value()) {
     return;
+  }
 
   LidEventReceived(result->lid_state, base::TimeTicks::Now());
   TabletModeEventReceived(result->tablet_mode, base::TimeTicks::Now());
@@ -1034,8 +1060,9 @@ void TabletModeController::RecordTabletModeUsageInterval(
   // If |tablet_mode_usage_interval_start_time_| is null, do not record any
   // tablet mode usage metrics. It may happen when we have some false positive
   // tablet mode activations during startup.
-  if (tablet_mode_usage_interval_start_time_.is_null())
+  if (tablet_mode_usage_interval_start_time_.is_null()) {
     return;
+  }
 
   DCHECK(CanEnterTabletMode() && initial_input_device_set_up_finished_ &&
          have_seen_tablet_mode_event_);
@@ -1072,8 +1099,9 @@ TabletModeController::CurrentTabletModeIntervalType() {
 }
 
 void TabletModeController::HandlePointingDeviceAddedOrRemoved() {
-  if (!initial_input_device_set_up_finished_)
+  if (!initial_input_device_set_up_finished_) {
     return;
+  }
 
   bool has_external_pointing_device = false;
   bool has_internal_pointing_device = false;
@@ -1100,16 +1128,18 @@ void TabletModeController::HandlePointingDeviceAddedOrRemoved() {
       (has_external_pointing_device_ != has_external_pointing_device) ||
       (has_internal_pointing_device_ != has_internal_pointing_device);
 
-  if (!changed)
+  if (!changed) {
     return;
+  }
 
   has_external_pointing_device_ = has_external_pointing_device;
   has_internal_pointing_device_ = has_internal_pointing_device;
 
   // We only need to update UI state if observed internal pointing device or
   // external pointing device changed.
-  if (tablet_mode_behavior_.observe_pointer_device_events)
+  if (tablet_mode_behavior_.observe_pointer_device_events) {
     UpdateUiTabletState();
+  }
 }
 
 void TabletModeController::OnBluetoothAdapterOrDeviceChanged(
@@ -1145,8 +1175,9 @@ void TabletModeController::UpdateInternalInputDevicesEventBlocker() {
 
   if (should_block_internal_events == AreInternalInputDeviceEventsBlocked()) {
     if (force_notify_events_blocking_changed_) {
-      for (auto& observer : tablet_mode_observers_)
+      for (auto& observer : tablet_mode_observers_) {
         observer.OnTabletModeEventsBlockingChanged();
+      }
       force_notify_events_blocking_changed_ = false;
     }
 
@@ -1154,8 +1185,9 @@ void TabletModeController::UpdateInternalInputDevicesEventBlocker() {
   }
 
   event_blocker_->UpdateInternalInputDevices(should_block_internal_events);
-  for (auto& observer : tablet_mode_observers_)
+  for (auto& observer : tablet_mode_observers_) {
     observer.OnTabletModeEventsBlockingChanged();
+  }
 }
 
 void TabletModeController::SuspendOcclusionTracker() {
@@ -1215,8 +1247,9 @@ void TabletModeController::FinishInitTabletMode() {
 }
 
 void TabletModeController::DeleteScreenshot() {
-  if (screenshot_layer_)
+  if (screenshot_layer_) {
     VLOG(1) << "Tablet screenshot layer destroyed.";
+  }
 
   screenshot_layer_.reset();
   screenshot_taken_callback_.Cancel();
@@ -1266,8 +1299,9 @@ void TabletModeController::OnLayerCopyed(
   container_hider_.reset();
 
   // Cancel if the root window is deleted while taking a screenshot.
-  if (!base::Contains(Shell::GetAllRootWindows(), root_window))
+  if (!base::Contains(Shell::GetAllRootWindows(), root_window)) {
     return;
+  }
 
   if (!copy_layer || !top_window) {
     std::move(on_screenshot_taken).Run();
@@ -1298,21 +1332,25 @@ bool TabletModeController::CalculateIsInTabletPhysicalState() const {
       return false;
   }
 
-  if (!HasActiveInternalDisplay())
+  if (!HasActiveInternalDisplay()) {
     return false;
+  }
 
   // For updated EC, the tablet mode switch activates at 200 degrees, and
   // deactivates at 160 degrees.
   // For old EC, the tablet mode switch activates at 300 degrees, so it's
   // always reliable when |tablet_mode_switch_is_on_|.
-  if (tablet_mode_switch_is_on_)
+  if (tablet_mode_switch_is_on_) {
     return true;
+  }
 
-  if (lid_is_closed_)
+  if (lid_is_closed_) {
     return false;
+  }
 
-  if (!can_detect_lid_angle_)
+  if (!can_detect_lid_angle_) {
     return false;
+  }
 
   // Toggle tablet mode on or off when corresponding thresholds are passed.
   if (lid_angle_ >= kEnterTabletModeAngle &&
@@ -1332,14 +1370,17 @@ bool TabletModeController::CalculateIsInTabletPhysicalState() const {
 }
 
 bool TabletModeController::ShouldUiBeInTabletMode() const {
-  if (forced_ui_mode_ == UiMode::kTabletMode)
+  if (forced_ui_mode_ == UiMode::kTabletMode) {
     return true;
+  }
 
-  if (forced_ui_mode_ == UiMode::kClamshell)
+  if (forced_ui_mode_ == UiMode::kClamshell) {
     return false;
+  }
 
-  if (!tablet_mode_behavior_.observe_pointer_device_events)
+  if (!tablet_mode_behavior_.observe_pointer_device_events) {
     return is_in_tablet_physical_state_;
+  }
 
   // If this is a tablet capable device, and `OnDeviceListsComplete()` has
   // not been received yet, then skip further checking and don't enter tablet
@@ -1363,18 +1404,21 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
 }
 
 bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {
-  if (new_state == is_in_tablet_physical_state_)
+  if (new_state == is_in_tablet_physical_state_) {
     return false;
+  }
 
   is_in_tablet_physical_state_ = new_state;
 
-  for (auto& observer : tablet_mode_observers_)
+  for (auto& observer : tablet_mode_observers_) {
     observer.OnTabletPhysicalStateChanged();
+  }
 
   // InputDeviceBlocker must always be updated, but don't update it here if the
   // UI state has changed because it's already done.
-  if (UpdateUiTabletState())
+  if (UpdateUiTabletState()) {
     return true;
+  }
 
   UpdateInternalInputDevicesEventBlocker();
   return false;

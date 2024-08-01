@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -57,7 +58,10 @@ SurfaceManager::SurfaceManager(
       root_surface_id_(FrameSinkId(0u, 0u),
                        LocalSurfaceId(1u, base::UnguessableToken::Create())),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      max_uncommitted_frames_(max_uncommitted_frames) {
+      max_uncommitted_frames_(max_uncommitted_frames),
+      cooldown_frames_for_ack_on_activation_during_interaction_(
+          features::
+              NumCooldownFramesForAckOnSurfaceActivationDuringInteraction()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // Android WebView doesn't have a task runner and doesn't need the timer.
@@ -500,8 +504,12 @@ bool SurfaceManager::SurfaceModified(
     SurfaceObserver::HandleInteraction handle_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool changed = false;
-  for (auto& observer : observer_list_)
+  if (handle_interaction == SurfaceObserver::HandleInteraction::kYes) {
+    last_interactive_frame_ = ack.frame_id;
+  }
+  for (auto& observer : observer_list_) {
     changed |= observer.OnSurfaceDamaged(surface_id, ack, handle_interaction);
+  }
   return changed;
 }
 
@@ -530,10 +538,33 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
     // modified. This will allow frame production to continue for this client
     // leading to the group being unblocked.
     surface->SendAckToClient();
+  } else if (ShouldAckInteractiveFrame(metadata.begin_frame_ack)) {
+    // If we should be early acking during an interaction, do that here. This,
+    // will persist for a number of frames (the cooldown) following an
+    // interaction.
+    surface->SendAckToClient();
   }
 
   for (auto& observer : observer_list_)
     observer.OnSurfaceActivated(surface->surface_id());
+}
+
+bool SurfaceManager::ShouldAckInteractiveFrame(const BeginFrameAck& ack) const {
+  if (!cooldown_frames_for_ack_on_activation_during_interaction_ ||
+      !last_interactive_frame_) {
+    return false;
+  }
+  // If we get an ack for a previous (i.e., slow) frame while we have a more
+  // recent and valid interactive frame, then assume that we should ack it
+  // on activation.
+  if (ack.frame_id < last_interactive_frame_.value()) {
+    return true;
+  }
+  const uint64_t frames_since_interactive =
+      ack.frame_id.sequence_number -
+      last_interactive_frame_.value().sequence_number;
+  return frames_since_interactive <
+         cooldown_frames_for_ack_on_activation_during_interaction_.value();
 }
 
 void SurfaceManager::SurfaceDestroyed(Surface* surface) {

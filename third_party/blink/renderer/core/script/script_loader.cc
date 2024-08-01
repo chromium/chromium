@@ -204,13 +204,18 @@ void ScriptLoader::Removed() {
   if (ScriptWebBundle* bundle = std::exchange(script_web_bundle_, nullptr))
     bundle->WillReleaseBundleLoaderAndUnregister();
 
-  if (SpeculationRuleSet* rule_set =
-          std::exchange(speculation_rule_set_, nullptr)) {
-    // Speculation rules in this script no longer apply.
-    // Candidate speculations must be re-evaluated.
-    DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kSpeculationRules);
-    DocumentSpeculationRules::From(element_->GetDocument())
-        .RemoveRuleSet(rule_set);
+  RemoveSpeculationRuleSet();
+}
+
+void ScriptLoader::DocumentBaseURLChanged() {
+  if (GetScriptType() != ScriptTypeAtPrepare::kSpeculationRules) {
+    return;
+  }
+  // We reparse the original source text and generate a new SpeculationRuleSet
+  // with the new base URL. Note that any text changes since the first parse
+  // will be ignored.
+  if (SpeculationRuleSet* rule_set = RemoveSpeculationRuleSet()) {
+    AddSpeculationRuleSet(rule_set->source());
   }
 }
 
@@ -1015,20 +1020,9 @@ PendingScript* ScriptLoader::PrepareScript(
       }
 
       case ScriptTypeAtPrepare::kSpeculationRules: {
-        // https://wicg.github.io/nav-speculation/speculation-rules.html
-        // Let result be the result of parsing speculation rules given source
-        // text and base URL.
-        // Set the script’s result to result.
-        // If the script’s result is not null, append it to the element’s node
-        // document's list of speculation rule sets.
         auto* source = SpeculationRuleSet::Source::FromInlineScript(
             source_text, element_document, element_->GetDOMNodeId());
-        speculation_rule_set_ =
-            SpeculationRuleSet::Parse(source, context_window);
-        CHECK(speculation_rule_set_);
-        DocumentSpeculationRules::From(element_document)
-            .AddRuleSet(speculation_rule_set_);
-        speculation_rule_set_->AddConsoleMessageForValidation(*element_);
+        AddSpeculationRuleSet(source);
         return nullptr;
       }
 
@@ -1207,16 +1201,6 @@ PendingScript* ScriptLoader::PrepareScript(
           static const features::DelayAsyncScriptTarget
               delay_async_script_target =
                   features::kDelayAsyncScriptTargetParam.Get();
-          // Currently LazyEmbeds(crbug.com/1247131) experiment uses
-          // DelayAsyncScript mechanism here.
-          if (delay_async_script_target ==
-                  features::DelayAsyncScriptTarget::kCrossSiteWithAllowList ||
-              delay_async_script_target ==
-                  features::DelayAsyncScriptTarget::
-                      kCrossSiteWithAllowListReportOnly) {
-            UseCounter::Count(element_document.TopDocument(),
-                              WebFeature::kAutomaticLazyEmbeds);
-          }
           if (delay_async_script_target ==
               features::DelayAsyncScriptTarget::
                   kCrossSiteWithAllowListReportOnly) {
@@ -1435,6 +1419,39 @@ String ScriptLoader::GetScriptText() const {
   return GetStringForScriptExecution(child_text_content,
                                      element_->GetScriptElementType(),
                                      element_->GetExecutionContext());
+}
+
+void ScriptLoader::AddSpeculationRuleSet(SpeculationRuleSet::Source* source) {
+  // https://wicg.github.io/nav-speculation/speculation-rules.html
+  // Let result be the result of parsing speculation rules given source
+  // text and base URL.
+  // Set the script’s result to result.
+  // If the script’s result is not null, append it to the element’s node
+  // document's list of speculation rule sets.
+  Document& element_document = element_->GetDocument();
+  LocalDOMWindow* context_window = element_document.domWindow();
+  if (!context_window) {
+    return;
+  }
+
+  speculation_rule_set_ = SpeculationRuleSet::Parse(source, context_window);
+  CHECK(speculation_rule_set_);
+  DocumentSpeculationRules::From(element_document)
+      .AddRuleSet(speculation_rule_set_);
+  speculation_rule_set_->AddConsoleMessageForValidation(*element_);
+}
+
+SpeculationRuleSet* ScriptLoader::RemoveSpeculationRuleSet() {
+  if (SpeculationRuleSet* rule_set =
+          std::exchange(speculation_rule_set_, nullptr)) {
+    // Speculation rules in this script no longer apply.
+    // Candidate speculations must be re-evaluated.
+    DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kSpeculationRules);
+    DocumentSpeculationRules::From(element_->GetDocument())
+        .RemoveRuleSet(rule_set);
+    return rule_set;
+  }
+  return nullptr;
 }
 
 }  // namespace blink

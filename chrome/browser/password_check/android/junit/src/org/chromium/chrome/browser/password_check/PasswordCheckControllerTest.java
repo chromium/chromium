@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePass
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -130,7 +129,6 @@ public class PasswordCheckControllerTest {
     @Mock private PasswordCheckChangePasswordHelper mChangePasswordDelegate;
     @Mock private PasswordCheck mPasswordCheck;
     @Mock private PasswordAccessReauthenticationHelper mReauthenticationHelper;
-    @Mock private SettingsLauncher mSettingsLauncher;
     @Mock private PasswordCheckIconHelper mIconHelper;
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
@@ -144,10 +142,7 @@ public class PasswordCheckControllerTest {
         mModel = PasswordCheckProperties.createDefaultModel();
         mMediator =
                 new PasswordCheckMediator(
-                        mChangePasswordDelegate,
-                        mReauthenticationHelper,
-                        mSettingsLauncher,
-                        mIconHelper);
+                        mChangePasswordDelegate, mReauthenticationHelper, mIconHelper);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator.initialize(mModel, mDelegate, PasswordCheckReferrer.PASSWORD_SETTINGS, () -> {});
         PasswordCheckMediator.setStatusUpdateDelayMillis(0);

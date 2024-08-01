@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -26,14 +27,16 @@ std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
                    pre_discard_resource_usage->discard_reason());
 }
 
-uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents) {
+int64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents) {
   const auto* const pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(contents);
-  return pre_discard_resource_usage == nullptr
-             ? 0
-             : pre_discard_resource_usage->memory_footprint_estimate_kb() *
-                   1024;
+  if (pre_discard_resource_usage == nullptr) {
+    return 0;
+  } else {
+    CHECK(pre_discard_resource_usage->memory_footprint_estimate_kb() >= 0);
+    return pre_discard_resource_usage->memory_footprint_estimate_kb() * 1024;
+  }
 }
 
 }  // namespace memory_saver

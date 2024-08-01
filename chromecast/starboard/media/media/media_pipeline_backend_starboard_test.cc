@@ -6,8 +6,10 @@
 
 #include "base/test/task_environment.h"
 #include "chromecast/public/graphics_types.h"
+#include "chromecast/public/media/media_pipeline_device_params.h"
+#include "chromecast/public/volume_control.h"
+#include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
-#include "mock_starboard_api_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,15 +18,28 @@ namespace media {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::DoubleEq;
 using ::testing::Mock;
 using ::testing::MockFunction;
+using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::WithArg;
+
+// Takes a StarboardPlayerCreationParam* argument and ensures that its max video
+// capabilities specify streaming=1.
+MATCHER(CreationParamHasStreamingEnabled, "") {
+  if (!arg) {
+    *result_listener << "the StarboardPlayerCreationParam* is null";
+    return false;
+  }
+  return strcmp(arg->video_sample_info.max_video_capabilities, "streaming=1") ==
+         0;
+}
 
 // A mock delegate that can be passed to decoders.
 class MockDelegate : public MediaPipelineBackend::Decoder::Delegate {
@@ -76,7 +91,11 @@ VideoConfig GetBasicVideoConfig() {
 class MediaPipelineBackendStarboardTest : public ::testing::Test {
  protected:
   MediaPipelineBackendStarboardTest()
-      : starboard_(std::make_unique<MockStarboardApiWrapper>()) {
+      : starboard_(std::make_unique<MockStarboardApiWrapper>()),
+        device_params_(
+            /*task_runner_in=*/nullptr,
+            AudioContentType::kMedia,
+            /*device_id_in=*/"id") {
     // Sets up default behavior for the mock functions that return values, so
     // that tests that do not care about this functionality can ignore them.
     ON_CALL(*starboard_, CreatePlayer).WillByDefault(Return(&fake_player_));
@@ -95,14 +114,61 @@ class MediaPipelineBackendStarboardTest : public ::testing::Test {
   // to represent it.
   int fake_player_ = 1;
   StarboardVideoPlane video_plane_;
+  MediaPipelineDeviceParams device_params_;
 };
 
 TEST_F(MediaPipelineBackendStarboardTest, InitializesSuccessfully) {
   EXPECT_CALL(*starboard_, EnsureInitialized).WillOnce(Return(true));
   EXPECT_CALL(*starboard_, CreatePlayer).WillOnce(Return(&fake_player_));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       SetsMaxVideoCapabilitiesToStreamingForIgnorePtsSyncType) {
+  EXPECT_CALL(*starboard_, EnsureInitialized).WillOnce(Return(true));
+  EXPECT_CALL(*starboard_, CreatePlayer(CreationParamHasStreamingEnabled(), _))
+      .WillOnce(Return(&fake_player_));
+
+  MediaPipelineDeviceParams device_params = device_params_;
+  device_params.sync_type =
+      MediaPipelineDeviceParams::MediaSyncType::kModeIgnorePts;
+  MediaPipelineBackendStarboard backend(device_params, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  // We need to create a video decoder in order for video params to be set when
+  // creating the SbPlayer.
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+  ASSERT_THAT(video_decoder, NotNull());
+  video_decoder->SetConfig(VideoConfig());
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       DoesNotSetMaxVideoCapabilitiesToStreamingForSyncPtsSyncType) {
+  EXPECT_CALL(*starboard_, EnsureInitialized).WillOnce(Return(true));
+  EXPECT_CALL(*starboard_,
+              CreatePlayer(
+                  AllOf(NotNull(), Not(CreationParamHasStreamingEnabled())), _))
+      .WillOnce(Return(&fake_player_));
+
+  MediaPipelineDeviceParams device_params = device_params_;
+  device_params.sync_type =
+      MediaPipelineDeviceParams::MediaSyncType::kModeSyncPts;
+  MediaPipelineBackendStarboard backend(device_params, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  // We need to create a video decoder in order for video params to be set when
+  // creating the SbPlayer.
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+  ASSERT_THAT(video_decoder, NotNull());
+  video_decoder->SetConfig(VideoConfig());
 
   EXPECT_TRUE(backend.Initialize());
 }
@@ -112,7 +178,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_CALL(*starboard_, CreatePlayer).WillOnce(Return(&fake_player_));
   EXPECT_CALL(*starboard_, SetPlayerBounds(&fake_player_, 0, 1, 2, 1920, 1080));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
 
   MediaPipelineBackend::VideoDecoder* video_decoder =
@@ -137,7 +203,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_CALL(*starboard_, CreatePlayer).WillOnce(Return(&fake_player_));
   EXPECT_CALL(*starboard_, SetPlayerBounds(&fake_player_, 0, 3, 4, 1920, 1080));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
 
   MediaPipelineBackend::VideoDecoder* video_decoder =
@@ -161,7 +227,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
 TEST_F(MediaPipelineBackendStarboardTest, DestroysPlayerOnDestruction) {
   EXPECT_CALL(*starboard_, DestroyPlayer(&fake_player_)).Times(1);
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
   EXPECT_TRUE(backend.Initialize());
 }
@@ -170,7 +236,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
        DoesNotCallDestroyPlayerIfNotInitialized) {
   EXPECT_CALL(*starboard_, DestroyPlayer).Times(0);
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
 }
 
@@ -181,7 +247,7 @@ TEST_F(MediaPipelineBackendStarboardTest, SeeksToBeginningOnStart) {
   EXPECT_CALL(*starboard_, SetPlaybackRate(&fake_player_, DoubleEq(1.0)))
       .Times(1);
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
   CHECK(backend.Initialize());
   EXPECT_TRUE(backend.Start(start_time));
@@ -194,7 +260,7 @@ TEST_F(MediaPipelineBackendStarboardTest, SeeksToMidPointOnStart) {
   EXPECT_CALL(*starboard_, SetPlaybackRate(&fake_player_, DoubleEq(1.0)))
       .Times(1);
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
   CHECK(backend.Initialize());
   EXPECT_TRUE(backend.Start(start_time));
@@ -207,7 +273,7 @@ TEST_F(MediaPipelineBackendStarboardTest, SetsPlaybackRateToZeroOnPause) {
   EXPECT_CALL(*starboard_, SetPlaybackRate(&fake_player_, DoubleEq(0.0)))
       .Times(1);
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
   CHECK(backend.Initialize());
   CHECK(backend.Start(0));
@@ -237,7 +303,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_CALL(*starboard_, SetPlaybackRate(&fake_player_, DoubleEq(0.0)))
       .Times(1);
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
   CHECK(backend.Initialize());
   CHECK(backend.Start(0));
@@ -257,7 +323,7 @@ TEST_F(MediaPipelineBackendStarboardTest, GetsCurrentPts) {
         player_info->playback_rate = 1.0;
       }));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
   CHECK(backend.Initialize());
   CHECK(backend.Start(0));
@@ -271,7 +337,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_CALL(*starboard_, CreatePlayer)
       .WillOnce(DoAll(SaveArg<1>(&callback_handler), Return(&fake_player_)));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
 
   MediaPipelineBackend::AudioDecoder* audio_decoder =
@@ -312,7 +378,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_CALL(*starboard_, CreatePlayer)
       .WillOnce(DoAll(SaveArg<1>(&callback_handler), Return(&fake_player_)));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
 
   MediaPipelineBackend::AudioDecoder* audio_decoder =
@@ -353,7 +419,7 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_CALL(*starboard_, CreatePlayer)
       .WillOnce(DoAll(SaveArg<1>(&callback_handler), Return(&fake_player_)));
 
-  MediaPipelineBackendStarboard backend(&video_plane_);
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
   backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
 
   MediaPipelineBackend::AudioDecoder* audio_decoder =

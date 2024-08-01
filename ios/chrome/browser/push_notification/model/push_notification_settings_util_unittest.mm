@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -35,21 +35,22 @@ namespace push_notification_settings {
 class PushNotificationSettingsUtilTest : public PlatformTest {
  public:
   PushNotificationSettingsUtilTest() {
-    auto test_chrome_browser_state = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState* test_chrome_browser_state =
+        browser_state_manager_.AddBrowserStateWithBuilder(
+            TestChromeBrowserState::Builder());
+
     const std::string browser_state_name =
         test_chrome_browser_state->GetBrowserStateName();
-    pref_service_ = test_chrome_browser_state.get()->GetPrefs();
-    test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_chrome_browser_state));
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
+    pref_service_ = test_chrome_browser_state->GetPrefs();
+
     browser_state_info()->RemoveBrowserState(browser_state_name);
     manager_ = [[PushNotificationAccountContextManager alloc]
-        initWithChromeBrowserStateManager:test_manager_.get()];
+        initWithChromeBrowserStateManager:&browser_state_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
     // TODO(b/318863934): Remove flag when enabled by default.
     feature_list_.InitWithFeatures(
-        {/*enabled=*/kContentNotificationExperiment, kIOSTipsNotifications},
+        {/*enabled=*/kContentNotificationExperiment, kIOSTipsNotifications,
+         kSafetyCheckNotifications},
         {/*disabled=*/});
     AddTestCasesToManager(manager_, browser_state_info(),
                           base::SysNSStringToUTF8(fake_id_.gaiaID),
@@ -90,9 +91,10 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
  protected:
   raw_ptr<PrefService> pref_service_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   FakeSystemIdentity* fake_id_;
   PushNotificationAccountContextManager* manager_;
-  std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -117,6 +119,10 @@ TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
+  state = GetNotificationPermissionState(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(YES, kContentNotificationKey, pref_service_);
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
@@ -135,6 +141,10 @@ TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
   TurnNotificationForKey(NO, kContentNotificationKey, pref_service_);
+  state = GetNotificationPermissionState(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
+  TurnAppLevelNotificationForKey(NO, kSafetyCheckNotificationKey);
   state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
   EXPECT_EQ(ClientPermissionState::INDETERMINANT, state);
@@ -253,6 +263,32 @@ TEST_F(PushNotificationSettingsUtilTest, TestGetClientPermissionStateForTips) {
   EXPECT_EQ(ClientPermissionState::DISABLED, state);
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
   state = GetClientPermissionState(PushNotificationClientId::kTips,
+                                   base::SysNSStringToUTF8(fake_id_.gaiaID),
+                                   pref_service_);
+  EXPECT_EQ(ClientPermissionState::ENABLED, state);
+}
+
+#pragma mark - Safety Check Notifications Tests
+
+TEST_F(PushNotificationSettingsUtilTest,
+       TestMobileNotificationsEnabledForSafetyCheck) {
+  BOOL isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_FALSE(isMobileNotificationsEnabled);
+  TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
+  isMobileNotificationsEnabled = IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_TRUE(isMobileNotificationsEnabled);
+}
+
+TEST_F(PushNotificationSettingsUtilTest,
+       TestGetClientPermissionStateForSafetyCheck) {
+  ClientPermissionState state = GetClientPermissionState(
+      PushNotificationClientId::kSafetyCheck,
+      base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);
+  EXPECT_EQ(ClientPermissionState::DISABLED, state);
+  TurnAppLevelNotificationForKey(YES, kSafetyCheckNotificationKey);
+  state = GetClientPermissionState(PushNotificationClientId::kSafetyCheck,
                                    base::SysNSStringToUTF8(fake_id_.gaiaID),
                                    pref_service_);
   EXPECT_EQ(ClientPermissionState::ENABLED, state);

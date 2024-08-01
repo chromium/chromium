@@ -61,7 +61,7 @@ struct TabRendererData {
   bool is_tab_discarded = false;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
-  uint64_t discarded_memory_savings_in_bytes = 0;
+  int64_t discarded_memory_savings_in_bytes = 0;
   // Contains information about how much resource a tab is using
   scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;

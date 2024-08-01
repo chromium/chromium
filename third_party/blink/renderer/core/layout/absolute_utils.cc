@@ -580,7 +580,7 @@ bool ComputeOofInlineDimensions(
                                        block_alignment_position,
                                        imcb.has_auto_block_inset);
 
-  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
 
     // Mark the inline calculations as being dependent on min/max sizes.
@@ -789,10 +789,10 @@ const LayoutResult* ComputeOofBlockDimensions(
 
     const LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, main_block_length, &auto_length,
-        IntrinsicBlockSizeFunc, imcb.BlockSize());
+        [&](SizeType) { return IntrinsicBlockSizeFunc(); }, imcb.BlockSize());
 
-    MinMaxSizes min_max_block_sizes =
-        ComputeMinMaxBlockSizes(space, style, border_padding, imcb.BlockSize());
+    MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizesDeprecated(
+        space, node, border_padding, imcb.BlockSize());
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.

@@ -178,10 +178,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testNavigateToTopicsPage() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
@@ -193,10 +190,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testNavigateToTopicsPageV2() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());

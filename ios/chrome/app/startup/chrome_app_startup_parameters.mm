@@ -125,7 +125,7 @@ enum MobileSessionStartAction {
   START_EXTERNAL_ACTION = 10,
   MOBILE_SESSION_START_ACTION_COUNT
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Values of the UMA iOS.SearchExtension.Action histogram.
 // LINT.IfChange
@@ -141,7 +141,7 @@ enum SearchExtensionAction {
   ACTION_LENS,
   SEARCH_EXTENSION_ACTION_COUNT,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Values of the UMA IOS.WidgetKit.Action histogram.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -164,7 +164,7 @@ enum class WidgetKitExtensionAction {
   ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS = 13,
   kMaxValue = ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Values of the UMA IOS.ExternalAction histogram.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -182,7 +182,7 @@ enum class IOSExternalAction {
   ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP = 3,
   kMaxValue = ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {

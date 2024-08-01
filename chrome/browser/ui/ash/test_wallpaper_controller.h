@@ -151,6 +151,7 @@ class TestWallpaperController : public ash::WallpaperController {
                               const gfx::ImageSkia& image) override;
   void SetSeaPenWallpaper(const AccountId& account_id,
                           uint32_t id,
+                          bool preview_mode,
                           SetWallpaperCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;

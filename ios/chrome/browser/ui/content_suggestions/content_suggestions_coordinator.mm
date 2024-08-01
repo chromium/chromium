@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -282,9 +283,9 @@
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   _shortcutsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
-  _shortcutsMediator.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCoordinatorCommands>>(
-          self.browser->GetCommandDispatcher());
+  _shortcutsMediator.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>>(
+      self.browser->GetCommandDispatcher());
   [moduleMediators addObject:_shortcutsMediator];
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
 

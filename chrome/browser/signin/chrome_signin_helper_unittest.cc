@@ -28,6 +28,7 @@
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_test_job.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -196,9 +197,9 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
         /*incognito_availability=*/0, signin::AccountConsistencyMethod::kDice,
         "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
         /*is_sync_enabled=*/true, "device_id", cookie_settings.get());
-    std::string managed_account_header;
-    EXPECT_FALSE(request.modified_headers().GetHeader(
-        signin::kChromeConnectedHeader, &managed_account_header));
+    EXPECT_EQ(
+        request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+        std::nullopt);
   }
 
   {
@@ -209,13 +210,12 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
         /*incognito_availability=*/0, signin::AccountConsistencyMethod::kDice,
         "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
         /*is_sync_enabled=*/true, "device_id", cookie_settings.get());
-    std::string managed_account_header;
-    EXPECT_TRUE(request.modified_headers().GetHeader(
-        signin::kChromeConnectedHeader, &managed_account_header));
     std::string expected_header =
         "source=Chrome,id=gaia_id,mode=0,enable_account_consistency=false,"
         "supervised=false,consistency_enabled_by_default=false";
-    EXPECT_EQ(managed_account_header, expected_header);
+    EXPECT_THAT(
+        request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+        testing::Optional(expected_header));
   }
 
   // Tear down the test environment.

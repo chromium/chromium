@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
 // kLinkCapturingUiUpdate on CrOS platforms.
 bool ShouldShowLinkCapturingUX();
 
+// Returns true if the `DesktopPWAsLinkCapturing` flag is enabled with the
+// reimplementation parameters set.
+bool IsLinkCapturingReimplementationEnabled();
+
 }  // namespace apps::features
 
 #endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURES_H_

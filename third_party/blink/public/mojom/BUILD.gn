@@ -29,6 +29,7 @@ mojom("mojom_platform") {
     "aggregation_service/aggregatable_report.mojom",
     "ai/ai_manager.mojom",
     "ai/ai_text_session.mojom",
+    "ai/model_streaming_responder.mojom",
     "annotation/annotation.mojom",
     "app_banner/app_banner.mojom",
     "array_buffer/array_buffer_contents.mojom",
@@ -50,6 +51,7 @@ mojom("mojom_platform") {
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
     "compute_pressure/web_pressure_manager.mojom",
+    "compute_pressure/web_pressure_manager_automation.mojom",
     "content_extraction/inner_html.mojom",
     "content_extraction/inner_text.mojom",
     "content_index/content_index.mojom",
@@ -1083,7 +1085,7 @@ mojom("mojom_platform") {
             [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.h" ]
         traits_sources =
             [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.cc" ]
-        traits_public_deps = [ "//printing" ]
+        traits_public_deps = [ "//printing:settings" ]
         traits_deps = [
           "//printing/backend",
           "//printing/mojom",

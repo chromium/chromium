@@ -49,7 +49,7 @@ TouchToFillPaymentMethodController::TouchToFillPaymentMethodController(
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(
-      autofill_client->GetAutofillDriverFactory());
+      &autofill_client->GetAutofillDriverFactory());
 }
 
 TouchToFillPaymentMethodController::~TouchToFillPaymentMethodController() {

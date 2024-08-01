@@ -30,8 +30,8 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
 
 BrowserFrameViewLinux::~BrowserFrameViewLinux() = default;
 
-gfx::Insets BrowserFrameViewLinux::MirroredFrameBorderInsets() const {
-  return layout_->MirroredFrameBorderInsets();
+gfx::Insets BrowserFrameViewLinux::RestoredMirroredFrameBorderInsets() const {
+  return layout_->RestoredMirroredFrameBorderInsets();
 }
 
 gfx::Insets BrowserFrameViewLinux::GetInputInsets() const {
@@ -41,7 +41,7 @@ gfx::Insets BrowserFrameViewLinux::GetInputInsets() const {
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
   gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawRestoredFrameShadow()) {
-    gfx::InsetsF border(layout_->MirroredFrameBorderInsets());
+    gfx::InsetsF border(layout_->RestoredMirroredFrameBorderInsets());
     bounds_dip.Inset(border);
   }
   float radius_dip = GetRestoredCornerRadiusDip();
@@ -70,7 +70,7 @@ void BrowserFrameViewLinux::PaintRestoredFrameBorder(
   PaintRestoredFrameBorderLinux(
       *canvas, *this, frame_background(), GetRestoredClipRegion(),
       ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
-      layout_->MirroredFrameBorderInsets(), shadow_values, tiled);
+      layout_->RestoredMirroredFrameBorderInsets(), shadow_values, tiled);
 }
 
 void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,

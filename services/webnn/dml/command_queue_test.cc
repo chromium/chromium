@@ -27,7 +27,7 @@ class WebNNCommandQueueTest : public TestBase {
 void WebNNCommandQueueTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   Adapter::EnableDebugLayerForTesting();
-  auto adapter_creation_result = Adapter::GetInstanceForTesting();
+  auto adapter_creation_result = Adapter::GetGpuInstanceForTesting();
   // If the adapter creation result has no value, it's most likely because
   // platform functions were not properly loaded.
   SKIP_TEST_IF(!adapter_creation_result.has_value());

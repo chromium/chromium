@@ -32,7 +32,6 @@ import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
@@ -341,7 +340,7 @@ public class ChildProcessService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             // Record process startup time histograms.
-            long startTime = SystemClock.uptimeMillis() - ApiHelperForN.getStartUptimeMillis();
+            long startTime = SystemClock.uptimeMillis() - Process.getStartUptimeMillis();
             String baseHistogramName = "Android.ChildProcessStartTimeV2";
             String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
             RecordHistogram.recordMediumTimesHistogram(baseHistogramName + ".All", startTime);

@@ -71,14 +71,21 @@ TestAutofillManagerWaiter::TestAutofillManagerWaiter(
 
 TestAutofillManagerWaiter::~TestAutofillManagerWaiter() = default;
 
-void TestAutofillManagerWaiter::OnAutofillManagerDestroyed(
-    AutofillManager& manager) {
-  observation_.Reset();
-}
-
-void TestAutofillManagerWaiter::OnAutofillManagerReset(
-    AutofillManager& manager) {
-  Reset();
+void TestAutofillManagerWaiter::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kActive:
+      break;
+    case AutofillManager::LifecycleState::kPendingReset:
+      Reset();
+      break;
+    case AutofillManager::LifecycleState::kPendingDeletion:
+      observation_.Reset();
+      break;
+  }
 }
 
 void TestAutofillManagerWaiter::OnBeforeLanguageDetermined(
@@ -317,18 +324,22 @@ const FormStructure* WaitForMatchingForm(
     }
 
    private:
-    void OnAutofillManagerDestroyed(AutofillManager& manager) override {
-      DCHECK_EQ(&manager, manager_.get());
-      manager_ = nullptr;
-      run_loop_.Quit();
-      observation_.Reset();
-    }
-
-    void OnAutofillManagerReset(AutofillManager& manager) override {
-      DCHECK_EQ(&manager, manager_.get());
-      manager_ = nullptr;
-      run_loop_.Quit();
-      observation_.Reset();
+    void OnAutofillManagerStateChanged(
+        AutofillManager& manager,
+        AutofillManager::LifecycleState old_state,
+        AutofillManager::LifecycleState new_state) override {
+      using enum AutofillManager::LifecycleState;
+      switch (new_state) {
+        case kInactive:
+        case kActive:
+          break;
+        case kPendingReset:
+        case kPendingDeletion:
+          DCHECK_EQ(&manager, manager_.get());
+          manager_ = nullptr;
+          run_loop_.Quit();
+          observation_.Reset();
+      }
     }
 
     void OnAfterFormsSeen(AutofillManager& manager,

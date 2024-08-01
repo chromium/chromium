@@ -41,7 +41,7 @@
 // and MyEarlGreyImpl has to be a subclass of BaseEGTestHelperImpl.
 //
 #define EG_TEST_HELPER_ASSERT_TRUE(__expression, __description) \
-  [self fail:!__expression                                      \
+  [self fail:!(__expression)                                    \
        expression:@"" #__expression                             \
       description:__description];
 

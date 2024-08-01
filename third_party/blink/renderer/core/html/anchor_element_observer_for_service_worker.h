@@ -19,8 +19,6 @@ namespace blink {
 
 class Document;
 class HTMLAnchorElement;
-class IntersectionObserver;
-class IntersectionObserverEntry;
 
 class CORE_EXPORT AnchorElementObserverForServiceWorker
     : public GarbageCollected<AnchorElementObserverForServiceWorker>,
@@ -44,16 +42,11 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
 
   void MaybeSendNavigationTargetLinks(const Links& candidate_links);
   void MaybeSendPendingWarmUpRequests();
-  void ObserveAnchorElementVisibility(HTMLAnchorElement& element);
   void Trace(Visitor* visitor) const override;
 
  private:
-  void UpdateVisibleAnchors(
-      const HeapVector<Member<IntersectionObserverEntry>>& entries);
   void SendPendingWarmUpRequests(TimerBase*);
   Document& GetDocument() { return *GetSupplementable(); }
-
-  Member<IntersectionObserver> intersection_observer_;
 
   // Remember already handled links to prevent excessive duplicate
   // warm-up requests.
@@ -61,7 +54,7 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
 
   // The following `pending_warm_up_links_` keeps the pending warm-up requests
   // until the document is loaded to prioritize loading the document.
-  HeapDeque<Member<HTMLAnchorElement>> pending_warm_up_links_;
+  Links pending_warm_up_links_;
 
   // Sent URL count to browser process.
   int total_request_count_ = 0;

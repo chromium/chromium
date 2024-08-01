@@ -17,27 +17,27 @@ export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
 // </if>
-export {ViewerAttachmentBarElement} from './elements/viewer-attachment-bar.js';
-export {ViewerAttachmentElement} from './elements/viewer-attachment.js';
-export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer-bookmark.js';
-export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';
-export {ViewerDownloadControlsElement} from './elements/viewer-download-controls.js';
+export {ViewerAttachmentElement} from './elements/viewer_attachment.js';
+export {ViewerAttachmentBarElement} from './elements/viewer_attachment_bar.js';
+export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer_bookmark.js';
+export {ViewerDocumentOutlineElement} from './elements/viewer_document_outline.js';
+export {ViewerDownloadControlsElement} from './elements/viewer_download_controls.js';
 // <if expr="enable_ink">
-export {ViewerInkHostElement} from './elements/viewer-ink-host.js';
+export {ViewerInkHostElement} from './elements/viewer_ink_host.js';
 // </if>
-export {ViewerPageSelectorElement} from './elements/viewer-page-selector.js';
-export {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
-export {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
-export {ViewerPropertiesDialogElement} from './elements/viewer-properties-dialog.js';
+export {ViewerPageSelectorElement} from './elements/viewer_page_selector.js';
+export {ViewerPasswordDialogElement} from './elements/viewer_password_dialog.js';
+export {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
+export {ViewerPropertiesDialogElement} from './elements/viewer_properties_dialog.js';
 // <if expr="enable_pdf_ink2">
-export {ViewerSidePanelElement} from './elements/viewer-side-panel.js';
+export {ViewerSidePanelElement} from './elements/viewer_side_panel.js';
 // </if>
-export {ViewerThumbnailBarElement} from './elements/viewer-thumbnail-bar.js';
-export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer-thumbnail.js';
+export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer_thumbnail.js';
+export {ViewerThumbnailBarElement} from './elements/viewer_thumbnail_bar.js';
+export {ViewerToolbarElement} from './elements/viewer_toolbar.js';
 // <if expr="enable_ink">
-export {ViewerToolbarDropdownElement} from './elements/viewer-toolbar-dropdown.js';
+export {ViewerToolbarDropdownElement} from './elements/viewer_toolbar_dropdown.js';
 // </if>
-export {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 export {PdfPluginElement} from './internal_plugin.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';

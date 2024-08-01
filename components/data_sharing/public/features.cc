@@ -12,4 +12,9 @@ BASE_FEATURE(kDataSharingFeature,
              "DataSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<std::string> kDataSharingURL(
+    &kDataSharingFeature,
+    "data_sharing_url",
+    /*default_value=*/"https://www.chromium.org/data_sharing/");
+
 }  // namespace data_sharing::features

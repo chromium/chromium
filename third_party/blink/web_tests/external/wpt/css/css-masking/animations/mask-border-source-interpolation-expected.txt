@@ -1,0 +1,592 @@
+This is a testharness.js-based test.
+Found 294 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [initial] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (-0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (-0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (-0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (-0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.3) should be [inherit]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [none]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [none] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [url(../support/aqua_color.png)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [url(../support/aqua_color.png)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (-0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.3) should be [linear-gradient(-45deg, red, yellow)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (0.6) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-source> from [linear-gradient(-45deg, red, yellow)] to [linear-gradient(45deg, blue, orange)] at (1.5) should be [linear-gradient(45deg, blue, orange)]
+  assert_true: 'from' value should be supported expected true got false
+Harness: the test ran to completion.
+

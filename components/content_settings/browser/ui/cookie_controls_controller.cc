@@ -237,6 +237,22 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           features};
 }
 
+bool CookieControlsController::ShowIpProtection() const {
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::kIpProtectionUserBypass) &&
+         tracking_protection_settings_->IsIpProtectionEnabled();
+}
+
+bool CookieControlsController::ShowFingerprintingProtection() const {
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::kFingerprintingProtectionUserBypass) &&
+         tracking_protection_settings_->IsFingerprintingProtectionEnabled();
+}
+
+bool CookieControlsController::ShowActFeatures() {
+  return ShowIpProtection() || ShowFingerprintingProtection();
+}
+
 std::vector<TrackingProtectionFeature>
 CookieControlsController::CreateTrackingProtectionFeatureList(
     CookieControlsEnforcement enforcement,
@@ -253,17 +269,13 @@ CookieControlsController::CreateTrackingProtectionFeatureList(
   std::vector<TrackingProtectionFeature> features = {
       {FeatureType::kThirdPartyCookies, enforcement, status_label}};
 
-  // Note these features will not be displayed unless the Tracking Protection
-  // User Bypass UI is enabled.
-  if (privacy_sandbox::kUserBypassIpProtection.Get() &&
-      tracking_protection_settings_->IsIpProtectionEnabled()) {
+  if (ShowIpProtection()) {
     features.push_back(
         {FeatureType::kIpProtection, CookieControlsEnforcement::kNoEnforcement,
          protections_on ? TrackingProtectionBlockingStatus::kHidden
                         : TrackingProtectionBlockingStatus::kVisible});
   }
-  if (privacy_sandbox::kUserBypassFingerprintingProtection.Get() &&
-      tracking_protection_settings_->IsFingerprintingProtectionEnabled()) {
+  if (ShowFingerprintingProtection()) {
     features.push_back({FeatureType::kFingerprintingProtection,
                         CookieControlsEnforcement::kNoEnforcement,
                         protections_on
@@ -340,26 +352,18 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   should_reload_ = true;
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
-    if (!base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
-      cookie_settings_->ResetThirdPartyCookieSetting(url);
-    }
-    // Removing a 3PC exception should always remove a Tracking Protection
-    // exception, if one exists, to respect user preferences since Tracking
-    // Protection exceptions will allow 3PC access post-3PCD.
+    cookie_settings_->ResetThirdPartyCookieSetting(url);
     tracking_protection_settings_->RemoveTrackingProtectionException(url);
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
+  if (ShowActFeatures()) {
     tracking_protection_settings_->AddTrackingProtectionException(
         url, /*is_user_bypass_exception=*/true);
-  } else {
-    cookie_settings_->SetCookieSettingForUserBypass(url);
   }
+  cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
@@ -629,8 +633,7 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
     std::vector<TrackingProtectionFeature> features,
     bool protections_on,
     bool controls_visible) {
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
+  if (ShowActFeatures()) {
     bool has_controllable_feature = false;
     std::vector<TrackingProtectionFeature>::iterator it;
     for (it = features.begin(); it != features.end(); it++) {

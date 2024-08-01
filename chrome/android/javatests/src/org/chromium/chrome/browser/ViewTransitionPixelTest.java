@@ -25,21 +25,15 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
-import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -81,6 +75,8 @@ public class ViewTransitionPixelTest {
 
     private EmbeddedTestServer mTestServer;
 
+    private ViewportTestUtils mViewportTestUtils;
+
     private int mInitialPageHeight;
     private double mInitialVVHeight;
 
@@ -92,9 +88,8 @@ public class ViewTransitionPixelTest {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
-        ThreadUtils.runOnUiThreadBlocking(
-                TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
-        FullscreenManagerTestUtils.disableBrowserOverrides();
+        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
+        mViewportTestUtils.setUpForBrowserControls();
     }
 
     private void startKeyboardTest(@VirtualKeyboardMode.EnumType int vkMode) throws Throwable {
@@ -112,8 +107,8 @@ public class ViewTransitionPixelTest {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        mInitialPageHeight = getPageInnerHeight();
-        mInitialVVHeight = getVisualViewportHeight();
+        mInitialPageHeight = mViewportTestUtils.getPageInnerHeightPx();
+        mInitialVVHeight = mViewportTestUtils.getVisualViewportHeightPx();
     }
 
     private void assertWaitForKeyboardStatus(final boolean show) {
@@ -131,53 +126,8 @@ public class ViewTransitionPixelTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    private void assertWaitForPageHeight(double expectedPageHeight) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        int curHeight = getPageInnerHeight();
-                        // Allow 1px delta to account for device scale factor rounding.
-                        Criteria.checkThat(
-                                (double) curHeight,
-                                Matchers.closeTo(expectedPageHeight, /* error= */ 1.0));
-                    } catch (Throwable e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                },
-                TEST_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-    }
-
-    private void assertWaitForVisualViewportHeight(double expectedHeight) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        double curHeight = getVisualViewportHeight();
-                        // Allow 1px delta to account for device scale factor rounding.
-                        Criteria.checkThat(
-                                curHeight, Matchers.closeTo(expectedHeight, /* error= */ 1.0));
-                    } catch (Throwable e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                },
-                TEST_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-    }
-
     private WebContents getWebContents() {
         return mActivityTestRule.getActivity().getActivityTab().getWebContents();
-    }
-
-    private int getPageInnerHeight() throws Throwable {
-        return Integer.parseInt(
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        getWebContents(), "window.innerHeight"));
-    }
-
-    private double getVisualViewportHeight() throws Throwable {
-        return Float.parseFloat(
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        getWebContents(), "window.visualViewport.height"));
     }
 
     private void showAndWaitForKeyboard() throws Throwable {
@@ -194,9 +144,10 @@ public class ViewTransitionPixelTest {
         double keyboardHeight = getKeyboardHeightDp();
 
         if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            assertWaitForVisualViewportHeight(mInitialVVHeight - keyboardHeight);
+            mViewportTestUtils.waitForExpectedVisualViewportHeight(
+                    mInitialVVHeight - keyboardHeight);
         } else if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT) {
-            assertWaitForPageHeight(mInitialPageHeight - keyboardHeight);
+            mViewportTestUtils.waitForExpectedPageHeight(mInitialPageHeight - keyboardHeight);
         } else {
             Assert.fail("Unimplemented keyboard mode");
         }
@@ -212,86 +163,12 @@ public class ViewTransitionPixelTest {
     private void waitForKeyboardHidden() {
         assertWaitForKeyboardStatus(false);
         if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            assertWaitForVisualViewportHeight(mInitialVVHeight);
+            mViewportTestUtils.waitForExpectedVisualViewportHeight(mInitialVVHeight);
         } else if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT) {
-            assertWaitForPageHeight(mInitialPageHeight);
+            mViewportTestUtils.waitForExpectedPageHeight(mInitialPageHeight);
         } else {
             Assert.fail("Unimplemented keyboard mode");
         }
-    }
-
-    private double getDeviceScaleFactor() {
-        return Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
-    }
-
-    private String getCurrentUrl() {
-        return ChromeTabUtils.getUrlStringOnUiThread(
-                mActivityTestRule.getActivity().getActivityTab());
-    }
-
-    private int getTopControlsHeightPx() {
-        BrowserControlsStateProvider browserControlsStateProvider =
-                mActivityTestRule.getActivity().getBrowserControlsManager();
-        return browserControlsStateProvider.getTopControlsHeight();
-    }
-
-    private int getTopControlsHeightDp() {
-        return (int) Math.floor(getTopControlsHeightPx() / getDeviceScaleFactor());
-    }
-
-    private void waitForBrowserControlsState(boolean shown) {
-        int topControlsHeight = getTopControlsHeightPx();
-        BrowserControlsStateProvider browserControlsStateProvider =
-                mActivityTestRule.getActivity().getBrowserControlsManager();
-
-        // The TopControlOffset is the offset of the controls top edge from the viewport top edge.
-        // So fully shown the offset is 0, fully hidden it is -controls_height.
-        int expectedPosition = shown ? 0 : -topControlsHeight;
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            browserControlsStateProvider.getTopControlOffset(),
-                            Matchers.is(expectedPosition));
-                });
-    }
-
-    private void hideBrowserControls() throws Throwable {
-        // Ensure controls start fully shown. A new renderer initializes with controls hidden and
-        // receives a signal to animate them to showing. Trying to hide the controls before that
-        // animation has completed is flaky.
-        waitForBrowserControlsState(/* shown= */ true);
-
-        FullscreenManagerTestUtils.waitForPageToBeScrollable(
-                mActivityTestRule.getActivity().getActivityTab());
-        waitForFramePresented();
-        int initialPageHeight = getPageInnerHeight();
-
-        int topControlsHeight = getTopControlsHeightPx();
-
-        float dragX = 50f;
-
-        // Drag slightly less than the full height of the controls. Releasing at this point will
-        // animate the controls to hidden but ensure we don't accidentally cause any scrolling of
-        // the page.
-        float dragStartY = topControlsHeight * 3;
-        float dragEndY = dragStartY - topControlsHeight * 0.85f;
-
-        long duration_ms = 1000;
-        int steps = 60;
-        TouchCommon.performDragNoFling(
-                mActivityTestRule.getActivity(),
-                dragX,
-                dragX,
-                dragStartY,
-                dragEndY,
-                steps,
-                duration_ms);
-
-        waitForBrowserControlsState(/* shown= */ false);
-
-        // Also wait for the browser controls to resize Blink before returning.
-        assertWaitForPageHeight(initialPageHeight + getTopControlsHeightDp());
     }
 
     private double getKeyboardHeightDp() {
@@ -304,7 +181,7 @@ public class ViewTransitionPixelTest {
                                         .getWindow()
                                         .getDecorView()
                                         .getRootView());
-        return keyboardHeightPx / getDeviceScaleFactor();
+        return keyboardHeightPx / mViewportTestUtils.getDeviceScaleFactor();
     }
 
     private void setLocationAndWaitForLoad(String url) {
@@ -388,32 +265,9 @@ public class ViewTransitionPixelTest {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), "finishAnimations();");
     }
 
-    // Force generating a new compositor frame from the renderer and wait until
-    // its presented on screen.
-    private void waitForFramePresented() throws Throwable {
-        final CallbackHelper ch = new CallbackHelper();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    getWebContents()
-                            .getMainFrame()
-                            .insertVisualStateCallback(result -> ch.notifyCalled());
-                });
-
-        ch.waitForNext(TEST_TIMEOUT, TimeUnit.SECONDS);
-
-        // insertVisualStateCallback replies when a CompositorFrame is submitted. However, we want
-        // to wait until the Viz process has received the new CompositorFrame so that the new frame
-        // is available to a CopySurfaceRequest. Waiting for a second frame to be submitted
-        // guarantees this since it cannot be sent until the first frame was ACKed by Viz.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    getWebContents()
-                            .getMainFrame()
-                            .insertVisualStateCallback(result -> ch.notifyCalled());
-                });
-
-        ch.waitForNext(TEST_TIMEOUT, TimeUnit.SECONDS);
+    private String getCurrentUrl() {
+        return ChromeTabUtils.getUrlStringOnUiThread(
+                mActivityTestRule.getActivity().getActivityTab());
     }
 
     /**
@@ -445,13 +299,13 @@ public class ViewTransitionPixelTest {
 
         // Wait for a frame to be presented to ensure the animation has started and the updated
         // viewport size is rendered.
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
 
         Bitmap oldState = takeScreenshot();
         mRenderTestRule.compareForResult(oldState, "old_state_keyboard_resizes_visual");
 
         animateToEndState();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "new_state_keyboard_resizes_visual");
@@ -487,13 +341,13 @@ public class ViewTransitionPixelTest {
 
         // Wait for a frame to be presented to ensure the animation has started and the updated
         // viewport size is rendered.
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
 
         Bitmap oldState = takeScreenshot();
         mRenderTestRule.compareForResult(oldState, "old_state_keyboard_resizes_content");
 
         animateToEndState();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "new_state_keyboard_resizes_content");
@@ -522,7 +376,7 @@ public class ViewTransitionPixelTest {
         // Since that's in the end-state, skip straight to that.
         startTransitionAnimation();
         animateToEndState();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "incoming_dialog_element");
@@ -552,7 +406,7 @@ public class ViewTransitionPixelTest {
         // Since that's in the end-state, skip straight to that.
         startTransitionAnimation();
         animateToEndState();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "wider-than-icb");
@@ -580,27 +434,27 @@ public class ViewTransitionPixelTest {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        hideBrowserControls();
+        mViewportTestUtils.hideBrowserControls();
 
         // Scrolling to a non-0 y offset will cause controls to overlay content when they're shown.
         // Ensure we wait a frame before navigating so that the compositor receives the new scroll
         // offset before controls start to show.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, 1)");
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         setLocationAndWaitForLoad(getCurrentUrl() + "?next");
 
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         waitForTransitionReady();
 
-        int oldPageScrollOffset = getTopControlsHeightDp() + 1;
+        int oldPageScrollOffset = mViewportTestUtils.getTopControlsHeightDp() + 1;
 
         // Scroll the incoming page too just so the strips should line up.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, " + oldPageScrollOffset + ")");
 
-        waitForFramePresented();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "browser-controls-overlay-root");
 
@@ -627,21 +481,21 @@ public class ViewTransitionPixelTest {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        hideBrowserControls();
+        mViewportTestUtils.hideBrowserControls();
 
         // Ensure the page is at offset 0. When scrolled to the top the controls animation will push
         // the page down, rather than overlaying it. Ensure we wait a frame before navigating so
         // that the compositor receives the new scroll offset before controls start to show.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, 0)");
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         setLocationAndWaitForLoad(getCurrentUrl() + "?next");
 
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         waitForTransitionReady();
 
-        waitForFramePresented();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "browser-controls-push-root");
 
@@ -666,27 +520,27 @@ public class ViewTransitionPixelTest {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        hideBrowserControls();
+        mViewportTestUtils.hideBrowserControls();
 
         // Scrolling to a non-0 y offset will cause controls to overlay content when they're shown.
         // Ensure we wait a frame before navigating so that the compositor receives the new scroll
         // offset before controls start to show.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, 1)");
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         setLocationAndWaitForLoad(getCurrentUrl() + "?next");
 
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         waitForTransitionReady();
 
-        int oldPageScrollOffset = getTopControlsHeightDp() + 1;
+        int oldPageScrollOffset = mViewportTestUtils.getTopControlsHeightDp() + 1;
 
         // Scroll the incoming page too just so the strips should line up.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, " + oldPageScrollOffset + ")");
 
-        waitForFramePresented();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "browser-controls-overlay-child");
 
@@ -712,21 +566,21 @@ public class ViewTransitionPixelTest {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        hideBrowserControls();
+        mViewportTestUtils.hideBrowserControls();
 
         // Ensure the page is at offset 0. When scrolled to the top the controls animation will push
         // the page down, rather than overlaying it. Ensure we wait a frame before navigating so
         // that the compositor receives the new scroll offset before controls start to show.
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, 0)");
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         setLocationAndWaitForLoad(getCurrentUrl() + "?next");
 
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         waitForTransitionReady();
 
-        waitForFramePresented();
-        waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "browser-controls-push-child");
 

@@ -44,8 +44,7 @@ class EGLTimestampClient;
 
 // Encapsulates a surface that can be rendered to with GL, hiding platform
 // specific management.
-class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
-                            public base::SupportsWeakPtr<GLSurface> {
+class GL_EXPORT GLSurface : public base::RefCounted<GLSurface> {
  public:
   GLSurface();
 
@@ -209,6 +208,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual void SetCurrent();
   virtual bool IsCurrent();
 
+  base::WeakPtr<GLSurface> AsWeakPtr();
+
   static bool ExtensionsContain(const char* extensions, const char* name);
 
   // This should be called at most once at GPU process startup time.
@@ -220,6 +221,9 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
  protected:
   virtual ~GLSurface();
 
+  void InvalidateWeakPtrs();
+  bool HasWeakPtrs();
+
   static GpuPreference forced_gpu_preference_;
 
  private:
@@ -227,6 +231,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   friend class base::RefCounted<GLSurface>;
   friend class GLContext;
+
+  base::WeakPtrFactory<GLSurface> weak_ptr_factory_{this};
 };
 
 // Wraps GLSurface in scoped_refptr and tries to initializes it. Returns a

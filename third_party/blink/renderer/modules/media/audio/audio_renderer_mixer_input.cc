@@ -235,7 +235,8 @@ double AudioRendererMixerInput::ProvideInput(
     media::AudioBus* audio_bus,
     uint32_t frames_delayed,
     const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT0("audio", "AudioRendererMixerInput::ProvideInput");
+  TRACE_EVENT("audio", "AudioRendererMixerInput::ProvideInput",
+              "delay (frames)", frames_delayed);
   const base::TimeDelta delay = media::AudioTimestampHelper::FramesToTime(
       frames_delayed, params_.sample_rate());
 

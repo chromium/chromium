@@ -173,8 +173,9 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::string debugee_by_tab = base::StringPrintf("{\"tabId\": %d}", tab_id);
   testing::AssertionResult result =
       RunAttachFunctionOnTarget(debugee_by_tab, expected_error);
-  if (!result)
+  if (!result) {
     return result;
+  }
 
   // Attach by targetId.
   scoped_refptr<DebuggerGetTargetsFunction> get_targets_function =

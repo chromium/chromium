@@ -132,7 +132,21 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareErrorTransferInProgressTitle",
        IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_ERROR},
       {"nearbyShareErrorTransferInProgressDescription",
-       IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_DESCRIPTION}};
+       IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_DESCRIPTION},
+      {"quickShareV2VisibilitySectionTitle",
+       IDS_QUICK_SHARE_V2_VISIBILITY_SECTION_TITLE},
+      {"quickShareV2VisibilitySectionSubtitleOnDisabled",
+       IDS_QUICK_SHARE_V2_VISIBILITY_SECTION_SUBTITLE_ON_DISABLED},
+      {"quickShareV2VisibilityYourDevicesSublabel",
+       IDS_QUICK_SHARE_V2_VISIBILITY_YOUR_DEVICES_SUBLABEL},
+      {"quickShareV2VisibilityContactsSublabel",
+       IDS_QUICK_SHARE_V2_VISIBILITY_CONTACTS_SUBLABEL},
+      {"quickShareV2VisibilityEveryoneLabel",
+       IDS_QUICK_SHARE_V2_VISIBILITY_EVERYONE_LABEL},
+      {"quickShareV2VisibilityEveryoneSublabel",
+       IDS_QUICK_SHARE_V2_VISIBILITY_EVERYONE_SUBLABEL},
+      {"quickShareV2VisibilityOnlyForTenMinutesLabel",
+       IDS_QUICK_SHARE_V2_VISIBILITY_ONLY_FOR_TEN_MINUTES_LABEL}};
   data_source->AddLocalizedStrings(kLocalizedStrings);
 
   data_source->AddString("nearbyShareLearnMoreLink",

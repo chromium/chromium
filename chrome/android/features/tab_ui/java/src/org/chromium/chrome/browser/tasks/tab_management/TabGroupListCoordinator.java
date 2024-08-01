@@ -17,10 +17,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
@@ -28,7 +30,9 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.ViewUtils;
@@ -102,6 +106,12 @@ public class TabGroupListCoordinator {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
+        @Nullable DataSharingService dataSharingService = null;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+            dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+        }
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(profile, context, filter, modalDialogManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
@@ -112,6 +122,8 @@ public class TabGroupListCoordinator {
                         filter,
                         faviconResolver,
                         tabGroupSyncService,
+                        dataSharingService,
+                        identityManager,
                         paneManager,
                         tabGroupUiActionHandler,
                         actionConfirmationManager,

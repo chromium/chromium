@@ -10,6 +10,7 @@
 #include "ash/display/display_move_window_util.h"
 #include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"

@@ -140,6 +140,11 @@ void DeleteTypedUrlFromClient(const GURL& url);
 // passphrase to start.
 void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase);
 
+// Adds a sync passphrase. The sync server will need the sync
+// passphrase to start. In order to work, this need to be called before the
+// primary user is signed-in.
+void AddSyncPassphrase(const std::string& sync_passphrase);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_APP_SYNC_TEST_UTIL_H_

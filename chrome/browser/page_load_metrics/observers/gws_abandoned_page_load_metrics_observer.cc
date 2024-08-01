@@ -6,19 +6,23 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace internal {
 
 const char kGWSAbandonedPageLoadMetricsHistogramPrefix[] =
-    "PageLoad.Clients.GoogleSearch.Leakage.";
+    "PageLoad.Clients.GoogleSearch.Leakage2.";
 const char kSuffixWasNonSRP[] = ".WasNonSRP";
 
 const char kSuffixRTTUnknown[] = ".RTTUnkown";
@@ -74,8 +78,33 @@ GWSAbandonedPageLoadMetricsObserver::OnNavigationEvent(
   return CONTINUE_OBSERVING;
 }
 
+const base::flat_map<std::string,
+                     AbandonedPageLoadMetricsObserver::NavigationMilestone>&
+GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
+  static const base::NoDestructor<
+      base::flat_map<std::string, NavigationMilestone>>
+      mark_names({
+          {internal::kGwsAFTStartMarkName, NavigationMilestone::kAFTStart},
+          {internal::kGwsAFTEndMarkName, NavigationMilestone::kAFTEnd},
+          {internal::kGwsHeaderChunkStartMarkName,
+           NavigationMilestone::kHeaderChunkStart},
+          {internal::kGwsHeaderChunkEndMarkName,
+           NavigationMilestone::kHeaderChunkEnd},
+          {internal::kGwsBodyChunkStartMarkName,
+           NavigationMilestone::kBodyChunkStart},
+          {internal::kGwsBodyChunkEndMarkName,
+           NavigationMilestone::kBodyChunkEnd},
+      });
+  return *mark_names;
+}
+
 bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogMetrics() const {
   // Only log metrics for navigations that involve SRP.
+  return involved_srp_url_;
+}
+
+bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogUKM() const {
+  // Only log UKMs for navigations that involve SRP.
   return involved_srp_url_;
 }
 
@@ -98,4 +127,15 @@ GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
       suffix,
       suffix + GetSuffixForRTT(
                    g_browser_process->network_quality_tracker()->GetHttpRTT())};
+}
+
+void GWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(
+    ukm::builders::AbandonedSRPNavigation& builder) {
+  std::optional<base::TimeDelta> rtt =
+      g_browser_process->network_quality_tracker()->GetHttpRTT();
+  if (rtt.has_value()) {
+    builder.SetRTT(ukm::GetSemanticBucketMinForDurationTiming(
+        rtt.value().InMilliseconds()));
+  }
+  builder.SetDidRequestNonSRP(did_request_non_srp_);
 }

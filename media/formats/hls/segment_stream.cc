@@ -66,35 +66,45 @@ void SegmentStream::SetNewPlaylist(scoped_refptr<MediaPlaylist> playlist) {
     return;
   }
 
-  // VOD playlists are very easy. because we know all the sequence numbers are
-  // the same, we can just use the seek functionality to reset the queue.
-  if (seekable_) {
-    Seek(next_segment_start_);
-    return;
+  bool must_keep_encrypted_ = false;
+  if (!Exhausted()) {
+    // If the head is a non-fresh encrypted segment, keep it.
+    must_keep_encrypted_ = !!segments_.front()->GetEncryptionData() &&
+                           !segments_.front()->HasNewEncryptionData();
   }
 
-  // We need to get the sequence number for what should be the first new thing
-  // in the queue. If it was exhausted, that thing is the highest seen so far.
-  // if there is still data, we should use the first instead.
-  types::DecimalInteger next_sequence_number = 0;
+  size_t starting_segment_number = 0;
   if (Exhausted()) {
-    next_sequence_number = highest_sequence_number_;
+    if (seekable_) {
+      // If a VOD stream is exhausted, there is nothing to append. Seeking later
+      // will use the new active playlist's queue.
+      return;
+    }
+    starting_segment_number = highest_sequence_number_ + 1;
   } else {
-    next_sequence_number = segments_.front()->GetMediaSequenceNumber() - 1;
+    starting_segment_number = segments_.front()->GetMediaSequenceNumber();
   }
 
-  // Then we clear the queue and add everything that came after the segment
-  // which was most recently served.
-  segments_ = {};
+  if (must_keep_encrypted_) {
+    starting_segment_number++;
+  }
+
+  base::queue<scoped_refptr<MediaSegment>> new_queue;
+  if (must_keep_encrypted_) {
+    new_queue.push(std::move(segments_.front()));
+  }
+
   for (const auto& segment : segments) {
     auto seg_seq_num = segment->GetMediaSequenceNumber();
-    if (seg_seq_num > next_sequence_number) {
-      segments_.push(segment);
+    if (seg_seq_num >= starting_segment_number) {
+      new_queue.push(segment);
     }
     if (seg_seq_num > highest_sequence_number_) {
       highest_sequence_number_ = seg_seq_num;
     }
   }
+
+  segments_ = std::move(new_queue);
 }
 
 base::TimeDelta SegmentStream::GetMaxDuration() const {

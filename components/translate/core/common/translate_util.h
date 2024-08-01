@@ -18,11 +18,6 @@ BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
 // and the CLD3 version is used instead.
 BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
 
-#if !BUILDFLAG(IS_WIN)
-// Controls whether mmap is used to load the language detection model.
-BASE_DECLARE_FEATURE(kMmapLanguageDetectionModel);
-#endif
-
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];
 

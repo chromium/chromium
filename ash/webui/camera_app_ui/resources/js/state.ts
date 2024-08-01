@@ -59,6 +59,7 @@ export enum State {
   STREAMING = 'streaming',
   SUPER_RES_ZOOM = 'super-res-zoom',
   SUSPEND = 'suspend',
+  SW_PRIVACY_SWITCH_ON = 'sw-privacy-switch-on',
   TABLET = 'tablet',
   TABLET_LANDSCAPE = 'tablet-landscape',
   TAKING = 'taking',

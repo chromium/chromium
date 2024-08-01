@@ -73,6 +73,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "crypto/crypto_buildflags.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
 #include "net/ssl/ssl_info.h"
@@ -118,7 +119,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
@@ -683,10 +686,10 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
-#if !BUILDFLAG(IS_ANDROID)
-  GURL chrome_passwords_in_settings(chrome::kChromeUIPasswordManagerURL);
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  GURL chrome_certificate_manager(chrome::kChromeUICertificateManagerDialogURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(
-      &chrome_passwords_in_settings, &profile_));
+      &chrome_certificate_manager, &profile_));
 #endif
 }
 
@@ -772,6 +775,34 @@ TEST_F(ChromeContentBrowserClientTest, PreferenceRankVideoDeviceInfos) {
       &profile_with_prefs, infos);
   EXPECT_EQ(infos, expected_infos);
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+#if BUILDFLAG(USE_NSS_CERTS)
+TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kEnableCertManagementUIV2);
+  TestChromeContentBrowserClient test_content_browser_client;
+  GURL settings_cert_url(chrome::kChromeUICertificateRedirectURL);
+  test_content_browser_client.HandleWebUI(&settings_cert_url, &profile_);
+  // No redirection, feature is off.
+  EXPECT_EQ(GURL(chrome::kChromeUICertificateRedirectURL), settings_cert_url);
+}
+#endif  // BUILDFLAG(USE_NSS_CERTS)
+
+TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kEnableCertManagementUIV2);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  GURL settings_cert_url(chrome::kChromeUICertificateRedirectURL);
+  test_content_browser_client.HandleWebUI(&settings_cert_url, &profile_);
+  EXPECT_EQ(GURL(chrome::kChromeUICertificateManagerDialogURL),
+            settings_cert_url);
+}
+
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
@@ -891,6 +922,42 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectTerminalURL) {
           static_cast<int>(policy::SystemFeature::kTerminal)));
 
   dest_url = terminal_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+}
+
+TEST_F(ChromeContentSettingsRedirectTest, RedirectPrintJobsURL) {
+  TestChromeContentBrowserClient test_content_browser_client;
+
+  const GURL print_jobs_url(ash::kChromeUIPrintManagementAppUrl);
+  GURL dest_url = print_jobs_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(print_jobs_url, dest_url);
+
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      base::Value::List().Append(
+          static_cast<int>(policy::SystemFeature::kPrintJobs)));
+
+  dest_url = print_jobs_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
+}
+
+TEST_F(ChromeContentSettingsRedirectTest, RedirectKeyShortcutsURL) {
+  TestChromeContentBrowserClient test_content_browser_client;
+
+  const GURL key_shortcuts_url(ash::kChromeUIShortcutCustomizationAppURL);
+  GURL dest_url = key_shortcuts_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(key_shortcuts_url, dest_url);
+
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      base::Value::List().Append(
+          static_cast<int>(policy::SystemFeature::kKeyShortcuts)));
+
+  dest_url = key_shortcuts_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
 }

@@ -27,7 +27,7 @@
 
   dictionary MyType1 {
     // This comment tests "double-quotes".
-    [legalValues=(1,2)] long x;
+    long x;
     DOMString y;
     DOMString z;
     DOMString a;

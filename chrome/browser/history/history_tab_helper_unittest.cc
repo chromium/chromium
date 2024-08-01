@@ -19,7 +19,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/feed/buildflags.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -36,22 +35,22 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::NiceMock;
 
 namespace {
 
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
 class TestFeedApi : public feed::StubFeedApi {
  public:
   MOCK_METHOD1(WasUrlRecentlyNavigatedFromFeed, bool(const GURL&));
 };
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -65,7 +64,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
     feed::FeedServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindLambdaForTesting([&](content::BrowserContext* context) {
@@ -73,7 +72,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
               feed::FeedService::CreateForTesting(&test_feed_api_);
           return result;
         }));
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#endif  // BUILDFLAG(IS_ANDROID)
     history_service_ = HistoryServiceFactory::GetForProfile(
         profile(), ServiceAccessType::IMPLICIT_ACCESS);
     ASSERT_TRUE(history_service_);
@@ -167,9 +166,9 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   base::CancelableTaskTracker tracker_;
   raw_ptr<history::HistoryService> history_service_;
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
   TestFeedApi test_feed_api_;
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 TEST_F(HistoryTabHelperTest, ShouldUpdateTitleInHistory) {
@@ -437,8 +436,6 @@ TEST_F(HistoryTabHelperTest,
   EXPECT_EQ(args.context_annotations->response_code, 234);
 }
 
-#if BUILDFLAG(ENABLE_FEED_V2)
-
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(HistoryTabHelperTest, CreateAddPageArgsPopulatesAppId) {
   NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
@@ -459,7 +456,6 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsPopulatesAppId) {
   // Make sure the `app_id` is populated.
   ASSERT_EQ(*args.app_id, "org.chromium.testapp");
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {
   GURL new_url("http://newurl.com");
@@ -482,7 +478,7 @@ TEST_F(HistoryTabHelperTest, FeedNavigationsDoNotContributeToMostVisited) {
   EXPECT_THAT(GetMostVisitedURLSet(), testing::Not(testing::Contains(new_url)));
 }
 
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 enum class MPArchType {
   kFencedFrame,

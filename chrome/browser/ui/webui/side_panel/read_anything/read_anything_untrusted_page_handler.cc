@@ -9,8 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
@@ -40,12 +42,19 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/header_util.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -243,17 +252,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    auto* active_web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
-    if (active_web_contents) {
-      ObserveWebContentsSidePanelController(active_web_contents);
-    }
-  } else {
-    coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
-    if (coordinator_) {
-      coordinator_->AddObserver(this);
-    }
+  auto* active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (active_web_contents) {
+    ObserveWebContentsSidePanelController(active_web_contents);
   }
 
   PrefService* prefs = browser_->profile()->GetPrefs();
@@ -341,16 +343,11 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   pdf_observer_.reset();
   LogTextStyle();
 
-  if (features::IsReadAnythingLocalSidePanelEnabled() && tab_helper_) {
+  if (tab_helper_) {
     // If |this| is destroyed before the |ReadAnythingSidePanelController|, then
     // remove |this| from the observer lists. In the cases where the coordinator
     // is destroyed first, these will have been destroyed before this call.
     tab_helper_->RemovePageHandlerAsObserver(weak_factory_.GetWeakPtr());
-  } else if (coordinator_) {
-    // If |this| is destroyed before the |ReadAnythingCoordinator|, then remove
-    // |this| from the observer lists. In the cases where the coordinator is
-    // destroyed first, these will have been destroyed before this call.
-    coordinator_->RemoveObserver(this);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -545,14 +542,32 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
 void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
-  ui::AXActionData action_data;
-  action_data.target_tree_id = target_tree_id;
-  action_data.action = ax::mojom::Action::kGetImageData;
-  action_data.target_node_id = target_node_id;
-  // The rect size is the max size of the image;
-  action_data.target_rect = gfx::Rect(gfx::Size(INT_MAX, INT_MAX));
+  main_observer_->web_contents()->DownloadImageFromAxNode(
+      target_tree_id, target_node_id,
+      /*preferred_size=*/gfx::Size(),
+      /*max_bitmap_size=*/0, /*bypass_cache=*/false,
+      base::BindOnce(&ReadAnythingUntrustedPageHandler::OnImageDataDownloaded,
+                     weak_factory_.GetWeakPtr(), target_tree_id,
+                     target_node_id));
+}
 
-  PerformActionInTargetTree(target_tree_id, action_data);
+void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
+    const ui::AXTreeID& target_tree_id,
+    ui::AXNodeID node_id,
+    int id,
+    int http_status_code,
+    const GURL& image_url,
+    const std::vector<SkBitmap>& bitmaps,
+    const std::vector<gfx::Size>& sizes) {
+  // Since we are allowing use of the cache the status code should never be bad.
+  CHECK(network::IsSuccessfulStatus(http_status_code) || http_status_code == 0);
+  // There should be at least one image.
+  if (!bitmaps.empty()) {
+    const auto& bitmap = bitmaps[0];
+    page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
+  } else {
+    page_->OnImageDataDownloaded(target_tree_id, node_id, SkBitmap());
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
@@ -627,10 +642,6 @@ void ReadAnythingUntrustedPageHandler::Activate(bool active) {
   OnActiveWebContentsChanged();
 }
 
-void ReadAnythingUntrustedPageHandler::OnCoordinatorDestroyed() {
-  coordinator_ = nullptr;
-}
-
 void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
   tab_helper_ = nullptr;
 }
@@ -674,10 +685,8 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
       active_ && browser_ ? browser_->tab_strip_model()->GetActiveWebContents()
                           : nullptr;
 
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    if (!tab_helper_ && web_contents) {
-      ObserveWebContentsSidePanelController(web_contents);
-    }
+  if (!tab_helper_ && web_contents) {
+    ObserveWebContentsSidePanelController(web_contents);
   }
 
   // Enable accessibility for the top level render frame and all descendants.

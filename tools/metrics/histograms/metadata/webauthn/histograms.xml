@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequest"
-    enum="CredManPrepareRequestEnum" expires_after="2024-11-17">
+    enum="CredManPrepareRequestEnum" expires_after="2025-01-26">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequestDuration"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-01-26">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -187,13 +187,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records the number of passkeys available for a Conditional UI get request.
   </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CredentialFetchDuration.{ApiUsed}"
+    units="ms" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    The duration of a request to obtain a list of credentials for a WebAuthn
+    conditional UI Get Assertion request, when using the {ApiUsed}. This is only
+    recorded when at least one credential is available in the results. This
+    complements the duration recorded by
+    WebAuthentication.Android.CredManPrepareRequestDuration, which only applies
+    to the CredMan API but emits on all requests including when there are no
+    results present.
+  </summary>
+  <token key="ApiUsed">
+    <variant name="ChromeOS" summary="ChromeOS platform API"/>
+    <variant name="CredMan" summary="Credential Manager API on Android"/>
+    <variant name="GmsCore" summary="GMS Core API on Android"/>
+    <variant name="ICloudKeychain" summary="ICloud Keychain API"/>
+    <variant name="TouchId" summary="Chrome-native Touch ID authenticator"/>
+    <variant name="WinHello" summary="Windows Hello API"/>
+  </token>
 </histogram>
 
 <histogram name="WebAuthentication.Enclave.ChangePinEvents"
@@ -247,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
-    enum="Boolean" expires_after="2024-11-17">
+    enum="Boolean" expires_after="2025-01-26">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

@@ -496,6 +496,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
 
+  std::vector<content_settings::TrackingProtectionFeature> features_;
+
   base::Time cookie_exception_expiration_;
 
   bool is_subscribed_to_permission_change_for_testing = false;

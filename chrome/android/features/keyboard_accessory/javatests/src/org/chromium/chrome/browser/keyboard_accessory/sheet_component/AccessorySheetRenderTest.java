@@ -47,6 +47,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -55,7 +56,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
-import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
@@ -210,6 +210,38 @@ public class AccessorySheetRenderTest {
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Passwords");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingPlusAddressesToPasswordTabRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.PASSWORDS, "Passwords", "");
+        sheet.getPlusAddressSection()
+                .add(
+                        new KeyboardAccessoryData.PlusAddressSection(
+                                /* origin= */ "google.com",
+                                new UserInfoField(
+                                        "example@gmail.com",
+                                        "example@gmail.com",
+                                        "",
+                                        false,
+                                        unused -> {})));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Suggest strong password", cb -> {}));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage Passwords", cb -> {}));
+
+        PasswordAccessorySheetCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PasswordAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), mProfile, null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "Passwords with plus address");
     }
 
     // Tests rendering of Payments tab with both credit cards and promo code offers.

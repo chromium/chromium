@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -18,9 +19,9 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
+#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_resolver.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/event_level_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -28,13 +29,16 @@
 #include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
 #include "sql/transaction.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
+class AggregatableTriggerConfig;
 class SuitableOrigin;
 }  // namespace attribution_reporting
 
 namespace base {
 class Time;
+class TimeDelta;
 class Uuid;
 }  // namespace base
 
@@ -46,7 +50,10 @@ namespace content {
 
 class AggregatableDebugReport;
 class AttributionResolverDelegate;
+class AttributionTrigger;
+class CreateReportResult;
 class StorableSource;
+
 struct AttributionInfo;
 
 enum class RateLimitResult : int;
@@ -113,7 +120,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kFailedToInitializeSchema = 4,
     kMaxValue = kFailedToInitializeSchema,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionStorageSqlInitStatus)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionStorageSqlInitStatus)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -155,7 +162,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidRandomizedResponseRate = 31,
     kMaxValue = kSourceInvalidRandomizedResponseRate,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionCorruptReportStatus)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCorruptReportStatus)
 
   struct DeletionCounts {
     int sources = 0;
@@ -263,7 +270,8 @@ class CONTENT_EXPORT AttributionStorageSql {
   // reports. Returns false on failure.
   [[nodiscard]] bool DeleteExpiredSources();
 
-  bool HasCapacityForStoringSource(
+  // Returns a negative value on failure.
+  int64_t CountActiveSourcesWithSourceOrigin(
       const attribution_reporting::SuitableOrigin& origin,
       base::Time now);
 
@@ -282,19 +290,36 @@ class CONTENT_EXPORT AttributionStorageSql {
       uint32_t trigger_data,
       int64_t priority);
 
+  [[nodiscard]] std::optional<AttributionReport::Id> StoreNullReport(
+      base::Time trigger_time,
+      base::Time initial_report_time,
+      const base::Uuid& external_report_id,
+      std::optional<uint64_t> trigger_debug_key,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      const std::optional<attribution_reporting::SuitableOrigin>&
+          coordinator_origin,
+      const attribution_reporting::AggregatableTriggerConfig& trigger_config,
+      base::Time fake_source_time);
+
+  [[nodiscard]] std::optional<AttributionReport::Id> StoreAggregatableReport(
+      StoredSource::Id source_id,
+      base::Time trigger_time,
+      base::Time initial_report_time,
+      const base::Uuid& external_report_id,
+      std::optional<uint64_t> trigger_debug_key,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      const std::optional<attribution_reporting::SuitableOrigin>&
+          coordinator_origin,
+      const attribution_reporting::AggregatableTriggerConfig& trigger_config,
+      const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+          contributions);
+
   int64_t StorageFileSizeKB();
 
   // Returns the number of sources in storage.
   std::optional<int64_t> NumberOfSources();
-
-  // Generates null aggregatable reports for the given trigger and stores all
-  // those reports.
-  [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
-      const AttributionTrigger&,
-      const AttributionInfo&,
-      const StoredSource* source,
-      std::optional<AttributionReport>& new_aggregatable_report,
-      std::optional<base::Time>& min_null_aggregatable_report_time);
 
   // Deactivates the given sources. Returns false on error.
   [[nodiscard]] bool DeactivateSources(
@@ -333,7 +358,7 @@ class CONTENT_EXPORT AttributionStorageSql {
       const url::Origin& context_origin,
       AttributionReport::Type);
 
-  AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
+  attribution_reporting::mojom::EventLevelResult MaybeStoreEventLevelReport(
       AttributionReport& report,
       const StoredSource& source,
       std::optional<uint64_t> dedup_key,
@@ -346,7 +371,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in
   // `GenerateNullAggregatableReportsAndStoreReports()`.
-  AttributionTrigger::AggregatableResult
+  attribution_reporting::mojom::AggregatableResult
   MaybeStoreAggregatableAttributionReportData(
       AttributionReport& report,
       StoredSource::Id source_id,
@@ -354,9 +379,6 @@ class CONTENT_EXPORT AttributionStorageSql {
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
       std::optional<int>& max_aggregatable_reports_per_source);
-
-  base::Time GetAggregatableReportTime(const AttributionTrigger&,
-                                       base::Time trigger_time) const;
 
  private:
   using ReportCorruptionStatusSet =

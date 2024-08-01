@@ -229,6 +229,9 @@ enum class PreloadingEligibility {
   // Preloading was ineligible for non-http(s).
   kHttpOrHttpsOnly = 19,
 
+  // Preloading was ineligible because the network is too slow.
+  kSlowNetwork = 20,
+
   // See corresponding values in PrefetchStatus for documentation.
   kUserHasCookies = 55,
   kUserHasServiceWorker = 56,
@@ -369,6 +372,14 @@ enum class PreloadingFailureReason {
   kPreloadingFailureReasonContentEnd = 1000,
 };
 // LINT.ThenChange()
+
+// Types of URL match:
+// Exact match: the URLs are matching exactly.
+// NoVarySearch match: No-Vary-Search header allows for inexact match by
+// ignoring some query parameters, or the order of query parameters present
+// in URLs.
+// Custom match: custom URL matching provided by a url matching predicate.
+enum class UrlMatchType { kExact, kNoVarySearch, kURLPredicateMatch };
 
 }  // namespace content
 

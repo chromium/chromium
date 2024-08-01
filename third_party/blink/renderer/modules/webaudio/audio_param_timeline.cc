@@ -607,7 +607,7 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
   DCHECK_GT(insertion_idx, wtf_size_t{0});
   wtf_size_t ub = insertion_idx - 1;  // upper bound of events that can overlap.
   if (events_.back()->Time() > insert_time) {
-    auto* it = std::upper_bound(
+    auto it = std::upper_bound(
         events_.begin(), events_.end(), insert_time,
         [](const double value, const std::unique_ptr<ParamEvent>& entry) {
           return value < entry->Time();

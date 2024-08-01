@@ -28,6 +28,8 @@ static_library("power") {
     "suspend_perf_reporter.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",
@@ -65,6 +67,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",

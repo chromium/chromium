@@ -50,7 +50,9 @@
       <wallpaper-grid-item
           on-wallpaper-grid-item-selected="onClickSample_"
           primary-text="[[sample.prompt]]"
-          src="[[sample.preview]]">
+          role="option"
+          src="[[sample.preview]]"
+          tabindex$="[[tabIndex]]">
       </wallpaper-grid-item>
       <iron-icon class="add-icon" icon="personalization-shared:circular-add">
     </iron-icon>

@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/fixed_array.h"
 #include "media/base/buffering_state.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
@@ -727,9 +728,9 @@ void WebEngineAudioRendererTestBase::TestPcmStream(
   // Read and verify packet content
   size_t output_size = kNumSamples * kChannels * bytes_per_sample_output;
   EXPECT_EQ(packet.payload_size, output_size);
-  uint8_t data[output_size];
+  base::FixedArray<uint8_t> data(output_size);
   zx_status_t result = stream_sink_->buffers()[packet.payload_buffer_id].read(
-      data, 0, output_size);
+      data.data(), 0, output_size);
   ZX_CHECK(result == ZX_OK, result);
 
   for (size_t i = 0; i < output_size; ++i) {

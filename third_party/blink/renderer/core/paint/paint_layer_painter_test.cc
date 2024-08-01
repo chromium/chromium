@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -851,8 +852,9 @@ TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
                                   /*disable_expansion*/ false);
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(stacking).Rect());
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(absolute).Rect());
-    PaintController controller(PaintController::kTransient);
-    GraphicsContext context(controller);
+    PaintController* controller =
+        MakeGarbageCollected<PaintController>(PaintController::kTransient);
+    GraphicsContext context(*controller);
     PaintLayerPainter(stacking).Paint(context);
   }
   // Should restore the original status after OverridingCullRectScope.

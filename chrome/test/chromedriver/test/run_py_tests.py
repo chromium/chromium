@@ -217,12 +217,14 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     # https://crbug.com/chromedriver/4632
     # chrome-headless-shell ignores the selected range while inserting the text
     'ChromeDriverW3cTest.testSendKeysToElementDoesNotAppend',
-    # https://crbug.com/chromedriver/4629
-    # The following four tests fail on Mac Arm64
+    # https://issues.chromium.org/issues/42323658
+    # The following tests fail on Mac due to focus issues
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMaximumFrequency',
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMinimumFrequency',
     'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
     'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
+    'ComputePressureSpecificTest.testUpdateVirtualPressure',
+    'ComputePressureSpecificTest.testRemoveVirtualPressureSourceWhileInUse',
 ]
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['win'] = [
     # https://bugs.chromium.org/p/chromium/issues/detail?id=1196363
@@ -538,7 +540,6 @@ class RunnerSelfTest(unittest.TestCase):
                                             lambda _: False)
       self.assertIsNone(path, 'platform=%s' % platform)
       self.assertGreater(len(path_list), 0, 'platform=%s' % platform)
-
 
 
 class ChromeDriverBaseTest(unittest.TestCase):
@@ -5021,6 +5022,25 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
             'return postures.length === 1')))
 
+  def testCreateVirtualPressureSourceNotConnected(self):
+    script = """
+      const done = arguments[0];
+      const observer = new PressureObserver(() => {
+        throw Error("The observer callback should not be called");
+      });
+      observer.observe("cpu").then(() => {
+        throw new Error('Observation did not fail as expected');
+      }, e => {
+        done(e.name);
+      });
+    """
+    self._driver.CreateVirtualPressureSource('cpu', {'supported': False})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/compute_pressure_test.html'))
+    self.assertEqual('NotSupportedError',
+                     self._driver.ExecuteAsyncScript(script))
+
+
 # Tests in the following class are expected to be moved to ChromeDriverTest
 # class when we no longer support the legacy mode.
 class ChromeDriverW3cTest(ChromeDriverBaseTestWithWebServer):
@@ -5694,7 +5714,6 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
         timeout=10))
 
 
-
 class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):
 
   class _RequestHandler(object):
@@ -6104,9 +6123,15 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testCanInspectBackgroundPage(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
+    # This test exercises inspection of an extension background page, which
+    # is only valid for manifest V2 extensions. Explicitly disable the
+    # experiment that disallows MV2 extensions.
+    # This test can be removed entirely when support for MV2 extensions is
+    # removed.
     driver = self.CreateDriver(
         chrome_extensions=[self._PackExtension(crx)],
-        experimental_options={'windowTypes': ['background_page']})
+        experimental_options={'windowTypes': ['background_page']},
+        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
     handles = driver.GetWindowHandles()
     for handle in handles:
       driver.SwitchToWindow(handle)
@@ -6774,7 +6799,6 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       break
     if exception is not None:
       raise exception
-
 
 
 class LaunchDesktopTest(ChromeDriverBaseTest):
@@ -7991,7 +8015,6 @@ class ClassicTest(ChromeDriverBaseTestWithWebServer):
     driver.CloseWindow()
 
 
-
 class SupportIPv4AndIPv6(ChromeDriverBaseTest):
   def testSupportIPv4AndIPv6(self):
     has_ipv4 = False
@@ -8387,6 +8410,177 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(self.WaitForCondition(self.FedCmPopupWindowCondition))
 
     self._driver.CancelFedCmDialog()
+
+
+class ComputePressureSpecificTest(ChromeDriverBaseTestWithWebServer):
+  """
+  Tests for https://w3c.github.io/compute-pressure/#automation
+  """
+
+  def setUp(self):
+    self._driver = self.CreateDriver(accept_insecure_certs=True)
+
+    script_content = bytes(
+        """
+      <!DOCTYPE html>
+      <script>
+      let observer;
+      const states = [];
+
+      function pressureChangeCallback(records, observer) {
+        for (const record of records) {
+          states.push(record.state);
+        }
+      }
+
+      async function addPressureObserver() {
+        observer = new PressureObserver(pressureChangeCallback);
+        await observer.observe("cpu");
+      }
+      </script>
+      """, 'utf-8')
+    self._https_server.SetDataForPath('/compute-pressure.html', script_content)
+
+  def testCreateVirtualPressureSourceWithNonStringType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: 'type' must be a string",
+        self._driver.CreateVirtualPressureSource,
+        42,
+    )
+
+  def testCreateVirtualPressureSourceWithInvalidType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Invalid pressure source: invalid_type",
+        self._driver.CreateVirtualPressureSource,
+        'invalid_type',
+    )
+
+  def testCreateVirtualPressureSourceWithInvalidMetadata(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: 'supported' must be a boolean",
+        self._driver.CreateVirtualPressureSource,
+        'cpu',
+        {'supported': 'foo'},
+    )
+
+  def testUpdateVirtualPressureSourceWithInvalidType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        'invalid argument: Invalid pressure source: invalid_type',
+        self._driver.UpdateVirtualPressureSource,
+        'invalid_type',
+        'nominal',
+    )
+
+  def testUpdateVirtualPressureSourceWithInvalidSample(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        'invalid argument: Invalid pressure state: invalid_sample',
+        self._driver.UpdateVirtualPressureSource,
+        'cpu',
+        'invalid_sample',
+    )
+
+  def testUpdateVirtualPressureSourceWithoutSample(self):
+    self.assertRaisesRegex(
+        Exception,
+        "UpdateVirtualPressureSource\(\) missing 1 required " +
+        "positional argument: 'sample'",
+        self._driver.UpdateVirtualPressureSource,
+        'cpu',
+    )
+
+  def testUpdateVirtualPressureSourceWithNonStringSample(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: 'sample' must be a string",
+        self._driver.UpdateVirtualPressureSource,
+        "cpu",
+        42,
+    )
+
+  def testUpdateVirtualPressureSourceWithoutOverriding(self):
+    self.assertRaisesRegex(
+        Exception,
+        'invalid argument: The specified pressure source is not being '
+        'overridden',
+        self._driver.UpdateVirtualPressureSource, 'cpu', 'nominal')
+
+  def testRemoveVirtualPressureSourceWithInvalidType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        'invalid argument: Invalid pressure source: invalid_type',
+        self._driver.RemoveVirtualPressureSource,
+        'invalid_type',
+    )
+
+  def testRemoveVirtualPressureSourceWithoutType(self):
+    self.assertRaisesRegex(
+        Exception,
+        "RemoveVirtualPressureSource\(\) missing 1 required " +
+        "positional argument: 'type'",
+        self._driver.RemoveVirtualPressureSource,
+    )
+
+  def testCreateVirtualPressureSourceNotConnected(self):
+    script = """
+      const done = arguments[0];
+      const observer = new PressureObserver(() => {
+        throw Error("The observer callback should not be called");
+      });
+      observer.observe("cpu").then(() => {
+        throw new Error('Observation did not fail as expected');
+      }, e => {
+        done(e.name);
+      });
+    """
+    self._driver.CreateVirtualPressureSource('cpu', {'supported': False})
+    self._driver.Load(self._https_server.GetUrl() + '/compute-pressure.html')
+    self.assertEqual('NotSupportedError',
+                     self._driver.ExecuteAsyncScript(script))
+
+  def testUpdateVirtualPressure(self):
+    source = 'cpu'
+    self._driver.CreateVirtualPressureSource(source)
+    self._driver.Load(self._https_server.GetUrl() + '/compute-pressure.html')
+
+    self._driver.ExecuteAsyncScript(
+        'const done = arguments[0]; addPressureObserver().then(done)')
+    pressure_states = ["nominal", "fair", "serious", "critical"]
+    states_length = 1
+
+    for state in pressure_states:
+      self._driver.UpdateVirtualPressureSource(source, state)
+      self.assertTrue(
+          self.WaitForCondition(lambda: self._driver.ExecuteScript(
+              'return states.length === arguments[0]', states_length)))
+      received_state = self._driver.ExecuteScript('return states.at(-1)')
+      self.assertEqual(state, received_state)
+      states_length = states_length + 1
+
+    self._driver.RemoveVirtualPressureSource(source)
+
+  def testRemoveVirtualPressureSourceWhileInUse(self):
+    source = 'cpu'
+    self._driver.CreateVirtualPressureSource(source)
+    self._driver.Load(self._https_server.GetUrl() + '/compute-pressure.html')
+    self._driver.ExecuteAsyncScript(
+        'const done = arguments[0]; addPressureObserver().then(done)')
+
+    self._driver.UpdateVirtualPressureSource(source, 'serious')
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return states.at(-1) === "serious"')))
+    self._driver.RemoveVirtualPressureSource(source)
+    self.assertRaisesRegex(
+        Exception,
+        'invalid argument: The specified pressure source is not being '
+        'overridden',
+        self._driver.UpdateVirtualPressureSource, source, 'nominal')
+
 
 class NavTrackingMitigationSpecificTest(ChromeDriverBaseTestWithWebServer):
 

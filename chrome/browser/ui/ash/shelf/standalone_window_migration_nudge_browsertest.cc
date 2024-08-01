@@ -26,14 +26,8 @@ class StandaloneWindowMigrationNudgeBrowserTest : public InProcessBrowserTest {
     std::vector<base::test::FeatureRef> enabled_features = {
         chromeos::features::kCrosShortstand,
         ash::features::kStandaloneWindowMigrationUx};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatures(
         enabled_features, {ash::standalone_browser::features::kLacrosOnly});
-#else
-    enabled_features
-        .insert(ash::standalone_browser::features::kLacrosOnly)
-            scoped_feature_list_.InitWithFeatures(enabled_features, {});
-#endif
   }
 
   void SetUpOnMainThread() override { ASSERT_TRUE(controller()); }
@@ -60,7 +54,7 @@ class StandaloneWindowMigrationNudgeBrowserTest : public InProcessBrowserTest {
 
 // TODO(https://crbug.com/332642058): Test is flaky on Linux Chromium OS ASan
 // LSan Tests.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_CheckNudge DISABLED_CheckNudge
 #else
 #define MAYBE_CheckNudge CheckNudge

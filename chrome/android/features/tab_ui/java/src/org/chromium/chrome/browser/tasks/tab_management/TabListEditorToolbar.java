@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.tab_ui.R;
@@ -31,6 +32,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
     @ColorInt private int mBackgroundColor;
+    @StringRes private int mBackButtonAccessibilityString;
     private RelatedTabCountProvider mRelatedTabCountProvider;
 
     public interface RelatedTabCountProvider {
@@ -44,6 +46,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+        mBackButtonAccessibilityString = R.string.accessibility_tab_selection_editor_back_button;
     }
 
     @Override
@@ -78,7 +81,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
         navigationIconDrawable.setTint(lightIconColor);
 
         setNavigationIcon(navigationIconDrawable);
-        setNavigationContentDescription(R.string.accessibility_tab_selection_editor_back_button);
+        setNavigationContentDescription(mBackButtonAccessibilityString);
     }
 
     @Override
@@ -117,8 +120,15 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
         return mActionViewLayout;
     }
 
+    /** Override the back button content description. */
+    public void setBackButtonContentDescription(@StringRes int backButtonContentDescription) {
+        mBackButtonAccessibilityString = backButtonContentDescription;
+        setNavigationContentDescription(mBackButtonAccessibilityString);
+    }
+
     /**
      * Update the tint for buttons, the navigation button and the action button, in the toolbar.
+     *
      * @param tint New {@link ColorStateList} to use.
      */
     public void setButtonTint(ColorStateList tint) {

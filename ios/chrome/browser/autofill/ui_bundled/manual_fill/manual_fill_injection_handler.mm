@@ -203,6 +203,24 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   [self.formSuggestionClient didSelectSuggestion:formSuggestion];
 }
 
+- (BOOL)isActiveFormAPasswordForm {
+  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return NO;
+  }
+
+  PasswordTabHelper* tabHelper =
+      PasswordTabHelper::FromWebState(activeWebState);
+  if (!tabHelper) {
+    return NO;
+  }
+
+  const password_manager::PasswordForm* observedForm =
+      [self currentPasswordFormFromWebState:activeWebState tabHelper:tabHelper];
+
+  return observedForm != nullptr;
+}
+
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState

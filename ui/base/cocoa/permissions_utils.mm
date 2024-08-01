@@ -95,65 +95,12 @@ void CaptureScreenshot() {
 
 }  // namespace
 
-// Note that the SDK has `CGPreflightScreenCaptureAccess()` and
-// `CGRequestScreenCaptureAccess()` listed as available on 10.15, but using
-// them yields link errors in testing. Therefore, use them on 11.0 and
-// heuristic methods on 10.15.
-
 bool IsScreenCaptureAllowed() {
-  if (@available(macOS 11.0, *)) {
     return CGPreflightScreenCaptureAccess();
-  } else {
-    // Screen Capture is considered allowed if the name of at least one normal
-    // or dock window running on another process is visible.
-    // See https://crbug.com/993692.
-    NSArray* window_list = base::apple::CFToNSOwnershipCast(
-        CGWindowListCopyWindowInfo(kCGWindowListOptionAll, kCGNullWindowID));
-    int current_pid = NSProcessInfo.processInfo.processIdentifier;
-    for (NSDictionary* window in window_list) {
-      NSNumber* window_pid =
-          [window objectForKey:base::apple::CFToNSPtrCast(kCGWindowOwnerPID)];
-      if (!window_pid || window_pid.integerValue == current_pid) {
-        continue;
-      }
-
-      NSString* window_name =
-          [window objectForKey:base::apple::CFToNSPtrCast(kCGWindowName)];
-      if (!window_name)
-        continue;
-
-      NSNumber* layer =
-          [window objectForKey:base::apple::CFToNSPtrCast(kCGWindowLayer)];
-      if (!layer)
-        continue;
-
-      NSInteger layer_integer = layer.integerValue;
-      if (layer_integer == CGWindowLevelForKey(kCGNormalWindowLevelKey) ||
-          layer_integer == CGWindowLevelForKey(kCGDockWindowLevelKey)) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
 
 bool TryPromptUserForScreenCapture() {
-  if (@available(macOS 11.0, *)) {
     return CGRequestScreenCaptureAccess();
-  } else {
-    // On 10.15+, macOS will show the permissions prompt for Screen Recording
-    // if we request to create a display stream and our application is not
-    // in the applications list in System permissions. Stream creation will
-    // fail if the user denies permission, or if our application is already
-    // in the system permission and is unchecked.
-    base::apple::ScopedCFTypeRef<CGDisplayStreamRef> stream(
-        CGDisplayStreamCreate(
-            CGMainDisplayID(), 1, 1, 'BGRA', nullptr,
-            ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
-              IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
-            }));
-    return !!stream;
-  }
 }
 
 void WarmScreenCapture() {

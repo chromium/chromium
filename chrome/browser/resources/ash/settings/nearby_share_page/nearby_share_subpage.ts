@@ -136,26 +136,71 @@ export class SettingsNearbyShareSubpageElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
       },
+
+      isDeviceVisible_: {
+        type: Boolean,
+        value: true,  // Correctly populated on settings load.
+      },
+
+      selectedVisibilityLabel_: {
+        type: String,
+        value: '',  // Populated on settings load.
+      },
+
+      isEveryoneModeOnlyForTenMinutes_: {
+        type: Boolean,
+        value: true,
+      },
+
+      yourDevicesLabel_: {
+        type: String,
+        value: 'Your devices',
+      },
+
+      contactsLabel_: {
+        type: String,
+        value: 'Contacts',
+      },
+
+      everyoneLabel_: {
+        type: String,
+        value: 'Everyone',
+      },
+
+      yourDevicesSublabel_: {
+        type: String,
+        computed: 'getYourDevicesVisibilitySublabel_(profileLabel_)',
+      },
     };
   }
 
   static get observers() {
-    return ['enabledChange_(settings.enabled)'];
+    return [
+      'enabledChange_(settings.enabled)',
+      'setSettingsVisibilityMenu_(settings.visibility)',
+    ];
   }
 
   isSettingsRetreived: boolean;
+  settings: NearbySettings;
+  private isDeviceVisible_: boolean;
+  private isEveryoneModeOnlyForTenMinutes_: boolean;
   private inHighVisibility_: boolean;
   private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;
   private receiveObserver_: ReceiveObserverReceiver|null;
-  private settings: NearbySettings;
+  private selectedVisibilityLabel_: string;
   private shouldShowFastInititationNotificationToggle_: boolean;
   private showDataUsageDialog_: boolean;
   private showDeviceNameDialog_: boolean;
   private showReceiveDialog_: boolean;
   private showVisibilityDialog_: boolean;
+  private yourDevicesLabel_: string;
+  private yourDevicesSublabel_: string;
+  private contactsLabel_: string;
+  private everyoneLabel_: string;
 
   constructor() {
     super();
@@ -461,6 +506,103 @@ export class SettingsNearbyShareSubpageElement extends
   private computeShouldShowFastInititationNotificationToggle_(
       isHardwareSupported: boolean): boolean {
     return isHardwareSupported;
+  }
+
+  private onQuickShareVisibilityToggled_(): void {
+    if (this.isDeviceVisible_) {
+      this.isDeviceVisible_ = false;
+      this.set('settings.visibility', Visibility.kNoOne);
+      return;
+    }
+
+    this.isDeviceVisible_ = true;
+    const selectedVisibility = this.getSelectedVisibility_();
+
+    if (selectedVisibility) {
+      this.set('settings.visibility', selectedVisibility);
+      return;
+    }
+
+    console.error(
+        'Selected visibility could not be determined. Defaulting to Your devices.');
+    this.set('settings.visibility', Visibility.kYourDevices);
+  }
+
+  private onSelectedVisibilityChange_(e: CustomEvent<{value: string}>): void {
+    const newSelectedVisibilityLabel = e.detail.value;
+    switch (newSelectedVisibilityLabel) {
+      case this.yourDevicesLabel_:
+        this.set('settings.visibility', Visibility.kYourDevices);
+        break;
+      case this.contactsLabel_:
+        this.set('settings.visibility', Visibility.kAllContacts);
+        break;
+      case this.everyoneLabel_:
+        this.set('settings.visibility', Visibility.kAllContacts);  // TODO
+        break;
+      default:
+        console.error(
+            'Selected visibility could not be determined. Defaulting to Your devices.');
+        this.set('settings.visibility', Visibility.kYourDevices);
+    }
+  }
+
+  private isEveryoneModeSelected_(): boolean {
+    return this.selectedVisibilityLabel_ === this.everyoneLabel_;
+  }
+
+  private getSelectedVisibility_(): Visibility|null {
+    switch (this.selectedVisibilityLabel_) {
+      case this.yourDevicesLabel_:
+        return Visibility.kYourDevices;
+      case this.contactsLabel_:
+        return Visibility.kAllContacts;
+      case this.everyoneLabel_:
+        return Visibility.kAllContacts;
+      default:
+        return null;
+    }
+  }
+
+  private setSettingsVisibilityMenu_(): void {
+    if (this.settings == null) {
+      return;
+    }
+    if (this.settings.visibility == null) {
+      return;
+    }
+
+    const settingsVisibility = this.settings.visibility;
+    this.isDeviceVisible_ = true;
+    switch (settingsVisibility) {
+      case Visibility.kYourDevices:
+        this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
+        break;
+      case Visibility.kAllContacts:
+        this.selectedVisibilityLabel_ = this.contactsLabel_;
+        break;
+      case Visibility.kNoOne:
+        this.isDeviceVisible_ = false;
+        this.selectedVisibilityLabel_ = this.contactsLabel_;
+        break;
+      case Visibility.kSelectedContacts:
+        // Selected contacts visibility is phased out in QSv2. Set visibility to
+        // Your devices.
+        this.set('settings.visibility', Visibility.kYourDevices);
+        this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
+        break;
+      default:
+        console.error(
+            'Selected visibility could not be determined. Defaulting to Your devices.');
+        this.set('settings.visibility', Visibility.kYourDevices);
+        this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
+    }
+  }
+
+  private getYourDevicesVisibilitySublabel_(): TrustedHTML {
+    return this.i18nAdvanced(
+        'quickShareV2VisibilityYourDevicesSublabel',
+        {substitutions: [this.profileLabel_]});
   }
 }
 

@@ -164,6 +164,12 @@ extern const base::FeatureParam<double>
 // when Battery Saver is active. Depends on kCPUMeasurementInFreezingPolicy.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
 
+// This is the similar to `kFreezingOnBatterySaver`, with some changes to
+// facilitate testing:
+// - Pretend that Battery Saver is active even if it's not.
+// - Pretend that all tabs have high CPU usage in background.
+BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);

@@ -16,6 +16,8 @@ static_library("kerberos") {
     "kerberos_ticket_expiry_notification.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

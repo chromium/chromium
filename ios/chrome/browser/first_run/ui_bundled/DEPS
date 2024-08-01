@@ -1,0 +1,34 @@
+include_rules = [
+  "+ios/chrome/browser/crash_report/model/crash_helper.h",
+  "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/metrics/model/metrics_app_interface.h",
+  "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/segmentation_platform/model",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h",
+  "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
+  "+ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h",
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
+  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h",
+  "+ios/chrome/browser/ui/settings/sync/utils/sync_util.h",
+  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h",
+  "+ios/chrome/browser/ui/screen",
+  "+ios/chrome/browser/ui/settings/elements",
+]
+
+specific_include_rules = {
+  "enterprise_loading_screen_egtest\.mm": [
+    "+components/policy/test_support/embedded_policy_test_server.h",
+  ],
+  "first_run_test_case_base\.mm": [
+    "+ios/chrome/browser/ui/authentication/signin_matchers.h",
+    "+ios/chrome/browser/ui/authentication/signin_earl_grey.h",
+  ],
+}

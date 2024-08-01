@@ -25,6 +25,8 @@
 
 namespace payments {
 
+using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
+
 SecurePaymentConfirmationController::SecurePaymentConfirmationController(
     base::WeakPtr<PaymentRequest> request)
     : request_(request) {
@@ -101,8 +103,8 @@ void SecurePaymentConfirmationController::
   model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
   model_.set_progress_bar_visible(false);
 
-  if (base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
+  if (features::GetNetworkAndIssuerIconsTreatment() ==
+      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
     model_.set_title(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_TITLE));
     model_.set_description(l10n_util::GetStringUTF16(

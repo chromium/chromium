@@ -494,7 +494,7 @@ UILockController* Seat::GetUILockControllerForTesting() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ash::ImeControllerImpl::Observer overrides:
+// ash::ImeController::Observer overrides:
 
 void Seat::OnCapsLockChanged(bool enabled) {}
 

@@ -156,12 +156,12 @@ suite('BasicPage', () => {
 
     function getDefault() {
       return getCardElement()!.shadowRoot!.querySelector(
-          'div[route-path="default"].iron-selected');
+          'div[route-path="default"].selected');
     }
 
     function getSubpage() {
       return getCardElement()!.shadowRoot!.querySelector(
-          'settings-subpage.iron-selected settings-appearance-fonts-page');
+          'settings-subpage.selected settings-appearance-fonts-page');
     }
 
     // RouteState.SECTION -> RoutState.SECTION

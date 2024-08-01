@@ -50,6 +50,14 @@ static_library("utf") {
     "src/utf/utfutf.c",
   ]
 
+  deps = [
+    # Several UTF functions, e.g. `chartorune` are declared in `utf.h`
+    # and implemented in both `utf` and `libphonenumber`. They have
+    # been removed from `utf`. We add a dep on `libphonenumber` so
+    # that this target contains an implementation of them.
+    "//third_party/libphonenumber",
+  ]
+
   public_deps = [ ":utf-headers" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {

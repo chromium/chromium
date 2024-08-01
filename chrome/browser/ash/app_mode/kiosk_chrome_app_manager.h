@@ -10,20 +10,17 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
-#include "kiosk_system_session.h"
 #include "net/base/backoff_entry.h"
 
 class GURL;
@@ -52,16 +49,6 @@ extern const char kKioskExternalUpdateSuccessHistogram[];
 class KioskChromeAppManager : public KioskAppManagerBase,
                               public chromeos::ExternalCacheDelegate {
  public:
-  enum class ConsumerKioskAutoLaunchStatus {
-    // Consumer kiosk mode auto-launch feature can be enabled on this machine.
-    kConfigurable,
-    // Consumer kiosk auto-launch feature is enabled on this machine.
-    kEnabled,
-    // Consumer kiosk mode auto-launch feature is disabled and cannot any longer
-    // be enabled on this machine.
-    kDisabled,
-  };
-
   // Result of downloading primary app from ExternalCache. Should be in sync
   // with extensions::ExtensionDownloaderDelegate::Error. Used in UMA metrics.
   enum class PrimaryAppDownloadResult {
@@ -85,10 +72,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
     kCrxFetchFailed,
     kMaxValue = kCrxFetchFailed,
   };
-
-  using EnableKioskAutoLaunchCallback = base::OnceCallback<void(bool success)>;
-  using GetConsumerKioskAutoLaunchStatusCallback =
-      base::OnceCallback<void(ConsumerKioskAutoLaunchStatus status)>;
 
   typedef std::vector<App> Apps;
 
@@ -130,39 +113,18 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // be applied to Kiosk, because a Kiosk session has a special user profile.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  static bool IsConsumerKioskEnabled();
-
   KioskChromeAppManager();
   KioskChromeAppManager(const KioskChromeAppManager&) = delete;
   KioskChromeAppManager& operator=(const KioskChromeAppManager&) = delete;
   ~KioskChromeAppManager() override;
 
-  // Initiates reading of consumer kiosk mode auto-launch status.
-  void GetConsumerKioskAutoLaunchStatus(
-      GetConsumerKioskAutoLaunchStatusCallback callback);
-
-  // Enables consumer kiosk mode app auto-launch feature. Upon completion,
-  // `callback` will be invoked with outcome of this operation.
-  void EnableConsumerKioskAutoLaunch(EnableKioskAutoLaunchCallback callback);
-
-  // Returns true if this device is consumer kiosk auto launch enabled.
-  bool IsConsumerKioskDeviceWithAutoLaunch();
-
   // Returns auto launcher app id or an empty string if there is none.
   std::string GetAutoLaunchApp() const;
 
+  // TODO(crbug.com/256596599): append ForTesting to this method.
   // Sets `app_id` as the app to auto launch at start up.
   void SetAutoLaunchApp(const std::string& app_id,
                         OwnerSettingsServiceAsh* service);
-
-  // Returns true if there is a pending auto-launch request.
-  bool IsAutoLaunchRequested() const;
-
-  // Returns true if owner/policy enabled auto launch.
-  bool IsAutoLaunchEnabled() const;
-
-  // Enable auto launch setter.
-  void SetEnableAutoLaunch(bool value);
 
   // Returns the cached required platform version of the auto launch with
   // zero delay kiosk app.
@@ -260,13 +222,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   friend class KioskAutoLaunchViewsTest;
   friend class KioskBaseTest;
 
-  enum class AutoLoginState {
-    kNone = 0,
-    kRequested = 1,
-    kApproved = 2,
-    kRejected = 3,
-  };
-
   // Gets KioskAppData for the given app id.
   const KioskAppData* GetAppData(const std::string& app_id) const;
   KioskAppData* GetAppDataMutable(const std::string& app_id);
@@ -284,24 +239,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   void OnExtensionDownloadFailed(
       const extensions::ExtensionId& id,
       extensions::ExtensionDownloaderDelegate::Error error) override;
-
-  // Callback for `InstallAttributes::LockDevice()` during
-  // EnableConsumerModeKiosk() call.
-  void OnLockDevice(EnableKioskAutoLaunchCallback callback,
-                    InstallAttributes::LockResult result);
-
-  // Callback for `InstallAttributes::ReadImmutableAttributes()` during
-  // GetConsumerKioskModeStatus() call.
-  void OnReadImmutableAttributes(
-      GetConsumerKioskAutoLaunchStatusCallback callback);
-
-  // Callback for reading handling checks of the owner public.
-  void OnOwnerFileChecked(GetConsumerKioskAutoLaunchStatusCallback callback,
-                          bool* owner_present);
-
-  // Reads/writes auto login state from/to local state.
-  AutoLoginState GetAutoLoginState() const;
-  void SetAutoLoginState(AutoLoginState state);
 
   // Returns the auto launch delay.
   base::TimeDelta GetAutoLaunchDelay() const;
@@ -322,8 +259,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // App.
   App ConstructApp(const KioskAppData& data) const;
 
-  // True if machine ownership is already established.
-  bool ownership_established_ = false;
   std::vector<std::unique_ptr<KioskAppData>> apps_;
   std::string auto_launch_app_id_;
   std::string currently_auto_launched_with_zero_delay_app_;

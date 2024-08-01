@@ -56,6 +56,9 @@ specific_include_rules = {
   "gpu_memory_buffer_video_frame_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
+  "video_encode_accelerator_adapter_test.cc": [
+    "+components/viz/test/test_context_provider.h"
+  ],
   "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],

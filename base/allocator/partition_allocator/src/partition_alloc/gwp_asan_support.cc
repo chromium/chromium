@@ -102,7 +102,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
           auto slot_start = slot_span_start + slot_idx * kSlotSize;
           PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(slot_start,
                                                                    kSlotSize)
-              ->InitalizeForGwpAsan();
+              ->InitializeForGwpAsan();
           size_t global_slot_idx = (slot_start - super_page_span_start -
                                     kSuperPageGwpAsanSlotAreaBeginOffset) /
                                    kSlotSize;

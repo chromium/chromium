@@ -455,8 +455,8 @@ void SetupFragmentBuilderForFragmentation(
       // constrained. If it doesn't affect the block size, it means that we can
       // tell before layout how much more space this node needs.
       LayoutUnit max_block_size = ComputeBlockSizeForFragment(
-          space, node.Style(), builder->BorderPadding(), LayoutUnit::Max(),
-          builder->InitialBorderBoxSize().inline_size);
+          space, To<BlockNode>(node), builder->BorderPadding(),
+          LayoutUnit::Max(), builder->InitialBorderBoxSize().inline_size);
       DCHECK(space.HasKnownFragmentainerBlockSize());
 
       // If max_block_size is "infinite", we can't tell for sure that it's going

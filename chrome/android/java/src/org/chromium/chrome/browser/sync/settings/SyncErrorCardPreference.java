@@ -58,6 +58,7 @@ public class SyncErrorCardPreference extends Preference
 
         setLayoutResource(R.layout.sync_promo_view_settings);
         mSyncError = SyncError.NO_ERROR;
+        setVisible(false);
     }
 
     /**
@@ -110,6 +111,10 @@ public class SyncErrorCardPreference extends Preference
     }
 
     private void update() {
+        if (mSyncError == SyncSettingsUtils.getSyncError(mProfile)) {
+            return;
+        }
+
         mSyncError = SyncSettingsUtils.getSyncError(mProfile);
         boolean suppressSyncSetupIncompleteFromSigninPage =
                 (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE)

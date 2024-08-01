@@ -10,13 +10,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/test/extension_test_message_listener.h"
 
 namespace {
 
-class DevToolsExtensionsProtocolDisabledTest : public DevToolsProtocolTestBase {
+class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
  public:
   void SetUpOnMainThread() override {
     DevToolsProtocolTestBase::SetUpOnMainThread();
@@ -27,40 +31,37 @@ class DevToolsExtensionsProtocolDisabledTest : public DevToolsProtocolTestBase {
     DevToolsProtocolTestBase::SetUpCommandLine(command_line);
     command_line->RemoveSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
+
+  const base::Value::Dict* SendLoadUnpackedCommand(const std::string& path) {
+    base::FilePath extension_path =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII("devtools")
+            .AppendASCII("extensions")
+            .AppendASCII(path);
+
+    base::Value::Dict params;
+    params.Set("path", extension_path.AsUTF8Unsafe());
+
+    return SendCommandSync("Extensions.loadUnpacked", std::move(params));
+  }
 };
 
-class DevToolsExtensionsProtocolTest
-    : public DevToolsExtensionsProtocolDisabledTest {
+class DevToolsExtensionsProtocolWithUnsafeDebuggingTest
+    : public DevToolsExtensionsProtocolTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsExtensionsProtocolDisabledTest::SetUpCommandLine(command_line);
+    DevToolsExtensionsProtocolTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolDisabledTest,
-                       CannotInstallExtension) {
-  base::FilePath extension_path =
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII("devtools")
-          .AppendASCII("extensions")
-          .AppendASCII("simple_background_page");
-  base::Value::Dict params;
-  params.Set("path", extension_path.AsUTF8Unsafe());
-  const base::Value::Dict* result =
-      SendCommandSync("Extensions.loadUnpacked", std::move(params));
-  ASSERT_FALSE(result);
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CannotInstallExtension) {
+  ASSERT_FALSE(SendLoadUnpackedCommand("simple_background_page"));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanInstallExtension) {
-  base::FilePath extension_path =
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII("devtools")
-          .AppendASCII("extensions")
-          .AppendASCII("simple_background_page");
-  base::Value::Dict params;
-  params.Set("path", extension_path.AsUTF8Unsafe());
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanInstallExtension) {
   const base::Value::Dict* result =
-      SendCommandSync("Extensions.loadUnpacked", std::move(params));
+      SendLoadUnpackedCommand("simple_background_page");
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
   extensions::ExtensionRegistry* registry =
@@ -74,17 +75,118 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanInstallExtension) {
             extensions::mojom::ManifestLocation::kUnpacked);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, ThrowsOnWrongPath) {
-  base::FilePath extension_path =
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII("devtools")
-          .AppendASCII("extensions")
-          .AppendASCII("non-existent");
-  base::Value::Dict params;
-  params.Set("path", extension_path.AsUTF8Unsafe());
-  const base::Value::Dict* result =
-      SendCommandSync("Extensions.loadUnpacked", std::move(params));
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       ThrowsOnWrongPath) {
+  const base::Value::Dict* result = SendLoadUnpackedCommand("non-existent");
   ASSERT_FALSE(result);
+}
+
+// Returns the `DevToolsAgentHost` associated with an extension's service
+// worker if available.
+scoped_refptr<content::DevToolsAgentHost> FindExtensionHost(
+    const std::string& id) {
+  for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+        host->GetURL().host() == id) {
+      return host;
+    }
+  }
+  return nullptr;
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanGetStorageValues) {
+  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
+
+  const base::Value::Dict* load_result =
+      SendLoadUnpackedCommand("service_worker");
+  ASSERT_TRUE(load_result);
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension = registry->GetExtensionById(
+      *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+
+  // Ensure service worker has had time to initialize.
+  EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
+
+  base::Value::Dict values_to_set;
+  values_to_set.Set("foo", "bar");
+  values_to_set.Set("other", "value");
+
+  //  Set some dummy values in storage.
+  base::RunLoop run_loop;
+  extensions::StorageFrontend::Get(browser()->profile())
+      ->Set(extension, extensions::StorageAreaNamespace::kLocal,
+            std::move(values_to_set),
+            base::BindOnce(
+                [](base::OnceClosure quit_closure,
+                   extensions::StorageFrontend::ResultStatus status) {
+                  ASSERT_TRUE(status.success);
+                  std::move(quit_closure).Run();
+                },
+                run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Extensions.getStorageItems is only allowed from a target associated with
+  // the extension. Attach to the extension service worker to be able to test
+  // the method.
+  DetachProtocolClient();
+  agent_host_ = FindExtensionHost(extension->id());
+  agent_host_->AttachClient(this);
+
+  base::Value::Dict storage_params;
+  storage_params.Set("id", extension->id());
+  storage_params.Set("storageArea", "local");
+  storage_params.Set("keys", base::Value::List().Append("foo"));
+
+  const base::Value::Dict* get_result =
+      SendCommandSync("Extensions.getStorageItems", std::move(storage_params));
+  ASSERT_TRUE(get_result);
+  ASSERT_EQ(*get_result->FindDict("data")->FindString("foo"), "bar");
+  ASSERT_FALSE(get_result->FindDict("data")->contains("other"));
+}
+
+// Test to ensure that the target associated with an extension service worker
+// cannot access data from the storage associated with another extension.
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CannotGetStorageValuesUnrelatedTarget) {
+  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
+
+  const base::Value::Dict* load_result =
+      SendLoadUnpackedCommand("service_worker");
+  ASSERT_TRUE(load_result);
+
+  const std::string first_extension_id = *load_result->FindString("id");
+
+  // Ensure service worker has had time to initialize.
+  EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
+
+  // Load a second extension.
+  load_result = SendLoadUnpackedCommand("simple_background_page");
+  ASSERT_TRUE(load_result);
+
+  const std::string second_extension_id = *load_result->FindString("id");
+
+  // Attach to first extension.
+  DetachProtocolClient();
+  agent_host_ = FindExtensionHost(first_extension_id);
+  agent_host_->AttachClient(this);
+
+  // Try to load data from the second extension from a context associated with
+  // the first extension. This should be blocked.
+  base::Value::Dict storage_params;
+  storage_params.Set("id", second_extension_id);
+  storage_params.Set("storageArea", "local");
+
+  const base::Value::Dict* get_result =
+      SendCommandSync("Extensions.getStorageItems", std::move(storage_params));
+
+  // Command should fail as target does not have access.
+  EXPECT_FALSE(get_result);
+  ASSERT_EQ(*error()->FindString("message"), "Extension not found.");
 }
 
 }  // namespace

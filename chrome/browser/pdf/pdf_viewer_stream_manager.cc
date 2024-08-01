@@ -456,12 +456,6 @@ void PdfViewerStreamManager::DidFinishNavigation(
   stream_info->set_extension_host_frame_tree_node_id(
       extension_host_frame_tree_node_id);
 
-  ReportPDFLoadStatus(embedder_host->IsInPrimaryMainFrame()
-                          ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
-                          : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
-  // TODO(b:289010799): Call `RecordPDFOpenedWithA11yFeatureWithPdfOcr`in
-  // pdf_ocr_util.cc after figuring out how to fix the build dependency issue.
-
   NavigateToPdfExtensionUrl(extension_host_frame_tree_node_id, stream_info,
                             embedder_host->GetSiteInstance(),
                             about_blank_host->GetGlobalId());
@@ -691,6 +685,14 @@ bool PdfViewerStreamManager::MaybeSetUpPostMessage(
                              claimed_stream_info->stream()->original_url());
   claimed_stream_info->set_mime_handler_view_container_manager(
       std::move(container_manager));
+
+  // Now that postMessage is set up, the PDF viewer has finished loading, so
+  // update metrics.
+  ReportPDFLoadStatus(embedder_host->IsInPrimaryMainFrame()
+                          ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
+                          : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
+  // TODO(b:289010799): Call `RecordPDFOpenedWithA11yFeatureWithPdfOcr`in
+  // pdf_ocr_util.cc after figuring out how to fix the build dependency issue.
 
   return true;
 }

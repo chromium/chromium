@@ -143,6 +143,7 @@ android_library("java") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
+    "//chrome/browser/ui/android/pdf:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",

@@ -121,6 +121,13 @@ WebGestureEvent SyntheticWebGestureEventBuilder::BuildScrollUpdate(
   return result;
 }
 
+WebGestureEvent SyntheticWebGestureEventBuilder::BuildScrollEnd(
+    blink::WebGestureDevice source_device) {
+  WebGestureEvent result =
+      Build(WebInputEvent::Type::kGestureScrollEnd, source_device);
+  return result;
+}
+
 WebGestureEvent SyntheticWebGestureEventBuilder::BuildPinchUpdate(
     float scale,
     float anchor_x,

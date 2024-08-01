@@ -24,8 +24,6 @@ public class TabArchiveSettings {
         void onSettingChanged();
     }
 
-    @VisibleForTesting static final boolean ARCHIVE_ENABLED_DEFAULT = true;
-    @VisibleForTesting static final boolean AUTO_DELETE_ENABLED_DEFAULT = true;
     @VisibleForTesting static final boolean DIALOG_IPH_DEFAULT = true;
 
     private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
@@ -81,7 +79,9 @@ public class TabArchiveSettings {
         // this will need to be turned on manually.
         return mPrefsManager.readBoolean(
                 ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED,
-                BuildConfig.IS_FOR_TEST ? false : ARCHIVE_ENABLED_DEFAULT);
+                BuildConfig.IS_FOR_TEST
+                        ? false
+                        : ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue());
     }
 
     /** Sets whether archive is enabled in settings. */
@@ -121,7 +121,7 @@ public class TabArchiveSettings {
     public boolean isAutoDeleteEnabled() {
         return mPrefsManager.readBoolean(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
-                AUTO_DELETE_ENABLED_DEFAULT);
+                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteEnabled.getValue());
     }
 
     /** Sets whether auto deletion for archived tabs is enabled in settings. */

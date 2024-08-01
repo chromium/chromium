@@ -8,6 +8,8 @@ static_library("url_deduplication") {
     "deduplication_strategy.h",
     "docs_url_strip_handler.cc",
     "docs_url_strip_handler.h",
+    "url_deduplication_helper.cc",
+    "url_deduplication_helper.h",
     "url_strip_handler.h",
   ]
 
@@ -22,10 +24,14 @@ static_library("url_deduplication") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "docs_url_strip_handler_unittest.cc" ]
+  sources = [
+    "docs_url_strip_handler_unittest.cc",
+    "url_deduplication_helper_unittest.cc",
+  ]
 
   deps = [
     ":url_deduplication",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

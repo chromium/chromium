@@ -33,6 +33,13 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
                              const syncer::SyncService* sync_service,
                              const std::string& gms_version_str);
 
+// The min GMS version which supports the account UPM backend.
+inline constexpr int kAccountUpmMinGmsVersion = 223012000;
+// The min GMS version which supports the local UPM backend. This is a exposed
+// as a function because the value is different on auto / non-auto and the
+// form factor can only be checked in runtime.
+int GetLocalUpmMinGmsVersion();
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SPLIT_STORES_AND_LOCAL_UPM_H_

@@ -73,6 +73,9 @@ struct KeyValuePairExtractor {
 // allowed; for integer keys 0 or -1 can't be used as a key. You can change
 // the restriction with a custom key hash traits. See hash_traits.h for how to
 // define hash traits.
+// Commonly used key types define their key hash traits separately from the
+// class itself, so e.g if you want a `WTF::HashMap<WTF::String, ...>` you must
+// include `string_hash.h`.
 template <typename KeyArg,
           typename MappedArg,
           typename KeyTraitsArg = HashTraits<KeyArg>,

@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "embedded_policy_test_server_mixin.cc",
+    "embedded_policy_test_server_mixin.h",
+    "policy_test_server_constants.h",
+    "remote_commands_service_mixin.cc",
+    "remote_commands_service_mixin.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/system",
+    "//components/account_id",
+    "//components/policy:cloud_policy_proto_generated_compile",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/policy/test_support",
+    "//net",
+  ]
+}

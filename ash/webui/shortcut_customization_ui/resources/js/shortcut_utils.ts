@@ -106,6 +106,7 @@ export const createEmptyAccelInfoFromAccel =
       return {
         layoutProperties:
             {standardAccelerator: {accelerator: accel, keyDisplay: ''}},
+        acceleratorLocked: false,
         locked: false,
         state: AcceleratorState.kEnabled,
         type: AcceleratorType.kUser,

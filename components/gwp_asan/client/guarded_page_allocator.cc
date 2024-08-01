@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
 #include <algorithm>
@@ -11,8 +16,6 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/gwp_asan_support.h"
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
@@ -27,6 +30,8 @@
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/gwp_asan_support.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -431,8 +436,7 @@ void GuardedPageAllocator::RecordAllocationMetadata(
   metadata_[metadata_idx].alloc_ptr = reinterpret_cast<uintptr_t>(ptr);
 
   const void* trace[AllocatorState::kMaxStackFrames];
-  size_t len =
-      AllocationInfo::GetStackTrace(trace, AllocatorState::kMaxStackFrames);
+  size_t len = AllocationInfo::GetStackTrace(trace);
   metadata_[metadata_idx].alloc.trace_len =
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            metadata_[metadata_idx].stack_trace_pool,
@@ -449,8 +453,7 @@ void GuardedPageAllocator::RecordAllocationMetadata(
 void GuardedPageAllocator::RecordDeallocationMetadata(
     AllocatorState::MetadataIdx metadata_idx) {
   const void* trace[AllocatorState::kMaxStackFrames];
-  size_t len =
-      AllocationInfo::GetStackTrace(trace, AllocatorState::kMaxStackFrames);
+  size_t len = AllocationInfo::GetStackTrace(trace);
   metadata_[metadata_idx].dealloc.trace_len =
       Pack(reinterpret_cast<uintptr_t*>(trace), len,
            metadata_[metadata_idx].stack_trace_pool +

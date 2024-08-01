@@ -47,11 +47,32 @@ import java.util.List;
 public class AllPasswordsBottomSheetIntegrationTest {
     private static final String EXAMPLE_URL = "https://www.example.xyz";
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.domain.xyz/", false, "");
+            new Credential(
+                    /* username= */ "ana@gmail.com",
+                    /* password= */ "S3cr3t",
+                    /* formattedUsername= */ "ana@gmail.com",
+                    /* originUrl= */ "https://m.domain.xyz/",
+                    /* isAndroidCredential= */ false,
+                    /* appDisplayName= */ "",
+                    /* isPlusAddressUsername= */ true);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", "https://subdomain.example.xyz", false, "");
+            new Credential(
+                    /* username= */ "Bob",
+                    /* password= */ "*****",
+                    /* formattedUsername= */ "Bob",
+                    /* originUrl= */ "https://subdomain.example.xyz",
+                    /* isAndroidCredential= */ false,
+                    /* appDisplayName= */ "",
+                    /* isPlusAddressUsername= */ false);
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", "https://www.origin.xyz", false, "");
+            new Credential(
+                    /* username= */ "Carl",
+                    /* password= */ "G3h3!m",
+                    /* formattedUsername= */ "Carl",
+                    /* originUrl= */ "https://www.origin.xyz",
+                    /* isAndroidCredential= */ false,
+                    /* appDisplayName= */ "",
+                    /* isPlusAddressUsername= */ false);
     private static final List<Credential> TEST_CREDENTIALS = List.of(BOB, CARL, ANA);
     private static final boolean IS_PASSWORD_FIELD = true;
 

@@ -16,6 +16,7 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/window_open_disposition.h"
 
 // The android implementation does not do anything "foreign session" specific.
 // We use it to restore tabs from "recently closed" too.
@@ -61,7 +62,9 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   }
   DCHECK(disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
          disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  tab_model->CreateTab(current_tab, new_web_contents.release());
+  tab_model->CreateTab(
+      current_tab, new_web_contents.release(),
+      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB);
   return raw_new_web_contents;
 }
 

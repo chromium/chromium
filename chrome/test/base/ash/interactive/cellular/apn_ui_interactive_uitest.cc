@@ -10,8 +10,10 @@
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "dbus/object_path.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
@@ -33,6 +35,49 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
   }
 
   const SimInfo& esim_info() const { return *esim_info_; }
+
+  void VerifyNoCustomApnsInShill() {
+    const base::Value::Dict* cellular_properties =
+        ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+            esim_info().service_path());
+    ASSERT_TRUE(cellular_properties);
+    const base::Value::List* shill_custom_apns =
+        cellular_properties->FindList(shill::kCellularCustomApnListProperty);
+    ASSERT_TRUE(shill_custom_apns);
+    EXPECT_EQ(0u, shill_custom_apns->size());
+  }
+
+  void VerifyCustomApnCreatedInShill(const std::string& expected_apn_type) {
+    const base::Value::Dict* cellular_properties =
+        ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+            esim_info().service_path());
+    ASSERT_TRUE(cellular_properties);
+    const base::Value::List* shill_custom_apns =
+        cellular_properties->FindList(shill::kCellularCustomApnListProperty);
+    ASSERT_TRUE(shill_custom_apns);
+    EXPECT_EQ(1u, shill_custom_apns->size());
+    const std::string* apn_name =
+        shill_custom_apns->front().GetDict().FindString(shill::kApnProperty);
+    EXPECT_EQ(kNewApnName, *apn_name);
+    const std::string* apn_type =
+        shill_custom_apns->front().GetDict().FindString(
+            shill::kApnTypesProperty);
+    EXPECT_EQ(expected_apn_type, *apn_type);
+  }
+
+  void VerifyLastGoodApn(const std::string& expected_apn_name) {
+    const base::Value::Dict* cellular_properties =
+        ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+            esim_info().service_path());
+    ASSERT_TRUE(cellular_properties);
+    const base::Value::Dict* last_goog_apn =
+        cellular_properties->FindDict(shill::kCellularLastGoodApnProperty);
+    ASSERT_TRUE(last_goog_apn);
+    const std::string* apn_name =
+        last_goog_apn->FindString(shill::kApnProperty);
+    ASSERT_TRUE(apn_name);
+    EXPECT_EQ(expected_apn_name, *apn_name);
+  }
 
  private:
   std::unique_ptr<SimInfo> esim_info_;
@@ -66,6 +111,9 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
       WaitForElementTextContains(
           kOSSettingsId, settings::cellular::ApnListFirstItemName(),
           /*text=*/FakeHermesEuiccClient::kFakeDefaultApn),
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
 
       Log("Disconnect cellular network"),
 
@@ -94,17 +142,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
 
       Log("Verify no custom APNs before start testing"),
 
-      Do([&]() {
-        const base::Value::Dict* cellular_properties =
-            ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-                esim_info().service_path());
-        ASSERT_TRUE(cellular_properties);
-        const base::Value::List* shill_custom_apns =
-            cellular_properties->FindList(
-                shill::kCellularCustomApnListProperty);
-        ASSERT_TRUE(shill_custom_apns);
-        EXPECT_EQ(0u, shill_custom_apns->size());
-      }),
+      Do([&]() { VerifyNoCustomApnsInShill(); }),
 
       Log("Navigating to the internet page"),
 
@@ -129,12 +167,17 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
       ClickElement(kOSSettingsId, settings::cellular::ApnDialogApnInput()),
       SendTextAsKeyEvents(kOSSettingsId, kNewApnName),
 
-      Log("Check APN type defaults to \'Default\'"),
+      Log("Expand advanced settings"),
 
       WaitForElementEnabled(
           kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsButton()),
       ClickElement(kOSSettingsId,
                    settings::cellular::ApnDialogAdvancedSettingsButton()),
+      WaitForElementOpened(
+          kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsGroup()),
+
+      Log("Check APN type defaults to 'Default'"),
+
       WaitForElementChecked(kOSSettingsId,
                             settings::cellular::ApnDialogDefaultCheckbox()),
 
@@ -158,25 +201,232 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
 
       Log("Verify the custom APN saved in Shill"),
 
+      Do([&]() { VerifyCustomApnCreatedInShill(shill::kApnTypeDefault); }),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
+                       CreateDefaultAndAttachCustomApn) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Verify no custom APNs before start testing"),
+
+      Do([&]() { VerifyNoCustomApnsInShill(); }),
+
+      Log("Navigating to the internet page"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      Log("Navigate to the APN revamp details page"),
+
+      NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+      Log("Open add custom APN dialog"),
+
+      OpenAddCustomApnDetailsDialog(kOSSettingsId),
+
+      Log("Type in custom APN name in APN dialog"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::cellular::ApnDialogApnInput()),
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnDialogApnInput()),
+      ClickElement(kOSSettingsId, settings::cellular::ApnDialogApnInput()),
+      SendTextAsKeyEvents(kOSSettingsId, kNewApnName),
+
+      Log("Expand advanced settings"),
+
+      WaitForElementEnabled(
+          kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsButton()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAdvancedSettingsButton()),
+      WaitForElementOpened(
+          kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsGroup()),
+
+      Log("Check APN type defaults to 'Default'"),
+
+      WaitForElementChecked(kOSSettingsId,
+                            settings::cellular::ApnDialogDefaultCheckbox()),
+
+      Log("Uncheck 'Default' type"),
+
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogDefaultCheckbox()),
+      WaitForElementUnchecked(kOSSettingsId,
+                              settings::cellular::ApnDialogDefaultCheckbox()),
+
+      Log("Check 'Attach' type"),
+
+      WaitForElementUnchecked(kOSSettingsId,
+                              settings::cellular::ApnDialogAttachCheckbox()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAttachCheckbox()),
+      WaitForElementChecked(kOSSettingsId,
+                            settings::cellular::ApnDialogAttachCheckbox()),
+
+      Log("Check for the warning message"),
+
+      WaitForElementExists(
+          kOSSettingsId, settings::cellular::ApnDialogDefaultApnRequiredInfo()),
+
+      Log("Check for the 'Add' button disabled"),
+
+      WaitForElementDisabled(kOSSettingsId,
+                             settings::cellular::ApnDialogAddActionButton()),
+
+      Log("Re-check the 'Default' type"),
+
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogDefaultCheckbox()),
+      WaitForElementChecked(kOSSettingsId,
+                            settings::cellular::ApnDialogDefaultCheckbox()),
+
+      Log("Save the custom APN"),
+
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnDialogAddActionButton()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAddActionButton()),
+
+      Log("Wait for the newly created custom APN appear at the top of the "
+          "list"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::cellular::ApnListFirstItem()),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::cellular::ApnListFirstItemName(),
+                                 /*text=*/kNewApnName),
+
+      Log("Wait for the custom APN connected"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+
+      Log("Verify the custom APN saved in Shill"),
+
       Do([&]() {
-        const base::Value::Dict* cellular_properties =
-            ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-                esim_info().service_path());
-        ASSERT_TRUE(cellular_properties);
-        const base::Value::List* shill_custom_apns =
-            cellular_properties->FindList(
-                shill::kCellularCustomApnListProperty);
-        ASSERT_TRUE(shill_custom_apns);
-        EXPECT_EQ(1u, shill_custom_apns->size());
-        const std::string* apn_name =
-            shill_custom_apns->front().GetDict().FindString(
-                shill::kApnProperty);
-        EXPECT_EQ(kNewApnName, *apn_name);
-        const std::string* apn_type =
-            shill_custom_apns->front().GetDict().FindString(
-                shill::kApnTypesProperty);
-        EXPECT_EQ(shill::kApnTypeDefault, *apn_type);
+        VerifyCustomApnCreatedInShill(base::StringPrintf(
+            "%s,%s", shill::kApnTypeDefault, shill::kApnTypeIA));
       }),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, DiscoverApns) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Verify no custom APNs before start testing"),
+
+      Do([&]() { VerifyNoCustomApnsInShill(); }),
+
+      Log("Navigating to the internet page"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      Log("Navigate to the APN revamp details page"),
+
+      NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+      Log("Open add custom APN dialog"),
+
+      OpenAddCustomApnDetailsDialog(kOSSettingsId),
+
+      Log("Type in custom APN name in APN dialog"),
+
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnDialogApnInput()),
+      ClickElement(kOSSettingsId, settings::cellular::ApnDialogApnInput()),
+      SendTextAsKeyEvents(kOSSettingsId, kNewApnName),
+
+      Log("Save the custom APN"),
+
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnDialogAddActionButton()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAddActionButton()),
+
+      Log("Wait for the newly created custom APN appear at the top of the "
+          "list"),
+
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::cellular::ApnListFirstItemName(),
+                                 /*text=*/kNewApnName),
+
+      Log("Wait for the custom APN connected"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+      Do([&]() { VerifyLastGoodApn(kNewApnName); }),
+
+      Log("Open 'Show known APNs' dialog"),
+
+      OpenApnSelectionDialog(kOSSettingsId),
+
+      Log("Checking the name of the first APN item"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnSelectionFirstItemName(),
+          /*text=*/FakeHermesEuiccClient::kFakeDefaultApn),
+
+      Log("Select default APNs"),
+
+      WaitForElementDisabled(kOSSettingsId,
+                             settings::cellular::ApnSelectionConfirmButton()),
+      ClickElement(kOSSettingsId, settings::cellular::ApnSelectionFirstItem()),
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnSelectionConfirmButton()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnSelectionConfirmButton()),
+
+      Log("Checking for the APN selection dialog close"),
+
+      WaitForElementDoesNotExist(kOSSettingsId,
+                                 settings::cellular::ApnSelectionDialog()),
+
+      Log("Wait for the default APN appear at the top of the list"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnListFirstItemName(),
+          /*text=*/FakeHermesEuiccClient::kFakeDefaultApn),
+
+      Log("Wait for the default APN connected"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
+          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+
+      Log("Check the custom APN re-ordered to second APN"),
+
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::cellular::ApnListNthItemName(2),
+                                 /*text=*/kNewApnName),
+      Do([&]() { VerifyLastGoodApn(FakeHermesEuiccClient::kFakeDefaultApn); }),
+
+      Log("Check custom APN disabled"),
+
+      WaitForElementHasAttribute(
+          kOSSettingsId, settings::cellular::ApnListNthItem(2), "is-disabled_"),
 
       Log("Test complete"));
 }

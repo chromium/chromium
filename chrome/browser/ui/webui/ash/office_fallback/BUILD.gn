@@ -13,3 +13,71 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
+
+static_library("office_fallback") {
+  sources = [
+    "office_fallback_dialog.cc",
+    "office_fallback_dialog.h",
+    "office_fallback_page_handler.cc",
+    "office_fallback_page_handler.h",
+    "office_fallback_ui.cc",
+    "office_fallback_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//ui/web_dialogs",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+  ]
+
+  deps = [
+    "//ash/webui/common/resources/office_fallback:resources",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/cloud_upload",
+    "//chromeos/constants",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/webui",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ui/webui/ash/cloud_upload",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "office_fallback_dialog_browsertest.cc" ]
+
+  deps = [
+    ":office_fallback",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//chromeos/constants",
+    "//content/test:test_support",
+    "//ui/base",
+  ]
+}

@@ -6,8 +6,12 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
@@ -23,7 +27,7 @@ namespace {
 // Layout.
 const CGFloat kInterItemSpacing = 24;
 const CGFloat kInterGroupSpacing = 16;
-const CGFloat kEstimatedItemHeight = 80;
+const CGFloat kEstimatedItemHeight = 96;
 // The minimum width to display two columns. Under that value, display only one
 // column.
 const CGFloat kColumnCountWidthThreshold = 1000;
@@ -170,12 +174,35 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   }
 }
 
+- (void)reconfigureItem:(TabGroupsPanelItem*)item {
+  TabGroupsPanelSnapshot* snapshot = [_dataSource snapshot];
+  if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+    return;
+  }
+  [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
 #pragma mark UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
   [self.mutator selectTabGroupsPanelItem:item];
+}
+
+- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
+    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
+                                         point:(CGPoint)point {
+  UICollectionViewCell* collectionViewCell =
+      [_collectionView cellForItemAtIndexPath:indexPath];
+
+  TabGroupsPanelCell* cell =
+      base::apple::ObjCCastStrict<TabGroupsPanelCell>(collectionViewCell);
+  return
+      [self contextMenuConfigurationForCell:cell
+                               menuScenario:
+                                   kMenuScenarioHistogramTabGroupsPanelEntry];
 }
 
 #pragma mark UIScrollViewDelegate
@@ -312,17 +339,81 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 - (void)configureCell:(TabGroupsPanelCell*)cell
              withItem:(TabGroupsPanelItem*)item {
   cell.item = item;
-  TabGroupsPanelItemData* itemData =
-      [_itemDataSource dataForItem:item
-          withFaviconsFetchCompletion:^(NSArray<UIImage*>* favicons) {
-            if ([cell.item isEqual:item]) {
-              cell.faviconsGrid.favicons = favicons;
-            }
-          }];
+  TabGroupsPanelItemData* itemData = [_itemDataSource dataForItem:item];
   cell.titleLabel.text = itemData.title;
   cell.dot.backgroundColor = itemData.color;
   cell.subtitleLabel.text = itemData.creationText;
-  cell.faviconsGrid.numberOfTabs = itemData.numberOfTabs;
+  NSUInteger numberOfTabs = itemData.numberOfTabs;
+  cell.faviconsGrid.numberOfTabs = numberOfTabs;
+  UIImage* fallbackImage = DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
+  if (numberOfTabs >= 1) {
+    cell.faviconsGrid.favicon1 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:0
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon1 = favicon;
+                                }
+                              }];
+  }
+  if (numberOfTabs >= 2) {
+    cell.faviconsGrid.favicon2 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:1
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon2 = favicon;
+                                }
+                              }];
+  }
+  if (numberOfTabs >= 3) {
+    cell.faviconsGrid.favicon3 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:2
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon3 = favicon;
+                                }
+                              }];
+  }
+  if (numberOfTabs == 4) {
+    cell.faviconsGrid.favicon4 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:3
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon4 = favicon;
+                                }
+                              }];
+  }
+}
+
+// Returns a context menu configuration instance for the given cell in the tab
+// groups panel.
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForCell:(TabGroupsPanelCell*)cell
+                       menuScenario:(MenuScenarioHistogram)scenario {
+  // Record that this context menu was shown to the user.
+  RecordMenuShown(scenario);
+
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithScenario:scenario];
+
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  [menuElements
+      addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                    // TODO(crbug.com/329629692): Implement delete action.
+                }]];
+
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        return [UIMenu menuWithTitle:@"" children:menuElements];
+      };
+
+  return
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
 }
 
 @end

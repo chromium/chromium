@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 #include <cstring>
@@ -149,6 +154,7 @@ void WaylandZAuraShell::OnDesksChanged(void* data,
   auto* self = static_cast<WaylandZAuraShell*>(data);
   char* desk_name = reinterpret_cast<char*>(states->data);
   self->desks_.clear();
+  // SAFETY: TODO(crbug.com/353039516): fix unsafe pointer arithmetic.
   while (desk_name < reinterpret_cast<char*>(states->data) + states->size) {
     std::string str(desk_name, strlen(desk_name));
     self->desks_.push_back(str);

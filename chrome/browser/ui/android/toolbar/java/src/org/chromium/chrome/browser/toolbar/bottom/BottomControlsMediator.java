@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -132,10 +134,7 @@ class BottomControlsMediator
 
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         if (mEdgeToEdgeControllerSupplier.get() != null) {
-            mEdgeToEdgeChangeObserver =
-                    (bottomInset) -> {
-                        onEdgeToEdgeChanged(bottomInset);
-                    };
+            mEdgeToEdgeChangeObserver = this::onEdgeToEdgeChanged;
             mEdgeToEdgeControllerSupplier.get().registerObserver(mEdgeToEdgeChangeObserver);
         }
         mReadAloudRestoringSupplier = readAloudRestoringSupplier;
@@ -198,7 +197,9 @@ class BottomControlsMediator
         // this special case to make sure the bottom controls aren't covered by the Read Aloud
         // player when it is shown again following browser UI being recreated.
         if (mReadAloudRestoringSupplier.get()) {
-            mModel.set(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y, -bottomControlsMinHeight);
+            mModel.set(
+                    BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
+                    mModel.get(BottomControlsProperties.Y_OFFSET));
         }
         // A min height greater than 0 suggests the presence of some other UI component underneath
         // the bottom controls.
@@ -222,8 +223,9 @@ class BottomControlsMediator
         updateAndroidViewVisibility();
     }
 
-    private void onEdgeToEdgeChanged(int bottomInset) {
-        mEdgeToEdgePaddingPx = bottomInset;
+    private void onEdgeToEdgeChanged(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
+        mEdgeToEdgePaddingPx = isDrawingToEdge ? bottomInset : 0;
 
         updateBrowserControlsHeight();
 
@@ -270,7 +272,8 @@ class BottomControlsMediator
     private int getAndroidViewHeight() {
         int edgeToEdgePadding = 0;
 
-        if (mEdgeToEdgeControllerSupplier.get() != null) {
+        if (mEdgeToEdgeControllerSupplier.get() != null
+                && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
             // TODO(https://crbug.com/327274751): Account for presence of Read Aloud when
             // determining bottom controls height.
             edgeToEdgePadding = mEdgeToEdgePaddingPx;
@@ -303,10 +306,11 @@ class BottomControlsMediator
                         && !mIsInSwipeLayout
                         && getBrowserControls().getBottomControlOffset() == 0;
         if (visible) {
-            // Translate view so that its bottom is aligned with browser controls min height.
+            // Translate view so that its bottom is aligned with the "base" y_offset, or the
+            // y_offset when the bottom controls aren't offset.
             mModel.set(
                     BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
-                    -getBrowserControls().getBottomControlsMinHeight());
+                    mModel.get(BottomControlsProperties.Y_OFFSET));
         }
         mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE, visible);
     }
@@ -334,12 +338,12 @@ class BottomControlsMediator
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
-        return LayerScrollBehavior.SCROLL_OFF;
+        return LayerScrollBehavior.ALWAYS_SCROLL_OFF;
     }
 
     @Override
-    public boolean isVisible() {
-        return isCompositedViewVisible();
+    public @LayerVisibility int getLayerVisibility() {
+        return isCompositedViewVisible() ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
     }
 
     @Override
@@ -352,7 +356,8 @@ class BottomControlsMediator
         return mEdgeToEdgeChangeObserver;
     }
 
-    void simulateEdgeToEdgeChangeForTesting(int bottomInset) {
-        onEdgeToEdgeChanged(bottomInset);
+    void simulateEdgeToEdgeChangeForTesting(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptedIntoEdgeToEdge) {
+        onEdgeToEdgeChanged(bottomInset, isDrawingToEdge, isPageOptedIntoEdgeToEdge);
     }
 }

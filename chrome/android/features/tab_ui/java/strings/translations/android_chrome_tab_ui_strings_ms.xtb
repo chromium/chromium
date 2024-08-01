@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Cadangan: <ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Lawati laman</translation>
+<translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Dibuat <ph name="NUM_HOURS_ONE" /> jam yang lalu}other{Dibuat <ph name="NUM_HOURS_MANY" /> jam yang lalu}}</translation>
 <translation id="2801787514987684416">Lihat maklumat kedai?</translation>
 <translation id="2928243913527329289">Google | Perihal kedai ini</translation>
 <translation id="2977480621796371840">Alih keluar daripada kumpulan</translation>
 <translation id="3008554597174452548">Hentikan penjejakan produk</translation>
 <translation id="3026391124054406831">Buat kumpulan untuk menyusun tab anda.</translation>
+<translation id="3051031624272448591">Anda boleh mendapatkan semula tab melalui sejarah pada bila-bila masa</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> penurunan harga pada <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ikon warna kumpulan tab <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">rating</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="427987768447457592">Kumpulan tab baharu</translation>
-<translation id="4338724047016295066">Tab yang tidak aktif akan ditutup secara automatik. Anda boleh menemukan tab tersebut dalam Sejarah pada bila-bila masa.</translation>
 <translation id="4371591986692297148">Tidak aktif</translation>
 <translation id="4460014764210899310">Nyahkumpulan</translation>
+<translation id="4590027107044272416">Kini anda boleh membuka tab baharu di sini</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Tutup 1 tab yang tidak aktif?}other{Tutup <ph name="TAB_COUNT_MANY" /> tab yang tidak aktif?}}</translation>
 <translation id="4648718555153979859">Tab anda dikumpulkan bersama di sini</translation>
 <translation id="4686942373615810936">Dibuat sebentar tadi</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Tutup selepas 1 hari}other{Tutup selepas <ph name="DAY_COUNT_MANY" /> hari}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
+<translation id="4871719318659334896">Tutup kumpulan</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tutup tab}other{Tutup tab}}</translation>
 <translation id="4908147833782857886">Kumpulan <ph name="USER_EMAIL" /> disimpan (akan menutup tab dan memadamkan kumpulan)</translation>
@@ -100,7 +104,9 @@
 <translation id="5972844218283131174">Nyahpilih semua</translation>
 <translation id="6017514345406065928">Hijau</translation>
 <translation id="6040143037577758943">Tutup</translation>
+<translation id="6051432659151380973">Tab kumpulan anda disimpan secara automatik</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Anda akan kehilangan akses kepada kumpulan tab <ph name="GROUP_NAME" /> dengan serta-merta</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="6271513594716432922">Tutup semua tab tidak aktif</translation>
@@ -115,7 +121,6 @@
 <translation id="6562820390860419811">Alihkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
 <translation id="6744956528665271406">Edit warna kumpulan</translation>
-<translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
 <translation id="6856809498882026482">Sembunyikan mod berbilang pilihan</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Kongsi tab}other{Kongsi tab}}</translation>
 <translation id="7129458170538955174">Maklumat tentang kedai ini dibuka pada ketinggian separuh</translation>
@@ -125,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Dipilih</translation>
 <translation id="7326879924029668159">Lihat dasar pemulangan dan pelbagai lagi</translation>
 <translation id="7352298686197644113">Lihat item yang lebih murah dalam tab yang terbuka</translation>
+<translation id="7421293530411019405">Tinggalkan kumpulan tab?</translation>
 <translation id="7452985128687107478">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="753732157349120914">Penukar Tab</translation>
@@ -152,12 +158,15 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="8398929769197326728">Folder Baharu - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Tetapan</translation>
+<translation id="8631711675211020168">Semua orang akan kehilangan akses kepada kumpulan tab <ph name="GROUP_NAME" /> dengan serta-merta dan kumpulan tab akan dipadamkan daripada semua peranti</translation>
+<translation id="870736955561925754">Tutup tab dan padamkan kumpulan?</translation>
 <translation id="8714939927607906138">Lebih murah</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8730999928494395583">Aktiviti anda dalam tab Inkognito ini akan dialih keluar daripada peranti ini</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_MONTHS_ONE" /> bulan yang lalu}other{Dibuat <ph name="NUM_MONTHS_MANY" /> bulan yang lalu}}</translation>
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
 <translation id="8887921976452567404">Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab.</translation>
+<translation id="8915916167043355778">Tutup semua</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
@@ -165,6 +174,5 @@
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
 <translation id="9216898458513705996">Tab akan kekal terbuka pada peranti ini tetapi kumpulan akan dipadamkan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
-<translation id="959682366969460160">Jadi teratur</translation>
 <translation id="992256792861109788">Merah Jambu</translation>
 </translationbundle>

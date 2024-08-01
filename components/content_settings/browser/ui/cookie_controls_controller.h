@@ -67,6 +67,9 @@ class CookieControlsController final
   // Returns whether first-party cookies are blocked.
   bool FirstPartyCookiesBlocked();
 
+  // Returns whether any ACT features should be shown.
+  bool ShowActFeatures();
+
   // Returns whether the cookie blocking setting for the current site was
   // changed by the user via user bypass.
   bool HasUserChangedCookieBlockingForSite();
@@ -167,6 +170,9 @@ class CookieControlsController final
       const GURL url,
       SettingInfo info,
       bool cookies_allowed);
+
+  bool ShowIpProtection() const;
+  bool ShowFingerprintingProtection() const;
 
   bool HasOriginSandboxedTopLevelDocument() const;
 

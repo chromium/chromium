@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/353039516): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 
 namespace ui {
@@ -19,6 +24,7 @@ bool CheckIfWlArrayHasValue(struct wl_array* wl_array, uint32_t value) {
   uint32_t* data = reinterpret_cast<uint32_t*>(wl_array->data);
   size_t array_size = wl_array->size / sizeof(uint32_t);
   for (size_t i = 0; i < array_size; i++) {
+    // SAFETY: TODO(crbug.com/353039516): fix unsafe buffer access.
     if (data[i] == value)
       return true;
   }

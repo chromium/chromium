@@ -132,16 +132,10 @@ std::string SysInfo::CPUModelName() {
 
 // static
 std::string SysInfo::HardwareModelName() {
-  // The old "hw.machine" and "hw.model" sysctls are discouraged in favor of the
-  // new "hw.product" and "hw.target". See
-  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/sys/sysctl.h#L1168-L1169
-  // and
-  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/kern/kern_mib.c#L534-L536
-  if (base::mac::MacOSMajorVersion() < 11) {
-    return StringSysctl({CTL_HW, HW_MODEL}).value_or(std::string{});
-  } else {
-    return StringSysctl({CTL_HW, HW_PRODUCT}).value_or(std::string{});
-  }
+  // Note that there is lots of code out there that uses "hw.model", but that is
+  // deprecated in favor of "hw.product" as used here. See the sysctl.h file for
+  // more info.
+  return StringSysctl({CTL_HW, HW_PRODUCT}).value_or(std::string{});
 }
 
 // static

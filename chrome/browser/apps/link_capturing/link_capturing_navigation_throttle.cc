@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
@@ -157,6 +158,12 @@ std::unique_ptr<content::NavigationThrottle>
 LinkCapturingNavigationThrottle::MaybeCreate(
     content::NavigationHandle* handle,
     std::unique_ptr<Delegate> delegate) {
+  // If the reimplementation params of the link capturing feature flag is
+  // enabled, turn off the "old" link capturing behavior.
+  if (features::IsLinkCapturingReimplementationEnabled()) {
+    return nullptr;
+  }
+
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. fenced-frame). We specifically allow
   // prerendering navigations so that we can destroy the prerender. Opening an

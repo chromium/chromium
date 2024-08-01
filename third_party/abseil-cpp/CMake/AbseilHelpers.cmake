@@ -258,6 +258,13 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
     elseif(_build_type STREQUAL "static" OR _build_type STREQUAL "shared")
       add_library(${_NAME} "")
       target_sources(${_NAME} PRIVATE ${ABSL_CC_LIB_SRCS} ${ABSL_CC_LIB_HDRS})
+      if(APPLE)
+        set_target_properties(${_NAME} PROPERTIES
+          INSTALL_RPATH "@loader_path")
+      elseif(UNIX)
+        set_target_properties(${_NAME} PROPERTIES
+          INSTALL_RPATH "$ORIGIN")
+      endif()
       target_link_libraries(${_NAME}
       PUBLIC ${ABSL_CC_LIB_DEPS}
       PRIVATE

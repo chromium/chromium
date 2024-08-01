@@ -26,8 +26,6 @@ android_library("public_java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionComponent.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/DigitalIdentitySafetyInterstitialBridge.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/DigitalIdentitySafetyInterstitialController.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/Account.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/ClientIdMetadata.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityCredentialTokenError.java",
@@ -37,7 +35,6 @@ android_library("public_java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/android/webid/DigitalIdentitySafetyInterstitialBridge.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/Account.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/ClientIdMetadata.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityCredentialTokenError.java",

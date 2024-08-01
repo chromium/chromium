@@ -3,8 +3,8 @@
 // For
 //     org.jni_zero.SampleProxyEdgeCases
 
-#ifndef org_jni_zero_SampleProxyEdgeCases_JNI
-#define org_jni_zero_SampleProxyEdgeCases_JNI
+#ifndef org_jni_1zero_SampleProxyEdgeCases_JNI
+#define org_jni_1zero_SampleProxyEdgeCases_JNI
 
 #include <jni.h>
 
@@ -178,4 +178,4 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_native
 }
 
 
-#endif  // org_jni_zero_SampleProxyEdgeCases_JNI
+#endif  // org_jni_1zero_SampleProxyEdgeCases_JNI

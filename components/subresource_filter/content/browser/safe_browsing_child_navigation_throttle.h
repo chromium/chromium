@@ -34,7 +34,6 @@ class SafeBrowsingChildNavigationThrottle
   SafeBrowsingChildNavigationThrottle(
       content::NavigationHandle* handle,
       AsyncDocumentSubresourceFilter* parent_frame_filter,
-      bool bypass_alias_check,
       base::RepeatingCallback<std::string(const GURL& url)>
           disallow_message_callback,
       std::optional<blink::FrameAdEvidence> ad_evidence);

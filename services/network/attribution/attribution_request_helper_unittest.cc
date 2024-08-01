@@ -206,9 +206,9 @@ TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
     resource_request.attribution_reporting_eligibility = test_case.eligibility;
     SetAttributionReportingHeaders(*request, resource_request);
 
-    std::string actual;
-    request->extra_request_headers().GetHeader(kAttributionReportingEligible,
-                                               &actual);
+    std::string actual = request->extra_request_headers()
+                             .GetHeader(kAttributionReportingEligible)
+                             .value_or(std::string());
 
     auto dict = net::structured_headers::ParseDictionary(actual);
     EXPECT_TRUE(dict.has_value());
@@ -257,9 +257,9 @@ TEST_F(AttributionCrossAppWebRequestHelperTest,
     resource_request.attribution_reporting_support = test_case.support;
     SetAttributionReportingHeaders(*request, resource_request);
 
-    std::string actual;
-    request->extra_request_headers().GetHeader(kAttributionReportingEligible,
-                                               &actual);
+    std::string actual = request->extra_request_headers()
+                             .GetHeader(kAttributionReportingEligible)
+                             .value_or(std::string());
 
     auto dict = net::structured_headers::ParseDictionary(actual);
     EXPECT_TRUE(dict.has_value());

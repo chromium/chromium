@@ -259,12 +259,6 @@ bool RemoteSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
-                                                         Client* client) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
-}
-
 std::optional<
     SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
 RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
@@ -364,7 +358,7 @@ void RemoteSafeBrowsingDatabaseManager::StartOnSBThread(
     const V4ProtocolConfig& config) {
   VLOG(1) << "RemoteSafeBrowsingDatabaseManager starting";
   SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
-
+  SafeBrowsingApiHandlerBridge::GetInstance().PopulateArtificialDatabase();
   enabled_ = true;
 }
 
@@ -380,6 +374,7 @@ void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   for (const std::unique_ptr<ClientRequest>& req : to_callback) {
     req->OnRequestDone(SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
   }
+  SafeBrowsingApiHandlerBridge::GetInstance().ClearArtificialDatabase();
   enabled_ = false;
 
   SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);

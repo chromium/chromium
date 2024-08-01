@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/check_deref.h"
+#include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -20,9 +23,11 @@
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -42,6 +47,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -53,6 +59,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
@@ -754,6 +761,32 @@ ChromePaymentsAutofillClient::GetMerchantPromoCodeManager() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return MerchantPromoCodeManagerFactory::GetForProfile(profile);
+}
+
+AutofillOfferManager* ChromePaymentsAutofillClient::GetAutofillOfferManager() {
+  return AutofillOfferManagerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
+}
+
+bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilities) {
+#if BUILDFLAG(IS_ANDROID)
+  // Create the manual filling controller which will be used to show the
+  // unmasked virtual card details in the manual fallback.
+  ManualFillingController::GetOrCreate(web_contents())
+      ->UpdateSourceAvailability(
+          ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
+          !cards_to_suggest.empty());
+
+  return touch_to_fill_payment_method_controller_.Show(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, cards_to_suggest, card_acceptabilities);
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED_NORETURN();
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

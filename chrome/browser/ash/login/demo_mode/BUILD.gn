@@ -26,6 +26,7 @@ static_library("demo_mode") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/dbus/power",
     "//components/component_updater/ash",
@@ -155,6 +156,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/shill",
@@ -203,6 +205,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/enrollment:test_support",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",

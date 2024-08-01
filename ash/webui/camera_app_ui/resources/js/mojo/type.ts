@@ -28,6 +28,7 @@ export {
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
+  SWPrivacySwitchMonitorCallbackRouter,
   TabletModeMonitorCallbackRouter,
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,

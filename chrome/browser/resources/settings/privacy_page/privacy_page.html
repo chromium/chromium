@@ -276,7 +276,7 @@
               allow-option-icon="cr:file-download"
               block-option-label
                   ="$i18n{siteSettingsAutomaticDownloadsBlocked}"
-              block-option-icon="settings:file-download-off">
+              block-option-icon="privacy:file-download-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
@@ -331,7 +331,7 @@
               block-option-label="$i18n{siteSettingsBackgroundSyncBlocked}"
               block-option-sub-label=
                   "$i18n{siteSettingsBackgroundSyncBlockedSubLabel}"
-              block-option-icon="settings:sync-off">
+              block-option-icon="privacy:sync-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.BACKGROUND_SYNC]]"
@@ -360,7 +360,7 @@
               block-option-label="$i18n{siteSettingsCameraBlocked}"
               block-option-sub-label=
                   "$i18n{siteSettingsCameraBlockedSubLabel}"
-              block-option-icon="settings:videocam-off">
+              block-option-icon="privacy:videocam-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.CAMERA]]" read-only-list
@@ -501,7 +501,7 @@
                   block-option-label="$i18n{siteSettingsLocationBlocked}"
                   block-option-sub-label=
                       "$i18n{siteSettingsLocationBlockedSubLabel}"
-                  block-option-icon="settings:location-off">
+                  block-option-icon="privacy:location-off">
               </settings-category-default-radio-group>
             </template>
 
@@ -548,7 +548,7 @@
                     name="location-block-radio-button"
                     sub-label="$i18n{siteSettingsLocationBlockedSubLabel}"
                     checked$="[[!isLocationAllowed_]]">
-                  <iron-icon icon="settings:location-off"></iron-icon>
+                  <iron-icon icon="privacy:location-off"></iron-icon>
                   $i18n{siteSettingsLocationBlocked}
                 </cr-radio-button>
               </cr-radio-group>
@@ -684,10 +684,10 @@
               category="[[contentSettingsTypesEnum_.MIC]]"
               allow-option-label=
                   "$i18n{siteSettingsMicAllowed}"
-              allow-option-icon="cr:mic"
+              allow-option-icon="privacy:mic"
               block-option-label="$i18n{siteSettingsMicBlocked}"
               block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
-              block-option-icon="settings:mic-off">
+              block-option-icon="privacy:mic-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.MIC]]" read-only-list
@@ -707,11 +707,11 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.SENSORS]]"
               allow-option-label="$i18n{siteSettingsMotionSensorsAllowed}"
-              allow-option-icon="settings:sensors"
+              allow-option-icon="privacy:sensors"
               block-option-label="$i18n{siteSettingsMotionSensorsBlocked}"
               block-option-sub-label=
                   "$i18n{siteSettingsMotionSensorsBlockedSubLabel}"
-              block-option-icon="settings:sensors-off">
+              block-option-icon="privacy:sensors-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.SENSORS]]" read-only-list
@@ -758,7 +758,7 @@
                     name="[[settingsStateEnum_.LOUD]]"
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsAllowed}"
-                    icon="settings:notifications">
+                    icon="privacy:notifications">
                 </settings-collapse-radio-button>
 
                 <settings-collapse-radio-button no-collapse class="two-line"
@@ -767,7 +767,7 @@
                     label="$i18n{siteSettingsNotificationsPartial}"
                     sub-label=
                         "$i18n{siteSettingsNotificationsPartialSubLabel}"
-                    icon="settings:notifications">
+                    icon="privacy:notifications">
                 </settings-collapse-radio-button>
 
                 <settings-collapse-radio-button no-collapse class="two-line"
@@ -775,7 +775,7 @@
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsBlocked}"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
-                    icon="settings:notifications-off">
+                    icon="privacy:notifications-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </template>
@@ -787,7 +787,7 @@
                     id="notification-ask-radio-button"
                     name="notification-ask-radio-button"
                     checked$="[[isNotificationAllowed_]]">
-                  <iron-icon icon="settings:notifications"></iron-icon>
+                  <iron-icon icon="privacy:notifications"></iron-icon>
                   $i18n{siteSettingsNotificationsAskState}
                 </cr-radio-button>
 
@@ -822,7 +822,7 @@
                     name="notification-block-radio-button"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
                     checked$="[[!isNotificationAllowed_]]">
-                  <iron-icon icon="settings:notifications-off"></iron-icon>
+                  <iron-icon icon="privacy:notifications-off"></iron-icon>
                   $i18n{siteSettingsNotificationsBlocked}
                 </cr-radio-button>
               </cr-radio-group>
@@ -895,9 +895,9 @@
               category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
               allow-option-label=
                   "$i18n{siteSettingsMidiAllowed}"
-              allow-option-icon="settings:midi"
+              allow-option-icon="privacy:piano"
               block-option-label="$i18n{siteSettingsMidiBlocked}"
-              block-option-icon="settings:midi-off">
+              block-option-icon="privacy:piano-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
@@ -917,9 +917,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
               allow-option-label="$i18n{siteSettingsUsbAllowed}"
-              allow-option-icon="settings:usb"
+              allow-option-icon="privacy:usb"
               block-option-label="$i18n{siteSettingsUsbBlocked}"
-              block-option-icon="settings:usb-off">
+              block-option-icon="privacy:usb-off">
           </settings-category-default-radio-group>
           <chooser-exception-list
               category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
@@ -937,9 +937,9 @@
               category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
               allow-option-label=
                   "$i18n{siteSettingsSerialPortsAllowed}"
-              allow-option-icon="settings:serial-port"
+              allow-option-icon="privacy:developer-board"
               block-option-label="$i18n{siteSettingsSerialPortsBlocked}"
-              block-option-icon="settings:serial-port-off">
+              block-option-icon="privacy:developer-board-off">
           </settings-category-default-radio-group>
           <chooser-exception-list
               category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
@@ -980,10 +980,10 @@
               category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
               allow-option-label=
                   "$i18n{siteSettingsFileSystemWriteAllowed}"
-              allow-option-icon="settings:save-original"
+              allow-option-icon="privacy:file-save"
               block-option-label=
                   "$i18n{siteSettingsFileSystemWriteBlocked}"
-              block-option-icon="settings:file-editing-off">
+              block-option-icon="privacy:file-save-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.FILE_SYSTEM_WRITE]]"
@@ -1014,10 +1014,10 @@
               category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
               allow-option-label=
                   "$i18n{siteSettingsHidDevicesAllowed}"
-              allow-option-icon="settings:hid-device"
+              allow-option-icon="privacy:videogame-asset"
               block-option-label=
                   "$i18n{siteSettingsHidDevicesBlocked}"
-              block-option-icon="settings:hid-device-off">
+              block-option-icon="privacy:videogame-asset-off">
           </settings-category-default-radio-group>
           <chooser-exception-list
               category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
@@ -1114,9 +1114,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
               allow-option-label="$i18n{siteSettingsClipboardAllowed}"
-              allow-option-icon="settings:clipboard"
+              allow-option-icon="privacy:content-paste"
               block-option-label="$i18n{siteSettingsClipboardBlocked}"
-              block-option-icon="settings:clipboard-off">
+              block-option-icon="privacy:content-paste-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
@@ -1138,9 +1138,9 @@
                 category="[[contentSettingsTypesEnum_.PAYMENT_HANDLER]]"
                 allow-option-label=
                     "$i18n{siteSettingsPaymentHandlersAllowed}"
-                allow-option-icon="settings:payment-handler"
+                allow-option-icon="privacy:credit-card"
                 block-option-label="$i18n{siteSettingsPaymentHandlersBlocked}"
-                block-option-icon="settings:payment-handler-off">
+                block-option-icon="privacy:credit-card-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[contentSettingsTypesEnum_.PAYMENT_HANDLER]]"
@@ -1191,9 +1191,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.VR]]"
               allow-option-label="$i18n{siteSettingsVrAllowed}"
-              allow-option-icon="settings:vr-headset"
+              allow-option-icon="privacy:cardboard"
               block-option-label="$i18n{siteSettingsVrBlocked}"
-              block-option-icon="settings:vr-headset-off">
+              block-option-icon="privacy:cardboard-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.VR]]"
@@ -1215,9 +1215,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.AR]]"
               allow-option-label="$i18n{siteSettingsArAsk}"
-              allow-option-icon="settings:vr-headset"
+              allow-option-icon="privacy:cardboard"
               block-option-label="$i18n{siteSettingsArBlock}"
-              block-option-icon="settings:vr-headset-off">
+              block-option-icon="privacy:cardboard-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.AR]]"
@@ -1240,7 +1240,7 @@
               allow-option-label="$i18n{siteSettingsDeviceUseAllowed}"
               allow-option-icon="settings:devices"
               block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
-              block-option-icon="settings:devices-off">
+              block-option-icon="privacy:devices-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
@@ -1260,9 +1260,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
               allow-option-label="$i18n{siteSettingsWindowManagementAsk}"
-              allow-option-icon="settings:window-management"
+              allow-option-icon="privacy:select-window"
               block-option-label="$i18n{siteSettingsWindowManagementBlocked}"
-              block-option-icon="settings:window-management-off">
+              block-option-icon="privacy:select-window-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
@@ -1283,9 +1283,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
               allow-option-label="$i18n{siteSettingsFontsAllowed}"
-              allow-option-icon="settings:local-fonts"
+              allow-option-icon="privacy:font-download"
               block-option-label="$i18n{siteSettingsFontsBlocked}"
-              block-option-icon="settings:local-fonts-off">
+              block-option-icon="privacy:font-download-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
@@ -1305,9 +1305,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
               allow-option-label="$i18n{storageAccessAllowed}"
-              allow-option-icon="settings:storage-access"
+              allow-option-icon="privacy:storage-access"
               block-option-label="$i18n{storageAccessBlocked}"
-              block-option-icon="settings:storage-access-off">
+              block-option-icon="privacy:storage-access-off">
           </settings-category-default-radio-group>
           <!-- Exceptions section. -->
           <div class="content-settings-header">

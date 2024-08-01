@@ -9,17 +9,22 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/cbor/values.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-shared.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -74,7 +79,7 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
     int compression_group_id;
     int partition_id;
 
-    bool operator==(const IsolationIndex& other) const = default;
+    auto operator<=>(const IsolationIndex&) const = default;
   };
 
   // Build the request helper using the helper builder to construct the POST
@@ -208,6 +213,65 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
   // size parameter. Valid parameter key are "slotSize" or
   // "allSlotsRequestedSizes"
   std::pair<std::string, std::string> trusted_bidding_signals_slot_size_param_;
+};
+
+// The received result for a particular compression group, returned only on
+// success. CONTENT_EXPORT is added for use in testing purposes.
+struct CONTENT_EXPORT CompressionGroupResult {
+  CompressionGroupResult();
+  CompressionGroupResult(mojom::TrustedSignalsCompressionScheme scheme,
+                         std::string content,
+                         base::TimeDelta ttl);
+  CompressionGroupResult(CompressionGroupResult&&);
+  CompressionGroupResult& operator=(CompressionGroupResult&&);
+  ~CompressionGroupResult();
+
+  // The compression scheme used by `content`, as indicated by the
+  // server.
+  mojom::TrustedSignalsCompressionScheme compression_scheme;
+
+  // The compressed content string.
+  std::string content;
+
+  // Time until the response expires.
+  base::TimeDelta ttl;
+};
+
+class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
+ public:
+  struct ErrorInfo {
+    std::string error_msg;
+  };
+
+  // A map of compression group ids to results, in the case of success.
+  using CompressionGroupResultMap = std::map<int, CompressionGroupResult>;
+
+  // The result of a fetch. Either the entire fetch succeeds or it fails with a
+  // single error.
+  using SignalsFetchResult =
+      base::expected<CompressionGroupResultMap, ErrorInfo>;
+
+  // Result map for response parser. The key is an `IsolationIndex` indicates
+  // compression group id and partition id. Return ErrorInfo if there is any
+  // failure during parsing.
+  using TrustedSignalsResultMap = base::expected<
+      std::map<TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex,
+               scoped_refptr<TrustedSignals::Result>>,
+      ErrorInfo>;
+
+  // Parse response body to `SignalsFetchResult` for integration with cache call
+  // flow in browser process.
+  static SignalsFetchResult ParseResponseToSignalsFetchResult(
+      std::vector<uint8_t> body_bytes);
+
+  // Parse trusted bidding signals fetch result to result map for integration
+  // with bidder worklet trusted bidding signals fetch call flow.
+  static TrustedSignalsResultMap ParseBiddingSignalsFetchResultToResultMap(
+      AuctionV8Helper* v8_helper,
+      const std::optional<std::set<std::string>>& interest_group_names,
+      const std::optional<std::set<std::string>>& keys,
+      const CompressionGroupResultMap& compression_group_result_map,
+      std::optional<uint32_t> data_version);
 };
 
 }  // namespace auction_worklet

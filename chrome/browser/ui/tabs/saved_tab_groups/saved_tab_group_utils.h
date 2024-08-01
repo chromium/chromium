@@ -61,11 +61,10 @@ class SavedTabGroupUtils {
   static void ToggleGroupPinState(Browser* browser,
                                   const base::Uuid& saved_group_guid);
 
-  // Helper method to show the deletion dialog, if its needed. a return value of
-  // true means that a synchronous deletion is allowed, and the callback wasnt
-  // called. A return value of false means that the dialog was shown and the
-  // callback may be called asynchronously based on the dialog response.
-  static bool MaybeShowSavedTabGroupDeletionDialog(
+  // Helper method to show the deletion dialog, if its needed. It either
+  // runs the callback if the dialog is not shown or it shows the dialog
+  // and the callback is run asynchronously through the dialog.
+  static void MaybeShowSavedTabGroupDeletionDialog(
       Browser* browser,
       DeletionDialogController::DialogType type,
       const std::vector<TabGroupId>& group_ids,
@@ -103,7 +102,7 @@ class SavedTabGroupUtils {
 
   // Returns the set of urls currently stored in the saved tab group.
   static std::unordered_set<std::string> GetURLsInSavedTabGroup(
-      const tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
+      Profile* profile,
       const base::Uuid& saved_id);
 
   // Moves an open saved tab group from `source_browser` to `target_browser`.

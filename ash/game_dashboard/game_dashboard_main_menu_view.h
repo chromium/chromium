@@ -59,6 +59,7 @@ class ASH_EXPORT GameDashboardMainMenuView
  private:
   friend class GameDashboardContextTestApi;
 
+  class ScreenSizeRow;
   class GameControlsDetailsRow;
 
   // Callbacks for the tiles and buttons in the main menu view.
@@ -150,6 +151,10 @@ class ASH_EXPORT GameDashboardMainMenuView
   // For test to access the nudge ID in the anonymous namespace.
   AnchoredNudge* GetGameControlsSetupNudgeForTesting();
 
+  // Returns the screen size row sub-label. If the screen size row or the
+  // sub-label aren't available, returns null. Visible for testing.
+  const views::Label* GetScreenSizeRowSubtitle();
+
   // views::Views:
   void OnThemeChanged() override;
 
@@ -172,6 +177,9 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Record game button to start recording the game window. This will open the
   // screen capture tool, allowing the user to select recording options.
   raw_ptr<FeatureTile> record_game_tile_ = nullptr;
+
+  // Screen Size Settings detail row. Visible for testing.
+  raw_ptr<ScreenSizeRow> screen_size_row_ = nullptr;
 
   // Game Controls details row to configure Game Controls.
   raw_ptr<GameControlsDetailsRow> game_controls_details_ = nullptr;

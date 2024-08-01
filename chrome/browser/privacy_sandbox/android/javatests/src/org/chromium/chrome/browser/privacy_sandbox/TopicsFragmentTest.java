@@ -128,7 +128,8 @@ public final class TopicsFragmentTest {
     }
 
     private View getTopicsRootView() {
-        if (TopicsUtils.shouldShowProactiveTopicsBlocking()) {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
             return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label_v2);
         }
         return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label);
@@ -159,10 +160,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderTopicsOff() throws IOException {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -172,10 +170,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderTopicsEmpty() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -185,10 +180,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderTopicsPopulated() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -199,10 +191,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderBlockedTopicsEmpty() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -213,10 +202,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderBlockedTopicsPopulated() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -228,10 +214,7 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testRenderLearnMore() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -264,10 +247,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testTurnTopicsOnWhenTopicListEmpty() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -286,10 +266,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testTurnTopicsOnWhenTopicListEmptyV2() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -335,10 +312,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testTurnTopicsOff() {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -358,10 +332,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testTurnTopicsOffV2() {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -390,10 +361,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testBlockedTopicsAppearWhenTopicOff() {
         setTopicsPrefEnabled(false);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -411,10 +379,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testBlockedTopicsAppearWhenTopicOn() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -432,10 +397,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testBlockedTopicsAppearWhenTopicOnV2() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -453,10 +415,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testBlockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -496,10 +455,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testBlockTopicsV2() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -539,10 +495,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testUnblockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -586,10 +539,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false"
-    })
-    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testUnblockTopicsV2() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -649,10 +599,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
     public void testLearnMoreLink() {
         startTopicsSettings();
         TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
@@ -729,25 +676,5 @@ public final class TopicsFragmentTest {
                                 iconId != 0);
                     }
                 });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/true",
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
-    public void testPTBIncludesModeB() {
-        assertTrue(TopicsUtils.shouldShowProactiveTopicsBlocking());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING + ":include-mode-b/false",
-        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
-    })
-    public void testPTBExcludesModeB() {
-        assertFalse(TopicsUtils.shouldShowProactiveTopicsBlocking());
     }
 }

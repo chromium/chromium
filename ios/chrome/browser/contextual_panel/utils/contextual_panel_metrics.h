@@ -16,7 +16,7 @@ enum class ModelRelevanceType {
   High = 2,
   kMaxValue = High,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelModelRelevance)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelModelRelevance)
 
 // Values of the UMA IOS.ContextualPanel.InfoBlockImpression histograms. Must be
 // kept up to date with IOSContextualPanelInfoBlockImpression in enums.xml.
@@ -31,7 +31,7 @@ enum class PanelBlockImpressionType {
   VisibleAndOtherWasLoudEntrypoint = 4,
   kMaxValue = VisibleAndOtherWasLoudEntrypoint,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelInfoBlockImpression)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelInfoBlockImpression)
 
 // Values of the UMA IOS.ContextualPanel.DismissedReason histogram. Must be
 // kept up to date with IOSContextualPanelInfoBlockImpression in enums.xml.
@@ -46,7 +46,7 @@ enum class ContextualPanelDismissedReason {
   KeyboardOpened = 4,
   kMaxValue = KeyboardOpened,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelDismissedReason)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelDismissedReason)
 
 // Values of the UMA IOS.ContextualPanel.Entrypoint histograms. Must be
 // kept up to date with IOSContextualPanelEntrypointInteractionType in
@@ -58,6 +58,6 @@ enum class EntrypointInteractionType {
   Tapped = 1,
   kMaxValue = Tapped,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelEntrypointInteractionType)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelEntrypointInteractionType)
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UTILS_CONTEXTUAL_PANEL_METRICS_H_

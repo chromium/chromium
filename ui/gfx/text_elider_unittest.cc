@@ -4,6 +4,11 @@
 //
 // Unit tests for eliding and formatting utility functions.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/text_elider.h"
 
 #include <stddef.h>

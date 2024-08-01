@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_mediator.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h"
@@ -100,7 +101,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
@@ -394,6 +394,29 @@ void MigrateStringPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
+// Migrates a Dict pref from source to target PrefService.
+void MigrateDictPref(std::string_view pref_name,
+                     PrefService* target_pref_service,
+                     PrefService* source_pref_service) {
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_name);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_name);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetDict(
+        pref_name, source_pref_service->GetDict(pref_name).Clone());
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_name);
+}
+
 // Helper function migrating the `list` preference from LocalState prefs to
 // BrowserState prefs.
 void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
@@ -435,18 +458,8 @@ void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
 void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      local_pref_service->FindPreference(pref_name.data());
-
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    profile_pref_service->SetDict(
-        pref_name.data(),
-        local_pref_service->GetDict(pref_name.data()).Clone());
-
-    local_pref_service->ClearPref(pref_name.data());
-  }
+  MigrateDictPref(pref_name, profile_pref_service,
+                  GetApplicationContext()->GetLocalState());
 }
 
 }  // namespace
@@ -661,6 +674,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
+
+  // Preferences related to the Docking Promo feature (used only if
+  // `kIOSDockingPromoForEligibleUsersOnly` is enabled).
+  registry->RegisterBooleanPref(prefs::kIosDockingPromoEligibilityMet, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -945,6 +962,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterDictionaryPref(
       prefs::kContentNotificationsEnrollmentEligibility);
+
+  registry->RegisterStringPref(prefs::kContentNotificationsEnrollmentType, "");
 
   registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
 

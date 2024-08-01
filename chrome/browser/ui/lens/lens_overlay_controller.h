@@ -14,7 +14,6 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
@@ -74,6 +73,8 @@ class SyncService;
 namespace variations {
 class VariationsClient;
 }  // namespace variations
+
+enum class SidePanelEntryHideReason;
 
 class PrefService;
 class Profile;
@@ -143,10 +144,6 @@ class LensOverlayController : public LensSearchboxClient,
     // The selection type of the current Lens request, if any.
     lens::LensOverlaySelectionType lens_selection_type_;
   };
-
-  // Returns whether the Lens Overlay feature is enabled for this user profile
-  // and browser window.
-  static bool IsEnabled(Browser* browser);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
@@ -220,6 +217,11 @@ class LensOverlayController : public LensSearchboxClient,
   // executing javascript and has bound the handler. Takes ownership of
   // `handler`.
   void SetSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+
+  // Passes ownership of the realbox handler to the search bubble controller.
+  // This is called by the WebUIController when the WebUI is executing
+  // javascript and has bound the handler.
+  void SetContextualSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
 
   // This method is used to release the owned `SearchboxHandler`. It should be
   // called before the embedding web contents is destroyed since it contains a
@@ -354,6 +356,10 @@ class LensOverlayController : public LensSearchboxClient,
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
   // Sets whether the side panel should show a full error page.
   virtual void SetSidePanelShowErrorPage(bool should_show_error_page);
+
+  // Called before the lens results panel begins hiding. This is called before
+  // any side panel closing animations begin.
+  void OnSidePanelWillHide(SidePanelEntryHideReason reason);
 
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();
@@ -924,6 +930,10 @@ class LensOverlayController : public LensSearchboxClient,
   base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
       omnibox_tab_helper_observer_{this};
 
+  // Owns the search bubble that shows over the overlay, before the side panel
+  // is showing.
+  std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
+
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,
   // like in the case of side panel opening. In addition, the handler may be
@@ -954,10 +964,6 @@ class LensOverlayController : public LensSearchboxClient,
   raw_ptr<views::View> overlay_view_;
   // Pointer to the web view within the overlay view if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
-
-  // Owns the search bubble that shows over the overlay, before the side panel
-  // is showing.
-  std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
 
   // Preselection toast bubble. Weak; owns itself. NULL when closed.
   raw_ptr<views::Widget> preselection_widget_ = nullptr;

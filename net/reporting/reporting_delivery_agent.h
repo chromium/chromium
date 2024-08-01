@@ -72,6 +72,12 @@ class NET_EXPORT ReportingDeliveryAgent {
   // is being destroyed.
   virtual void SendReportsForSource(
       base::UnguessableToken reporting_source) = 0;
+
+ private:
+  // Bypasses the schedule to attempt delivery of all outstanding reports.
+  virtual void SendReportsForTesting() = 0;
+
+  friend class ReportingDeliveryAgentTest;
 };
 
 }  // namespace net

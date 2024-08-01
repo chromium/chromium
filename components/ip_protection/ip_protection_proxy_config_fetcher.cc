@@ -65,7 +65,7 @@ void IpProtectionProxyConfigFetcher::OnGetProxyConfigCompleted(
         base::Time::Now() + next_get_proxy_config_backoff_;
     next_get_proxy_config_backoff_ *= 2;
 
-    std::move(callback).Run(std::nullopt, nullptr);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -75,7 +75,7 @@ void IpProtectionProxyConfigFetcher::OnGetProxyConfigCompleted(
 
   std::vector<net::ProxyChain> proxy_list =
       GetProxyListFromProxyConfigResponse(response.value());
-  network::mojom::GeoHintPtr geo_hint =
+  std::optional<network::GeoHint> geo_hint =
       GetGeoHintFromProxyConfigResponse(response.value());
   std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
 }
@@ -155,18 +155,17 @@ IpProtectionProxyConfigFetcher::GetProxyListFromProxyConfigResponse(
   return proxy_list;
 }
 
-network::mojom::GeoHintPtr
+std::optional<network::GeoHint>
 IpProtectionProxyConfigFetcher::GetGeoHintFromProxyConfigResponse(
     ip_protection::GetProxyConfigResponse& response) {
   if (!response.has_geo_hint()) {
-    return nullptr;  // No GeoHint available in the response.
+    return std::nullopt;  // No GeoHint available in the response.
   }
 
-  const auto& response_geo_hint = response.geo_hint();
-
-  return network::mojom::GeoHint::New(response_geo_hint.country_code(),
-                                      response_geo_hint.iso_region(),
-                                      response_geo_hint.city_name());
+  return std::make_optional<network::GeoHint>(
+      {.country_code = response.geo_hint().country_code(),
+       .iso_region = response.geo_hint().iso_region(),
+       .city_name = response.geo_hint().city_name()});
 }
 
 void IpProtectionProxyConfigFetcher::SetUpForTesting(

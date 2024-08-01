@@ -44,10 +44,8 @@ namespace autofill {
 //                      display. For example, a JP address with "ja" language
 //                      code starts with the postal code, but a JP address with
 //                      "ja-latn" language code starts with the recipient name.
-//   label              A user-chosen and user-visible label for the profile to
-//                      help identifying the semantics of the profile. The user
-//                      can choose an arbitrary string in principle, but the
-//                      values '$HOME$' and '$WORK$' indicate a special meaning.
+//   label              A label intended to be chosen by the user. This was
+//                      however never implemented and is currently unused.
 //   initial_creator_id The application that initially created the profile.
 //                      Represented as an integer. See AutofillProfile.
 //   last_modifier_id   The application that performed the last non-metadata
@@ -97,16 +95,16 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Records a single Autofill profile in the autofill_profiles table.
-  virtual bool AddAutofillProfile(const AutofillProfile& profile);
+  bool AddAutofillProfile(const AutofillProfile& profile);
 
   // Updates the database values for the specified profile.  Multi-value aware.
-  virtual bool UpdateAutofillProfile(const AutofillProfile& profile);
+  bool UpdateAutofillProfile(const AutofillProfile& profile);
 
   // Removes the Autofill profile with the given `guid`. `profile_source`
   // indicates where the profile was synced from and thus whether it is stored
   // in `kAutofillProfilesTable` or `kContactInfoTable`.
-  virtual bool RemoveAutofillProfile(const std::string& guid,
-                                     AutofillProfile::Source profile_source);
+  bool RemoveAutofillProfile(const std::string& guid,
+                             AutofillProfile::Source profile_source);
 
   // Removes all profiles from the given `profile_source`.
   bool RemoveAllAutofillProfiles(AutofillProfile::Source profile_source);
@@ -120,9 +118,9 @@ class AddressAutofillTable : public WebDatabaseTable {
   // Retrieves profiles in the database. They are returned in unspecified order.
   // The `profile_source` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
-  virtual bool GetAutofillProfiles(
+  bool GetAutofillProfiles(
       AutofillProfile::Source profile_source,
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
+      std::vector<std::unique_ptr<AutofillProfile>>& profiles) const;
 
   // Removes rows from local_addresses tables if they were created on or after
   // `delete_begin` and strictly before `delete_end`. Returns the list of
@@ -135,12 +133,12 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool RemoveAutofillDataModifiedBetween(
       base::Time delete_begin,
       base::Time delete_end,
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles);
+      std::vector<std::unique_ptr<AutofillProfile>>& profiles);
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
-  // GetCreditCard may change over time, but MigrateToVersionXX should never
-  // change.
+  // `GetAutofillProfile()` may change over time, but MigrateToVersionXX should
+  // never change.
   bool MigrateToVersion88AddNewNameColumns();
   bool MigrateToVersion90AddNewStructuredAddressColumns();
   bool MigrateToVersion91AddMoreStructuredAddressColumns();
@@ -162,7 +160,7 @@ class AddressAutofillTable : public WebDatabaseTable {
   std::unique_ptr<AutofillProfile> GetAutofillProfileFromLegacyTable(
       const std::string& guid) const;
   bool GetAutofillProfilesFromLegacyTable(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
+      std::vector<std::unique_ptr<AutofillProfile>>& profiles) const;
 
   bool InitLegacyProfileAddressesTable();
   bool InitProfileMetadataTable(AutofillProfile::Source source);

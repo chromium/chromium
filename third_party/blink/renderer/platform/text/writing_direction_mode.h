@@ -47,6 +47,10 @@ class PLATFORM_EXPORT WritingDirectionMode {
     return IsFlippedBlocksWritingMode(writing_mode_);
   }
 
+  bool IsFlippedInlines() const {
+    return IsRtl() ^ (writing_mode_ == WritingMode::kSidewaysLr);
+  }
+
   // Bottom of the line occurs earlier in the block; modes vertical-lr.
   bool IsFlippedLines() const {
     return IsFlippedLinesWritingMode(writing_mode_);
@@ -93,7 +97,7 @@ inline bool WritingDirectionMode::IsFlippedY() const {
     DCHECK(!IsFlippedBlocks());
     return false;
   }
-  return IsRtl();
+  return IsFlippedInlines();
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,

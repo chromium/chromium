@@ -23,10 +23,8 @@ class MockScrollbar : public FakeScrollbar {
     set_is_overlay(true);
   }
 
-  void PaintPart(PaintCanvas*, ScrollbarPart part, const gfx::Rect&) override {
-    if (part == ScrollbarPart::kTrackButtonsTickmarks) {
-      paint_tickmarks_called_ = true;
-    }
+  void PaintTrackAndButtons(PaintCanvas&, const gfx::Rect&) override {
+    paint_tickmarks_called_ = true;
   }
 
   bool UsesNinePatchThumbResource() const override { return true; }

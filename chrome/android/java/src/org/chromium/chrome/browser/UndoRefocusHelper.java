@@ -37,7 +37,7 @@ public class UndoRefocusHelper implements DestroyObserver {
     private LayoutManagerImpl mLayoutManager;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
-    private Integer mSelectedTabIdWhenTabClosed;
+    private int mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     private boolean mTabSwitcherActive;
     private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
     private boolean mIsTablet;
@@ -150,15 +150,14 @@ public class UndoRefocusHelper implements DestroyObserver {
                     public void tabClosureUndone(Tab tab) {
                         int id = tab.getId();
                         recordClosureCancellation(id);
-                        if (mSelectedTabIdWhenTabClosed != null
-                                && mSelectedTabIdWhenTabClosed == id) {
+                        if (mSelectedTabIdWhenTabClosed == id) {
                             selectPreviouslySelectedTab();
                         }
                     }
 
                     @Override
                     public void allTabsClosureUndone() {
-                        if (mSelectedTabIdWhenTabClosed != null) {
+                        if (mSelectedTabIdWhenTabClosed != Tab.INVALID_TAB_ID) {
                             selectPreviouslySelectedTab();
                         }
 
@@ -169,8 +168,10 @@ public class UndoRefocusHelper implements DestroyObserver {
                     @Override
                     public void tabClosureCommitted(Tab tab) {
                         if (!tab.isIncognito()) {
-                            resetSelectionsForUndo();
-                            mTabsClosedFromTabStrip.clear();
+                            if (tab.getId() == mSelectedTabIdWhenTabClosed) {
+                                resetSelectionsForUndo();
+                            }
+                            mTabsClosedFromTabStrip.remove(tab.getId());
                         }
                     }
 
@@ -238,12 +239,10 @@ public class UndoRefocusHelper implements DestroyObserver {
 
     /** If a tab closure is undone, this selects tab if it was previously selected. */
     private void selectPreviouslySelectedTab() {
-        TabModel model = mModelSelector.getCurrentModel();
-        if (model == null || mSelectedTabIdWhenTabClosed == null) return;
+        if (mSelectedTabIdWhenTabClosed == Tab.INVALID_TAB_ID) return;
 
-        int prevSelectedIndex = TabModelUtils.getTabIndexById(model, mSelectedTabIdWhenTabClosed);
-
-        TabModelUtils.setIndex(model, prevSelectedIndex, TabSelectionType.FROM_UNDO);
+        TabModelUtils.selectTabById(
+                mModelSelector, mSelectedTabIdWhenTabClosed, TabSelectionType.FROM_UNDO);
         resetSelectionsForUndo();
     }
 
@@ -252,7 +251,7 @@ public class UndoRefocusHelper implements DestroyObserver {
      * are reset so the next undo closure action does not reselect the reopened tab.
      */
     private void resetSelectionsForUndo() {
-        mSelectedTabIdWhenTabClosed = null;
+        mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     }
 
     public TabModelSelectorTabModelObserver getTabModelSelectorTabModelObserverForTests() {

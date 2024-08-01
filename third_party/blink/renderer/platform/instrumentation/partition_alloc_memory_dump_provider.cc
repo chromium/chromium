@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/partition_alloc_memory_dump_provider.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

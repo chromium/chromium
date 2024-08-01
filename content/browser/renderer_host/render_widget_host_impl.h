@@ -272,7 +272,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void AddSuppressShowingImeCallback(
       const SuppressShowingImeCallback& callback) override;
   void RemoveSuppressShowingImeCallback(
-      const SuppressShowingImeCallback& callback) override;
+      const SuppressShowingImeCallback& callback,
+      bool trigger_ime) override;
   void AddInputEventObserver(
       RenderWidgetHost::InputEventObserver* observer) override;
   void RemoveInputEventObserver(
@@ -1512,6 +1513,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::OneShotTimer pending_user_activation_timer_;
 
   input::InputRouterImpl::RequestMouseLockCallback request_pointer_lock_callback_;
+
+  ui::mojom::TextInputStatePtr saved_text_input_state_for_suppression_;
 
   // Parameters to pass to blink::mojom::Widget::WasShown after
   // `waiting_for_init_` becomes true. These are stored in a struct instead of

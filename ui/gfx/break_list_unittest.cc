@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/break_list.h"
 
 #include <stddef.h>
@@ -14,38 +19,50 @@ namespace gfx {
 
 class BreakListTest : public testing::Test {};
 
-TEST_F(BreakListTest, SetValue) {
+TEST_F(BreakListTest, ClearAndSetInitialValue) {
   // Check the default values applied to new instances.
   BreakList<bool> style_breaks(false);
   EXPECT_TRUE(style_breaks.EqualsValueForTesting(false));
-  style_breaks.SetValue(true);
+  style_breaks.ClearAndSetInitialValue(true);
   EXPECT_TRUE(style_breaks.EqualsValueForTesting(true));
 
   // Ensure that setting values works correctly.
   BreakList<SkColor> color_breaks(SK_ColorRED);
   EXPECT_TRUE(color_breaks.EqualsValueForTesting(SK_ColorRED));
-  color_breaks.SetValue(SK_ColorBLACK);
+  color_breaks.ClearAndSetInitialValue(SK_ColorBLACK);
   EXPECT_TRUE(color_breaks.EqualsValueForTesting(SK_ColorBLACK));
 }
 
-TEST_F(BreakListTest, SetValueChanged) {
+TEST_F(BreakListTest, ClearAndSetInitialValueChanged) {
   BreakList<bool> breaks(false);
-  EXPECT_FALSE(breaks.SetValue(false));
-  EXPECT_TRUE(breaks.SetValue(true));
-  EXPECT_FALSE(breaks.SetValue(true));
-  EXPECT_TRUE(breaks.SetValue(false));
+  EXPECT_FALSE(breaks.ClearAndSetInitialValue(false));
+  EXPECT_TRUE(breaks.ClearAndSetInitialValue(true));
+  EXPECT_FALSE(breaks.ClearAndSetInitialValue(true));
+  EXPECT_TRUE(breaks.ClearAndSetInitialValue(false));
 
-  const size_t max = 99;
+  constexpr size_t max = 99;
   breaks.SetMax(max);
   breaks.ApplyValue(true, Range(0, 2));
   breaks.ApplyValue(true, Range(3, 6));
-  EXPECT_TRUE(breaks.SetValue(false));
-  EXPECT_FALSE(breaks.SetValue(false));
+  EXPECT_TRUE(breaks.ClearAndSetInitialValue(false));
+  EXPECT_FALSE(breaks.ClearAndSetInitialValue(false));
+}
+
+TEST_F(BreakListTest, Reset) {
+  BreakList<bool> breaks(false);
+  constexpr size_t max = 99;
+  breaks.SetMax(max);
+  EXPECT_EQ(breaks.breaks().size(), 1U);
+  breaks.ApplyValue(true, Range(0, 2));
+  EXPECT_EQ(breaks.breaks().size(), 2U);
+  breaks.Reset();
+
+  EXPECT_EQ(breaks.breaks().size(), 1U);
 }
 
 TEST_F(BreakListTest, ApplyValue) {
   BreakList<bool> breaks(false);
-  const size_t max = 99;
+  constexpr size_t max = 99;
   breaks.SetMax(max);
 
   // Ensure ApplyValue is a no-op on invalid and empty ranges.
@@ -67,7 +84,7 @@ TEST_F(BreakListTest, ApplyValue) {
   }
 
   // Ensure setting a value overrides the ranged value.
-  breaks.SetValue(true);
+  breaks.ClearAndSetInitialValue(true);
   EXPECT_TRUE(breaks.EqualsValueForTesting(true));
 
   // Ensure applying a value over [0, |max|) is the same as setting a value.
@@ -119,7 +136,7 @@ TEST_F(BreakListTest, ApplyValue) {
 
 TEST_F(BreakListTest, ApplyValueChanged) {
   BreakList<bool> breaks(false);
-  const size_t max = 99;
+  constexpr size_t max = 99;
   breaks.SetMax(max);
 
   // Set two ranges.

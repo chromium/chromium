@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Integration test for the Password Check component, testing the interaction between sub-components
@@ -43,7 +42,6 @@ public class PasswordCheckIntegrationTest {
     @Rule public final JniMocker mJniMocker = new JniMocker();
 
     @Mock private PasswordCheckBridge.Natives mPasswordCheckBridge;
-    @Mock private SettingsLauncher mMockSettingsLauncher;
 
     @Before
     public void setUp() {
@@ -54,8 +52,7 @@ public class PasswordCheckIntegrationTest {
     @Test
     @MediumTest
     public void testDestroysComponentIfFirstInSettingsStack() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
+        ThreadUtils.runOnUiThreadBlocking(() -> PasswordCheckFactory.getOrCreate());
         Activity activity = setUpUiLaunchedFromDialog();
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
@@ -65,8 +62,7 @@ public class PasswordCheckIntegrationTest {
     @Test
     @MediumTest
     public void testDoesNotDestroyComponentIfNotFirstInSettingsStack() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
+        ThreadUtils.runOnUiThreadBlocking(() -> PasswordCheckFactory.getOrCreate());
         Activity activity = setUpUiLaunchedFromSettings();
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());

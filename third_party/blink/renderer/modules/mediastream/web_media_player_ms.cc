@@ -1218,6 +1218,18 @@ void WebMediaPlayerMS::OnPageShown() {
 
 void WebMediaPlayerMS::OnIdleTimeout() {}
 
+void WebMediaPlayerMS::OnFrameShown() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
+  // CL.
+}
+
+void WebMediaPlayerMS::OnFrameHidden() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(crbug.com/351354996): This method should be implemented in a follow-up
+  // CL.
+}
+
 void WebMediaPlayerMS::SetVolumeMultiplier(double multiplier) {
   // TODO(perkj, magjed): See TODO in OnPlay().
 }

@@ -28,6 +28,7 @@
 #include "extensions/browser/extension_util.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -117,7 +118,6 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
       views::Widget::InitParams::TYPE_WINDOW);
   init_params.delegate = this;
   init_params.remove_standard_frame = ShouldRemoveStandardFrame();
-  init_params.use_system_default_icon = true;
   if (create_params.alpha_enabled) {
     init_params.opacity =
         views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -138,12 +138,12 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   gfx::Rect init_param_bounds = init_params.bounds;
   widget()->Init(std::move(init_params));
 
-  // The frame insets are required to resolve the bounds specifications
-  // correctly. So we set the window bounds and constraints now.
+  // The frame insets and window radii are required to resolve the bounds
+  // specifications correctly. So we set the window bounds and constraints now.
   gfx::Insets frame_insets = GetFrameInsets();
   gfx::Rect window_bounds =
       init_param_bounds.IsEmpty()
-          ? create_params.GetInitialWindowBounds(frame_insets)
+          ? create_params.GetInitialWindowBounds(frame_insets, GetWindowRadii())
           : init_param_bounds;
   SetContentSizeConstraints(create_params.GetContentMinimumSize(frame_insets),
                             create_params.GetContentMaximumSize(frame_insets));

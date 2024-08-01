@@ -682,8 +682,8 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   if (Style().HasAutoStandardLineClamp()) {
     LayoutUnit clamp_bfc_offset = ChildAvailableSize().block_size;
     if (clamp_bfc_offset == kIndefiniteSize) {
-      MinMaxSizes sizes =
-          ComputeMinMaxBlockSizes(constraint_space, Style(), BorderPadding());
+      const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
+          constraint_space, Node(), BorderPadding());
       if (sizes.max_size != LayoutUnit::Max()) {
         clamp_bfc_offset = (sizes.max_size - BorderScrollbarPadding().block_end)
                                .ClampNegativeToZero();
@@ -1214,7 +1214,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
 
   // Recompute the block-axis size now that we know our content size.
   border_box_size.block_size = ComputeBlockSizeForFragment(
-      constraint_space, Style(), BorderPadding(),
+      constraint_space, Node(), BorderPadding(),
       previously_consumed_block_size + intrinsic_block_size_,
       border_box_size.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(border_box_size.block_size);
@@ -1238,7 +1238,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     //  - The block-size differs from the intrinsic size.
     //  - The parent has a definite initial block-size.
     const LayoutUnit initial_block_size = ComputeInitialBlockSizeForFragment(
-        constraint_space, Style(), BorderPadding(), kIndefiniteSize,
+        constraint_space, Node(), BorderPadding(), kIndefiniteSize,
         border_box_size.inline_size);
     if (border_box_size.block_size != intrinsic_block_size_ ||
         initial_block_size != kIndefiniteSize) {
@@ -3703,16 +3703,6 @@ LogicalOffset BlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
   const auto* input =
       To<HTMLInputElement>(Node().GetDOMNode()->OwnerShadowHost());
   LayoutUnit offset(input->RatioValue().ToDouble() * available_extent);
-  // While the vertical form controls do not support LTR direction, we need to
-  // position the thumb's offset on the opposite side of the element (similar to
-  // RTL direction).
-  WritingDirectionMode writing_direction =
-      GetConstraintSpace().GetWritingDirection();
-  if (!writing_direction.IsHorizontal() && writing_direction.IsLtr() &&
-      !RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeDirectionSupportEnabled()) {
-    offset = available_extent - offset;
-  }
   return {logical_offset.inline_offset + offset, logical_offset.block_offset};
 }
 

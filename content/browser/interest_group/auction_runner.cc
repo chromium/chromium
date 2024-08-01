@@ -77,6 +77,7 @@ blink::AuctionConfig* LookupAuction(
 }  // namespace
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
+    AuctionMetricsRecorder* auction_metrics_recorder,
     AuctionWorkletManager* auction_worklet_manager,
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
@@ -88,7 +89,6 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     const blink::AuctionConfig& auction_config,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
-    ukm::SourceId ukm_source_id,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -96,12 +96,12 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_worklet_manager, auction_nonce_manager, interest_group_manager,
-      browser_context, private_aggregation_manager,
+      auction_metrics_recorder, auction_worklet_manager, auction_nonce_manager,
+      interest_group_manager, browser_context, private_aggregation_manager,
       std::move(ad_auction_page_data_callback),
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
-      frame_origin, ukm_source_id, std::move(client_security_state),
+      frame_origin, std::move(client_security_state),
       std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
       std::move(attestation_callback), std::move(abort_receiver),
@@ -527,6 +527,7 @@ void AuctionRunner::FailAuction(
 }
 
 AuctionRunner::AuctionRunner(
+    AuctionMetricsRecorder* auction_metrics_recorder,
     AuctionWorkletManager* auction_worklet_manager,
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
@@ -539,7 +540,6 @@ AuctionRunner::AuctionRunner(
     const blink::AuctionConfig& auction_config,
     const url::Origin& main_frame_origin,
     const url::Origin& frame_origin,
-    ukm::SourceId ukm_source_id,
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -563,14 +563,13 @@ AuctionRunner::AuctionRunner(
           std::make_unique<blink::AuctionConfig>(auction_config)),
       callback_(std::move(callback)),
       promise_fields_in_auction_config_(owned_auction_config_->NumPromises()),
-      auction_metrics_recorder_(ukm_source_id),
       auction_(kanon_mode_,
                owned_auction_config_.get(),
                /*parent=*/nullptr,
+               auction_metrics_recorder,
                auction_worklet_manager,
                auction_nonce_manager,
                interest_group_manager,
-               &auction_metrics_recorder_,
                base::BindRepeating(&AuctionRunner::GetDataDecoder,
                                    // `this` owns `auction_`.
                                    base::Unretained(this)),

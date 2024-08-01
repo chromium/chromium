@@ -201,11 +201,6 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       // No additional accessibility states currently for these menu states.
       break;
   }
-
-  if (IsTraversableByKeyboard()) {
-    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                                IsSelected());
-  }
 }
 
 bool MenuItemView::HandleAccessibleAction(const ui::AXActionData& action_data) {
@@ -509,6 +504,7 @@ void MenuItemView::SetSelected(bool selected) {
     return;
 
   selected_ = selected;
+  UpdateAccessibleSelection();
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
   OnPropertyChanged(&selected_, kPropertyEffectsPaint);
 }
@@ -890,6 +886,13 @@ MenuItemView::MenuItemView(MenuItemView* parent,
   if (parent && type != Type::kEmpty && root_delegate)
     SetEnabled(root_delegate->IsCommandEnabled(command));
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
+
+  visible_changed_callback_ = AddVisibleChangedCallback(base::BindRepeating(
+      &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
+  enabled_changed_callback_ = AddEnabledChangedCallback(base::BindRepeating(
+      &MenuItemView::UpdateAccessibleSelection, base::Unretained(this)));
+
+  UpdateAccessibleSelection();
   UpdateAccessibleKeyShortcuts();
 }
 
@@ -1532,6 +1535,10 @@ void MenuItemView::UpdateAccessibleKeyShortcuts() {
   } else {
     GetViewAccessibility().RemoveKeyShortcuts();
   }
+}
+
+void MenuItemView::UpdateAccessibleSelection() {
+  GetViewAccessibility().SetIsSelected(IsTraversableByKeyboard() && selected_);
 }
 
 BEGIN_METADATA(MenuItemView)

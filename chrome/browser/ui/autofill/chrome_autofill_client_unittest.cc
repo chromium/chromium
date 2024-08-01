@@ -81,6 +81,7 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::Ref;
 using ::testing::Return;
+using PasswordFormClassification = AutofillClient::PasswordFormClassification;
 using user_education::test::MockFeaturePromoController;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -259,10 +260,13 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnMainFrame) {
     ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
   }
 
+  const auto expected = PasswordFormClassification{
+      .type = PasswordFormClassification::Type::kLoginForm,
+      .username_field = form.fields()[0].global_id()};
   EXPECT_EQ(client()->ClassifyAsPasswordForm(
                 autofill_driver->GetAutofillManager(), form.global_id(),
                 form.fields()[0].global_id()),
-            AutofillClient::PasswordFormType::kLoginForm);
+            expected);
 }
 
 // Tests that `ClassifyAsPasswordForm()` correctly recognizes a login form on
@@ -316,12 +320,15 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
   EXPECT_EQ(client()->ClassifyAsPasswordForm(main_driver->GetAutofillManager(),
                                              main_form.global_id(),
                                              main_form.fields()[0].global_id()),
-            AutofillClient::PasswordFormType::kNoPasswordForm);
+            PasswordFormClassification());
   // The form fields in the child frame form a login form.
+  const auto expected = PasswordFormClassification{
+      .type = PasswordFormClassification::Type::kLoginForm,
+      .username_field = child_form.fields()[0].global_id()};
   EXPECT_EQ(client()->ClassifyAsPasswordForm(
                 main_driver->GetAutofillManager(), main_form.global_id(),
                 child_form.fields()[0].global_id()),
-            AutofillClient::PasswordFormType::kLoginForm);
+            expected);
 }
 
 TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_BelowMaxFlowTime) {

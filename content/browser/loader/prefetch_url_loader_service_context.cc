@@ -56,9 +56,19 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_to_use =
       current_context.factory;
 
+  // The request must not already have its `trusted_params` initialized.
+  if (resource_request.trusted_params) {
+    loader_factory_receivers_->ReportBadMessage(
+        "Prefetch/CreatePrefetchLoaderAndStart: trusted params");
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+    return;
+  }
+
   if (resource_request.load_flags & net::LOAD_RESTRICTED_PREFETCH) {
     // The renderer has marked this prefetch as restricted, meaning it is a
-    // cross-origin prefetch intended for top-leve navigation reuse. We must
+    // cross-origin prefetch intended for top-level navigation reuse. We must
     // verify that the request meets the necessary security requirements, and
     // populate `resource_request`'s IsolationInfo appropriately.
     EnsureCrossOriginFactory();
@@ -93,7 +103,7 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     url::Origin destination_origin = url::Origin::Create(resource_request.url);
     resource_request.trusted_params = network::ResourceRequest::TrustedParams();
     resource_request.trusted_params->isolation_info =
-        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
                                    destination_origin, destination_origin,
                                    net::SiteForCookies(),
                                    /*nonce=*/fenced_frame_nonce);
@@ -101,6 +111,8 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
 
   // Recursive prefetch from a cross-origin main resource prefetch.
   if (resource_request.recursive_prefetch_token) {
+    CHECK(!(resource_request.load_flags & net::LOAD_RESTRICTED_PREFETCH));
+
     // TODO(crbug.com/40150754): Figure out why we're seeing this condition
     // hold true in the field.
     if (!current_context.cross_origin_factory) {
@@ -220,13 +232,6 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
   if (resource_request.load_flags & net::LOAD_CAN_USE_RESTRICTED_PREFETCH) {
     loader_factory_receivers_->ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: can use restricted prefetch");
-    return false;
-  }
-
-  // The request must not already have its |trusted_params| initialized.
-  if (resource_request.trusted_params) {
-    loader_factory_receivers_->ReportBadMessage(
-        "Prefetch/IsValidCrossOrigin: trusted params");
     return false;
   }
 

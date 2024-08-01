@@ -2389,7 +2389,6 @@ FormRetrievalResult LoginDatabase::StatementToForms(
         were_undecryptable_logins_deleted_ = true;
         return FormRetrievalResult::kSuccess;
       }
-      return FormRetrievalResult::kEncryptionServiceFailure;
     }
     if (ShouldReturnPartialPasswords()) {
       return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;

@@ -16,6 +16,7 @@
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
@@ -362,7 +362,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Should be removed after TODO(crbug.com/40065405).
   if ([self isRunningTest:@selector
             (DISABLED_testSyncSpinnerDismissedInRecentlyClosedTabs)]) {
-    [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+    [ChromeEarlGrey signOutAndClearIdentities];
   }
 
   [super tearDown];
@@ -985,6 +985,42 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [self longPressTabWithTitle:kTitle1];
 
   [ChromeEarlGrey verifyShareActionWithURL:_URL1 pageTitle:kTitle1];
+}
+
+// Tests the Serach action on a Recent Tabs.
+- (void)testRecentTabsSearch {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+  [self prepareRecentTabWithURL:_URL1 response:kResponse1];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verify that search mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+
+  // Exit search mode.
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
+      performAction:grey_tap()];
+
+  // Verify that normal mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
+      assertWithMatcher:grey_notNil()];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Verify that search mode is active.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Tab Grid Item Context Menu
@@ -2549,7 +2585,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests "search recent tabs" and "search open tabs" suggested actions switch
 // the tab grid page correctly while staying in the search mode.
-- (void)testSearchSuggestedActionsPageSwitch {
+// TODO(crbug.com/356678903): Test fails on bots that don't use
+// fieldtrial_testing_config.json (and is already skipped below on bots that do
+// use it, since these bots have Tab Group Sync enabled).
+- (void)DISABLED_testSearchSuggestedActionsPageSwitch {
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
   // supported with Tab Group Sync enabled.

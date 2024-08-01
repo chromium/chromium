@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './elements/viewer-error-dialog.js';
-import './elements/viewer-page-indicator.js';
-import './elements/viewer-zoom-toolbar.js';
+// This import is necessary for html_to_wrapper to detect this is a Polymer
+// element.
+import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import './elements/viewer_error_dialog.js';
+import './elements/viewer_page_indicator.js';
+import './elements/viewer_zoom_toolbar.js';
 import './pdf_viewer_shared_style.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -15,8 +18,8 @@ import type {ExtendedKeyEvent} from './constants.js';
 import {FittingType} from './constants.js';
 import type {MessageData, PrintPreviewParams} from './controller.js';
 import {PluginController} from './controller.js';
-import type {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
-import type {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
+import type {ViewerPageIndicatorElement} from './elements/viewer_page_indicator.js';
+import type {ViewerZoomToolbarElement} from './elements/viewer_zoom_toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';

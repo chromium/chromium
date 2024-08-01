@@ -174,8 +174,6 @@ DirectionFlippingScope::DirectionFlippingScope(
           !layout_object.StyleRef().IsLeftToRightDirection()),
       needs_vertical_flipping_(
           !IsHorizontalWritingMode(layout_object.StyleRef().GetWritingMode()) &&
-          RuntimeEnabledFeatures::
-              FormControlsVerticalWritingModeDirectionSupportEnabled() &&
           layout_object.StyleRef().IsLeftToRightDirection()),
       paint_info_(paint_info) {
   if (needs_horizontal_flipping_) {
@@ -498,7 +496,9 @@ void ThemePainterDefault::SetupMenuListArrow(
     WebThemeEngine::ExtraParams& extra_params) {
   auto& menu_list =
       absl::get<WebThemeEngine::MenuListExtraParams>(extra_params);
-  if (IsHorizontalWritingMode(style.GetWritingMode())) {
+  WritingDirectionMode writing_direction = style.GetWritingDirection();
+  PhysicalDirection block_end = writing_direction.BlockEnd();
+  if (block_end == PhysicalDirection::kDown) {
     menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kDown;
     const int left = rect.x() + floorf(style.BorderLeftWidth());
     const int right =
@@ -513,13 +513,14 @@ void ThemePainterDefault::SetupMenuListArrow(
     // TODO(tkent): This should be 7.0 to match scroll bar buttons.
     float arrow_size = 8.0 * arrow_scale_factor;
     // Put the arrow at the center of paddingForArrow area.
-    // |arrowX| is the left position for Aura theme engine.
-    menu_list.arrow_x = (style.Direction() == TextDirection::kRtl)
-                            ? left + (arrow_box_width - arrow_size) / 2
-                            : right - (arrow_box_width + arrow_size) / 2;
+    // |arrow_x| is the left position for Aura theme engine.
+    menu_list.arrow_x =
+        (writing_direction.InlineEnd() == PhysicalDirection::kLeft)
+            ? left + (arrow_box_width - arrow_size) / 2
+            : right - (arrow_box_width + arrow_size) / 2;
     menu_list.arrow_size = arrow_size;
   } else {
-    if (style.GetWritingMode() == WritingMode::kVerticalLr) {
+    if (block_end == PhysicalDirection::kRight) {
       menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kRight;
     } else {
       menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kLeft;
@@ -536,10 +537,11 @@ void ThemePainterDefault::SetupMenuListArrow(
     // TODO(tkent): This should be 7.0 to match scroll bar buttons.
     float arrow_size = 8.0 * arrow_scale_factor;
     // Put the arrow at the center of paddingForArrow area.
-    // |arrowY| is the bottom position for Aura theme engine.
-    menu_list.arrow_y = (style.Direction() == TextDirection::kRtl)
-                            ? bottom + (arrow_box_height - arrow_size) / 2
-                            : top - (arrow_box_height + arrow_size) / 2;
+    // |arrow_y| is the bottom position for Aura theme engine.
+    menu_list.arrow_y =
+        (writing_direction.InlineEnd() == PhysicalDirection::kUp)
+            ? bottom + (arrow_box_height - arrow_size) / 2
+            : top - (arrow_box_height + arrow_size) / 2;
     menu_list.arrow_size = arrow_size;
   }
 
@@ -575,9 +577,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   // bottom-to-top.
   slider.right_to_left =
       (IsHorizontalWritingMode(writing_mode) && !is_slider_vertical) ||
-              (RuntimeEnabledFeatures::
-                   FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-               is_writing_mode_vertical)
+              is_writing_mode_vertical
           ? !style.IsLeftToRightDirection()
           : true;
   if (writing_mode == WritingMode::kSidewaysLr) {

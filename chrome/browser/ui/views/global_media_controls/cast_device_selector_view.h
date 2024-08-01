@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_CAST_DEVICE_SELECTOR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_CAST_DEVICE_SELECTOR_VIEW_H_
 
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
@@ -21,7 +22,32 @@ namespace views {
 class BoxLayoutView;
 }  // namespace views
 
-class HoverButton;
+// Special hover button that displays a device with issue text. We create a
+// subclass because the hover button lacks functionalities to customize the
+// labels.
+class IssueHoverButton : public HoverButton {
+  METADATA_HEADER(IssueHoverButton, HoverButton)
+
+ public:
+  IssueHoverButton(PressedCallback callback,
+                   global_media_controls::mojom::IconType icon,
+                   const std::u16string& device_name,
+                   const std::u16string& status_text,
+                   ui::ColorId device_name_color_id,
+                   ui::ColorId status_text_color_id);
+
+  // HoverButton:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+  int GetHeightForWidth(int w) const override;
+
+  views::Label* device_name_label() { return device_name_label_; }
+  views::Label* status_text_label() { return status_text_label_; }
+
+ private:
+  raw_ptr<views::Label> device_name_label_ = nullptr;
+  raw_ptr<views::Label> status_text_label_ = nullptr;
+};
 
 // CastDeviceSelectorView holds a list of devices available for casting the
 // given media session. This is used within MediaDialogView on non-CrOS desktop
@@ -66,8 +92,9 @@ class CastDeviceSelectorView
   // Build a device entry view for the given device information.
   std::unique_ptr<HoverButton> BuildCastDeviceEntryView(
       views::Button::PressedCallback callback,
-      const std::u16string& text,
-      global_media_controls::mojom::IconType icon);
+      global_media_controls::mojom::IconType icon,
+      const std::u16string& device_name,
+      const std::u16string& status_text);
 
   // Callback for when a device is selected by user.
   void OnCastDeviceSelected(const std::string& device_id);

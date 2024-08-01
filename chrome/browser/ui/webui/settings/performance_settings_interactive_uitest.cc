@@ -101,12 +101,6 @@ class PerformanceSettingsInteractiveTest
     : public MemorySaverInteractiveTestMixin<
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kDiscardRingImprovements);
-    InteractiveBrowserTest::SetUp();
-  }
-
   auto CheckDiscardRingTreatmentLogged(
       bool enabled,
       int expected_count,
@@ -117,9 +111,6 @@ class PerformanceSettingsInteractiveTest
           static_cast<int>(enabled), expected_count);
     }));
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,

@@ -182,8 +182,9 @@ def main(raw_args):
   subparser.add_argument(
       '--require-fast-start',
       action='store_true',
-      help='Shortens the start-up timeout. Used by bots to avoid startup '
-      'regressions.')
+      help='Shortens the start-up timeout and turns off the customization for '
+      'local AVD run, e.g. larger disk space. Should be set when used by bots '
+      'for AVD create or start.')
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)

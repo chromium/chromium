@@ -88,14 +88,10 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
@@ -130,7 +126,7 @@ import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvid
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoUtil;
+import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
@@ -141,6 +137,7 @@ import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
@@ -150,6 +147,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -494,7 +492,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mDragDropTouchObserver = null;
         }
 
-        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
             mAppHeaderCoordinator.destroy();
             mAppHeaderCoordinator = null;
         }
@@ -513,6 +511,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mLayoutManagerSupplier,
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
+                        mBottomControlsStacker,
                         mBrowserControlsManager,
                         mSnackbarManagerSupplier,
                         mContextualSearchManagerSupplier,
@@ -621,6 +620,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 // Back navigation gesture performs what the back button would do.
                                 mActivity.getOnBackPressedDispatcher().onBackPressed();
                             }
+
+                            @Override
+                            public void onGestureUnhandled() {
+                                if (mRtlGestureNavIphController != null) {
+                                    mRtlGestureNavIphController.onGestureUnhandled();
+                                }
+                            }
+
+                            @Override
+                            public void onGestureHandled() {
+                                if (mRtlGestureNavIphController != null) {
+                                    mRtlGestureNavIphController.onGestureHandled();
+                                }
+                            }
                         },
                         () -> mCompositorViewHolderSupplier.get());
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
@@ -727,7 +740,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mTabModelSelectorSupplier.get(),
                         mModalDialogManagerSupplier.get(),
                         new IncognitoReauthManager(mActivity, profile),
-                        new SettingsLauncherImpl(),
                         mLayoutManager,
                         mHubManagerSupplier,
                         /* showRegularOverviewIntent= */ null,
@@ -849,28 +861,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     boolean maybeTriggerTrackingProtectionNoticeAndOnboarding(
             Profile profile, boolean wasPromoTriggered) {
-        // Handles whether the Tracking Protection notices and onboarding controllers should be
-        // shown (independent of each other), and returns the updated value of wasPromoTriggered
-        if (!wasPromoTriggered
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)) {
-            wasPromoTriggered =
-                    TrackingProtectionOnboardingController.maybeCreate(
-                            mActivity,
-                            new TrackingProtectionBridge(profile),
-                            mActivityTabProvider,
-                            mMessageDispatcher,
-                            new SettingsLauncherImpl(),
-                            SurfaceType.BR_APP);
-        }
-
         if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
             TrackingProtectionNoticeController.create(
-                    mActivity,
-                    profile,
-                    mActivityTabProvider,
-                    mMessageDispatcher,
-                    new SettingsLauncherImpl());
+                    mActivity, profile, mActivityTabProvider, mMessageDispatcher);
             // Promo will be triggered eventually. We don't want for this promo to clash with other
             // promos in the same run.
             return true;
@@ -1006,8 +999,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivityTabProvider, mAddToHomescreenIPHController);
         if (!didTriggerPromo
                 && mWindowAndroid.getWindow() != null
-                && UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
-            mRtlGestureNavIphController = new RtlGestureNavIphController(mActivityTabProvider);
+                && LocalizationUtils.isLayoutRtl()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                && ChromeFeatureList.isEnabled(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)
+                && !UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
+            mRtlGestureNavIphController =
+                    new RtlGestureNavIphController(mActivityTabProvider, mProfileSupplier);
         }
 
         Tab tab = mActivityTabProvider.get();
@@ -1021,7 +1018,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity,
                     tab != null ? tab.getProfile() : profile,
                     tab != null ? tab.getWebContents() : null,
-                    new SettingsLauncherImpl(),
                     mMessageDispatcher);
         }
 
@@ -1202,7 +1198,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
     }
 
-    @SuppressWarnings("NewApi") // Android V check is done via helper method.
+    @SuppressWarnings("NewApi") // OS version check is done via helper method.
     private void initAppHeaderCoordinator(Bundle savedInstanceState) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)) {
@@ -1244,6 +1240,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     public NavigationSheet getNavigationSheetForTesting() {
         return mNavigationSheet;
+    }
+
+    public RtlGestureNavIphController getRtlGestureNavIphControllerForTesting() {
+        return mRtlGestureNavIphController;
     }
 
     /** Called when a link is copied through context menu. */
@@ -1320,7 +1320,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (PwaRestorePromoUtils.launchPromoIfNeeded(profile, mWindowAndroid)) {
             return true;
         }
-        if (FullscreenSigninPromoUtil.launchPromoIfNeeded(
+        if (FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                 mActivity,
                 profile,
                 SyncConsentActivityLauncherImpl.get(),

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1044891598689252897">Siteler normal şekilde çalışır</translation>
 <translation id="1073417869336441572">Üçüncü taraf çerezlerine neden izin verdiğinizi bize bildirerek Chrome'u iyileştirmemize yardımcı olun. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Fiyat düşüşü kartını gizle</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="1192844206376121885">Bu işlem, <ph name="ORIGIN" /> tarafından depolanan tüm verileri ve çerezleri siler.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Yardım ve geri bildirim</translation>
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
-<translation id="2550801787432930915">Fiyat düşüş kartı</translation>
 <translation id="2570922361219980984">Konum erişimi bu cihaz için de kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
 <translation id="2586657967955657006">Pano</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İleriye doğru git</translation>
 <translation id="3895926599014793903">Yakınlaştırmayı etkinleştirmeye zorla</translation>
+<translation id="3905475044299942653">Çok fazla bildirim gelmesini engelleyin</translation>
 <translation id="3908288065506437185">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Bazı özellikler çalışmayabilir. İlgili siteler, üçüncü taraf çerezlerini kullanmaya devam edebilir.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Korunan içerik</translation>
 <translation id="662080504995468778">Kal</translation>
 <translation id="6653342741369270081">Tam ekrandan çıkmak için geri düğmesine dokunun.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Bu sekmeyle devam edin seçeneğini gizle}other{Bu sekmelerle devam edin seçeneğini gizle}}</translation>
 <translation id="6689172468748959065">Profil fotoğrafları</translation>
 <translation id="6697925417670533197">Etkin indirme işlemleri</translation>
 <translation id="6722828510648505498">Kimlik hizmetlerinden gelen oturum açma istemlerini engelleyin.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> için bir seçenek belirleyin</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6818926723028410516">Öğe seçin</translation>
+<translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
 <translation id="6864395892908308021">Bu cihaz NFC'yi okuyamıyor</translation>
 <translation id="6912998170423641340">Sitelerin panodaki metni ve resimleri okumasını engelle</translation>
 <translation id="6945221475159498467">Seç</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Bu sayfa tehlikeli</translation>
 <translation id="930525582205581608">Bu site unutulsun mu?</translation>
 <translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
+<translation id="959682366969460160">Organize çalışın</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 </translationbundle>

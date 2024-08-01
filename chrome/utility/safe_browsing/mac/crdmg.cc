@@ -15,6 +15,8 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -45,7 +47,7 @@ class SafeDMG {
 
   ~SafeDMG();
 
-  int Main(int argc, const char* argv[]);
+  int Main(base::span<const char*> args);
 
  private:
   // Prepares for an unpack operation, setting up |unpack_dir_| for the given
@@ -69,25 +71,26 @@ SafeDMG::SafeDMG() : dmg_file_(), unpack_dir_() {}
 
 SafeDMG::~SafeDMG() {}
 
-int SafeDMG::Main(int argc, const char* argv[]) {
-  if (argc != 2 && argc != 3) {
-    fprintf(stderr, "Usage: %s file.dmg [unpack-directory]\n", argv[0]);
+int SafeDMG::Main(base::span<const char*> args) {
+  if (args.size() != 2 && args.size() != 3) {
+    fprintf(stderr, "Usage: %s file.dmg [unpack-directory]\n", args[0]);
     fprintf(stderr,
             "If no unpack-directory is specified, the tool will\n"
             "list the contents of the DMG.\n");
     return EXIT_FAILURE;
   }
 
-  dmg_file_.Initialize(base::FilePath(argv[1]),
+  dmg_file_.Initialize(base::FilePath(args[1]),
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!dmg_file_.IsValid()) {
-    LOG(ERROR) << "Failed to open " << argv[1] << ": "
+    LOG(ERROR) << "Failed to open " << args[1] << ": "
                << dmg_file_.error_details();
     return EXIT_FAILURE;
   }
 
-  if (argc == 3 && !PrepareUnpack(argv[2]))
+  if (args.size() == 3 && !PrepareUnpack(args[2])) {
     return EXIT_FAILURE;
+  }
 
   if (!EnableSandbox())
     return EXIT_FAILURE;
@@ -247,5 +250,7 @@ bool SafeDMG::ParseDMG() {
 
 int main(int argc, const char* argv[]) {
   SafeDMG safe_dmg;
-  return safe_dmg.Main(argc, argv);
+  // SAFETY: argc and argv come from the OS and must be trusted.
+  return safe_dmg.Main(
+      UNSAFE_BUFFERS(base::span(argv, base::saturated_cast<size_t>(argc))));
 }

@@ -308,15 +308,66 @@ INSTANTIATE_TEST_SUITE_P(
                            u"CA",
                            u"CA - California"}));
 
-TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountries) {
+// Tests that a select element is properly filled if it contains country names.
+TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountryName) {
+  AutofillProfile profile = test::GetFullCanadianProfile();
+
   AutofillField field = CreateTestSelectAutofillField({"Albania", "Canada"},
                                                       ADDRESS_HOME_COUNTRY);
-  AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
   EXPECT_EQ(u"Canada",
-            GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_COUNTRY), field,
+            GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                /*address_normalizer=*/nullptr));
+
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode));
+  EXPECT_EQ(u"Canada",
+            GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                               /*address_normalizer=*/nullptr));
+
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName));
+  EXPECT_EQ(u"Canada",
+            GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                               /*address_normalizer=*/nullptr));
+}
+
+// Tests that a select element is properly filled if it contains country codes.
+TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountryCode) {
+  AutofillProfile profile = test::GetFullCanadianProfile();
+
+  AutofillField field =
+      CreateTestSelectAutofillField({"FR", "CA", "BR"}, ADDRESS_HOME_COUNTRY);
+  EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                                      /*address_normalizer=*/nullptr));
+
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode));
+  EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                                      /*address_normalizer=*/nullptr));
+
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName));
+  EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                                      /*address_normalizer=*/nullptr));
+}
+
+// Tests that a text input field is properly filled with a country name or code,
+// depending on HTML and heuristic type.
+TEST_F(FieldFillingAddressUtilTest, FillInputWithCountry) {
+  AutofillProfile profile = test::GetFullCanadianProfile();
+
+  AutofillField field;
+  field.set_form_control_type(FormControlType::kInputText);
+  field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_COUNTRY);
+
+  EXPECT_EQ(u"Canada",
+            GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                               /*address_normalizer=*/nullptr));
+
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName));
+  EXPECT_EQ(u"Canada",
+            GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                               /*address_normalizer=*/nullptr));
+
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode));
+  EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
+                                      /*address_normalizer=*/nullptr));
 }
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {

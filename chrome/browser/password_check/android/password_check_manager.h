@@ -88,10 +88,8 @@ class PasswordCheckManager
                         std::string_view new_password);
 
   // Called by java to launch the edit credential UI for `credential`.
-  void OnEditCredential(
-      const password_manager::CredentialUIEntry& credential,
-      const base::android::JavaParamRef<jobject>& context,
-      const base::android::JavaParamRef<jobject>& settings_launcher);
+  void OnEditCredential(const password_manager::CredentialUIEntry& credential,
+                        const base::android::JavaParamRef<jobject>& context);
 
   // Called by java to remove the given compromised `credential` and trigger a
   // UI update on completion.

@@ -192,6 +192,7 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
   if (navigation_handle->IsSameDocument() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
       !IsDataProtectionEnabled(profile)) {
+    std::move(callback).Run(UrlSettings::None());
     return;
   }
 
@@ -226,6 +227,7 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
   }
 
   if (!IsDataProtectionEnabled(profile)) {
+    std::move(callback).Run(UrlSettings::None());
     return;
   }
 

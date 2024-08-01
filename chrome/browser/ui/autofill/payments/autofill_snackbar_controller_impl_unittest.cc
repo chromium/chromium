@@ -181,6 +181,39 @@ TEST_F(AutofillSnackbarControllerImplTest,
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
 }
 
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveServerIbanSuccess) {
+  base::HistogramTester histogram_tester;
+  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess);
+  // Verify that the count for Shown is incremented and ActionClicked hasn't
+  // changed.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.SaveServerIbanSuccess.Shown", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Snackbar.SaveServerIbanSuccess.ActionClicked", 0);
+  controller()->OnDismissed();
+
+  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess);
+  controller()->OnActionClicked();
+
+  // Verify that the count for both Shown and ActionClicked is incremented.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.SaveServerIbanSuccess.Shown", 1, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.SaveServerIbanSuccess.ActionClicked", true, 1);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       SaveServerIbanSuccessMessageAndActionButtonText) {
+  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess);
+
+  EXPECT_EQ(controller()->GetMessageText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT));
+  EXPECT_EQ(controller()->GetActionButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT));
+}
+
 TEST_F(AutofillSnackbarControllerImplTest, OnShowDefaultDurationSet) {
   controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
   EXPECT_EQ(controller()->GetDuration(),

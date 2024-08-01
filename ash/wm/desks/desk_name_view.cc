@@ -31,9 +31,6 @@ DeskNameView::DeskNameView(DeskMiniView* mini_view)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       .BuildChildren();
 
-  set_use_default_focus_manager(mini_view_->owner_bar()->type() ==
-                                DeskBarViewBase::Type::kDeskButton);
-
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
 }
@@ -44,21 +41,6 @@ void DeskNameView::OnFocus() {
   DeskTextfield::OnFocus();
 
   // When this gets focus, scroll to make `mini_view_` visible.
-  mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
-}
-
-void DeskNameView::OnFocusableViewFocused() {
-  if (!HasFocus()) {
-    // When the focus ring is the result of tabbing, as opposed to clicking or
-    // chromevoxing, the name view will not have focus, so the user should be
-    // told how to focus and edit the field.
-    Shell::Get()
-        ->accessibility_controller()
-        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringUTF8(
-            IDS_ASH_DESKS_NAME_HIGHLIGHT_NOTIFICATION));
-  }
-
-  DeskTextfield::OnFocusableViewFocused();
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 

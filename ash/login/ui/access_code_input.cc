@@ -285,6 +285,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
   }
   text_value_for_a11y_ = std::u16string(length, ' ');
   GetViewAccessibility().SetIsProtected(is_obscure_pin_);
+  GetViewAccessibility().SetValue(text_value_for_a11y_);
 }
 
 FixedLengthCodeInput::~FixedLengthCodeInput() = default;
@@ -379,6 +380,7 @@ void FixedLengthCodeInput::ResetTextValueForA11y() {
   }
 
   text_value_for_a11y_ = result;
+  GetViewAccessibility().SetValue(text_value_for_a11y_);
 }
 
 gfx::Range FixedLengthCodeInput::GetSelectedRangeOfTextValueForA11y() {
@@ -392,7 +394,6 @@ void FixedLengthCodeInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTextField;
   node_data->AddState(ax::mojom::State::kEditable);
 
-  node_data->SetValue(text_value_for_a11y_);
   node_data->html_attributes.push_back(std::make_pair("type", "tel"));
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kName,
@@ -564,6 +565,7 @@ void FixedLengthCodeInput::ClearInput() {
   }
   active_input_index_ = 0;
   text_value_for_a11y_.clear();
+  GetViewAccessibility().RemoveValue();
   ActiveField()->RequestFocus();
 }
 

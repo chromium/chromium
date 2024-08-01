@@ -48,6 +48,9 @@ source_set("public") {
   sources = [
     "confirm_infobar_metrics_recorder.h",
     "confirm_infobar_metrics_recorder.mm",
+    "infobar_badge_tab_helper_observer.h",
+    "infobar_badge_tab_helper_observer_bridge.h",
+    "infobar_badge_tab_helper_observer_bridge.mm",
     "infobar_controller_delegate.h",
     "infobar_metrics_recorder.h",
     "infobar_metrics_recorder.mm",
@@ -60,6 +63,7 @@ source_set("public") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "infobar_badge_tab_helper_observer_bridge_unittest.mm",
     "infobar_badge_tab_helper_unittest.mm",
     "infobar_ios_unittest.mm",
   ]

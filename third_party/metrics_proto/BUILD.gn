@@ -15,6 +15,7 @@ _proto_files = [
   "chrome_user_metrics_extension.proto",
   "custom_tab_session.proto",
   "device_state.proto",
+  "dwa/deidentified_web_analytics.proto",
   "execution_context.proto",
   "extension_install.proto",
   "histogram_event.proto",

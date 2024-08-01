@@ -56,10 +56,15 @@ std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
     // checked by kWebRtcH264WithOpenH264FFmpeg flag. This check should be
     // removed when SW implementation is fully enabled.
     bool webrtc_h264_sw_enabled = false;
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
+// should be detangled such that software decoding can be enabled without
+// software encoding.
+#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
+    BUILDFLAG(ENABLE_OPENH264)
     webrtc_h264_sw_enabled = base::FeatureList::IsEnabled(
         blink::features::kWebRtcH264WithOpenH264FFmpeg);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
+        // BUILDFLAG(ENABLE_OPENH264)
     if (!webrtc_h264_sw_enabled) {
       return std::nullopt;
     }

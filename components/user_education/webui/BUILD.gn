@@ -14,6 +14,7 @@ source_set("webui") {
     "tracked_element_webui.h",
     "whats_new_registry.cc",
     "whats_new_registry.h",
+    "whats_new_storage_service.h",
   ]
 
   deps = [

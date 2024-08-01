@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/ozone/device/udev/device_manager_udev.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <string>
 
 #include "base/logging.h"
@@ -26,45 +33,6 @@ const char* const kSubsystems[] = {
   "drm",
 };
 
-// Severity levels from syslog.h. We can't include it directly as it
-// conflicts with base/logging.h
-enum {
-  SYS_LOG_EMERG = 0,
-  SYS_LOG_ALERT = 1,
-  SYS_LOG_CRIT = 2,
-  SYS_LOG_ERR = 3,
-  SYS_LOG_WARNING = 4,
-  SYS_LOG_NOTICE = 5,
-  SYS_LOG_INFO = 6,
-  SYS_LOG_DEBUG = 7,
-};
-
-// Log handler for messages generated from libudev.
-void UdevLog(struct udev* udev,
-             int priority,
-             const char* file,
-             int line,
-             const char* fn,
-             const char* format,
-             va_list args) {
-  if (priority <= SYS_LOG_ERR)
-    LOG(ERROR) << "libudev: " << fn << ": " << base::StringPrintV(format, args);
-  else if (priority <= SYS_LOG_INFO)
-    VLOG(1) << "libudev: " << fn << ": " << base::StringPrintV(format, args);
-  else  // SYS_LOG_DEBUG
-    VLOG(2) << "libudev: " << fn << ": " << base::StringPrintV(format, args);
-}
-
-// Create libudev context.
-device::ScopedUdevPtr UdevCreate() {
-  struct udev* udev = device::udev_new();
-  if (udev) {
-    device::udev_set_log_fn(udev, UdevLog);
-    device::udev_set_log_priority(udev, SYS_LOG_DEBUG);
-  }
-  return device::ScopedUdevPtr(udev);
-}
-
 // Start monitoring input device changes.
 device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {
   struct udev_monitor* monitor =
@@ -72,7 +40,7 @@ device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {
   if (monitor) {
     for (size_t i = 0; i < std::size(kSubsystems); ++i)
       device::udev_monitor_filter_add_match_subsystem_devtype(
-          monitor, kSubsystems[i], NULL);
+          monitor, kSubsystems[i], nullptr);
 
     if (device::udev_monitor_enable_receiving(monitor))
       LOG(ERROR) << "Failed to start receiving events from udev";
@@ -86,7 +54,7 @@ device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {
 }  // namespace
 
 DeviceManagerUdev::DeviceManagerUdev()
-    : udev_(UdevCreate()), controller_(FROM_HERE) {}
+    : udev_(device::udev_new()), controller_(FROM_HERE) {}
 
 DeviceManagerUdev::~DeviceManagerUdev() {
 }

@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/fixed_array.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -134,13 +135,13 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
   content::RunAllTasksUntilIdle();
   // The buffer for actual result is 1 byte longer than the expected data to be
   // able to detect when the actual data are too long.
-  char actual_result[expected_result.size() + 1];
+  base::FixedArray<char> actual_result(expected_result.size() + 1);
   int number_of_bytes_read = base::ReadFile(
       base::FilePath::FromUTF8Unsafe(serialized_passwords.exported_file_path),
-      actual_result, expected_result.size() + 1);
+      actual_result.data(), expected_result.size() + 1);
   EXPECT_EQ(static_cast<int>(expected_result.size()), number_of_bytes_read);
   EXPECT_EQ(expected_result,
-            std::string(actual_result,
+            std::string(actual_result.data(),
                         (number_of_bytes_read < 0) ? 0 : number_of_bytes_read));
   EXPECT_EQ(1, serialized_passwords.entries_count);
   EXPECT_FALSE(serialized_passwords.exported_file_path.empty());

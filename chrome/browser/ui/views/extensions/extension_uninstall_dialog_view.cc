@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
@@ -69,9 +70,10 @@ void ExtensionUninstallDialogViews::Show() {
   // TODO(pbos): Consider separating dialog model from views code.
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetInternalName("ExtensionUninstallDialog")
-      .SetTitle(
-          l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
-                                     base::UTF8ToUTF16(extension()->name())))
+      .SetTitle(l10n_util::GetStringFUTF16(
+          IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
+          extensions::util::GetFixupExtensionNameForUIDisplay(
+              extension()->name())))
       .OverrideShowCloseButton(false)
       .SetDialogDestroyingCallback(
           base::BindOnce(&ExtensionUninstallDialogViews::DialogClosing,
@@ -94,7 +96,8 @@ void ExtensionUninstallDialogViews::Show() {
         ui::DialogModelLabel(
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSION_PROMPT_UNINSTALL_TRIGGERED_BY_EXTENSION,
-                base::UTF8ToUTF16(triggering_extension()->name())))
+                extensions::util::GetFixupExtensionNameForUIDisplay(
+                    triggering_extension()->name())))
             .set_is_secondary()
             .set_allow_character_break());
   }
@@ -104,7 +107,8 @@ void ExtensionUninstallDialogViews::Show() {
         triggering_extension()
             ? l10n_util::GetStringFUTF16(
                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
-                  base::UTF8ToUTF16(extension()->name()))
+                  extensions::util::GetFixupExtensionNameForUIDisplay(
+                      extension()->name()))
             : l10n_util::GetStringUTF16(
                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);
 

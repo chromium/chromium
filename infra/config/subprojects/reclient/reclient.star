@@ -8,6 +8,7 @@ load("//lib/builders.star", "builders", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify_builder")
 load("//lib/structs.star", "structs")
 load("//lib/xcode.star", "xcode")
 
@@ -812,8 +813,8 @@ ci.builder(
     name = "Comparison Linux (reclient)(CQ)",
     description_html = """\
 This builder measures Linux build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "linux-rel-compilator")),
     executable = "recipe:reclient_reclient_comparison",
     gn_args = {
         "build1": gn_args.config(
@@ -839,4 +840,33 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     shadow_siso_project = siso.project.TEST_UNTRUSTED,
     siso_project = siso.project.TEST_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+)
+
+# TODO(crbug.com/352206623) Turn down builder once reclient depscan issue has been resolved.
+ci.builder(
+    name = "Win Builder (reclient shadow)",
+    description_html = "This builder mirrors Win Builder in order to debug an reclient dependency scanner issue (crbug.com/352206623).",
+    builder_spec = builder_config.copy_from(
+        "ci/Win Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = ["reclient_experimental"],
+            ),
+        ),
+    ),
+    gn_args = "ci/Win Builder",
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|builder",
+        short_name = "32",
+    ),
+    contact_team_email = "git-build-tools@google.com",
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

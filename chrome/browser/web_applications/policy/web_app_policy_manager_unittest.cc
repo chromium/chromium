@@ -1290,6 +1290,26 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
   }
 }
 
+TEST_P(WebAppPolicyManagerTest, InvalidUrlParsingSkipped) {
+  if (ShouldSkipPWASpecificTest()) {
+    return;
+  }
+  base::Value::Dict invalid_url_policy =
+      base::Value::Dict()
+          .Set(kUrlKey, "abcdef")
+          .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue);
+  base::Value::List policy_list;
+  policy_list.Append(std::move(invalid_url_policy));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(policy_list));
+
+  WaitForAppsToSynchronize();
+
+  const auto& install_requests =
+      externally_managed_app_manager().install_requests();
+  EXPECT_EQ(0u, install_requests.size());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
   auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
@@ -1305,14 +1325,21 @@ TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
           .Append(static_cast<int>(policy::SystemFeature::kExplore))
           .Append(static_cast<int>(policy::SystemFeature::kCrosh))
           .Append(static_cast<int>(policy::SystemFeature::kTerminal))
-          .Append(static_cast<int>(policy::SystemFeature::kGallery)));
+          .Append(static_cast<int>(policy::SystemFeature::kGallery))
+          .Append(static_cast<int>(policy::SystemFeature::kPrintJobs))
+          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts)));
   base::RunLoop().RunUntilIdle();
 
   const std::set<ash::SystemWebAppType> expected_disabled_apps{
-      ash::SystemWebAppType::CAMERA,   ash::SystemWebAppType::SETTINGS,
-      ash::SystemWebAppType::SCANNING, ash::SystemWebAppType::HELP,
-      ash::SystemWebAppType::CROSH,    ash::SystemWebAppType::TERMINAL,
-      ash::SystemWebAppType::MEDIA};
+      ash::SystemWebAppType::CAMERA,
+      ash::SystemWebAppType::SETTINGS,
+      ash::SystemWebAppType::SCANNING,
+      ash::SystemWebAppType::HELP,
+      ash::SystemWebAppType::CROSH,
+      ash::SystemWebAppType::TERMINAL,
+      ash::SystemWebAppType::MEDIA,
+      ash::SystemWebAppType::PRINT_MANAGEMENT,
+      ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION};
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);

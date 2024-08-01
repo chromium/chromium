@@ -219,7 +219,8 @@ suite('AppearanceTest', () => {
     await callbackRouterRemote.$.flushForTesting();
     assertNotStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
     assertNotStyle(appearanceElement.$.chromeColors, 'display', 'none');
-    assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+    assertStyle(
+        appearanceElement.$.thirdPartyThemeLinkButton, 'display', 'none');
   });
 
   test('respects policy for edit theme', async () => {
@@ -383,7 +384,7 @@ suite('AppearanceTest', () => {
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
       assertNotStyle(
-          appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+          appearanceElement.$.thirdPartyThemeLinkButton, 'display', 'none');
       assertNotStyle(
           appearanceElement.$.setClassicChromeButton, 'display', 'none');
       assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
@@ -400,7 +401,7 @@ suite('AppearanceTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Assert.
-      appearanceElement.$.thirdPartyLinkButton.click();
+      appearanceElement.$.thirdPartyThemeLinkButton.click();
       assertEquals(1, handler.getCallCount('openThirdPartyThemePage'));
     });
   });
@@ -413,7 +414,8 @@ suite('AppearanceTest', () => {
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
 
-    assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+    assertStyle(
+        appearanceElement.$.thirdPartyThemeLinkButton, 'display', 'none');
     assertNotStyle(appearanceElement.$.uploadedImageButton, 'display', 'none');
     assertStyle(appearanceElement.$.searchedImageButton, 'display', 'none');
     assertNotStyle(
@@ -446,7 +448,8 @@ suite('AppearanceTest', () => {
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
 
-    assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+    assertStyle(
+        appearanceElement.$.thirdPartyThemeLinkButton, 'display', 'none');
     assertStyle(appearanceElement.$.uploadedImageButton, 'display', 'none');
     assertNotStyle(appearanceElement.$.searchedImageButton, 'display', 'none');
     assertNotStyle(
@@ -623,7 +626,7 @@ suite('AppearanceTest', () => {
     ];
 
     const idsNotControlledByIsSourceTabFirstPartyNtp = [
-      '#thirdPartyLinkButton',
+      '#thirdPartyThemeLinkButton',
       '#uploadedImageButton',
       '#searchedImageButton',
       '#chromeColors',

@@ -11,11 +11,14 @@
 #include <optional>
 #include <string_view>
 
+#include "base/environment.h"
 #include "base/i18n/break_iterator.h"
 #include "base/memory/raw_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -211,6 +214,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
   void OnPreeditChanged(const ui::CompositionText& composition_text) override {
     was_on_preedit_changed_called_ = true;
+    last_on_preedit_changed_args_ = composition_text;
   }
   void OnClearGrammarFragments(const gfx::Range& range) override {
     was_on_clear_grammar_fragments_called_ = true;
@@ -241,6 +245,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
+
+  const std::optional<ui::CompositionText>& last_preedit() {
+    return last_on_preedit_changed_args_;
+  }
 
   std::optional<std::u16string> last_commit_text() const {
     return last_commit_text_;
@@ -293,6 +301,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   bool was_on_add_grammar_fragment_called_ = false;
   bool was_on_set_autocorrect_range_called_ = false;
   bool was_on_insert_image_range_called_ = false;
+  std::optional<ui::CompositionText> last_on_preedit_changed_args_;
   std::optional<std::pair<size_t, size_t>>
       last_on_delete_surrounding_text_args_;
   std::optional<gfx::Rect> virtual_keyboard_bounds_;
@@ -356,7 +365,11 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    input_method_context_->Init(true);
+    input_method_context_->Init(
+        true, nullptr,
+        // Ensure by default it doesn't pick the current desktop from the system
+        // the tests are running on.
+        base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
     connection_->Flush();
 
     WaylandConnectionTestApi(connection_.get()).SyncDisplay();
@@ -1304,17 +1317,26 @@ TEST_P(WaylandInputMethodContextTest, SetInputTypeAfterFocus) {
 }
 
 TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zwp_text_input_v1_send_preedit_string(
-        server->text_input_manager_v1()->text_input()->resource(),
-        server->GetNextSerial(), "PreeditString", "");
-  });
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr gfx::Range kSelection{7, 13};
+  input_method_context_->OnPreeditString(
+      kPreeditString,
+      {{0,
+        static_cast<uint32_t>(kPreeditString.size()),
+        {{ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThin}}}},
+      kSelection);
   EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->ime_text_spans,
+            ImeTextSpans{ImeTextSpan(ImeTextSpan::Type::kComposition, 0,
+                                     kPreeditString.size(),
+                                     ImeTextSpan::Thickness::kThin)});
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       u"PreeditString");
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            gfx::Range(0, 13));
+            gfx::Range(0, kPreeditString.size()));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            kSelection);
 }
 
 TEST_P(WaylandInputMethodContextTest, OnCommit) {
@@ -1338,11 +1360,7 @@ TEST_P(WaylandInputMethodContextTest, OnCommit) {
 // Regression test for crbug.com/40263583
 TEST_P(WaylandInputMethodContextTest,
        OnCommitAfterEmptyPreeditStringWithoutCursor) {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zwp_text_input_v1_send_preedit_string(
-        server->text_input_manager_v1()->text_input()->resource(),
-        server->GetNextSerial(), "", "");
-  });
+  input_method_context_->OnPreeditString("", {}, gfx::Range::InvalidRange());
   EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
@@ -1351,11 +1369,7 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0, 0));
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             gfx::Range(0));
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zwp_text_input_v1_send_commit_string(
-        server->text_input_manager_v1()->text_input()->resource(),
-        server->GetNextSerial(), "CommitString");
-  });
+  input_method_context_->OnCommitString("CommitString");
   EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
@@ -1369,11 +1383,8 @@ TEST_P(WaylandInputMethodContextTest,
 }
 
 TEST_P(WaylandInputMethodContextTest, OnCommitAfterPreeditStringWithoutCursor) {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zwp_text_input_v1_send_preedit_string(
-        server->text_input_manager_v1()->text_input()->resource(),
-        server->GetNextSerial(), "PreeditString", "");
-  });
+  input_method_context_->OnPreeditString("PreeditString", {},
+                                         gfx::Range::InvalidRange());
   EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
@@ -1384,11 +1395,7 @@ TEST_P(WaylandInputMethodContextTest, OnCommitAfterPreeditStringWithoutCursor) {
   // specified.
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             gfx::Range(13));
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zwp_text_input_v1_send_commit_string(
-        server->text_input_manager_v1()->text_input()->resource(),
-        server->GetNextSerial(), "CommitString");
-  });
+  input_method_context_->OnCommitString("CommitString");
   EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
@@ -2092,7 +2099,11 @@ class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
         input_method_context_delegate_.get());
     auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
     mock_wrapper_ = mock_wrapper.get();
-    input_method_context_->Init(true, std::move(mock_wrapper));
+    input_method_context_->Init(
+        true, std::move(mock_wrapper),
+        // Ensure by default it doesn't pick the current desktop from the system
+        // the tests are running on.
+        base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
   }
 
  protected:
@@ -2265,6 +2276,42 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
       u"");
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             gfx::Range(0, 0));
+}
+
+TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+       OnPreeditChangedGnomeWorkaround) {
+  const std::u16string text(50, u'あ');
+  const std::string text_utf8 = base::UTF16ToUTF8(text);
+
+  // workaround should NOT be used when desktop is not gnome.
+  std::unique_ptr<WaylandInputMethodContext> input_method_context;
+  input_method_context = std::make_unique<WaylandInputMethodContext>(
+      connection_.get(), keyboard_delegate_.get(),
+      input_method_context_delegate_.get());
+  auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
+  input_method_context->Init(true, std::move(mock_wrapper),
+                             base::nix::DESKTOP_ENVIRONMENT_KDE3);
+
+  input_method_context->OnPreeditString(text_utf8, {}, {60, 30});
+  EXPECT_EQ(
+      input_method_context->predicted_state_for_testing().surrounding_text,
+      text);
+  EXPECT_EQ(input_method_context->predicted_state_for_testing().selection,
+            gfx::Range(20, 10));
+
+  // workaround should be used when desktop is gnome.
+  input_method_context = std::make_unique<WaylandInputMethodContext>(
+      connection_.get(), keyboard_delegate_.get(),
+      input_method_context_delegate_.get());
+  mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
+  input_method_context->Init(true, std::move(mock_wrapper),
+                             base::nix::DESKTOP_ENVIRONMENT_GNOME);
+  input_method_context->OnPreeditString(text_utf8, {}, {60, 30});
+  EXPECT_EQ(
+      input_method_context->predicted_state_for_testing().surrounding_text,
+      text);
+  EXPECT_EQ(input_method_context->predicted_state_for_testing().selection,
+            gfx::Range(20, 20));
 }
 
 }  // namespace ui

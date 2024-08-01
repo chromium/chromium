@@ -96,7 +96,7 @@ constexpr int32_t kMaxGattAttributeHandle = 0xFFFF;
 // The maximum length of an attribute value shall be 512 octets.
 constexpr int kMaxGattAttributeLength = 512;
 // Copied from Android at system/bt/stack/btm/btm_ble_int.h
-// https://goo.gl/k7PM6u
+// https://android.googlesource.com/platform/system/bt/+/android-n-preview-5/stack/btm/btm_ble_int.h?pli=1#109
 constexpr uint16_t kAndroidMBluetoothVersionNumber = 95;
 // Timeout for Bluetooth Discovery (scan)
 // 120 seconds is used here as the upper bound of the time need to do device
@@ -2070,7 +2070,7 @@ void ArcBluetoothBridge::AddDescriptor(int32_t service_handle,
   // is the parent of the new descriptor, we assume that it would be the last
   // characteristic that was added to the given service. This matches the
   // Android framework code at android/bluetooth/BluetoothGattServer.java#594.
-  // Link: https://goo.gl/cJZl1u
+  // https://android.googlesource.com/platform/frameworks/base/+/android-6.0.1_r55/core/java/android/bluetooth/BluetoothGattServer.java#586
   DCHECK(last_characteristic_.find(service_handle) !=
          last_characteristic_.end());
   int32_t last_characteristic_handle = last_characteristic_[service_handle];

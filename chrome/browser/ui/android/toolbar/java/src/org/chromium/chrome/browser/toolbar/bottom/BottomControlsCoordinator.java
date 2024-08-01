@@ -203,8 +203,10 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mMediator.destroy();
     }
 
-    public void simulateEdgeToEdgeChangeForTesting(int bottomInset) {
-        mMediator.simulateEdgeToEdgeChangeForTesting(bottomInset);
+    public void simulateEdgeToEdgeChangeForTesting(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptedIntoEdgeToEdge) {
+        mMediator.simulateEdgeToEdgeChangeForTesting( // IN-TEST
+                bottomInset, isDrawingToEdge, isPageOptedIntoEdgeToEdge); // IN-TEST
     }
 
     public ScrollingBottomViewSceneLayer getSceneLayerForTesting() {

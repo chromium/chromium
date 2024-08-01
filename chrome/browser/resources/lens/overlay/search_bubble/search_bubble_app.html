@@ -1,12 +1,16 @@
 <style include="cr-icons">
+:host {
+  --cr-realbox-min-width: 332px;
+}
+
 #container {
   display: flex;
+  flex-wrap: wrap;
 }
 
 #header {
   app-region: drag;
   flex: 1;
-  padding: 16px 0 16px;
 }
 
 :host-context([dir='ltr']) #header {
@@ -17,31 +21,9 @@
   padding-right: 48px;
 }
 
-#logo {
-  forced-color-adjust: none;
-  height: 30px;
-  margin: auto;
-  width: 92px;
-}
-
-:host([single-colored]) #logo {
-  -webkit-mask-image: url(cr_components/searchbox/icons/google_logo.svg);
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 92px;
-  background-color: var(--search-bubble-fg-color);
-}
-
-:host(:not([single-colored])) #logo {
-  background-image: url(cr_components/searchbox/icons/google_logo.svg);
-  background-repeat: no-repeat;
-  background-size: 92px;
-}
-
-
 #closeButton {
-  --cr-icon-button-fill-color: var(--search-bubble-fg-color);
-  --cr-icon-button-icon-size: 24px;
-  margin: 16px 0 16px;
+  --cr-icon-button-fill-color: #474747;
+  --cr-icon-button-icon-size: 16px;
 }
 
 :host-context([dir='ltr']) #closeButton {
@@ -51,11 +33,22 @@
 :host-context([dir='rtl']) #closeButton {
   margin-left: 16px;
 }
+
+#realboxContainer {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: center;
+  --cr-realbox-height: 52px;
+  --cr-realbox-icon-left-position: 10px;
+  --cr-realbox-icon-top-position: 1px;
+  --cr-realbox-icon-size-in-searchbox: 24px;
+}
 </style>
-<div id="container" style="--search-bubble-fg-color: [[logoColor_]];">
-  <div id="header">
-    <div id="logo"></div>
-  </div>
+<div id="container">
+  <div id="header"></div>
   <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}"
     on-click="onClose_"></cr-icon-button>
+  <div id="realboxContainer">
+    <cr-realbox id="realbox"></cr-realbox>
+  </div>
 </div>

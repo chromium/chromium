@@ -31,9 +31,6 @@ class CC_EXPORT ScrollStateData {
   // Pointer (i.e. cursor/touch point) position in viewport coordinates (DIP).
   int position_x;
   int position_y;
-  // Scroll velocity in DIP/seconds.
-  double velocity_x;
-  double velocity_y;
 
   bool is_beginning;
   bool is_in_inertial_phase;

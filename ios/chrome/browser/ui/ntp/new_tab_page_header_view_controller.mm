@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view.h"
@@ -91,6 +92,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 @implementation NewTabPageHeaderViewController {
   BOOL _useNewBadgeForLensButton;
+  BOOL _hasAccountError;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:
@@ -497,7 +499,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                               action:@selector(customizationMenuWasTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  [self.headerView setCustomizationMenuView:customizationMenuButton];
+  [self.headerView setCustomizationMenuButton:customizationMenuButton];
 }
 
 // Configures `identityDiscButton` with the current state of
@@ -739,6 +741,21 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   [self updateVoiceSearchDisplay];
 }
 
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError {
+  CHECK(base::FeatureList::IsEnabled(kIdentityDiscAccountMenu));
+
+  if (hasAccountError == _hasAccountError) {
+    return;
+  }
+
+  _hasAccountError = hasAccountError;
+  if (_hasAccountError) {
+    [self.headerView setIdentityDiscErrorBadge];
+  } else {
+    [self.headerView removeIdentityDiscErrorBadge];
+  }
+}
+
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)setSignedOutAccountImage {
@@ -811,6 +828,12 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
       beamWithPreferredLength:interaction.view.bounds.size.height / 2
                          axis:UIAxisVertical];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+#pragma mark - Getters
+
+- (UIButton*)customizationMenuButton {
+  return [self.headerView customizationMenuButton];
 }
 
 @end

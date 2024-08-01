@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -45,6 +44,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "partition_alloc/buildflags.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"

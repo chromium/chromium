@@ -32,6 +32,7 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -41,7 +42,6 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
@@ -156,20 +156,6 @@ bool IsManagedGuestSession() {
   return false;
 #endif
 }
-
-std::unique_ptr<ClientMetadata> GetBasicClientMetadata() {
-  // In this case, we are just using the client metadata to indicate to
-  // WebProtect whether or not the request is coming from a Managed Guest
-  // Session on ChromeOS, so we do not need the other info.
-  if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    auto metadata = std::make_unique<ClientMetadata>();
-
-    metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
-    return metadata;
-  } else {
-    return nullptr;
-  }
-}
 }  // namespace
 
 BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
@@ -188,6 +174,31 @@ ConnectorsService::ConnectorsService(content::BrowserContext* context,
 }
 
 ConnectorsService::~ConnectorsService() = default;
+
+std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata(
+    Profile* profile) {
+  auto metadata = std::make_unique<ClientMetadata>();
+  // We need to return profile and browser DM tokens, even in cases where the
+  // reporting policy is disabled, in order to support merging rules.
+  std::optional<std::string> browser_dm_token = GetBrowserDmToken();
+  if (browser_dm_token.has_value()) {
+    metadata->mutable_device()->set_dm_token(*browser_dm_token);
+  }
+
+  std::optional<std::string> profile_dm_token =
+      reporting::GetUserDmToken(profile);
+  if (profile_dm_token.has_value()) {
+    metadata->mutable_profile()->set_dm_token(*profile_dm_token);
+  }
+
+  // In this case, we are just using the client metadata to indicate to
+  // WebProtect whether or not the request is coming from a Managed Guest
+  // Session on ChromeOS.
+  if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
+    metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
+  }
+  return metadata;
+}
 
 std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     ReportingConnector connector) {
@@ -383,7 +394,7 @@ std::string ConnectorsService::GetManagementDomain() {
 
   std::optional<policy::PolicyScope> scope = std::nullopt;
   for (const char* scope_pref :
-       {prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+       {enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         ConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
         ConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
         ConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
@@ -435,8 +446,7 @@ std::string ConnectorsService::GetManagementDomain() {
 }
 
 std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
-  auto dm_token =
-      GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
+  auto dm_token = GetDmToken(kEnterpriseRealTimeUrlCheckScope);
   if (!dm_token) {
     return std::string();
   }
@@ -565,11 +575,11 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
   auto reporting_settings =
       GetReportingSettings(ReportingConnector::SECURITY_EVENT);
 
+  Profile* profile = Profile::FromBrowserContext(context_);
   if (is_cloud && !reporting_settings.has_value()) {
-    return GetBasicClientMetadata();
+    return GetBasicClientMetadata(profile);
   }
 
-  Profile* profile = Profile::FromBrowserContext(context_);
   auto metadata = std::make_unique<ClientMetadata>(
       reporting::GetContextAsClientMetadata(profile));
 

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -26,10 +27,14 @@
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/models/menu_model.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -107,13 +112,18 @@ content::WebUIController* GetWebUIController(
 }
 
 std::vector<GURL> GetAllPreloadableWebUIURLs() {
-  // Top 3 most used Top Chrome WebUIs.
-  // TODO(crbug.com/40168622): add more Top Chrome WebUIs.
-  static const base::NoDestructor<std::vector<GURL>> s_preloadable_webui_urls(
-      {GURL(chrome::kChromeUITabSearchURL),
-       GURL(chrome::kChromeUIHistoryClustersSidePanelURL),
-       GURL(chrome::kChromeUIBookmarksSidePanelURL)});
-  return *s_preloadable_webui_urls;
+  // Retrieves top-chrome WebUIs that enables IsPreloadable() in its WebUI
+  // config.
+  std::vector<GURL> preloadable_urls;
+  TopChromeWebUIConfig::ForEachConfig([&preloadable_urls](
+                                          TopChromeWebUIConfig* config) {
+    if (config->IsPreloadable()) {
+      preloadable_urls.emplace_back(base::StrCat(
+          {config->scheme(), url::kStandardSchemeSeparator, config->host()}));
+    }
+  });
+
+  return preloadable_urls;
 }
 
 }  // namespace
@@ -401,10 +411,9 @@ WebUIContentsPreloadManager::CreateNewContents(
   task_manager::WebContentsTags::CreateForToolContents(
       web_contents.get(), IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI);
   chrome::InitializePageLoadMetricsForWebContents(web_contents.get());
+  webui_tracker_->AddWebContents(web_contents.get());
 
   LoadURLForContents(web_contents.get(), url);
-
-  webui_tracker_->AddWebContents(web_contents.get());
 
   return web_contents;
 }
@@ -461,4 +470,20 @@ void WebUIContentsPreloadManager::OnWebContentsDestroyed(
   // the most time.
   MaybePreloadForBrowserContext(web_contents->GetBrowserContext());
   request_time_map_.erase(web_contents);
+}
+
+void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
+    content::WebContents* web_contents) {
+  if (web_contents == preloaded_web_contents_.get()) {
+    content::RenderWidgetHostView* render_widget_host_view =
+        web_contents->GetRenderWidgetHostView();
+    const bool should_auto_reisze_host =
+        TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
+                                   web_contents->GetVisibleURL())
+            ->ShouldAutoResizeHost();
+    if (render_widget_host_view && should_auto_reisze_host) {
+      render_widget_host_view->EnableAutoResize(gfx::Size(1, 1),
+                                                gfx::Size(INT_MAX, INT_MAX));
+    }
+  }
 }

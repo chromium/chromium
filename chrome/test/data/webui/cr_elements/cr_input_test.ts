@@ -131,17 +131,13 @@ suite('cr-input', function() {
     const label = crInput.$.label;
     const originalLabelColor = getComputedStyle(label).color;
 
-    function waitForTransitions(): Promise<TransitionEvent[]> {
+    async function waitForTransitions(): Promise<TransitionEvent[]> {
       const events: TransitionEvent[] = [];
-      return eventToPromise('transitionend', underline)
-          .then(e => {
-            events.push(e);
-            return eventToPromise('transitionend', underline);
-          })
-          .then(e => {
-            events.push(e);
-            return events;
-          });
+      let e = await eventToPromise('transitionend', underline);
+      events.push(e);
+      e = await eventToPromise('transitionend', underline);
+      events.push(e);
+      return events;
     }
 
     assertEquals('0', getComputedStyle(underline).opacity);

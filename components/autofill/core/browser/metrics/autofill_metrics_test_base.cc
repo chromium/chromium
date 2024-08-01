@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 
+#include <memory>
+
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -42,8 +44,10 @@ void SetProfileTestData(AutofillProfile* profile) {
 }
 }  // namespace
 
-MockAutofillClient::MockAutofillClient() = default;
-MockAutofillClient::~MockAutofillClient() = default;
+MockPaymentsAutofillClient::MockPaymentsAutofillClient(AutofillClient* client)
+    : payments::TestPaymentsAutofillClient(client) {}
+
+MockPaymentsAutofillClient::~MockPaymentsAutofillClient() = default;
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
     : is_in_any_main_frame_(is_in_any_main_frame) {}
@@ -56,8 +60,10 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   ASSERT_TRUE(base::Time::FromString("01/01/20", &year2020));
   task_environment_.FastForwardBy(year2020 - base::Time::Now());
 
-  autofill_client_ = std::make_unique<MockAutofillClient>();
+  autofill_client_ = std::make_unique<TestAutofillClient>();
   autofill_client_->SetPrefs(test::PrefServiceForTesting());
+  autofill_client_->set_payments_autofill_client(
+      std::make_unique<MockPaymentsAutofillClient>(autofill_client_.get()));
 
   test_api(personal_data().address_data_manager())
       .set_auto_accept_address_imports(true);
@@ -81,7 +87,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
           autofill_client_.get(),
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()),
           /*iban_save_manager=*/nullptr, "en-US"));
-  autofill_client_->set_autofill_offer_manager(
+  autofill_client_->GetPaymentsAutofillClient()->set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(&personal_data()));
 
   auto browser_autofill_manager =

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 
 #include <va/va.h>
@@ -155,7 +160,6 @@ void UpdatePictureForTemporalLayerEncoding(
           }};
 
   // Fill |pic.metadata_for_encoding| and |pic.ref|.
-  H264Metadata metadata;
   std::tie(pic.metadata_for_encoding.emplace(), pic.ref) =
       kFrameMetadata[num_layers - 2][num_encoded_frames % kTemporalLayerCycle];
 
@@ -168,10 +172,12 @@ void UpdatePictureForTemporalLayerEncoding(
   DCHECK_EQ(pic.ref_pic_list_modification_flag_l0, 0);
   DCHECK_EQ(pic.abs_diff_pic_num_minus1, 0);
   DCHECK(!ref_pic_list0.empty());
-  if (metadata.temporal_idx == 0)
+
+  if (pic.metadata_for_encoding->temporal_idx == 0) {
     ref_frame_idx = base::checked_cast<size_t>(ref_pic_list0.size() - 1);
-  else
+  } else {
     ref_frame_idx = 0;
+  }
 
   DCHECK_LT(*ref_frame_idx, ref_pic_list0.size());
   const H264Picture& ref_frame_pic = *ref_pic_list0[*ref_frame_idx];

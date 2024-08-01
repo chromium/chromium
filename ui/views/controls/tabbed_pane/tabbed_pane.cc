@@ -147,7 +147,6 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
 
 void TabbedPaneTab::GetAccessibleNodeData(ui::AXNodeData* data) {
   data->role = ax::mojom::Role::kTab;
-  data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
 }
 
 bool TabbedPaneTab::HandleAccessibleAction(
@@ -230,8 +229,13 @@ void TabbedPaneTab::OnStateChanged() {
     // Notify assistive tools to update this tab's selected status. The way
     // ChromeOS accessibility is implemented right now, firing almost any event
     // will work, we just need to trigger its state to be refreshed.
-    if (state_ == State::kInactive)
+    if (state_ == State::kInactive) {
+      // TODO(crbug.com/325137417): This view doesn't set the AXCheckedState, it
+      // only sets the kSelected attribute. Investigate why this is and whether
+      // we should fire another type of event automatically from the
+      // accessibility cache.
       NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
+    }
 
     // Style the tab text according to the spec for highlight style tabs. We no
     // longer have windows specific bolding of text in this case.
@@ -245,6 +249,8 @@ void TabbedPaneTab::OnStateChanged() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   title_->SetFontList(rb.GetFontListForDetails(ui::ResourceBundle::FontDetails(
       std::string(), font_size_delta, font_weight)));
+
+  UpdateAccessibleSelection();
 }
 
 void TabbedPaneTab::OnPaint(gfx::Canvas* canvas) {
@@ -301,6 +307,10 @@ void TabbedPaneTab::UpdateAccessibleName() {
     GetViewAccessibility().SetName(title_->GetText(),
                                    ax::mojom::NameFrom::kContents);
   }
+}
+
+void TabbedPaneTab::UpdateAccessibleSelection() {
+  GetViewAccessibility().SetIsSelected(selected());
 }
 
 BEGIN_METADATA(TabbedPaneTab)

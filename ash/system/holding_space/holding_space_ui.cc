@@ -19,9 +19,7 @@ views::Builder<views::Label> CreateTopLevelBubbleHeaderLabel(int message_id) {
 
 views::Builder<views::Label> CreateSectionHeaderLabel(int message_id) {
   return views::Builder<views::Label>(bubble_utils::CreateLabel(
-      features::IsHoldingSpaceRefreshEnabled() ? TypographyToken::kCrosButton1
-                                               : TypographyToken::kCrosTitle1,
-      l10n_util::GetStringUTF16(message_id)));
+      TypographyToken::kCrosTitle1, l10n_util::GetStringUTF16(message_id)));
 }
 
 views::Builder<views::Label> CreateSuggestionsSectionHeaderLabel(

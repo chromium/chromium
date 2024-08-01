@@ -66,22 +66,24 @@ GroupMember GroupMemberFromProto(
 
 data_sharing_pb::GroupData GroupDataToProto(const GroupData& group_data) {
   data_sharing_pb::GroupData result;
-  result.set_group_id(group_data.group_id.value());
+  result.set_group_id(group_data.group_token.group_id.value());
   result.set_display_name(group_data.display_name);
   for (const auto& member : group_data.members) {
     *result.add_members() = GroupMemberToProto(member);
   }
+  result.set_access_token(group_data.group_token.access_token);
   return result;
 }
 
 GroupData GroupDataFromProto(
     const data_sharing_pb::GroupData& group_data_proto) {
   GroupData result;
-  result.group_id = GroupId(group_data_proto.group_id());
+  result.group_token.group_id = GroupId(group_data_proto.group_id());
   result.display_name = group_data_proto.display_name();
   for (const auto& member_proto : group_data_proto.members()) {
     result.members.push_back(GroupMemberFromProto(member_proto));
   }
+  result.group_token.access_token = group_data_proto.access_token();
   return result;
 }
 

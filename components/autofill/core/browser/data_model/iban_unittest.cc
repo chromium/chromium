@@ -8,7 +8,7 @@
 
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -21,8 +21,8 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 // with a whitespace. If `is_value_masked` is true, replace oneDot ('\u2022')
 // with '*'.
 // This is useful to simplify the expectations in tests.
-std::u16string GetIbanValueGroupedByFour(const Iban& iban,
-                                         bool is_value_masked) {
+std::u16string GetHumanReadableIbanString(const Iban& iban,
+                                          bool is_value_masked) {
   std::u16string identifierIbanValue =
       iban.GetIdentifierStringForAutofillDisplay(is_value_masked);
   base::ReplaceChars(identifierIbanValue, kEllipsisOneSpace, u" ",
@@ -67,7 +67,7 @@ TEST(IbanTest, GetMetadata) {
   Iban local_iban = test::GetLocalIban();
   local_iban.set_use_count(2);
   local_iban.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
-  AutofillMetadata local_metadata = local_iban.GetMetadata();
+  PaymentsMetadata local_metadata = local_iban.GetMetadata();
 
   EXPECT_EQ(local_iban.guid(), local_metadata.id);
   EXPECT_EQ(local_iban.use_count(), local_metadata.use_count);
@@ -169,35 +169,35 @@ TEST(IbanTest, GetUserFacingValue_LocalIban) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
   Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  EXPECT_EQ(u"", GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"", GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
 
   iban.set_value(u"CH5604835012345678009");
 
-  EXPECT_EQ(u"CH** **** **** **** *800 9",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"CH **8009",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"CH56 0483 5012 3456 7800 9",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 
   iban.set_value(u"DE91100000000123456789");
 
-  EXPECT_EQ(u"DE** **** **** **** **67 89",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"DE **6789",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"DE91 1000 0000 0123 4567 89",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 
   iban.set_value(u"GR9608100010000001234567890");
 
-  EXPECT_EQ(u"GR** **** **** **** **** ***7 890",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"GR **7890",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"GR96 0810 0010 0000 0123 4567 890",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 
   iban.set_value(u"PK70BANK0000123456789000");
 
-  EXPECT_EQ(u"PK** **** **** **** **** 9000",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"PK **9000",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"PK70 BANK 0000 1234 5678 9000",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
@@ -214,11 +214,11 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
 TEST(IbanTest, GetUserFacingValue_ServerIban_RegularPrefixAndSuffix) {
   Iban server_iban(Iban::InstrumentId(1234567));
   // Set the prefix, suffix and length of the server IBAN.
-  server_iban.set_prefix(u"FR76");
+  server_iban.set_prefix(u"FR");
   server_iban.set_suffix(u"0189");
   server_iban.set_length(27);
-  EXPECT_EQ(u"FR76 **** **** **** **** ***0 189",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"FR **0189",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
@@ -227,18 +227,18 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
   server_iban.set_prefix(u"");
   server_iban.set_suffix(u"0189");
   server_iban.set_length(27);
-  EXPECT_EQ(u"**** **** **** **** **** ***0 189",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u" **0189",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptySuffix) {
   // Set up a `server_iban` with empty suffix.
   Iban server_iban(Iban::InstrumentId(1234567));
-  server_iban.set_prefix(u"FR76");
+  server_iban.set_prefix(u"FR");
   server_iban.set_suffix(u"");
   server_iban.set_length(27);
-  EXPECT_EQ(u"FR76 **** **** **** **** **** ***",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"FR **",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_OtherLengthOfPrefixAndSuffix) {
@@ -247,8 +247,8 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_OtherLengthOfPrefixAndSuffix) {
   server_iban.set_prefix(u"FR7");
   server_iban.set_suffix(u"10189");
   server_iban.set_length(27);
-  EXPECT_EQ(u"FR7* **** **** **** **** **10 189",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"FR7 **10189",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, ValidateIbanValue_ValidateOnLength) {
@@ -450,7 +450,7 @@ TEST(IbanTest, MatchesPrefixSuffixAndLength_AcrossTypes) {
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   local_iban.set_value(u"CH56 0483 5012 3456 7800 9");
   Iban server_iban(Iban::InstrumentId(1234567));
-  server_iban.set_prefix(u"CH56");
+  server_iban.set_prefix(u"CH");
   server_iban.set_suffix(u"8009");
   server_iban.set_length(21);
   EXPECT_TRUE(local_iban.MatchesPrefixSuffixAndLength(server_iban));

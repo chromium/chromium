@@ -16,6 +16,7 @@
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.RECORD_VIDEO" />
   <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
   <!-- Kerberos authentication -->
   <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -28,9 +29,16 @@
   <!-- android.permission.RECORD_AUDIO -->
   <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
+  <queries>
+    <intent>
+      <action android:name="org.chromium.net.test.EMBEDDED_TEST_SERVER_SERVICE" />
+    </intent>
+  </queries>
+
   <application android:name="org.chromium.android_webview.shell.AwShellApplication"
       android:label="AwShellApplication"
-      android:hardwareAccelerated="true">
+      android:hardwareAccelerated="true"
+      android:usesCleartextTraffic="true">
     <activity android:name="org.chromium.android_webview.shell.AwShellActivity"
         android:label="Android WebView Test Shell"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize"

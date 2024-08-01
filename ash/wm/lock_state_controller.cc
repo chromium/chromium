@@ -873,6 +873,7 @@ void LockStateController::SessionStateChangeWithInformedRestore(
     DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
                                file_path);
     StartSessionStateChange(requested_session_state);
+    return;
   }
 
   // Check if there are any content currently on the screen that are restricted

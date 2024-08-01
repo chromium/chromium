@@ -388,7 +388,7 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
   }
   scroll_into_view_util::ScrollRectToVisible(
       *renderer, path_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           horizontal_scroll_mode, vertical_scroll_mode,
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));

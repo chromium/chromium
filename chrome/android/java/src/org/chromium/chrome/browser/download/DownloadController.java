@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -58,7 +59,8 @@ public class DownloadController {
         }
         assert nativePage instanceof PdfPage;
         ((PdfPage) nativePage)
-                .onDownloadComplete(downloadInfo.getFileName(), downloadInfo.getFilePath());
+                .onDownloadComplete(
+                        downloadInfo.getFileName(), downloadInfo.getFilePath(), isDownloadSafe);
         tab.updateTitle();
     }
 
@@ -150,6 +152,8 @@ public class DownloadController {
         // Set isPdf param so that other parts of the code can load the pdf native page instead of
         // starting a download.
         param.setIsPdf(true);
+        param.setLoadType(LoadURLType.PDF_ANDROID);
+        param.setVirtualUrlForSpecialCases(downloadUrl);
         // If the download url matches the tab’s url, avoid duplicate navigation entries by
         // replacing the current entry.
         param.setShouldReplaceCurrentEntry(downloadUrl.equals(tab.getUrl().getSpec()));

@@ -9,7 +9,7 @@
 #include <set>
 #include <vector>
 
-#include "chrome/browser/sharing/sharing_handler_registry.h"
+#include "components/sharing_message/sharing_handler_registry.h"
 
 namespace content {
 class SmsFetcher;

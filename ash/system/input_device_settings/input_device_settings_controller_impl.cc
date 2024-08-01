@@ -57,6 +57,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -263,10 +264,11 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
 mojom::MousePtr BuildMojomMouse(
     const ui::InputDevice& mouse,
     mojom::CustomizationRestriction customization_restriction,
-    mojom::MouseButtonConfig mouse_button_config) {
+    mojom::MouseButtonConfig mouse_button_config,
+    const std::string& name) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
-  mojom_mouse->name = mouse.name;
+  mojom_mouse->name = name;
   mojom_mouse->customization_restriction = customization_restriction;
   mojom_mouse->mouse_button_config = mouse_button_config;
   mojom_mouse->device_key =
@@ -311,7 +313,12 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     mojom::CustomizationRestriction customization_restriction,
     mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
-  mojom_graphics_tablet->name = graphics_tablet.name;
+  auto* metadata = GetGraphicsTabletMetadata(graphics_tablet);
+  std::string name = features::IsWelcomeExperienceEnabled() && metadata &&
+                             metadata->name.has_value()
+                         ? metadata->name.value()
+                         : graphics_tablet.name;
+  mojom_graphics_tablet->name = name;
   mojom_graphics_tablet->id = graphics_tablet.id;
   mojom_graphics_tablet->customization_restriction = customization_restriction;
   mojom_graphics_tablet->graphics_tablet_button_config =
@@ -849,6 +856,9 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardDefaultSplitModifierSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterBooleanPref(
+      prefs::kKeyboardHasSplitModifierKeyboard, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardUpdateSettingsMetricInfo);
@@ -902,6 +912,22 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
                                   base::Time());
   pref_registry->RegisterTimePref(prefs::kInsertRemappingNudgeLastShown,
                                   base::Time());
+}
+
+void InputDeviceSettingsControllerImpl::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (state != session_manager::SessionState::OOBE &&
+      last_session_ == session_manager::SessionState::OOBE) {
+    RefreshCachedKeyboardSettings();
+
+    for (auto& [id, keyboard] : keyboards_) {
+      if (IsSplitModifierKeyboard(*keyboard)) {
+        active_pref_service_->SetBoolean(
+            prefs::kKeyboardHasSplitModifierKeyboard, true);
+      }
+    }
+  }
+  last_session_ = state;
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
@@ -1062,6 +1088,12 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
             weak_ptr_factory_.GetWeakPtr()));
     pref_change_registrar_->Add(
         prefs::kKeyboardDefaultSplitModifierSettings,
+        base::BindRepeating(
+            &InputDeviceSettingsControllerImpl::
+                ForceInitializeDefaultSplitModifierKeyboardSettings,
+            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kKeyboardHasSplitModifierKeyboard,
         base::BindRepeating(
             &InputDeviceSettingsControllerImpl::
                 ForceInitializeDefaultSplitModifierKeyboardSettings,
@@ -1839,6 +1871,15 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
   }
 }
 
+std::string GetMouseName(const ui::InputDevice& mouse) {
+  const auto* mouse_metadata = GetMouseMetadata(mouse);
+  if (!features::IsWelcomeExperienceEnabled() || !mouse_metadata ||
+      !mouse_metadata->name.has_value()) {
+    return mouse.name;
+  }
+  return mouse_metadata->name.value();
+}
+
 mojom::CustomizationRestriction
 InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
     const ui::InputDevice& mouse) {
@@ -1911,6 +1952,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
 
   RefreshCachedKeyboardSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
@@ -1932,6 +1974,7 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
 
   RefreshCachedTouchpadSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
@@ -1940,7 +1983,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse =
         BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse),
-                        GetMouseButtonConfig(mouse));
+                        GetMouseButtonConfig(mouse), GetMouseName(mouse));
     InitializeMouseSettings(mojom_mouse.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_mouse->device_key, mojom_mouse->id);
@@ -2006,6 +2049,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   }
   RefreshStoredLoginScreenGraphicsTabletSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
@@ -2588,6 +2632,24 @@ void InputDeviceSettingsControllerImpl::
   }
 
   for (auto& [id, keyboard] : keyboards_) {
+    // Only forward sync top_row_are_fkeys pref value from ChromeOS keyboard
+    // settings to split modifier keyboard settings.
+    if (IsSplitModifierKeyboard(*keyboard)) {
+      auto top_row_are_fkeys =
+          active_pref_service_->GetDict(prefs::kKeyboardDefaultChromeOSSettings)
+              .FindBool(prefs::kKeyboardSettingTopRowAreFKeys);
+
+      if (!top_row_are_fkeys || active_pref_service_->GetBoolean(
+                                    prefs::kKeyboardHasSplitModifierKeyboard)) {
+        continue;
+      }
+      keyboard->settings->top_row_are_fkeys = top_row_are_fkeys.value();
+      keyboard_pref_handler_->UpdateKeyboardSettings(
+          active_pref_service_, policy_handler_->keyboard_policies(),
+          *keyboard);
+      continue;
+    }
+
     if (!IsChromeOSKeyboard(*keyboard)) {
       continue;
     }
@@ -2638,6 +2700,11 @@ void InputDeviceSettingsControllerImpl::RefreshCachedMouseSettings() {
 }
 
 void InputDeviceSettingsControllerImpl::RefreshCachedKeyboardSettings() {
+  // Only refresh the settings after the OOBE session to avoid a race condition
+  // in the order we receive synced prefs.
+  if (IsOobe()) {
+    return;
+  }
   RefreshStoredLoginScreenKeyboardSettings();
   RefreshKeyboardDefaultSettings();
 }
@@ -2770,26 +2837,26 @@ void InputDeviceSettingsControllerImpl::OnDeviceNotificationImageDownloaded(
     const DeviceImage& device_image) {
   if (auto* kb = FindKeyboard(id); kb != nullptr) {
     notification_controller_->NotifyKeyboardFirstTimeConnected(
-        *kb, device_image.gfx_image());
+        *kb, device_image.gfx_image_skia());
     return;
   }
 
   if (auto* mouse = FindMouse(id); mouse != nullptr) {
     notification_controller_->NotifyMouseFirstTimeConnected(
-        *mouse, device_image.gfx_image());
+        *mouse, device_image.gfx_image_skia());
     return;
   }
 
   if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
     notification_controller_->NotifyTouchpadFirstTimeConnected(
-        *touchpad, device_image.gfx_image());
+        *touchpad, device_image.gfx_image_skia());
     return;
   }
 
   if (auto* graphics_tablet = FindGraphicsTablet(id);
       graphics_tablet != nullptr) {
     notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
-        *graphics_tablet, device_image.gfx_image());
+        *graphics_tablet, device_image.gfx_image_skia());
     return;
   }
 }

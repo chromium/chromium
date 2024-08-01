@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -45,6 +44,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -117,8 +117,9 @@ class BrowserActionApiTest : public ExtensionApiTest {
 
  protected:
   ExtensionActionTestHelper* GetBrowserActionsBar() {
-    if (!browser_action_test_util_)
+    if (!browser_action_test_util_) {
       browser_action_test_util_ = ExtensionActionTestHelper::Create(browser());
+    }
     return browser_action_test_util_.get();
   }
 
@@ -295,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   // We should not be creating icons asynchronously, so we don't need an
   // observer.
   ExtensionActionIconFactory icon_factory(
-      profile(), extension, GetBrowserAction(browser(), *extension), nullptr);
+      extension, GetBrowserAction(browser(), *extension), nullptr);
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
 

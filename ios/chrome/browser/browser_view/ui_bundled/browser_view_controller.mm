@@ -25,6 +25,9 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -51,15 +54,18 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tabs/ui_bundled/background_tab_animation_view.h"
+#import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
+#import "ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_presentation.h"
+#import "ios/chrome/browser/tabs/ui_bundled/switch_to_tab_animation_view.h"
+#import "ios/chrome/browser/tabs/ui_bundled/tab_strip_constants.h"
+#import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
@@ -70,12 +76,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_utils.h"
-#import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
-#import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
-#import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
-#import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
@@ -1832,6 +1832,10 @@ enum HeaderBehaviour {
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter {
   return self;
+}
+
+- (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
+  return kTopOmniboxGuide;
 }
 
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {

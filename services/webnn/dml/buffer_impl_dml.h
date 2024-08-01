@@ -21,8 +21,7 @@ class BufferImplDml final : public WebNNBufferImpl {
   BufferImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
                 ContextImplDml* context,
-                mojom::BufferInfoPtr buffer_info,
-                const base::UnguessableToken& buffer_handle);
+                mojom::BufferInfoPtr buffer_info);
 
   BufferImplDml(const BufferImplDml&) = delete;
   BufferImplDml& operator=(const BufferImplDml&) = delete;

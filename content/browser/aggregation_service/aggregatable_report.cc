@@ -29,6 +29,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -216,30 +217,31 @@ void AppendEncodedContributionToCborArray(
   array.emplace_back(std::move(map));
 }
 
-// Returns a vector with a serialized CBOR map. See the AggregatableReport
-// documentation for more detail on the expected format. Returns an empty
-// vector in case of error.
-// Note that a vector is returned to match the `kExperimentalPoplar` case.
-std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
-    const AggregationServicePayloadContents& payload_contents) {
+// Returns a serialized CBOR map. See the `AggregatableReport` documentation for
+// more detail on the expected format. Returns `std::nullopt` if serialization
+// fails.
+std::optional<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
+    const AggregatableReportRequest& request) {
+  const AggregationServicePayloadContents& payload_contents =
+      request.payload_contents();
+
   cbor::Value::MapValue value;
   value.emplace(kOperationKey, kHistogramValue);
 
   cbor::Value::ArrayValue data;
-  base::ranges::for_each(
-      payload_contents.contributions,
-      [&](const blink::mojom::AggregatableReportHistogramContribution&
-              contribution) {
-        AppendEncodedContributionToCborArray(
-            data, contribution, payload_contents.filtering_id_max_bytes);
-      });
+  for (const blink::mojom::AggregatableReportHistogramContribution&
+           contribution : payload_contents.contributions) {
+    AppendEncodedContributionToCborArray(
+        data, contribution, payload_contents.filtering_id_max_bytes);
+  }
 
-  int number_of_null_contributions_to_add =
+  // This property is enforced by `AggregatableReportRequest::Create()`.
+  CHECK_GE(payload_contents.max_contributions_allowed,
+           payload_contents.contributions.size());
+  const size_t number_of_null_contributions_to_add =
       payload_contents.max_contributions_allowed -
       payload_contents.contributions.size();
-  CHECK_GE(number_of_null_contributions_to_add, 0);
-
-  for (int i = 0; i < number_of_null_contributions_to_add; ++i) {
+  for (size_t i = 0; i < number_of_null_contributions_to_add; ++i) {
     AppendEncodedContributionToCborArray(
         data,
         blink::mojom::AggregatableReportHistogramContribution(
@@ -249,14 +251,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
 
   value.emplace("data", std::move(data));
 
-  std::optional<std::vector<uint8_t>> unencrypted_payload =
-      cbor::Writer::Write(cbor::Value(std::move(value)));
-
-  if (!unencrypted_payload.has_value()) {
-    return {};
-  }
-
-  return {std::move(unencrypted_payload.value())};
+  return cbor::Writer::Write(cbor::Value(std::move(value)));
 }
 
 std::optional<AggregationServicePayloadContents>
@@ -302,13 +297,14 @@ ConvertPayloadContentsFromProto(
         url::Origin::Create(GURL(proto.aggregation_coordinator_origin()));
   }
 
-  int max_contributions_allowed = proto.max_contributions_allowed();
-  if (max_contributions_allowed < 0) {
+  if (proto.max_contributions_allowed() < 0) {
     return std::nullopt;
-  } else if (max_contributions_allowed == 0) {
-    // Don't pad reports stored before padding was implemented.
-    max_contributions_allowed = contributions.size();
   }
+  // Don't pad reports stored before padding was implemented.
+  const size_t max_contributions_allowed =
+      proto.max_contributions_allowed() == 0
+          ? contributions.size()
+          : base::saturated_cast<size_t>(proto.max_contributions_allowed());
 
   std::optional<size_t> filtering_id_max_bytes;
   if (proto.has_filtering_id_max_bytes()) {
@@ -559,7 +555,7 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
         contributions,
     blink::mojom::AggregationServiceMode aggregation_mode,
     std::optional<url::Origin> aggregation_coordinator_origin,
-    int max_contributions_allowed,
+    base::StrictNumeric<size_t> max_contributions_allowed,
     std::optional<size_t> filtering_id_max_bytes)
     : operation(operation),
       contributions(std::move(contributions)),
@@ -731,7 +727,7 @@ AggregatableReportRequest::CreateInternal(
   }
 
   if (payload_contents.max_contributions_allowed <
-      static_cast<int>(payload_contents.contributions.size())) {
+      payload_contents.contributions.size()) {
     return std::nullopt;
   }
 
@@ -899,19 +895,28 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
 
   switch (report_request.payload_contents().aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased: {
-      unencrypted_payloads = ConstructUnencryptedTeeBasedPayload(
-          report_request.payload_contents());
+      std::optional<std::vector<uint8_t>> payload =
+          ConstructUnencryptedTeeBasedPayload(report_request);
+      if (!payload.has_value()) {
+        return std::nullopt;
+      }
 
       MaybeVerifyPayloadLength(
           report_request.payload_contents().max_contributions_allowed,
-          /*payload_length=*/unencrypted_payloads[0].size(),
+          /*payload_length=*/payload->size(),
           report_request.payload_contents().filtering_id_max_bytes);
+
+      unencrypted_payloads.emplace_back(*std::move(payload));
       break;
     }
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar: {
 #if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
       unencrypted_payloads = ConstructUnencryptedExperimentalPoplarPayloads(
           report_request.payload_contents());
+
+      if (unencrypted_payloads.empty()) {
+        return std::nullopt;
+      }
       break;
 #else
       LOG(WARNING)
@@ -921,10 +926,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
 #endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
     }
   }
-
-  if (unencrypted_payloads.empty()) {
-    return std::nullopt;
-  }
+  CHECK(!unencrypted_payloads.empty());
 
   std::string encoded_shared_info =
       report_request.shared_info().SerializeAsJson();

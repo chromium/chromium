@@ -5,12 +5,15 @@
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -416,5 +419,25 @@ INSTANTIATE_TEST_SUITE_P(
         // SharedWorker:
         MakeParamsWithSetBit<12>(),
     }));
+
+TEST(StorageAccessHandleRetentionTest, Lifespan) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<DummyPageHolder> holder =
+      DummyPageHolder::CreateAndCommitNavigation(
+          KURL("https://www.example.com"));
+  LocalDOMWindow* window = holder->GetFrame().DomWindow();
+  StorageAccessTypes* storage_access_types =
+      MakeGarbageCollected<StorageAccessTypes>();
+  storage_access_types->setBroadcastChannel(true);
+  StorageAccessHandle* storage_access_handle =
+      MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
+  V8TestingScope scope;
+  class BroadcastChannel* channel = storage_access_handle->BroadcastChannel(
+      scope.GetExecutionContext(), "foo", scope.GetExceptionState());
+  EXPECT_TRUE(channel->IsRemoteClientConnectedForTesting());
+  storage_access_handle = nullptr;
+  WebHeap::CollectGarbageForTesting();
+  EXPECT_TRUE(channel->IsRemoteClientConnectedForTesting());
+}
 
 }  // namespace blink

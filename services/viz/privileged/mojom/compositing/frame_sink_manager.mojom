@@ -38,6 +38,9 @@ struct RootCompositorFrameSinkParams {
   [EnableIf=is_android]
   float refresh_rate;
 
+  [EnableIf=is_win]
+  bool set_present_duration_allowed = false;
+
   pending_associated_receiver<CompositorFrameSink> compositor_frame_sink;
   pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client;
 
@@ -66,6 +69,13 @@ struct FrameCountingPerSinkData {
 
   // Collected number of presented frames for the specified bucket size.
   array<uint16> presented_frames;
+};
+
+struct OverdrawData {
+  // Average overdraw as percentage of the root frame sink size for
+  // each AggregatedFrame, grouped using `bucket_size` arg of
+  // `StartOverdrawTrackingForTest`.
+  array<float> average_overdraws;
 };
 
 // The FrameSinkManager interface is a privileged interface that allows the
@@ -203,13 +213,23 @@ interface FrameSinkManager {
   // |debug_settings| (show_overdraw_feedback, etc.).
   UpdateDebugRendererSettings(DebugRendererSettings debug_settings);
 
-  // Starts frame counting per frame sink on the Viz thread.
+  // Starts frame counting per frame sink on the viz.
   StartFrameCountingForTest(mojo_base.mojom.TimeTicks start_time,
                             mojo_base.mojom.TimeDelta bucket_size);
 
-  // Stops frame counting on the Viz thread and returns all records to the
+  // Stops frame counting on the viz and returns all records to the
   // caller.
   StopFrameCountingForTest() => (FrameCountingData? data);
+
+  // Starts overdraw tracking for the root_frame_sink_id in viz.
+  StartOverdrawTrackingForTest(
+    FrameSinkId root_frame_sink_id,
+    mojo_base.mojom.TimeDelta bucket_size);
+
+  // Stops overdraw tracking for the root_frame_sink in viz and returns
+  // all records to the caller.
+  StopOverdrawTrackingForTest(FrameSinkId root_frame_sink_id) =>
+                                                  (OverdrawData? data);
 
   // Clears the ViewTransition resources if they have not been claimed by a
   // CompositorFrameSink. `transition_token` identifies the navigation for which

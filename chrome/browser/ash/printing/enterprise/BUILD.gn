@@ -27,6 +27,8 @@ static_library("enterprise") {
     "print_servers_provider_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":managed_printer_proto",
     "//chrome/browser:browser_process",
@@ -63,6 +65,8 @@ source_set("unit_tests") {
     ":managed_printer_proto",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
   ]
 }
 

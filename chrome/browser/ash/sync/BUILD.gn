@@ -32,6 +32,7 @@ static_library("sync") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/crosapi/mojom",
     "//components/keyed_service/core",

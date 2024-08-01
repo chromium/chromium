@@ -22,6 +22,11 @@ source_set("app_service") {
   # TODO(crbug.com/40251079): Remove circular dependencies.
   allow_circular_includes_from = [ "//chrome/browser/apps/app_service" ]
 
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/media/webrtc",
+  ]
+
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
@@ -43,11 +48,6 @@ source_set("app_service") {
   }
 
   if (is_chromeos_ash) {
-    assert(enable_system_notifications)
-    sources += [
-      "browser_shortcuts.cc",
-      "browser_shortcuts.h",
-    ]
     deps += [
       "//ash/components/arc:arc_base",
       "//ash/public/cpp",
@@ -63,16 +63,13 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/chromeos",
-      "//components/app_constants",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",
-      "//components/services/app_service/public/cpp/shortcut",
       "//extensions/browser/api/file_handlers",
     ]
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
     sources += [
       "lacros_web_apps_controller.cc",
       "lacros_web_apps_controller.h",
@@ -85,7 +82,6 @@ source_set("app_service") {
       "//chromeos/startup",
     ]
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

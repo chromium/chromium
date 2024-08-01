@@ -130,18 +130,31 @@
           index-as="rowIndex">
         <div class="detail-container"
             hidden$="[[!showRow_(detail.title, rowIndex)]]">
-            <div class="detail-title">
-              <span>[[detail.title]]</span>
-            </div>
-            <div class="detail-description"
-                hidden$="[[!showDescription_(detail.title, rowIndex,
-                    columns)]]">
-              [[detail.description]]
-            </div>
+          <div class="detail-title">
+            <span>[[detail.title]]</span>
+          </div>
+          <div class="detail-description"
+              hidden$="[[!showDescription_(detail.title, rowIndex,
+                  columns)]]">
+            [[detail.description]]
+          </div>
+          <template is="dom-if"
+              if="[[showSummary_(detail.title, rowIndex, columns)]]">
+            <!-- The following section is messy to avoid spaces being rendered
+                 in place of new lines. -->
+            <!-- TODO(355476863): Figure out how to clean this up. -->
             <div class="detail-summary"
-                hidden$="[[!showSummary_(detail.title, rowIndex, columns)]]">
-              [[detail.summary]]
+              ><template is="dom-repeat" items="[[detail.summary]]"
+                  as="summaryItem" index-as="summaryIndex"
+                >[[summaryItem.text]]<template
+                    is="dom-repeat" items="[[summaryItem.urls]]" as="urlInfo"
+                    index-as="urlIndex"
+                      ><description-citation
+                          url="[[urlInfo.url.url]]"
+                          index="[[computeCitationIndex_(detail.summary, summaryIndex, urlIndex)]]"
+                          ></description-citation></template></template>
             </div>
+          </template>
         </div>
       </template>
     </div>

@@ -12,11 +12,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/features.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -35,25 +35,9 @@ struct GetProxyListCall {
   std::string geo_id;
 };
 
-class MockIpProtectionConfigGetter
-    : public network::mojom::IpProtectionConfigGetter {
+class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
  public:
   ~MockIpProtectionConfigGetter() override = default;
-
-  // Register an expectation of a call to `TryGetAuthTokens()` returning the
-  // given tokens.
-  void ExpectTryGetAuthTokensCall(
-      uint32_t batch_size,
-      std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens) {
-    NOTREACHED_NORETURN();
-  }
-
-  // Register an expectation of a call to `TryGetAuthTokens()` returning no
-  // tokens and the given `try_again_after`.
-  void ExpectTryGetAuthTokensCall(uint32_t batch_size,
-                                  base::Time try_again_after) {
-    NOTREACHED_NORETURN();
-  }
 
   // Register an expectation of a call to `GetIpProtectionProxyList()`,
   // returning the given proxy list manager.
@@ -75,8 +59,10 @@ class MockIpProtectionConfigGetter
   // Reset all test expectations.
   void Reset() { expected_get_proxy_list_calls_.clear(); }
 
+  bool IsAvailable() override { return true; }
+
   void TryGetAuthTokens(uint32_t batch_size,
-                        network::mojom::IpProtectionProxyLayer proxy_layer,
+                        IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     NOTREACHED_NORETURN();
   }
@@ -102,20 +88,19 @@ class IpProtectionProxyListManagerImplTest : public testing::Test {
   IpProtectionProxyListManagerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         mock_(),
-        receiver_(&mock_) {
-    remote_ = mojo::Remote<network::mojom::IpProtectionConfigGetter>();
-    remote_.Bind(receiver_.BindNewPipeAndPassRemote());
-    ipp_proxy_list_ = std::make_unique<IpProtectionProxyListManagerImpl>(
-        &remote_,
-        /* disable_background_tasks_for_testing=*/true);
-  }
+        ipp_proxy_list_(std::make_unique<IpProtectionProxyListManagerImpl>(
+            &mock_,
+            /* disable_background_tasks_for_testing=*/true)) {}
 
   // Wait until the proxy list is refreshed.
-  void WaitForProxyListRefresh() {
+  void QuitClosureOnRefresh() {
+    // TODO(abhijithnair): Understand what QuitClosure and RunUntilQuit does
+    // and refactor these tests.
     ipp_proxy_list_->SetOnProxyListRefreshedForTesting(
         task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
   }
+
+  void WaitTillClosureQuit() { task_environment_.RunUntilQuit(); }
 
   // Shortcut to create a ProxyChain from hostnames.
   net::ProxyChain MakeChain(std::vector<std::string> hostnames) {
@@ -132,10 +117,6 @@ class IpProtectionProxyListManagerImplTest : public testing::Test {
 
   MockIpProtectionConfigGetter mock_;
 
-  mojo::Receiver<network::mojom::IpProtectionConfigGetter> receiver_;
-
-  mojo::Remote<network::mojom::IpProtectionConfigGetter> remote_;
-
   // The IpProtectionProxyListImpl being tested.
   std::unique_ptr<IpProtectionProxyListManagerImpl> ipp_proxy_list_;
 
@@ -148,8 +129,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListOnStartup) {
       .proxy_chains = std::vector{MakeChain({"a-proxy"})},
       .geo_id = "US,US-AL,ALABASTER"};
   mock_.ExpectGetProxyListCall(expected_call);
+  QuitClosureOnRefresh();
   ipp_proxy_list_->EnableProxyListRefreshingForTesting();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -161,7 +143,8 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListOnStartup) {
       GetProxyListCall{.proxy_chains = std::vector{MakeChain({"b-proxy"})},
                        .geo_id = "US,US-CA,MOUNTAIN VIEW"};
   mock_.ExpectGetProxyListCall(expected_call);
-  WaitForProxyListRefresh();
+  QuitClosureOnRefresh();
+  WaitTillClosureQuit();
   base::TimeDelta delay = net::features::kIpPrivacyProxyListFetchInterval.Get();
   EXPECT_EQ(base::Time::Now() - start, delay);
 
@@ -178,9 +161,10 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListRefresh) {
       .proxy_chains = std::vector{MakeChain({"a-proxy"})},
       .geo_id = "US,US-AL,ALABASTER"};
   mock_.ExpectGetProxyListCall(expected_call);
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -192,8 +176,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, IsProxyListAvailableEvenIfEmpty) {
   mock_.ExpectGetProxyListCall(GetProxyListCall{
       .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
   });
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
 }
@@ -204,8 +189,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
       .proxy_chains = std::vector{MakeChain({"a-proxy"})},
       .geo_id = "US,US-AL,ALABASTER"};
   mock_.ExpectGetProxyListCall(expected_call);
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -216,8 +202,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
       net::features::kIpPrivacyProxyListMinFetchInterval.Get());
 
   mock_.ExpectGetProxyListCallFailure();
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -232,8 +219,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
       .proxy_chains = std::nullopt,
       .geo_id = "US,US-CA,MOUNTAIN VIEW"};  // A new Geohint
   mock_.ExpectGetProxyListCall(expected_call_fail);
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -244,8 +232,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
 
 TEST_F(IpProtectionProxyListManagerImplTest, GetProxyListFailureRecorded) {
   mock_.ExpectGetProxyListCallFailure();
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
       kGetProxyListResultHistogram,
@@ -257,8 +246,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, GotEmptyProxyListRecorded) {
   mock_.ExpectGetProxyListCall(GetProxyListCall{
       .proxy_chains = std::vector<net::ProxyChain>{},  // Empty ProxyList
   });
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
       kGetProxyListResultHistogram,
@@ -271,8 +261,9 @@ TEST_F(IpProtectionProxyListManagerImplTest, GotPopulatedProxyListRecorded) {
       .proxy_chains = std::vector{MakeChain({"a-proxy", "b-proxy"})},
       .geo_id = "US,US-AL,ALABASTER"};
   mock_.ExpectGetProxyListCall(expected_call);
+  QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitForProxyListRefresh();
+  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
       kGetProxyListResultHistogram,

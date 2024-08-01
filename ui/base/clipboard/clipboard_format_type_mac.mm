@@ -5,8 +5,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 
 #import <Cocoa/Cocoa.h>
-#import <CoreServices/CoreServices.h>  // pre-macOS 11
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h> // macOS 11
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -132,14 +131,8 @@ const ClipboardFormatType& ClipboardFormatType::HtmlType() {
 }
 
 const ClipboardFormatType& ClipboardFormatType::SvgType() {
-  if (@available(macOS 11, *)) {
-    static base::NoDestructor<ClipboardFormatType> type(UTTypeSVG.identifier);
-    return *type;
-  } else {
-    static base::NoDestructor<ClipboardFormatType> type(
-        base::apple::CFToNSPtrCast(kUTTypeScalableVectorGraphics));
-    return *type;
-  }
+  static base::NoDestructor<ClipboardFormatType> type(UTTypeSVG.identifier);
+  return *type;
 }
 
 // static

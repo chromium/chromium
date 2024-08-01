@@ -16,6 +16,7 @@
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -68,7 +69,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -111,6 +112,7 @@ class NewTabPageMediatorTest : public PlatformTest {
                        isIncognito:is_incognito
                discoverFeedService:discover_feed_service
                        prefService:prefs
+                       syncService:&test_sync_service_
                         isSafeMode:NO];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
@@ -179,6 +181,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  syncer::TestSyncService test_sync_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

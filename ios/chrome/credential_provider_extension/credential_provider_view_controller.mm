@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/command_line.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -184,6 +185,43 @@ UIColor* BackgroundColor() {
       [[ConsentCoordinator alloc] initWithBaseViewController:self
                                    credentialResponseHandler:self];
   [self.consentCoordinator start];
+}
+
+// Only available in iOS 18.0+.
+- (void)performPasskeyRegistrationWithoutUserInteractionIfPossible:
+    (ASPasskeyCredentialRequest*)registrationRequest API_AVAILABLE(ios(18.0)) {
+  // This function is called to silently create passkeys.
+  // We're always allowed to return an error until we support this flow.
+  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+}
+
+- (void)prepareInterfaceForPasskeyRegistration:
+    (id<ASCredentialRequest>)registrationRequest {
+  if (![registrationRequest isKindOfClass:[ASPasskeyCredentialRequest class]]) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
+  ASPasskeyCredentialRequest* passkeyCredentialRequest =
+      base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
+          registrationRequest);
+
+  NSArray<NSNumber*>* supportedAlgorithms =
+      [passkeyCredentialRequest.supportedAlgorithms
+          filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                       NSNumber* algorithm,
+                                                       NSDictionary* bindings) {
+            return webauthn::passkey_model_utils::IsSupportedAlgorithm(
+                algorithm.intValue);
+          }]];
+
+  if (supportedAlgorithms.count == 0) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
+  // TODO(crbug.com/330355124): Perform passkey creation here.
+  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
 }
 
 #pragma mark - Properties

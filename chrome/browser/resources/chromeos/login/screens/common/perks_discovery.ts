@@ -31,6 +31,14 @@ const GENERATE_WEB_VIEW_CSS = (backgroundColor: string) => {
   };
 };
 
+/**
+ * Available user actions.
+ */
+enum UserAction {
+  FINISHED = 'finished',
+  LOADED = 'loaded',
+}
+
 interface PerkData {
   perkId: string;
   title: string;
@@ -46,13 +54,6 @@ interface PerkData {
 enum PerksDiscoveryStep {
   LOADING = 'loading',
   OVERVIEW = 'overview',
-}
-
-/**
- * Available user actions.
- */
-enum UserAction {
-  LOADED = 'loaded',
 }
 
 
@@ -74,6 +75,12 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
         type: Array,
         value: [],
         notify: true,
+      },
+      /**
+       * A map that stores a user's interest in various perks.
+       */
+      selectedPerks: {
+        type: Object,
       },
       /**
        * Current perk displayed.
@@ -100,6 +107,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   }
 
   private perksList: PerkData[];
+  private selectedPerks: Set<string>;
   private currentPerk: number;
   private itemIconsRendered: number;
   private itemIllustrationsRendered: number;
@@ -138,6 +146,9 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     this.currentPerk = -1;
     this.itemIconsRendered = 0;
     this.itemIllustrationsRendered = 0;
+    if(this.selectedPerks) {
+      this.selectedPerks.clear();
+    }
   }
 
   isElementHidden(currentPerk: number, index: number): boolean {
@@ -147,10 +158,11 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   setPerksData(perksData: PerkData[]): void {
     assert(perksData !== null);
     this.perksList = perksData;
-    this.currentPerk = 0;
+    this.selectedPerks = new Set<string>();
   }
 
   setOverviewStep(): void {
+    this.currentPerk = 0;
     this.setUIStep(PerksDiscoveryStep.OVERVIEW);
   }
 
@@ -228,9 +240,33 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     });
   }
 
-  private onNotInterestedClicked(): void {}
+  private onBackClicked(): void {
+    assert(this.currentPerk > 0);
+    this.currentPerk--;
+  }
 
-  private onInterestedClicked(): void {}
+  private canGoBack(currentStep: number): boolean {
+    return currentStep > 0;
+  }
+
+  private advanceToNextPerk(): void {
+    if (this.currentPerk === this.perksList.length - 1) {
+      this.userActed([UserAction.FINISHED, Array.from(this.selectedPerks)]);
+      return;
+    }
+    this.currentPerk++;
+  }
+
+  private onNotInterestedClicked(): void {
+    this.selectedPerks.delete(this.perksList[this.currentPerk].perkId);
+    this.advanceToNextPerk();
+  }
+
+  private onInterestedClicked(): void {
+    this.selectedPerks.add(this.perksList[this.currentPerk].perkId);
+    this.advanceToNextPerk();
+  }
+
 
   /**
    * Returns the title of the perk.

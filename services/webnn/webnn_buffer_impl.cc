@@ -14,10 +14,8 @@ namespace webnn {
 WebNNBufferImpl::WebNNBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle)
-    : WebNNObjectImpl(buffer_handle),
-      context_(context),
+    mojom::BufferInfoPtr buffer_info)
+    : context_(context),
       // TODO(crbug.com/343638938): Use buffer_info->usage.
       descriptor_(std::move(buffer_info->descriptor)),
       receiver_(this, std::move(receiver)) {

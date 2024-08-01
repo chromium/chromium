@@ -59,7 +59,7 @@ class MemorySaverChipTabHelper
   explicit MemorySaverChipTabHelper(content::WebContents* contents);
 
   // Threshold was selected based on the 75th percentile of tab memory usage
-  static constexpr uint64_t kExpandedMemorySaverChipThresholdBytes =
+  static constexpr int64_t kExpandedMemorySaverChipThresholdBytes =
       197 * 1024 * 1024;
 
   static constexpr base::TimeDelta kExpandedMemorySaverChipFrequency =

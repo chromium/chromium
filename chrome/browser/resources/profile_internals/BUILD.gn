@@ -13,9 +13,13 @@ build_webui("build") {
   web_component_files = [ "profile_internals_app.ts" ]
   non_web_component_files = [ "profile_internals_browser_proxy.ts" ]
 
+  css_files = [ "profile_internals_app.css" ]
+
+  html_to_wrapper_template = "detect"
+
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

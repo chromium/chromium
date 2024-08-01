@@ -38,9 +38,9 @@
 ++++[table row] name='Cell at level 2' level:2
 ++++++[table cell] name='Cell at level 2' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++[static] name='Cell at level 2'
-++[section]
+++[list item] level:1
 ++++[static] name='List item at level 1'
-++[section]
+++[list item] level:3
 ++++[static] name='List item at level 3'
 ++[list]
 ++++[list item] level:2

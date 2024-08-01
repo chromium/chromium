@@ -16,6 +16,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/path_service.h"
+#import "base/profiler/process_type.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
@@ -34,7 +35,6 @@
 #import "components/memory_system/parameters.h"
 #import "components/metrics/call_stacks/call_stack_profile_builder.h"
 #import "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
-#import "components/metrics/call_stacks/call_stack_profile_params.h"
 #import "components/metrics/clean_exit_beacon.h"
 #import "components/metrics/expired_histogram_util.h"
 #import "components/metrics/metrics_service.h"
@@ -256,8 +256,8 @@ void IOSChromeMainParts::PreCreateThreads() {
   // consistency with other main delegates where the browser process is denoted
   // this way.
   memory_system::Initializer()
-      .SetProfilingClientParameters(
-          channel, metrics::CallStackProfileParams::Process::kBrowser)
+      .SetProfilingClientParameters(channel,
+                                    base::ProfilerProcessType::kBrowser)
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kDynamic,
                                memory_system::DispatcherParameters::
@@ -318,7 +318,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
           "EnsureBrowserStateKeyedServiceFactoriesBuilt()");
 
   // Ensure the ChromeBrowserState is loaded and initialized.
-  ios::ChromeBrowserStateManager* browser_state_manager =
+  ChromeBrowserStateManager* browser_state_manager =
       application_context_->GetChromeBrowserStateManager();
 
   // Load all BrowserStates.

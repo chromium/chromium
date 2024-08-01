@@ -43,6 +43,7 @@ class PerProfileWebUITrackerImpl : public PerProfileWebUITracker {
   void OnWebContentsOriginChanged(content::WebContents* web_contents,
                                   url::Origin old_origin,
                                   url::Origin new_origin);
+  void OnWebContentsPrimaryPageChanged(content::WebContents* web_contents);
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
   // Observers of tracked WebContents.
@@ -84,6 +85,7 @@ class PerProfileWebUITrackerImpl::WebContentsObserver
   }
 
   void PrimaryPageChanged(content::Page&) override {
+    owner_->OnWebContentsPrimaryPageChanged(web_contents_);
     url::Origin new_origin =
         url::Origin::Create(web_contents_->GetVisibleURL());
     if (new_origin != origin_) {
@@ -143,6 +145,14 @@ void PerProfileWebUITrackerImpl::OnWebContentsOriginChanged(
   }
   if (!new_origin.opaque()) {
     profile_origin_set_.emplace(profile, new_origin);
+  }
+}
+
+void PerProfileWebUITrackerImpl::OnWebContentsPrimaryPageChanged(
+    content::WebContents* web_contents) {
+  CHECK(web_contents_observers_.contains(web_contents));
+  for (Observer& observer : observers_) {
+    observer.OnWebContentsPrimaryPageChanged(web_contents);
   }
 }
 

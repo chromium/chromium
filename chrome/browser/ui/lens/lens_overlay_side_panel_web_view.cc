@@ -34,7 +34,7 @@ LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
           base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<lens::LensUntrustedUI>>(
               GURL(chrome::kChromeUILensUntrustedSidePanelURL),
-              browser_context,
+              Profile::FromBrowserContext(browser_context),
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
               /*esc_closes_ui=*/false)),
       coordinator_(coordinator) {}

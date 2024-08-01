@@ -129,7 +129,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Overridden from views::View:
   void Layout(PassKey) override;
-  int GetHeightForWidth(int w) const override;
 
   // Fetches the category of results this view should show.
   SearchResult::Category GetSearchCategory();

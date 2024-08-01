@@ -12,8 +12,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -21,8 +19,10 @@ import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagement
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -30,13 +30,9 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 
 /** Implementation class for launching a {@link SettingsActivity}. */
 public class SettingsLauncherImpl implements SettingsLauncher {
-    /** Can be used by native code to inject SettingsLauncher in modularized Java code. */
-    @CalledByNative
-    private static SettingsLauncher create() {
-        return new SettingsLauncherImpl();
-    }
 
-    public SettingsLauncherImpl() {}
+    /** Instantiated through SettingsLauncherFactory. */
+    SettingsLauncherImpl() {}
 
     @Override
     public void launchSettingsActivity(Context context) {
@@ -59,7 +55,9 @@ public class SettingsLauncherImpl implements SettingsLauncher {
                                 /* isFetcherSuppliedFromOutside= */ false);
                 break;
             case SettingsFragment.SAFETY_CHECK:
-                fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
+                if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
+                    fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
+                }
                 break;
             case SettingsFragment.MAIN:
             case SettingsFragment.PAYMENT_METHODS:
@@ -133,7 +131,11 @@ public class SettingsLauncherImpl implements SettingsLauncher {
             case SettingsFragment.PAYMENT_METHODS:
                 return AutofillPaymentMethodsFragment.class;
             case SettingsFragment.SAFETY_CHECK:
-                return SafetyCheckSettingsFragment.class;
+                if (ChromeFeatureList.sSafetyHub.isEnabled()) {
+                    return SafetyHubFragment.class;
+                } else {
+                    return SafetyCheckSettingsFragment.class;
+                }
             case SettingsFragment.SITE:
                 return SiteSettings.class;
             case SettingsFragment.ACCESSIBILITY:

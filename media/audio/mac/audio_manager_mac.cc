@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/mac/audio_manager_mac.h"
 
 #include <limits>
@@ -35,7 +40,6 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/core_audio_util_mac.h"
-#include "media/audio/mac/coreaudio_dispatch_override.h"
 #include "media/audio/mac/screen_capture_kit_swizzler.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -971,7 +975,6 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
 
 void AudioManagerMac::InitializeOnAudioThread() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  InitializeCoreAudioDispatchOverride();
   power_observer_ = std::make_unique<AudioPowerObserver>();
 }
 

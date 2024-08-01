@@ -234,6 +234,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7395825497086981028">Passordet blir lagret i Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>
 <translation id="7523464085759699266">Slå på «Lås inkognitofaner når du lukker Chromium».</translation>
+<translation id="7531461704633548377">Fra Chromium</translation>
 <translation id="7674213385180944843">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Chromium, og slå på kameraet.</translation>
 <translation id="7710137812207066069">Åpner en ny fane i Chromium.</translation>
 <translation id="7747820849741499258">Søk i Chromium</translation>
@@ -264,6 +265,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har den sterkeste sikkerheten i Chromium mot skadelige nettsteder</translation>
 <translation id="8458950033462118672">Du kan åpne linker i Chromium automatisk ved å angi Chromium som standard nettleserapp.</translation>
+<translation id="8502918057530111907">Bruk Chromium som standard for å få prisstatistikk enkelt</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}}</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>

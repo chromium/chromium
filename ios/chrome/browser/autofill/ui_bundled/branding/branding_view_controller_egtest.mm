@@ -57,24 +57,13 @@ void DisableManualFillButtonsInProfileStore() {
 void BringUpKeyboard() {
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
-  ConditionBlock keyboardShown = ^{
-    return [EarlGrey isKeyboardShownWithError:nil];
-  };
-  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
-                     base::test::ios::kWaitForUIElementTimeout, keyboardShown),
-                 @"Keyboard not brought up.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Dismisses the keyboard, if it exist.
 void DismissKeyboard() {
   [EarlGrey dismissKeyboardWithError:nil];
-  ConditionBlock keyboardDismissed = ^{
-    return ![EarlGrey isKeyboardShownWithError:nil];
-  };
-  GREYAssertTrue(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          base::test::ios::kWaitForUIElementTimeout, keyboardDismissed),
-      @"Keyboard not dismissed.");
+  [ChromeEarlGrey waitForKeyboardToDisappear];
 }
 
 // Check that the branding visibility matches the parameter `visibility`.

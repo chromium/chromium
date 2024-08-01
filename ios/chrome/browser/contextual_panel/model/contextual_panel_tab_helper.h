@@ -158,6 +158,9 @@ class ContextualPanelTabHelper
   // Map of the models this tab helper should query for possible panels.
   std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models_;
 
+  // The time the current request began.
+  base::Time request_start_time_;
+
   // Holds the responses currently being returned.
   std::map<ContextualPanelItemType, ModelResponse> responses_;
 

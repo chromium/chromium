@@ -417,22 +417,22 @@ TEST(BirchRankerTest, RankFileSuggestItems) {
   BirchRanker ranker(now);
 
   // Create a file shared in the last hour.
-  BirchFileItem item0(base::FilePath("/item0"), u"suggested",
+  BirchFileItem item0(base::FilePath("/item0"), "title_0", u"suggested",
                       TimeFromString("22 Feb 2024 08:45 UTC"), "id_0",
                       "icon_url");
 
   // Create a file shared in the last day.
-  BirchFileItem item1(base::FilePath("/item1"), u"suggested",
+  BirchFileItem item1(base::FilePath("/item1"), "title_1", u"suggested",
                       TimeFromString("21 Feb 2024 09:15 UTC"), "id_1",
                       "icon_url");
 
   // Create a file shared in the last week.
-  BirchFileItem item2(base::FilePath("/item2"), u"suggested",
+  BirchFileItem item2(base::FilePath("/item2"), "title_2", u"suggested",
                       TimeFromString("15 Feb 2024 09:15 UTC"), "id_2",
                       "icon_url");
 
   // Create a file shared more than a week ago.
-  BirchFileItem item3(base::FilePath("/item3"), u"suggested",
+  BirchFileItem item3(base::FilePath("/item3"), "title_3", u"suggested",
                       TimeFromString("14 Feb 2024 09:15 UTC"), "id_3",
                       "icon_url");
 
@@ -445,19 +445,19 @@ TEST(BirchRankerTest, RankFileSuggestItems) {
   ASSERT_EQ(4u, items.size());
 
   // The file shared in the last hour has high priority.
-  EXPECT_EQ(items[0].title(), u"item0");
+  EXPECT_EQ(items[0].title(), u"title_0");
   EXPECT_FLOAT_EQ(items[0].ranking(), 22.f);
 
   // The file shared in the last day has medium priority.
-  EXPECT_EQ(items[1].title(), u"item1");
+  EXPECT_EQ(items[1].title(), u"title_1");
   EXPECT_FLOAT_EQ(items[1].ranking(), 35.f);
 
   // The file shared in the last week has low priority.
-  EXPECT_EQ(items[2].title(), u"item2");
+  EXPECT_EQ(items[2].title(), u"title_2");
   EXPECT_FLOAT_EQ(items[2].ranking(), 43.f);
 
   // The file shared more than a week ago wasn't ranked.
-  EXPECT_EQ(items[3].title(), u"item3");
+  EXPECT_EQ(items[3].title(), u"title_3");
   EXPECT_FLOAT_EQ(items[3].ranking(), std::numeric_limits<float>::max());
 }
 

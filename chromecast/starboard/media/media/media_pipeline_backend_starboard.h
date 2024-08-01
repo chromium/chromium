@@ -10,10 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/public/graphics_types.h"
+#include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
+#include "chromecast/starboard/media/media/starboard_audio_decoder.h"
+#include "chromecast/starboard/media/media/starboard_video_decoder.h"
 #include "chromecast/starboard/media/media/starboard_video_plane.h"
-#include "starboard_audio_decoder.h"
-#include "starboard_video_decoder.h"
 
 namespace chromecast {
 namespace media {
@@ -24,7 +25,8 @@ namespace media {
 // consntructed the MediaPipelineBackendStarboard.
 class MediaPipelineBackendStarboard : public MediaPipelineBackend {
  public:
-  explicit MediaPipelineBackendStarboard(StarboardVideoPlane* video_plane);
+  MediaPipelineBackendStarboard(const MediaPipelineDeviceParams& params,
+                                StarboardVideoPlane* video_plane);
   ~MediaPipelineBackendStarboard() override;
 
   // For testing purposes, `starboard` will be used to call starboard functions.
@@ -160,6 +162,9 @@ class MediaPipelineBackendStarboard : public MediaPipelineBackend {
   std::optional<RectF> pending_geometry_change_;
   StarboardVideoPlane* video_plane_ = nullptr;
   int64_t video_plane_callback_token_ = 0;
+  // If true, we should render frames immediately to minimize latency. This
+  // should be true when mirroring.
+  bool is_streaming_ = false;
 
   // This must be destructed first.
   base::WeakPtrFactory<MediaPipelineBackendStarboard> weak_factory_{this};

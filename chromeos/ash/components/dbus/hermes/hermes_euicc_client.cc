@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/hermes/constants.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
@@ -24,9 +25,23 @@
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
 namespace ash {
-
 namespace {
+
 HermesEuiccClient* g_instance = nullptr;
+
+// Activation codes with preceding/trailing whitespace can cause issues when
+// provided to Hermes; for example, an SM-DS activation code with trailing
+// whitespace may result in profiles not being discovered. This function trims
+// this whitespace. This function returns a `std::string` since
+// `dbus::MessageWriter::AppendString()` does not respect the length of
+// `std::string_view` if it is shorter than the string it is a substring of.
+std::string PrepareActivationCodeForHermes(const std::string& activation_code) {
+  std::string trimmed;
+  base::TrimWhitespaceASCII(activation_code, base::TrimPositions::TRIM_ALL,
+                            &trimmed);
+  return trimmed;
+}
+
 }  // namespace
 
 HermesEuiccClient::Properties::Properties(
@@ -85,7 +100,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
         hermes::kHermesEuiccInterface,
         hermes::euicc::kInstallProfileFromActivationCode);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendString(activation_code);
+    writer.AppendString(PrepareActivationCodeForHermes(activation_code));
     writer.AppendString(confirmation_code);
     object_proxy->CallMethodWithErrorResponse(
         &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
@@ -146,7 +161,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
                                  hermes::euicc::kRefreshSmdxProfiles);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendString(activation_code);
+    writer.AppendString(PrepareActivationCodeForHermes(activation_code));
     writer.AppendBool(restore_slot);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(

@@ -43,14 +43,12 @@ class ManualFallbackEventLogger {
   void OnDidFillSuggestion(FillingProduct target_filling_product);
 
   // Called when context menu was opened on a qualifying field.
-  // `address_fallback_present` indicates where an address fallback was
-  // added. Similarly, `credit_cards_fallback_present` indicates whether a
-  // credit card fallback option was added.
-  void ContextMenuEntryShown(bool address_fallback_present,
-                             bool credit_cards_fallback_present);
+  // `target_filling_product` indicates which of the available options was
+  // shown.
+  void ContextMenuEntryShown(FillingProduct target_filling_product);
 
   // Called when a fallback option was accepted (not just hovered).
-  // `target_filling_product` specifies of the available options was
+  // `target_filling_product` specifies which of the available options was
   // chosen.
   void ContextMenuEntryAccepted(FillingProduct target_filling_product);
 

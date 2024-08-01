@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.ParentAccessWidgetError.{FlowType}"
-    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2024-09-01">
+    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -362,6 +362,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
+    enum="Boolean" expires_after="2024-12-12">
+  <owner>fernandex@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Whether a fetch to the Kids Management API::ListMembers was necessary as a
+    part of populating the FamilyInfoLogSource in feedback reports.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
     units="ms" expires_after="2025-01-05">
   <owner>anthie@google.com</owner>
@@ -487,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.SubdomainConflictType"
-    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-11-17">
+    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2025-01-26">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -556,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekday" units="Hour of day"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -567,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekend" units="Hour of day"
-    expires_after="2024-11-17">
+    expires_after="2025-01-26">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -606,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="FamilyLinkWebFilterType" expires_after="2024-11-17">
+    enum="FamilyLinkWebFilterType" expires_after="2025-01-26">
   <owner>fernandex@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -704,7 +714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.TopLevelFilteringResult"
-    enum="SupervisedUserFilterTopLevelResult" expires_after="2024-11-24">
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2025-01-26">
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -712,6 +722,45 @@ chromium-metrics-reviews@google.com.
     includes the outcome of the filter (allowed or blocked). If outcome is
     blocked reason for the block (e.g. SafeSites, Blocklist) is also recorded.
     For more granular information see ManagedUsers.FilteringResult.
+  </summary>
+</histogram>
+
+<histogram
+    name="SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse"
+    units="ms" expires_after="2024-12-31">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the time difference between completing the url classification for
+    the navigation (including request and possible redirects), and the moment
+    where the classification was needed to decide whether or not to proceed with
+    navigation.
+
+    Recorded only in the mainline case when the navigation was not blocked.
+
+    Together with the complementary
+    SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse metric it forms
+    a continuum of time, with 0 recorded in either (but only one) metric meaning
+    that the classification was ready exactly when it was needed.
+  </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse"
+    units="ms" expires_after="2024-12-31">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the time difference between when the navigation needs a url
+    classification to proceed, and the time when that classification was
+    completed. In other words, it tracks the user-visible delay introduced to
+    the navigation by the url classification.
+
+    Recorded only in the mainline case when the navigation was not blocked.
+
+    Together with the complementary
+    SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse metric it
+    forms a continuum of time, with 0 recorded in either (but only one) metric
+    meaning that the classification was ready exactly when it was needed.
   </summary>
 </histogram>
 

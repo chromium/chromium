@@ -176,9 +176,6 @@ class CC_EXPORT CompositorFrameReportingController {
   // that reporter is in, its ownership might be pass or not.
   void SetPartialUpdateDeciderWhenWaitingOnMain(
       std::unique_ptr<CompositorFrameReporter>& reporter);
-  void TrackSwapTiming(const viz::FrameTimingDetails& details);
-  void ReportMultipleSwaps(base::TimeTicks begin_frame_time,
-                           base::TimeDelta interval);
 
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);
@@ -250,13 +247,6 @@ class CC_EXPORT CompositorFrameReportingController {
   // cases its more appropriate to check against frame_token instead of
   // BeginFrameId.
   std::map<uint32_t, EventMetricsSet> events_metrics_from_dropped_frames_;
-
-  // Tracking the swap times in a queue to measure delta of multiple swaps in
-  // each vsync.
-  std::queue<base::TimeTicks> latest_swap_times_;
-
-  // interval of last begin frame args.
-  base::TimeDelta last_interval_;
 
   CompositorFrameReporter::CompositorLatencyInfo
       previous_latency_predictions_main_;

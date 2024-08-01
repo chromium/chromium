@@ -3317,7 +3317,8 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
   FormDataParser parser;
   parser.set_predictions(std::move(predictions));
 
-  auto [result, username_detection_method, is_new_password_reliable] =
+  auto [result, username_detection_method, is_new_password_reliable,
+        suggestion_banned_fields] =
       parser.ParseAndReturnParsingResult(
           form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{});
   EXPECT_EQ(username_detection_method,
@@ -3333,7 +3334,8 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
                         CreateField(FormControlType::kInputPassword, u"")});
 
   FormDataParser parser;
-  auto [password_form, username_detection_method, is_new_password_reliable] =
+  auto [password_form, username_detection_method, is_new_password_reliable,
+        suggestion_banned_fields] =
       parser.ParseAndReturnParsingResult(
           form_data, FormDataParser::Mode::kFilling, {kUsername});
   ASSERT_TRUE(password_form);

@@ -40,6 +40,7 @@ namespace power_manager {
 class BacklightBrightnessChange;
 class ScreenIdleState;
 class SetBacklightBrightnessRequest;
+class SetAmbientLightSensorEnabledRequest;
 }  // namespace power_manager
 
 namespace chromeos {
@@ -252,7 +253,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
   // Sets whether the ambient light sensor should be used in brightness
   // calculations.
-  virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
+  virtual void SetAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request) = 0;
 
   // Asynchronously gets whether the ambient light sensor is currently enabled
   // (i.e. whether it's being used in brightness calculations). On error (e.g.
@@ -288,7 +290,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
   // Sets whether the ambient light sensor should be used in keyboard brightness
   // calculations.
-  virtual void SetKeyboardAmbientLightSensorEnabled(bool enabled) = 0;
+  virtual void SetKeyboardAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request) = 0;
 
   // Asynchronously gets whether the keyboard ambient light sensor is currently
   // enabled. On error (e.g. powerd not running), |callback| will be run with

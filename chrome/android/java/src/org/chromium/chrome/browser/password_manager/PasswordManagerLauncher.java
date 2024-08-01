@@ -10,7 +10,6 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -46,12 +45,7 @@ public class PasswordManagerLauncher {
                         : null;
         PasswordManagerHelper.getForProfile(originalProfile)
                 .showPasswordSettings(
-                        context,
-                        referrer,
-                        new SettingsLauncherImpl(),
-                        modalDialogManagerSupplier,
-                        managePasskeys,
-                        account);
+                        context, referrer, modalDialogManagerSupplier, managePasskeys, account);
     }
 
     @CalledByNative

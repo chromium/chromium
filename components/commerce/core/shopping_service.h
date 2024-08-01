@@ -426,10 +426,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   virtual ClusterManager* GetClusterManager();
 
-  // Return whether the |discount_id| has been shown before.
-  virtual bool HasDiscountShownBefore(uint64_t discount_id);
-  // Called after showing the DiscountInfo with the |discount_id|.
-  void ShownDiscount(uint64_t discount_id);
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -620,6 +616,9 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecificationSets();
 
+  void OnGetOnDemandProductInfo(const GURL& url,
+                                const std::optional<const ProductInfo>& info);
+
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 
@@ -668,10 +667,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // The object handling discounts storage.
   std::unique_ptr<DiscountsStorage> discounts_storage_;
 
-  // This set includes the unique id of shown discounts in the current browser
-  // context. It serves as a cross-tab status tracker for the discounts UI.
-  base::flat_set<uint64_t> shown_discount_ids_;
-
   // Object for tracking parcel status.
   std::unique_ptr<ParcelsManager> parcels_manager_;
 
@@ -696,6 +691,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // the commerce info cache up to date.
   std::unique_ptr<ProductSpecificationsSet::Observer>
       prod_spec_url_ref_observer_;
+
+  // Map between URL and a list of callbacks that are waiting for product info.
+  // This is used to avoid repeated calls to get product info for the same URL.
+  std::map<GURL, std::vector<ProductInfoCallback>>
+      on_demand_product_info_callbacks_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

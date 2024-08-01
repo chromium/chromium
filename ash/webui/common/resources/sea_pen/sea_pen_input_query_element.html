@@ -14,12 +14,16 @@
     width: 100%;
   }
 
+  #inputTextArea {
+    padding: 0 95px;
+    width: 100%;
+  }
+
   #queryInput {
-    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
-    --cr-input-border-radius: 20px;
-    --cr-input-error-display: none;
-    --cr-input-min-height: 72px;
-    font: var(--cros-body-1-font);
+    --cr-input-underline-display: none;
+    --cr-textarea-autogrow-max-height: 3.5lh;
+    color: var(--cros-sys-on_secondary_container);
+    font: var(--cros-display-4-font);
     margin-top: 16px;
     text-align: center;
     width: 100%;
@@ -34,17 +38,40 @@
     font: var(--cros-button-2-font);
     padding: 0px 12px;
   }
-</style>
 
+  #underline {
+    background-image:
+        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
+        linear-gradient(to right, #D7E6FF, #C7E4FF, #DCE2FF, #ECDCFB);
+    background-size: 12px 3px, 100% 3px;
+    border: none;
+    height: 3px;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #underline {
+      background-image:
+        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
+        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
+    }
+  }
+</style>
 <div id="container">
-  <cr-input id="queryInput"
-      maxlength="[[maxTextLength_]]"
-      placeholder="[[i18n('seaPenFreeformInputPlaceholder')]]"
-      on-keypress="onClickInputQuerySearchButton_"
-      on-focus="onTextInputFocused_"
-      type="text"
-      value="{{textValue_}}">
-  </cr-input>
+  <div id="inputTextArea">
+    <cr-textarea id="queryInput"
+        value="{{textValue_}}"
+        rows=1
+        has-max-height
+        autogrow
+        placeholder="[[i18n('seaPenFreeformInputPlaceholder')]]"
+        maxlength="[[maxTextLength_]]"
+        spellcheck="false"
+        on-keypress="onClickInputQuerySearchButton_"
+        on-focus="onTextInputFocused_">
+    </cr-textarea>
+    <div id="underline"></div>
+  </div>
   <div id="innerContainer">
     <template is="dom-if" if="[[shouldShowSuggestions_]]"
         on-dom-change="onSeaPenSuggestionsDomChanged_" restamp>

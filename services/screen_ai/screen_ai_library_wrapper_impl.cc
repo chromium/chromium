@@ -5,6 +5,7 @@
 #include "services/screen_ai/screen_ai_library_wrapper_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace screen_ai {
@@ -131,12 +132,16 @@ void ScreenAILibraryWrapperImpl::EnableDebugMode() {
 
 NO_SANITIZE("cfi-icall")
 bool ScreenAILibraryWrapperImpl::InitOCR() {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Accessibility.ScreenAI.OCR.InitializationLatency");
   CHECK(init_ocr_);
   return init_ocr_();
 }
 
 NO_SANITIZE("cfi-icall")
 bool ScreenAILibraryWrapperImpl::InitMainContentExtraction() {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Accessibility.ScreenAI.MainContentExtraction.InitializationLatency");
   CHECK(init_main_content_extraction_);
   return init_main_content_extraction_();
 }

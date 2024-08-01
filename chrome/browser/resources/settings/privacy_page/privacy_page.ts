@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
+import '../privacy_icons.html.js';
 import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -612,15 +613,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.isPrivacySandboxRestrictedNoticeEnabled_;
   }
 
-  // Only show Manage Topics page when PTB is enabled. If user is part of Mode B
-  // and include-mode-b feature param is false, don't show the page.
   private shouldShowManageTopics_(): boolean {
-    if (!this.isProactiveTopicsBlockingEnabled_ ||
-        this.isPrivacySandboxRestricted_) {
-      return false;
-    }
-    return loadTimeData.getBoolean('proactiveTopicsBlockingIncludesModeB') ||
-        !loadTimeData.getBoolean('isInCookieDeprecationFacilitatedTesting');
+    return this.isProactiveTopicsBlockingEnabled_ &&
+        !this.isPrivacySandboxRestricted_;
   }
 
   private onSafetyHubButtonClick_() {

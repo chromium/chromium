@@ -608,6 +608,21 @@ public class SafeModeTest extends AwParameterizedTest {
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_emptyAction() throws Throwable {
+        final String invalidWebViewPackageName = "org.chromium.android_webview.test";
+
+        Assert.assertFalse(
+                "SafeMode should be disabled",
+                SafeModeController.getInstance().isSafeModeEnabled(invalidWebViewPackageName));
+        Assert.assertEquals(
+                "ContentProvider should return empty set when cursor is null",
+                asSet(),
+                SafeModeController.getInstance().queryActions(invalidWebViewPackageName));
+    }
+
     private class TestSafeModeAction implements SafeModeAction {
         private int mCallCount;
         private int mExecutionOrder;

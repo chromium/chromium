@@ -186,7 +186,8 @@ class TestTabModel : public TabModel {
   void SetActiveIndex(int index) override {}
   void CloseTabAt(int index) override {}
   void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents) override {}
+                 content::WebContents* web_contents,
+                 bool select) override {}
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override {}
   content::WebContents* CreateNewTabForDevTools(const GURL& url) override {
@@ -477,7 +478,13 @@ class UkmBrowserTestWithDemographics
 // Make sure that UKM is disabled while an incognito window is open.
 // Keep in sync with testRegularPlusIncognito in ios/chrome/browser/metrics/
 // ukm_egtest.mm.
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
+// Disabled on Android due to flakiness. See crbug.com/355609356.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_RegularPlusIncognitoCheck DISABLED_RegularPlusIncognitoCheck
+#else
+#define MAYBE_RegularPlusIncognitoCheck RegularPlusIncognitoCheck
+#endif
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_RegularPlusIncognitoCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
 
@@ -830,8 +837,16 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NetworkProviderPopulatesSystemProfile) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that install date is attached.
+// Disabled on Android due to flakiness. See crbug.com/355609356.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InstallDateProviderPopulatesSystemProfile \
+  DISABLED_InstallDateProviderPopulatesSystemProfile
+#else
+#define MAYBE_InstallDateProviderPopulatesSystemProfile \
+  InstallDateProviderPopulatesSystemProfile
+#endif
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest,
-                       InstallDateProviderPopulatesSystemProfile) {
+                       MAYBE_InstallDateProviderPopulatesSystemProfile) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInt64(prefs::kInstallDate, 123456);
 

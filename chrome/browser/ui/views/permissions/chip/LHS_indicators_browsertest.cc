@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
                        InvokeUi_PageInfo_camera_blocked_on_system_level) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
-  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
       ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
 
   UpdatePageInfo();
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+  system_permission_settings::ScopedSettingsForTesting scoped_system_permission(
       ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
 
   UpdatePageInfo();
@@ -518,10 +518,12 @@ IN_PROC_BROWSER_TEST_F(
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
-  ScopedSystemPermissionSettingsForTesting scoped_system_permission_camera(
-      ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
-  ScopedSystemPermissionSettingsForTesting scoped_system_permission_mic(
-      ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+  system_permission_settings::ScopedSettingsForTesting
+      scoped_system_permission_camera(ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      /*blocked=*/true);
+  system_permission_settings::ScopedSettingsForTesting
+      scoped_system_permission_mic(ContentSettingsType::MEDIASTREAM_MIC,
+                                   /*blocked=*/true);
 
   UpdatePageInfo();
 

@@ -151,6 +151,9 @@ class ShoppingServiceHandler
   void SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback feedback) override;
 
+  void SetProductSpecificationAcceptedDisclosureVersion(
+      shopping_service::mojom::ProductSpecificationsDisclosureVersion) override;
+
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
                    bool succeeded) override;

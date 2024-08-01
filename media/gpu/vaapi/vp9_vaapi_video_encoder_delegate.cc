@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 
 #include <algorithm>
@@ -643,7 +648,7 @@ Vp9FrameHeader VP9VaapiVideoEncoderDelegate::GetDefaultFrameHeader(
     const bool keyframe) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Vp9FrameHeader hdr;
+  Vp9FrameHeader hdr{};
   DCHECK(!visible_size_.IsEmpty());
   hdr.frame_width = visible_size_.width();
   hdr.frame_height = visible_size_.height();

@@ -130,19 +130,18 @@ NSString* FormatElapsedTimeSinceLastCheck(
   base::TimeDelta elapsed_time =
       base::Time::Now() - last_completed_check.value();
 
-  std::u16string timestamp;
-  // If check finished in less than `kJustCheckedTimeThreshold` show
-  // "just now" instead of timestamp.
+  // If check finished in less than `kJustCheckedTimeThreshold` show "Checked
+  // just now" instead of timestamp.
   if (elapsed_time < kJustCheckedTimeThreshold) {
-    timestamp = l10n_util::GetStringUTF16(
+    return l10n_util::GetNSString(
         use_title_case ? IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE
                        : IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  } else {
-    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-        use_title_case ? ui::TimeFormat::FORMAT_TITLE_CASE_ELAPSED
-                       : ui::TimeFormat::FORMAT_ELAPSED,
-        ui::TimeFormat::LENGTH_LONG, elapsed_time, true);
   }
+
+  std::u16string timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+      use_title_case ? ui::TimeFormat::FORMAT_TITLE_CASE_ELAPSED
+                     : ui::TimeFormat::FORMAT_ELAPSED,
+      ui::TimeFormat::LENGTH_LONG, elapsed_time, true);
 
   return l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
                                  timestamp);

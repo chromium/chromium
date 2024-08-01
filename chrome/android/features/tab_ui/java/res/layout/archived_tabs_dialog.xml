@@ -14,15 +14,26 @@ found in the LICENSE file.
         android:id="@+id/tab_list_editor_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/archived_tabs_dialog_bottom_button_container_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/close_all_tabs_button_container" />
+
+    <org.chromium.components.browser_ui.widget.FadingShadowView
+        android:id="@+id/close_all_tabs_button_container_shadow"
+        app:layout_constraintBottom_toTopOf="@id/close_all_tabs_button_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_shadow_height" />
 
     <FrameLayout
         android:id="@+id/close_all_tabs_button_container"
+        android:background="@macro/default_bg_color"
         android:layout_width="match_parent"
-        android:layout_height="92dp"
+        android:layout_height="@dimen/archived_tabs_dialog_bottom_button_container_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -36,4 +47,11 @@ found in the LICENSE file.
         style="@style/FilledButton"
         android:text="@string/archived_tabs_dialog_close_all_button"/>
     </FrameLayout>
+    <FrameLayout
+        android:id="@+id/snackbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

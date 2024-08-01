@@ -401,7 +401,6 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
 #endif  // BUILDFLAG(IS_ANDROID)
             GURL("chrome://settings/safetyCheck?activateSafetyCheck")) {
-#if !BUILDFLAG(IS_ANDROID)
     // If SafetyHub flag is enabled, the label strings and url should be
     // updated.
     if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
@@ -412,7 +411,6 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
           IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2);
       url_ = GURL("chrome://settings/safetyCheck");
     }
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(

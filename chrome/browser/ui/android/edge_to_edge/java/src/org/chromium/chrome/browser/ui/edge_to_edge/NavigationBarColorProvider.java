@@ -18,7 +18,22 @@ public interface NavigationBarColorProvider {
          * @param color The color of the navigation bar.
          */
         void onNavigationBarColorChanged(@ColorInt int color);
+
+        /**
+         * Called when the navigation bar has an update to the color of its divider.
+         *
+         * @param dividerColor The color of the navigation bar divider.
+         */
+        void onNavigationBarDividerChanged(@ColorInt int dividerColor);
     }
+
+    /**
+     * @return The current color for the navigation bar. Note that this color does not account for
+     *     edge-to-edge mode - when drawing edge-to-edge, the actual (OS) navigation bar will be set
+     *     to transparent, while this color will continue reflect the non-transparent "original"
+     *     navigation bar color.
+     */
+    int getNavigationBarColor();
 
     /**
      * Add an observer to be notified of changes to the navigation bar color.

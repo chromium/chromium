@@ -6,8 +6,8 @@
 
 namespace webnn {
 
-WebNNObjectImpl::WebNNObjectImpl(const base::UnguessableToken& handle)
-    : handle_(handle) {}
+WebNNObjectImpl::WebNNObjectImpl()
+    : handle_(base::UnguessableToken::Create()) {}
 
 WebNNObjectImpl::~WebNNObjectImpl() = default;
 

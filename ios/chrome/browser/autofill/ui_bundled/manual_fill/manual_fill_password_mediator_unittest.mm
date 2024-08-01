@@ -68,7 +68,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(

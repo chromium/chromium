@@ -8,8 +8,7 @@ found in the LICENSE file.
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:background="@color/google_bottom_bar_background_color"
-    android:layout_height="@dimen/google_bottom_bar_double_decker_height">
+    android:background="@color/google_bottom_bar_background_color">
 
   <LinearLayout
       android:id="@+id/bottom_bar_searchbox_container"

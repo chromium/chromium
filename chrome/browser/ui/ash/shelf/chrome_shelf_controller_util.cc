@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
-#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/standalone_window_migration_nudge_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -145,10 +144,6 @@ bool IsAppPinEditable(apps::AppType app_type,
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(app_id)) {
-    return true;
-  }
-
-  if (ShelfControllerHelper::IsAppServiceShortcut(profile, app_id)) {
     return true;
   }
 

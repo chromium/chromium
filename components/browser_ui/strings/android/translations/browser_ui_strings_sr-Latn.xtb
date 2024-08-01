@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Sakrijte karticu za sniženje</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1192844206376121885">Ovim brišete sve podatke i kolačiće koje čuva sajt <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}one{<ph name="SITE_COUNT" /> sajt}few{<ph name="SITE_COUNT" /> sajta}other{<ph name="SITE_COUNT" /> sajtova}}</translation>
+<translation id="1500473259453106018">Sakrij sniženja na karticama</translation>
 <translation id="1510341833810331442">Sajtovima nije dozvoljeno da čuvaju podatke na uređaju</translation>
 <translation id="1547123415014299762">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="1568470248891039841">Sajtovi koje posećujete mogu da ugrade sadržaj sa drugih sajtova, na primer, slike, oglase i tekst. Ovi drugi sajtovi mogu da traže dozvolu za korišćenje informacija koje su sačuvali tokom pregledanja sajta. <ph name="BEGIN_LINK" />Saznajte više o ugrađenom sadržaju<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Pomoć i povratne informacije</translation>
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
-<translation id="2550801787432930915">Kartica sniženja</translation>
 <translation id="2570922361219980984">Pristup lokaciji je isključen i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno je – Kliknite da biste skupili.</translation>
 <translation id="2586657967955657006">Memorija</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Izbriši podatke pregledanja…</translation>
 <translation id="3242646949159196181">Kada je uključeno, sajtovi mogu da puštaju zvuk. Kada je isključeno, sajtovi ne mogu da puštaju zvuk.</translation>
+<translation id="3273479183583863618">Sniženja na karticama</translation>
 <translation id="3277252321222022663">Dozvoli sajtovima da pristupaju senzorima (preporučeno)</translation>
 <translation id="3285500645985761267">Dozvolite srodnim sajtovima da vide vaše aktivnosti u grupi</translation>
 <translation id="3295019059349372795">11. poglavlje: Čudesni Smaragdni grad Oza</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3859306556332390985">Premotaj unapred</translation>
 <translation id="3895926599014793903">Prinudno omogući zumiranje</translation>
+<translation id="3905475044299942653">Zaustavite mnogo obaveštenja</translation>
 <translation id="3908288065506437185">Blokiraj kolačiće treće strane u režimu bez arhiviranja</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Neke funkcije možda neće raditi. Srodni sajtovi i dalje mogu da koriste kolačiće treće strane.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="662080504995468778">Ne zatvaraj</translation>
 <translation id="6653342741369270081">Dodirnite dugme Nazad da biste izašli iz režima celog ekrana.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sakrij opciju Nastavi sa ovom karticom}one{Sakrij opciju Nastavi sa ovim karticama}few{Sakrij opciju Nastavi sa ovim karticama}other{Sakrij opciju Nastavi sa ovim karticama}}</translation>
 <translation id="6689172468748959065">Slike profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
 <translation id="6722828510648505498">Blokirajte upite za prijavljivanje koje prikazuju usluge za identitet.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Izaberite opciju za <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6818926723028410516">Izaberite stavke</translation>
+<translation id="6840760312327750441">Da biste grupisali kartice, dodirnite karticu i zadržite je. Zatim je prevucite na drugu karticu.</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može da čita NFC</translation>
+<translation id="6870169401250095575">Sakrij karticu Provera bezbednosti</translation>
 <translation id="6912998170423641340">Blokiraj sajtove tako da ne čitaju tekst i slike iz privremene memorije</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6950072572526089586">Sajt koji posećujete može da čuva informacije o tome šta radite kako bi radio na očekivani način – na primer, da biste ostali prijavljeni na sajt ili da biste sačuvali stavke u korpi za kupovinu. Sajtovi često privremeno čuvaju te informacije na uređaju.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Izaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je uključeno, sajtovi mogu da traže da koriste mikrofon. Kad je isključeno, sajtovi ne mogu da koriste mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno je za ovaj uređaj</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sakrij karticu Nastavi sa ovom karticom}one{Sakrij karticu Nastavi sa ovim karticama}few{Sakrij karticu Nastavi sa ovim karticama}other{Sakrij karticu Nastavi sa ovim karticama}}</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8042586301629853791">Sortiraj prema:</translation>
 <translation id="8067883171444229417">Pusti video</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">Ova stranica je opasna</translation>
 <translation id="930525582205581608">Želite da zaboravite ovaj sajt?</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
+<translation id="959682366969460160">Bolja organizacija</translation>
 <translation id="967624055006145463">Sačuvani podaci</translation>
 </translationbundle>

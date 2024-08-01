@@ -8,9 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_manager_test_api.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/core/browser/autofill_driver_test_api.h"
+#import "components/autofill/core/browser/autofill_manager_test_api.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_test_api.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -84,9 +86,25 @@ class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
   void Inject(web::WebFrame* web_frame) {
     AutofillDriverIOS* driver =
         AutofillDriverIOS::FromWebStateAndWebFrame(web_state_, web_frame);
-    test_api(driver->GetAutofillManager())
-        .SetLifecycleState(AutofillManager::LifecycleState::kPendingDeletion);
-    driver->set_autofill_manager_for_testing(std::make_unique<T>(driver));
+    // There's no guarantee that the injector's WebFrameBecameAvailable() event
+    // handler comes before other handlers. These other handlers may have
+    // touched `driver` already. In particular, they may have registered
+    // AutofillManager::Observers. We need to notify those observers that the
+    // `manager` is about to die so they can clean up their observations.
+    //
+    // TODO: crbug.com/354043640 - Observe
+    // AutofillDriverFactory::OnAutofillDriverCreated() instead of
+    // WebFrameBecameAvailable(), and use AddObserverAtIndex().
+    using LifecycleState = AutofillDriverIOS::LifecycleState;
+    LifecycleState old_state = driver->GetLifecycleState();
+    CHECK_EQ(old_state, LifecycleState::kActive);
+    AutofillManager& manager = driver->GetAutofillManager();
+    for (auto& observer : test_api(manager).observers()) {
+      observer.OnAutofillManagerStateChanged(manager, old_state,
+                                             LifecycleState::kPendingDeletion);
+    }
+
+    test_api(*driver).SetAutofillManager(std::make_unique<T>(driver));
   }
 
   raw_ptr<web::WebState> web_state_;

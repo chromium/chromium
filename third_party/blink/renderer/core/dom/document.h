@@ -199,8 +199,6 @@ class HTMLLinkElement;
 class HTMLMetaElement;
 class HitTestRequest;
 class HttpRefreshScheduler;
-class IdleRequestOptions;
-class IdleTask;
 class IntersectionObserverController;
 class LayoutUpgrade;
 class LayoutView;
@@ -238,7 +236,6 @@ class ScriptRunnerDelayer;
 class ScriptValue;
 class ScriptableDocumentParser;
 class ScriptedAnimationController;
-class ScriptedIdleTaskController;
 class SecurityOrigin;
 class SelectorQueryCache;
 class SerializedScriptValue;
@@ -1571,9 +1568,6 @@ class CORE_EXPORT Document : public ContainerNode,
   int RequestAnimationFrame(FrameCallback*);
   void CancelAnimationFrame(int id);
 
-  int RequestIdleCallback(IdleTask*, const IdleRequestOptions*);
-  void CancelIdleCallback(int id);
-
   ScriptedAnimationController& GetScriptedAnimationController();
 
   void InitDNSPrefetch();
@@ -1992,8 +1986,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return rendering_had_begun_for_last_style_update_;
   }
 
-  void IncrementLazyAdsFrameCount();
-  void IncrementLazyEmbedsFrameCount();
   void IncrementImmediateChildFrameCreationCount();
   int GetImmediateChildFrameCreationCount() const;
 
@@ -2211,8 +2203,6 @@ class CORE_EXPORT Document : public ContainerNode,
       delete;  // This will catch anyone doing an unnecessary check.
   bool IsElementNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
-
-  ScriptedIdleTaskController& EnsureScriptedIdleTaskController();
 
   bool HasPendingVisualUpdate() const {
     return lifecycle_.GetState() == DocumentLifecycle::kVisualUpdatePending;
@@ -2698,7 +2688,6 @@ class CORE_EXPORT Document : public ContainerNode,
   unsigned write_recursion_depth_;
 
   Member<ScriptedAnimationController> scripted_animation_controller_;
-  Member<ScriptedIdleTaskController> scripted_idle_task_controller_;
   Member<TextAutosizer> text_autosizer_;
 
   void ElementDataCacheClearTimerFired(TimerBase*);

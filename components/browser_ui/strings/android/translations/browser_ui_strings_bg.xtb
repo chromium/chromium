@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
 <translation id="1073417869336441572">Помогнете ни да подобрим Chrome, като ни кажете защо разрешихте „бисквитките“ на трети страни. <ph name="BEGIN_LINK" />Изпращане на отзиви<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Скриване на картата за понижение на цената</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1192844206376121885">Всички данни и „бисквитки“, съхранявани от <ph name="ORIGIN" />, ще бъдат изтрити.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Помощ и отзиви</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
-<translation id="2550801787432930915">Карта за понижение на цената</translation>
 <translation id="2570922361219980984">Достъпът до местоположението е изключен и за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгънато – кликнете за свиване.</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Придвижване напред</translation>
 <translation id="3895926599014793903">Принудително активиране на промяната на мащаба</translation>
+<translation id="3905475044299942653">Спиране на големия брой известия</translation>
 <translation id="3908288065506437185">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Някои функции може да не работят. Сродните сайтове пак могат да използват „бисквитки“ на трети страни.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Защитено съдържание</translation>
 <translation id="662080504995468778">Оставане</translation>
 <translation id="6653342741369270081">Натиснете бутона за връщане назад, за да излезете от режима на цял екран.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Скриване на опцията „Продължаване с този раздел“}other{Скриване на опцията „Продължаване с тези раздели“}}</translation>
 <translation id="6689172468748959065">Снимки на потребителския профил</translation>
 <translation id="6697925417670533197">Активни изтегляния</translation>
 <translation id="6722828510648505498">Блокиране на подканите за вход от услуги за идентифициране.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Изберете опция за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>
+<translation id="6840760312327750441">За да групирате раздели, докоснете и задръжте някой от тях. След това го преместете с плъзгане върху друг.</translation>
 <translation id="6864395892908308021">Това устройство не може да чете NFC</translation>
 <translation id="6912998170423641340">Забраняване на сайтовете да четат текста и изображенията от буферната памет</translation>
 <translation id="6945221475159498467">Избиране</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Тази страница е опасна</translation>
 <translation id="930525582205581608">Да се забрави ли този сайт?</translation>
 <translation id="947156494302904893">Сайтовете, които посещавате, могат да потвърдят, че сте истински човек, а не робот</translation>
+<translation id="959682366969460160">Организиране</translation>
 <translation id="967624055006145463">Съхранени данни</translation>
 </translationbundle>

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +24,10 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 @Config(manifest = Config.NONE)
 public class TabArchiveSettingsTest {
 
+    static final String ARCHIVE_ENABLED_PARAM = "android_tab_declutter_archive_enabled";
     static final String ARCHIVE_TIME_DELTA_PARAM = "android_tab_declutter_archive_time_delta_hours";
     static final int ARCHIVE_TIME_DELTA_HOURS_DEFAULT = 7 * 24;
+    static final String AUTO_DELETE_ENABLED_PARAM = "android_tab_declutter_auto_delete_enabled";
     static final String AUTO_DELETE_TIME_DELTA_PARAM =
             "android_tab_declutter_auto_delete_time_delta_hours";
     static final int AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT = 60 * 24;
@@ -39,11 +42,14 @@ public class TabArchiveSettingsTest {
 
     @Test
     public void testSettings() {
-        mSettings.setArchiveEnabled(TabArchiveSettings.ARCHIVE_ENABLED_DEFAULT);
-        assertEquals(TabArchiveSettings.ARCHIVE_ENABLED_DEFAULT, mSettings.getArchiveEnabled());
-        assertEquals(ARCHIVE_TIME_DELTA_HOURS_DEFAULT, mSettings.getArchiveTimeDeltaHours());
+        // Archive is disabled for tests, reset it to the default param value.
+        mSettings.setArchiveEnabled(
+                ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue());
         assertEquals(
-                TabArchiveSettings.AUTO_DELETE_ENABLED_DEFAULT, mSettings.isAutoDeleteEnabled());
+                ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue(),
+                mSettings.getArchiveEnabled());
+        assertEquals(ARCHIVE_TIME_DELTA_HOURS_DEFAULT, mSettings.getArchiveTimeDeltaHours());
+        assertEquals(false, mSettings.isAutoDeleteEnabled());
         assertEquals(AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT, mSettings.getAutoDeleteTimeDeltaHours());
 
         mSettings.setArchiveEnabled(false);
@@ -52,8 +58,8 @@ public class TabArchiveSettingsTest {
         mSettings.setArchiveTimeDeltaHours(1);
         assertEquals(1, mSettings.getArchiveTimeDeltaHours());
 
-        mSettings.setAutoDeleteEnabled(false);
-        assertFalse(mSettings.isAutoDeleteEnabled());
+        mSettings.setAutoDeleteEnabled(true);
+        assertTrue(mSettings.isAutoDeleteEnabled());
 
         mSettings.setAutoDeleteTimeDeltaHours(1);
         assertEquals(1, mSettings.getArchiveTimeDeltaHours());
@@ -61,13 +67,28 @@ public class TabArchiveSettingsTest {
 
     @Test
     public void testSettingsDefaultOverriddenByFinch() {
+        // Archive is disabled for tests, reset it to the default param value.
+        mSettings.setArchiveEnabled(
+                ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue());
+        assertTrue(mSettings.getArchiveEnabled());
+        assertFalse(mSettings.isAutoDeleteEnabled());
+
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_ENABLED_PARAM, "false");
+        testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_TIME_DELTA_PARAM, "10");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_ENABLED_PARAM, "true");
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_TIME_DELTA_PARAM, "20");
         FeatureList.setTestValues(testValues);
 
+        // Archive is disabled for tests, reset it to the default param value.
+        mSettings.setArchiveEnabled(
+                ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue());
+        assertFalse(mSettings.getArchiveEnabled());
+        assertTrue(mSettings.isAutoDeleteEnabled());
         assertEquals(10, mSettings.getArchiveTimeDeltaHours());
         assertEquals(20, mSettings.getAutoDeleteTimeDeltaHours());
 

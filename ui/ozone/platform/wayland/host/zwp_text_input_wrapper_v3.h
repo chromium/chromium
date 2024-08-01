@@ -64,11 +64,25 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
     uint32_t content_purpose = ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL;
   };
 
+  struct PreeditData {
+    constexpr PreeditData() = default;
+    constexpr PreeditData(std::string text,
+                          int32_t cursor_begin,
+                          int32_t cursor_end)
+        : text(std::move(text)),
+          cursor_begin(cursor_begin),
+          cursor_end(cursor_end) {}
+    std::string text;
+    int32_t cursor_begin = 0;
+    int32_t cursor_end = 0;
+  };
+
   void SendCursorRect(const gfx::Rect& rect);
   void SendContentType(const ContentType& content_type);
   void ApplyPendingSetRequests();
   void ResetPendingSetRequests();
   void ResetLastSentValues();
+  void ResetPendingInputEvents();
   void Commit();
 
   // zwp_text_input_v3_listener
@@ -99,6 +113,10 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
   const raw_ptr<ZWPTextInputWrapperClient> client_;
   uint32_t commit_count_ = 0;
   uint32_t last_done_serial_ = 0;
+
+  // Pending input events that will be applied in done event.
+  std::optional<PreeditData> pending_preedit_;
+  std::optional<std::string> pending_commit_;
 
   // Pending set requests to be sent to compositor
   std::optional<gfx::Rect> pending_set_cursor_rect_;

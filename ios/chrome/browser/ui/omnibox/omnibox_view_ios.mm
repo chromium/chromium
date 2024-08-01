@@ -664,6 +664,10 @@ void OmniboxViewIOS::HideKeyboard() {
   [field_ resignFirstResponder];
 }
 
+void OmniboxViewIOS::OnCallActionTap() {
+  this->HideKeyboard();
+}
+
 void OmniboxViewIOS::FocusOmnibox() {
   [field_ becomeFirstResponder];
 }

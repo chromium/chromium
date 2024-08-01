@@ -392,6 +392,21 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
       1);
 }
 
+TEST_F(NotificationHeaderViewTest, AccessibleNameTest) {
+  ui::AXNodeData data;
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+
+  data = ui::AXNodeData();
+  notification_header_view_->SetAppName(u"Some app name");
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Some app name");
+}
+
 TEST_F(NotificationHeaderViewTest, MetadataTest) {
   views::test::TestViewMetadata(notification_header_view_);
 }

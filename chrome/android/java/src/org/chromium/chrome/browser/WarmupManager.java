@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources.Theme;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.InflateException;
@@ -28,6 +28,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.net.NetId;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -479,6 +481,7 @@ public class WarmupManager {
     public void transferViewHierarchyTo(ViewGroup contentView) {
         ThreadUtils.assertOnUiThread();
         ViewGroup from = mMainView;
+        Set<Theme> rebasedThemes = new ArraySet<Theme>(from.getChildCount());
         mMainView = null;
         if (from == null) return;
         ((CctContextWrapper) from.getContext()).mActivityContext = contentView.getContext();
@@ -486,6 +489,14 @@ public class WarmupManager {
             View currentChild = from.getChildAt(0);
             from.removeView(currentChild);
             contentView.addView(currentChild);
+            // Purge any previously cached resources and ensure the Theme is rebased to match
+            // the Theme of the view hierarchy the reused views are attached to.
+            var theme = currentChild.getContext().getTheme();
+            if (!rebasedThemes.contains(theme)) {
+                ResourcesCompat.ThemeCompat.rebase(theme);
+                ResourcesCompat.clearCachesForTheme(theme);
+                rebasedThemes.add(theme);
+            }
         }
     }
 
@@ -672,7 +683,7 @@ public class WarmupManager {
                             .createWebContentsWithWarmRenderer(
                                     profile,
                                     /* initiallyHidden= */ true,
-                                    /* networkHandle= */ DEFAULT_NETWORK_HANDLE);
+                                    /* targetNetwork= */ NetId.INVALID);
             mObserver = new RenderProcessGoneObserver();
             mSpareWebContents.addObserver(mObserver);
         }

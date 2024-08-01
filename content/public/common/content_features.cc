@@ -279,6 +279,20 @@ BASE_FEATURE(kDeferSpeculativeRFHCreation,
 // DeferSpeculativeRFHCreation.
 const base::FeatureParam<bool> kWarmupSpareProcessCreationWhenDeferRFH{
     &kDeferSpeculativeRFHCreation, "warmup_spare_process", false};
+// When enabled, the browser will not try to create a speculative RFH after
+// loading starts for BFCache restore and prerender activation. The
+// `OnResponseStarted` function will be called immediately and the RFH will be
+// created there.
+const base::FeatureParam<bool> kCreateSpeculativeRFHFilterRestore{
+    &kDeferSpeculativeRFHCreation, "create_speculative_rfh_filter_restore",
+    false};
+// When enabled, the creation of the speculative RFH will be delayed for
+// a short time after the loading starts. The loading start functions are
+// critical for performance. We try not to interfere with it.
+// Zero or negative value will disable the delay and create the speculative
+// RFH instantly.
+const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
+    &kDeferSpeculativeRFHCreation, "create_speculative_rfh_delay_ms", 0};
 
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/
@@ -488,11 +502,6 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
 // quotes and escaped backslashed should be added to the Sec-CH-UA header
 // (activated by kUserAgentClientHint)
 BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Guard for work on https://crbug.com/40279485
-BASE_FEATURE(kIndexedDBShardBackingStores,
-             "IndexedDBShardBackingStores",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -935,12 +944,6 @@ BASE_FEATURE(kSharedArrayBufferOnDesktop,
 // RenderFrameHostImpl::CalculateStorageKey for frames with extension URLs.
 BASE_FEATURE(kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder,
              "ShouldAllowFirstPartyStorageKeyOverrideFromEmbedder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Origin-Signed HTTP Exchanges (for WebPackage Loading)
-// https://www.chromestatus.com/feature/5745285984681984
-BASE_FEATURE(kSignedHTTPExchange,
-             "SignedHTTPExchange",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, GetUserMedia API will only work when the concerned tab is in

@@ -341,6 +341,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void SetUserDataStorageWriteEnabled(
+      const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+      SetUserDataStorageWriteEnabledCallback callback) override {
+    CallProtoMethod(::user_data_auth::kSetUserDataStorageWriteEnabled,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)
@@ -425,25 +433,12 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     }
   }
 
-  void OnAuthScanResult(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    ::user_data_auth::AuthScanResult proto;
-    if (!reader.PopArrayOfBytesAsProto(&proto)) {
-      LOG(ERROR)
-          << "Failed to parse AuthScanResult protobuf from UserDataAuth signal";
-      return;
-    }
-    for (auto& observer : fp_observer_list_) {
-      observer.OnFingerprintScan(proto.fingerprint_result());
-    }
-  }
-
   void OnAuthEnrollmentProgress(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
     ::user_data_auth::AuthEnrollmentProgress proto;
     if (!reader.PopArrayOfBytesAsProto(&proto)) {
-      LOG(ERROR)
-          << "Failed to parse AuthScanResult protobuf from UserDataAuth signal";
+      LOG(ERROR) << "Failed to parse AuthEnrollmentProgress protobuf from "
+                    "UserDataAuth signal";
       return;
     }
     for (auto& observer : fp_observer_list_) {
@@ -476,6 +471,16 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
         observer.OnFingerprintAuthScan(
             proto.auth_progress().biometrics_progress());
       }
+    } else if (proto.purpose() ==
+                   ::user_data_auth::PURPOSE_AUTHENTICATE_AUTH_FACTOR &&
+               proto.auth_progress().auth_factor_type() ==
+                   ::user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
+      for (auto& observer : fp_observer_list_) {
+        observer.OnFingerprintScan(proto.auth_progress()
+                                       .biometrics_progress()
+                                       .scan_result()
+                                       .fingerprint_result());
+      }
     } else {
       LOG(ERROR) << "Received a unrecognized PrepareAuthFactorProgress signal";
       return;
@@ -495,12 +500,6 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
         ::user_data_auth::kUserDataAuthInterface,
         ::user_data_auth::kLowDiskSpace,
         base::BindRepeating(&UserDataAuthClientImpl::OnLowDiskSpace,
-                            weak_factory_.GetWeakPtr()),
-        base::BindOnce(&OnSignalConnected));
-    proxy_->ConnectToSignal(
-        ::user_data_auth::kUserDataAuthInterface,
-        ::user_data_auth::kAuthScanResultSignal,
-        base::BindRepeating(&UserDataAuthClientImpl::OnAuthScanResult,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
     proxy_->ConnectToSignal(

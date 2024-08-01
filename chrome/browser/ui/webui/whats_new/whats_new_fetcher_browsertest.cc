@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using BrowserCommand = browser_command::mojom::Command;
 
 // Enabled through feature list.
 BASE_FEATURE(kTestModuleEnabled,
@@ -37,18 +38,6 @@ BASE_FEATURE(kTestModuleEnabledByDefault,
 BASE_FEATURE(kTestModuleDisabledByDefault,
              "TestModuleDisabledByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-class GlobalFeaturesOverride : public GlobalFeatures {
- public:
-  GlobalFeaturesOverride() = default;
-
- protected:
-  std::unique_ptr<whats_new::WhatsNewRegistry> CreateWhatsNewRegistry()
-      override {
-    return std::make_unique<whats_new::WhatsNewRegistry>();
-  }
-};
-
 }  // namespace
 
 class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
@@ -57,16 +46,8 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures({user_education::features::kWhatsNewVersion2,
                                     kTestModuleEnabled, kTestModule2Enabled},
                                    {kTestModuleDisabled});
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
-        base::BindRepeating(&WhatsNewFetcherBrowserTest::CreateGlobalFeatures,
-                            base::Unretained(this)));
   }
-  ~WhatsNewFetcherBrowserTest() override {
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(base::NullCallback());
-  }
-  std::unique_ptr<GlobalFeatures> CreateGlobalFeatures() {
-    return std::make_unique<GlobalFeaturesOverride>();
-  }
+  ~WhatsNewFetcherBrowserTest() override = default;
 
   whats_new::WhatsNewRegistry* GetRegistry() {
     return g_browser_process->GetFeatures()->whats_new_registry();
@@ -97,7 +78,9 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderWithOneEnabled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
-  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleEnabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
+  registry->RegisterModule(
+      whats_new::WhatsNewModule("", BrowserCommand::kNoOpCommand));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
@@ -115,8 +98,10 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderWithMultipleEnabled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
-  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleEnabled, ""));
-  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModule2Enabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModule2Enabled, ""));
+  registry->RegisterModule(
+      whats_new::WhatsNewModule("", BrowserCommand::kNoOpCommand));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",
@@ -135,14 +120,17 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetV2ServerURLForRenderEnabledAndRolled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
-  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleEnabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
   // Will be ignored - disabled by experiment
-  registry->RegisterModule(whats_new::WhatsNewModule(&kTestModuleDisabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleDisabled, ""));
   registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleEnabledByDefault, ""));
+      whats_new::WhatsNewModule(kTestModuleEnabledByDefault, ""));
   // Will be ignored - disabled by default
   registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModuleDisabledByDefault, ""));
+      whats_new::WhatsNewModule(kTestModuleDisabledByDefault, ""));
+  // Will be ignored - no feature.
+  registry->RegisterModule(
+      whats_new::WhatsNewModule("", BrowserCommand::kNoOpCommand));
 
   std::string expected = base::StringPrintf(
       "https://www.google.com/chrome/v2/whats-new/?version=%d",

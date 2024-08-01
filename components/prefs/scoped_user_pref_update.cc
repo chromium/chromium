@@ -4,6 +4,9 @@
 
 #include "components/prefs/scoped_user_pref_update.h"
 
+#include <string_view>
+
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_service.h"
@@ -17,8 +20,8 @@
 namespace subtle {
 
 ScopedUserPrefUpdateBase::ScopedUserPrefUpdateBase(PrefService* service,
-                                                   const std::string& path)
-    : service_(service), path_(path), value_(nullptr) {
+                                                   std::string_view path)
+    : service_(CHECK_DEREF(service)), path_(path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(service_->sequence_checker_);
 }
 

@@ -1097,6 +1097,155 @@ TEST_F(NetworkContextTest, EnableNetworkErrorLoggingWithStore) {
                   ->GetContextForTesting()
                   ->store());
 }
+
+TEST_F(NetworkContextTest, SetEnterpriseReportingEndpointsWithFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kReportingApiEnableEnterpriseCookieIssues);
+  base::flat_map<std::string, GURL> test_enterprise_endpoints{
+      {"endpoint-1", GURL("https://example.com/reports")},
+      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
+      {"endpoint-3", GURL("https://report-collector.example")},
+  };
+
+  auto reporting_context = std::make_unique<net::TestReportingContext>(
+      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
+      net::ReportingPolicy());
+  net::ReportingCache* reporting_cache = reporting_context->cache();
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
+
+  EXPECT_EQ(0u, reporting_cache->GetEnterpriseEndpointsForTesting().size());
+  network_context->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
+  std::vector<net::ReportingEndpoint> expected_enterprise_endpoints = {
+      {net::ReportingEndpointGroupKey(net::NetworkAnonymizationKey(),
+                                      /*reporting_source=*/std::nullopt,
+                                      /*origin=*/std::nullopt, "endpoint-1",
+                                      net::ReportingTargetType::kEnterprise),
+       {.url = GURL("https://example.com/reports")}},
+      {net::ReportingEndpointGroupKey(net::NetworkAnonymizationKey(),
+                                      /*reporting_source=*/std::nullopt,
+                                      /*origin=*/std::nullopt, "endpoint-2",
+                                      net::ReportingTargetType::kEnterprise),
+       {.url = GURL("https://reporting.example/cookie-issues")}},
+      {net::ReportingEndpointGroupKey(net::NetworkAnonymizationKey(),
+                                      /*reporting_source=*/std::nullopt,
+                                      /*origin=*/std::nullopt, "endpoint-3",
+                                      net::ReportingTargetType::kEnterprise),
+       {.url = GURL("https://report-collector.example")}}};
+  EXPECT_EQ(expected_enterprise_endpoints,
+            reporting_cache->GetEnterpriseEndpointsForTesting());
+}
+
+TEST_F(NetworkContextTest, SetEnterpriseReportingEndpointsWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      net::features::kReportingApiEnableEnterpriseCookieIssues);
+  base::flat_map<std::string, GURL> test_enterprise_endpoints{
+      {"endpoint-1", GURL("https://example.com/reports")},
+      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
+      {"endpoint-3", GURL("https://report-collector.example")},
+  };
+
+  auto reporting_context = std::make_unique<net::TestReportingContext>(
+      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
+      net::ReportingPolicy());
+  net::ReportingCache* reporting_cache = reporting_context->cache();
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
+
+  EXPECT_EQ(0u, reporting_cache->GetEnterpriseEndpointsForTesting().size());
+  network_context->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
+  EXPECT_EQ(0u, reporting_cache->GetEnterpriseEndpointsForTesting().size());
+}
+
+TEST_F(NetworkContextTest, CheckInitialEnterpriseReportingEndpointsParamSet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kReportingApiEnableEnterpriseCookieIssues);
+  base::flat_map<std::string, GURL> enterprise_endpoints_for_testing{
+      {"endpoint-1", GURL("https://example.com/reports")},
+      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
+      {"endpoint-3", GURL("https://report-collector.example")},
+  };
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  EXPECT_FALSE(params->enterprise_reporting_endpoints.has_value());
+  params->enterprise_reporting_endpoints = enterprise_endpoints_for_testing;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(params));
+  std::vector<net::ReportingEndpoint> expected_enterprise_endpoints = {
+      {net::ReportingEndpointGroupKey(net::NetworkAnonymizationKey(),
+                                      /*reporting_source=*/std::nullopt,
+                                      /*origin=*/std::nullopt, "endpoint-1",
+                                      net::ReportingTargetType::kEnterprise),
+       {.url = GURL("https://example.com/reports")}},
+      {net::ReportingEndpointGroupKey(net::NetworkAnonymizationKey(),
+                                      /*reporting_source=*/std::nullopt,
+                                      /*origin=*/std::nullopt, "endpoint-2",
+                                      net::ReportingTargetType::kEnterprise),
+       {.url = GURL("https://reporting.example/cookie-issues")}},
+      {net::ReportingEndpointGroupKey(net::NetworkAnonymizationKey(),
+                                      /*reporting_source=*/std::nullopt,
+                                      /*origin=*/std::nullopt, "endpoint-3",
+                                      net::ReportingTargetType::kEnterprise),
+       {.url = GURL("https://report-collector.example")}}};
+  EXPECT_EQ(expected_enterprise_endpoints,
+            network_context->url_request_context()
+                ->reporting_service()
+                ->GetContextForTesting()
+                ->cache()
+                ->GetEnterpriseEndpointsForTesting());
+}
+
+TEST_F(NetworkContextTest,
+       CheckInitialEnterpriseReportingEndpointsParamNotSet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kReportingApiEnableEnterpriseCookieIssues);
+  base::flat_map<std::string, GURL> enterprise_endpoints_for_testing{
+      {"endpoint-1", GURL("https://example.com/reports")},
+      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
+      {"endpoint-3", GURL("https://report-collector.example")},
+  };
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  EXPECT_FALSE(params->enterprise_reporting_endpoints.has_value());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(params));
+  EXPECT_EQ(0u, network_context->url_request_context()
+                    ->reporting_service()
+                    ->GetContextForTesting()
+                    ->cache()
+                    ->GetEnterpriseEndpointsForTesting()
+                    .size());
+}
+
+TEST_F(NetworkContextTest,
+       CheckInitialEnterpriseReportingEndpointsParamSetWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      net::features::kReportingApiEnableEnterpriseCookieIssues);
+  base::flat_map<std::string, GURL> enterprise_endpoints_for_testing{
+      {"endpoint-1", GURL("https://example.com/reports")},
+      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
+      {"endpoint-3", GURL("https://report-collector.example")},
+  };
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  EXPECT_FALSE(params->enterprise_reporting_endpoints.has_value());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(params));
+  EXPECT_EQ(0u, network_context->url_request_context()
+                    ->reporting_service()
+                    ->GetContextForTesting()
+                    ->cache()
+                    ->GetEnterpriseEndpointsForTesting()
+                    .size());
+}
+
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 TEST_F(NetworkContextTest, DefaultHttpNetworkSessionParams) {
@@ -8838,6 +8987,46 @@ TEST_F(NetworkContextTest,
 
   // The request should have succeeded because the url was exempted.
   EXPECT_EQ(client.completion_status().error_code, net::OK);
+}
+
+TEST_F(NetworkContextTest, RevokeNetworkForNoncesCancelsPreconnectRequests) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  // Revoke the nonce for untrusted network access.
+  base::test::TestFuture<void> revoked;
+  network_context->RevokeNetworkForNonces(
+      {nonce}, base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Set up the connection listener.
+  ConnectionListener connection_listener;
+  net::EmbeddedTestServer test_server;
+  test_server.SetConnectionListener(&connection_listener);
+  ASSERT_TRUE(test_server.Start());
+  EXPECT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(
+      nonce, test_server.base_url()));
+
+  // Preconnect with a NetworkAnonymizationKey that does not contain the revoked
+  // nonce.
+  network_context->PreconnectSockets(1, test_server.base_url(),
+                                     network::mojom::CredentialsMode::kInclude,
+                                     net::NetworkAnonymizationKey());
+  connection_listener.WaitForAcceptedConnections(1u);
+  EXPECT_EQ(1, connection_listener.GetTotalSocketsSeen());
+
+  // Attempt to preconnect with a NetworkAnonymizationKey contains the revoked
+  // nonce.
+  const auto site = net::SchemefulSite(test_server.base_url());
+  network_context->PreconnectSockets(
+      1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
+      net::NetworkAnonymizationKey::CreateFromFrameSite(site, site, nonce));
+  base::RunLoop().RunUntilIdle();
+
+  // No new sockets are opened because the preconnect request is cancelled.
+  EXPECT_EQ(1, connection_listener.GetTotalSocketsSeen());
 }
 
 // ExemptUrlFromNetworkRevocationForNonce(exempted_url, nonce) exempts

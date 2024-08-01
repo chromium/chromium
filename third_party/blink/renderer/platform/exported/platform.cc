@@ -313,6 +313,11 @@ Platform::SharedCompositorWorkerContextProvider(
   return nullptr;
 }
 
+std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+Platform::CreateSharedImageInterfaceProvider() {
+  return nullptr;
+}
+
 scoped_refptr<gpu::GpuChannelHost> Platform::EstablishGpuChannelSync() {
   return nullptr;
 }

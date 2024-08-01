@@ -18,6 +18,8 @@ class AggregatedFrame;
 // get the overdraw data over a period of time.
 class VIZ_SERVICE_EXPORT OverdrawTracker {
  public:
+  using OverdrawTimeSeries = std::vector<float>;
+
   struct Settings {
     // Interval length determines the duration over which the overdraw
     // averages are aggregated. For example, an interval length of 5 seconds
@@ -44,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverdrawTracker {
   // at `start_time_` and finishes at `latest_time_`. If there are no frames
   // recorded in an in-between interval, the average overdraw for that interval
   // will be zero.
-  std::vector<float> TakeDataAsTimeSeries() const;
+  OverdrawTimeSeries TakeDataAsTimeSeries() const;
 
   void Reset();
 

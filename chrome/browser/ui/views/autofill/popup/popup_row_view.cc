@@ -263,6 +263,11 @@ PopupRowView::PopupRowView(
   content_view_->GetViewAccessibility().SetPosInSet(position);
   content_view_->GetViewAccessibility().SetSetSize(set_size);
   content_view_->GetViewAccessibility().SetIsSelected(false);
+
+  if (controller_ && line_number_ < controller_->GetLineCount()) {
+    GetViewAccessibility().SetPosInSet(position);
+    GetViewAccessibility().SetSetSize(set_size);
+  }
   content_event_handler_ =
       set_exit_enter_callbacks(CellType::kContent, *content_view_);
   layout->SetFlexForView(content_view_.get(), 1);
@@ -353,12 +358,6 @@ void PopupRowView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
         &content_node_data);
 
     node_data->role = content_node_data.role;
-    node_data->AddIntAttribute(
-        ax::mojom::IntAttribute::kPosInSet,
-        content_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
-    node_data->AddIntAttribute(
-        ax::mojom::IntAttribute::kSetSize,
-        content_node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
     node_data->SetName(
         GetSuggestionA11yString(controller_->GetSuggestionAt(line_number_),
                                 /*add_call_to_action_if_expandable=*/false));

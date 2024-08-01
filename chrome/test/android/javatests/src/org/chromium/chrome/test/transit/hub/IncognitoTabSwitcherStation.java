@@ -13,6 +13,7 @@ import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Incognito tab switcher pane station. */
 public class IncognitoTabSwitcherStation extends TabSwitcherStation {
@@ -22,6 +23,15 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
 
     public IncognitoTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ true, regularTabsExist, incognitoTabsExist);
+    }
+
+    /**
+     * Build an {@link IncognitoTabSwitcherStation} assuming the tab model doesn't change in the
+     * transition.
+     */
+    public static IncognitoTabSwitcherStation from(TabModelSelector selector) {
+        return new IncognitoTabSwitcherStation(
+                selector.getModel(false).getCount() > 0, selector.getModel(true).getCount() > 0);
     }
 
     @Override

@@ -227,6 +227,10 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
       ContextualPanelItemConfiguration::high_relevance;
   execution_it->second->config->accessibility_label = message;
   execution_it->second->config->entrypoint_message = message;
+  execution_it->second->config->iph_title = message;
+  execution_it->second->config->iph_text =
+      l10n_util::GetStringUTF8(IDS_INSIGHTS_RICH_IPH_TEXT);
+  execution_it->second->config->iph_image_name = "rich_iph_price_insights";
 }
 
 PriceInsightsItemConfiguration::PriceInsightsItemConfiguration()
@@ -250,6 +254,9 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
   iph_entrypoint_used_event_name = config->iph_entrypoint_used_event_name;
   image_type = config->image_type;
   relevance = config->relevance;
+  iph_title = config->iph_title;
+  iph_text = config->iph_text;
+  iph_image_name = config->iph_image_name;
 }
 
 PriceInsightsExecution::PriceInsightsExecution() = default;

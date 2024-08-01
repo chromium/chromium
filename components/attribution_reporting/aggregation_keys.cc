@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -96,7 +95,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
 }
 
 AggregationKeys::AggregationKeys(Keys keys) : keys_(std::move(keys)) {
-  CHECK(IsValid(keys_), base::NotFatalUntil::M128);
+  CHECK(IsValid(keys_));
 }
 
 AggregationKeys::AggregationKeys() = default;

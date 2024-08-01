@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -146,6 +145,7 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
 
     attribs.robust_resource_initialization = true;
     attribs.robust_buffer_access = true;
+    attribs.allow_client_arrays = false;
 
     // Request a specific context version instead of always 3.0
     if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
@@ -192,6 +192,7 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     // contexts.
     attribs.robust_resource_initialization = false;
     attribs.robust_buffer_access = false;
+    attribs.allow_client_arrays = true;
   }
 
   bool force_es2_context = gl::GetGlWorkarounds().disable_es3gl_context;

@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {
@@ -64,10 +65,9 @@ TEST_F(IpProtectionProxyConfigRetrieverTest, GetProxyConfigSuccess) {
         EXPECT_FALSE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
         EXPECT_TRUE(request.headers.HasHeader(kGoogApiKeyHeader));
-        std::string value;
-        EXPECT_TRUE(request.headers.GetHeader(
-            "Ip-Protection-Debug-Experiment-Arm", &value));
-        EXPECT_EQ(value, "42");
+        EXPECT_THAT(
+            request.headers.GetHeader("Ip-Protection-Debug-Experiment-Arm"),
+            testing::Optional(std::string("42")));
 
         auto head = network::mojom::URLResponseHead::New();
         test_url_loader_factory_.AddResponse(

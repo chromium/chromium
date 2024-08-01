@@ -274,22 +274,24 @@ export class DirectoryTreeContainer {
           navigationRoot.key, isAndroidApp ? androidAppData : fileData,
           navigationRoot);
 
-      // Always call insertBefore here even if the element already exists,
-      // because the index can change. Calling insertBefore with existing
-      // child element will move it to the correct position.
-      this.tree.insertBefore(
-          // Use `children` here because `items` is asynchronous.
-          navigationRootItem, this.tree.children[index] || null);
-
+      // Skip `insertBefore` for the tree item if it's an existing item in
+      // renaming state, otherwise it will interrupt user's input (via
+      // triggering `blur` event). Even we try to re-attach the rename input
+      // after `insertBefore`, it still interrupts user's input.
+      if (!isRenaming) {
+        // Always call insertBefore here even if the element already exists,
+        // because the index can change. Calling insertBefore with existing
+        // child element will move it to the correct position.
+        this.tree.insertBefore(
+            // Use `children` here because `items` is asynchronous.
+            navigationRootItem, this.tree.children[index] || null);
+      }
       // For existing items, `insertBefore` call above might make the element
-      // lose some status (e.g. focus/rename), check if we need to restore
+      // lose some status (e.g. focus), check if we need to restore
       // them or not.
       if (exists) {
         if (isFocused && !fileData?.disabled) {
           this.restoreFocus_(navigationRootItem, /* isExisting= */ true);
-        }
-        if (isRenaming) {
-          this.attachRename_(navigationRootItem);
         }
         continue;
       }
@@ -415,25 +417,27 @@ export class DirectoryTreeContainer {
 
         this.renderItem_(childKey, childFileData);
 
-        // Always call insertBefore here even if the element already exists,
-        // because the index can change. Calling insertBefore with existing
-        // child element will move it to the correct position.
-        element.insertBefore(
-            navigationItem,
-            // Use `.children` instead of `.items` here because `items` is
-            // asynchronous.
-            element.children[index] || null,
-        );
-
+        // Skip `insertBefore` for the tree item if it's an existing item in
+        // renaming state, otherwise it will interrupt user's input (via
+        // triggering `blur` event). Even we try to re-attach the rename input
+        // after `insertBefore`, it still interrupts user's input.
+        if (!isRenaming) {
+          // Always call insertBefore here even if the element already exists,
+          // because the index can change. Calling insertBefore with existing
+          // child element will move it to the correct position.
+          element.insertBefore(
+              navigationItem,
+              // Use `.children` instead of `.items` here because `items` is
+              // asynchronous.
+              element.children[index] || null,
+          );
+        }
         // For existing items, `insertBefore` call above might make the element
-        // lose some status (e.g. focus/rename), check if we need to restore
+        // lose some status (e.g. focus), check if we need to restore
         // them or not.
         if (exists) {
           if (isFocused && !childFileData?.disabled) {
             this.restoreFocus_(navigationItem, /* isExisting= */ true);
-          }
-          if (isRenaming) {
-            this.attachRename_(navigationItem);
           }
           continue;
         }

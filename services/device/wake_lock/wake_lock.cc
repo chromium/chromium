@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "services/device/wake_lock/wake_lock_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "services/device/wake_lock/wake_lock_context.h"
@@ -42,7 +43,16 @@ WakeLock::WakeLock(mojo::PendingReceiver<mojom::WakeLock> receiver,
       &WakeLock::OnConnectionError, base::Unretained(this)));
 }
 
-WakeLock::~WakeLock() = default;
+WakeLock::~WakeLock() {
+  // A race condition may cause the WakeLock to be destroyed before it has been
+  // removed. In this case, it should still be reset and observers notified.
+  if (base::FeatureList::IsEnabled(features::kRemoveWakeLockInDestructor)) {
+    if (wake_lock_) {
+      RemoveWakeLock();
+      CHECK(!wake_lock_);
+    }
+  }
+}
 
 void WakeLock::AddClient(mojo::PendingReceiver<mojom::WakeLock> receiver) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());

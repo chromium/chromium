@@ -49,9 +49,9 @@ struct NET_EXPORT DohProviderEntry {
   };
 
   std::string provider;
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION const base::Feature& feature;
+  // Avoid using base::Feature& and use raw_ref instead. Use feature.get()
+  // for accessing the raw reference.
+  raw_ref<const base::Feature> feature;
   std::set<IPAddress> ip_addresses;
   std::set<std::string> dns_over_tls_hostnames;
   DnsOverHttpsServerConfig doh_server_config;

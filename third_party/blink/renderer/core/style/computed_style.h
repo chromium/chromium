@@ -1459,12 +1459,16 @@ class ComputedStyle final : public ComputedStyleBase {
 
     if (container_type & kContainerTypeInlineSize) {
       effective |= kContainsStyle;
-      effective |= kContainsLayout;
+      if (!RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
+        effective |= kContainsLayout;
+      }
       effective |= kContainsInlineSize;
     }
     if (container_type & kContainerTypeBlockSize) {
       effective |= kContainsStyle;
-      effective |= kContainsLayout;
+      if (!RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
+        effective |= kContainsLayout;
+      }
       effective |= kContainsBlockSize;
     }
     if (!IsContentVisibilityVisible(content_visibility)) {
@@ -2270,6 +2274,11 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool ScrollMarkerGroupEqual(const ComputedStyle& other) const {
     return ScrollMarkerGroup() == other.ScrollMarkerGroup();
+  }
+
+  PhysicalBoxStrut ScrollMarginStrut() const {
+    return {LayoutUnit(ScrollMarginTop()), LayoutUnit(ScrollMarginRight()),
+            LayoutUnit(ScrollMarginBottom()), LayoutUnit(ScrollMarginLeft())};
   }
 
   // Returns true if the element is rendered in the top layer. That is the case

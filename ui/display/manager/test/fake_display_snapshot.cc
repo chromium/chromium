@@ -19,6 +19,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/display/display_features.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 
@@ -73,8 +74,8 @@ std::unique_ptr<DisplayMode> ParseDisplayMode(const std::string& str) {
     return nullptr;
   }
 
-  return CreateDisplayModePtrForTest({width, height}, false,
-                                     static_cast<float>(refresh_rate));
+  return std::make_unique<DisplayMode>(gfx::Size{width, height}, false,
+                                       static_cast<float>(refresh_rate));
 }
 
 // Parses a list of alternate display modes, adding each new display mode to
@@ -186,8 +187,7 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
       has_content_protection_key_, name_, sys_path_, std::move(modes_),
       current_mode_, native_mode_, product_code_, maximum_cursor_size_,
-      color_info_, variable_refresh_rate_state_, vsync_rate_min_,
-      DrmFormatsAndModifiers());
+      color_info_, variable_refresh_rate_state_, DrmFormatsAndModifiers());
 }
 
 Builder& Builder::SetId(int64_t id) {
@@ -340,12 +340,6 @@ Builder& Builder::SetVariableRefreshRateState(
   return *this;
 }
 
-Builder& Builder::SetVsyncRateMin(
-    const std::optional<uint16_t>& vsync_rate_min) {
-  vsync_rate_min_ = vsync_rate_min;
-  return *this;
-}
-
 const DisplayMode* Builder::AddOrFindDisplayMode(const gfx::Size& size) {
   for (auto& mode : modes_) {
     if (mode->size() == size)
@@ -353,7 +347,7 @@ const DisplayMode* Builder::AddOrFindDisplayMode(const gfx::Size& size) {
   }
 
   // Not found, insert a mode with the size and return.
-  modes_.push_back(CreateDisplayModePtrForTest(size, false, 60.0f));
+  modes_.push_back(std::make_unique<DisplayMode>(size, false, 60.0f));
   return modes_.back().get();
 }
 
@@ -395,7 +389,6 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     const gfx::Size& maximum_cursor_size,
     const DisplaySnapshot::ColorInfo& color_info,
     VariableRefreshRateState variable_refresh_rate_state,
-    const std::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : DisplaySnapshot(display_id,
                       port_display_id,
@@ -422,7 +415,6 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
                       2018 /*year_of_manufacture */,
                       maximum_cursor_size,
                       variable_refresh_rate_state,
-                      vsync_rate_min,
                       drm_formats_and_modifiers) {}
 
 FakeDisplaySnapshot::~FakeDisplaySnapshot() = default;

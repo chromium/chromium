@@ -37,7 +37,6 @@
 #include "chrome/browser/security_events/security_event_recorder.h"
 #include "chrome/browser/security_events/security_event_recorder_factory.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
-#include "chrome/browser/sharing/sharing_message_model_type_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
@@ -62,7 +61,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
-#include "components/browser_sync/sync_api_component_factory_impl.h"
+#include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/data_sharing/public/features.h"
 #include "components/desks_storage/core/desk_sync_service.h"
@@ -79,6 +78,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/sharing_message_bridge.h"
+#include "components/sharing_message/sharing_message_model_type_controller.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync/base/features.h"
@@ -90,7 +90,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/service/model_type_controller.h"
-#include "components/sync/service/sync_api_component_factory.h"
+#include "components/sync/service/sync_engine_factory.h"
 #include "components/sync/service/syncable_service_based_model_type_controller.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -156,7 +156,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
-#include "components/browser_sync/sync_client_utils.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using content::BrowserThread;
@@ -272,34 +271,11 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
     : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
+  engine_factory_ = std::make_unique<SyncEngineFactoryImpl>(
       this,
       DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker(),
       GetModelTypeStoreService()->GetSyncDataPath());
-
-#if BUILDFLAG(IS_ANDROID)
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      account_password_store = AccountPasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-
-  local_data_query_helper_ =
-      std::make_unique<browser_sync::LocalDataQueryHelper>(
-          profile_password_store.get(), account_password_store.get(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-              profile_));
-
-  local_data_migration_helper_ =
-      std::make_unique<browser_sync::LocalDataMigrationHelper>(
-          profile_password_store.get(), account_password_store.get(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-              profile_));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
@@ -342,19 +318,6 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
 
   return local_sync_backend_folder;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ChromeSyncClient::GetLocalDataDescriptions(
-    syncer::ModelTypeSet types,
-    base::OnceCallback<void(
-        std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
-  local_data_query_helper_->Run(types, std::move(callback));
-}
-
-void ChromeSyncClient::TriggerLocalDataMigration(syncer::ModelTypeSet types) {
-  local_data_migration_helper_->Run(types);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 syncer::ModelTypeController::TypeVector
 ChromeSyncClient::CreateModelTypeControllers(
@@ -766,9 +729,8 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
   }
 }
 
-syncer::SyncApiComponentFactory*
-ChromeSyncClient::GetSyncApiComponentFactory() {
-  return component_factory_.get();
+syncer::SyncEngineFactory* ChromeSyncClient::GetSyncEngineFactory() {
+  return engine_factory_.get();
 }
 
 bool ChromeSyncClient::IsCustomPassphraseAllowed() {

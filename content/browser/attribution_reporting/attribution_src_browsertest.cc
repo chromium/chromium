@@ -791,10 +791,14 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
              JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
 
   register_response->WaitForRequest();
-  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
-                              "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  ExpectEmptyAttributionReportingEligibleHeader(
+      register_response->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
+  ExpectValidAttributionReportingSupportHeader(
+      register_response->http_request()->headers.at(
+          "Attribution-Reporting-Support"),
+      /*web_expected=*/false,
+      /*os_expected=*/false);
 }
 
 // Regression test for https://crbug.com/1498717.

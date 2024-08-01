@@ -75,7 +75,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
   EXPECT_EQ(100.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
 }
 
-TEST_P(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
+TEST_P(ScrollableAreaTest, ScrollbarBackgroundAndThumbRepaint) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -87,30 +87,30 @@ TEST_P(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
 
   EXPECT_CALL(theme, ShouldRepaintAllPartsOnInvalidation())
       .WillRepeatedly(Return(true));
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
   scrollbar->SetNeedsPaintInvalidation(kNoPart);
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
 
-  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   scrollbar->ClearThumbNeedsRepaint();
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_FALSE(scrollbar->ThumbNeedsRepaint());
   scrollbar->SetNeedsPaintInvalidation(kThumbPart);
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
+  EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
 
   // When not all parts are repainted on invalidation,
   // setNeedsPaintInvalidation sets repaint bits only on the requested parts.
   EXPECT_CALL(theme, ShouldRepaintAllPartsOnInvalidation())
       .WillRepeatedly(Return(false));
-  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearTrackAndButtonsNeedRepaint();
   scrollbar->ClearThumbNeedsRepaint();
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_FALSE(scrollbar->ThumbNeedsRepaint());
   scrollbar->SetNeedsPaintInvalidation(kThumbPart);
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+  EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
   EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
 
   // Forced GC in order to finalize objects depending on the mock object.

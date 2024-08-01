@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/render_text.h"
 
 #include <limits.h>
@@ -539,15 +544,15 @@ void RenderText::SetText(std::u16string text) {
 
   // Clear style ranges as they might break new text graphemes and apply
   // the first style to the whole text instead.
-  colors_.SetValue(colors_.breaks().front().second);
-  baselines_.SetValue(baselines_.breaks().front().second);
-  font_size_overrides_.SetValue(font_size_overrides_.breaks().front().second);
-  weights_.SetValue(weights_.breaks().front().second);
-  fill_styles_.SetValue(fill_styles_.breaks().front().second);
-  stroke_widths_.SetValue(stroke_widths_.breaks().front().second);
+  colors_.Reset();
+  baselines_.Reset();
+  font_size_overrides_.Reset();
+  weights_.Reset();
+  fill_styles_.Reset();
+  stroke_widths_.Reset();
   for (auto& style : styles_)
-    style.SetValue(style.breaks().front().second);
-  elidings_.SetValue(false);
+    style.Reset();
+  elidings_.ClearAndSetInitialValue(false);
   cached_bounds_and_offset_valid_ = false;
 
   // Reset selection model. SetText should always followed by SetSelectionModel
@@ -594,11 +599,14 @@ void RenderText::SetVerticalAlignment(VerticalAlignment alignment) {
 void RenderText::SetFontList(const FontList& font_list) {
   font_list_ = font_list;
   const int font_style = font_list.GetFontStyle();
-  weights_.SetValue(font_list.GetFontWeight());
-  styles_[TEXT_STYLE_ITALIC].SetValue((font_style & Font::ITALIC) != 0);
-  styles_[TEXT_STYLE_UNDERLINE].SetValue((font_style & Font::UNDERLINE) != 0);
-  styles_[TEXT_STYLE_HEAVY_UNDERLINE].SetValue(false);
-  styles_[TEXT_STYLE_STRIKE].SetValue((font_style & Font::STRIKE_THROUGH) != 0);
+  weights_.ClearAndSetInitialValue(font_list.GetFontWeight());
+  styles_[TEXT_STYLE_ITALIC].ClearAndSetInitialValue(
+      (font_style & Font::ITALIC) != 0);
+  styles_[TEXT_STYLE_UNDERLINE].ClearAndSetInitialValue(
+      (font_style & Font::UNDERLINE) != 0);
+  styles_[TEXT_STYLE_HEAVY_UNDERLINE].ClearAndSetInitialValue(false);
+  styles_[TEXT_STYLE_STRIKE].ClearAndSetInitialValue(
+      (font_style & Font::STRIKE_THROUGH) != 0);
   baseline_ = kInvalidBaseline;
   cached_bounds_and_offset_valid_ = false;
   OnLayoutTextAttributeChanged(false);
@@ -891,8 +899,9 @@ void RenderText::SetCompositionRange(const Range& composition_range) {
 }
 
 void RenderText::SetColor(SkColor value) {
-  if (colors_.SetValue(value))
+  if (colors_.ClearAndSetInitialValue(value)) {
     OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
@@ -901,8 +910,9 @@ void RenderText::ApplyColor(SkColor value, const Range& range) {
 }
 
 void RenderText::SetBaselineStyle(BaselineStyle value) {
-  if (baselines_.SetValue(value))
+  if (baselines_.ClearAndSetInitialValue(value)) {
     OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
@@ -917,7 +927,7 @@ void RenderText::ApplyFontSizeOverride(int font_size_override,
 }
 
 void RenderText::SetStyle(TextStyle style, bool value) {
-  if (styles_[style].SetValue(value)) {
+  if (styles_[style].ClearAndSetInitialValue(value)) {
     cached_bounds_and_offset_valid_ = false;
     // TODO(oshima|msw): Not all style change requires layout changes.
     // Consider optimizing based on the type of change.
@@ -935,7 +945,7 @@ void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
 }
 
 void RenderText::SetWeight(Font::Weight weight) {
-  if (weights_.SetValue(weight)) {
+  if (weights_.ClearAndSetInitialValue(weight)) {
     cached_bounds_and_offset_valid_ = false;
     OnLayoutTextAttributeChanged(false);
   }
@@ -949,7 +959,7 @@ void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
 }
 
 void RenderText::SetFillStyle(cc::PaintFlags::Style style) {
-  if (fill_styles_.SetValue(style)) {
+  if (fill_styles_.ClearAndSetInitialValue(style)) {
     OnLayoutTextAttributeChanged(false);
   }
 }
@@ -962,7 +972,7 @@ void RenderText::ApplyFillStyle(cc::PaintFlags::Style style,
 }
 
 void RenderText::SetStrokeWidth(SkScalar stroke_width) {
-  if (stroke_widths_.SetValue(stroke_width)) {
+  if (stroke_widths_.ClearAndSetInitialValue(stroke_width)) {
     OnLayoutTextAttributeChanged(false);
   }
 }
@@ -973,7 +983,7 @@ void RenderText::ApplyStrokeWidth(SkScalar stroke_width, const Range& range) {
   }
 }
 void RenderText::SetEliding(bool value) {
-  elidings_.SetValue(value);
+  elidings_.ClearAndSetInitialValue(value);
   OnLayoutTextAttributeChanged(false);
 }
 
@@ -1434,15 +1444,14 @@ Range RenderText::ExpandRangeToGraphemeBoundary(const Range& range) const {
 
   const size_t min_index = snap_to_grapheme(range.GetMin(), CURSOR_BACKWARD);
   const size_t max_index = snap_to_grapheme(range.GetMax(), CURSOR_FORWARD);
-  return range.is_reversed() ? Range(max_index, min_index)
-                             : Range(min_index, max_index);
+  return Range(min_index, max_index).MatchDirection(range);
 }
 
 Range RenderText::ExpandRangeToWordBoundary(const Range& range) const {
   const size_t length = text().length();
   DCHECK_LE(range.GetMax(), length);
   if (obscured()) {
-    return range.is_reversed() ? Range(length, 0) : Range(0, length);
+    return Range(0, length).MatchDirection(range);
   }
 
   base::i18n::BreakIterator iter(text(), base::i18n::BreakIterator::BREAK_WORD);
@@ -1473,9 +1482,7 @@ Range RenderText::ExpandRangeToWordBoundary(const Range& range) const {
       break;
     }
   }
-
-  return range.is_reversed() ? Range(range_max, range_min)
-                             : Range(range_min, range_max);
+  return Range(range_min, range_max).MatchDirection(range);
 }
 
 bool RenderText::IsNewlineSegment(const internal::LineSegment& segment) const {

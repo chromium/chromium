@@ -104,6 +104,47 @@ std::vector<const drmModeModeInfo*> FindMatchingModes(
   return matches;
 }
 
+// Finds and returns the drm mode from |display| matching |request_mode| except
+// with the closest (or greater) refresh rate, or nullptr if no such mode
+// exists. If |is_seamless| is set, only modes which pass seamless verification
+// will be considered.
+const drmModeModeInfo* FindClosestModeWithGreaterRefreshRate(
+    const display::DisplayMode& request_mode,
+    const DrmDisplay& display,
+    bool is_seamless,
+    HardwareDisplayController* controller) {
+  if (!display.IsVrrCapable()) {
+    return nullptr;
+  }
+  if (is_seamless && !controller) {
+    LOG(ERROR) << "Could not find HardwareDisplayController for display_id: "
+               << display.display_id()
+               << " required to perform seamless verification.";
+    return nullptr;
+  }
+
+  const drmModeModeInfo* closest_mode = nullptr;
+  for (const auto& m : display.modes()) {
+    if (request_mode.size() != ModeSize(m) ||
+        request_mode.is_interlaced() != ModeIsInterlaced(m)) {
+      continue;
+    }
+    if (request_mode.refresh_rate() <
+        ModeVSyncRateMin(m, display.vsync_rate_min_from_edid())) {
+      continue;
+    }
+    if (is_seamless && !controller->TestSeamlessMode(display.crtc(), m)) {
+      continue;
+    }
+    if (ModeRefreshRate(m) >= request_mode.refresh_rate() &&
+        (!closest_mode ||
+         ModeRefreshRate(m) < ModeRefreshRate(*closest_mode))) {
+      closest_mode = &m;
+    }
+  }
+  return closest_mode;
+}
+
 std::string GetEventPropertyByKey(const std::string& key,
                                   const EventPropertyMap event_props) {
   const auto it = event_props.find(key);
@@ -413,12 +454,18 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
         return false;
       }
 
-      std::unique_ptr<drmModeModeInfo> found_mode =
-          request.mode
-              ? FindModeForDisplay(*request.mode, *display, is_seamless)
-              : nullptr;
-      if (request.mode && !found_mode) {
-        return false;
+      std::unique_ptr<drmModeModeInfo> found_mode = nullptr;
+      if (request.mode) {
+        found_mode = FindModeForDisplay(*request.mode, *display, is_seamless);
+
+        if (!found_mode) {
+          return false;
+        }
+
+        // Update the request mode with the precise vsync rate minimum
+        // determined from the found mode.
+        request.mode->set_vsync_rate_min(
+            ModeVSyncRateMin(*found_mode, display->vsync_rate_min_from_edid()));
       }
 
       scoped_refptr<DrmDevice> drm = display->drm();
@@ -833,9 +880,10 @@ std::unique_ptr<drmModeModeInfo> DrmGpuDisplayManager::FindModeForDisplay(
   std::vector<const drmModeModeInfo*> matching_modes =
       FindMatchingModes(request_mode, display.modes());
 
+  // Filter the matched modes by testing for seamless configurability if needed.
+  HardwareDisplayController* controller =
+      screen_manager_->GetDisplayController(display.drm(), display.crtc());
   if (is_seamless) {
-    HardwareDisplayController* controller =
-        screen_manager_->GetDisplayController(display.drm(), display.crtc());
     if (!controller) {
       LOG(ERROR) << "Could not find HardwareDisplayController for display_id: "
                  << display.display_id()
@@ -851,7 +899,8 @@ std::unique_ptr<drmModeModeInfo> DrmGpuDisplayManager::FindModeForDisplay(
   // If the display doesn't have the mode natively, then lookup the mode
   // from other displays and try using it on the current display (some
   // displays support panel fitting and they can use different modes even
-  // if the mode isn't explicitly declared).
+  // if the mode isn't explicitly declared). Not attempted for seamless
+  // configuration requests.
   if (matching_modes.empty() && !is_seamless) {
     for (const auto& other_display : displays_) {
       matching_modes = FindMatchingModes(request_mode, other_display->modes());
@@ -859,6 +908,24 @@ std::unique_ptr<drmModeModeInfo> DrmGpuDisplayManager::FindModeForDisplay(
         VLOG(3) << "Found matching mode from another display. Attempting to "
                    "apply via panel fitting.";
         break;
+      }
+    }
+  }
+
+  // If a matching mode hasn't been found and the display supports VRR, attempt
+  // to create a virtual mode with the requested properties.
+  if (matching_modes.empty() && display.IsVrrCapable()) {
+    const drmModeModeInfo* closest_mode = FindClosestModeWithGreaterRefreshRate(
+        request_mode, display, is_seamless, controller);
+
+    // Use the closest mode to create and return a virtual mode.
+    if (closest_mode) {
+      std::unique_ptr<drmModeModeInfo> out_virtual_mode =
+          CreateVirtualMode(*closest_mode, request_mode.refresh_rate());
+      if (out_virtual_mode) {
+        VLOG(3) << "Using virtual mode to achieve refresh_rate="
+                << request_mode.refresh_rate();
+        return out_virtual_mode;
       }
     }
   }

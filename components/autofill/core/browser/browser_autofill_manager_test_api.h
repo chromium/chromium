@@ -47,8 +47,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   FormInteractionsFlowId address_form_interactions_flow_id() const {
-    return manager_->address_form_event_logger_
-        ->form_interactions_flow_id_for_test();
+    return manager_->metrics_->address_form_event_logger
+        .form_interactions_flow_id_for_test();
   }
 
   SingleFieldFormFillRouter& single_field_form_fill_router() {
@@ -56,7 +56,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
-    return manager_->credit_card_form_event_logger_.get();
+    return &manager_->metrics_->credit_card_form_event_logger;
   }
 
   void set_single_field_form_fill_router(
@@ -83,7 +83,9 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->GetVirtualCreditCardsForStandaloneCvcField(origin);
   }
 
-  FormData* pending_form_data() { return manager_->pending_form_data_.get(); }
+  std::optional<FormData>& pending_form_data() {
+    return manager_->pending_form_data_;
+  }
 
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {

@@ -9,7 +9,7 @@
 
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/test/fake_sync_api_component_factory.h"
+#include "components/sync/test/fake_sync_engine_factory.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -52,9 +52,7 @@ class SyncServiceImplBundle {
     return identity_test_env_.identity_manager();
   }
 
-  FakeSyncApiComponentFactory* component_factory() {
-    return &component_factory_;
-  }
+  FakeSyncEngineFactory* engine_factory() { return &engine_factory_; }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
     return &sync_invalidations_service_;
@@ -68,7 +66,7 @@ class SyncServiceImplBundle {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  FakeSyncApiComponentFactory component_factory_;
+  FakeSyncEngineFactory engine_factory_;
   testing::NiceMock<MockSyncInvalidationsService> sync_invalidations_service_;
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_;
 };

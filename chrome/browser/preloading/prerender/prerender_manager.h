@@ -58,8 +58,6 @@ class PrerenderManager : public content::WebContentsObserver,
   ~PrerenderManager() override;
 
   // content::WebContentsObserver
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -104,8 +102,6 @@ class PrerenderManager : public content::WebContentsObserver,
   // will return the weak pointer to the on-going prerender handle.
   // PreloadingAttempt represents the attempt corresponding to this prerender to
   // log the necessary metrics.
-  // TODO(crbug.com/40208255): Merge the start method with DSE interface
-  // using AutocompleteMatch as the parameter instead of GURL.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderDirectUrlInput(
       const GURL& prerendering_url,
       content::PreloadingAttempt& preloading_attempt);
@@ -140,9 +136,8 @@ class PrerenderManager : public content::WebContentsObserver,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
   // Stores the prerender which serves for search results. It is responsible for
-  // tracking a started search prerender, and it keeps alive even if the
-  // prerender has been destroyed by the timer. With its help, PrerenderManager
-  // can record the prediction regardless whether a prerender is expired or not.
+  // tracking a started search prerender, and informing `SearchPrefetchService`
+  // of the prerender status.
   std::unique_ptr<SearchPrerenderTask> search_prerender_task_;
 
   std::unique_ptr<content::PrerenderHandle> bookmark_prerender_handle_;

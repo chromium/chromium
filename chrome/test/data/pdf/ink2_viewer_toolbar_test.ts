@@ -5,21 +5,17 @@
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertShowAnnotationsButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke} from './test_util.js';
+import {assertCheckboxMenuButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
-
-function toolbarQuerySelector(query: string): HTMLElement {
-  return viewerToolbar.shadowRoot!.querySelector<HTMLElement>(query)!;
-}
 
 chrome.test.runTests([
   // Test that clicking the annotation button toggles annotation mode.
   function testAnnotationButton() {
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
-    const annotateButton = toolbarQuerySelector('#annotate');
+    const annotateButton = getRequiredElement(viewerToolbar, '#annotate');
 
     annotateButton.click();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
@@ -30,33 +26,40 @@ chrome.test.runTests([
   },
   // Test that toggling annotation mode does not affect displaying annotations.
   function testTogglingAnnotationModeDoesNotAffectDisplayAnnotations() {
+    // The menu needs to be open to check for visible menu elements.
+    openToolbarMenu(viewerToolbar);
+
     // Start the test with annotation mode disabled and annotations displayed.
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     const showAnnotationsButton =
-        toolbarQuerySelector('#show-annotations-button');
-    assertShowAnnotationsButton(showAnnotationsButton, true);
+        getRequiredElement(viewerToolbar, '#show-annotations-button');
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
 
     // Enabling and disabling annotation mode shouldn't affect displaying
     // annotations.
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, true);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
     viewerToolbar.toggleAnnotation();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, true);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, true);
 
     // Hide annotations.
     showAnnotationsButton.click();
-    assertShowAnnotationsButton(showAnnotationsButton, false);
+
+    // Clicking the button closes the menu, so re-open it.
+    openToolbarMenu(viewerToolbar);
+
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
 
     // Enabling and disabling annotation mode shouldn't affect displaying
     // annotations.
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, false);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
     viewerToolbar.toggleAnnotation();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
-    assertShowAnnotationsButton(showAnnotationsButton, false);
+    assertCheckboxMenuButton(viewerToolbar, showAnnotationsButton, false);
     chrome.test.succeed();
   },
   // Test that toggling annotation mode sends a message to the PDF content.
@@ -119,8 +122,10 @@ chrome.test.runTests([
     const mockPlugin = createMockPdfPluginForTest();
     controller.setPluginForTesting(mockPlugin);
 
-    const undoButton = toolbarQuerySelector('#undo') as HTMLButtonElement;
-    const redoButton = toolbarQuerySelector('#redo') as HTMLButtonElement;
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
 
     // The buttons should be disabled when there aren't any strokes.
     chrome.test.assertTrue(undoButton.disabled);

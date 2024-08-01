@@ -13,6 +13,7 @@
 #include <xf86drmMode.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -561,6 +562,28 @@ bool ModeIsInterlaced(const drmModeModeInfo& mode) {
   return mode.flags & DRM_MODE_FLAG_INTERLACE;
 }
 
+const std::optional<float> ModeVSyncRateMin(
+    const drmModeModeInfo& mode,
+    const std::optional<uint16_t>& vsync_rate_min_from_edid) {
+  if (!vsync_rate_min_from_edid.has_value() ||
+      vsync_rate_min_from_edid.value() == 0) {
+    return std::nullopt;
+  }
+
+  if (!mode.htotal) {
+    return vsync_rate_min_from_edid;
+  }
+
+  float clock_hz = mode.clock * 1000.0f;
+  float htotal = mode.htotal;
+
+  // Calculate the vtotal from the imprecise min vsync rate.
+  float vtotal_extended =
+      clock_hz / (htotal * vsync_rate_min_from_edid.value());
+  // Clamp the calculated vtotal and determine the precise min vsync rate.
+  return clock_hz / (htotal * std::floor(vtotal_extended));
+}
+
 gfx::Size GetMaximumCursorSize(const DrmWrapper& drm) {
   uint64_t width = 0, height = 0;
   // Querying cursor dimensions is optional and is unsupported on older Chrome
@@ -592,6 +615,10 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info) {
   if (!IsVrrCapable(drm, info->connector())) {
+    return display::kVrrNotCapable;
+  }
+  if (!info->edid_parser()->vsync_rate_min().has_value() ||
+      info->edid_parser()->vsync_rate_min().value() == 0) {
     return display::kVrrNotCapable;
   }
 
@@ -767,11 +794,37 @@ bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs) {
 }
 
 std::unique_ptr<display::DisplayMode> CreateDisplayMode(
-    const drmModeModeInfo& mode) {
+    const drmModeModeInfo& mode,
+    const std::optional<uint16_t>& vsync_rate_min_from_edid) {
   return std::make_unique<display::DisplayMode>(
       gfx::Size{mode.hdisplay, mode.vdisplay},
-      mode.flags & DRM_MODE_FLAG_INTERLACE, GetRefreshRate(mode), mode.htotal,
-      mode.vtotal, mode.clock);
+      mode.flags & DRM_MODE_FLAG_INTERLACE, GetRefreshRate(mode),
+      ModeVSyncRateMin(mode, vsync_rate_min_from_edid));
+}
+
+std::unique_ptr<drmModeModeInfo> CreateVirtualMode(
+    const drmModeModeInfo& base_mode,
+    float virtual_refresh_rate) {
+  if (!base_mode.htotal) {
+    return nullptr;
+  }
+
+  float clock_hz = base_mode.clock * 1000.0f;
+  float htotal = base_mode.htotal;
+
+  uint16_t virtual_vtotal =
+      std::round(clock_hz / (htotal * virtual_refresh_rate));
+  // Vtotal can only be increased from the base mode because virtual modes rely
+  // on VRR capabilities (i.e. the back porch can be extended but not
+  // diminished).
+  if (virtual_vtotal < base_mode.vtotal) {
+    return nullptr;
+  }
+
+  auto out_mode = std::make_unique<drmModeModeInfo>();
+  *out_mode = base_mode;
+  out_mode->vtotal = virtual_vtotal;
+  return out_mode;
 }
 
 display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
@@ -787,7 +840,9 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
   display::DisplaySnapshot::DisplayModeList modes;
   for (int i = 0; i < info->connector()->count_modes; ++i) {
     const drmModeModeInfo& mode = info->connector()->modes[i];
-    modes.push_back(CreateDisplayMode(mode));
+    modes.push_back(CreateDisplayMode(
+        mode, info->edid_parser() ? info->edid_parser()->vsync_rate_min()
+                                  : std::nullopt));
 
     if (info->crtc()->mode_valid && SameMode(info->crtc()->mode, mode))
       *out_current_mode = modes.back().get();
@@ -864,7 +919,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   color_info.bits_per_channel = 8u;
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
-  std::optional<uint16_t> vsync_rate_min;
 
   const std::optional<display::EdidParser>& edid_parser = info->edid_parser();
   base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
@@ -899,7 +953,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 color_info.bits_per_channel);
     color_info.hdr_static_metadata = edid_parser->hdr_static_metadata();
-    vsync_rate_min = edid_parser->vsync_rate_min();
   }
 
   const display::DisplayMode* current_mode = nullptr;
@@ -933,7 +986,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       has_content_protection_key, color_info, display_name, drm.device_path(),
       std::move(modes), panel_orientation, edid, current_mode, native_mode,
       product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, vsync_rate_min, drm_formats_and_modifiers);
+      variable_refresh_rate_state, drm_formats_and_modifiers);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

@@ -1,8 +1,9 @@
 Name: S2 CellId Library
 Short Name: s2cellid
 URL: https://github.com/google/s2geometry
-Version: 0
-License: License: Apache Version 2.0
+Version: N/A
+Revision: d7b839d8bab982655afc67ab5ed0668c86c3692d
+License: Apache Version 2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no

@@ -8,6 +8,7 @@
   --iph-section-border-color: var(--google-blue-300);
   --main-column-max-width: 680px;
   --new-badge-section-border-color: var(--google-yellow-300);
+  --whats-new-section-border-color: var(--google-grey-300);
   --side-bar-width: 200px;
   --tutorials-section-border-color: var(--google-red-300);
 }
@@ -17,6 +18,7 @@
     --advanced-section-border-color: var(--google-green-700);
     --iph-section-border-color: var(--google-blue-700);
     --new-badge-section-border-color: var(--google-yellow-700);
+    --whats-new-section-border-color: var(--google-grey-700);
     --tutorials-section-border-color: var(--google-red-700);
   }
 }
@@ -31,11 +33,16 @@ cr-toolbar:not([narrow]) {
   --cr-toolbar-left-spacer-width: var(--side-bar-width);
 }
 
-user-education-internals-card.highlighted {
+user-education-internals-card.highlighted,
+user-education-whats-new-internals-card.highlighted {
   background-color: var(--cr-iph-anchor-highlight-color);
 }
 
 h2 {
+  padding-inline: var(--cr-section-padding);
+}
+
+.whats-new-section {
   padding-inline: var(--cr-section-padding);
 }
 
@@ -104,7 +111,14 @@ h2 {
   scroll-margin-top: 16px;
 }
 
-user-education-internals-card {
+#whatsNew {
+  border-inline-start: 1px solid var(--whats-new-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+user-education-internals-card,
+user-education-whats-new-internals-card {
   padding-block: var(--cr-section-vertical-padding);
   padding-inline: var(--cr-section-padding);
 }
@@ -170,6 +184,11 @@ user-education-internals-card {
         <a role="menuitem" href="#newBadges" class="cr-nav-menu-item">
           "New" Badges
         </a>
+        <template is="dom-if" if="[[isWhatsNewV2_]]">
+          <a role="menuitem" href="#whatsNew" class="cr-nav-menu-item">
+            What's New
+          </a>
+        </template>
         <a role="menuitem" href="#advanced" class="cr-nav-menu-item">
           Advanced
         </a>
@@ -223,6 +242,35 @@ user-education-internals-card {
           </user-education-internals-card>
         </template>
       </div>
+      <template is="dom-if" if="[[isWhatsNewV2_]]">
+        <div id="whatsNew">
+          <h2>What's New</h2>
+          <template is="dom-if" if="[[whatsNewModules_.length]]">
+            <h3 class="whats-new-section">Modules</h3>
+          </template>
+          <template is="dom-repeat" items="[[whatsNewModules_]]">
+            <user-education-whats-new-internals-card
+              id="[[item.moduleName]]"
+              hidden$="[[!whatsNewFilter_(item, filter)]]"
+              item="[[item]]"
+              type="module"
+              on-clear-whats-new-data="clearWhatsNewData_">
+            </user-education-whats-new-internals-card>
+          </template>
+          <template is="dom-if" if="[[whatsNewEditions_.length]]">
+            <h3 class="whats-new-section">Editions</h3>
+          </template>
+          <template is="dom-repeat" items="[[whatsNewEditions_]]">
+            <user-education-whats-new-internals-card
+              id="[[item.editionName]]"
+              hidden$="[[!whatsNewFilter_(item, filter)]]"
+              item="[[item]]"
+              type="edition"
+              on-clear-whats-new-data="clearWhatsNewData_">
+            </user-education-whats-new-internals-card>
+          </template>
+        </div>
+      </template>
       <div id="advanced">
         <a name="advanced"></a>
         <h2>Advanced</h2>

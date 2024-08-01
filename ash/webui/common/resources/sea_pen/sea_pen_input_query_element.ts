@@ -15,20 +15,22 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_suggestions_element.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY, SEA_PEN_SAMPLES} from './constants.js';
+import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -36,12 +38,13 @@ import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metr
 import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
+import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isSelectionEvent} from './sea_pen_utils.js';
 
 export interface SeaPenInputQueryElement {
   $: {
     innerContainer: HTMLDivElement,
-    queryInput: CrInputElement,
+    queryInput: CrTextareaElement,
     searchButton: HTMLElement,
   };
 }
@@ -66,7 +69,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
       thumbnails_: {
         type: Object,
-        observer: 'updateSearchButton_',
       },
 
       thumbnailsLoading_: Boolean,
@@ -110,6 +112,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   static get observers() {
     return [
       'updateShouldShowSuggestions_(textValue_, thumbnailsLoading_)',
+      'updateSearchButton_(thumbnails_, seaPenQuery_)',
     ];
   }
 
@@ -209,6 +212,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       return;
     }
     assert(this.textValue_, 'input query should not be empty.');
+    try {
+      // Throws an error if the textValue_ contains insecure HTML/javascript.
+      parseHtmlSubset(this.textValue_);
+    } catch (error) {
+      this.getStore().dispatch(setThumbnailResponseStatusCodeAction(
+          MantaStatusCode.kBlockedOutputs));
+      this.shouldShowSuggestions_ = false;
+      return;
+    }
     // This only works for English. We only support English queries for now.
     logNumWordsInTextQuery(this.textValue_.split(/\s+/).length);
     const query: SeaPenQuery = {
@@ -229,8 +241,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         event.detail;
   }
 
-  private updateSearchButton_(thumbnails: SeaPenThumbnail[]|null) {
-    if (!thumbnails) {
+  private updateSearchButton_(
+      thumbnails: SeaPenThumbnail[]|null, seaPenQuery: SeaPenQuery|null) {
+    if (!thumbnails || !seaPenQuery) {
       // The thumbnails are not loaded yet.
       this.searchButtonText_ = this.i18n('seaPenCreateButton');
       this.searchButtonIcon_ = 'sea-pen:photo-spark';

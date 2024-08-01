@@ -9,7 +9,9 @@
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -155,7 +157,9 @@ bool ChromeWebAuthnCredentialsDelegate::OfferPasskeysFromAnotherDeviceOption()
 
 void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
     base::OnceClosure callback) {
+  passkey_retrieval_timer_ = std::make_unique<base::ElapsedTimer>();
   if (passkeys_.has_value()) {
+    RecordPasskeyRetrievalDelay();
     // Entries were already populated from the WebAuthn request.
     std::move(callback).Run();
     return;
@@ -170,6 +174,7 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
   passkeys_ = std::move(credentials);
   offer_passkey_from_another_device_ = offer_passkey_from_another_device;
   if (retrieve_passkeys_callback_) {
+    RecordPasskeyRetrievalDelay();
     std::move(retrieve_passkeys_callback_).Run();
   }
 }
@@ -207,3 +212,11 @@ void ChromeWebAuthnCredentialsDelegate::SetAndroidHybridAvailable(
   android_hybrid_available_ = available;
 }
 #endif
+
+void ChromeWebAuthnCredentialsDelegate::RecordPasskeyRetrievalDelay() {
+  if (passkey_retrieval_timer_) {
+    base::UmaHistogramTimes("PasswordManager.PasskeyRetrievalWaitDuration",
+                            passkey_retrieval_timer_->Elapsed());
+    passkey_retrieval_timer_.reset();
+  }
+}

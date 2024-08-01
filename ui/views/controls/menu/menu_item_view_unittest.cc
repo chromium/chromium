@@ -695,4 +695,38 @@ TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
   EXPECT_FALSE(submenu_item_view->SubmenuIsShowing());
 }
 
+TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
+  MenuItemView* item = menu_item_view();
+  ui::AXNodeData data;
+  item->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  item->SetSelected(true);
+  data = ui::AXNodeData();
+  item->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  item->SetSelected(false);
+  data = ui::AXNodeData();
+  item->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  item->SetSelected(true);
+  item->SetEnabled(false);
+  data = ui::AXNodeData();
+  item->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  item->SetEnabled(true);
+  item->SetVisible(false);
+  data = ui::AXNodeData();
+  item->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  item->SetVisible(true);
+  data = ui::AXNodeData();
+  item->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
 }  // namespace views

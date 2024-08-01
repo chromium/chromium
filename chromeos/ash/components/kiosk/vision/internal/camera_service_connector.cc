@@ -142,6 +142,7 @@ void CameraServiceConnector::GetCameraDevices() {
 }
 
 void CameraServiceConnector::OnCameraDevicesReceived(
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   if (devices.empty()) {
     // TODO(b/339399663): report this error to telemetry API.

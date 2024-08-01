@@ -36,7 +36,10 @@ class FaceGazeTestUtils {
     EYES_LOOK_LEFT,
     EYES_LOOK_RIGHT,
     EYES_LOOK_UP,
+    JAW_LEFT,
     JAW_OPEN,
+    JAW_RIGHT,
+    MOUTH_FUNNEL,
     MOUTH_LEFT,
     MOUTH_PUCKER,
     MOUTH_RIGHT,
@@ -94,6 +97,8 @@ class FaceGazeTestUtils {
     MOUSE_LONG_CLICK_LEFT = 45,
     TOGGLE_FACEGAZE = 46,
     OPEN_FACEGAZE_SETTINGS = 47,
+    TOGGLE_VIRTUAL_KEYBOARD = 48,
+    MOUSE_CLICK_LEFT_DOUBLE = 49,
   };
 
   // Facial gestures recognized by Mediapipe. Ensure this enum stays in sync
@@ -115,7 +120,10 @@ class FaceGazeTestUtils {
     EYE_LOOK_UP_RIGHT,
     EYE_SQUINT_LEFT,
     EYE_SQUINT_RIGHT,
+    JAW_LEFT,
     JAW_OPEN,
+    JAW_RIGHT,
+    MOUTH_FUNNEL,
     MOUTH_LEFT,
     MOUTH_PUCKER,
     MOUTH_RIGHT,

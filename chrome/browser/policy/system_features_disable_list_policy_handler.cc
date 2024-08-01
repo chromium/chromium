@@ -30,6 +30,8 @@ const char kExploreFeature[] = "explore";
 const char kCroshFeature[] = "crosh";
 const char kTerminalFeature[] = "terminal";
 const char kGalleryFeature[] = "gallery";
+const char kPrintJobsFeature[] = "print_jobs";
+const char kKeyShortcutsFeature[] = "key_shortcuts";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -130,7 +132,12 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
   if (system_feature == kGalleryFeature) {
     return SystemFeature::kGallery;
   }
-
+  if (system_feature == kPrintJobsFeature) {
+    return SystemFeature::kPrintJobs;
+  }
+  if (system_feature == kKeyShortcutsFeature) {
+    return SystemFeature::kKeyShortcuts;
+  }
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return SystemFeature::kUnknownSystemFeature;
 }

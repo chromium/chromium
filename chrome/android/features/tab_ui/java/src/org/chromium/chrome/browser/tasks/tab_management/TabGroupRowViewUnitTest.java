@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
@@ -35,7 +36,6 @@ import android.widget.TextView;
 
 import androidx.core.util.Pair;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -100,7 +100,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTitleData() {
         remakeWithProperty(TITLE_DATA, new Pair<>("Title", 3));
         assertEquals("Title", mTitleTextView.getText());
@@ -119,7 +118,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetCreationMillis() {
         long creationMillis = 123L;
         String timeAgo = "Created just now";
@@ -132,7 +130,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetOpenRunnable() {
         remakeWithProperty(OPEN_RUNNABLE, mRunnable);
         mTabGroupRowView.performClick();
@@ -145,7 +142,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenRunnableFromMenu() {
         remakeWithProperty(OPEN_RUNNABLE, mRunnable);
         mListMenuButton.showMenu();
@@ -154,8 +150,7 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
-    public void testCloseRunnableFromMenu() {
+    public void testDeleteRunnableFromMenu() {
         remakeWithProperty(DELETE_RUNNABLE, mRunnable);
         mListMenuButton.showMenu();
         onView(withText("Delete")).perform(click());
@@ -163,7 +158,14 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
+    public void testLeaveRunnableFromMenu() {
+        remakeWithProperty(LEAVE_RUNNABLE, mRunnable);
+        mListMenuButton.showMenu();
+        onView(withText("Leave")).perform(click());
+        verify(mRunnable).run();
+    }
+
+    @Test
     public void testSetFavicon_topLeft() {
         remakeWithProperty(ASYNC_FAVICON_TOP_LEFT, (callback) -> callback.onResult(mDrawable));
         ImageView imageView =
@@ -178,7 +180,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetFavicon_topRight() {
         remakeWithProperty(ASYNC_FAVICON_TOP_RIGHT, (callback) -> callback.onResult(mDrawable));
         ImageView imageView =
@@ -187,7 +188,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetFavicon_bottomLeft() {
         remakeWithProperty(ASYNC_FAVICON_BOTTOM_LEFT, (callback) -> callback.onResult(mDrawable));
         ImageView imageView =
@@ -196,7 +196,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetFavicon_bottomRightAndPlusCount() {
         remakeWithProperty(ASYNC_FAVICON_BOTTOM_RIGHT, (callback) -> callback.onResult(mDrawable));
         ImageView imageView =
@@ -220,7 +219,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResetOnBind() {
         remakeWithProperty(ASYNC_FAVICON_TOP_LEFT, (callback) -> callback.onResult(mDrawable));
         ImageView imageView =
@@ -232,7 +230,6 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testContentDescriptions() {
         remakeWithProperty(TITLE_DATA, new Pair<>("Title", 3));
         assertEquals("Open Title", mTitleTextView.getContentDescription());

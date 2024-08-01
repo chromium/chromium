@@ -110,8 +110,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
   }
 
   std::optional<SupportedVideoDecoderConfigs>
-  GetPlatformSupportedVideoDecoderConfigs(
-      GetVdaConfigsCB get_vda_configs) final {
+  GetPlatformSupportedVideoDecoderConfigs() final {
     // This method must be called on the GPU main thread.
     SupportedVideoDecoderConfigs supported_configs;
     if (gpu_preferences_.disable_accelerated_video_decode) {

@@ -75,13 +75,12 @@ class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriver;
+class AutofillDriverFactory;
 class AutofillMlPredictionModelHandler;
-class AutofillOfferManager;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillProfile;
-class CreditCard;
 enum class CreditCardFetchResult;
 class FormDataImporter;
 class Iban;
@@ -295,6 +294,9 @@ class AutofillClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
+  // Returns the AutofillDriverFactory.
+  virtual AutofillDriverFactory& GetAutofillDriverFactory() = 0;
+
   // Returns the AutofillCrowdsourcingManager for communication with the
   // Autofill server.
   virtual AutofillCrowdsourcingManager* GetCrowdsourcingManager();
@@ -344,8 +346,14 @@ class AutofillClient {
   // Gets the FormDataImporter instance owned by the client.
   virtual FormDataImporter* GetFormDataImporter() = 0;
 
-  // Gets the payments::PaymentsAutofillClient instance owned by the client.
+  // Gets the payments::PaymentsAutofillClient implementation owned by `this`.
+  // On platforms where there exists a payments::PaymentsAutofillClient, the
+  // instance that is returned is an existing payments::PaymentsAutofillClient
+  // that was created upon the AutofillClient implementation's creation. If no
+  // payments::PaymentsAutofillClient exists for a given platform, these
+  // functions will return nullptr.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
+  const payments::PaymentsAutofillClient* GetPaymentsAutofillClient() const;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
@@ -361,11 +369,6 @@ class AutofillClient {
 
   // Gets an AddressNormalizer instance (can be null).
   virtual AddressNormalizer* GetAddressNormalizer() = 0;
-
-  // Gets an AutofillOfferManager instance (can be null for unsupported
-  // platforms).
-  virtual AutofillOfferManager* GetAutofillOfferManager();
-  const AutofillOfferManager* GetAutofillOfferManager() const;
 
   // Returns the last committed url of the primary main frame.
   virtual const GURL& GetLastCommittedPrimaryMainFrameURL() const = 0;
@@ -434,16 +437,6 @@ class AutofillClient {
       const AutofillProfile* original_profile,
       AutofillClient::SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) = 0;
-
-  // Shows the Touch To Fill surface for filling credit card information, if
-  // possible, and returns |true| on success. |delegate| will be notified of
-  // events. `card_acceptabilies` is a boolean list denoting if the virtual
-  // card in `cards_to_suggest` is acceptable on the merchant's platform.
-  // Should be called only if the feature is supported by the platform.
-  virtual bool ShowTouchToFillCreditCard(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilies) = 0;
 
   // Shows the Touch To Fill surface for filling IBAN information, if
   // possible, returning `true` on success. `delegate` will be notified of
@@ -566,36 +559,46 @@ class AutofillClient {
 
   virtual base::span<const AutofillProfile> GetTestAddresses() const;
 
-  // `PasswordFormType` describes the different outcomes of Password Manager's
-  // form parsing heuristics (see `FormDataParser`). Note that these are all
-  // predictions and may be inaccurate.
-  enum class PasswordFormType {
-    // The form is not password-related.
-    kNoPasswordForm = 0,
-    // The form is a predicted to be a login form, i.e. it has a username and a
-    // password field.
-    kLoginForm = 1,
-    // The form is predicted to be a signup form, i.e. it has a username field
-    // and a new password field.
-    kSignupForm = 2,
-    // The form is predicted to be a change password form, i.e. it has a current
-    // password field and a new password field.
-    kChangePasswordForm = 3,
-    // The form is predicted to be a reset password form, i.e. it has a new
-    // password field.
-    kResetPasswordForm = 4,
-    // The form is predicted to be the username form of a username-first flow,
-    // i.e. there is only a username field.
-    kSingleUsernameForm = 5
+  // `PasswordFormClassification` describes the different outcomes of Password
+  // Manager's form parsing heuristics (see `FormDataParser`). Note that these
+  // are all predictions and may be inaccurate.
+  struct PasswordFormClassification {
+    bool operator==(const PasswordFormClassification&) const = default;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    enum class Type {
+      // The form is not password-related.
+      kNoPasswordForm = 0,
+      // The form is a predicted to be a login form, i.e. it has a username and
+      // a
+      // password field.
+      kLoginForm = 1,
+      // The form is predicted to be a signup form, i.e. it has a username field
+      // and a new password field.
+      kSignupForm = 2,
+      // The form is predicted to be a change password form, i.e. it has a
+      // current
+      // password field and a new password field.
+      kChangePasswordForm = 3,
+      // The form is predicted to be a reset password form, i.e. it has a new
+      // password field.
+      kResetPasswordForm = 4,
+      // The form is predicted to be the username form of a username-first flow,
+      // i.e. there is only a username field.
+      kSingleUsernameForm = 5
+    } type = Type::kNoPasswordForm;
+    std::optional<FieldGlobalId> username_field;
   };
   // Returns the heuristics predictions for the renderer form to which
   // `field_id` belongs inside the form with `form_id`. The browser form with
   // `form_id` is decomposed into renderer forms prior to running Password
   // Manager heuristics.
   // If the form cannot be found, `kNoPasswordForm` is returned.
-  virtual PasswordFormType ClassifyAsPasswordForm(AutofillManager& manager,
-                                                  FormGlobalId form_id,
-                                                  FieldGlobalId field_id) const;
+  virtual PasswordFormClassification ClassifyAsPasswordForm(
+      AutofillManager& manager,
+      FormGlobalId form_id,
+      FieldGlobalId field_id) const;
 };
 
 }  // namespace autofill

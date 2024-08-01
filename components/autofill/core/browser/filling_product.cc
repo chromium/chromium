@@ -49,6 +49,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kManageAddress:
       return FillingProduct::kAddress;

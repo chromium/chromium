@@ -2126,7 +2126,7 @@ void Vector<T, InlineCapacity, Allocator>::insert(wtf_size_t position,
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
 void Vector<T, InlineCapacity, Allocator>::InsertAt(T* position, U&& val) {
-  insert(position - begin(), val);
+  insert(base::checked_cast<wtf_size_t>(position - begin()), val);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2134,7 +2134,7 @@ template <typename U>
 void Vector<T, InlineCapacity, Allocator>::InsertAt(T* position,
                                                     const U* data,
                                                     wtf_size_t data_size) {
-  insert(position - begin(), data, data_size);
+  insert(base::checked_cast<wtf_size_t>(position - begin()), data, data_size);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>

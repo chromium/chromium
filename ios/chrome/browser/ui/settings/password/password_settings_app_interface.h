@@ -88,8 +88,7 @@
                                           origin:(NSString*)origin;
 
 // Creates a passkey in the passkey store.
-+ (void)saveExamplePasskeyToStore:(NSString*)credentialId
-                             rpId:(NSString*)rpId
++ (void)saveExamplePasskeyToStore:(NSString*)rpId
                            userId:(NSString*)userId
                          username:(NSString*)username
                   userDisplayName:(NSString*)userDisplayName;

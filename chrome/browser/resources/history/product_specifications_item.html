@@ -70,6 +70,7 @@
     </cr-checkbox>
     <div id="link-container">
       <div id="link" on-click="onLinkClick_"
+          on-keydown="onLinkKeydown_"
           role="link" tabindex="0"
           aria-label="[[getMenuAriaLabel_(item)]]">
         <cr-icon id="history-icon" class="website-icon"

@@ -82,10 +82,13 @@ gfx::Size FillLayout::GetPreferredSize(const View* host,
   gfx::Size result;
 
   bool has_child = false;
+  const SizeBounds new_available_size =
+      include_insets_ ? available_size.Inset(host->GetInsets())
+                      : available_size;
   for (const View* child : host->children()) {
     if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
       has_child = true;
-      result.SetToMax(child->GetPreferredSize(available_size));
+      result.SetToMax(child->GetPreferredSize(new_available_size));
     }
   }
 

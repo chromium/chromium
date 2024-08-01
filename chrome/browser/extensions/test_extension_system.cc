@@ -101,8 +101,9 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
 TestExtensionSystem::~TestExtensionSystem() = default;
 
 void TestExtensionSystem::Shutdown() {
-  if (extension_service_)
+  if (extension_service_) {
     extension_service_->Shutdown();
+  }
   in_process_data_decoder_.reset();
 }
 

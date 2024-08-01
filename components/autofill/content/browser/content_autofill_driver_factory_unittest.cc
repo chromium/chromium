@@ -52,9 +52,11 @@ class MockContentAutofillDriverFactoryObserver
                ContentAutofillDriver& driver),
               (override));
   MOCK_METHOD(void,
-              OnContentAutofillDriverWillBeDeleted,
+              OnContentAutofillDriverStateChanged,
               (ContentAutofillDriverFactory & factory,
-               ContentAutofillDriver& driver),
+               ContentAutofillDriver& driver,
+               AutofillDriver::LifecycleState old_state,
+               AutofillDriver::LifecycleState new_state),
               (override));
 };
 
@@ -69,7 +71,7 @@ class ContentAutofillDriverFactoryTest
   }
 
   ContentAutofillDriverFactory& factory() {
-    return *client()->GetAutofillDriverFactory();
+    return client()->GetAutofillDriverFactory();
   }
 
   void NavigateMainFrame(std::string_view url) {
@@ -312,52 +314,6 @@ TEST_F(ContentAutofillDriverFactoryTest_FencedFrames,
             ContentAutofillDriver::GetForRenderFrameHost(fenced_frame_root));
   EXPECT_NE(nullptr, ContentAutofillDriver::GetForRenderFrameHost(
                          fenced_frame_subframe));
-}
-
-// Tests the notifications of ContentAutofillDriverFactory::Observer.
-class ContentAutofillDriverFactoryTest_Observer
-    : public ContentAutofillDriverFactoryTest {
- public:
-  void SetUp() override {
-    ContentAutofillDriverFactoryTest::SetUp();
-    factory().AddObserver(&observer_);
-  }
-
-  void TearDown() override {
-    if (client()) {
-      factory().RemoveObserver(&observer_);
-    }
-    ContentAutofillDriverFactoryTest::TearDown();
-  }
-
-  MockContentAutofillDriverFactoryObserver observer_;
-};
-
-auto IsKnownDriver(ContentAutofillDriverFactory* factory) {
-  return testing::Truly([](ContentAutofillDriver& driver) {
-    return ContentAutofillDriver::GetForRenderFrameHost(
-               driver.render_frame_host()) == &driver;
-  });
-}
-
-TEST_F(ContentAutofillDriverFactoryTest_Observer, FactoryDestroyed) {
-  EXPECT_CALL(observer_,
-              OnContentAutofillDriverFactoryDestroyed(Ref(factory())));
-  DeleteContents();
-}
-
-TEST_F(ContentAutofillDriverFactoryTest_Observer, DriverCreated) {
-  EXPECT_CALL(observer_, OnContentAutofillDriverCreated(
-                             Ref(factory()), IsKnownDriver(&factory())));
-  NavigateMainFrame("https://a.com/");
-}
-
-TEST_F(ContentAutofillDriverFactoryTest_Observer, DriverDeleted) {
-  EXPECT_CALL(observer_, OnContentAutofillDriverCreated);
-  EXPECT_CALL(observer_, OnContentAutofillDriverWillBeDeleted(
-                             Ref(factory()), IsKnownDriver(&factory())));
-  NavigateMainFrame("https://a.com/");
-  factory().RenderFrameDeleted(main_rfh());
 }
 
 }  // namespace autofill

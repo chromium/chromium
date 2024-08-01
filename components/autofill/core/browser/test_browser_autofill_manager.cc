@@ -32,10 +32,7 @@ TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
       std::make_unique<TestFormFiller>(*this, log_manager(), "en-US"));
 }
 
-TestBrowserAutofillManager::~TestBrowserAutofillManager() {
-  test_api(*this).SetLifecycleState(
-      AutofillManager::LifecycleState::kPendingDeletion);
-}
+TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
 void TestBrowserAutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
@@ -259,6 +256,10 @@ void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
     TestAutofillClient& client,
     bool autofill_payment_methods_enabled) {
   autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+  if (PrefService* prefs = client.GetPrefs()) {
+    prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                      autofill_payment_methods_enabled);
+  }
   if (!autofill_payment_methods_enabled) {
     // Credit card data is refreshed when this pref is changed.
     client.GetPersonalDataManager()

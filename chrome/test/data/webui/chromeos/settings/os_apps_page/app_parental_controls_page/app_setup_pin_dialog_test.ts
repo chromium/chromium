@@ -136,7 +136,7 @@ suite('AppSetupPinDialogElementTest', () => {
 
         const confirmButton = getActionButton();
         assertEquals(confirmButton.textContent, 'Confirm');
-        assertFalse(continueButton.disabled);
+        assertTrue(confirmButton.disabled);
       });
 
   test('Submitting an invalid PIN records error to histogram', async () => {

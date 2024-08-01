@@ -4575,6 +4575,13 @@ public class AwContents implements SmartClipProvider {
                 setFunctor(newFunctor);
             }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_FRAME_RATE_HINTS)) {
+                float velocity =
+                        AwContentsJni.get().getVelocityInPixelsPerSecond(mNativeAwContents);
+                mContainerView.setFrameContentVelocity(velocity);
+            }
+
             mScrollOffsetManager.syncScrollOffsetFromOnDraw();
             int scrollX = mContainerView.getScrollX();
             int scrollY = mContainerView.getScrollY();
@@ -5034,6 +5041,8 @@ public class AwContents implements SmartClipProvider {
                 int visibleRight,
                 int visibleBottom,
                 boolean forceAuxiliaryBitmapRendering);
+
+        float getVelocityInPixelsPerSecond(long nativeAwContents);
 
         boolean needToDrawBackgroundColor(long nativeAwContents);
 

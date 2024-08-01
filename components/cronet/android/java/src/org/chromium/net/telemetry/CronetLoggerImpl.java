@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.impl.CronetLogger;
 
 import java.util.List;
@@ -201,8 +202,13 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getReadCount(),
                     trafficInfo.getOnUploadReadCount(),
                     OptionalBoolean.fromBoolean(trafficInfo.getIsBidiStream()).getValue(),
-                    OptionalBoolean.fromBoolean(trafficInfo.getFinalUserCallbackThrew())
-                            .getValue());
+                    OptionalBoolean.fromBoolean(trafficInfo.getFinalUserCallbackThrew()).getValue(),
+                    trafficInfo.getUid(),
+                    trafficInfo.getNetworkInternalErrorCode(),
+                    trafficInfo.getQuicErrorCode(),
+                    convertToProtoConnectionCloseSource(trafficInfo.getConnectionCloseSource()),
+                    convertToProtoFailureReason(trafficInfo.getFailureReason()),
+                    OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);
@@ -214,6 +220,33 @@ public class CronetLoggerImpl extends CronetLogger {
                                 cronetEngineId, e.getMessage()));
             }
         }
+    }
+
+    private static int convertToProtoFailureReason(
+            CronetTrafficInfo.RequestFailureReason failureReason) {
+        switch (failureReason) {
+            case NETWORK:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__FAILURE_REASON__FAILURE_REASON_NETWORK;
+            case OTHER:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__FAILURE_REASON__FAILURE_REASON_OTHER;
+            default:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__FAILURE_REASON__FAILURE_REASON_UNKNOWN;
+        }
+    }
+
+    private static int convertToProtoConnectionCloseSource(@ConnectionCloseSource int source) {
+        switch (source) {
+            case ConnectionCloseSource.SELF:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__QUIC_CONNECTION_CLOSE_SOURCE__CONNECTION_CLOSE_SELF;
+            case ConnectionCloseSource.PEER:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__QUIC_CONNECTION_CLOSE_SOURCE__CONNECTION_CLOSE_PEER;
+        }
+        return CronetStatsLog
+                .CRONET_TRAFFIC_REPORTED__QUIC_CONNECTION_CLOSE_SOURCE__CONNECTION_CLOSE_UNKNOWN;
     }
 
     private static int convertToProtoCronetEngineBuilderInitializedAuthor(

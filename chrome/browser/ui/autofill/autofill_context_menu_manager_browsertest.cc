@@ -1113,8 +1113,11 @@ IN_PROC_BROWSER_TEST_F(
       /*expected_bucket_count=*/1);
 
   // Hide the password generation popup to avoid the test crashing.
-  ChromePasswordManagerClient::FromWebContents(web_contents())
-      ->PasswordGenerationRejectedByTyping();
+  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents());
+  client->SetCurrentTargetFrameForTesting(
+      web_contents()->GetPrimaryMainFrame());
+  client->PasswordGenerationRejectedByTyping();
+  client->SetCurrentTargetFrameForTesting(nullptr);
 }
 
 enum class PasswordDatabaseEntryType {

@@ -1790,6 +1790,30 @@ class AutotestPrivateStopFrameCountingFunction : public ExtensionFunction {
   void OnDataReceived(viz::mojom::FrameCountingDataPtr data_ptr);
 };
 
+class AutotestPrivateStartOverdrawTrackingFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateStartOverdrawTrackingFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.startOverdrawTracking",
+                             AUTOTESTPRIVATE_STARTOVERDRAWTRACKING)
+
+ private:
+  ~AutotestPrivateStartOverdrawTrackingFunction() override;
+  ResponseAction Run() override;
+};
+
+class AutotestPrivateStopOverdrawTrackingFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateStopOverdrawTrackingFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.stopOverdrawTracking",
+                             AUTOTESTPRIVATE_STOPOVERDRAWTRACKING)
+
+ private:
+  ~AutotestPrivateStopOverdrawTrackingFunction() override;
+  ResponseAction Run() override;
+
+  void OnDataReceived(viz::mojom::OverdrawDataPtr data_ptr);
+};
+
 class AutotestPrivateInstallBruschettaFunction : public ExtensionFunction {
  public:
   AutotestPrivateInstallBruschettaFunction();

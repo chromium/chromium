@@ -27,8 +27,9 @@ constexpr unsigned int kExtraTopBorder = 3;
 BrowserFrameViewLayoutLinux::BrowserFrameViewLayoutLinux() = default;
 BrowserFrameViewLayoutLinux::~BrowserFrameViewLayoutLinux() = default;
 
-gfx::Insets BrowserFrameViewLayoutLinux::MirroredFrameBorderInsets() const {
-  auto border = FrameBorderInsets(false);
+gfx::Insets BrowserFrameViewLayoutLinux::RestoredMirroredFrameBorderInsets()
+    const {
+  auto border = RestoredFrameBorderInsets();
   return base::i18n::IsRTL() ? gfx::Insets::TLBR(border.top(), border.right(),
                                                  border.bottom(), border.left())
                              : border;

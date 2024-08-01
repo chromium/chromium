@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -121,7 +122,9 @@ class CommerceUiTabHelper
   // A notification that the price tracking icon was clicked.
   void OnPriceTrackingIconClicked();
 
-  // A notification that the coupon code in the Discounts bubble is copied.
+  // TODO(b/355566609): Expose the DiscountsPageActionController getter instead
+  // of the discount related methods below.
+  //  A notification that the coupon code in the Discounts bubble is copied.
   void OnDiscountsCouponCodeCopied();
   // Return whether the coupon code is copied. This will reset the copied
   // status.
@@ -130,6 +133,7 @@ class CommerceUiTabHelper
   // |discount_id|.
   virtual bool ShouldAutoShowDiscountsBubble(uint64_t discount_id,
                                              bool is_merchant_wide);
+  void DiscountsBubbleShown(uint64_t discount_id);
 
   PriceTrackingPageActionController* GetPriceTrackingControllerForTesting();
 
@@ -256,6 +260,8 @@ class CommerceUiTabHelper
   // indicates that |page_action_to_expand_| was read by the UI and lets us keep
   // track of which page action actually expanded.
   std::optional<PageActionIconType> page_action_expanded_;
+
+  base::TimeTicks page_action_icon_compute_start_time_;
 
   // The price insights icon label type for the current page load.
   PriceInsightsIconView::PriceInsightsIconLabelType price_insights_label_type_ =

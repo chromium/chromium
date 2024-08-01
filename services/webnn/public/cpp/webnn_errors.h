@@ -130,7 +130,7 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
                                 SupportedDataTypes supported_types);
 
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    GetLabelErrorSuffix(std::string_view label);
+    GetErrorLabelPrefix(std::string_view label);
 
 }  // namespace webnn
 

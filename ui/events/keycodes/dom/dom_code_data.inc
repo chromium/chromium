@@ -106,12 +106,14 @@ DOM_CODE_DECLARATION {
 
   // Sleep could be encoded as USB#0c0032, but there's no corresponding WakeUp
   // in the 0x0c USB page.
-  //            USB     evdev    XKB     Win     Mac
+  //            USB     evdev    XKB     Win   Mac
   DOM_CODE(0x010082, 0x008e, 0x0096, 0xe05f, 0xffff, "Sleep", SLEEP), // SystemSleep
   DOM_CODE(0x010083, 0x008f, 0x0097, 0xe063, 0xffff, "WakeUp", WAKE_UP),
   DOM_CODE(0x010097, 0x01d0, 0x01d8, 0x0000, 0xffff, "Fn", FN),
   DOM_CODE(0x0100a9, 0x00f8, 0x0100, 0x0000, 0xffff, NULL,
              MICROPHONE_MUTE_TOGGLE),  // Microphone Mute Toggle
+  DOM_CODE(0x0100aa, 0x024e, 0x0256, 0x0000, 0xffff, NULL,
+             ACCESSIBILITY),  // System Accessibility Binding
   DOM_CODE(0x0100b5, 0x00e3, 0x00eb, 0x0000, 0xffff, "DisplayToggleIntExt",
              DISPLAY_TOGGLE_INT_EXT),  // System Display Toggle Int/Ext
 

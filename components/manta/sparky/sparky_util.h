@@ -6,6 +6,7 @@
 #define COMPONENTS_MANTA_SPARKY_SPARKY_UTIL_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/component_export.h"
@@ -91,6 +92,12 @@ DialogTurn COMPONENT_EXPORT(MANTA)
 void COMPONENT_EXPORT(MANTA)
     AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
                              proto::SparkyContextData* sparky_context_proto);
+
+void COMPONENT_EXPORT(MANTA) AddFilesData(base::span<const FileData> files_data,
+                                          proto::FilesData* files_proto);
+
+std::set<std::string> COMPONENT_EXPORT(MANTA)
+    GetSelectedFilePaths(const proto::FileRequest& file_request);
 
 }  // namespace manta
 

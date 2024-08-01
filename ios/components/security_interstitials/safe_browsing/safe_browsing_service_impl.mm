@@ -125,6 +125,15 @@ void SafeBrowsingServiceImpl::Initialize(
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Enhanced.RegularProfile",
                         prefs->GetBoolean(prefs::kSafeBrowsingEnhanced));
   safe_browsing::RecordExtendedReportingMetrics(*prefs);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kExtendedReportingRemovePrefDependency)) {
+    prefs->SetBoolean(
+        prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated,
+        prefs->GetBoolean(prefs::kSafeBrowsingScoutReportingEnabled));
+  } else {
+    prefs->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated,
+                      false);
+  }
   UpdateSafeBrowsingEnabledState();
   if (safe_browsing_metrics_collector)
     safe_browsing_metrics_collector->StartLogging();

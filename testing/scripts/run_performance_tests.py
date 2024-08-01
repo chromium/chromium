@@ -55,6 +55,7 @@ import six
 from collections import OrderedDict
 
 CHROMIUM_SRC_DIR = pathlib.Path(__file__).absolute().parents[2]
+RELEASE_DIR = CHROMIUM_SRC_DIR / 'out/Release'
 
 PERF_DIR = CHROMIUM_SRC_DIR / 'tools/perf'
 sys.path.append(str(PERF_DIR))
@@ -76,7 +77,8 @@ import xvfb
 import test_env
 from scripts import common
 
-CATAPULT_DIR = CHROMIUM_SRC_DIR / 'third_party/catapult'
+THIRD_PARTY_DIR = CHROMIUM_SRC_DIR / 'third_party'
+CATAPULT_DIR = THIRD_PARTY_DIR / 'catapult'
 TELEMETRY_DIR = CATAPULT_DIR / 'telemetry'
 if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   # Telemetry is required on perf infra, but not present on some environments.
@@ -89,6 +91,8 @@ else:
 
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
+ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
+PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
 
 # See https://crbug.com/923564.
@@ -678,13 +682,15 @@ class CrossbenchTest(object):
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
   CHROME_BROWSER = '--browser=%s'
+  ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
     browser_arg = self._get_browser_arg(options.passthrough_args)
-    self._find_desktop_browser(browser_arg)
+    self.is_android = self._is_android(browser_arg)
+    self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
 
   def _get_browser_arg(self, args):
@@ -693,26 +699,47 @@ class CrossbenchTest(object):
       raise ValueError('Expects exactly one --browser=... arg on command line')
     return browser_args[0].split('=', 1)[1]
 
-  # TODO: Implement similar method for Android.
-  def _find_desktop_browser(self, browser_arg):
+  def _is_android(self, browser_arg):
+    """Is the test running on an Android device.
+
+    See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
+    """
+    return browser_arg.lower().startswith('android')
+
+  def _find_browser(self, browser_arg):
     if '/' in browser_arg or '\\' in browser_arg:
       # The --browser arg looks like a path. Use it as-is.
       self.browser = self.CHROME_BROWSER % browser_arg
       return
     options = browser_options.BrowserFinderOptions()
+    options.chrome_root = CHROMIUM_SRC_DIR
     parser = options.CreateParser()
     binary_manager.InitDependencyManager(None)
     parser.parse_args([self.CHROME_BROWSER % browser_arg])
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
       raise ValueError(f'Unable to find Chrome browser of type: {browser_arg}')
-    self.browser = self.CHROME_BROWSER % possible_browser._local_executable
+    if self.is_android:
+      browser_app = possible_browser.settings.package
+      android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
+      self.browser = self.CHROME_BROWSER % android_json
+
+      # Using WPR because of lack of network access on lab Android phones.
+      # TODO: Use update_wpr library when it supports Crossbench archive files.
+      archive = PAGE_SETS_DATA / 'crossbench_android_speedometer_3.0_000.wprgo'
+      if not (wpr_go := binary_manager.FetchPath(
+          'wpr_go', os_name='linux', arch='x86_64')):
+        raise ValueError(f'wpr_go not found: {wpr_go}')
+      wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"{wpr_go}"}}'
+      self.network = [f'--network={wpr_config}']
+    else:
+      self.browser = self.CHROME_BROWSER % possible_browser._local_executable
 
   def _find_chromedriver(self, browser_arg):
     browser_arg = browser_arg.lower()
     if browser_arg == 'release_x64':
       path = '../Release_x64'
-    elif browser_arg.startswith('android'):
+    elif self.is_android:
       path = 'clang_x64'
     else:
       path = '.'
@@ -725,17 +752,20 @@ class CrossbenchTest(object):
     return []
 
   def _get_default_args(self):
-    return [
+    default_args = [
         '--no-symlinks',
-        '--enable-field-trial-config',
         # Required until crbug/41491492 and crbug/346323630 are fixed.
         '--enable-features=DisablePrivacySandboxPrompts',
     ]
+    if not self.is_android:
+      # See http://shortn/_xGSaVM9P5g
+      default_args.append('--enable-field-trial-config')
+    return default_args
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return ([sys.executable] + [self.options.executable] + [benchmark] +
             [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
-            self.driver_path_arg + self._get_default_args())
+            self.driver_path_arg + self.network + self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,

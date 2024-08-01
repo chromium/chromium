@@ -580,6 +580,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "UsbDeviceManager",
     "UsbDeviceResourceManager",
     "UserCloudPolicyInvalidator",
+    "UserFmRegistrationTokenUploader",
     "UserPolicySigninService",
 #if !BUILDFLAG(IS_ANDROID)
     "VisualQuerySuggestionsService",

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Blob URL shouldn't be fetched from a cross-partition iframe
+  promise_test: Unhandled rejection with value: "Blob URL was fetched in not-same-top-level-site iframe: Fetch succeeded"
+[FAIL] Blob URL shouldn't be fetched from a cross-partition dedicated worker
+  promise_test: Unhandled rejection with value: "Blob URL was fetched in not-same-top-level-site dedicated worker: Fetch succeeded"
+[FAIL] Blob URL shouldn't be fetched from a cross-partition shared worker
+  promise_test: Unhandled rejection with value: "Blob URL was fetched in not-same-top-level-site shared worker: Fetch succeeded"
+[FAIL] Blob URL shouldn't be fetched from a cross-partition service worker
+  promise_test: Unhandled rejection with value: "Blob URL was fetched in not-same-top-level-site service worker: Fetch succeeded"
+Harness: the test ran to completion.
+

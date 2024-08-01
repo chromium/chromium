@@ -100,6 +100,14 @@ enum class MemtagMode {
   kAsync,
 };
 
+enum class RetagMode {
+  // Allocations are retagged by incrementing the current tag.
+  kIncrement,
+
+  // Allocations are retagged with a random tag.
+  kRandom,
+};
+
 enum class MemoryTaggingEnabledProcesses {
   // Memory tagging enabled only in the browser process.
   kBrowserOnly,
@@ -139,6 +147,7 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
 extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
+extern const BASE_EXPORT base::FeatureParam<RetagMode> kRetagModeParam;
 extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
     kMemoryTaggingEnabledProcessesParam;
 // Kill switch for memory tagging. Skips any code related to memory tagging when

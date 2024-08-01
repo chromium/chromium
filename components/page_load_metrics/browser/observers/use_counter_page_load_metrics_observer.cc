@@ -410,6 +410,12 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kAbortSignalAny, WebDXFeature::kAbortsignalAny},
           {WebFeature::kNavigationAPI, WebDXFeature::kNavigation},
           {WebFeature::kMathMLMathElement, WebDXFeature::kMathml},
+          {WebFeature::kCanvasRenderingContext2DConicGradient,
+           WebDXFeature::kCanvasCreateconicgradient},
+          {WebFeature::kCanvasRenderingContext2DReset,
+           WebDXFeature::kCanvasReset},
+          {WebFeature::kCanvasRenderingContext2DRoundRect,
+           WebDXFeature::kCanvasRoundrect},
       });
 
   return *kMap;

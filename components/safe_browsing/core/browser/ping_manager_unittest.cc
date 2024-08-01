@@ -39,6 +39,8 @@ using ::testing::_;
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 class FakeSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
  public:
   void LaunchRedWarningSurvey(
@@ -220,13 +222,11 @@ void PingManagerTest::RunReportThreatDetailsTest(
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_EQ(GetUploadData(request), expected_report_content);
-        std::string header_value;
-        bool found_header = request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &header_value);
-        EXPECT_EQ(found_header, expect_access_token);
-        if (expect_access_token) {
-          EXPECT_EQ(header_value, "Bearer " + access_token);
-        }
+        EXPECT_THAT(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            testing::Conditional(expect_access_token,
+                                 testing::Optional("Bearer " + access_token),
+                                 std::nullopt));
         EXPECT_EQ(request.credentials_mode,
                   expect_cookies_removed
                       ? network::mojom::CredentialsMode::kOmit

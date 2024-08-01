@@ -46,12 +46,6 @@ constexpr inline IfEnum<EnumType, bool> ContainsFlags(EnumType superset,
   return (superset & subset) == subset;
 }
 
-// Removes flags `target` from `from`.
-template <typename EnumType>
-constexpr inline IfEnum<EnumType> RemoveFlags(EnumType from, EnumType target) {
-  return from & ~target;
-}
-
 // A macro to define binary arithmetic over `EnumType`.
 // Use inside `namespace partition_alloc::internal`.
 #define PA_DEFINE_OPERATORS_FOR_FLAGS(EnumType)                              \

@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"

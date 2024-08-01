@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -48,6 +49,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view_class_properties.h"
 
@@ -264,24 +266,35 @@ class MonitoringWarningView : public NonAccessibleView {
       : NonAccessibleView(kMonitoringWarningClassName),
         warning_type_(WarningType::kNone) {
     const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-    image_ = new views::ImageView();
-    image_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kWarningIcon,
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                 : kColorAshIconColorWarning,
-        kMonitoringWarningIconSizeDp));
-    image_->SetVisible(false);
-    AddChildView(image_.get());
 
     const std::u16string label_text = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_WARNING);
-    label_ = CreateLabel(
-        label_text,
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                 : kColorAshTextColorPrimary);
-    label_->SetMultiLine(true);
-    label_->SetLineHeight(kTextLineHeightDp);
-    AddChildView(label_.get());
+    views::Builder<views::View>(this)
+        .SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::LayoutOrientation::kVertical, gfx::Insets(),
+            kSpacingBetweenMonitoringWarningIconAndLabelDp))
+        .AddChildren(
+            views::Builder<views::ImageView>()
+                .CopyAddressTo(&image_)
+                .SetVisible(false)
+                .SetImage(ui::ImageModel::FromVectorIcon(
+                    vector_icons::kWarningIcon,
+                    is_jelly ? static_cast<ui::ColorId>(
+                                   cros_tokens::kCrosSysOnSurface)
+                             : kColorAshIconColorWarning,
+                    kMonitoringWarningIconSizeDp)),
+            views::Builder<views::View>()
+                .CopyAddressTo(&placeholder_)
+                .SetPreferredSize(gfx::Size(0, kMonitoringWarningIconSizeDp)),
+            views::Builder<views::Label>(
+                base::WrapUnique(CreateLabel(
+                    label_text, is_jelly ? static_cast<ui::ColorId>(
+                                               cros_tokens::kCrosSysOnSurface)
+                                         : kColorAshTextColorPrimary)))
+                .SetMultiLine(true)
+                .CopyAddressTo(&label_)
+                .SetLineHeight(kTextLineHeightDp))
+        .BuildChildren();
   }
 
   enum class WarningType { kNone, kSoftWarning, kFullWarning };
@@ -301,32 +314,6 @@ class MonitoringWarningView : public NonAccessibleView {
 
   ~MonitoringWarningView() override = default;
 
-  // TODO(crbug.com/41295639): MonitoringWarningview is effectively laid out as
-  // BoxLayout with kSpacingBetweenMonitoringWarningIconAndLabelDp spacing
-  // between its two child views. However, horizontal BoxLayout and FlexLayout
-  // do not handle views that override GetHeightForWidth well, so it's
-  // implemented ad-hoc here.
-  int GetHeightForWidth(int w) const override {
-    return image_->GetPreferredSize().height() +
-           kSpacingBetweenMonitoringWarningIconAndLabelDp +
-           label_->GetHeightForWidth(w);
-  }
-
-  void Layout(PassKey) override {
-    int y = 0;
-
-    image_->SizeToPreferredSize();
-    image_->SetPosition(gfx::Point{0, y});
-    y = image_->bounds().bottom();
-
-    y += kSpacingBetweenMonitoringWarningIconAndLabelDp;
-
-    int label_height = label_->GetHeightForWidth(size().width());
-    label_->SetSize(gfx::Size{size().width(), label_height});
-    label_->SetPosition(gfx::Point{0, y});
-    y = label_->bounds().bottom();
-  }
-
  private:
   void UpdateLabel() {
     // Call sequence of UpdateForUser() and SetWarningType() is not clear.
@@ -341,11 +328,13 @@ class MonitoringWarningView : public NonAccessibleView {
           IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING,
           base::UTF8ToUTF16(device_manager_.value()));
       image_->SetVisible(true);
+      placeholder_->SetVisible(false);
     } else {
       label_text = l10n_util::GetStringFUTF16(
           IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING,
           base::UTF8ToUTF16(device_manager_.value()));
       image_->SetVisible(false);
+      placeholder_->SetVisible(true);
     }
     label_->SetText(label_text);
     InvalidateLayout();
@@ -357,6 +346,7 @@ class MonitoringWarningView : public NonAccessibleView {
   WarningType warning_type_;
   std::optional<std::string> device_manager_;
   raw_ptr<views::ImageView> image_;
+  raw_ptr<views::View> placeholder_;
   raw_ptr<views::Label> label_;
 };
 

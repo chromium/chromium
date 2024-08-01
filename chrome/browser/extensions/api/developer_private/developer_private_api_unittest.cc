@@ -78,6 +78,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace extensions {
 
@@ -709,19 +710,24 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-
   base::FilePath expected_dir_path =
       data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(expected_dir_path);
+  base::FilePath expected_file_path =
+      data_dir().AppendASCII("simple_with_popup.pem");
 
   // Try selecting a directory.
-  base::Value::List choose_args;
-  choose_args.Append("FOLDER");
-  choose_args.Append("LOAD");
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  function->set_accept_dialog_for_testing(true);
+  function->set_selected_file_for_testing(
+      ui::SelectedFileInfo(expected_dir_path));
+  base::Value::List choose_args;
+  choose_args.Append("FOLDER");
+  choose_args.Append("LOAD");
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
+
+  // Verify directory was properly chosen.
   std::string path;
   const base::Value::List* result_list = function->GetResultListForTest();
   ASSERT_TRUE(result_list);
@@ -731,15 +737,17 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   EXPECT_EQ(path, expected_dir_path.AsUTF8Unsafe());
 
   // Try selecting a pem file.
-  base::FilePath expected_file_path =
-      data_dir().AppendASCII("simple_with_popup.pem");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(expected_file_path);
+  function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  function->set_accept_dialog_for_testing(true);
+  function->set_selected_file_for_testing(
+      ui::SelectedFileInfo(expected_file_path));
   choose_args.clear();
   choose_args.Append("FILE");
   choose_args.Append("PEM");
-  function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
-  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
+
+  // Verify pem file was properly chosen.
   result_list = function->GetResultListForTest();
   ASSERT_TRUE(result_list);
   ASSERT_GT(result_list->size(), 0u);
@@ -748,10 +756,12 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   EXPECT_EQ(path, expected_file_path.AsUTF8Unsafe());
 
   // Try canceling the file dialog.
-  api::EntryPicker::SkipPickerAndAlwaysCancelForTest();
   function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  function->set_accept_dialog_for_testing(false);
   EXPECT_FALSE(RunFunction(function, choose_args));
+
+  // Verify function returns an error.
   EXPECT_EQ(std::string("File selection was canceled."), function->GetError());
 }
 
@@ -759,19 +769,33 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  ExtensionIdSet current_ids = registry()->enabled_extensions().GetIDs();
 
-  base::FilePath path = data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
-
-  // Try loading a good extension (it should succeed, and the extension should
-  // be added).
+  // Try loading an extension and canceling the dialog.
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+  function->set_accept_dialog_for_testing(false);
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-  ExtensionIdSet current_ids = registry()->enabled_extensions().GetIDs();
+  EXPECT_FALSE(RunFunction(function, base::Value::List()));
+
+  // Function should fail and no new extensions are installed.
+  // NOTE: This isn't really an error, but we kept it like this for backward
+  // compatibility.
+  EXPECT_EQ("File selection was canceled.", function->GetError());
+  EXPECT_EQ(0u, base::STLSetDifference<ExtensionIdSet>(
+                    registry()->enabled_extensions().GetIDs(), current_ids)
+                    .size());
+
+  // Try loading a good extension and accepting the dialog.
+  function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+  base::FilePath path = data_dir().AppendASCII("simple_with_popup");
+  function->set_accept_dialog_for_testing(true);
+  function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+
+  // Function should succeed and extension is added.
   EXPECT_TRUE(RunFunction(function, base::Value::List()))
       << function->GetError();
-  // We should have added one new extension.
   ExtensionIdSet id_difference = base::STLSetDifference<ExtensionIdSet>(
       registry()->enabled_extensions().GetIDs(), current_ids);
   ASSERT_EQ(1u, id_difference.size());
@@ -780,11 +804,11 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
       path,
       registry()->enabled_extensions().GetByID(*id_difference.begin())->path());
 
-  path = data_dir().AppendASCII("empty_manifest");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
-
-  // Try loading a bad extension (it should fail, and we should get an error).
+  // Try loading a bad extension and accepting the dialog.
   function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+  path = data_dir().AppendASCII("empty_manifest");
+  function->set_accept_dialog_for_testing(true);
+  function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   base::Value::List unpacked_args;
   base::Value::Dict options;
@@ -792,8 +816,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   unpacked_args.Append(std::move(options));
   current_ids = registry()->enabled_extensions().GetIDs();
   EXPECT_FALSE(RunFunction(function, unpacked_args));
+
+  // Function should fail and no new extensions are installed.
   EXPECT_EQ(manifest_errors::kManifestUnreadable, function->GetError());
-  // We should have no new extensions installed.
   EXPECT_EQ(0u, base::STLSetDifference<ExtensionIdSet>(
                     registry()->enabled_extensions().GetIDs(),
                     current_ids).size());
@@ -814,15 +839,17 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
              "manifest_version": 2
            })");
     base::FilePath path = dir.UnpackedPath();
-    api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
+
     // The loadError result should be populated.
     ASSERT_TRUE(result);
     std::optional<api::developer_private::LoadError> error =
@@ -841,10 +868,11 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
     // Load an extension with no manifest.
     TestExtensionDir dir;
     base::FilePath path = dir.UnpackedPath();
-    api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -873,10 +901,11 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
              "manifest_version": 2
            })");
     base::FilePath path = dir.UnpackedPath();
-    api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -902,7 +931,6 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
            "manifest_version": 2
          })");
   base::FilePath path = dir.UnpackedPath();
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
   DeveloperPrivateAPI::UnpackedRetryId retry_guid;
   {
@@ -910,6 +938,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     // retry id populated.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -930,6 +960,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     // just retries continuously.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -955,10 +987,11 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
              "manifest_version": 2
            })");
     base::FilePath second_path = second_dir.UnpackedPath();
-    api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(second_path);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(second_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -984,12 +1017,13 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
   // Set the picker to choose an invalid path (the picker should be skipped if
   // we supply a retry id).
   base::FilePath empty_path;
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(empty_path);
 
   {
     // Try reloading the extension by supplying the retry id. It should succeed.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(empty_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     TestExtensionRegistryObserver observer(registry());
     api_test_utils::RunFunction(function.get(),
@@ -1008,6 +1042,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     // Try supplying an invalid retry id. It should fail with an error.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(empty_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
@@ -1046,7 +1082,6 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
   TestExtensionDir dir;
   dir.WriteManifest(kGoodManifest);
   base::FilePath path = dir.UnpackedPath();
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
   scoped_refptr<const Extension> extension;
   {
@@ -1130,6 +1165,8 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
     // and the extension should be enabled again.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     TestExtensionRegistryObserver observer(registry());
     std::string args =
@@ -1169,11 +1206,6 @@ TEST_F(DeveloperPrivateApiUnitTest,
     api_test_utils::RunFunction(function.get(), "[]", profile());
   }
 
-  // Set the picker to choose an invalid path (the picker should be skipped if
-  // we supply a retry id).
-  base::FilePath empty_path;
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(empty_path);
-
   constexpr char kLoadUnpackedArgs[] =
       R"([{"failQuietly": true,
            "populateError": true,
@@ -1183,7 +1215,13 @@ TEST_F(DeveloperPrivateApiUnitTest,
     // Try reloading the extension by supplying the retry id. It should succeed.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    // Set file picker dialog to be accepted with an invalid path (the dialog
+    // should be skipped if we supply a retry id).
+    base::FilePath empty_path;
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(empty_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+
     TestExtensionRegistryObserver observer(registry());
     api_test_utils::RunFunction(function.get(), kLoadUnpackedArgs, profile());
     scoped_refptr<const Extension> extension =
@@ -1213,6 +1251,11 @@ TEST_F(DeveloperPrivateApiUnitTest,
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+    // Set file picker dialog to be accepted with an invalid path (the dialog
+    // should be skipped if we supply a retry id).
+    base::FilePath empty_path;
+    function->set_accept_dialog_for_testing(true);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(empty_path));
     TestExtensionRegistryObserver observer(registry());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1224,7 +1267,6 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Cleanup.
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
       SetDropPathForTesting(nullptr);
-  api::EntryPicker::StopSkippingPickerForTest();
 }
 
 // Test developerPrivate.requestFileSource.
@@ -1431,14 +1473,13 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithoutDevMode) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
 
-  base::FilePath path = data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
-
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kExtensionsUIDeveloperMode, false);
+
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), "[]", profile());
   EXPECT_THAT(error, testing::HasSubstr("developer mode"));
@@ -1449,29 +1490,24 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
 
-  base::FilePath path = data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
-
   {
     ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
         pref_updater(testing_profile()->GetTestingPrefService());
     pref_updater.SetBlocklistedByDefault(true);
   }
-  EXPECT_TRUE(
-      ExtensionManagementFactory::GetForBrowserContext(browser_context())
-          ->BlocklistedByDefault());
 
-  EXPECT_FALSE(
-      ExtensionManagementFactory::GetForBrowserContext(browser_context())
-          ->HasAllowlistedExtension());
+  auto* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context());
+  EXPECT_TRUE(extension_management->BlocklistedByDefault());
+  EXPECT_FALSE(extension_management->HasAllowlistedExtension());
 
   auto info = DeveloperPrivateAPI::CreateProfileInfo(testing_profile());
-
   EXPECT_FALSE(info->can_load_unpacked);
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), "[]", profile());
   EXPECT_THAT(error, testing::HasSubstr("policy"));
@@ -1481,9 +1517,6 @@ TEST_F(DeveloperPrivateApiUnitTest,
        LoadUnpackedWorksWithBlocklistingPolicyAlongAllowlistingPolicy) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-
-  base::FilePath path = data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
   {
     ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
@@ -3128,7 +3161,6 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
   if (extensions_permissions_for_supervised_users_on_desktop()) {
     EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(

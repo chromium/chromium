@@ -6,14 +6,24 @@
 
 #include <map>
 #include <memory>
+#include <set>
+#include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "net/base/completion_once_callback.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/log/net_log_with_source.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/spdy/spdy_http_stream.h"
+#include "net/spdy/spdy_session.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -21,6 +31,8 @@ namespace net {
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
     : http_network_session_(http_network_session),
+      stream_attempt_params_(
+          StreamAttemptParams::FromHttpNetworkSession(http_network_session_)),
       cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
   CHECK(http_network_session_);
   if (cleanup_on_ip_address_change) {
@@ -36,6 +48,26 @@ HttpStreamPool::~HttpStreamPool() {
   if (cleanup_on_ip_address_change_) {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
   }
+}
+
+std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
+    HttpStreamRequest::Delegate* delegate,
+    const HttpStreamKey& stream_key,
+    RequestPriority priority,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    bool enable_ip_based_pooling,
+    const NetLogWithSource& net_log) {
+  return GetOrCreateGroup(stream_key)
+      .RequestStream(delegate, priority, allowed_bad_certs,
+                     enable_ip_based_pooling, net_log);
+}
+
+int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
+                               size_t num_streams,
+                               CompletionOnceCallback callback) {
+  CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
+  return GetOrCreateGroup(stream_key)
+      .Preconnect(num_streams, std::move(callback));
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {
@@ -63,9 +95,9 @@ void HttpStreamPool::IncrementTotalConnectingStreamCount() {
   ++total_connecting_stream_count_;
 }
 
-void HttpStreamPool::DecrementTotalConnectingStreamCount() {
-  CHECK_GT(total_connecting_stream_count_, 0u);
-  --total_connecting_stream_count_;
+void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
+  CHECK_GE(total_connecting_stream_count_, amount);
+  total_connecting_stream_count_ -= amount;
 }
 
 void HttpStreamPool::OnIPAddressChanged() {
@@ -94,6 +126,12 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
     }
   }
   ProcessPendingRequestsInGroups();
+}
+
+void HttpStreamPool::OnGroupComplete(Group* group) {
+  auto it = groups_.find(group->stream_key());
+  CHECK(it != groups_.end());
+  groups_.erase(it);
 }
 
 bool HttpStreamPool::IsPoolStalled() {
@@ -130,8 +168,10 @@ HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
     const HttpStreamKey& stream_key) {
   auto it = groups_.find(stream_key);
   if (it == groups_.end()) {
-    it = groups_.try_emplace(it, stream_key,
-                             std::make_unique<Group>(this, stream_key));
+    SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+    it = groups_.try_emplace(
+        it, stream_key,
+        std::make_unique<Group>(this, stream_key, std::move(spdy_session_key)));
   }
   return *it->second;
 }

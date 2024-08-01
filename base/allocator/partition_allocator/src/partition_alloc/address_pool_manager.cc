@@ -556,7 +556,7 @@ void AddressPoolManager::DumpStats(AddressSpaceStatsDumper* dumper) {
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 // This function just exists to static_assert the layout of the private fields
-// in Pool.
+// in Pool. It is never called.
 void AddressPoolManager::AssertThreadIsolatedLayout() {
   constexpr size_t last_pool_offset =
       offsetof(AddressPoolManager, pools_) + sizeof(Pool) * (kNumPools - 1);

@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "media/base/stream_parser.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,8 +16,8 @@
 #include <sstream>
 
 #include "base/ranges/algorithm.h"
-#include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
+#include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -45,9 +52,19 @@ static void GenerateBuffers(const int* decode_timestamps,
   DCHECK_NE(type, DemuxerStream::UNKNOWN);
   DCHECK_LE(type, DemuxerStream::TYPE_MAX);
   for (int i = 0; decode_timestamps[i] != kEnd; ++i) {
-    scoped_refptr<StreamParserBuffer> buffer =
-        StreamParserBuffer::CopyFrom(kFakeData, sizeof(kFakeData),
-                                     true, type, track_id);
+    scoped_refptr<StreamParserBuffer> buffer;
+    if (i % 3 == 0) {
+      buffer = StreamParserBuffer::CopyFrom(kFakeData, sizeof(kFakeData), true,
+                                            type, track_id);
+    } else if (i % 3 == 1) {
+      buffer = StreamParserBuffer::FromArray(
+          base::HeapArray<uint8_t>::CopiedFrom(kFakeData), true, type,
+          track_id);
+    } else {
+      buffer = StreamParserBuffer::FromExternalMemory(
+          std::make_unique<ExternalMemoryAdapterForTesting>(kFakeData), true,
+          type, track_id);
+    }
     buffer->SetDecodeTimestamp(
         DecodeTimestamp::FromMicroseconds(decode_timestamps[i]));
     queue->push_back(buffer);

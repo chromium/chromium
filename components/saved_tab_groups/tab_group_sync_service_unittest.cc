@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iterator>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,7 @@
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,12 +169,10 @@ class TabGroupSyncServiceTest : public testing::Test {
         test::CreateSavedTabGroupTab("Aramis", u"One For All", id_3,
                                      /*position=*/2)};
 
-    group_1_ = SavedTabGroup(title_1, color_1, group_1_tabs, std::nullopt, id_1,
+    group_1_ = SavedTabGroup(title_1, color_1, group_1_tabs, 0, id_1,
                              local_group_id_1_);
-    group_2_ =
-        SavedTabGroup(title_2, color_2, group_2_tabs, std::nullopt, id_2);
-    group_3_ =
-        SavedTabGroup(title_3, color_3, group_3_tabs, std::nullopt, id_3);
+    group_2_ = SavedTabGroup(title_2, color_2, group_2_tabs, 1, id_2);
+    group_3_ = SavedTabGroup(title_3, color_3, group_3_tabs, 2, id_3);
 
     group_1_.SetCreatorCacheGuid(kTestCacheGuid);
     group_2_.SetCreatorCacheGuid(kTestCacheGuid);
@@ -747,6 +747,91 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
   model_->Remove(group_1_.local_group_id().value());
+}
+
+class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
+ public:
+  PinningTabGroupSyncServiceTest() {
+    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
+  }
+
+  PinningTabGroupSyncServiceTest(const PinningTabGroupSyncServiceTest&) =
+      delete;
+  PinningTabGroupSyncServiceTest& operator=(
+      const PinningTabGroupSyncServiceTest&) = delete;
+};
+
+TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionPinnedState) {
+  auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(group.has_value());
+
+  const bool pinned_state = group->is_pinned();
+  tab_group_sync_service_->UpdateGroupPosition(group->saved_guid(),
+                                               !pinned_state, std::nullopt);
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_NE(group->is_pinned(), pinned_state);
+
+  tab_group_sync_service_->UpdateGroupPosition(group->saved_guid(),
+                                               pinned_state, std::nullopt);
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_EQ(group->is_pinned(), pinned_state);
+}
+
+TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionIndex) {
+  auto get_index = [&](const LocalTabGroupID& local_id) -> int {
+    std::vector<SavedTabGroup> groups = tab_group_sync_service_->GetAllGroups();
+    auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
+      return group.local_group_id() == local_id;
+    });
+
+    if (it == groups.end()) {
+      return -1;
+    }
+
+    return std::distance(groups.begin(), it);
+  };
+
+  std::vector<SavedTabGroup> all_groups =
+      tab_group_sync_service_->GetAllGroups();
+  ASSERT_EQ(3u, all_groups.size());
+
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      all_groups[0].saved_guid(), test::GenerateRandomTabGroupID());
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      all_groups[1].saved_guid(), test::GenerateRandomTabGroupID());
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      all_groups[2].saved_guid(), test::GenerateRandomTabGroupID());
+
+  // Groups are inserted FILO style (like a stack data structure).
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  const LocalTabGroupID group_id_3 = all_groups[0].local_group_id().value();
+  const LocalTabGroupID group_id_2 = all_groups[1].local_group_id().value();
+  const LocalTabGroupID group_id_1 = all_groups[2].local_group_id().value();
+
+  const base::Uuid group_sync_id_3 = all_groups[0].saved_guid();
+  const base::Uuid group_sync_id_1 = all_groups[2].saved_guid();
+
+  EXPECT_EQ(0, get_index(group_id_3));
+  EXPECT_EQ(1, get_index(group_id_2));
+  EXPECT_EQ(2, get_index(group_id_1));
+
+  tab_group_sync_service_->UpdateGroupPosition(group_sync_id_3, std::nullopt,
+                                               2);
+  EXPECT_EQ(0, get_index(group_id_2));
+  EXPECT_EQ(1, get_index(group_id_1));
+  EXPECT_EQ(2, get_index(group_id_3));
+
+  tab_group_sync_service_->UpdateGroupPosition(group_sync_id_1, std::nullopt,
+                                               0);
+  EXPECT_EQ(0, get_index(group_id_1));
+  EXPECT_EQ(1, get_index(group_id_2));
+  EXPECT_EQ(2, get_index(group_id_3));
+
+  tab_group_sync_service_->UpdateGroupPosition(group_sync_id_3, std::nullopt,
+                                               1);
+  EXPECT_EQ(0, get_index(group_id_1));
+  EXPECT_EQ(1, get_index(group_id_3));
+  EXPECT_EQ(2, get_index(group_id_2));
 }
 
 }  // namespace tab_groups

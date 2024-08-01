@@ -36,7 +36,7 @@ Event::Event(scoped_refptr<UnsizedRefCountedMemory> event_bytes,
   if (response_type == GeGenericEvent::opcode) {
     auto* ge = reinterpret_cast<xcb_ge_event_t*>(xcb_event);
     const size_t extended_length = ge->length * 4;
-    memmove(&ge->full_sequence, &ge[1], extended_length);
+    UNSAFE_BUFFERS(memmove(&ge->full_sequence, &ge[1], extended_length));
   }
   connection->GetEventTypeAndOp(event_bytes->bytes(), &type_id_, &opcode_);
   if (type_id_) {

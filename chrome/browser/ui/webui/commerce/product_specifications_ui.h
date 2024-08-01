@@ -7,6 +7,7 @@
 
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
@@ -20,8 +21,11 @@ namespace commerce {
 
 class ShoppingServiceHandler;
 
+// This UI is used for both product specifications page and disclosure dialog.
+// ui::MojoWebUIController works for the former, but we need to make it
+// ui::MojoWebDialogUI to achieve both former and latter.
 class ProductSpecificationsUI
-    : public ui::MojoWebUIController,
+    : public ui::MojoWebDialogUI,
       public shopping_service::mojom::ShoppingServiceHandlerFactory {
  public:
   explicit ProductSpecificationsUI(content::WebUI* web_ui);

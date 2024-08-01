@@ -4,98 +4,169 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
 
+#import <map>
+
+#import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_header_view.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 @interface HomeCustomizationMagicStackViewController () <
+    HomeCustomizationViewControllerProtocol,
     UICollectionViewDelegate>
+
+// Contains the types of HomeCustomizationToggleCells that should be shown, with
+// a BOOL indicating if each one is enabled.
+@property(nonatomic, assign) std::map<CustomizationToggleType, BOOL> toggleMap;
 
 @end
 
 @implementation HomeCustomizationMagicStackViewController {
-  // The collection view containing this menu page's content.
-  UICollectionView* _collectionView;
+  // The configurator for the collection view.
+  HomeCustomizationCollectionConfigurator* _collectionConfigurator;
 
-  // The diffable data source for the collection view.
-  UICollectionViewDiffableDataSource<CustomizationSection*, NSNumber*>*
-      _diffableDataSource;
+  // Registration for the HomeCustomizationToggleCells.
+  UICollectionViewCellRegistration* _toggleCellRegistration;
 
-  // Registration for the HomeCustomizationMagicStackCell.
-  UICollectionViewCellRegistration* _magicStackCellRegistration;
+  // Registration for the collection's header.
+  UICollectionViewSupplementaryRegistration* _headerRegistration;
 }
+
+// Synthesized from HomeCustomizationViewControllerProtocol.
+@synthesize collectionView = _collectionView;
+@synthesize diffableDataSource = _diffableDataSource;
+@synthesize page = _page;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  [self createCollectionView];
+  _collectionConfigurator = [[HomeCustomizationCollectionConfigurator alloc]
+      initWithViewController:self];
+  _page = CustomizationMenuPage::kMagicStack;
+
+  [self registerCells];
+  [_collectionConfigurator configureCollectionView];
+
+  // Sets initial data.
+  [_diffableDataSource applySnapshot:[self dataSnapshot]
+                animatingDifferences:NO];
 
   // The primary view is set as the collection view for better integration with
   // the UISheetPresentationController which presents it.
   self.view = _collectionView;
 
-  [self configureNavigationBar];
+  [_collectionConfigurator configureNavigationBar];
 }
 
 #pragma mark - Private
 
-// Creates and returns the collection view for the main menu page.
-- (void)createCollectionView {
-  _collectionView = [[UICollectionView alloc]
-             initWithFrame:CGRectZero
-      collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
-  _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-  _collectionView.delegate = self;
-
-  _diffableDataSource = [self createDiffableDataSource];
-  _collectionView.dataSource = _diffableDataSource;
-}
-
-// Creates and returns the diffable data source for the collection view.
-- (UICollectionViewDiffableDataSource*)createDiffableDataSource {
-  // Creates the diffable data source with a cell provider used to configure
-  // each cell.
+// Registers the different cells used by the collection view.
+- (void)registerCells {
   __weak __typeof(self) weakSelf = self;
-  auto cellProvider =
-      ^UICollectionViewCell*(UICollectionView* collectionView,
-                             NSIndexPath* indexPath, NSNumber* itemIdentifier) {
-        return [weakSelf configuredCellForIndexPath:indexPath
-                                     itemIdentifier:itemIdentifier];
-      };
-  UICollectionViewDiffableDataSource* diffableDataSource =
-      [[UICollectionViewDiffableDataSource alloc]
-          initWithCollectionView:_collectionView
-                    cellProvider:cellProvider];
-
-  return diffableDataSource;
+  _toggleCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[HomeCustomizationToggleCell class]
+           configurationHandler:^(HomeCustomizationToggleCell* cell,
+                                  NSIndexPath* indexPath,
+                                  NSNumber* itemIdentifier) {
+             CustomizationToggleType toggleType =
+                 (CustomizationToggleType)[itemIdentifier integerValue];
+             BOOL enabled = self.toggleMap.at(toggleType);
+             [cell configureCellWithType:toggleType enabled:enabled];
+             cell.mutator = weakSelf.mutator;
+           }];
+  _headerRegistration = [UICollectionViewSupplementaryRegistration
+      registrationWithSupplementaryClass:[HomeCustomizationHeaderView class]
+                             elementKind:UICollectionElementKindSectionHeader
+                    configurationHandler:^(HomeCustomizationHeaderView* header,
+                                           NSString* elementKind,
+                                           NSIndexPath* indexPath) {
+                      header.page = CustomizationMenuPage::kMagicStack;
+                    }];
 }
 
-// Returns a configured cell for the given path in the collection view.
+// Creates a data snapshot representing the content of the collection view.
+- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>*)
+    dataSnapshot {
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  // Create toggles section and add items to it.
+  [snapshot appendSectionsWithIdentifiers:@[
+    kCustomizationSectionMagicStackToggles
+  ]];
+  [snapshot
+      appendItemsWithIdentifiers:[self identifiersForToggleMap:self.toggleMap]
+       intoSectionWithIdentifier:kCustomizationSectionMagicStackToggles];
+
+  return snapshot;
+}
+
+#pragma mark - HomeCustomizationViewControllerProtocol
+
+- (void)dismissCustomizationMenu {
+  [self.presentingViewController dismissViewControllerAnimated:YES
+                                                    completion:nil];
+}
+
+- (NSCollectionLayoutSection*)
+      sectionForIndex:(NSInteger)sectionIndex
+    layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  if (sectionIndex ==
+      [self.diffableDataSource.snapshot
+          indexOfSectionIdentifier:kCustomizationSectionMagicStackToggles]) {
+    return [_collectionConfigurator
+        verticalListSectionForLayoutEnvironment:layoutEnvironment];
+  }
+  return nil;
+}
+
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
                                      itemIdentifier:(NSNumber*)itemIdentifier {
   return [_collectionView
-      dequeueConfiguredReusableCellWithRegistration:_magicStackCellRegistration
+      dequeueConfiguredReusableCellWithRegistration:_toggleCellRegistration
                                        forIndexPath:indexPath
                                                item:itemIdentifier];
 }
 
-// Sets the title and button to the navigation bar on top of the presenting menu
-// page.
-- (void)configureNavigationBar {
-  // TODO(crbug.com/350990359): Confirm page title.
-  self.title = @"Magic Stack";
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                           target:self
-                           action:@selector(dismissCustomizationMenu)];
-  dismissButton.accessibilityIdentifier = kNavigationBarDismissButtonIdentifier;
-  self.navigationItem.rightBarButtonItem = dismissButton;
-  self.navigationItem.backBarButtonItem.accessibilityIdentifier =
-      kNavigationBarBackButtonIdentifier;
+// Returns a configured header for the given path in the collection view.
+- (UICollectionViewCell*)configuredHeaderForIndexPath:(NSIndexPath*)indexPath {
+  return [_collectionView
+      dequeueConfiguredReusableSupplementaryViewWithRegistration:
+          _headerRegistration
+                                                    forIndexPath:indexPath];
 }
 
-// Dismisses the presenting view controller.
-- (void)dismissCustomizationMenu {
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:nil];
+#pragma mark - HomeCustomizationMagicStackConsumer
+
+- (void)populateToggles:(std::map<CustomizationToggleType, BOOL>)toggleMap {
+  _toggleMap = toggleMap;
+
+  // Recreate the snapshot with the new items to take into account all the
+  // changes of items presence (add/remove).
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+      [self dataSnapshot];
+
+  // Reconfigure all present items to ensure that they are updated in case their
+  // content changed.
+  [snapshot
+      reconfigureItemsWithIdentifiers:[self identifiersForToggleMap:toggleMap]];
+
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+#pragma mark - Helpers
+
+// Returns an array of identifiers for a map of toggle types, which can be
+// used by the snapshot.
+- (NSMutableArray<NSNumber*>*)identifiersForToggleMap:
+    (std::map<CustomizationToggleType, BOOL>)types {
+  NSMutableArray<NSNumber*>* toggleDataIdentifiers =
+      [[NSMutableArray alloc] init];
+  for (auto const& [key, value] : types) {
+    [toggleDataIdentifiers addObject:@((int)key)];
+  }
+  return toggleDataIdentifiers;
 }
 
 @end

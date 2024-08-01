@@ -91,16 +91,6 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
       base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
                      std::string> ip_protection_auth_client);
 
-  void OnGetInitialDataComplete(
-      quiche::BlindSignMessageCallback callback,
-      base::expected<privacy::ppn::GetInitialDataResponse,
-                     ip_protection::android::AuthRequestError> response);
-
-  void OnAuthAndSignComplete(
-      quiche::BlindSignMessageCallback callback,
-      base::expected<privacy::ppn::AuthAndSignResponse,
-                     ip_protection::android::AuthRequestError> response);
-
   template <typename ResponseType>
   void OnSendRequestComplete(
       base::WeakPtr<IpProtectionAuthClientInterface>

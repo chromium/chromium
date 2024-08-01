@@ -85,7 +85,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
       std::string_view network = kVisaCard,
       CreditCard::VirtualCardEnrollmentType virtual_card_enrollment_type =
           CreditCard::VirtualCardEnrollmentType::kNetwork,
-      std::string_view issuer_id = kCapitalOneCardIssuerId) {
+      std::string_view issuer_id = "") {
     CreditCard card = test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
     test_api(card).set_network_for_card(network);
     card.set_virtual_card_enrollment_type(virtual_card_enrollment_type);

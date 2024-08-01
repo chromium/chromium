@@ -25,9 +25,10 @@
 - (void)setUserEmail:(NSString*)userEmail;
 
 // Sets up the share button next to the navigation's right bar button. Tapping
-// on the button results in entering the sharing flow when `enabled`. Otherwise,
-// info popup is displayed explaining that the feature is disabled by policy.
-- (void)setupRightShareButton:(BOOL)enabled;
+// on the button results in entering the sharing flow when `policyEnabled`.
+// Otherwise, info popup is displayed explaining that the feature is disabled by
+// policy.
+- (void)setupRightShareButton:(BOOL)policyEnabled;
 
 @end
 

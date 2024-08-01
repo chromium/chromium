@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/stack_trace.h"
 
 #include <string.h>
@@ -79,14 +74,22 @@ static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
 
 uintptr_t GetNextStackFrame(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
-  MSAN_UNPOISON(fp_addr, sizeof(uintptr_t));
-  return fp_addr[0] - kStackFrameAdjustment;
+  // SAFETY: `fp` is the address of an array of pointers. The first element
+  // is the next stack frame, the second element is the PC.
+  UNSAFE_BUFFERS({
+    MSAN_UNPOISON(&fp_addr[0], sizeof(uintptr_t));
+    return fp_addr[0] - kStackFrameAdjustment;
+  })
 }
 
 uintptr_t GetStackFramePC(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
-  MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
-  return StripPointerAuthenticationBits(fp_addr[1]);
+  // SAFETY: `fp` is the address of an array of pointers. The first element
+  // is the next stack frame, the second element is the PC.
+  UNSAFE_BUFFERS({
+    MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
+    return StripPointerAuthenticationBits(fp_addr[1]);
+  })
 }
 
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
@@ -239,13 +242,13 @@ StackTrace::StackTrace() : StackTrace(std::size(trace_)) {}
 StackTrace::StackTrace(size_t count)
     : count_(ShouldSuppressOutput()
                  ? 0
-                 : CollectStackTrace(trace_,
-                                     std::min(count, std::size(trace_)))) {}
+                 : CollectStackTrace(base::span(trace_).first(
+                       std::min(count, std::size(trace_))))) {}
 
-StackTrace::StackTrace(const void* const* trace, size_t count)
-    : count_(std::min(count, std::size(trace_))) {
+StackTrace::StackTrace(span<const void* const> trace)
+    : count_(std::min(trace.size(), std::size(trace_))) {
   if (count_) {
-    memcpy(trace_, trace, count_ * sizeof(trace_[0]));
+    base::span(trace_).copy_prefix_from(trace.first(count_));
   }
 }
 
@@ -372,18 +375,14 @@ bool IsWithinRange(uintptr_t address, const AddressRange& range) {
   return address >= range.start && address <= range.end;
 }
 
-// We force this function to be inlined into its callers (e.g.
-// TraceStackFramePointers()) in all build modes so we don't have to worry about
-// conditionally skipping a frame based on potential inlining or tail calls.
-__attribute__((always_inline)) size_t TraceStackFramePointersInternal(
-    uintptr_t fp,
-    uintptr_t stack_end,
-    size_t max_depth,
-    size_t skip_initial,
-    bool enable_scanning,
-    const void** out_trace) {
+NOINLINE size_t TraceStackFramePointers(span<const void*> out_trace,
+                                        size_t skip_initial,
+                                        bool enable_scanning) {
+  uintptr_t fp = reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
+                 kStackFrameAdjustment;
+  uintptr_t stack_end = GetStackEnd();
   size_t depth = 0;
-  while (depth < max_depth) {
+  while (depth < out_trace.size()) {
     uintptr_t pc = GetStackFramePC(fp);
     if (skip_initial != 0) {
       skip_initial--;
@@ -397,8 +396,9 @@ __attribute__((always_inline)) size_t TraceStackFramePointersInternal(
       continue;
     }
 
-    if (!enable_scanning)
+    if (!enable_scanning) {
       break;
+    }
 
     next_fp = ScanStackForNextFrame(fp, stack_end);
     if (next_fp) {
@@ -409,26 +409,6 @@ __attribute__((always_inline)) size_t TraceStackFramePointersInternal(
   }
 
   return depth;
-}
-
-NOINLINE size_t TraceStackFramePointers(const void** out_trace,
-                                        size_t max_depth,
-                                        size_t skip_initial,
-                                        bool enable_scanning) {
-  return TraceStackFramePointersInternal(
-      reinterpret_cast<uintptr_t>(__builtin_frame_address(0)) -
-          kStackFrameAdjustment,
-      GetStackEnd(), max_depth, skip_initial, enable_scanning, out_trace);
-}
-
-NOINLINE size_t TraceStackFramePointersFromBuffer(uintptr_t fp,
-                                                  uintptr_t stack_end,
-                                                  const void** out_trace,
-                                                  size_t max_depth,
-                                                  size_t skip_initial,
-                                                  bool enable_scanning) {
-  return TraceStackFramePointersInternal(fp, stack_end, max_depth, skip_initial,
-                                         enable_scanning, out_trace);
 }
 
 ScopedStackFrameLinker::ScopedStackFrameLinker(void* fp, void* parent_fp)

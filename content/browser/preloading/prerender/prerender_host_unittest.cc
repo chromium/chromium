@@ -275,7 +275,9 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 
   PrerenderAttributes GeneratePrerenderAttributesWithPredicate(
       const GURL& url,
-      base::RepeatingCallback<bool(const GURL&)> url_match_predicate) {
+      base::RepeatingCallback<bool(const GURL&,
+                                   const std::optional<content::UrlMatchType>&)>
+          url_match_predicate) {
     RenderFrameHostImpl* rfh = contents()->GetPrimaryMainFrame();
     return PrerenderAttributes(
         url, PreloadingTriggerType::kSpeculationRule,
@@ -641,8 +643,10 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
 
 TEST_F(PrerenderHostTest, UrlMatchPredicate) {
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
-  base::RepeatingCallback callback =
-      base::BindRepeating([](const GURL&) { return true; });
+  base::RepeatingCallback callback = base::BindRepeating(
+      [](const GURL&, const std::optional<content::UrlMatchType>&) {
+        return true;
+      });
   const int prerender_frame_tree_node_id = registry().CreateAndStartHost(
       GeneratePrerenderAttributesWithPredicate(kPrerenderingUrl, callback));
   PrerenderHost* prerender_host =

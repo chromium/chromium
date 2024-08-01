@@ -69,7 +69,7 @@ namespace ash {
 
 PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
-                               views::BubbleBorder::RIGHT_CENTER,
+                               views::BubbleBorder::LEFT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true) {
   // Configuration for this view.
@@ -77,6 +77,9 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical))
       ->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
   SetCanActivate(false);
+  // Ignore this bubble for accessibility purposes. The contents of the preview
+  // bubble are announced via the item view that triggered the bubble.
+  SetAccessibleWindowRole(ax::mojom::Role::kNone);
 
   views::Builder<PickerPreviewBubbleView>(this)
       .set_margins(kMargins)
@@ -108,13 +111,6 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
 
   // Show the widget.
   views::BubbleDialogDelegateView::CreateBubble(this);
-
-  // We need an anchor_view until show is called, but we actually want to inset
-  // this bubble, so fix the anchor_rect now.
-  auto rect = GetAnchorRect();
-  rect.Inset(kBubbleOverlapOverPicker);
-  SetAnchorView(nullptr);
-  SetAnchorRect(rect);
 }
 
 ui::ImageModel PickerPreviewBubbleView::GetPreviewImage() const {
@@ -147,6 +143,12 @@ void PickerPreviewBubbleView::SetText(const std::u16string& eyebrow_text,
 void PickerPreviewBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   set_color(GetColorProvider()->GetColor(kBackgroundColor));
+}
+
+gfx::Rect PickerPreviewBubbleView::GetAnchorRect() const {
+  gfx::Rect rect = BubbleDialogDelegateView::GetAnchorRect();
+  rect.Inset(kBubbleOverlapOverPicker);
+  return rect;
 }
 
 void PickerPreviewBubbleView::Close() {

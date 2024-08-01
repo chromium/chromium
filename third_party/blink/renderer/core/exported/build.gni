@@ -35,7 +35,6 @@ blink_core_sources_exported = [
   "web_isolated_world_info.cc",
   "web_label_element.cc",
   "web_language_detection_details.cc",
-  "web_memory_statistics.cc",
   "web_message_port_converter.cc",
   "web_meta_element.cc",
   "web_navigation_params.cc",

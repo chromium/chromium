@@ -1,0 +1,340 @@
+This is a testharness.js-based test.
+Found 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <mask-border-outset> from neutral to [2px] at (-0.3) should be [0.7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from neutral to [2px] at (0) should be [1px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from neutral to [2px] at (0.3) should be [1.3px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from neutral to [2px] at (0.6) should be [1.6px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from neutral to [2px] at (1) should be [2px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from neutral to [2px] at (1.5) should be [2.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from neutral to [2px] at (-0.3) should be [0.7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from neutral to [2px] at (0) should be [1px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from neutral to [2px] at (0.3) should be [1.3px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from neutral to [2px] at (0.6) should be [1.6px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from neutral to [2px] at (1) should be [2px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from neutral to [2px] at (1.5) should be [2.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from neutral to [2px] at (-0.3) should be [0.7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from neutral to [2px] at (0) should be [1px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from neutral to [2px] at (0.3) should be [1.3px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from neutral to [2px] at (0.6) should be [1.6px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from neutral to [2px] at (1) should be [2px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from neutral to [2px] at (1.5) should be [2.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from neutral to [2px] at (-0.3) should be [0.7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from neutral to [2px] at (0) should be [1px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from neutral to [2px] at (0.3) should be [1.3px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from neutral to [2px] at (0.6) should be [1.6px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from neutral to [2px] at (1) should be [2px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from neutral to [2px] at (1.5) should be [2.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [initial] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [initial] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [initial] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [initial] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [initial] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [initial] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [initial] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [initial] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [initial] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [initial] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [initial] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [initial] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [initial] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [initial] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [initial] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [initial] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [initial] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [initial] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [initial] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [initial] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [initial] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [initial] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [initial] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [initial] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [inherit] to [2px] at (-0.3) should be [12.4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [inherit] to [2px] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [inherit] to [2px] at (0.3) should be [7.6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [inherit] to [2px] at (0.6) should be [5.2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [inherit] to [2px] at (1) should be [2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [inherit] to [2px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [inherit] to [2px] at (-0.3) should be [12.4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [inherit] to [2px] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [inherit] to [2px] at (0.3) should be [7.6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [inherit] to [2px] at (0.6) should be [5.2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [inherit] to [2px] at (1) should be [2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [inherit] to [2px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [inherit] to [2px] at (-0.3) should be [12.4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [inherit] to [2px] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [inherit] to [2px] at (0.3) should be [7.6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [inherit] to [2px] at (0.6) should be [5.2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [inherit] to [2px] at (1) should be [2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [inherit] to [2px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [inherit] to [2px] at (-0.3) should be [12.4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [inherit] to [2px] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [inherit] to [2px] at (0.3) should be [7.6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [inherit] to [2px] at (0.6) should be [5.2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [inherit] to [2px] at (1) should be [2px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [inherit] to [2px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [unset] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [unset] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [unset] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [unset] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [unset] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [unset] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [unset] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [unset] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [unset] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [unset] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [unset] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [unset] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [unset] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [unset] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [unset] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [unset] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [unset] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [unset] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [unset] to [2] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [unset] to [2] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [unset] to [2] at (0.3) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [unset] to [2] at (0.6) should be [1.2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [unset] to [2] at (1) should be [2]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [unset] to [2] at (1.5) should be [3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0px] to [5px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0px] to [5px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0px] to [5px] at (0.3) should be [1.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0px] to [5px] at (0.6) should be [3px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0px] to [5px] at (1) should be [5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0px] to [5px] at (1.5) should be [7.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0px] to [5px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0px] to [5px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0px] to [5px] at (0.3) should be [1.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0px] to [5px] at (0.6) should be [3px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0px] to [5px] at (1) should be [5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0px] to [5px] at (1.5) should be [7.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0px] to [5px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0px] to [5px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0px] to [5px] at (0.3) should be [1.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0px] to [5px] at (0.6) should be [3px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0px] to [5px] at (1) should be [5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0px] to [5px] at (1.5) should be [7.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0px] to [5px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0px] to [5px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0px] to [5px] at (0.3) should be [1.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0px] to [5px] at (0.6) should be [3px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0px] to [5px] at (1) should be [5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0px] to [5px] at (1.5) should be [7.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0] to [1] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0] to [1] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0] to [1] at (0.3) should be [0.3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0] to [1] at (0.6) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0] to [1] at (1) should be [1]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [0] to [1] at (1.5) should be [1.5]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0] to [1] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0] to [1] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0] to [1] at (0.3) should be [0.3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0] to [1] at (0.6) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0] to [1] at (1) should be [1]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [0] to [1] at (1.5) should be [1.5]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0] to [1] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0] to [1] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0] to [1] at (0.3) should be [0.3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0] to [1] at (0.6) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0] to [1] at (1) should be [1]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [0] to [1] at (1.5) should be [1.5]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0] to [1] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0] to [1] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0] to [1] at (0.3) should be [0.3]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0] to [1] at (0.6) should be [0.6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0] to [1] at (1) should be [1]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [0] to [1] at (1.5) should be [1.5]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (-0.3) should be [0 0 0px 0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0) should be [1 2 3px 4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.3) should be [31 32 33px 34px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.6) should be [61 62 63px 64px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1) should be [101 102 103px 104px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1.5) should be [151 152 153px 154px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (-0.3) should be [0 0 0px 0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0) should be [1 2 3px 4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.3) should be [31 32 33px 34px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.6) should be [61 62 63px 64px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1) should be [101 102 103px 104px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1.5) should be [151 152 153px 154px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (-0.3) should be [0 0 0px 0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0) should be [1 2 3px 4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.3) should be [31 32 33px 34px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.6) should be [61 62 63px 64px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1) should be [101 102 103px 104px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1.5) should be [151 152 153px 154px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (-0.3) should be [0 0 0px 0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0) should be [1 2 3px 4px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.3) should be [31 32 33px 34px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (0.6) should be [61 62 63px 64px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1) should be [101 102 103px 104px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-outset> from [1 2 3px 4px] to [101 102 103px 104px] at (1.5) should be [151 152 153px 154px]
+  assert_true: 'from' value should be supported expected true got false
+Harness: the test ran to completion.
+

@@ -18,7 +18,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -357,7 +356,7 @@ public class NotificationUmaTracker {
         if (type == SystemNotificationType.UNKNOWN || notification == null) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            logNotificationShown(type, ApiHelperForO.getNotificationChannelId(notification));
+            logNotificationShown(type, notification.getChannelId());
         } else {
             logNotificationShown(type, null);
         }

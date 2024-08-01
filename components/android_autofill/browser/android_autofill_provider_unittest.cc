@@ -1298,7 +1298,7 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   EXPECT_NE(pi_form_session_id, pw_form_second_session_id);
 }
 
-// Tests that the prefill request can be sent for Change Password form.
+// Tests that the prefill request is sent for a Change Password form.
 TEST_F(AndroidAutofillProviderPrefillRequestTest,
        PrefillRequestSentForChangePasswordForm) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
@@ -1317,6 +1317,40 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)));
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());
+}
+
+// Tests that starting an autofill session for a change password form works.
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
+       SessionStartForChangePasswordForm) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillPrefillRequestsForChangePassword);
+
+  FormData form = CreateFormDataForFrame(CreateTestChangePasswordForm(),
+                                         main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
+
+  // Upon receiving server predictions a prefill request should be sent.
+  SessionId cache_session_id = SessionId(0);
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormData(form)))
+      .WillOnce(SaveSessionId(&cache_session_id));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(
+      provider_bridge(),
+      StartAutofillSession(EqualsFormDataWithSessionId(form, cache_session_id),
+                           EqualsFieldInfo(/*index=*/0),
+                           /*has_server_predictions=*/true));
+  android_autofill_manager().SimulateOnAskForValuesToFill(
+      form, form.fields().front());
 }
 
 // Tests that metrics are emitted when the bottom sheet is shown.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -180,21 +181,24 @@ TEST_F(ChromePasswordReuseDetectionManagerClientTest,
 
 TEST_F(ChromePasswordReuseDetectionManagerClientTest,
        IsHistorySyncAccountEmail) {
-  const struct {
+  struct TestCase {
     std::string fake_sync_email;
     std::string input_username;
     bool expected_result;
-  } kTestCases[] = {{"", "", false},
-                    {"", "user@example.org", false},
-                    {"user@example.org", "", false}};
+  };
+  std::array<TestCase, 3> kTestCases{{{"", "", false},
+                                      {"", "user@example.org", false},
+                                      {"user@example.org", "", false}}};
 
   std::unique_ptr<MockChromePasswordReuseDetectionManagerClient> client(
       std::make_unique<MockChromePasswordReuseDetectionManagerClient>(
           web_contents()));
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "i=" << i);
-    EXPECT_EQ(kTestCases[i].expected_result,
-              client->IsHistorySyncAccountEmail(kTestCases[i].input_username));
+  for (const TestCase& test : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "fake_sync_email=" << test.fake_sync_email
+                 << " input_username=" << test.input_username);
+    EXPECT_EQ(test.expected_result,
+              client->IsHistorySyncAccountEmail(test.input_username));
   }
 }

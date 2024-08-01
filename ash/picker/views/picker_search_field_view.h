@@ -11,11 +11,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 
 namespace views {
 class Textfield;
@@ -38,6 +40,11 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   using SearchCallback =
       base::RepeatingCallback<void(const std::u16string& query)>;
   using BackCallback = base::RepeatingClosure;
+
+  // The delay before notifying the initial active descendant when the textfield
+  // is focused. Same value as Launcher.
+  static constexpr base::TimeDelta kNotifyInitialActiveDescendantA11yDelay =
+      base::Milliseconds(1500);
 
   // `search_callback` is called asynchronously whenever the contents of the
   // search field changes (with debouncing logic to avoid unnecessary calls).
@@ -99,6 +106,10 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
 
   // Updates the textfield border when the clear button visibility changes.
   void UpdateTextfieldBorder();
+  // Schedules a delayed announcement of the initial active descendant.
+  void ScheduleNotifyInitialActiveDescendantForA11y();
+  // Notifies the initial active descendant for the screen reader.
+  void NotifyInitialActiveDescendantForA11y();
 
   bool should_show_focus_indicator_ = false;
 
@@ -108,6 +119,11 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   raw_ptr<PickerSearchBarTextfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
+
+  // Tracks pending active descendant change when the textfield is not focused.
+  views::ViewTracker active_descendant_tracker_;
+  // Delay the initial active descendant change notification for a query.
+  base::OneShotTimer notify_initial_active_descendant_timer_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchFieldView, views::BoxLayoutView)

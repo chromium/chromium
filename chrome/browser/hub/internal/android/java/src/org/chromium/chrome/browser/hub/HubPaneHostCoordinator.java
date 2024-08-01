@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,5 +33,15 @@ public class HubPaneHostCoordinator {
     /** Cleans up observers and resources. */
     public void destroy() {
         mMediator.destroy();
+    }
+
+    /** Returns the button view for the floating action button if present. */
+    public @Nullable View getFloatingActionButton() {
+        return mMediator.getFloatingActionButton();
+    }
+
+    /** Returns the view group to contain the snackbar. */
+    public ViewGroup getSnackbarContainer() {
+        return mMediator.getSnackbarContainer();
     }
 }

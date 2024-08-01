@@ -19,10 +19,10 @@
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
-#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -130,7 +130,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
             shelf, ActiveNetworkIcon::Type::kSingle));
   }
 
-  AddTrayItemToContainer(std::make_unique<PowerTrayView>(shelf));
+  power_tray_view_ =
+      AddTrayItemToContainer(std::make_unique<PowerTrayView>(shelf));
 
   if (ShouldChannelIndicatorBeShown()) {
     base::RecordAction(base::UserMetricsAction("Tray_ShowChannelInfo"));

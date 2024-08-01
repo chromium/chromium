@@ -140,12 +140,10 @@ class NetMetricsLogUploaderTest : public testing::Test {
 
 void CheckReportingInfoHeader(net::HttpRequestHeaders headers,
                               int expected_attempt_count) {
-  std::string reporting_info_base64;
-  EXPECT_TRUE(
-      headers.GetHeader("X-Chrome-UMA-ReportingInfo", &reporting_info_base64));
   std::string reporting_info_string;
-  EXPECT_TRUE(
-      base::Base64Decode(reporting_info_base64, &reporting_info_string));
+  EXPECT_TRUE(base::Base64Decode(
+      headers.GetHeader("X-Chrome-UMA-ReportingInfo").value(),
+      &reporting_info_string));
   ReportingInfo reporting_info;
   EXPECT_TRUE(reporting_info.ParseFromString(reporting_info_string));
   EXPECT_EQ(reporting_info.attempt_count(), expected_attempt_count);

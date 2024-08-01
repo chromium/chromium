@@ -191,7 +191,6 @@ src:*media/gpu/vaapi/va_stubs.cc
 
 # Calls to auto-generated stubs by generate_library_loader.py
 src:*content/browser/speech/tts_linux.cc
-src:*device/udev_linux/udev0_loader.cc
 src:*device/udev_linux/udev1_loader.cc
 
 # Calls to auto-generated stubs by ui/gl/generate_bindings.py
@@ -249,6 +248,10 @@ src:*net/http/http_auth_gssapi_posix.cc
 src:*third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.cc
 src:*third_party/crashpad/crashpad/snapshot/crashpad_info_client_options_test.cc
 src:*third_party/skia/src/ports/SkFontHost_FreeType.cpp
+
+# WebRTC / PipeWire
+fun:*pw_registry_bind*
+fun:*pw_core_get_registry*
 
 ######### Function pointers cast to incorrect type signatures
 

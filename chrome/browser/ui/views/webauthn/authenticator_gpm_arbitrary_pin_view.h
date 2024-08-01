@@ -24,13 +24,13 @@ class AuthenticatorGPMArbitraryPinView : public views::View,
   class Delegate {
    public:
     virtual void OnPinChanged(std::u16string pin) = 0;
-    virtual void UpdateHintVisibility() = 0;
   };
 
   explicit AuthenticatorGPMArbitraryPinView(
       bool ui_disabled,
       const std::u16string& pin,
       const std::u16string& pin_accessible_name,
+      const std::u16string& pin_accessible_description,
       Delegate* delegate);
 
   AuthenticatorGPMArbitraryPinView(const AuthenticatorGPMArbitraryPinView&) =
@@ -48,14 +48,11 @@ class AuthenticatorGPMArbitraryPinView : public views::View,
   // views::TextFieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
-  void OnBeforeUserAction(views::Textfield* sender) override;
-  void OnAfterUserAction(views::Textfield* sender) override;
 
   const raw_ptr<Delegate> delegate_;
   raw_ptr<views::Textfield> pin_textfield_ = nullptr;
   raw_ptr<views::ToggleImageButton> reveal_button_ = nullptr;
   bool pin_revealed_ = false;
-  int pin_length_before_user_action_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ARBITRARY_PIN_VIEW_H_

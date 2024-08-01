@@ -343,36 +343,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kBrowserSideTimerClosedWindow"/>
 </enum>
 
-<enum name="ContextResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="TransientFailure"/>
-  <int value="2" label="FatalFailure"/>
-  <int value="3" label="SurfaceFailure"/>
-</enum>
-
-<enum name="CoreAudioDispatchOverrideInitResult">
-  <summary>
-    The result of trying to initialize the CoreAudio dispatch override hotfix.
-    See media/audio/mac/coreaudio_dispatch_override.cc.
-  </summary>
-  <int value="0" label="Not supported"/>
-  <int value="1" label="Initialized successfully"/>
-  <int value="2" label="dyld_dynamic_interpose not found"/>
-  <int value="3" label="dlopen of CoreAudio failed"/>
-  <int value="4" label="Symbol lookup in CoreAudio failed"/>
-  <int value="5" label="dladdr call failed"/>
-</enum>
-
-<enum name="CoreAudioDispatchOverrideLookupEvent">
-  <summary>
-    The types of lookup events that the CoreAudio dispatch override hotfix can
-    emit. See media/audio/mac/coreaudio_dispatch_override.cc.
-  </summary>
-  <int value="0" label="Lookup performed but didn't find ResumeIO/PauseIO"/>
-  <int value="1" label="ResumeIO callsite found"/>
-  <int value="2" label="PauseIO callsite found"/>
-</enum>
-
 <enum name="CrasInputStreamOpenSuccess">
   <int value="0" label="Success: Stream opened as indented."/>
   <int value="1" label="Error: Stream already opened."/>

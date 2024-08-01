@@ -668,6 +668,9 @@ void BubbleDialogDelegate::OnAnchorWidgetBoundsChanged() {
 
 
 BubbleBorder::Shadow BubbleDialogDelegate::GetShadow() const {
+  if (!Widget::IsWindowCompositingSupported()) {
+    return BubbleBorder::Shadow::NO_SHADOW;
+  }
   return shadow_;
 }
 
@@ -1176,9 +1179,9 @@ void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {
   button = button ? button : Button::AsButton(GetAnchorView());
   if (button && highlight_button_when_shown_) {
     if (highlighted) {
-      button_anchor_higlight_ = button->AddAnchorHighlight();
+      button_anchor_highlight_ = button->AddAnchorHighlight();
     } else {
-      button_anchor_higlight_.reset();
+      button_anchor_highlight_.reset();
     }
   }
 }

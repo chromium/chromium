@@ -9,24 +9,10 @@
 #include <stdint.h>
 
 #include "base/functional/bind.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 
 namespace media {
-
-// Creates a video frame from a set of shared images with a common texture
-// target and sync token.
-scoped_refptr<VideoFrame> CreateSharedImageFrame(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    VideoPixelFormat format,
-    std::vector<gpu::Mailbox> mailboxes,
-    const gpu::SyncToken& sync_token,
-    GLenum texture_target,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    base::TimeDelta timestamp,
-    base::OnceClosure destroyed_callback);
 
 // Creates a shared image backed frame in RGBA format, with colors on the shared
 // image mapped as follow.
@@ -34,7 +20,7 @@ scoped_refptr<VideoFrame> CreateSharedImageFrame(
 // ---+---+---+---
 // Bl | M | C | W
 scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     base::OnceClosure destroyed_callback);
@@ -43,7 +29,7 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
 // exactly like CreateSharedImageRGBAFrame above, noting that subsamples may get
 // interpolated leading to inconsistent colors around the "seams".
 scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     base::OnceClosure destroyed_callback);
@@ -53,7 +39,7 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
 // This will return nullptr if the necessary extension is not available for NV12
 // support.
 scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     base::OnceClosure destroyed_callback);

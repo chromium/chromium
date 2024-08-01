@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
@@ -24,9 +25,12 @@
 
 namespace net {
 
-ReportingCacheImpl::ReportingCacheImpl(ReportingContext* context)
+ReportingCacheImpl::ReportingCacheImpl(
+    ReportingContext* context,
+    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints)
     : context_(context) {
   DCHECK(context_);
+  SetEnterpriseReportingEndpoints(enterprise_reporting_endpoints);
 }
 
 ReportingCacheImpl::~ReportingCacheImpl() = default;
@@ -221,7 +225,9 @@ ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
   base::flat_map<url::Origin, base::flat_set<std::string>> group_name_helper;
   for (const auto& token_and_endpoints : document_endpoints_) {
     for (const auto& endpoint : token_and_endpoints.second) {
-      auto origin = endpoint.group_key.origin;
+      // Document endpoints should have an origin.
+      DCHECK(endpoint.group_key.origin.has_value());
+      auto origin = endpoint.group_key.origin.value();
       if (result.count(origin)) {
         if (group_name_helper.at(origin)
                 .insert(endpoint.group_key.group_name)
@@ -398,7 +404,9 @@ void ReportingCacheImpl::OnParsedHeader(
     // all groups parsed from this header.
     DCHECK(new_group.group_key.network_anonymization_key ==
            new_client.network_anonymization_key);
-    DCHECK_EQ(new_group.group_key.origin, new_client.origin);
+    // V0 endpoints should have an origin.
+    DCHECK(new_group.group_key.origin.has_value());
+    DCHECK_EQ(new_group.group_key.origin.value(), new_client.origin);
 
     for (const auto& parsed_endpoint_info : parsed_endpoint_group.endpoints) {
       endpoints_per_group[new_group.group_key].insert(parsed_endpoint_info.url);
@@ -454,7 +462,11 @@ void ReportingCacheImpl::RemoveSourceAndEndpoints(
       }));
   url::Origin origin;
   if (document_endpoints_.count(reporting_source) > 0) {
-    origin = document_endpoints_.at(reporting_source)[0].group_key.origin;
+    // Document endpoints should have an origin.
+    DCHECK(document_endpoints_.at(reporting_source)[0]
+               .group_key.origin.has_value());
+    origin =
+        document_endpoints_.at(reporting_source)[0].group_key.origin.value();
   }
   document_endpoints_.erase(reporting_source);
   isolation_info_.erase(reporting_source);
@@ -471,11 +483,35 @@ void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
   DCHECK(!endpoints.empty());
   DCHECK_EQ(0u, document_endpoints_.count(reporting_source));
   DCHECK_EQ(0u, isolation_info_.count(reporting_source));
-  url::Origin origin = endpoints[0].group_key.origin;
+  // Document endpoints should have an origin.
+  DCHECK(endpoints[0].group_key.origin.has_value());
+  url::Origin origin = endpoints[0].group_key.origin.value();
   document_endpoints_.insert({reporting_source, std::move(endpoints)});
   isolation_info_.insert({reporting_source, isolation_info});
   context_->NotifyEndpointsUpdatedForOrigin(
       FilterEndpointsByOrigin(document_endpoints_, origin));
+}
+
+void ReportingCacheImpl::SetEnterpriseReportingEndpoints(
+    const base::flat_map<std::string, GURL>& endpoints) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kReportingApiEnableEnterpriseCookieIssues)) {
+    return;
+  }
+  std::vector<ReportingEndpoint> new_enterprise_endpoints;
+  new_enterprise_endpoints.reserve(endpoints.size());
+  for (const auto& [endpoint_name, endpoint_url] : endpoints) {
+    ReportingEndpoint endpoint;
+    endpoint.group_key = ReportingEndpointGroupKey(
+        NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
+        /*origin=*/std::nullopt, endpoint_name,
+        ReportingTargetType::kEnterprise);
+    ReportingEndpoint::EndpointInfo endpoint_info;
+    endpoint_info.url = std::move(endpoint_url);
+    endpoint.info = endpoint_info;
+    new_enterprise_endpoints.push_back(endpoint);
+  }
+  enterprise_endpoints_.swap(new_enterprise_endpoints);
 }
 
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
@@ -663,8 +699,10 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
         EnforcePerClientAndGlobalEndpointLimits(client_it);
       }
       DCHECK(FindClientIt(group_key) == clients_.end());
-      client = std::make_optional(
-          Client(group_key.network_anonymization_key, group_key.origin));
+      // V0 endpoints should have an origin.
+      DCHECK(group_key.origin.has_value());
+      client = std::make_optional(Client(group_key.network_anonymization_key,
+                                         group_key.origin.value()));
     }
     DCHECK(client.has_value());
     client->endpoint_group_names.insert(group_key.group_name);
@@ -737,8 +775,10 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
 
   // We need to clear out the |reporting_source| field to get a group key which
   // can be compared to any V0 endpoint groups.
+  // V0 endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
   ReportingEndpointGroupKey v0_lookup_group_key(
-      group_key.network_anonymization_key, group_key.origin,
+      group_key.network_anonymization_key, group_key.origin.value(),
       group_key.group_name, group_key.target_type);
 
   // Look for an exact origin match for |origin| and |group|.
@@ -755,7 +795,9 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
   // If no endpoints were found for an exact match, look for superdomain matches
   // TODO(chlily): Limit the number of labels to go through when looking for a
   // superdomain match.
-  std::string domain = v0_lookup_group_key.origin.host();
+  // V0 endpoints should have an origin.
+  DCHECK(v0_lookup_group_key.origin.has_value());
+  std::string domain = v0_lookup_group_key.origin.value().host();
   while (!domain.empty()) {
     const auto domain_range = clients_.equal_range(domain);
     for (auto client_it = domain_range.first; client_it != domain_range.second;
@@ -832,6 +874,11 @@ ReportingEndpoint ReportingCacheImpl::GetEndpointForTesting(
       return endpoint;
   }
   return ReportingEndpoint();
+}
+
+std::vector<ReportingEndpoint>
+ReportingCacheImpl::GetEnterpriseEndpointsForTesting() const {
+  return enterprise_endpoints_;
 }
 
 bool ReportingCacheImpl::EndpointGroupExistsForTesting(
@@ -911,8 +958,10 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
     DCHECK(isolation_info_.at(reporting_source)
                .IsEqualForTesting(isolation_info));  // IN-TEST
   }
+  // Document endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
   context_->NotifyEndpointsUpdatedForOrigin(
-      FilterEndpointsByOrigin(document_endpoints_, group_key.origin));
+      FilterEndpointsByOrigin(document_endpoints_, group_key.origin.value()));
 }
 
 void ReportingCacheImpl::SetEnterpriseEndpointForTesting(
@@ -936,8 +985,11 @@ void ReportingCacheImpl::SetEndpointForTesting(
   ClientMap::iterator client_it = FindClientIt(group_key);
   // If the client doesn't yet exist, add it.
   if (client_it == clients_.end()) {
-    Client new_client(group_key.network_anonymization_key, group_key.origin);
-    std::string domain = group_key.origin.host();
+    // V0 endpoints should have an origin.
+    DCHECK(group_key.origin.has_value());
+    Client new_client(group_key.network_anonymization_key,
+                      group_key.origin.value());
+    std::string domain = group_key.origin.value().host();
     client_it = clients_.emplace(domain, std::move(new_client));
   }
 
@@ -983,6 +1035,13 @@ void ReportingCacheImpl::SetEndpointForTesting(
 
 IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
     const ReportingEndpoint& endpoint) const {
+  // Enterprise endpoints do not use a NetworkAnonymizationKey or an
+  // IsolationInfo, but they need a non-empty IsolationInfo for reports to be
+  // uploaded. Enterprise endpoints are profile-bound and
+  // not document-bound like web developer endpoints.
+  if (endpoint.group_key.target_type == ReportingTargetType::kEnterprise) {
+    return IsolationInfo::CreateTransient();
+  }
   // V0 endpoint groups do not support credentials.
   if (!endpoint.group_key.reporting_source.has_value()) {
     // TODO(crbug.com/344943210): Remove this and have a better way to get a
@@ -1183,7 +1242,10 @@ ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::FindClientIt(
 
 ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::FindClientIt(
     const ReportingEndpointGroupKey& group_key) {
-  return FindClientIt(group_key.network_anonymization_key, group_key.origin);
+  // V0 endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
+  return FindClientIt(group_key.network_anonymization_key,
+                      group_key.origin.value());
 }
 
 ReportingCacheImpl::EndpointGroupMap::iterator

@@ -2326,10 +2326,6 @@ crbug.com/874695 foo/test [ Failure ]
                 data_types.StepBuildStatsMap({
                     'blink_web_tests': linux_debug_stats,
                 }),
-                'Mac10.15 Tests':
-                data_types.StepBuildStatsMap({
-                    'blink_web_tests': mac10_release_stats,
-                }),
                 'mac11-arm64-rel-tests':
                 data_types.StepBuildStatsMap({
                     'blink_web_tests': mac11_arm_release_stats,

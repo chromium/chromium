@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 #include <stddef.h>
@@ -161,10 +166,10 @@ void UmaHistogramWithTraceAndTemperature(
   UmaHistogramWithTemperature(histogram_function, histogram_basename,
                               end_ticks - begin_ticks);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
       begin_ticks, "Temperature", g_startup_temperature);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
       end_ticks);
 }
 

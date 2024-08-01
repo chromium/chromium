@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 /** A class that provides functionality to block the initial draw for the Incognito restore flow. */
 public class IncognitoRestoreAppLaunchDrawBlocker {
@@ -75,22 +77,21 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
             };
 
     /**
-     * A {@link TabModelSelectorObserver} which notifies about the event when the tab state is
-     * initialized. This is one of the signal along with the native initialization that we look for
-     * to unblock the draw.
+     * The {@link CallbackController} for any callbacks that may run after the class is destroyed.
      */
-    private final @NonNull TabModelSelectorObserver mTabModelSelectorObserver =
-            new TabModelSelectorObserver() {
-                @Override
-                public void onTabStateInitialized() {
-                    maybeUnblockDraw();
-                }
-            };
+    private CallbackController mCallbackController = new CallbackController();
 
-    /** A callback to add the |mTabModelSelectorObserver|. */
+    /**
+     * A callback to add a {@link TabModelSelectorObserver} which notifies about the event when the
+     * tab state is initialized. This is one of the signal along with the native initialization that
+     * we look for to unblock the draw.
+     */
     private final @NonNull Callback<TabModelSelector> mTabModelSelectorSupplierCallback =
             (tabModelSelector) -> {
-                tabModelSelector.addObserver(mTabModelSelectorObserver);
+                TabModelUtils.runOnTabStateInitialized(
+                        tabModelSelector,
+                        mCallbackController.makeCancelable(
+                                unusedTabModelSelector -> maybeUnblockDraw()));
             };
 
     /**
@@ -135,11 +136,9 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
 
     /** The destroy method which would remove any added observers by this class. */
     public void destroy() {
+        mCallbackController.destroy();
         mActivityLifecycleDispatcher.unregister(mNativeInitObserver);
         mTabModelSelectorSupplier.removeObserver(mTabModelSelectorSupplierCallback);
-        if (mTabModelSelectorSupplier.get() != null) {
-            mTabModelSelectorSupplier.get().removeObserver(mTabModelSelectorObserver);
-        }
     }
 
     /**

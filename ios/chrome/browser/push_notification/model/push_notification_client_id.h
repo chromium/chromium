@@ -22,8 +22,9 @@ enum class PushNotificationClientId {
   kContent = 2,
   kTips = 3,
   kSports = 4,
-  kMaxValue = kSports,
+  kSafetyCheck = 5,
+  kMaxValue = kSafetyCheck,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientId)
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_ID_H_

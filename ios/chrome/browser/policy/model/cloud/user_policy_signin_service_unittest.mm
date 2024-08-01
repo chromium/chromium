@@ -128,7 +128,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
     TestChromeBrowserState::Builder builder;
     builder.SetUserCloudPolicyManager(BuildCloudPolicyManager());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
@@ -276,7 +276,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  IOSChromeScopedTestingLocalState scoped_local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   raw_ptr<PrefService> pref_service_;
 
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

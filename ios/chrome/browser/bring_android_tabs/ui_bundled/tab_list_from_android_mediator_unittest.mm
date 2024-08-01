@@ -42,7 +42,7 @@ class TabListFromAndroidMediatorTest : public PlatformTest {
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
   }
 
   // Creates the set of tabs to pass to the FakeBringAndroidTabsToIOSService and

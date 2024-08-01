@@ -79,38 +79,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          TrackingProtectionSettingsForEnterpriseBrowserTest,
                          testing::Bool());
 
-class TrackingProtectionSettingsIppInitializationBrowserTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  TrackingProtectionSettingsIppInitializationBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          privacy_sandbox::kIpProtectionDogfoodDefaultOn);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          privacy_sandbox::kIpProtectionDogfoodDefaultOn);
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(TrackingProtectionSettingsIppInitializationBrowserTest,
-                       DogfoodDefaultOnFeatureInitializesPrefToEnabled) {
-  EXPECT_EQ(
-      browser()->profile()->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled),
-      GetParam());
-  EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
-                prefs::kIpProtectionInitializedByDogfood),
-            GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TrackingProtectionSettingsIppInitializationBrowserTest,
-                         testing::Bool());
-
 class TrackingProtectionSettingsExceptionsMigrationBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {

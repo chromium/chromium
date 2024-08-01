@@ -37,10 +37,6 @@ class NotificationUIManager;
 class PrefService;
 class SystemNotificationHelper;
 
-namespace content {
-class NotificationService;
-}
-
 namespace extensions {
 class ExtensionsBrowserClient;
 }
@@ -216,7 +212,6 @@ class TestingBrowserProcess : public BrowserProcess {
 
   void Init();
 
-  std::unique_ptr<content::NotificationService> notification_service_;
   std::string app_locale_;
   bool is_shutting_down_ = false;
 
@@ -291,8 +286,7 @@ class TestingBrowserProcess : public BrowserProcess {
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.
-// Allows you to initialize TestingBrowserProcess/NotificationService before
-// other member variables.
+// Allows you to initialize TestingBrowserProcess before other member variables.
 //
 // This can be helpful if you are running a unit test inside the browser_tests
 // suite because browser_tests do not make a TestingBrowserProcess for you.
@@ -302,7 +296,6 @@ class TestingBrowserProcess : public BrowserProcess {
 //  private:
 //   TestingBrowserProcessInitializer initializer_;
 //   LocalState local_state_;  // Needs a BrowserProcess to initialize.
-//   NotificationRegistrar registar_;  // Needs NotificationService.
 // };
 class TestingBrowserProcessInitializer {
  public:

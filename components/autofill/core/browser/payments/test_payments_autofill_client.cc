@@ -12,10 +12,12 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -201,6 +203,17 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 MerchantPromoCodeManager*
 TestPaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return &mock_merchant_promo_code_manager_;
+}
+
+AutofillOfferManager* TestPaymentsAutofillClient::GetAutofillOfferManager() {
+  return autofill_offer_manager_.get();
+}
+
+bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilities) {
+  return false;
 }
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {

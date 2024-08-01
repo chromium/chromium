@@ -18,8 +18,6 @@ import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.compat.ApiHelperForR;
-
 /**
  * Helper functions relevant to working with displays, but have no parallel in the native
  * DisplayAndroid class.
@@ -166,7 +164,7 @@ public abstract class DisplayUtil {
             WindowManager manager =
                     (WindowManager) windowManagerContext.getSystemService(Context.WINDOW_SERVICE);
             assert manager != null;
-            Rect bounds = ApiHelperForR.getMaximumWindowMetricsBounds(manager);
+            Rect bounds = manager.getMaximumWindowMetrics().getBounds();
             return DisplayUtil.pxToDp(
                     display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
         }

@@ -51,6 +51,8 @@ int DemographicsClient::GetNumberOfProfilesOnDisk() {
       ->GetNumberOfBrowserStates();
 }
 
+// TODO(crbug.com/355629111): this API needs to be re-designed to work
+// with Multiple Identities.
 ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
   ChromeBrowserState* chrome_browser_state = chrome_browser_state_.get();
   if (!chrome_browser_state) {

@@ -348,6 +348,8 @@ component("ash") {
     "assistant/assistant_web_ui_controller.h",
     "assistant/assistant_web_view_delegate_impl.cc",
     "assistant/assistant_web_view_delegate_impl.h",
+    "auth/active_session_auth_controller_impl.cc",
+    "auth/active_session_auth_controller_impl.h",
     "auth/views/active_session_auth_view.cc",
     "auth/views/active_session_auth_view.h",
     "auth/views/auth_common.h",
@@ -1034,6 +1036,8 @@ component("ash") {
     "picker/model/picker_model.h",
     "picker/model/picker_search_results_section.cc",
     "picker/model/picker_search_results_section.h",
+    "picker/picker_action_on_next_focus_request.cc",
+    "picker/picker_action_on_next_focus_request.h",
     "picker/picker_asset_fetcher.h",
     "picker/picker_asset_fetcher_impl.cc",
     "picker/picker_asset_fetcher_impl.h",
@@ -2192,6 +2196,8 @@ component("ash") {
     "system/palette/tools/laser_pointer_mode.h",
     "system/palette/tools/magnifier_mode.cc",
     "system/palette/tools/magnifier_mode.h",
+    "system/palette/tools/marker_mode.cc",
+    "system/palette/tools/marker_mode.h",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.cc",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.h",
     "system/phonehub/app_stream_connection_error_dialog.cc",
@@ -2931,10 +2937,6 @@ component("ash") {
     "wm/overview/overview_drop_target.h",
     "wm/overview/overview_focus_cycler.cc",
     "wm/overview/overview_focus_cycler.h",
-    "wm/overview/overview_focus_cycler_old.cc",
-    "wm/overview/overview_focus_cycler_old.h",
-    "wm/overview/overview_focusable_view.cc",
-    "wm/overview/overview_focusable_view.h",
     "wm/overview/overview_grid.cc",
     "wm/overview/overview_grid.h",
     "wm/overview/overview_grid_event_handler.cc",
@@ -3031,8 +3033,6 @@ component("ash") {
     "wm/splitview/split_view_overview_session.h",
     "wm/splitview/split_view_setup_view.cc",
     "wm/splitview/split_view_setup_view.h",
-    "wm/splitview/split_view_setup_view_old.cc",
-    "wm/splitview/split_view_setup_view_old.h",
     "wm/splitview/split_view_test_api.cc",
     "wm/splitview/split_view_types.h",
     "wm/splitview/split_view_utils.cc",
@@ -3651,6 +3651,7 @@ test("ash_unittests") {
     "assistant/ui/main_stage/ui_element_container_view_unittest.cc",
     "assistant/util/deep_link_util_unittest.cc",
     "assistant/util/resource_util_unittest.cc",
+    "auth/test/active_session_auth_controller_unittest.cc",
     "auth/views/active_session_auth_view_unittest.cc",
     "auth/views/auth_container_view_unittest.cc",
     "auth/views/auth_input_row_view_unittest.cc",
@@ -3819,6 +3820,7 @@ test("ash_unittests") {
     "metrics/login_metrics_recorder_unittest.cc",
     "metrics/login_unlock_throughput_recorder_unittest.cc",
     "metrics/pointer_metrics_recorder_unittest.cc",
+    "metrics/post_login_metrics_recorder_unittest.cc",
     "metrics/stylus_metrics_recorder_unittest.cc",
     "metrics/task_switch_metrics_recorder_unittest.cc",
     "metrics/task_switch_time_tracker_unittest.cc",
@@ -3834,6 +3836,7 @@ test("ash_unittests") {
     "picker/model/picker_emoji_history_model_unittest.cc",
     "picker/model/picker_emoji_suggester_unittest.cc",
     "picker/model/picker_model_unittest.cc",
+    "picker/picker_action_on_next_focus_request_unittest.cc",
     "picker/picker_asset_fetcher_impl_unittest.cc",
     "picker/picker_clipboard_history_provider_unittest.cc",
     "picker/picker_controller_unittest.cc",
@@ -4338,7 +4341,6 @@ test("ash_unittests") {
     "wm/overview/cleanup_animation_observer_unittest.cc",
     "wm/overview/delayed_animation_observer_impl_unittest.cc",
     "wm/overview/overview_controller_unittest.cc",
-    "wm/overview/overview_focus_cycler_old_unittest.cc",
     "wm/overview/overview_focus_cycler_unittest.cc",
     "wm/overview/overview_grid_unittest.cc",
     "wm/overview/overview_session_unittest.cc",
@@ -4665,6 +4667,10 @@ test("ash_unittests") {
       "ambient/resources/ambient_animation_static_resources_impl_unittest.cc",
     ]
   }
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
 }
 
 test("ash_pixeltests") {
@@ -4687,7 +4693,6 @@ test("ash_pixeltests") {
     "scalable_iph/scalable_iph_pixeltest.cc",
     "shelf/login_shelf_view_pixeltest.cc",
     "shelf/scrollable_shelf_view_pixeltest.cc",
-    "shelf/shelf_app_button_pixeltest.cc",
     "shelf/shelf_layout_manager_pixeltest.cc",
     "system/accessibility/accessibility_detailed_view_pixeltest.cc",
     "system/audio/audio_detailed_view_pixeltest.cc",
@@ -4965,6 +4970,8 @@ static_library("test_support") {
     "picker/picker_test_util.h",
     "picker/search/mock_search_picker_client.cc",
     "picker/search/mock_search_picker_client.h",
+    "picker/views/mock_picker_search_results_view_delegate.cc",
+    "picker/views/mock_picker_search_results_view_delegate.h",
     "projector/test/mock_projector_metadata_controller.cc",
     "projector/test/mock_projector_metadata_controller.h",
     "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.cc",

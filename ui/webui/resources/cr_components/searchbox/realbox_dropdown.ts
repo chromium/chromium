@@ -88,6 +88,12 @@ export class RealboxDropdownElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      hasEmptyInput: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: `computeHasEmptyInput_(result)`,
+      },
+
       result: {
         type: Object,
       },
@@ -326,6 +332,10 @@ export class RealboxDropdownElement extends PolymerElement {
       this.hadSecondarySide = hasSecondarySide;
     }
     return hasSecondarySide;
+  }
+
+  private computeHasEmptyInput_(): boolean {
+    return this.result && decodeString16(this.result.input) === '';
   }
 
   private computeHiddenGroupIds_(): number[] {

@@ -38,9 +38,6 @@ inline constexpr NSString* kDefaultPassword = @"concrete password";
 // Default site used for password creation.
 inline constexpr NSString* kDefaultSite = @"https://example.com/";
 
-// Default credential id used for passkey creation.
-inline constexpr NSString* kDefaultCredentialId = @"credential_id";
-
 // Default rp id used for passkey creation.
 inline constexpr NSString* kDefaultRpId = @"example.com";
 
@@ -141,7 +138,6 @@ void SaveMutedCompromisedPasswordFormToProfileStore(
 
 // Saves a passkey to the store.
 void SaveExamplePasskeyToStore(
-    NSString* credentialId = kDefaultCredentialId,
     NSString* rpId = kDefaultRpId,
     NSString* userId = kDefaultUserId,
     NSString* username = kDefaultUsername,

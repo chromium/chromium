@@ -55,6 +55,7 @@ class CampaignsManagerClientImpl;
 class CampaignsManagerSession;
 class CastConfigControllerMediaRouter;
 class DesksClient;
+class ExoParts;
 class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LobsterClientFactoryImpl;
@@ -73,10 +74,6 @@ class TabClusterUIClient;
 class TabletModePageBehavior;
 class VpnListForwarder;
 class WallpaperControllerClientImpl;
-
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-class ExoParts;
-#endif
 
 namespace internal {
 class ChromeShelfControllerInitializer;
@@ -170,9 +167,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<CampaignsManagerSession> campaigns_manager_session_;
   std::unique_ptr<ash::PeripheralsAppDelegateImpl> peripherals_app_delegate_;
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;
-#endif
 
   // Initialized in PostProfileInit in all configs:
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;

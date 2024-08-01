@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -186,10 +187,10 @@ TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
 
   loader_factory().SetInterceptor(base::BindLambdaForTesting(
       [&](const network::ResourceRequest& resource_request) {
-        std::string accept_value;
-        ASSERT_TRUE(resource_request.headers.GetHeader(
-            net::HttpRequestHeaders::kAccept, &accept_value));
-        EXPECT_EQ(accept_value, network::kDefaultAcceptHeaderValue);
+        EXPECT_THAT(
+            resource_request.headers.GetHeader(
+                net::HttpRequestHeaders::kAccept),
+            testing::Optional(std::string(network::kDefaultAcceptHeaderValue)));
       }));
 
   early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),

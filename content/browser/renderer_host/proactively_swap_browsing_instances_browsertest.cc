@@ -1236,8 +1236,24 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   ASSERT_FALSE(controller.NeedsReload());
 }
 
-IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
-                       SwapOnNavigationToPageThatRedirects) {
+class ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay
+    : public ProactivelySwapBrowsingInstancesTest {
+ public:
+  ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay() {
+    feature_list_for_defer_speculative_rfh_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation,
+        {{"create_speculative_rfh_delay_ms", "0"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_defer_speculative_rfh_;
+};
+
+// The test disables delaying the speculative RFH creation when navigation
+// starts since it checks the behavior of speculative RFH during redirection.
+IN_PROC_BROWSER_TEST_P(
+    ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay,
+    SwapOnNavigationToPageThatRedirects) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
@@ -2358,5 +2374,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay,
     testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content

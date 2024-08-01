@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -1219,7 +1220,7 @@ void USBDevice::MarkRequestComplete(ScriptPromiseResolverBase* resolver) {
   // Since all callbacks are wrapped with a check that the execution context is
   // still valid we can guarantee that `device_requests_` hasn't been cleared
   // yet if we are in this function.
-  DCHECK(request_entry != device_requests_.end());
+  CHECK(request_entry != device_requests_.end(), base::NotFatalUntil::M130);
   device_requests_.erase(request_entry);
 }
 

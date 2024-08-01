@@ -16,6 +16,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -45,7 +46,7 @@ class AutofillProfileTableViewControllerTest
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -75,7 +76,7 @@ class AutofillProfileTableViewControllerTest
             chrome_browser_state_.get());
     personal_data_manager->address_data_manager()
         .get_alternative_state_name_map_updater_for_testing()
-        ->set_local_state_for_testing(local_state_.Get());
+        ->set_local_state_for_testing(local_state());
     personal_data_manager->SetSyncServiceForTest(nullptr);
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
@@ -88,8 +89,12 @@ class AutofillProfileTableViewControllerTest
     std::move(waiter).Wait();  // Wait for completion of the async operation.
   }
 
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
 };

@@ -45,7 +45,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
     : public ash::input_method::InputMethodManager::ImeMenuObserver,
       public KeyboardDeviceConfigurationDelegate,
       public KeyboardObserver,
-      public ash::ImeControllerImpl::Observer,
+      public ash::ImeController::Observer,
       public ui::InputDeviceEventObserver {
  public:
   WaylandKeyboardDeviceConfigurationDelegate(wl_resource* resource,
@@ -93,7 +93,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
     wl_client_flush(client());
   }
 
-  // Overridden from ImeControllerImpl::Observer:
+  // Overridden from ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override {}
 
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {

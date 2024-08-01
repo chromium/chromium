@@ -24,7 +24,7 @@ bool SampledEffect::WillNeverChange() const {
 
 void SampledEffect::RemoveReplacedInterpolations(
     const HashSet<PropertyHandle>& replaced_properties) {
-  auto* new_end = std::remove_if(
+  auto new_end = std::remove_if(
       interpolations_.begin(), interpolations_.end(),
       [&](const auto& interpolation) {
         return replaced_properties.Contains(interpolation->GetProperty());

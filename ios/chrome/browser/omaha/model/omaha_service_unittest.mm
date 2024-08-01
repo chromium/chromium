@@ -17,11 +17,10 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -36,7 +35,6 @@
 
 namespace {
 
-const char kUserDataDir[] = FILE_PATH_LITERAL(".");
 const int64_t kUnknownInstallDate = 2;
 
 }  // namespace
@@ -47,10 +45,7 @@ class OmahaServiceTest : public PlatformTest {
       : test_shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        need_update_(false),
-        scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(
-                base::FilePath(kUserDataDir))) {
+        need_update_(false) {
     GetApplicationContext()->GetLocalState()->SetInt64(
         metrics::prefs::kInstallDate, kUnknownInstallDate);
     OmahaService::ClearPersistentStateForTests();
@@ -122,8 +117,8 @@ class OmahaServiceTest : public PlatformTest {
   bool need_update_ = false;
   bool was_one_off_ = false;
   bool scheduled_callback_used_ = false;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 TEST_F(OmahaServiceTest, PingMessageTest) {

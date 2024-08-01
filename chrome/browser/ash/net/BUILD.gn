@@ -44,6 +44,8 @@ static_library("net") {
     "xdr_manager.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/public/cpp",
@@ -142,6 +144,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/net/dns_over_https:unit_tests",
     "//chrome/browser/ash/net/network_diagnostics:unit_tests",
     "//chrome/browser/ash/net/rollback_network_config:unit_tests",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/shill",
@@ -190,6 +193,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/policy/affiliation:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",

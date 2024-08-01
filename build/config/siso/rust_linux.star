@@ -26,6 +26,7 @@ def __filegroups(ctx):
             "includes": [
                 "bin/rustc",
                 "lib/*.so",
+                "lib/libclang.so.*",
                 "lib/rustlib/src/rust/library/std/src/lib.rs",
                 "lib/rustlib/x86_64-unknown-linux-gnu/lib/*",
             ],
@@ -217,6 +218,15 @@ def __step_config(ctx, step_config):
             ],
             "remote": config.get(ctx, "cog"),
             "input_root_absolute_path": True,
+            "timeout": "2m",
+        },
+        {
+            # rust/bindgen fails remotely when *.d does not exist.
+            # TODO(b/356496947): need to run scandeps?
+            "name": "rust/bindgen",
+            "command_prefix": "python3 ../../build/rust/run_bindgen.py",
+            "inputs": rust_inputs + clang_inputs,
+            "remote": False,
             "timeout": "2m",
         },
     ])

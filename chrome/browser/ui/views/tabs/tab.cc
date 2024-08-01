@@ -318,16 +318,12 @@ void Tab::Layout(PassKey) {
     } else {
       MaybeAdjustLeftForPinnedTab(&favicon_bounds, gfx::kFaviconSize);
     }
-
-    if (base::FeatureList::IsEnabled(
-            performance_manager::features::kDiscardRingImprovements)) {
-      icon_->EnlargeDiscardIndicatorRadius(
-          controller()->GetInactiveTabWidth() -
-                      2 * tab_style()->GetBottomCornerRadius() >=
-                  gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
-              ? kIncreasedDiscardIndicatorRadiusDp
-              : 0);
-    }
+    icon_->EnlargeDiscardIndicatorRadius(
+        controller()->GetInactiveTabWidth() -
+                    2 * tab_style()->GetBottomCornerRadius() >=
+                gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
+            ? kIncreasedDiscardIndicatorRadiusDp
+            : 0);
 
     // Add space for insets outside the favicon bounds.
     favicon_bounds.Inset(-icon_->GetInsets());
@@ -699,7 +695,6 @@ std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTab;
-  node_data->AddState(ax::mojom::State::kMultiselectable);
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               IsSelected());
 

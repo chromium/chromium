@@ -301,9 +301,10 @@ void CronetURLRequest::NetworkTasks::Start(
   url_request_->SetExtraRequestHeaders(*request_headers);
   url_request_->SetPriority(initial_priority_);
   url_request_->SetIdempotency(idempotency_);
-  std::string referer;
-  if (request_headers->GetHeader(net::HttpRequestHeaders::kReferer, &referer)) {
-    url_request_->SetReferrer(referer);
+  if (std::optional<std::string> referer =
+          request_headers->GetHeader(net::HttpRequestHeaders::kReferer);
+      referer) {
+    url_request_->SetReferrer(*referer);
   }
   if (upload)
     url_request_->set_upload(std::move(upload));

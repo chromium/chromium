@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "content/browser/interest_group/auction_runner.h"
 
 #include <stdint.h>
 
@@ -31,6 +30,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,9 +49,11 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/additional_bids_test_util.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_result.h"
+#include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
@@ -110,6 +112,20 @@ using auction_worklet::TestDevToolsAgentClient;
 using testing::HasSubstr;
 
 namespace content {
+class ProcessHandleTestPeer {
+ public:
+  explicit ProcessHandleTestPeer(
+      const AuctionProcessManager::ProcessHandle* handle)
+      : handle_(handle) {}
+
+  void CallOnLaunchedWithPidForCurrentProcess() {
+    handle_->OnBaseProcessLaunched(base::Process::Current());
+  }
+
+ private:
+  raw_ptr<const AuctionProcessManager::ProcessHandle> handle_;
+};
+
 namespace {
 
 using InterestGroupKey = blink::InterestGroupKey;
@@ -1466,6 +1482,10 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
     return nullptr;
   }
 
+  void OnNewProcessAssigned(const ProcessHandle* handle) override {
+    ProcessHandleTestPeer(handle).CallOnLaunchedWithPidForCurrentProcess();
+  }
+
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override {
@@ -1678,6 +1698,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     same_process_auction_process_manager_ = nullptr;
     // And this points into the process manager as well.
     auction_worklet_manager_.reset();
+
+    auction_metrics_recorder_.reset();
 
     interest_group_manager_.reset();
     auction_nonce_manager_.reset();
@@ -1922,9 +1944,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     // So destroy it now, since we are going to make a new one shortly anyway.
     auction_worklet_manager_.reset();
 
+    auction_metrics_recorder_.reset();
+
     interest_group_manager_ = std::make_unique<TestInterestGroupManagerImpl>(
         frame_origin_, GetClientSecurityState(),
         dummy_report_shared_url_loader_factory_);
+
     if (!auction_process_manager_) {
       auto same_process_auction_process_manager =
           std::make_unique<SameProcessAuctionProcessManager>();
@@ -1933,6 +1958,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       auction_process_manager_ =
           std::move(same_process_auction_process_manager);
     }
+
+    ukm_source_id_ = ukm::AssignNewSourceId();
+    auction_metrics_recorder_ =
+        std::make_unique<AuctionMetricsRecorder>(ukm_source_id_);
     auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
         auction_process_manager_.get(), top_frame_origin_, frame_origin_, this);
     interest_group_manager_->set_auction_process_manager_for_testing(
@@ -2004,7 +2033,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     }
 
     interest_group_manager_->ClearLoggedData();
-    source_id_ = ukm::AssignNewSourceId();
 
     task_environment()->FastForwardBy(between_join_run_auction_delay_);
 
@@ -2020,13 +2048,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             base::Unretained(browser_context()));
 
     auction_runner_ = AuctionRunner::CreateAndStart(
-        auction_worklet_manager_.get(), auction_nonce_manager_.get(),
-        interest_group_manager_.get(), /*browser_context=*/browser_context(),
-        &private_aggregation_manager_,
+        auction_metrics_recorder_.get(), auction_worklet_manager_.get(),
+        auction_nonce_manager_.get(), interest_group_manager_.get(),
+        /*browser_context=*/browser_context(), &private_aggregation_manager_,
         base::BindRepeating(&AuctionRunnerTest::GetAdAuctionPageData,
                             base::Unretained(this)),
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
-        std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
+        std::move(auction_config), top_frame_origin_, frame_origin_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
         IsInterestGroupApiAllowedCallback(), std::move(attestation_callback),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),
@@ -2355,7 +2383,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                     /*code_ready_latency=*/std::nullopt,
                     /*direct_from_seller_signals_latency=*/std::nullopt,
-                    /*trusted_scoring_signals_latency=*/std::nullopt),
+                    /*trusted_scoring_signals_latency=*/std::nullopt,
+                    /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                    /*score_ad_start_time=*/base::TimeTicks::Now(),
+                    /*score_ad_finish_time=*/base::TimeTicks::Now()),
                 /*errors=*/{});
       }
     }
@@ -2515,6 +2546,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumDistinctOwnersWithInterestGroupsName,
                 Entry::kNumSellersWithBiddersName,
                 Entry::kNumBidderWorkletsName,
+                /* WorkletCreation phase metrics */
+                Entry::kWorkletCreationPhaseStartTimeInMillisName,
+                Entry::kWorkletCreationPhaseEndTimeInMillisName,
                 /* Bid filtering metrics */
                 Entry::kNumBidsAbortedByBuyerCumulativeTimeoutName,
                 Entry::kNumBidsAbortedByBidderWorkletFatalErrorName,
@@ -2563,6 +2597,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                     kMeanGenerateBidDirectFromSellerSignalsCriticalPathLatencyInMillisName,
                 Entry::
                     kMeanGenerateBidTrustedBiddingSignalsCriticalPathLatencyInMillisName,
+                /* GenerateBid phase metrics */
+                Entry::kBidSignalsFetchPhaseStartTimeInMillisName,
+                Entry::kBidSignalsFetchPhaseEndTimeInMillisName,
+                Entry::kBidGenerationPhaseStartTimeInMillisName,
+                Entry::kBidGenerationPhaseEndTimeInMillisName,
                 /* Bids queued waiting to begin ScoreAd */
                 Entry::kNumTopLevelBidsQueuedWaitingForConfigPromisesName,
                 Entry::kNumTopLevelBidsQueuedWaitingForSellerWorkletName,
@@ -2595,11 +2634,16 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                     kMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillisName,
                 Entry::
                     kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName,
+                /* ScoreAd phase metrics */
+                Entry::kScoreSignalsFetchPhaseStartTimeInMillisName,
+                Entry::kScoreSignalsFetchPhaseEndTimeInMillisName,
+                Entry::kScoringPhaseStartTimeInMillisName,
+                Entry::kScoringPhaseEndTimeInMillisName,
             });
 
     EXPECT_THAT(ukm_entries, testing::SizeIs(1));
     if (ukm_entries.size() == 1) {
-      EXPECT_EQ(ukm_entries.at(0).source_id, source_id_);
+      EXPECT_EQ(ukm_entries.at(0).source_id, ukm_source_id_);
       return ukm_entries.at(0).metrics;
     }
 
@@ -3355,6 +3399,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               nullptr);
 
+  ukm::SourceId ukm_source_id_;
+  std::unique_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
   std::unique_ptr<AuctionNonceManager> auction_nonce_manager_;
 
@@ -3382,8 +3428,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // The TestInterestGroupManager is recreated and repopulated for each auction.
   std::unique_ptr<TestInterestGroupManagerImpl> interest_group_manager_;
-
-  ukm::SourceId source_id_;
 
   std::unique_ptr<AuctionRunner> auction_runner_;
   std::unique_ptr<InterestGroupAuctionReporter> reporter_;
@@ -4272,7 +4316,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 10 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 11u);
@@ -4300,7 +4345,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 20 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 21u);
@@ -4354,7 +4400,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 2 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service1->AuctionV8HelpersForTesting().size(), 3u);
@@ -4392,7 +4439,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 1 bidder thread and 1 seller thread.
   EXPECT_EQ(auction_worklet_service2->AuctionV8HelpersForTesting().size(), 2u);
@@ -4434,7 +4482,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 2 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service3->AuctionV8HelpersForTesting().size(), 3u);
@@ -10843,7 +10892,10 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   score_ad_params = seller_worklet->WaitForScoreAd();
@@ -10866,7 +10918,10 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Finish the auction.
@@ -11127,7 +11182,10 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
 
     // Finish the auction.
@@ -11382,7 +11440,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Top-level seller worklet scores the bid.
@@ -11409,7 +11470,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Top-level seller worklet returns a report url.
@@ -11609,7 +11673,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
 
     // The auction fails, because of the bad ComponentAuctionModifiedBidParams.
@@ -11687,7 +11754,10 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   auction_run_loop_->Run();
@@ -11774,7 +11844,10 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
               auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                   /*code_ready_latency=*/std::nullopt,
                   /*direct_from_seller_signals_latency=*/std::nullopt,
-                  /*trusted_scoring_signals_latency=*/std::nullopt),
+                  /*trusted_scoring_signals_latency=*/std::nullopt,
+                  /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                  /*score_ad_start_time=*/base::TimeTicks::Now(),
+                  /*score_ad_finish_time=*/base::TimeTicks::Now()),
               /*errors=*/{});
 
       // Finish the auction.
@@ -11898,7 +11971,10 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
               auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                   /*code_ready_latency=*/std::nullopt,
                   /*direct_from_seller_signals_latency=*/std::nullopt,
-                  /*trusted_scoring_signals_latency=*/std::nullopt),
+                  /*trusted_scoring_signals_latency=*/std::nullopt,
+                  /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                  /*score_ad_start_time=*/base::TimeTicks::Now(),
+                  /*score_ad_finish_time=*/base::TimeTicks::Now()),
               /*errors=*/{});
 
       // Finish the auction.
@@ -12296,7 +12372,10 @@ TEST_F(AuctionRunnerTest, BadScoreAdBidInSellerCurrency) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ("Invalid bid_in_seller_currency", TakeBadMessage());
@@ -12354,7 +12433,10 @@ TEST_F(AuctionRunnerTest, BadScoreAdScore) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ("Invalid score", TakeBadMessage());
@@ -12408,7 +12490,10 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Finish the auction.
@@ -12489,7 +12574,10 @@ TEST_F(AuctionRunnerTest, Tie) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
 
     // Bidder2 returns a bid, which is then scored.
@@ -12516,7 +12604,10 @@ TEST_F(AuctionRunnerTest, Tie) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
     // received the score.
@@ -12664,7 +12755,10 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                         /*code_ready_latency=*/std::nullopt,
                         /*direct_from_seller_signals_latency=*/std::nullopt,
-                        /*trusted_scoring_signals_latency=*/std::nullopt),
+                        /*trusted_scoring_signals_latency=*/std::nullopt,
+                        /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                        /*score_ad_start_time=*/base::TimeTicks::Now(),
+                        /*score_ad_finish_time=*/base::TimeTicks::Now()),
                     /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment()->RunUntilIdle();
@@ -12689,7 +12783,10 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                         /*code_ready_latency=*/std::nullopt,
                         /*direct_from_seller_signals_latency=*/std::nullopt,
-                        /*trusted_scoring_signals_latency=*/std::nullopt),
+                        /*trusted_scoring_signals_latency=*/std::nullopt,
+                        /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                        /*score_ad_start_time=*/base::TimeTicks::Now(),
+                        /*score_ad_finish_time=*/base::TimeTicks::Now()),
                     /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment()->RunUntilIdle();
@@ -13106,7 +13203,10 @@ TEST_F(AuctionRunnerTest,
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Finish the auction.
@@ -13231,7 +13331,10 @@ TEST_F(AuctionRunnerTest,
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   // Finish the auction.
@@ -14380,7 +14483,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(550),
             /*config_promises_latency=*/nullopt,
             /*direct_from_seller_signals_latency=*/base::Milliseconds(400),
-            /*trusted_bidding_signals_latency=*/nullopt}),
+            /*trusted_bidding_signals_latency=*/nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/500,
        /*num_bidder_worklet_on_critical_path=*/1,
        /*bidder_worklet_critical_path_latency_in_millis=*/100,
@@ -14399,7 +14505,10 @@ TEST_F(
            {/*code_ready_latency=*/nullopt,
             /*config_promises_latency=*/base::Milliseconds(550),
             /*direct_from_seller_signals_latency=*/nullopt,
-            /*trusted_bidding_signals_latency=*/base::Milliseconds(300)}),
+            /*trusted_bidding_signals_latency=*/base::Milliseconds(300),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/nullopt,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14418,7 +14527,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(50),
             /*config_promises_latency=*/base::Milliseconds(200),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(550),
-            /*trusted_bidding_signals_latency=*/nullopt}),
+            /*trusted_bidding_signals_latency=*/nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/50,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14437,7 +14549,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(100),
             /*config_promises_latency=*/base::Milliseconds(51),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
-            /*trusted_bidding_signals_latency=*/base::Milliseconds(550)}),
+            /*trusted_bidding_signals_latency=*/base::Milliseconds(550),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/100,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14456,7 +14571,10 @@ TEST_F(
            {/*code_ready_latency=*/base::Milliseconds(100),
             /*config_promises_latency=*/base::Milliseconds(550),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
-            /*trusted_bidding_signals_latency=*/base::Milliseconds(550)}),
+            /*trusted_bidding_signals_latency=*/base::Milliseconds(550),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/100,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14518,7 +14636,10 @@ TEST_F(
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
 
     // Finish the auction.
@@ -14650,7 +14771,10 @@ TEST_F(AuctionRunnerTest,
        ScoreAdDependencyLatencies(
            {/*code_ready_latency=*/base::Milliseconds(550),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(400),
-            /*trusted_scoring_signals_latency=*/nullopt}),
+            /*trusted_scoring_signals_latency=*/nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/500,
        /*num_bidder_worklet_on_critical_path=*/1,
        /*bidder_worklet_critical_path_latency_in_millis=*/100,
@@ -14665,7 +14789,10 @@ TEST_F(AuctionRunnerTest,
        ScoreAdDependencyLatencies(
            {/*code_ready_latency=*/base::Milliseconds(200),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(550),
-            /*trusted_scoring_signals_latency=*/nullopt}),
+            /*trusted_scoring_signals_latency=*/nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/200,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14680,7 +14807,10 @@ TEST_F(AuctionRunnerTest,
        ScoreAdDependencyLatencies(
            {/*code_ready_latency=*/base::Milliseconds(100),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
-            /*trusted_scoring_signals_latency=*/base::Milliseconds(550)}),
+            /*trusted_scoring_signals_latency=*/base::Milliseconds(550),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/100,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14695,7 +14825,10 @@ TEST_F(AuctionRunnerTest,
        ScoreAdDependencyLatencies(
            {/*code_ready_latency=*/base::Milliseconds(550),
             /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
-            /*trusted_scoring_signals_latency=*/base::Milliseconds(550)}),
+            /*trusted_scoring_signals_latency=*/base::Milliseconds(550),
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_start_time=*/base::TimeTicks::Now(),
+            /*score_ad_finish_time=*/base::TimeTicks::Now()}),
        /*code_ready_latency_in_millis=*/500,
        /*num_bidder_worklet_on_critical_path=*/0,
        /*bidder_worklet_critical_path_latency_in_millis=*/nullopt,
@@ -14735,7 +14868,10 @@ TEST_F(AuctionRunnerTest,
             /*code_ready_latency=*/std::nullopt,
             /*config_promises_latency=*/std::nullopt,
             /*direct_from_seller_signals_latency=*/std::nullopt,
-            /*trusted_bidding_signals_latency=*/std::nullopt));
+            /*trusted_bidding_signals_latency=*/std::nullopt,
+            /*deps_wait_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_start_time=*/base::TimeTicks::Now(),
+            /*generate_bid_finish_time=*/base::TimeTicks::Now()));
 
     // Score the ad.
     auto score_ad_params = seller_worklet->WaitForScoreAd();
@@ -14838,6 +14974,177 @@ TEST_F(AuctionRunnerTest,
                 kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName,
             test_case.trusted_scoring_signals_critical_path_latency_in_millis));
   }
+}
+
+// Test the phase metrics for the WorkletCreation phase.
+TEST_F(AuctionRunnerTest, VerifyWorkletCreationPhaseMetrics) {
+  auto same_process_auction_process_manager =
+      std::make_unique<SameProcessAuctionProcessManager>();
+  same_process_auction_process_manager_ =
+      same_process_auction_process_manager.get();
+  auction_process_manager_ = std::move(same_process_auction_process_manager);
+
+  RunStandardAuction();
+
+  ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
+
+  using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
+
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName));
+}
+
+// Test the phase metrics for GenerateBid and ScoreAd phases.
+TEST_F(AuctionRunnerTest, VerifyGenerateBidAndScoreAdPhaseMetrics) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+
+  // First bid.
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  bidder1_worklet->InvokeGenerateBidCallback(
+      /*bid=*/2, /*bid_currency=*/std::nullopt,
+      /*ad_descriptor=*/blink::AdDescriptor(GURL("https://ad1.com/")),
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      /*further_bids=*/{},
+      /*ad_component_descriptors=*/std::nullopt,
+      /*duration=*/base::TimeDelta(),
+      /*bidding_signals_data_version=*/std::nullopt,
+      /*debug_loss_report_url=*/std::nullopt,
+      /*debug_win_report_url=*/std::nullopt,
+      /*pa_requests=*/{},
+      /*real_time_contributions=*/{},
+      /*dependency_latencies=*/
+      auction_worklet::mojom::GenerateBidDependencyLatencies::New(
+          /*code_ready_latency=*/std::nullopt,
+          /*config_promises_latency=*/std::nullopt,
+          /*direct_from_seller_signals_latency=*/std::nullopt,
+          /*trusted_bidding_signals_latency=*/std::nullopt,
+          /*deps_wait_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_finish_time=*/base::TimeTicks::Now()));
+
+  // Score the first ad.
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(2, score_ad_params.bid);
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*bid_in_seller_currency=*/std::nullopt,
+          /*scoring_signals_data_version=*/std::nullopt,
+          /*debug_loss_report_url=*/std::nullopt,
+          /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
+          /*scoring_latency=*/base::Milliseconds(0),
+          /*score_ad_dependency_latencies=*/
+          auction_worklet::mojom::ScoreAdDependencyLatencies::New(
+              /*code_ready_latency=*/base::Milliseconds(100),
+              /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
+              /*trusted_scoring_signals_latency=*/base::Milliseconds(550),
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
+          /*errors=*/{});
+
+  // Second bid.
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+  bidder2_worklet->InvokeGenerateBidCallback(
+      /*bid=*/1, /*bid_currency=*/std::nullopt,
+      /*ad_descriptor=*/blink::AdDescriptor(GURL("https://ad2.com/")),
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      /*further_bids=*/{},
+      /*ad_component_descriptors=*/std::nullopt,
+      /*duration=*/base::TimeDelta(),
+      /*bidding_signals_data_version=*/std::nullopt,
+      /*debug_loss_report_url=*/std::nullopt,
+      /*debug_win_report_url=*/std::nullopt,
+      /*pa_requests=*/{},
+      /*real_time_contributions=*/{},
+      /*dependency_latencies=*/
+      auction_worklet::mojom::GenerateBidDependencyLatencies::New(
+          /*code_ready_latency=*/std::nullopt,
+          /*config_promises_latency=*/std::nullopt,
+          /*direct_from_seller_signals_latency=*/std::nullopt,
+          /*trusted_bidding_signals_latency=*/std::nullopt,
+          /*deps_wait_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_start_time=*/base::TimeTicks::Now(),
+          /*generate_bid_start_time=*/base::TimeTicks::Now()));
+
+  // Score the second ad.
+  score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(1, score_ad_params.bid);
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/15,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*bid_in_seller_currency=*/std::nullopt,
+          /*scoring_signals_data_version=*/std::nullopt,
+          /*debug_loss_report_url=*/std::nullopt,
+          /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+          /*real_time_contributions=*/{},
+          /*scoring_latency=*/base::Milliseconds(0),
+          /*score_ad_dependency_latencies=*/
+          auction_worklet::mojom::ScoreAdDependencyLatencies::New(
+              /*code_ready_latency=*/base::Milliseconds(100),
+              /*direct_from_seller_signals_latency=*/base::Milliseconds(100),
+              /*trusted_scoring_signals_latency=*/base::Milliseconds(550),
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
+          /*errors=*/{});
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  bidder2_worklet->WaitForReportWin();
+  bidder2_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
+
+  using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
+
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidSignalsFetchPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidSignalsFetchPhaseEndTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidGenerationPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kBidGenerationPhaseEndTimeInMillisName));
+
+  EXPECT_THAT(
+      ukm_metrics,
+      HasMetric(UkmEntry::kScoreSignalsFetchPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kScoreSignalsFetchPhaseEndTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kScoringPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kScoringPhaseEndTimeInMillisName));
 }
 
 // An auction with two successful bids. contributeToHistogram() and
@@ -15748,7 +16055,10 @@ TEST_F(AuctionRunnerTest,
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   PrivateAggregationRequests report_win_pa_requests;
@@ -15869,7 +16179,10 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
                 /*trusted_scoring_signals_latency=*/
-                base::Milliseconds(100 * i + 21)),
+                base::Milliseconds(100 * i + 21),
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
   }
 
@@ -16028,7 +16341,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
                 /*trusted_scoring_signals_latency=*/
-                base::Milliseconds(100 * i + 21)),
+                base::Milliseconds(100 * i + 21),
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
   }
 
@@ -16060,7 +16376,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/base::Milliseconds(31)),
+              /*trusted_scoring_signals_latency=*/base::Milliseconds(31),
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
@@ -17239,7 +17558,10 @@ TEST_F(AuctionRunnerTest, RealTimeReportingSellerBadContribution) {
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
@@ -20063,7 +20385,10 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
                 /*direct_from_seller_signals_latency=*/std::nullopt,
-                /*trusted_scoring_signals_latency=*/std::nullopt),
+                /*trusted_scoring_signals_latency=*/std::nullopt,
+                /*deps_wait_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_start_time=*/base::TimeTicks::Now(),
+                /*score_ad_finish_time=*/base::TimeTicks::Now()),
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
@@ -20141,7 +20466,10 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,
               /*direct_from_seller_signals_latency=*/std::nullopt,
-              /*trusted_scoring_signals_latency=*/std::nullopt),
+              /*trusted_scoring_signals_latency=*/std::nullopt,
+              /*deps_wait_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_start_time=*/base::TimeTicks::Now(),
+              /*score_ad_finish_time=*/base::TimeTicks::Now()),
           /*errors=*/{});
 
   seller_worklet->WaitForReportResult();

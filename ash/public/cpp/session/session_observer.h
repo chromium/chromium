@@ -25,8 +25,13 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
   // Called when a user session gets added to the existing session.
   virtual void OnUserSessionAdded(const AccountId& account_id) {}
 
-  // Called once the first time a user session starts.
+  // Called when the first user session starts. Note this is called before the
+  // first user session is fully initialized. Post login works might still be
+  // pending.
   virtual void OnFirstSessionStarted() {}
+
+  // Called when the first user session finishes post login works.
+  virtual void OnFirstSessionReady() {}
 
   // Called when a user session is updated, such as avatar change.
   virtual void OnUserSessionUpdated(const AccountId& account_id) {}

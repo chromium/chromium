@@ -1,4 +1,19 @@
 {
+  "codesearch-gen-chrome-internal-android": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": true,
+      "clang_use_chrome_plugins": false,
+      "debuggable_apks": false,
+      "enable_kythe_annotations": true,
+      "is_chrome_branded": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
   "codesearch-gen-chrome-internal-linux": {
     "gn_args": {
       "blink_enable_generated_code_formatting": true,

@@ -36,7 +36,10 @@ static_library("network") {
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/mobile",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/profiles:signin_profile_handler",
+    "//chrome/browser/chromeos/network",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/common",
     "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/dbus/hermes",
@@ -60,6 +63,9 @@ static_library("network") {
     "//ui/message_center/public/cpp",
     "//ui/web_dialogs",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/cellular_setup" ]
 }
 
 source_set("unit_tests") {
@@ -119,6 +125,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/network",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support_ui",

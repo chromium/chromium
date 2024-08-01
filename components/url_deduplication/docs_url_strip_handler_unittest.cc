@@ -9,6 +9,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace url_deduplication {
+
 class DocsURLStripHandlerTest : public ::testing::Test {
  public:
   DocsURLStripHandlerTest() = default;
@@ -27,3 +29,5 @@ TEST_F(DocsURLStripHandlerTest, StripURL) {
   GURL stripped_url = Handler()->StripExtraParams(full_url);
   ASSERT_EQ("https://drive.google.com/open?id=document1", stripped_url.spec());
 }
+
+}  // namespace url_deduplication

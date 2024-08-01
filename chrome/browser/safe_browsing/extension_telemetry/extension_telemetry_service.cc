@@ -484,7 +484,7 @@ void ExtensionTelemetryService::SetEnabledForESB(bool enable) {
 // - Off-store data collection
 void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
   // Make call idempotent.
-  if (!base::FeatureList::IsEnabled(kExtensionTelemetryForEnteprise) ||
+  if (!base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise) ||
       enterprise_enabled_ == enable) {
     return;
   }
@@ -623,6 +623,8 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
     RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
     GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
         std::move(enterprise_report));
+  } else {
+    DLOG(WARNING) << "Upload skipped due to empty enterprise report.";
   }
 }
 

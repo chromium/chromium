@@ -15,6 +15,7 @@ static_library("safe_browsing_prefs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":features",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//net:net",
@@ -69,8 +70,6 @@ source_set("unit_tests") {
 
 source_set("common") {
   sources = [
-    "features.cc",
-    "features.h",
     "safe_browsing_settings_metrics.cc",
     "safe_browsing_settings_metrics.h",
     "safebrowsing_constants.cc",
@@ -105,7 +104,25 @@ source_set("common") {
     "//url/ipc:url_ipc",
   ]
 
-  public_deps = [ ":interfaces" ]
+  public_deps = [
+    ":features",
+    ":interfaces",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/safe_browsing:buildflags",
+  ]
 }
 
 mojom("interfaces") {

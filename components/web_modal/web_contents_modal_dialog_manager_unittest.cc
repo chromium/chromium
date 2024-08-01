@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 
 #include <map>
@@ -13,9 +18,19 @@
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/test_web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_modal {
+
+class MockCloseOnNavigationObserver
+    : public WebContentsModalDialogManager::CloseOnNavigationObserver {
+ public:
+  MockCloseOnNavigationObserver() = default;
+  ~MockCloseOnNavigationObserver() override = default;
+
+  MOCK_METHOD(void, OnWillClose, (), (override));
+};
 
 // Tracks persistent state changes of the native WC-modal dialog manager.
 class NativeManagerTracker {
@@ -387,6 +402,42 @@ TEST_F(WebContentsModalDialogManagerTest, CloseAllDialogs) {
   EXPECT_FALSE(manager->IsDialogActive());
   for (int i = 0; i < kWindowCount; i++)
     EXPECT_EQ(NativeManagerTracker::CLOSED, trackers[i].state_);
+}
+
+// Test that dialogs are closed on WebContents navigation.
+TEST_F(WebContentsModalDialogManagerTest, CloseOnNavigation) {
+  MockCloseOnNavigationObserver observer;
+  EXPECT_CALL(observer, OnWillClose());
+
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  manager->AddCloseOnNavigationObserver(&observer);
+
+  NavigateAndCommit(GURL("https://example.com/"));
+  EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
+}
+
+// Test that the CloseOnNavigation observer is not triggered if the dialog is
+// closed for another reason.
+TEST_F(WebContentsModalDialogManagerTest,
+       ObserverNotNotifiedOfNonNavigationClose) {
+  MockCloseOnNavigationObserver observer;
+  EXPECT_CALL(observer, OnWillClose()).Times(0);
+
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  manager->AddCloseOnNavigationObserver(&observer);
+
+  native_manager->Close();
+  EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
 }
 
 }  // namespace web_modal

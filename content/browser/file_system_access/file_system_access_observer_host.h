@@ -65,6 +65,14 @@ class FileSystemAccessObserverHost
       ObserveCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
 
+  void DidCheckItemExists(
+      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+      ObserveCallback callback,
+      storage::FileSystemURL url,
+      bool is_recursive,
+      base::File::Error result);
+
   void DidResolveTransferTokenToUnobserve(
       FileSystemAccessTransferTokenImpl* resolved_token);
 

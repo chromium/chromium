@@ -400,7 +400,8 @@ template("generate_jni_impl") {
       }
 
       foreach(_name, _input_names) {
-        _name = get_path_info(_name, "name") + "_jni.h"
+        _name =
+            string_replace(get_path_info(_name, "name"), "\$", "__") + "_jni.h"
         outputs += [ "$_jni_output_dir/$_name" ]
 
         # Avoid passing GN lists because not all webrtc embedders use //build.

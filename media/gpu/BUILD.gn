@@ -442,15 +442,6 @@ source_set("command_buffer_helper") {
     "command_buffer_helper.h",
   ]
 
-  if (!is_android) {
-    # This code is used only by the legacy VDA implementation, which is not
-    # supported on Android.
-    sources += [
-      "gles2_decoder_helper.cc",
-      "gles2_decoder_helper.h",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//gpu/command_buffer/common",
@@ -606,7 +597,6 @@ source_set("unit_tests") {
     "//media:test_support",
     "//media/gpu",
     "//media/gpu:test_support",
-    "//media/gpu/ipc/service:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gl:test_support",

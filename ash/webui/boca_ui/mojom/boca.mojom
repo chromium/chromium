@@ -1,17 +1,76 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 module ash.boca.mojom;
 
-// Implemented by browser process
-interface PageHandler{
+import "url/mojom/url.mojom";
 
+// Represents the tab information within browser window.
+struct TabInfo {
+  // Tab title.
+  string title;
+  // Tab URL.
+  url.mojom.Url url;
+  //Tab favicon in the format of data url.
+  string favicon;
 };
 
-// Implemented by renderer process for page chrome-untrusted://boca-app/
-interface Page {
-
+// Represents user full name.
+struct Name {
+  string full_name;
 };
+
+// Represents user profile.
+struct UserProfile {
+  // User id.
+  string id;
+  // User name.
+  Name name;
+  // User email address.
+  string email_address;
+};
+
+// Represents a student.
+struct Student {
+  // User profile.
+  UserProfile profile;
+};
+
+// Represents a course.
+struct Course {
+  // Course id.
+  string id;
+  // Course name.
+  string name;
+};
+
+// Represents a browser window.
+struct Window {
+  // User-customized window name.
+  string? name;
+  // Tabs within browser window. Tabs are ordererd using non-increasing order
+  // for tab's last access
+  // timestamp
+  array<TabInfo> tab_list;
+};
+
+// Implemented by browser process for page chrome-untrusted://boca-app/
+interface PageHandler {
+  // Fetches a list of browser windows and tabs in it. Windows are ordered using
+  // non-increasing order for most recent tab's last
+  // access timestamp
+  GetWindowsTabsList() => (array<Window> window_list);
+    // Fetch a list of courses for the current teacher.
+  ListCourses(string teacher_id) => (array<Course> courses);
+  // Requested by the Boca SWA to fetch a list of students for a given
+  // course. Must be called on a course_id received from the most recent
+  // ListCourses call.
+  ListStudents(string course_id) => (array<Student> students);
+};
+
+// Implemented by renderer process
+interface Page {};
 
 // Implemented in browser process to set up the communication between the Page
 // and PageHandler

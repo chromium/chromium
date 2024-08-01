@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_create_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -54,8 +53,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface SyncEncryptionTableViewController () <SyncObserverModelBridge,
-                                                 SettingsControllerProtocol> {
+@interface SyncEncryptionTableViewController () <SyncObserverModelBridge> {
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   BOOL _isUsingExplicitPassphrase;
 

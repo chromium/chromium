@@ -7,7 +7,16 @@
 
 #include "ash/webui/boca_ui/proto/bundle.pb.h"
 #include "ash/webui/boca_ui/proto/session.pb.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace ash {
 
@@ -27,15 +36,15 @@ class BocaAppClient {
 
     // Notifies when bundle updated. In the event of session started with a
     // bundle configured, both events will be fired.
-    virtual void OnBundleUpdated(const boca::Bundle& bundle);
+    virtual void OnBundleUpdated(const ::boca::Bundle& bundle);
 
     // Notifies when caption producer's config updated.
     virtual void OnProducerCaptionConfigUpdated(
-        const boca::CaptionsConfig& config);
+        const ::boca::CaptionsConfig& config);
 
     // Notifies when caption consumer's config updated.
     virtual void OnConsumerCaptionConfigUpdated(
-        const boca::CaptionsConfig& config);
+        const ::boca::CaptionsConfig& config);
   };
 
   BocaAppClient(const BocaAppClient&) = delete;
@@ -43,18 +52,22 @@ class BocaAppClient {
 
   static BocaAppClient* Get();
 
-  // Returns `true` if contains producer attribute.
-  virtual bool IsProducer() = 0;
+  // Returns the IdentityManager for the active user profile.
+  virtual signin::IdentityManager* GetIdentityManager() = 0;
 
-  // Returns `true` if contains consumer attribute.
-  virtual bool IsConsumer() = 0;
+  // Returns the URLLoaderFactory associated with user profile.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactory() = 0;
 
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  protected:
   BocaAppClient();
   virtual ~BocaAppClient();
+
+ private:
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

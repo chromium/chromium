@@ -496,11 +496,10 @@ void RangeTransactionServer::RangeHandler(const HttpRequestInfo* request,
   }
 
   std::vector<HttpByteRange> ranges;
-  std::string range_header;
-  if (!request->extra_headers.GetHeader(HttpRequestHeaders::kRange,
-                                        &range_header) ||
-      !HttpUtil::ParseRangeHeader(range_header, &ranges) || bad_200_ ||
-      ranges.size() != 1 ||
+  std::optional<std::string> range_header =
+      request->extra_headers.GetHeader(HttpRequestHeaders::kRange);
+  if (!range_header || !HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
+      bad_200_ || ranges.size() != 1 ||
       (modified_ && request->extra_headers.HasHeader("If-Range"))) {
     // This is not a byte range request, or a failed If-Range. We return 200.
     response_status->assign("HTTP/1.1 200 OK");
@@ -11955,9 +11954,9 @@ void HttpCacheHugeResourceTest::LargeResourceTransactionHandler(
     std::string* response_status,
     std::string* response_headers,
     std::string* response_data) {
-  std::string if_range;
-  if (!request->extra_headers.GetHeader(HttpRequestHeaders::kIfRange,
-                                        &if_range)) {
+  std::optional<std::string> if_range =
+      request->extra_headers.GetHeader(HttpRequestHeaders::kIfRange);
+  if (!if_range) {
     // If there were no range headers in the request, we are going to just
     // return the entire response body.
     *response_status = "HTTP/1.1 200 Success";
@@ -11970,11 +11969,10 @@ void HttpCacheHugeResourceTest::LargeResourceTransactionHandler(
   }
 
   // From this point on, we should be processing a valid byte-range request.
-  EXPECT_EQ("\"foo\"", if_range);
+  EXPECT_EQ("\"foo\"", *if_range);
 
-  std::string range_header;
-  EXPECT_TRUE(request->extra_headers.GetHeader(HttpRequestHeaders::kRange,
-                                               &range_header));
+  std::string range_header =
+      request->extra_headers.GetHeader(HttpRequestHeaders::kRange).value();
   std::vector<HttpByteRange> ranges;
 
   EXPECT_TRUE(HttpUtil::ParseRangeHeader(range_header, &ranges));

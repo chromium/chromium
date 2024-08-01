@@ -1926,6 +1926,191 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_TRUE(scrollable_area->HorizontalScrollbar()->Maximum());
 }
 
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesWithHorizontalScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges">
+      <div style="width: 300px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(0, 0, 90, 105),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(320, 105), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(35, 20, 320, 105),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(20, 20, 120, 105),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
+}
+
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesWithVerticalScrollbars) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges">
+      <div style="height: 300px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(0, 0, 90, 120),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(90, 320), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(35, 20, 90, 320),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(20, 20, 105, 120),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
+}
+
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesWithBothScrollbars) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges">
+      <div style="width: 300px; height: 300px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(0, 0, 90, 105),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(320, 320), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(35, 20, 320, 320),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(20, 20, 105, 105),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
+}
+
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesOverflowIntoGutter) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges">
+      <div style="position: relative; left: -15px; width: 100px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(0, 0, 90, 120),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(120, 120), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(35, 20, 120, 120),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(20, 20, 120, 120),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
+}
+
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesRtlWithHorizontalScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges;
+                            direction: rtl">
+      <div style="width: 300px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(200, 0, 90, 105),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(200, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(320, 105), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(-195, 20, 320, 105),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(20, 20, 120, 105),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(230, 0), scroll->ScrollOrigin());
+}
+
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesRtlWithVerticalScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges;
+                            direction: rtl">
+      <div style="height: 300px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(0, 0, 90, 120),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(0, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(90, 320), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(35, 20, 90, 320),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(35, 20, 105, 120),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(0, 0), scroll->ScrollOrigin());
+}
+
+// TODO(crbug.com/340578714): The expectations match the current actual outputs
+// which may not be fully correct.
+TEST_P(PaintLayerScrollableAreaTest,
+       ScrollbarGutterBothEdgesRtlWithBothScrollbars) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroll" style="width: 100px; height: 100px; overflow: auto;
+                            border: 20px solid blue; padding: 10px;
+                            scrollbar-gutter: stable both-edges;
+                            direction: rtl">
+      <div style="width: 300px; height: 300px"></div>
+    </div>
+  )HTML");
+
+  auto* scroll = GetLayoutBoxByElementId("scroll")->GetScrollableArea();
+  EXPECT_EQ(PhysicalRect(215, 0, 90, 105),
+            scroll->LayoutContentRect(kExcludeScrollbars));
+  EXPECT_EQ(PhysicalRect(215, 0, 120, 120),
+            scroll->LayoutContentRect(kIncludeScrollbars));
+  EXPECT_EQ(gfx::Size(320, 320), scroll->ContentsSize());
+  EXPECT_EQ(PhysicalRect(-195, 20, 320, 320),
+            scroll->GetLayoutBox()->ScrollableOverflowRect());
+  EXPECT_EQ(PhysicalRect(35, 20, 105, 105),
+            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(gfx::Point(230, 0), scroll->ScrollOrigin());
+}
+
 class PaintLayerScrollableAreaWithWebFrameTest : public ::testing::Test {
  public:
   void SetUp() override { web_view_helper_.Initialize(); }

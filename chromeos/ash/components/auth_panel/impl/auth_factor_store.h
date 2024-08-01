@@ -8,8 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/ime/ime_controller_impl.h"
-#include "ash/shell.h"
 #include "base/callback_list.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
@@ -20,6 +18,7 @@ namespace ash {
 
 class AuthHubConnector;
 class AuthPanel;
+class ImeController;
 
 // This class encapsulates the UI state of `AuthPanel`.
 class AuthFactorStore {
@@ -66,7 +65,7 @@ class AuthFactorStore {
   using OnStateUpdatedCallbackList =
       base::RepeatingCallbackList<void(const State& state)>;
 
-  AuthFactorStore(Shell* shell,
+  AuthFactorStore(ImeController* ime_controller,
                   AuthHubConnector* connector,
                   std::optional<AshAuthFactor> password_type,
                   AuthHub* auth_hub);
@@ -103,11 +102,11 @@ class AuthFactorStoreFactory {
   explicit AuthFactorStoreFactory(AuthHub* auth_hub) : auth_hub_(auth_hub) {}
 
   std::unique_ptr<AuthFactorStore> CreateAuthFactorStore(
-      Shell* shell,
+      ImeController* ime_controller,
       AuthHubConnector* connector,
       std::optional<AshAuthFactor> password_type) {
-    return std::make_unique<AuthFactorStore>(shell, connector, password_type,
-                                             auth_hub_);
+    return std::make_unique<AuthFactorStore>(ime_controller, connector,
+                                             password_type, auth_hub_);
   }
 
  private:

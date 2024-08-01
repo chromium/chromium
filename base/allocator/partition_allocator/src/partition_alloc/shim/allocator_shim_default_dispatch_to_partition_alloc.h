@@ -90,10 +90,94 @@ void* PartitionReallocUnchecked(const AllocatorDispatch*,
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void PartitionFree(const AllocatorDispatch*, void* object, void* context);
 
+#if PA_BUILDFLAG(IS_APPLE)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void PartitionFreeDefiniteSize(const AllocatorDispatch*,
+                               void* address,
+                               size_t size,
+                               void* context);
+#endif  // PA_BUILDFLAG(IS_APPLE)
+
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context);
+
+#if PA_BUILDFLAG(IS_APPLE)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+size_t PartitionGoodSize(const AllocatorDispatch*, size_t size, void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+bool PartitionClaimedAddress(const AllocatorDispatch*,
+                             void* address,
+                             void* context);
+#endif  // PA_BUILDFLAG(IS_APPLE)
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+unsigned PartitionBatchMalloc(const AllocatorDispatch*,
+                              size_t size,
+                              void** results,
+                              unsigned num_requested,
+                              void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void PartitionBatchFree(const AllocatorDispatch*,
+                        void** to_be_freed,
+                        unsigned num_to_be_freed,
+                        void* context);
+
+#if PA_BUILDFLAG(IS_APPLE)
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void PartitionTryFreeDefault(const AllocatorDispatch*,
+                             void* address,
+                             void* context);
+#endif  // PA_BUILDFLAG(IS_APPLE)
+
+inline constexpr AllocatorDispatch kPartitionAllocDispatch = {
+    &allocator_shim::internal::PartitionMalloc,  // alloc_function
+    &allocator_shim::internal::
+        PartitionMallocUnchecked,  // alloc_unchecked_function
+    &allocator_shim::internal::
+        PartitionCalloc,  // alloc_zero_initialized_function
+    &allocator_shim::internal::PartitionMemalign,  // alloc_aligned_function
+    &allocator_shim::internal::PartitionRealloc,   // realloc_function
+    &allocator_shim::internal::
+        PartitionReallocUnchecked,             // realloc_unchecked_function
+    &allocator_shim::internal::PartitionFree,  // free_function
+    &allocator_shim::internal::
+        PartitionGetSizeEstimate,  // get_size_estimate_function
+#if PA_BUILDFLAG(IS_APPLE)
+    &allocator_shim::internal::PartitionGoodSize,        // good_size
+    &allocator_shim::internal::PartitionClaimedAddress,  // claimed_address
+#else
+    nullptr,  // good_size
+    nullptr,  // claimed_address
+#endif
+    &allocator_shim::internal::PartitionBatchMalloc,  // batch_malloc_function
+    &allocator_shim::internal::PartitionBatchFree,    // batch_free_function
+#if PA_BUILDFLAG(IS_APPLE)
+    // On Apple OSes, free_definite_size() is always called from free(), since
+    // get_size_estimate() is used to determine whether an allocation belongs to
+    // the current zone. It makes sense to optimize for it.
+    &allocator_shim::internal::PartitionFreeDefiniteSize,
+    // On Apple OSes, try_free_default() is sometimes called as an optimization
+    // of free().
+    &allocator_shim::internal::PartitionTryFreeDefault,
+#else
+    nullptr,  // free_definite_size_function
+    nullptr,  // try_free_default_function
+#endif
+    &allocator_shim::internal::
+        PartitionAlignedAlloc,  // aligned_malloc_function
+    &allocator_shim::internal::
+        PartitionAlignedAllocUnchecked,  // aligned_malloc_unchecked_function
+    &allocator_shim::internal::
+        PartitionAlignedRealloc,  // aligned_realloc_function
+    &allocator_shim::internal::
+        PartitionAlignedReallocUnchecked,  // aligned_realloc_unchecked_function
+    &allocator_shim::internal::PartitionFree,  // aligned_free_function
+    nullptr,                                   // next
+};
 
 }  // namespace internal
 
@@ -102,16 +186,18 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 // we're making it more resilient to ConfigurePartitions() interface changes, so
 // that we don't have to modify multiple callers. This is particularly important
 // when callers are in a different repo, like PDFium or Dawn.
-PA_ALWAYS_INLINE void ConfigurePartitionsForTesting(
-    bool enable_memory_tagging_if_available = true) {
+// -----------------------------------------------------------------------------
+// DO NOT MODIFY this signature. This is meant for partition_alloc's embedders
+// only, so that partition_alloc can evolve without breaking them.
+// Chromium/PartitionAlloc are part of the same repo, they must not depend on
+// this function. They should call ConfigurePartitions() directly.
+PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   auto enable_brp = allocator_shim::EnableBrp(true);
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  auto enable_memory_tagging =
-      allocator_shim::EnableMemoryTagging(enable_memory_tagging_if_available);
-#else
-  auto enable_memory_tagging = allocator_shim::EnableMemoryTagging(false);
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  // Embedders's tests might benefit from MTE checks. However, this is costly
+  // and shouldn't be used in benchmarks.
+  auto enable_memory_tagging = allocator_shim::EnableMemoryTagging(
+      PA_BUILDFLAG(HAS_MEMORY_TAGGING) && PA_BUILDFLAG(DCHECKS_ARE_ON));
 
   // Since the only user of this function is a test function, we use
   // synchronous reporting mode, if MTE is enabled.

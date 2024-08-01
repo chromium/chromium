@@ -10,8 +10,28 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace tab_groups {
+
+namespace {
+
+std::vector<sync_pb::SavedTabGroupSpecifics>
+SyncEntitiesToSavedTabGroupSpecifics(
+    std::vector<sync_pb::SyncEntity> entities) {
+  std::vector<sync_pb::SavedTabGroupSpecifics> saved_tab_groups;
+  for (sync_pb::SyncEntity& entity : entities) {
+    CHECK(entity.specifics().has_saved_tab_group());
+    sync_pb::SavedTabGroupSpecifics specifics;
+    specifics.Swap(entity.mutable_specifics()->mutable_saved_tab_group());
+    saved_tab_groups.push_back(std::move(specifics));
+  }
+  return saved_tab_groups;
+}
+
+}  // namespace
 
 // ====================================
 // --- SavedTabOrGroupExistsChecker ---
@@ -271,4 +291,26 @@ void TabOrderChecker::SavedTabGroupUpdatedFromSync(
     const std::optional<base::Uuid>& tab_uuid) {
   CheckExitCondition();
 }
+
+ServerSavedTabGroupMatchChecker::ServerSavedTabGroupMatchChecker(
+    const Matcher& matcher)
+    : matcher_(matcher) {}
+
+ServerSavedTabGroupMatchChecker::~ServerSavedTabGroupMatchChecker() = default;
+
+bool ServerSavedTabGroupMatchChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for the tab groups committed to the server. ";
+
+  std::vector<sync_pb::SavedTabGroupSpecifics> entities =
+      SyncEntitiesToSavedTabGroupSpecifics(
+          fake_server()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP));
+
+  testing::StringMatchResultListener result_listener;
+  const bool matches =
+      testing::ExplainMatchResult(matcher_, entities, &result_listener);
+  *os << result_listener.str();
+  return matches;
+}
+
 }  // namespace tab_groups

@@ -29,7 +29,6 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -75,7 +74,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"}, {"SearchPassageMinimumWordCount", "3"}}},
+          {{"UseMlEmbedder", "false"},
+           {"SearchPassageMinimumWordCount", "3"},
+           {"UseMlAnswerer", "false"},
+           {"EnableAnswers", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -243,13 +245,45 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchSetsValidSessionId) {
   // Arbitrary constructed search results have no ID.
-  SearchResult invalid_result;
-  EXPECT_FALSE(invalid_result.session_id.is_valid());
+  SearchResult unfilled_result;
+  EXPECT_TRUE(unfilled_result.session_id.empty());
 
   // Search results created by service search have new valid ID.
   base::test::TestFuture<SearchResult> future;
   service_->Search("", {}, 1, future.GetRepeatingCallback());
-  EXPECT_TRUE(future.Take().session_id.is_valid());
+  EXPECT_FALSE(future.Take().session_id.empty());
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
+  OverrideVisibilityScoresForTesting({
+      {"passage with answer", 1},
+  });
+
+  auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
+    AddTestHistoryPage("http://answertest.com");
+    ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
+    scored_url_row.passages_embeddings.url_passages.passages.add_passages(
+        "passage with answer");
+    scored_url_row.passages_embeddings.url_embeddings.embeddings.emplace_back(
+        std::vector<float>(768, 1.0f));
+    scored_url_row.scores.push_back(score);
+    return scored_url_row;
+  };
+  std::vector<ScoredUrlRow> scored_url_rows = {
+      create_scored_url_row(1, 1),
+  };
+
+  base::test::TestFuture<SearchResult> future;
+  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                              scored_url_rows);
+
+  // No answer on initial search result.
+  SearchResult first_result = future.Take();
+  EXPECT_TRUE(first_result.AnswerText().empty());
+
+  // Then the answerer responds and another result is published with answer.
+  SearchResult second_result = future.Take();
+  EXPECT_FALSE(second_result.AnswerText().empty());
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
@@ -289,40 +323,50 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
       create_scored_url_row(4, .4),
   };
 
-  // Should default to .9 when neither the feature param nor metadata thresholds
-  // are set.
-  base::test::TestFuture<SearchResult> future;
-  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                              scored_url_rows);
-  SearchResult result = future.Take();
-  ASSERT_EQ(result.scored_url_rows.size(), 1u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
+  // Note, the block scopes are to cleanly separate searches since answers
+  // come in late with repeated callbacks.
+  {
+    // Should default to .9 when neither the feature param nor metadata
+    // thresholds are set.
+    base::test::TestFuture<SearchResult> future;
+    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                                scored_url_rows);
+    SearchResult result = future.Take();
+    ASSERT_EQ(result.scored_url_rows.size(), 1u);
+    EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
+  }
 
-  // Should use the metadata threshold when it's set.
-  SetMetadataScoreThreshold(0.7);
-  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                              scored_url_rows);
-  result = future.Take();
-  ASSERT_EQ(result.scored_url_rows.size(), 2u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
-  EXPECT_EQ(result.scored_url_rows[1].scored_url.visit_id, 2);
+  {
+    // Should use the metadata threshold when it's set.
+    base::test::TestFuture<SearchResult> future;
+    SetMetadataScoreThreshold(0.7);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                                scored_url_rows);
+    SearchResult result = future.Take();
+    ASSERT_EQ(result.scored_url_rows.size(), 2u);
+    EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
+    EXPECT_EQ(result.scored_url_rows[1].scored_url.visit_id, 2);
+  }
 
-  // Should use the feature param threshold when it's set, even if the metadata
-  // is also set.
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kHistoryEmbeddings, {
-                              {"UseMlEmbedder", "false"},
-                              {"SearchPassageMinimumWordCount", "3"},
-                              {"SearchScoreThreshold", "0.5"},
-                          });
-  service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                              scored_url_rows);
-  result = future.Take();
-  ASSERT_EQ(result.scored_url_rows.size(), 3u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
-  EXPECT_EQ(result.scored_url_rows[1].scored_url.visit_id, 2);
-  EXPECT_EQ(result.scored_url_rows[2].scored_url.visit_id, 3);
+  {
+    // Should use the feature param threshold when it's set, even if the
+    // metadata is also set.
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kHistoryEmbeddings, {
+                                {"UseMlEmbedder", "false"},
+                                {"SearchPassageMinimumWordCount", "3"},
+                                {"SearchScoreThreshold", "0.5"},
+                            });
+    base::test::TestFuture<SearchResult> future;
+    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
+                                scored_url_rows);
+    SearchResult result = future.Take();
+    ASSERT_EQ(result.scored_url_rows.size(), 3u);
+    EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
+    EXPECT_EQ(result.scored_url_rows[1].scored_url.visit_id, 2);
+    EXPECT_EQ(result.scored_url_rows[2].scored_url.visit_id, 3);
+  }
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
@@ -389,7 +433,8 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
   auto* answerer = GetAnswerer();
   EXPECT_EQ(answerer->GetModelVersion(), 1);
   base::test::TestFuture<AnswererResult> future;
-  answerer->ComputeAnswer("test query", {}, future.GetCallback());
+  answerer->ComputeAnswer("test query", Answerer::Context("1"),
+                          future.GetCallback());
   AnswererResult result = future.Take();
 
   EXPECT_EQ(result.status, ComputeAnswerStatus::SUCCESS);

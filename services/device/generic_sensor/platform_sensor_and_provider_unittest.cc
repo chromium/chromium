@@ -147,11 +147,10 @@ TEST_F(PlatformSensorAndProviderTest, SharedBufferDefaultValue) {
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(mojom::SensorType::AMBIENT_LIGHT),
+      GetSensorReadingSharedBufferOffset(mojom::SensorType::AMBIENT_LIGHT),
       sizeof(SensorReadingSharedBuffer));
 
-  const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+  const auto* buffer = mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.als.value, 0);
 }
 

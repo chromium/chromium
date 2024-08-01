@@ -7,19 +7,21 @@
 
 #include <deque>
 #include <map>
+#include <memory>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
+#include "services/network/ip_protection/ip_protection_config_getter.h"
+#include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
@@ -31,28 +33,29 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
  public:
   // If `config_getter` is unbound, no tokens will be provided.
   explicit IpProtectionConfigCacheImpl(
-      mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>
-          config_getter);
+      std::unique_ptr<IpProtectionConfigGetter> config_getter);
   ~IpProtectionConfigCacheImpl() override;
 
   // IpProtectionConfigCache implementation.
   bool AreAuthTokensAvailable() override;
-  std::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
-      size_t chain_index) override;
+  std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
   void SetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer proxy_layer,
+      IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override;
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      network::mojom::IpProtectionProxyLayer proxy_layer) override;
+      IpProtectionProxyLayer proxy_layer) override;
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
+      override;
+  IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
+  void GeoChangeObserved(const std::string& geo_id) override;
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
@@ -60,15 +63,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
 
  private:
   // Source of auth tokens and proxy list, when needed.
-  mojo::Remote<network::mojom::IpProtectionConfigGetter> config_getter_;
+  std::unique_ptr<IpProtectionConfigGetter> config_getter_;
 
   // A manager for the list of currently cached proxy hostnames.
   std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager_;
 
   // Proxy layer managers for cache of blind-signed auth tokens.
-  std::map<network::mojom::IpProtectionProxyLayer,
+  std::map<IpProtectionProxyLayer,
            std::unique_ptr<IpProtectionTokenCacheManager>>
       ipp_token_cache_managers_;
+
+  // Most current geo.
+  std::string current_geo_id_;
 
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or

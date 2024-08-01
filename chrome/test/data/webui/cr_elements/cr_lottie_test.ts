@@ -6,7 +6,6 @@
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type { MockMethod} from 'chrome://webui-test/mock_controller.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -86,8 +85,6 @@ suite('cr_lottie_test', function() {
     container.appendChild(crLottieElement);
 
     canvas = crLottieElement.$.canvas;
-
-    flush();
   }
 
   /**

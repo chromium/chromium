@@ -16,6 +16,7 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
   private defaultZoom_: number = 1;
   private isChildAccount_: boolean = false;
   private isHomeUrlValid_: boolean = true;
+  private pinnedToolbarActionsAreDefaultResponse_: boolean = true;
 
   constructor() {
     super([
@@ -32,6 +33,7 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'useQtTheme',
       // </if>
       'validateStartupPage',
+      'pinnedToolbarActionsAreDefault',
     ]);
   }
 
@@ -109,6 +111,15 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
   setValidStartupPageResponse(isValid: boolean) {
     this.isHomeUrlValid_ = isValid;
   }
+
+  pinnedToolbarActionsAreDefault() {
+    this.methodCalled('pinnedToolbarActionsAreDefault');
+    return Promise.resolve(this.pinnedToolbarActionsAreDefaultResponse_);
+  }
+
+  setPinnedToolbarActionsAreDefaultResponse(areDefault: boolean) {
+    this.pinnedToolbarActionsAreDefaultResponse_ = areDefault;
+  }
 }
 
 let appearancePage: SettingsAppearancePageElement;
@@ -117,7 +128,7 @@ let colorSchemeHandler: TestMock<CustomizeColorSchemeModeHandlerRemote>&
     CustomizeColorSchemeModeHandlerRemote;
 let colorSchemeCallbackRouter: CustomizeColorSchemeModeClientRemote;
 
-function createAppearancePage(hasPinnedActions: boolean = true) {
+function createAppearancePage() {
   appearanceBrowserProxy.reset();
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -166,12 +177,6 @@ function createAppearancePage(hasPinnedActions: boolean = true) {
       is_right_aligned: {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
-      },
-    },
-    toolbar: {
-      pinned_actions: {
-        type: chrome.settingsPrivate.PrefType.LIST,
-        value: hasPinnedActions ? ['kActionSidePanelShowBookmarks'] : [],
       },
     },
   });
@@ -358,11 +363,14 @@ suite('AppearanceHandler', function() {
         'openCustomizeChromeToolbarSection');
   });
 
-  test('resetPinnedToolbarActions', function() {
+  test('resetPinnedToolbarActions', async function() {
     loadTimeData.overrideValues({
       toolbarPinningEnabled: true,
     });
+    appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(false);
     createAppearancePage();
+    await microtasksFinished();
+
     const button = appearancePage.shadowRoot!.querySelector<HTMLElement>(
         '#resetPinnedToolbarActions');
     assertTrue(!!button);
@@ -371,11 +379,14 @@ suite('AppearanceHandler', function() {
     return appearanceBrowserProxy.whenCalled('resetPinnedToolbarActions');
   });
 
-  test('resetHiddenWhenNoPinnedActions', function() {
+  test('resetHiddenWhenNoPinnedActions', async function() {
     loadTimeData.overrideValues({
       toolbarPinningEnabled: true,
     });
-    createAppearancePage(false);
+    appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
+    createAppearancePage();
+    await microtasksFinished();
+
     const button = appearancePage.shadowRoot!.querySelector<HTMLElement>(
         '#resetPinnedToolbarActions');
     assertFalse(!!button);

@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/date_tray.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/public/cpp/ash_view_ids.h"

@@ -198,7 +198,7 @@ void DocumentAnimations::DetachCompositorTimelines() {
     if (cc::AnimationHost* host =
             document_->GetPage()->GetChromeClient().GetCompositorAnimationHost(
                 *document_->GetFrame())) {
-      host->RemoveAnimationTimeline(compositor_timeline);
+      host->DetachAnimationTimeline(compositor_timeline);
     }
   }
 }

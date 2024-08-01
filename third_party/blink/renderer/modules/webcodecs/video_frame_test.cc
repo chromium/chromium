@@ -54,7 +54,7 @@ class VideoFrameTest : public testing::Test {
     InitializeSharedGpuContextGLES2(test_context_provider_.get());
   }
 
-  void TearDown() override { SharedGpuContext::ResetForTesting(); }
+  void TearDown() override { SharedGpuContext::Reset(); }
 
   VideoFrame* CreateBlinkVideoFrame(
       scoped_refptr<media::VideoFrame> media_frame,

@@ -163,7 +163,10 @@ class DCompSurfaceImageBacking::D3DTextureGLSurfaceEGL
   }
 
  protected:
-  ~D3DTextureGLSurfaceEGL() override { Destroy(); }
+  ~D3DTextureGLSurfaceEGL() override {
+    InvalidateWeakPtrs();
+    Destroy();
+  }
 
  private:
   gfx::Size size_;

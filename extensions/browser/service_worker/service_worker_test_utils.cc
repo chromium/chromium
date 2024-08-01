@@ -174,7 +174,7 @@ UnregisterWorkerObserver::UnregisterWorkerObserver(
 
 UnregisterWorkerObserver::~UnregisterWorkerObserver() = default;
 
-void UnregisterWorkerObserver::OnServiceWorkerUnregistered(
+void UnregisterWorkerObserver::OnStoppedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   run_loop_.QuitWhenIdle();
 }

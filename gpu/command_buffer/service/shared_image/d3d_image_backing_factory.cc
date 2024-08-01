@@ -17,6 +17,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
@@ -33,6 +34,66 @@ bool IsFormatSupportedForInitialData(viz::SharedImageFormat format) {
   // adjust our initial data's packing or the |D3D11_SUBRESOURCE_DATA|'s pitch.
   return format == viz::SinglePlaneFormat::kRGBA_8888 ||
          format == viz::SinglePlaneFormat::kBGRA_8888;
+}
+
+bool IsFormatSupportedForDCompTexture(DXGI_FORMAT dxgi_format) {
+  switch (dxgi_format) {
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_YUY2:
+    case DXGI_FORMAT_420_OPAQUE:
+    case DXGI_FORMAT_P010:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsColorSpaceSupportedForDCompTexture(
+    DXGI_COLOR_SPACE_TYPE dxgi_color_space) {
+  switch (dxgi_color_space) {
+    case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
+    case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
+    case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P709:
+    case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_FULL_G22_NONE_P709_X601:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P601:
+    case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P601:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709:
+    case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P709:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P2020:
+    case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020:
+    case DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_TOPLEFT_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020:
+    case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P2020:
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+// Returns |true| if |desc| describes a texture that we can wrap in an
+// |IDCompositionTexture|.
+bool DCompTextureIsSupported(const D3D11_TEXTURE2D_DESC& desc) {
+  if (!gl::DirectCompositionTextureSupported()) {
+    return false;
+  }
+
+  return desc.MipLevels == 1 && desc.ArraySize == 1 &&
+         IsFormatSupportedForDCompTexture(desc.Format) &&
+         desc.SampleDesc.Count == 1 && desc.SampleDesc.Quality == 0 &&
+         desc.Usage == D3D11_USAGE_DEFAULT &&
+         (desc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0 &&
+         desc.CPUAccessFlags == 0 &&
+         desc.MiscFlags ==
+             (D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE);
 }
 
 // Formats supported by CreateSharedImage() with no GpuMemoryBufferHandle.
@@ -70,8 +131,7 @@ DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return DXGI_FORMAT_R16G16B16A16_FLOAT;
-  } else if (format == viz::MultiPlaneFormat::kNV12 ||
-             format == viz::LegacyMultiPlaneFormat::kNV12) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
 
@@ -108,7 +168,8 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
-    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
+    SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING;
 
 }  // anonymous namespace
 
@@ -391,10 +452,17 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
                                              SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   const bool has_gl_usage = HasGLES2ReadOrWriteUsage(usage);
+  const bool want_dcomp_texture =
+      usage.Has(SHARED_IMAGE_USAGE_SCANOUT) &&
+      IsFormatSupportedForDCompTexture(desc.Format) &&
+      IsColorSpaceSupportedForDCompTexture(
+          gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
   // TODO(crbug.com/40204134): Look into using DXGI handle when MF VEA is used.
-  const bool needs_shared_handle =
+  const bool needs_cross_device_synchronization =
       has_webgpu_usage ||
       (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));
+  const bool needs_shared_handle =
+      needs_cross_device_synchronization || want_dcomp_texture;
   if (needs_shared_handle) {
     // TODO(crbug.com/40068319): Many texture formats cannot be shared on old
     // GPUs/drivers to try to detect that and implement a fallback path or
@@ -434,7 +502,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
                                 debug_label.c_str());
 
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state;
-  if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
+  if (needs_cross_device_synchronization) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     hr = d3d11_texture.As(&dxgi_resource);
     if (FAILED(hr)) {
@@ -458,11 +526,49 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
             base::win::ScopedHandle(shared_handle), d3d11_texture);
   }
 
+  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+  if (want_dcomp_texture) {
+    // If this trips, it means we're claiming support for SCANOUT when DComp
+    // textures is not supported by the system, or an incompatible texture was
+    // created above.
+    CHECK(DCompTextureIsSupported(desc));
+
+    Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
+        gl::GetDirectCompositionDevice();
+    Microsoft::WRL::ComPtr<IDCompositionDevice4> dcomp_device4;
+    hr = dcomp_device.As(&dcomp_device4);
+    CHECK_EQ(hr, S_OK) << ", QueryInterface failed: "
+                       << logging::SystemErrorCodeToString(hr);
+
+    hr = dcomp_device4->CreateCompositionTexture(d3d11_texture.Get(),
+                                                 &dcomp_texture);
+    CHECK_EQ(hr, S_OK) << ", CreateCompositionTexture failed: "
+                       << logging::SystemErrorCodeToString(hr);
+
+    hr = dcomp_texture->SetAlphaMode(SkAlphaTypeIsOpaque(alpha_type)
+                                         ? DXGI_ALPHA_MODE_IGNORE
+                                         : DXGI_ALPHA_MODE_PREMULTIPLIED);
+    CHECK_EQ(hr, S_OK) << ", SetAlphaMode failed: "
+                       << logging::SystemErrorCodeToString(hr);
+
+    hr = dcomp_texture->SetColorSpace(
+        gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
+    CHECK_EQ(hr, S_OK) << ", SetColorSpace failed: "
+                       << logging::SystemErrorCodeToString(hr);
+  }
+
+  // SkiaOutputDeviceDComp will hold onto DComp texture overlay accesses for
+  // longer than a frame, due to DWM synchronization requirements. This is
+  // incompatible with the assumption that keyed mutex access will be minimal.
+  CHECK(!dcomp_texture || !(dxgi_shared_handle_state &&
+                            dxgi_shared_handle_state->has_keyed_mutex()));
+
   auto backing = D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
-      /*array_slice=*/0u, use_update_subresource1_);
+      std::move(dcomp_texture), std::move(dxgi_shared_handle_state),
+      gl_format_caps_, texture_target, /*array_slice=*/0u,
+      use_update_subresource1_);
   if (backing && !pixel_data.empty()) {
     backing->SetCleared();
   }
@@ -533,9 +639,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   std::unique_ptr<D3DImageBacking> backing = D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), gl_format_caps_,
-      /*texture_target=*/GL_TEXTURE_2D,
-      /*array_slice=*/0u, use_update_subresource1_);
+      /*dcomp_texture=*/nullptr, std::move(dxgi_shared_handle_state),
+      gl_format_caps_, /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
+      use_update_subresource1_);
 
   if (backing) {
     backing->SetCleared();
@@ -577,12 +683,14 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   const bool is_video_decode = usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
   if (is_scanout) {
-    if (!is_video_decode && gmb_type != gfx::DXGI_SHARED_HANDLE) {
-      return false;
-    } else {
+    if (is_video_decode || gmb_type == gfx::DXGI_SHARED_HANDLE) {
       // Video decode and video frames via GMBs are handled specially in
       // |SwapChainPresenter|, so we must assume it's safe to create a scanout
       // image backing for it.
+    } else if (gmb_type == gfx::EMPTY_BUFFER) {
+      return gl::DirectCompositionTextureSupported() &&
+             IsFormatSupportedForDCompTexture(
+                 GetDXGIFormatForCreateTexture(format));
     }
   }
 

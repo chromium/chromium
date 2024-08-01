@@ -13,12 +13,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service.h"
-#include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service_factory.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace ash {
+enum class AppsFetchingResult;
 class CategoriesSelectionScreenView;
+class OOBEAppDefinition;
+class OOBEDeviceUseCase;
 
 // Controller for the categories selection screen.
 class CategoriesSelectionScreen : public BaseScreen {

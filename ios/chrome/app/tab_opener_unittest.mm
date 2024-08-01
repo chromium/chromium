@@ -85,7 +85,7 @@ class TabOpenerTest : public PlatformTest {
 
       TestChromeBrowserState::Builder builder;
       builder.SetPrefService(factory.CreateSyncable(registry.get()));
-      browser_state_ = builder.Build();
+      browser_state_ = std::move(builder).Build();
 
       OCMStub([mock_wrangled_browser browserState])
           .andReturn(browser_state_.get());

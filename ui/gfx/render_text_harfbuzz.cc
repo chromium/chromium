@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/render_text_harfbuzz.h"
 
 #include <limits>
@@ -1928,6 +1933,9 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
 
   run_list->InitIndexMap();
   run_list->ComputePrecedingRunWidths();
+
+  UMA_HISTOGRAM_COUNTS_1000("RenderTextHarfBuzz.MissingGlyphCount",
+                            run_list->MissingGlyphCount());
 }
 
 void RenderTextHarfBuzz::ItemizeTextToRuns(

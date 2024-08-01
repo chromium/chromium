@@ -11,8 +11,10 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -92,6 +94,17 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
   return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
 }
 
+bool ParseJsonToAnswerData(const std::string& answer_json,
+                           omnibox::RichAnswerTemplate* answer_template) {
+  std::optional<base::Value> value = base::JSONReader::Read(answer_json);
+  if (!value || !value->is_dict()) {
+    return false;
+  }
+
+  return omnibox::answer_data_parser::ParseJsonToAnswerData(value->GetDict(),
+                                                            answer_template);
+}
+
 }  // namespace
 
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
@@ -106,10 +119,48 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
       "  { \"il\": { \"t\": [{ \"t\": \"text\", \"tt\": 8 }] } }, "
       "  { \"il\": { \"t\": [{ \"t\": \"sunny with a chance of hail\", \"tt\": "
       "5 }] } }] }";
-  SuggestionAnswer answer;
-  ASSERT_TRUE(ParseAnswer(answer_json, &answer));
-  match.answer = answer;
+  {
+    SuggestionAnswer answer;
+    ASSERT_TRUE(ParseAnswer(answer_json, &answer));
+    match.answer = answer;
 
-  EXPECT_EQ(kSearch + u", answer, sunny with a chance of hail, 4 of 6",
-            AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 3, 6));
+    EXPECT_EQ(
+        kSearch + u", answer, sunny with a chance of hail, 4 of 6",
+        AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 3, 6));
+  }
+  // Test label with SuggestionAnswerMigration enabled and no addititional
+  // accessibility text found in the answer data.
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestionAnswerMigration>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+
+    omnibox::RichAnswerTemplate answer_template;
+    ASSERT_TRUE(ParseJsonToAnswerData(answer_json, &answer_template));
+    ASSERT_FALSE(answer_template.answers(0).subhead().has_a11y_text());
+    match.answer_template = answer_template;
+    EXPECT_EQ(
+        kSearch + u", answer, sunny with a chance of hail, 4 of 6",
+        AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 3, 6));
+  }
+  // Test label with SuggestionAnswerMigration enabled and accessibility text
+  // found in the answer data.
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestionAnswerMigration>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+
+    omnibox::RichAnswerTemplate answer_template;
+    omnibox::AnswerData* answer_data = answer_template.add_answers();
+    answer_data->mutable_headline()->set_text("headline");
+    answer_data->mutable_subhead()->set_text("subhead");
+    answer_data->mutable_subhead()->set_a11y_text("accessibility text");
+    match.answer_template = answer_template;
+
+    EXPECT_EQ(
+        kSearch + u", answer, accessibility text, 4 of 6",
+        AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 3, 6));
+  }
 }

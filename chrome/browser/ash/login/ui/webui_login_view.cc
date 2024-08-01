@@ -128,14 +128,6 @@ WebUILoginView::WebUILoginView(base::WeakPtr<LoginDisplayHostWebUI> controller)
   for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
     ui::Accelerator accelerator(kLoginAcceleratorData[i].keycode,
                                 kLoginAcceleratorData[i].modifiers);
-    // Show reset conflicts with rotate screen when --ash-dev-shortcuts is
-    // passed. Favor --ash-dev-shortcuts since that is explicitly added.
-    if (kLoginAcceleratorData[i].action ==
-            LoginAcceleratorAction::kEnableConsumerKiosk &&
-        !KioskChromeAppManager::IsConsumerKioskEnabled()) {
-      continue;
-    }
-
     accel_map_[accelerator] = kLoginAcceleratorData[i].action;
   }
 

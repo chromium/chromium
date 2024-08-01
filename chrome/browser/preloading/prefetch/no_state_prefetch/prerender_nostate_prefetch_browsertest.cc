@@ -1030,10 +1030,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
     EXPECT_FALSE(request->headers.HasHeader(kExpectedPurposeHeaderOnPrefetch));
     EXPECT_TRUE(request->cors_exempt_headers.HasHeader(
         kExpectedPurposeHeaderOnPrefetch));
-    std::string purpose_header;
-    request->cors_exempt_headers.GetHeader(kExpectedPurposeHeaderOnPrefetch,
-                                           &purpose_header);
-    EXPECT_EQ("prefetch", purpose_header);
+    EXPECT_EQ("prefetch", request->cors_exempt_headers
+                              .GetHeader(kExpectedPurposeHeaderOnPrefetch)
+                              .value_or(std::string()));
   }
 }
 

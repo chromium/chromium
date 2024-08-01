@@ -110,12 +110,13 @@ class SharedStorageWorkletDevToolsAgentHostTest
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host;
 
+    GURL script_url("https://www.google.com/script.js");
+
     SharedStorageDocumentServiceImpl* document_service =
         SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(
             main_rfh);
     document_service->CreateWorklet(
-
-        GURL("https://www.google.com/script.js"),
+        script_url, url::Origin::Create(script_url),
         network::mojom::CredentialsMode::kSameOrigin, {},
         std::move(worklet_host), base::DoNothing());
 

@@ -1,0 +1,3 @@
+
+-keep public class com.android.tools.r8.Disassemble { public static void main(java.lang.String[]); }
+-keep public class com.android.tools.r8.relocator.RelocatorCommandLine { public static void main(java.lang.String[]); }

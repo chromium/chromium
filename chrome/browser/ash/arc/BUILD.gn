@@ -28,6 +28,8 @@ static_library("arc") {
     "icon_decode_request.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",
@@ -74,6 +76,7 @@ static_library("arc") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
@@ -162,6 +165,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/login/ui:test_support",
+    "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
     "//components/arc:arc_test_support",

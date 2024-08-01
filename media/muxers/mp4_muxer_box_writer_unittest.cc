@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -750,9 +755,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   ChannelLayout channel_layout = aac.GetChannelLayout(false);
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, channel_layout);
 
-  std::vector<uint8_t> buffer;
   int adts_header_size;
-  EXPECT_TRUE(aac.ConvertEsdsToADTS(&buffer, &adts_header_size));
+  auto buffer = aac.CreateAdtsFromEsds({}, &adts_header_size);
+  EXPECT_FALSE(buffer.empty());
 
   ADTSStreamParser adts_parser;
 

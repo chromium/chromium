@@ -7,9 +7,11 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 #if DCHECK_IS_ON()
@@ -18,25 +20,6 @@
 #endif
 
 namespace blink {
-
-class ScriptPromiseResolverBase::ExceptionStateScope final
-    : public ExceptionState {
-  STACK_ALLOCATED();
-
- public:
-  explicit ExceptionStateScope(ScriptPromiseResolverBase* resolver)
-      : ExceptionState(resolver->script_state_->GetIsolate(),
-                       resolver->exception_context_),
-        resolver_(resolver) {}
-  ~ExceptionStateScope() {
-    DCHECK(HadException());
-    resolver_->Reject(GetException());
-    ClearException();
-  }
-
- private:
-  ScriptPromiseResolverBase* resolver_;
-};
 
 ScriptPromiseResolverBase::ScriptPromiseResolverBase(
     ScriptState* script_state,
@@ -106,31 +89,45 @@ void ScriptPromiseResolverBase::RejectWithDOMException(
     DOMExceptionCode exception_code,
     const String& message) {
   ScriptState::Scope scope(script_state_.Get());
-  ExceptionStateScope(this).ThrowDOMException(exception_code, message);
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  auto exception =
+      V8ThrowDOMException::CreateOrDie(isolate, exception_code, message);
+  ApplyContextToException(script_state_, exception, exception_context_);
+  Reject(exception);
 }
 
 void ScriptPromiseResolverBase::RejectWithSecurityError(
     const String& sanitized_message,
     const String& unsanitized_message) {
   ScriptState::Scope scope(script_state_.Get());
-  ExceptionStateScope(this).ThrowSecurityError(sanitized_message,
-                                               unsanitized_message);
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      isolate, DOMExceptionCode::kSecurityError, sanitized_message,
+      unsanitized_message);
+  ApplyContextToException(script_state_, exception, exception_context_);
+  Reject(exception);
 }
 
 void ScriptPromiseResolverBase::RejectWithTypeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
-  ExceptionStateScope(this).ThrowTypeError(message);
+  Reject(V8ThrowException::CreateTypeError(
+      script_state_->GetIsolate(),
+      ExceptionMessages::AddContextToMessage(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::RejectWithRangeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
-  ExceptionStateScope(this).ThrowRangeError(message);
+  Reject(V8ThrowException::CreateRangeError(
+      script_state_->GetIsolate(),
+      ExceptionMessages::AddContextToMessage(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::RejectWithWasmCompileError(
     const String& message) {
   ScriptState::Scope scope(script_state_.Get());
-  ExceptionStateScope(this).ThrowWasmCompileError(message);
+  Reject(V8ThrowException::CreateWasmCompileError(
+      script_state_->GetIsolate(),
+      ExceptionMessages::AddContextToMessage(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::Detach() {

@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 
@@ -142,8 +143,8 @@ void WebAudioMediaStreamAudioSink::OnData(
       fifo_stats_->overruns++;
     }
 
-    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-                 "WebAudioMediaStreamAudioSink::OnData FIFO full");
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+                        "WebAudioMediaStreamAudioSink::OnData FIFO full");
   }
 }
 
@@ -173,8 +174,9 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
     output_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
 
   base::AutoLock auto_lock(lock_);
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-               "WebAudioMediaStreamAudioSink::ProvideInput under lock");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+              "WebAudioMediaStreamAudioSink::ProvideInput under lock",
+              "delay (frames)", fifo_->frames());
 
   if (!audio_converter_)
     return;
@@ -201,11 +203,15 @@ double WebAudioMediaStreamAudioSink::ProvideInput(
     media::AudioBus* audio_bus,
     uint32_t frames_delayed,
     const media::AudioGlitchInfo& glitch_info) NO_THREAD_SAFETY_ANALYSIS {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-               "WebAudioMediaStreamAudioSink::ProvideInput 2");
-
   lock_.AssertAcquired();
   CHECK(fifo_);
+  TRACE_EVENT(
+      TRACE_DISABLED_BY_DEFAULT("mediastream"),
+      "WebAudioMediaStreamAudioSink::ProvideInput 2", "delay (frames)",
+      frames_delayed, "layover_delay (ms)",
+      media::AudioTimestampHelper::FramesToTime(
+          frames_delayed + fifo_->frames(), source_params_.sample_rate())
+          .InMillisecondsF());
   if (fifo_->frames() >= audio_bus->frames()) {
     fifo_->Consume(audio_bus, 0, audio_bus->frames());
     TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
@@ -218,9 +224,10 @@ double WebAudioMediaStreamAudioSink::ProvideInput(
     if (fifo_stats_) {
       fifo_stats_->underruns++;
     }
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-                 "WebAudioMediaStreamAudioSink::ProvideInput underrun",
-                 "frames missing", audio_bus->frames() - fifo_->frames());
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+                        "WebAudioMediaStreamAudioSink::ProvideInput underrun",
+                        "frames missing",
+                        audio_bus->frames() - fifo_->frames());
   }
 
   return 1.0;

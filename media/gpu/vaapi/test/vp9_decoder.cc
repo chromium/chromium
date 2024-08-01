@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 
 #include <va/va.h>
 
-#include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/gpu/vaapi/test/scoped_va_config.h"
@@ -106,7 +110,7 @@ void Vp9Decoder::RefreshReferenceSlots(uint8_t refresh_frame_flags,
 VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   // Parse next frame from stream.
   gfx::Size size;
-  Vp9FrameHeader frame_hdr;
+  Vp9FrameHeader frame_hdr{};
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   if (parser_res == Vp9Parser::kEOStream)
     return VideoDecoder::kEOStream;
@@ -225,8 +229,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
 
   // Set up buffer for slice decoding.
   VASliceParameterBufferVP9 slice_param{};
-  slice_param.slice_data_size =
-      base::checked_cast<uint32_t>(frame_hdr.data.size());
+  slice_param.slice_data_size = frame_hdr.frame_size;
   slice_param.slice_data_offset = 0;
   slice_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
 
@@ -257,11 +260,9 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   buffers.push_back(buffer_id);
 
   // Set up buffer for frame header.
-  res = vaCreateBuffer(
-      va_device_->display(), va_context_->id(), VASliceDataBufferType,
-      base::checked_cast<int>(frame_hdr.data.size()), 1u,
-      reinterpret_cast<void*>(const_cast<uint8_t*>(frame_hdr.data.data())),
-      &buffer_id);
+  res = vaCreateBuffer(va_device_->display(), va_context_->id(),
+                       VASliceDataBufferType, frame_hdr.frame_size, 1u,
+                       const_cast<uint8_t*>(frame_hdr.data), &buffer_id);
   VA_LOG_ASSERT(res, "vaCreateBuffer");
   buffers.push_back(buffer_id);
 

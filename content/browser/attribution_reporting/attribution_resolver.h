@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"

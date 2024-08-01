@@ -12,18 +12,23 @@
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_style.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/system_shadow.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
+
+constexpr int kMainContainerMaxHeight = 300;
 
 std::unique_ptr<views::Separator> CreateSeparator() {
   return views::Builder<views::Separator>()
@@ -35,6 +40,17 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 }  // namespace
 
 PickerMainContainerView::PickerMainContainerView() {
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kPickerContainerBorderRadius});
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetIsFastRoundedCorner(true);
+  // We set background blur even though the main container background is opaque,
+  // to avoid a flickering issue related to the container's scroll view
+  // gradient. See b/351051291.
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
@@ -44,11 +60,19 @@ PickerMainContainerView::PickerMainContainerView() {
       this, kPickerContainerShadowType);
   shadow_->SetRoundedCornerRadius(kPickerContainerBorderRadius);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
 PickerMainContainerView::~PickerMainContainerView() = default;
+
+gfx::Size PickerMainContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int preferred_height =
+      views::View::CalculatePreferredSize(available_size).height();
+  return gfx::Size(kPickerViewWidth,
+                   std::min(preferred_height, kMainContainerMaxHeight));
+}
 
 views::View* PickerMainContainerView::GetTopItem() {
   return active_page_->GetTopItem();
@@ -114,10 +138,8 @@ PickerContentsView* PickerMainContainerView::AddContentsView(
   }
 
   contents_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithWeight(1));
+      views::kBoxLayoutFlexKey,
+      views::BoxLayoutFlexSpecification().WithWeight(1));
 
   return contents_view_;
 }

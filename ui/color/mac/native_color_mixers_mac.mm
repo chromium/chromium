@@ -78,14 +78,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
         0x66)};
   };
 
-  if (@available(macOS 11, *)) {
-    [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else {
-    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
-    NSAppearance.currentAppearance = AppearanceForKey(key);
-    load_colors();
-    NSAppearance.currentAppearance = saved_appearance;
-  }
+  [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
 }
 
 void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
@@ -132,14 +125,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
                                                                : SK_ColorWHITE};
   };
 
-  if (@available(macOS 11, *)) {
-    [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else {
-    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
-    NSAppearance.currentAppearance = AppearanceForKey(key);
-    load_colors();
-    NSAppearance.currentAppearance = saved_appearance;
-  }
+  [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
 }
 
 void AddNativePostprocessingMixer(ColorProvider* provider,

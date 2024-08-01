@@ -77,17 +77,20 @@ TEST(MediaRouterFeatureTest, GetCastMirroringPlayoutDelay) {
 }
 
 TEST(MediaRouterFeatureTest, GetCastMirroringPlayoutDelayCommandLine) {
+  base::TimeDelta default_delay = base::Milliseconds(200);
+
   base::test::ScopedFeatureList feature_list;
   // Test that an invalid switch is not returned.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
                                   "foo");
-  EXPECT_FALSE(GetCastMirroringPlayoutDelay().has_value());
+  EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), default_delay);
 
-  base::TimeDelta expected_delay = base::Milliseconds(200);
+  base::TimeDelta expected_delay = base::Milliseconds(150);
+
   // Test that valid values are passed.
   command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
-                                  "200");
+                                  "150");
   EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), expected_delay);
 
   // Test that command line takes precedence over feature.
@@ -97,7 +100,7 @@ TEST(MediaRouterFeatureTest, GetCastMirroringPlayoutDelayCommandLine) {
                                                   feature_params);
   ASSERT_NE(base::Milliseconds(kCastMirroringPlayoutDelayMs.Get()),
             expected_delay);
-  EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), base::Milliseconds(200));
+  EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), expected_delay);
 }
 
 class MediaRouterEnabledTest : public ::testing::Test {

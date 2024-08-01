@@ -135,11 +135,6 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
     return builder;
   }
 
-  bool HasNewTrackingProtectionUi() {
-    return base::FeatureList::IsEnabled(
-        privacy_sandbox::kTrackingProtectionContentSettingFor3pcb);
-  }
-
   auto CheckStateForTemporaryException() {
     return Steps(
         CheckViewProperty(
@@ -175,8 +170,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
   auto CheckTrackingProtectionAllowedState() {
     return Steps(
         CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn,
-                          !HasNewTrackingProtectionUi()),
+                          &views::ToggleButton::GetIsOn, !has_act_features_),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetPluralStringFUTF16(
@@ -190,7 +184,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
             l10n_util::GetStringUTF16(
                 IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
         CheckViewProperty(
-            HasNewTrackingProtectionUi()
+            has_act_features_
                 ? CookieControlsContentView::kThirdPartyCookiesLabel
                 : CookieControlsContentView::kToggleLabel,
             &views::Label::GetText,
@@ -202,8 +196,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
   auto CheckTrackingProtectionBlockedState() {
     return Steps(
         CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn,
-                          HasNewTrackingProtectionUi()),
+                          &views::ToggleButton::GetIsOn, has_act_features_),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(
@@ -213,7 +206,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
             l10n_util::GetStringUTF16(
                 IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckViewProperty(
-            HasNewTrackingProtectionUi()
+            has_act_features_
                 ? CookieControlsContentView::kThirdPartyCookiesLabel
                 : CookieControlsContentView::kToggleLabel,
             &views::Label::GetText,
@@ -294,6 +287,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
       &CookieControlsInteractiveUiBaseTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
 
+  bool has_act_features_ = false;
   base::UserActionTester user_actions_;
   base::test::ScopedFeatureList disabled_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -763,9 +757,17 @@ class CookieControlsInteractiveUiTrackingProtectionTest
         browser()->profile());
   }
 
+  // Enable FPP to display UB UX with ACT features
+  void EnableFingerprintingProtection() {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kFingerprintingProtectionEnabled, true);
+    has_act_features_ = true;
+  }
+
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {privacy_sandbox::kTrackingProtectionContentSettingFor3pcb};
+    return {privacy_sandbox::kFingerprintingProtectionSetting,
+            privacy_sandbox::kFingerprintingProtectionUserBypass};
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override { return {}; }
@@ -774,6 +776,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
 IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
                        CreateException) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
+  EnableFingerprintingProtection();
   SetBlockAll3pcToggle(GetParam());
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -791,8 +794,11 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockThirdPartyCookies(/*use_3pcd=*/true);
+  EnableFingerprintingProtection();
   SetHighSiteEngagement();
   SetBlockAll3pcToggle(GetParam());
+  cookie_settings()->SetCookieSettingForUserBypass(
+      third_party_cookie_page_url());
   tracking_protection_settings()->AddTrackingProtectionException(
       third_party_cookie_page_url(), /*is_user_bypass_exception=*/true);
   RunTestSequence(

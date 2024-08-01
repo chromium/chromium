@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_action_button.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -71,42 +70,10 @@ DeskActionButton::DeskActionButton(const std::u16string& tooltip,
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
-  if (desk_action_view_->mini_view()->owner_bar()->type() ==
-          DeskBarViewBase::Type::kOverview &&
-      !features::IsOverviewNewFocusEnabled()) {
-    focus_ring->SetHasFocusPredicate(
-        base::BindRepeating([](const views::View* view) {
-          const auto* v = views::AsViewClass<DeskActionButton>(view);
-          CHECK(v);
-          return v->is_focused();
-        }));
-  }
   views::InstallCircleHighlightPathGenerator(this);
 }
 
 DeskActionButton::~DeskActionButton() {}
-
-views::View* DeskActionButton::GetView() {
-  return this;
-}
-
-void DeskActionButton::MaybeActivateFocusedView() {
-  pressed_callback_.Run();
-}
-
-void DeskActionButton::MaybeCloseFocusedView(bool primary_action) {}
-
-void DeskActionButton::MaybeSwapFocusedView(bool right) {}
-
-void DeskActionButton::OnFocusableViewFocused() {
-  desk_action_view_->OnFocusChange();
-  views::FocusRing::Get(this)->SchedulePaint();
-}
-
-void DeskActionButton::OnFocusableViewBlurred() {
-  desk_action_view_->OnFocusChange();
-  views::FocusRing::Get(this)->SchedulePaint();
-}
 
 bool DeskActionButton::CanShow() const {
   DeskMiniView* mini_view = desk_action_view_->mini_view();

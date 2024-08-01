@@ -14,15 +14,18 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../settings_shared.css.js';
 
+import {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
-import {FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils} from './facegaze_constants.js';
+import {FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils} from './facegaze_constants.js';
 
 export interface FaceGazeAddActionDialogElement {
   $: {
@@ -36,8 +39,13 @@ export enum AddDialogPage {
   GESTURE_THRESHOLD = 2,
 }
 
+export const FACEGAZE_CONFIDENCE_DEFAULT = 60;
+export const FACEGAZE_CONFIDENCE_MIN = 1;
+export const FACEGAZE_CONFIDENCE_MAX = 100;
+export const FACEGAZE_CONFIDENCE_BUTTON_STEP = 5;
+
 const FaceGazeAddActionDialogElementBase =
-    I18nMixin(CrScrollableMixin(PolymerElement));
+    PrefsMixin(I18nMixin(CrScrollableMixin(PolymerElement)));
 
 export class FaceGazeAddActionDialogElement extends
     FaceGazeAddActionDialogElementBase {
@@ -51,6 +59,31 @@ export class FaceGazeAddActionDialogElement extends
 
   static get properties() {
     return {
+      currentPage_: {
+        type: Number,
+      },
+
+      initialPage: {
+        type: Object,
+        observer: 'initialPageChanged_',
+      },
+
+      actionToAssignGesture: {
+        type: Object,
+        observer: 'actionToAssignGestureChanged_',
+      },
+
+      gestureToConfigure: {
+        type: Object,
+        observer: 'gestureToConfigureChanged_',
+      },
+
+      leftClickGestures: {
+        type: Array,
+        value: () => [],
+        observer: 'leftClickGesturesChanged_',
+      },
+
       showSelectAction_: {
         type: Boolean,
         computed: 'shouldShowSelectAction_(currentPage_)',
@@ -89,6 +122,16 @@ export class FaceGazeAddActionDialogElement extends
       selectedGesture_: {
         type: Object,
         value: null,
+        observer: 'updateGestureThresholdValueFromGesture_',
+      },
+
+      localizedGestureThresholdTitle_: {
+        type: String,
+        computed: 'getLocalizedGestureThresholdTitle_(selectedGesture_)',
+      },
+
+      gestureThresholdValue_: {
+        type: Number,
       },
 
       disableActionNextButton_: {
@@ -100,20 +143,36 @@ export class FaceGazeAddActionDialogElement extends
         type: Boolean,
         computed: 'shouldDisableGestureNextButton_(selectedGesture_)',
       },
+
+      displayGesturePreviousButton_: {
+        type: Boolean,
+        computed: 'shouldDisplayGesturePreviousButton_(initialPage)',
+      },
+
+      displayThresholdPreviousButton_: {
+        type: Boolean,
+        computed: 'shouldDisplayThresholdPreviousButton_(initialPage)',
+      },
     };
   }
+
+  static get observers() {
+    return ['updateGestureThresholdValueFromGesture_(selectedGesture_)'];
+  }
+
+  actionToAssignGesture: MacroName|null = null;
+  initialPage: AddDialogPage = AddDialogPage.SELECT_ACTION;
+  gestureToConfigure: FacialGesture|null = null;
+  leftClickGestures: FacialGesture[] = [];
 
   // Internal state.
   private selectedAction_: MacroName|null = null;
   private selectedGesture_: FacialGesture|null = null;
+  private gestureThresholdValue_: number;
   private currentPage_: AddDialogPage = AddDialogPage.SELECT_ACTION;
 
   // Computed properties.
   private displayedActions_: MacroName[] = FaceGazeActions;
-
-  // TODO(b:353403651): If left-click action is assigned to a singular gesture
-  // then remove it from the list of available gestures to avoid losing left
-  // click functionality.
   private displayedGestures_: FacialGesture[] = FaceGazeGestures;
 
   private getItemClass_(selected: boolean): 'selected'|'' {
@@ -125,6 +184,14 @@ export class FaceGazeAddActionDialogElement extends
         'faceGazeActionsDialogSelectGestureTitle',
         this.selectedAction_ ?
             FaceGazeUtils.getMacroDisplayText(this.selectedAction_) :
+            '');
+  }
+
+  private getLocalizedGestureThresholdTitle_(): string {
+    return this.i18n(
+        'faceGazeActionsDialogGestureThresholdTitle',
+        this.selectedGesture_ ?
+            FaceGazeUtils.getGestureDisplayText(this.selectedGesture_) :
             '');
   }
 
@@ -145,6 +212,18 @@ export class FaceGazeAddActionDialogElement extends
     return this.selectedGesture_ === null;
   }
 
+  private shouldDisplayGesturePreviousButton_(): boolean {
+    // Only show the previous button on the gesture page if we are starting from
+    // the beginning of the dialog flow.
+    return this.initialPage === AddDialogPage.SELECT_ACTION;
+  }
+
+  private shouldDisplayThresholdPreviousButton_(): boolean {
+    // Only show the previous button on the threshold page if we are starting
+    // from an earlier dialog flow.
+    return this.initialPage !== AddDialogPage.GESTURE_THRESHOLD;
+  }
+
   // Dialog page navigation
   private shouldShowSelectAction_(): boolean {
     return this.currentPage_ === AddDialogPage.SELECT_ACTION;
@@ -156,6 +235,38 @@ export class FaceGazeAddActionDialogElement extends
 
   private shouldShowGestureThreshold_(): boolean {
     return this.currentPage_ === AddDialogPage.GESTURE_THRESHOLD;
+  }
+
+  private initialPageChanged_(page: AddDialogPage): void {
+    this.currentPage_ = page;
+  }
+
+  private actionToAssignGestureChanged_(newValue: MacroName|null): void {
+    if (!newValue) {
+      return;
+    }
+
+    this.selectedAction_ = newValue;
+  }
+
+  private gestureToConfigureChanged_(newValue: FacialGesture|null): void {
+    if (!newValue) {
+      return;
+    }
+
+    this.selectedGesture_ = newValue;
+  }
+
+  // If left-click action is assigned to a singular gesture then remove it
+  // from the list of available gestures to avoid losing left click
+  // functionality.
+  private leftClickGesturesChanged_(leftClickGestures: FacialGesture[]): void {
+    if (leftClickGestures.length === 1) {
+      this.displayedGestures_ =
+          this.displayedGestures_.filter((gesture: FacialGesture) => {
+            return leftClickGestures[0] !== gesture;
+          });
+    }
   }
 
   // Button event handlers
@@ -180,17 +291,36 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private onDecreaseThresholdButtonClick_(): void {
-    // TODO(b:341770753): Implement button with slider. See
-    // switch_access_setup_guide_dialog.ts onAutoScanSpeedSlower_ for example of
-    // slider with increment/decrement buttons. Button interacts with pref
-    // directly.
+    this.gestureThresholdValue_ = Math.max(
+        FACEGAZE_CONFIDENCE_MIN,
+        this.gestureThresholdValue_ - FACEGAZE_CONFIDENCE_BUTTON_STEP);
   }
 
   private onIncreaseThresholdButtonClick_(): void {
-    // TODO(b:341770753): Implement button with slider. See
-    // switch_access_setup_guide_dialog.ts onAutoScanSpeedSlower_ for example of
-    // slider with increment/decrement buttons. Button interacts with pref
-    // directly.
+    this.gestureThresholdValue_ = Math.min(
+        FACEGAZE_CONFIDENCE_MAX,
+        this.gestureThresholdValue_ + FACEGAZE_CONFIDENCE_BUTTON_STEP);
+  }
+
+  private getThresholdSlider(): CrSliderElement {
+    const slider = this.shadowRoot?.querySelector<CrSliderElement>(
+        '#faceGazeGestureThresholdSlider');
+    assert(slider);
+    return slider;
+  }
+
+  private onThresholdSliderChanged_(): void {
+    this.gestureThresholdValue_ = this.getThresholdSlider().value;
+  }
+
+  private updateGestureThresholdValueFromGesture_(): void {
+    this.gestureThresholdValue_ = FACEGAZE_CONFIDENCE_DEFAULT;
+    const gesturesToConfidence = this.get(FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF);
+
+    if (this.selectedGesture_ &&
+        this.selectedGesture_ in gesturesToConfidence) {
+      this.gestureThresholdValue_ = gesturesToConfidence[this.selectedGesture_];
+    }
   }
 
   private onSaveButtonClick_(): void {
@@ -210,6 +340,10 @@ export class FaceGazeAddActionDialogElement extends
     });
     this.dispatchEvent(event);
 
+    this.setPrefDictEntry(
+        FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, this.selectedGesture_,
+        Math.round(this.getThresholdSlider().value));
+
     this.$.dialog.close();
   }
 
@@ -218,6 +352,10 @@ export class FaceGazeAddActionDialogElement extends
     if (e.key === 'Escape') {
       this.$.dialog.close();
     }
+  }
+
+  getCurrentPageForTest(): AddDialogPage {
+    return this.currentPage_;
   }
 }
 

@@ -294,7 +294,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mRootView,
                             mSnackbarManager,
                             mRegularTabCreator,
-                            mBackPressManager);
+                            mBackPressManager,
+                            mModalDialogManager);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

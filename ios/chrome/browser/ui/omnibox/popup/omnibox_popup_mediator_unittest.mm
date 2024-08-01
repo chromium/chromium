@@ -20,8 +20,6 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
@@ -29,7 +27,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
-#import "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -69,6 +67,7 @@ class MockOmniboxPopupMediatorDelegate : public OmniboxPopupMediatorDelegate {
               (const AutocompleteMatch& match),
               (override));
   MOCK_METHOD(void, OnScroll, (), (override));
+  MOCK_METHOD(void, OnCallActionTap, (), (override));
 };
 
 // Structure to configure fake AutocompleteMatch for tests.
@@ -114,12 +113,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-
-    TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        test_cbs_builder.Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
 
     // Setup for AutocompleteController.
     auto template_url_service = std::make_unique<TemplateURLService>(
@@ -222,8 +215,8 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   }
 
   // Message loop for the main test thread.
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   base::test::TaskEnvironment environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   OmniboxPopupMediator* mediator_;
   MockOmniboxPopupMediatorDelegate delegate_;
   AutocompleteResult autocomplete_result_;

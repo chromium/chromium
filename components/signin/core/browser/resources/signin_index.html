@@ -72,11 +72,13 @@
           <td>Account Id</td>
           <td>Has refresh token</td>
           <td>Has persistent auth error</td>
+          <td jsdisplay="accountInfo[0].isBound != null">Is bound to the device</td>
         </tr>
         <tr jsselect="accountInfo">
           <td jscontent="accountId"></td>
           <td jscontent="hasRefreshToken"></td>
           <td jscontent="hasAuthError"></td>
+          <td jsdisplay="isBound != null" jscontent="isBound"></td>
         </tr>
       </table>
     </div>

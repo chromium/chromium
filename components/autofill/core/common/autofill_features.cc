@@ -69,7 +69,7 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
 // time passes between all submissions.
 BASE_FEATURE(kAutofillAssociateForms,
              "AutofillAssociateForms",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
@@ -249,6 +249,14 @@ BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
              "AutofillEnableEmailHeuristicOnlyAddressForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if heuristic field parsing should be performed on email-only forms
+// without an enclosing form tag. This feature will only be launched once
+// `kAutofillEnableEmailHeuristicOnlyAddressForms` rolls out.
+// TODO(crbug.com/40285735): Remove when/if launched.
+BASE_FEATURE(kAutofillEnableEmailHeuristicOutsideForms,
+             "AutofillEnableEmailHeuristicOutsideForms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When true, use autocomplete=email as required signal for email fields on
 // email-only forms, else accept a wider range of autocomplete values except for
 // `off` and `false`.
@@ -322,7 +330,7 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
 // on iOS.
 BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
              "AutofillEnableXHRSubmissionDetectionIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_xhr_submission_detection_ios)
 
 // When enabled, focusing on an autofilled field that was traditionally filled
@@ -655,7 +663,7 @@ BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
 // TODO(crbug.com/40270486): Clean up when launched.
 BASE_FEATURE(kAutofillTestFormWithTestAddresses,
              "AutofillTestFormWithTestAddresses",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows silent profile updates even when the profile import requirements are
 // not met.
@@ -803,6 +811,28 @@ BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
              "AutofillUpdateLowQualityTokenOnImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillUKMExperimentalFields,
+             "AutofillUKMExperimentalFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket0{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket0", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket1{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket1", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket2{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket2", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket3{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket3", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket4", ""};
+
+// When enabled, `AutofillProfile` tracks the second and third last use date of
+// each profile (instead of just the last use date).
+// TODO(crbug.com/354706653): Remove when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillTrackMultipleUseDates,
+             "AutofillTrackMultipleUseDates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
@@ -911,6 +941,12 @@ BASE_FEATURE(kAutofillServerCommunication,
 BASE_FEATURE(kAutofillShowTypePredictions,
              "AutofillShowTypePredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// This variation controls whether the verbose version of the feature is used.
+// In this version more information is attached to the respective DOM element,
+// such as aria labels and descriptions and select element options values and
+// texts.
+const base::FeatureParam<bool> kAutofillShowTypePredictionsVerboseParam{
+    &kAutofillShowTypePredictions, "verbose", false};
 
 // Autofill upload throttling limits uploading a form to the Autofill server
 // more than once over a `kAutofillUploadThrottlingPeriodInDays` period.

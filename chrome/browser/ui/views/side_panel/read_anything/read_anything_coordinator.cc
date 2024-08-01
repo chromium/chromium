@@ -59,9 +59,7 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
                        base::Unretained(this))) {
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
-  }
+  CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
@@ -79,45 +77,15 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
     RemoveGDocsHelperExtension();
   }
 
-  // Inform observers when |this| is destroyed so they can do their own cleanup.
-  for (Observer& obs : observers_) {
-    obs.OnCoordinatorDestroyed();
-  }
-
   // Deregister Read Anything from the global side panel registry. This removes
   // Read Anything as a side panel entry observer.
   Browser* browser = &GetBrowser();
-
-  // Deregisters the Read Anything side panel if it is not local. When a side
-  // panel entry is global, it has the same lifetime as the browser.
-  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-    // TODO(dcheng): The SidePanelRegistry is *also* a BrowserUserData. During
-    // Browser destruction, no other BrowserUserData instances are available, so
-    // this may be null. In general, this is a bit of a code smell, and the code
-    // should be refactored to avoid this situation.
-    SidePanelRegistry* global_registry =
-        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
-    if (global_registry) {
-      global_registry->Deregister(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
-    }
-  }
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->RemoveObserver(this);
   }
   browser->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
-}
-
-void ReadAnythingCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
-  auto side_panel_entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything,
-      base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
-                          base::Unretained(this)));
-  side_panel_entry->AddObserver(this);
-  global_registry->Register(std::move(side_panel_entry));
 }
 
 void ReadAnythingCoordinator::CreateAndRegisterEntriesForExistingWebContents(
@@ -166,11 +134,6 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
     return;
   }
 
-  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-    InstallGDocsHelperExtension();
-    return;
-  }
-
   active_local_side_panel_count_++;
   InstallGDocsHelperExtension();
 }
@@ -181,11 +144,6 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
   }
 
   if (!features::IsReadAnythingDocsIntegrationEnabled()) {
-    return;
-  }
-
-  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-    RemoveGDocsHelperExtension();
     return;
   }
 
@@ -232,17 +190,15 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   // If the Read Anything side panel is local, creates and registers a side
   // panel entry for each tab.
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    if (change.type() == TabStripModelChange::Type::kInserted) {
-      for (const auto& inserted_tab : change.GetInsert()->contents) {
-        CreateAndRegisterEntryForWebContents(inserted_tab.contents);
-      }
+  if (change.type() == TabStripModelChange::Type::kInserted) {
+    for (const auto& inserted_tab : change.GetInsert()->contents) {
+      CreateAndRegisterEntryForWebContents(inserted_tab.contents);
     }
-    if (change.type() == TabStripModelChange::Type::kReplaced) {
-      content::WebContents* new_contents = change.GetReplace()->new_contents;
-      if (new_contents) {
-        CreateAndRegisterEntryForWebContents(new_contents);
-      }
+  }
+  if (change.type() == TabStripModelChange::Type::kReplaced) {
+    content::WebContents* new_contents = change.GetReplace()->new_contents;
+    if (new_contents) {
+      CreateAndRegisterEntryForWebContents(new_contents);
     }
   }
   if (!selection.active_tab_changed()) {

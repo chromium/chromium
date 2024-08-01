@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -279,9 +278,6 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
  protected:
   void SetUp() override {
     IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest::SetUp();
-
-    IwaIdentityValidator::CreateSingleton();
-
     SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
   }
 

@@ -45,4 +45,8 @@ void ShowDialog(ExtensionsToolbarContainer* container,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
+// Shows the dialog constructed from `dialog_model` in `browser`.
+void ShowDialog(Browser* browser,
+                std::unique_ptr<ui::DialogModel> dialog_model);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_

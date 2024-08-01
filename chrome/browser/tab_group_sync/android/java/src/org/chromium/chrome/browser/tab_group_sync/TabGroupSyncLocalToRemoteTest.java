@@ -92,7 +92,7 @@ public class TabGroupSyncLocalToRemoteTest {
         String secondTabTitle = ChromeTabUtils.getTitleOnUiThread(secondTab);
         String secondTabUrl = ChromeTabUtils.getUrlStringOnUiThread(secondTab);
 
-        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);

@@ -25,6 +25,7 @@ static_library("system_web_apps") {
   public_deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",

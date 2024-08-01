@@ -39,6 +39,12 @@ class CompletionEvent {
     DCHECK(!waited_);
     waited_ = true;
 #endif
+    if (IsSignaled()) {
+      // The event has already been signaled and cannot be re-signaled.
+      // There is a non-trivial amount of machinery in WaitableEvent to quickly
+      // return if already signaled, which can be short-circuited.
+      return;
+    }
     // http://crbug.com/902653
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     event_.Wait();

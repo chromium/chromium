@@ -28,6 +28,7 @@ struct Illustration {
 
 struct Content {
   Content();
+  Content(const Content& content);
   ~Content();
   std::optional<Illustration> illustration;
 };
@@ -84,7 +85,15 @@ class PerksDiscoveryScreen : public BaseScreen {
   base::OneShotTimer timeout_overview_timer_;
   base::TimeDelta delay_exit_timeout_ = base::Minutes(1);
 
+  // Called when the user finish all perks on the screen.
+  void OnPerksSelectionFinished(const base::Value::List& selected_perks);
+
+  // Forward the action to the campaign manager.
+  void PerformButtonAction(const base::Value::Dict& button_data);
+
   std::vector<SinglePerkDiscoveryPayload> perks_data_;
+  int campaign_id_;
+  std::optional<int> group_id_;
   base::WeakPtr<PerksDiscoveryScreenView> view_;
   ScreenExitCallback exit_callback_;
 

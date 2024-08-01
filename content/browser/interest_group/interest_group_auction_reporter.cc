@@ -444,7 +444,7 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
                      top_seller_signals),
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletFatalError,
                      base::Unretained(this), base::Unretained(seller_info)),
-      seller_worklet_handle_);
+      seller_worklet_handle_, /*auction_metrics_recorder=*/nullptr);
 }
 
 void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
@@ -729,11 +729,12 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
       /*needs_cors_for_additional_bid=*/
       winning_bid_info_.provided_as_additional_bid, experiment_group_id,
       trusted_bidder_signals_slot_size_param,
+      interest_group.trusted_bidding_signals_coordinator,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                      base::Unretained(this), signals_for_winner),
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletFatalError,
                      base::Unretained(this)),
-      bidder_worklet_handle_);
+      bidder_worklet_handle_, /*auction_metrics_recorder=*/nullptr);
 }
 
 void InterestGroupAuctionReporter::OnBidderWorkletReceived(

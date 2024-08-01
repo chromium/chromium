@@ -21,8 +21,6 @@ export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} 
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
 export {FileProxy} from './modules/drive/file_module_proxy.js';
 export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
-export {FeedProxy} from './modules/feed/feed_module_proxy.js';
-export {feedDescriptor, FeedModuleElement} from './modules/feed/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';

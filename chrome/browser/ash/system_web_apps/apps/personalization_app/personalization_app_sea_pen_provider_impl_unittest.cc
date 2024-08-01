@@ -859,7 +859,8 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
   // Select the recent image |kSeaPenId1| as the current wallpaper.
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectRecentSeaPenImage(
-      kSeaPenId1, select_wallpaper_future.GetCallback());
+      kSeaPenId1, /*preview_mode=*/false,
+      select_wallpaper_future.GetCallback());
   EXPECT_TRUE(select_wallpaper_future.Take());
 
   // Delete |kSeaPenId2| from recent SeaPen images. |kSeaPenId1| is still the

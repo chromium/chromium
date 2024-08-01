@@ -405,10 +405,13 @@ public class WebContentsTest {
 
     @Test
     @SmallTest
-    // This test may run with --site-per-process, which also enables a feature to maintain a
-    // spare renderer process. The test expects only one renderer process and may
-    // incorrectly check its assertions on the spare process instead, so disable it.
-    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
+    // This test may run with --site-per-process or AndroidWarmUpSpareRendererWithTimeout,
+    // which also enables a feature to maintain a spare renderer process.
+    // The test expects only one renderer process and may incorrectly check its
+    // assertions on the spare process instead, so disable it.
+    @CommandLineFlags.Add({
+        "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
+    })
     public void testChildProcessImportance() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
@@ -434,10 +437,13 @@ public class WebContentsTest {
 
     @Test
     @SmallTest
-    // This test may run with --site-per-process, which also enables a feature to maintain a
-    // spare renderer process. The test expects only one renderer process and may
-    // incorrectly check its assertions on the spare process instead, so disable it.
-    @CommandLineFlags.Add({"disable-features=SpareRendererForSitePerProcess"})
+    // This test may run with --site-per-process or AndroidWarmUpSpareRendererWithTimeout,
+    // which also enables a feature to maintain a spare renderer process.
+    // The test expects only one renderer process and may incorrectly check its
+    // assertions on the spare process instead, so disable it.
+    @CommandLineFlags.Add({
+        "disable-features=SpareRendererForSitePerProcess,AndroidWarmUpSpareRendererWithTimeout"
+    })
     public void testVisibilityControlsBinding() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);

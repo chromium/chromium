@@ -912,10 +912,11 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
 
   FetchParameters link_fetch_params(std::move(resource_request), options);
   IdleRequestOptions* idle_options = IdleRequestOptions::Create();
-  document.RequestIdleCallback(
-      MakeGarbageCollected<LoadDictionaryWhenIdleTask>(
-          std::move(link_fetch_params), document.Fetcher(), pending_preload),
-      idle_options);
+  ScriptedIdleTaskController::From(*document.GetExecutionContext())
+      .RegisterCallback(MakeGarbageCollected<LoadDictionaryWhenIdleTask>(
+                            std::move(link_fetch_params), document.Fetcher(),
+                            pending_preload),
+                        idle_options);
 }
 
 Resource* PreloadHelper::StartPreload(ResourceType type,

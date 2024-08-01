@@ -14,7 +14,6 @@ import androidx.test.filters.LargeTest;
 
 import com.google.common.util.concurrent.SettableFuture;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -180,11 +179,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 () -> {
                     mAwContents.evaluateJavaScript(channelScript, null);
                 });
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     // Injects speculation rules for `url`.

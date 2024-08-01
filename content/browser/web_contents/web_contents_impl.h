@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
@@ -55,6 +54,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/mhtml_generation_result.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -63,6 +63,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_states.h"
 #include "net/base/network_handle.h"
+#include "partition_alloc/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -552,12 +553,19 @@ class CONTENT_EXPORT WebContentsImpl
   void DidChooseColorInColorChooser(SkColor color) override;
   void DidEndColorChooser() override;
 #endif
+  int DownloadImageFromAxNode(const ui::AXTreeID tree_id,
+                              const ui::AXNodeID node_id,
+                              const gfx::Size& preferred_size,
+                              uint32_t max_bitmap_size,
+                              bool bypass_cache,
+                              ImageDownloadCallback callback) override;
   int DownloadImage(const GURL& url,
                     bool is_favicon,
                     const gfx::Size& preferred_size,
                     uint32_t max_bitmap_size,
                     bool bypass_cache,
                     ImageDownloadCallback callback) override;
+
   int DownloadImageInFrame(
       const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
@@ -954,7 +962,8 @@ class CONTENT_EXPORT WebContentsImpl
       bool should_warm_up_compositor,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
-      base::RepeatingCallback<bool(const GURL&)>,
+      base::RepeatingCallback<bool(const GURL&,
+                                   const std::optional<UrlMatchType>&)>,
       base::RepeatingCallback<void(NavigationHandle&)>) override;
   void CancelAllPrerendering() override;
   void BackNavigationLikely(PreloadingPredictor predictor,
@@ -1749,6 +1758,8 @@ class CONTENT_EXPORT WebContentsImpl
                           const std::vector<SkBitmap>& images,
                           const std::vector<gfx::Size>& original_image_sizes);
 
+  int GetNextDownloadId();
+
   // Callback function when showing JavaScript dialogs. Takes in a routing ID
   // pair to identify the RenderFrameHost that opened the dialog, because it's
   // possible for the RenderFrameHost to be deleted by the time this is called.
@@ -2540,7 +2551,8 @@ class CONTENT_EXPORT WebContentsImpl
   // loading requests over a specific network. The network handle is set when
   // WebContents is created and will not change during the life cycle of
   // WebContents.
-  net::handles::NetworkHandle target_network_ = net::handles::kInvalidNetworkHandle;
+  net::handles::NetworkHandle target_network_ =
+      net::handles::kInvalidNetworkHandle;
 
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};

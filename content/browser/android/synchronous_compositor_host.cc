@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -216,6 +217,7 @@ SynchronousCompositorHost::DemandDrawHwAsync(
     const gfx::Size& viewport_size,
     const gfx::Rect& viewport_rect_for_tile_priority,
     const gfx::Transform& transform_for_tile_priority) {
+  velocity_in_pixels_per_second_ = 0.f;
   draw_hw_called_ = true;
   invalidate_needs_draw_ = false;
   num_invalidates_since_last_draw_ = 0u;
@@ -386,6 +388,7 @@ struct SynchronousCompositorHost::SharedMemoryWithSize {
 
 bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
                                              bool software_canvas) {
+  velocity_in_pixels_per_second_ = 0.f;
   num_invalidates_since_last_draw_ = 0u;
   if (use_in_process_zero_copy_software_draw_)
     return DemandDrawSwInProc(canvas);
@@ -434,7 +437,9 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
   UpdateFrameMetaData(metadata_version, std::move(*metadata), std::nullopt);
 
   SkBitmap bitmap;
-  SkPixmap pixmap(info, software_draw_shm_->shared_memory.memory(), stride);
+  base::span<uint8_t> mem(software_draw_shm_->shared_memory);
+  CHECK_GE(mem.size(), info.computeByteSize(stride));
+  SkPixmap pixmap(info, mem.data(), stride);
 
   bool pixels_released = false;
   {
@@ -544,6 +549,10 @@ void SynchronousCompositorHost::SetMemoryPolicy(size_t bytes_limit) {
   if (blink::mojom::SynchronousCompositor* compositor =
           GetSynchronousCompositor())
     compositor->SetMemoryPolicy(bytes_limit_);
+}
+
+float SynchronousCompositorHost::GetVelocityInPixelsPerSecond() {
+  return velocity_in_pixels_per_second_;
 }
 
 void SynchronousCompositorHost::DidChangeRootLayerScrollOffset(
@@ -694,6 +703,9 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
       (outstanding_begin_frame_requests_ & BEGIN_FRAME) ||
       (outstanding_begin_frame_requests_ & PERSISTENT_BEGIN_FRAME);
 
+  last_begin_frame_time_delta_ =
+      args.frame_time - last_begin_frame_args_.frame_time;
+
   // Update |last_begin_frame_args_| before handling
   // |outstanding_begin_frame_requests_| to prevent the BeginFrameSource from
   // sending the same MISSED args in infinite recursion.
@@ -778,6 +790,28 @@ void SynchronousCompositorHost::SendBeginFrame(viz::BeginFrameArgs args) {
   DCHECK(compositor);
   compositor->BeginFrame(args, timing_details_);
   timing_details_.clear();
+}
+
+void SynchronousCompositorHost::BeginFrameComplete(
+    blink::mojom::SyncCompositorCommonRendererParamsPtr params) {
+  velocity_in_pixels_per_second_ = 0.f;
+  gfx::PointF offset = root_scroll_offset_;
+  if (params) {
+    UpdateState(std::move(params));
+  }
+  // Sanity check frame time delta.
+  if (last_begin_frame_time_delta_.InMicroseconds() < 100 ||
+      last_begin_frame_time_delta_.InMicroseconds() > 1000000) {
+    return;
+  }
+  gfx::Vector2dF scroll = root_scroll_offset_ - offset;
+  float major_scroll_in_last_begin_frame =
+      std::abs(scroll.x()) > std::abs(scroll.y()) ? scroll.x() : scroll.y();
+  velocity_in_pixels_per_second_ = major_scroll_in_last_begin_frame /
+                                   last_begin_frame_time_delta_.InSecondsF();
+  TRACE_EVENT_INSTANT("cc", "SynchronousCompositorHost::BeginFrameComplete",
+                      "scroll", major_scroll_in_last_begin_frame, "delta",
+                      last_begin_frame_time_delta_.InMicroseconds());
 }
 
 void SynchronousCompositorHost::SetBeginFrameSource(

@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
 
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
@@ -28,17 +30,18 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MLBuffer* Create(ScopedMLTrace scoped_trace,
-                          ExecutionContext* execution_context,
-                          MLContext* ml_context,
-                          const MLBufferDescriptor* descriptor,
-                          ExceptionState& exception_state);
-
-  // The constructor shouldn't be called directly. The callers should use the
-  // `Create()` method instead.
-  explicit MLBuffer(ExecutionContext* execution_context,
-                    MLContext* context,
-                    webnn::OperandDescriptor descriptor);
+  // Instances should only be constructed via `MLContext.createBuffer()`.
+  // This method is public as required by the `MakeGarbageCollected` helper.
+  //
+  // `descriptor` describes the buffer data type and shape.
+  // `create_buffer_success` contains the resulting handles to the created
+  // buffer. which may be used to execute a context operation with respective
+  // buffer.
+  MLBuffer(ExecutionContext* execution_context,
+           MLContext* context,
+           webnn::OperandDescriptor descriptor,
+           webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
+           base::PassKey<MLContext> pass_key);
   MLBuffer(const MLBuffer&) = delete;
   MLBuffer& operator=(const MLBuffer&) = delete;
 
@@ -81,7 +84,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   void OnDidReadBuffer(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
                        webnn::mojom::blink::ReadBufferResultPtr result);
 
-  webnn::mojom::blink::BufferInfoPtr GetMojoBufferInfo() const;
+  void OnConnectionError();
 
   Member<MLContext> ml_context_;
 
@@ -94,6 +97,10 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // The `WebNNBuffer` is a buffer that can be used by the hardware
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNBuffer> remote_buffer_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<DOMArrayBuffer>>> pending_resolvers_;
 };
 
 }  // namespace blink

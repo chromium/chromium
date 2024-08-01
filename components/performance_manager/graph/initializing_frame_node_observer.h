@@ -45,11 +45,13 @@ class InitializingFrameNodeObserver {
   virtual void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) {}
+  virtual void OnHadUserActivationChanged(const FrameNode* frame_node) {}
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) {}
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) {}
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
-  virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) {}
+  virtual void OnViewportIntersectionStateChanged(const FrameNode* frame_node) {
+  }
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
   virtual void OnNonPersistentNotificationCreated(const FrameNode* frame_node) {
@@ -94,11 +96,12 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override;
+  void OnHadUserActivationChanged(const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override;
-  void OnIntersectsViewportChanged(const FrameNode* frame_node) override;
+  void OnViewportIntersectionStateChanged(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
   void OnNonPersistentNotificationCreated(const FrameNode* frame_node) override;

@@ -24,11 +24,11 @@ source_set("popup_menu_ui") {
   deps = [
     ":ui_constants",
     "//base",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
-    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/browser/ui/popup_menu/cells",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",

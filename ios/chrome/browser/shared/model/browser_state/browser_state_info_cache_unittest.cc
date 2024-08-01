@@ -187,3 +187,17 @@ TEST_F(BrowserStateInfoCacheTest, PrefService) {
               account.authenticated);
   }
 }
+
+// Tests that the saved browser state can be retrieve with the scene ID.
+TEST_F(BrowserStateInfoCacheTest, MapBrowserStateAndSceneID) {
+  BrowserStateInfoCache cache(pref_service());
+  BrowserStateInfoCacheTestObserver observer(cache);
+
+  std::string sceneID = "Test Scene ID";
+
+  for (const TestAccount& account : kTestAccounts) {
+    EXPECT_NE(cache.GetBrowserStateNameForSceneID(sceneID), account.name);
+    cache.SetBrowserStateForSceneID(sceneID, account.name);
+    EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), account.name);
+  }
+}

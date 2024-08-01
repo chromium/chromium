@@ -91,6 +91,10 @@ class NET_EXPORT_PRIVATE StreamAttempt {
  protected:
   virtual int StartInternal() = 0;
 
+  // Called when `this` is started. Subclasses should implement this method
+  // to record a useful NetLog event.
+  virtual base::Value::Dict GetNetLogStartParams() = 0;
+
   const StreamAttemptParams& params() { return *params_; }
 
   void SetStreamSocket(std::unique_ptr<StreamSocket> stream_socket);

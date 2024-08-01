@@ -16,9 +16,6 @@
 
 namespace {
 
-// How long, in seconds, the long duration bubble is visible on the screen. Ex.
-// Follow in-product help(IPH) bubble.
-const NSTimeInterval kBubbleVisibilityLongDuration = 8.0;
 // How long, in seconds, the user should be considered engaged with the bubble
 // after the bubble first becomes visible.
 const NSTimeInterval kBubbleEngagementDuration = 30.0;
@@ -78,8 +75,6 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @property(nonatomic, assign) BubbleAlignment alignment;
 // The type of the bubble view's content.
 @property(nonatomic, assign, readonly) BubbleViewType bubbleType;
-// YES if the bubble should present longer.
-@property(nonatomic, assign) BOOL isLongDurationBubble;
 // Whether the bubble view controller is presented or dismissed.
 @property(nonatomic, assign, getter=isPresenting) BOOL presenting;
 // The block invoked when the bubble is dismissed (both via timer and via tap).
@@ -140,10 +135,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 - (instancetype)initDefaultBubbleWithText:(NSString*)text
                            arrowDirection:(BubbleArrowDirection)arrowDirection
                                 alignment:(BubbleAlignment)alignment
-                     isLongDurationBubble:(BOOL)isLongDurationBubble
                         dismissalCallback:(CallbackWithIPHDismissalReasonType)
                                               dismissalCallback {
-  self.isLongDurationBubble = isLongDurationBubble;
   return [self initWithText:text
                       title:nil
                       image:nil
@@ -191,9 +184,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [self.bubbleViewController animateContentIn];
 
   self.bubbleDismissalTimer = [NSTimer
-      scheduledTimerWithTimeInterval:self.isLongDurationBubble
-                                         ? kBubbleVisibilityLongDuration
-                                         : kBubbleVisibilityDuration
+      scheduledTimerWithTimeInterval:[self bubbleVisibilityDuration]
                               target:self
                             selector:@selector(bubbleDismissalTimerFired:)
                             userInfo:nil
@@ -365,6 +356,11 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 }
 
 #pragma mark - Private
+
+- (NSTimeInterval)bubbleVisibilityDuration {
+  return _customBubbleVisibilityDuration > 0 ? _customBubbleVisibilityDuration
+                                             : kBubbleVisibilityDuration;
+}
 
 - (void)removeGestureRecognizers {
   [self.outsideBubbleTapRecognizer.view

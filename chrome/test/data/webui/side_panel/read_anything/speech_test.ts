@@ -209,6 +209,7 @@ suite('Speech', () => {
         'after speech started, cancels speech and plays from selection',
         async () => {
           app.speechPlayingState.isSpeechTreeInitialized = true;
+          app.speechPlayingState.hasSpeechBeenTriggered = true;
 
           await selectAndPlay(axTree, 5, 0, 5, 10);
 
@@ -275,6 +276,7 @@ suite('Speech', () => {
     setup(() => {
       chrome.readingMode.initAxPositionWithNode(2);
       app.speechPlayingState.isSpeechTreeInitialized = true;
+      app.speechPlayingState.hasSpeechBeenTriggered = true;
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
 
@@ -321,14 +323,17 @@ suite('Speech', () => {
   });
 
   test('previous granularity plays from there', () => {
+    speechSynthesis.setMaxSegments(7);
     chrome.readingMode.initAxPositionWithNode(2);
     app.playSpeech();
     speechSynthesis.clearSpokenUtterances();
 
+    speechSynthesis.setMaxSegments(1);
     emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
 
     assertEquals(1, speechSynthesis.spokenUtterances.length);
-    assertEquals(paragraph2.at(-1)!, speechSynthesis.spokenUtterances[0]!.text);
+    assertEquals(
+        paragraph2.at(-2)!, speechSynthesis.spokenUtterances[0]!.text.trim());
   });
 
 
@@ -408,6 +413,7 @@ suite('Speech', () => {
     setup(() => {
       chrome.readingMode.initAxPositionWithNode(2);
       app.speechPlayingState.isSpeechTreeInitialized = true;
+      app.speechPlayingState.hasSpeechBeenTriggered = true;
       app.speechPlayingState.isSpeechActive = true;
     });
 

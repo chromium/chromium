@@ -12,6 +12,8 @@ static_library("assistant") {
     "assistant_util.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//chrome/browser/ash/profiles",

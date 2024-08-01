@@ -49,7 +49,7 @@ class HotspotPolicyInteractiveUITest : public InteractiveAshTest {
 
   const ShillServiceInfo& shill_service_info() { return shill_service_info_; }
 
-  void restrict_hotspot() {
+  void RestrictHotspotFromPolicy() {
     base::Value::Dict global_config;
     global_config.Set(::onc::global_network_config::kAllowCellularHotspot,
                       false);
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest,
 
       Log("Enforce the policy to restrict users from enabling hotspot"),
 
-      Do([&]() { restrict_hotspot(); }),
+      Do([&]() { RestrictHotspotFromPolicy(); }),
 
       Log("Wait for hotspot toggle to be disabled"),
 
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(HotspotPolicyInteractiveUITest,
 
       Log("Enforce the policy to restrict users from enabling hotspot"),
 
-      Do([&]() { restrict_hotspot(); }),
+      Do([&]() { RestrictHotspotFromPolicy(); }),
 
       Log("Wait for hotspot toggle to be turned off"),
 

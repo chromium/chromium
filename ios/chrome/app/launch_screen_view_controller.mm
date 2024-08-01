@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/launch_screen_view_controller.h"
 
-#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {

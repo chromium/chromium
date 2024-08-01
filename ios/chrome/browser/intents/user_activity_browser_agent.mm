@@ -134,7 +134,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
 
     base::UmaHistogramEnumeration(kAppLaunchSource,
                                   AppLaunchSource::SPOTLIGHT_CHROME);
-    if (!item_id) {
+    if (!item_id || domain == spotlight::DOMAIN_UNKNOWN) {
       return NO;
     }
     if (domain == spotlight::DOMAIN_ACTIONS) {

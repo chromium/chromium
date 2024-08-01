@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/picker/picker_rich_media.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base64.h"
 #include "base/check.h"
@@ -22,6 +23,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -168,7 +170,7 @@ const TestCaseCallback kTextTestCases[] = {
         /*expected_text=*/u"hello")
         .ToCallback(),
     BasicTestCase(
-        /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
+        /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com"), "Foo"),
         /*expected_text=*/u"http://foo.com/")
         .ToCallback(),
 };
@@ -215,7 +217,8 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kTimeout);
   base::TimeDelta insert_duration =
@@ -233,7 +236,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsWhileBlurred) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-      complete_future.GetCallback());
+      /*get_web_paste_target=*/{}, complete_future.GetCallback());
   input_method.SetFocusedTextInputClient(&client);
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kSuccess);
@@ -255,7 +258,8 @@ TEST_P(PickerInsertMediaRequestTest,
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   task_environment().FastForwardBy(base::Milliseconds(999));
   input_method.SetFocusedTextInputClient(&client);
 
@@ -277,7 +281,8 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertAfterTimeoutWhileBlurred) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   task_environment().FastForwardBy(base::Seconds(1));
   input_method.SetFocusedTextInputClient(&client);
 
@@ -300,7 +305,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnNextFocusWhileFocused) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-      complete_future.GetCallback());
+      /*get_web_paste_target=*/{}, complete_future.GetCallback());
   input_method.SetFocusedTextInputClient(&next_client);
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kSuccess);
@@ -326,7 +331,8 @@ TEST_P(PickerInsertMediaRequestTest,
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   task_environment().FastForwardBy(base::Milliseconds(999));
   input_method.SetFocusedTextInputClient(&next_client);
 
@@ -353,7 +359,8 @@ TEST_P(PickerInsertMediaRequestTest,
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   task_environment().FastForwardBy(base::Seconds(1));
   input_method.SetFocusedTextInputClient(&next_client);
 
@@ -391,7 +398,7 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertInInputTypeNone) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-      complete_future.GetCallback());
+      /*get_web_paste_target=*/{}, complete_future.GetCallback());
   input_method.SetFocusedTextInputClient(&client_none);
   input_method.SetFocusedTextInputClient(&client_text);
 
@@ -414,7 +421,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithMultipleFocus) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-      complete_future.GetCallback());
+      /*get_web_paste_target=*/{}, complete_future.GetCallback());
   input_method.SetFocusedTextInputClient(&client1);
   input_method.SetFocusedTextInputClient(&client2);
 
@@ -435,7 +442,8 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithTimeout) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   input_method.SetFocusedTextInputClient(&client);
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kSuccess);
@@ -460,7 +468,7 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithDestruction) {
 
     PickerInsertMediaRequest request(
         &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-        complete_future.GetCallback());
+        /*get_web_paste_target=*/{}, complete_future.GetCallback());
     input_method.SetFocusedTextInputClient(&client);
 
     EXPECT_EQ(complete_future.Take(),
@@ -484,7 +492,8 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       old_input_method.get(), test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   old_input_method.reset();
   InputMethodAsh new_input_method(nullptr);
   new_input_method.SetFocusedTextInputClient(&client);
@@ -506,7 +515,7 @@ TEST_P(PickerInsertMediaRequestTest, CallsCallbackOnSuccess) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-      complete_future.GetCallback());
+      /*get_web_paste_target=*/{}, complete_future.GetCallback());
   client.Focus();
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kSuccess);
@@ -522,7 +531,8 @@ TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kTimeout);
   base::TimeDelta insert_duration =
@@ -544,7 +554,7 @@ TEST_P(PickerInsertMediaRequestImageTest,
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(), kInsertionTimeout,
-      complete_future.GetCallback());
+      /*get_web_paste_target=*/{}, complete_future.GetCallback());
   unsupported_client.Focus();
   supported_client.Focus();
 
@@ -568,7 +578,8 @@ TEST_P(PickerInsertMediaRequestImageTest,
   base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
       &input_method, test_case()->media_to_insert(),
-      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), /*get_web_paste_target=*/{},
+      complete_future.GetCallback());
   client.Focus();
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kTimeout);

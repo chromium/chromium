@@ -45,6 +45,12 @@ class DIPSDatabaseMigrator {
   // Config table for storing key-value configuration data.
   bool MigrateSchemaVersionFrom5To6();
 
+  // Migrates from v6 to v7 of the DIPS database schema. This migration removes
+  // the deprecated config entry tracking whether the database was prepopulated.
+  // Note that this is technically a data change rather than a schema change.
+  // Hence the minimum compatible schema version stays the same.
+  bool MigrateSchemaVersionFrom6To7();
+
   DIPSDatabaseMigrator(const DIPSDatabaseMigrator&) = delete;
   DIPSDatabaseMigrator& operator=(const DIPSDatabaseMigrator&) = delete;
 

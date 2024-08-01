@@ -29,7 +29,6 @@ namespace enterprise_companion {
 const char kLoggingModuleSwitch[] = "vmodule";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kCrashMeSwitch[] = "crash-me";
-const char kEnableUsageStatsSwitch[] = "enable-usage-stats";
 const char kShutdownSwitch[] = "shutdown";
 const char kInstallSwitch[] = "install";
 

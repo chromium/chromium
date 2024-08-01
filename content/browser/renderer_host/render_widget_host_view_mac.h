@@ -184,12 +184,12 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   bool GetIsPointerLockedUnadjustedMovementForTesting() override;
   // Returns true when running on a recent enough OS for unaccelerated pointer
   // events.
-  static bool IsUnadjustedMouseMovementSupported();
   bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void ProcessAckedTouchEvent(
       const input::TouchEventWithLatencyInfo& touch,

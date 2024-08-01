@@ -81,33 +81,31 @@ public class ContentView extends FrameLayout
 
     private int mDesiredHeightMeasureSpec = DEFAULT_MEASURE_SPEC;
 
-    @Nullable private final EventOffsetHandler mEventOffsetHandler;
     private EventOffsetHandler mDragDropEventOffsetHandler;
     private boolean mDeferKeepScreenOnChanges;
     private Boolean mPendingKeepScreenOnValue;
 
     /**
      * Constructs a new ContentView for the appropriate Android version.
-     * @param context The Context the view is running in, through which it can
-     *                access the current theme, resources, etc.
+     *
+     * @param context The Context the view is running in, through which it can access the current
+     *     theme, resources, etc.
      * @param webContents The WebContents managing this content view.
      * @return an instance of a ContentView.
      */
     public static ContentView createContentView(
-            Context context,
-            @Nullable EventOffsetHandler eventOffsetHandler,
-            @Nullable WebContents webContents) {
-        return new ContentView(context, eventOffsetHandler, webContents);
+            Context context, @Nullable WebContents webContents) {
+        return new ContentView(context, webContents);
     }
 
     /**
      * Creates an instance of a ContentView.
-     * @param context The Context the view is running in, through which it can
-     *                access the current theme, resources, etc.
+     *
+     * @param context The Context the view is running in, through which it can access the current
+     *     theme, resources, etc.
      * @param webContents A pointer to the WebContents managing this content view.
      */
-    protected ContentView(
-            Context context, EventOffsetHandler eventOffsetHandler, WebContents webContents) {
+    protected ContentView(Context context, WebContents webContents) {
         super(context, null, android.R.attr.webViewStyle);
 
         if (getScrollBarStyle() == View.SCROLLBARS_INSIDE_OVERLAY) {
@@ -116,7 +114,6 @@ public class ContentView extends FrameLayout
         }
 
         mWebContents = webContents;
-        mEventOffsetHandler = eventOffsetHandler;
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -392,40 +389,10 @@ public class ContentView extends FrameLayout
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent e) {
-        boolean ret = super.onInterceptTouchEvent(e);
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onInterceptTouchEvent(e);
-        }
-        return ret;
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (TouchEventFilter.hasInvalidToolType(event)) return false;
         EventForwarder forwarder = getEventForwarder();
         boolean ret = forwarder != null ? forwarder.onTouchEvent(event) : false;
-        if (mEventOffsetHandler != null) mEventOffsetHandler.onTouchEvent(event);
-        return ret;
-    }
-
-    @Override
-    public boolean onInterceptHoverEvent(MotionEvent e) {
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onInterceptHoverEvent(e);
-        }
-        return super.onInterceptHoverEvent(e);
-    }
-
-    @Override
-    public boolean dispatchDragEvent(DragEvent e) {
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
-        }
-        boolean ret = super.dispatchDragEvent(e);
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onPostDispatchDragEvent(e.getAction());
-        }
         return ret;
     }
 

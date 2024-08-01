@@ -69,6 +69,9 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.connect_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_end = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
       base::Milliseconds(100);
@@ -111,6 +114,18 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSParseStart, 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSConnectStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSConnectStart, 1, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSDomainLookupStart, 1, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupEnd, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSDomainLookupEnd, 1, 1);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSFirstContentfulPaint, 10, 1);
@@ -125,6 +140,9 @@ TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.connect_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_end = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
       base::Milliseconds(100);
@@ -153,6 +171,12 @@ TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSConnectStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupEnd, 0);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSLargestContentfulPaint, 0);
@@ -162,6 +186,9 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.parse_timing->parse_start = base::Seconds(60);
+  timing.connect_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_end = base::Milliseconds(1);
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.paint_timing->first_contentful_paint = base::Seconds(60);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
@@ -190,6 +217,12 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToOnComplete, 1);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSConnectStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupEnd, 0);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 0);
@@ -201,6 +234,9 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.parse_timing->parse_start = base::Microseconds(1);
+  timing.connect_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_start = base::Milliseconds(1);
+  timing.domain_lookup_timing->domain_lookup_end = base::Milliseconds(1);
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.paint_timing->first_contentful_paint = base::Microseconds(1);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
@@ -247,6 +283,18 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
       internal::kHistogramGWSParseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSParseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSConnectStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSConnectStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSDomainLookupStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSDomainLookupEnd, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSDomainLookupEnd, 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(

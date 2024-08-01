@@ -101,3 +101,7 @@ bool TestSessionController::IsScreenLocked() const {
 std::optional<int> TestSessionController::GetExistingUsersCount() const {
   return existing_users_count_;
 }
+
+void TestSessionController::NotifyFirstSessionReady() {
+  ++first_session_ready_count_;
+}

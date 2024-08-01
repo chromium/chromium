@@ -30,6 +30,7 @@ enum ActionId {
   kTaskManager,
   kDevTools,
   kShowChromeLabs,
+  kCopyLink,
 };
 
 // Unique identifiers for categories the actions can belong to.
@@ -86,4 +87,6 @@ interface CustomizeToolbarHandler {
 interface CustomizeToolbarClient {
   // Sets the pinned state of the action with id `action_id`.
   SetActionPinned(ActionId action_id, bool pinned);
+  // Notifies the WebUI that an action has changed and the UI should repopulate.
+  NotifyActionsUpdated();
 };

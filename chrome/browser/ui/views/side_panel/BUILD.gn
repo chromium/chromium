@@ -80,6 +80,7 @@ source_set("side_panel") {
     "side_panel_entry_id.h",
     "side_panel_entry_key.cc",
     "side_panel_entry_key.h",
+    "side_panel_entry_observer.h",
     "side_panel_enums.h",
     "side_panel_header.cc",
     "side_panel_header.h",
@@ -114,7 +115,9 @@ source_set("side_panel") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
     "//chrome/browser/companion/core/mojom:mojo_bindings",
+    "//chrome/browser/companion/visual_query",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
@@ -145,9 +148,11 @@ source_set("side_panel") {
     "//chrome/browser/companion/core",
     "//chrome/browser/favicon",
     "//chrome/browser/lens/region_search",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -155,6 +160,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/accessibility:reading",
@@ -194,26 +200,6 @@ source_set("side_panel") {
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry:geometry_skia",
     "//ui/webui",
-
-    # TODO(crbug.com/345645751): Use //chrome/browser instead after fixing cyclic dependency.
-    "//components/enterprise/common/proto:connectors_proto",
-
-    # TODO(crbug.com/346711540,crbug.com/346699817,crbug.com/345645751,
-    #      crbug.com/346694160,crbug.com/346709958,crbug.com/346707816):
-    # Use //chrome/browser/ui instead after fixing cyclic dependency.
-    "//chrome/browser/cart:mojo_bindings",
-    "//chrome/browser/companion/visual_query",
-    "//chrome/browser/ui:webui_name_variants",
-    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
-    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
-    "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
-    "//components/enterprise/buildflags",
-    "//components/page_image_service/mojom:mojo_bindings",
-    "//components/paint_preview/buildflags",
-    "//components/segmentation_platform/public/proto",
-    "//components/user_education/webui",
-    "//components/webapps/common:mojo_bindings",
-    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   ]
 
   if (enable_extensions) {
@@ -223,4 +209,6 @@ source_set("side_panel") {
     ]
     deps += [ "//chrome/common/extensions/api" ]
   }
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/views/toolbar" ]
 }

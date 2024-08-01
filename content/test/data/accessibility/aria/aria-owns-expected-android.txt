@@ -9,6 +9,6 @@ android.webkit.WebView focusable focused
 ++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
 ++++++android.view.View name='%E2%80%A2 '
 ++++++android.widget.TextView name='Four'
-++android.view.View
+++android.view.View collection_item row_span=1 column_span=1
 ++++android.view.View name='%E2%80%A2'
 ++++android.widget.TextView name='Three'

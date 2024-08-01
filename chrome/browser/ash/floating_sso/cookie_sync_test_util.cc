@@ -25,11 +25,19 @@ const std::array<std::string, 4> kNamesForTests{"FirstName", "SecondName",
 static_assert(std::tuple_size_v<decltype(kUniqueKeysForTests)> ==
               std::tuple_size_v<decltype(kNamesForTests)>);
 
-sync_pb::CookieSpecifics CookieSpecificsForTest(size_t i) {
+sync_pb::CookieSpecifics CreatePredefinedCookieSpecificsForTest(size_t i) {
   CHECK(i < kNamesForTests.size());
+
+  return CreateCookieSpecificsForTest(kUniqueKeysForTests[i],
+                                      kNamesForTests[i]);
+}
+
+sync_pb::CookieSpecifics CreateCookieSpecificsForTest(
+    const std::string& unique_key,
+    const std::string& name) {
   sync_pb::CookieSpecifics sync_specifics;
-  sync_specifics.set_unique_key(kUniqueKeysForTests[i]);
-  sync_specifics.set_name(kNamesForTests[i]);
+  sync_specifics.set_unique_key(unique_key);
+  sync_specifics.set_name(name);
   sync_specifics.set_value(kValueForTests);
   sync_specifics.set_domain(kDomainForTests);
   sync_specifics.set_path(kPathForTests);

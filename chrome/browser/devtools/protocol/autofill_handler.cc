@@ -411,9 +411,20 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
           .Build());
 }
 
-void AutofillHandler::OnAutofillManagerDestroyed(
-    autofill::AutofillManager& manager) {
-  autofill_manager_observation_.Reset();
+void AutofillHandler::OnAutofillManagerStateChanged(
+    autofill::AutofillManager& manager,
+    autofill::AutofillManager::LifecycleState old_state,
+    autofill::AutofillManager::LifecycleState new_state) {
+  using enum autofill::AutofillManager::LifecycleState;
+  switch (new_state) {
+    case kInactive:
+    case kActive:
+    case kPendingReset:
+      break;
+    case kPendingDeletion:
+      autofill_manager_observation_.Reset();
+      break;
+  }
 }
 
 void AutofillHandler::OnContentAutofillDriverFactoryDestroyed(

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
+#include "media/capture/video/chromeos/camera_sw_privacy_switch_state_observer.h"
 #include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,6 +56,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   using StorageMonitor = camera_app::mojom::StorageMonitor;
   using LidStateMonitor = camera_app::mojom::LidStateMonitor;
   using ScreenLockedMonitor = camera_app::mojom::ScreenLockedMonitor;
+  using SWPrivacySwitchMonitor = camera_app::mojom::SWPrivacySwitchMonitor;
 
   CameraAppHelperImpl(CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
@@ -110,6 +112,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void OpenWifiDialog(camera_app::mojom::WifiConfigPtr wifi_config) override;
   void SetLidStateMonitor(mojo::PendingRemote<LidStateMonitor> monitor,
                           SetLidStateMonitorCallback callback) override;
+  void SetSWPrivacySwitchMonitor(
+      mojo::PendingRemote<SWPrivacySwitchMonitor> monitor,
+      SetSWPrivacySwitchMonitorCallback callback) override;
   void GetEventsSender(GetEventsSenderCallback callback) override;
   void SetScreenLockedMonitor(mojo::PendingRemote<ScreenLockedMonitor> monitor,
                               SetScreenLockedMonitorCallback callback) override;
@@ -147,7 +152,11 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplaysRemoved(const display::Displays& removed_displays) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
+
   void OnLidStateChanged(cros::mojom::LidState state) override;
+
+  void OnSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState state);
 
   // For platform app, we set |camera_app_ui_| to nullptr and should not use
   // it. For SWA, since CameraAppUI owns CameraAppHelperImpl, it is safe to
@@ -161,6 +170,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
 
   bool has_external_screen_;
 
+  bool is_sw_privacy_switch_on_ = false;
+
   std::optional<uint32_t> pending_intent_id_;
 
   raw_ptr<aura::Window> window_;
@@ -169,6 +180,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   mojo::Remote<ScreenStateMonitor> screen_state_monitor_;
   mojo::Remote<ExternalScreenMonitor> external_screen_monitor_;
   mojo::Remote<LidStateMonitor> lid_state_monitor_;
+  mojo::Remote<SWPrivacySwitchMonitor> sw_privacy_switch_monitor_;
   SetLidStateMonitorCallback lid_callback_;
   mojo::Remote<StorageMonitor> storage_monitor_;
   StartStorageMonitorCallback storage_callback_;
@@ -181,6 +193,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
 
   // Client to connect to document detection service.
   std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;
+
+  std::unique_ptr<media::CrosCameraSWPrivacySwitchStateObserver>
+      sw_privacy_switch_state_observer_;
 
   mojo::Remote<cros::mojom::CrosSystemEventMonitor> monitor_;
 
