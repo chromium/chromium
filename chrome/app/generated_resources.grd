@@ -14490,24 +14490,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GEOLOCATION_WILL_ASK_AGAIN" desc="Info message that tells user that the website will prompt for geolocation permission again next time">
           This site will ask again next time.
       </message>
-      <if expr="is_chromeos">
+      <if expr="is_macosx or is_chromeos or is_win">
         <message name="IDS_GEOLOCATION_TURNED_OFF_IN_OS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level.">
-          Location is turned off in ChromeOS Settings
+          Location is turned off in system settings
         </message>
       </if>
-      <if expr="is_macosx">
-        <message name="IDS_GEOLOCATION_TURNED_OFF_IN_MACOS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level in macOS.">
-          Location is turned off in Mac System Preferences
-        </message>
-      </if>
-      <if expr="is_win">
-        <message name="IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level in Windows.">
-          Location is turned off in Windows System Preferences
-        </message>
-      </if>
-        <message name="IDS_GEOLOCATION_TURNED_OFF" desc="Description text in the omnibox icon showing when location permission is blocked on an OS level.">
-          Location turned off
-        </message>
+      <message name="IDS_GEOLOCATION_TURNED_OFF" desc="Description text in the omnibox icon showing when location permission is blocked on an OS level.">
+        Location turned off
+      </message>
 
       <!-- Web MIDI messages -->
       <message name="IDS_ALLOWED_MIDI_SYSEX_TITLE" desc="Title of the info bubble shown when a site is allowed to use MIDI system exclusive messages.">
@@ -14588,9 +14578,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_MIC_TURNED_OFF_IN_MACOS" desc="Title for the media status bubble that is used when a site requests microphone access, but microphone is blocked on an OS level in macOS.">
           Microphone is turned off in Mac System Settings
         </message>
-        <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in macOS, in order for the user to be able to modify the ability to access camera and microphone for Chrome. The translation for this string should match the translation of the System Settings app title in the macOS target locale. You can find this by selecting the locale from https://support.apple.com/guide/mac-help/mh15217/mac/localeselector. The title of the next page after that includes the desired translation. Note that, for size reasons, the English string omits 'System' and the same contraction may be suitable in other languages.">
-          Open Settings
-        </message>
         <message name="IDS_CAMERA" desc="Description text for the camera.">
           Camera
         </message>
@@ -14604,14 +14591,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Microphone turned off
         </message>
       </if>
-      <if expr="is_win or is_chromeos">
-        <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in Windows or ChromeOS, in order for the user to be able to modify the ability to access camera, microphone and geolocation for Chrome.">
-          Open Settings
-        </message>
-      </if>
       <if expr="is_macosx or is_chromeos or is_win">
         <message name="IDS_TURNED_OFF" desc="Description text for the state of camera or microphone or geolocation">
           Turned off
+        </message>
+        <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in Windows or ChromeOS, in order for the user to be able to modify the ability to access camera, microphone and geolocation for Chrome.">
+          System settings
         </message>
       </if>
 

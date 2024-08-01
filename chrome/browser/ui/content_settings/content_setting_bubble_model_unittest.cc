@@ -592,15 +592,9 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#elif BUILDFLAG(IS_WIN)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS));
-#elif BUILDFLAG(IS_CHROMEOS)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+              u"Location is turned off in system settings");
 #endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
@@ -623,16 +617,10 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
                 IsAllowed(ContentSettingsType::GEOLOCATION))
         .WillRepeatedly(Return(true));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#elif BUILDFLAG(IS_WIN)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS));
-#elif BUILDFLAG(IS_CHROMEOS)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
-#endif  // BUILDFLAG(IS_MAC)
+              u"Location is turned off in system settings");
+#endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
 
