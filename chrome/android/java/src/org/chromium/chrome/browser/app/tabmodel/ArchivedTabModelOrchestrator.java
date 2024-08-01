@@ -166,11 +166,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mTabArchiveSettings = null;
         }
 
-        // Null out TabWindowManager's reference so TabState isn't cleared.
-        if (mTabWindowManager != null) {
-            mTabWindowManager.setArchivedTabModelSelector(null);
-        }
-
         super.destroy();
     }
 
