@@ -549,10 +549,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceInterventionUI));
   html_source->AddBoolean(
-      "isMemorySaverModeAggressivenessEnabled",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kMemorySaverModeAggressiveness));
-  html_source->AddBoolean(
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 

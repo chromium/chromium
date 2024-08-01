@@ -708,19 +708,7 @@ IN_PROC_BROWSER_TEST_F(SettingsMemoryPageTest, MemorySaver) {
   RunTest("settings/memory_page_test.js", "runMochaSuite('MemorySaver')");
 }
 
-class SettingsMemoryPageAggressivenessTest : public SettingsBrowserTest {
- protected:
-  SettingsMemoryPageAggressivenessTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySaverModeAggressiveness);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsMemoryPageAggressivenessTest,
-                       MemorySaverAggressiveness) {
+IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MemorySaverAggressiveness) {
   RunTest("settings/memory_page_test.js",
           "runMochaSuite('MemorySaverAggressiveness')");
 }
