@@ -412,7 +412,7 @@ public class TabListMediatorUnitTest {
                 .getComposedFaviconImageFetcher(any(), anyBoolean());
         doReturn(mTabFaviconFetcher)
                 .when(mTabGroupColorFaviconProvider)
-                .getFaviconFromTabGroupColorFetcher(anyInt(), anyBoolean());
+                .getFaviconFromTabGroupColorFetcher(anyInt(), any(TabModel.class), any(Tab.class));
         doReturn(2).when(mTabGroupModelFilter).getCount();
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         doReturn(tabs2).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
@@ -573,7 +573,7 @@ public class TabListMediatorUnitTest {
     public void updatesTitle_OnTabGroupColorChange_Tab() {
         doReturn(mock(TabListFaviconProvider.TabFaviconFetcher.class))
                 .when(mTabGroupColorFaviconProvider)
-                .getFaviconFromTabGroupColorFetcher(anyInt(), anyBoolean());
+                .getFaviconFromTabGroupColorFetcher(anyInt(), any(TabModel.class), any(Tab.class));
 
         var oldFaviconFetcher = mModel.get(0).model.get(TabProperties.FAVICON_FETCHER);
         mTabGroupModelFilter.setTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
@@ -591,7 +591,7 @@ public class TabListMediatorUnitTest {
     public void updatesColor_OnTabGroupColorChange_Grid() {
         doReturn(mock(TabListFaviconProvider.TabFaviconFetcher.class))
                 .when(mTabGroupColorFaviconProvider)
-                .getFaviconFromTabGroupColorFetcher(anyInt(), anyBoolean());
+                .getFaviconFromTabGroupColorFetcher(anyInt(), any(TabModel.class), any(Tab.class));
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
@@ -1650,7 +1650,7 @@ public class TabListMediatorUnitTest {
 
         doReturn(mock(TabListFaviconProvider.TabFaviconFetcher.class))
                 .when(mTabGroupColorFaviconProvider)
-                .getFaviconFromTabGroupColorFetcher(anyInt(), anyBoolean());
+                .getFaviconFromTabGroupColorFetcher(anyInt(), any(TabModel.class), any(Tab.class));
 
         mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(mTab1, TAB2_ID);
@@ -3459,7 +3459,8 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
         createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
-        verify(mTabGroupColorFaviconProvider).getFaviconFromTabGroupColorFetcher(COLOR_2, false);
+        verify(mTabGroupColorFaviconProvider)
+                .getFaviconFromTabGroupColorFetcher(COLOR_2, mTabModel, mTab1);
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 

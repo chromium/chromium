@@ -2409,7 +2409,7 @@ class TabListMediator {
                     int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
                     faviconFetcher =
                             mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(
-                                    colorId, filter.getTabModel().isIncognito());
+                                    colorId, filter.getTabModel(), tab);
                 }
 
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);

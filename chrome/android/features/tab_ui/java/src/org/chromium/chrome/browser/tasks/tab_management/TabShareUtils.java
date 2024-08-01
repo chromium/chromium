@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
@@ -87,5 +89,16 @@ public class TabShareUtils {
         }
 
         return MemberRole.UNKNOWN;
+    }
+
+    /**
+     * Determines whether the collaboration id is valid by checking that it is non null and not
+     * empty.
+     *
+     * @param collaborationId The collaboration id for the tab group in question.
+     * @return Whether the provided collaboration id is valid or not.
+     */
+    public static boolean isCollaborationIdValid(String collaborationId) {
+        return collaborationId != null && !TextUtils.isEmpty(collaborationId);
     }
 }

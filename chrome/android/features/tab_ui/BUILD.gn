@@ -52,6 +52,8 @@ android_resources("java_resources") {
     "java/res/drawable/tab_group_dialog_color_icon.xml",
     "java/res/drawable/tab_group_favicon_quarter_bg.xml",
     "java/res/drawable/tab_group_list_empty_state_illustration.xml",
+    "java/res/drawable/tab_group_share_icon.xml",
+    "java/res/drawable/tab_group_share_with_color_icon.xml",
     "java/res/drawable/tab_group_start_icon_bg.xml",
     "java/res/drawable/tab_hover_card_background.xml",
     "java/res/drawable/tab_list_editor_share_icon.xml",
