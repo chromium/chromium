@@ -54,6 +54,17 @@ public class TabShareUtils {
     }
 
     /**
+     * Determines whether the collaboration id is valid by checking that it is non null and not
+     * empty.
+     *
+     * @param collaborationId The collaboration id for the tab group in question.
+     * @return Whether the provided collaboration id is valid or not.
+     */
+    public static boolean isCollaborationIdValid(String collaborationId) {
+        return collaborationId != null && !TextUtils.isEmpty(collaborationId);
+    }
+
+    /**
      * Tries to figure out if the signed in user account has a role in a given group, and if so,
      * which role they have.
      *
@@ -79,8 +90,12 @@ public class TabShareUtils {
      */
     public static @MemberRole int getSelfMemberRole(
             @Nullable GroupDataOrFailureOutcome outcome, String gaiaId) {
+        if (outcome == null) return MemberRole.UNKNOWN;
+
         @Nullable GroupData groupData = outcome.groupData;
-        if (groupData == null) return MemberRole.UNKNOWN;
+        if (groupData == null || groupData.members == null) {
+            return MemberRole.UNKNOWN;
+        }
 
         for (GroupMember member : groupData.members) {
             if (Objects.equals(gaiaId, member.gaiaId)) {
@@ -89,16 +104,5 @@ public class TabShareUtils {
         }
 
         return MemberRole.UNKNOWN;
-    }
-
-    /**
-     * Determines whether the collaboration id is valid by checking that it is non null and not
-     * empty.
-     *
-     * @param collaborationId The collaboration id for the tab group in question.
-     * @return Whether the provided collaboration id is valid or not.
-     */
-    public static boolean isCollaborationIdValid(String collaborationId) {
-        return collaborationId != null && !TextUtils.isEmpty(collaborationId);
     }
 }
