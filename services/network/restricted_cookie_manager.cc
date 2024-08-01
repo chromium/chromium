@@ -449,6 +449,12 @@ RestrictedCookieManager::RestrictedCookieManager(
 RestrictedCookieManager::~RestrictedCookieManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (cookies_access_timer_.IsRunning()) {
+    // There are cookie accesses which haven't been reported. Tell the observer
+    // before we're destroyed.
+    CallCookiesAccessed();
+  }
+
   base::LinkNode<Listener>* node = listeners_.head();
   while (node != listeners_.end()) {
     Listener* listener_reference = node->value();

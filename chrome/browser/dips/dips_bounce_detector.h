@@ -137,6 +137,10 @@ class DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
+  const DIPSRedirectInfo& AtForTesting(size_t i) const {
+    return *redirects_.at(i);
+  }
+
   std::optional<std::pair<size_t, DIPSRedirectInfo*>> GetRedirectInfoFromChain(
       const std::string& site) const;
 
@@ -171,9 +175,6 @@ class DIPSRedirectContext {
   // more gracefully.
   std::vector<DIPSRedirectInfoPtr> redirects_;
   std::set<std::string> redirectors_;
-  // The index of the last redirect to have a known cookie access. When adding
-  // late cookie accesses, we only consider redirects from this offset onwards.
-  size_t update_offset_ = 0;
   // The number of redirects preceding this chain, that should be counted toward
   // this chain's total length. Includes both committed redirects (for an
   // uncommitted chain) and trimmed redirects.
@@ -381,6 +382,7 @@ class RedirectChainDetector
   // End DIPSBounceDetectorDelegate overrides.
 
   // Start WebContentsObserver overrides:
+  void PrimaryPageChanged(content::Page& page) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
@@ -525,7 +527,13 @@ class DIPSWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
+namespace dips {
+
 ukm::SourceId GetInitialRedirectSourceId(
     content::NavigationHandle* navigation_handle);
+
+bool IsOrWasInPrimaryPage(content::RenderFrameHost* render_frame_host);
+
+}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
