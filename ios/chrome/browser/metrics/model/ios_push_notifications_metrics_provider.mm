@@ -39,6 +39,9 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
   IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
       kTipsNotifClientStatusByProviderHistogram,
       PushNotificationClientId::kTips);
+  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
+      kSafetyCheckNotifClientStatusByProviderHistogram,
+      PushNotificationClientId::kSafetyCheck);
 }
 
 void IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
@@ -70,6 +73,7 @@ void IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
       }
       break;
     case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSafetyCheck:
       base::UmaHistogramBoolean(
           histogram_name, push_notification_settings::
                               GetMobileNotificationPermissionStatusForClient(

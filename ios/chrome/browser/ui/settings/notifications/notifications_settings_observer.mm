@@ -40,6 +40,9 @@
 
   // Yes if tips notification is enabled.
   BOOL _tipsNotificationEnabled;
+
+  // Yes if Safety Check notifications are enabled.
+  BOOL _safetyCheckNotificationsEnabled;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
@@ -79,6 +82,10 @@
         _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
             .FindBool(kTipsNotificationKey)
             .value_or(false);
+    _safetyCheckNotificationsEnabled =
+        _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
+            .FindBool(kSafetyCheckNotificationKey)
+            .value_or(false);
   }
 
   return self;
@@ -113,6 +120,12 @@
       _tipsNotificationEnabled = [self isTipsNotificationEnabled];
       [self.delegate notificationsSettingsDidChangeForClient:
                          PushNotificationClientId::kTips];
+    } else if (_safetyCheckNotificationsEnabled !=
+               [self isSafetyCheckNotificationsEnabled]) {
+      _safetyCheckNotificationsEnabled =
+          [self isSafetyCheckNotificationsEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kSafetyCheck];
     }
   }
 }
@@ -148,6 +161,12 @@
 - (BOOL)isTipsNotificationEnabled {
   return _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
       .FindBool(kTipsNotificationKey)
+      .value_or(false);
+}
+
+- (BOOL)isSafetyCheckNotificationsEnabled {
+  return _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
+      .FindBool(kSafetyCheckNotificationKey)
       .value_or(false);
 }
 

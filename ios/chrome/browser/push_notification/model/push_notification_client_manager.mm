@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
@@ -30,6 +31,11 @@ PushNotificationClientManager::PushNotificationClientManager() {
 
   if (IsContentNotificationExperimentEnabled()) {
     AddPushNotificationClient(std::make_unique<ContentNotificationClient>());
+  }
+
+  if (IsSafetyCheckNotificationsEnabled()) {
+    AddPushNotificationClient(
+        std::make_unique<SafetyCheckNotificationClient>());
   }
 }
 PushNotificationClientManager::~PushNotificationClientManager() = default;
@@ -105,6 +111,9 @@ PushNotificationClientManager::GetClients() {
   if (IsIOSTipsNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kTips);
   }
+  if (IsSafetyCheckNotificationsEnabled()) {
+    client_ids.push_back(PushNotificationClientId::kSafetyCheck);
+  }
   return client_ids;
 }
 
@@ -128,6 +137,9 @@ std::string PushNotificationClientManager::PushNotificationClientIdToString(
     }
     case PushNotificationClientId::kSports: {
       return kSportsNotificationKey;
+    }
+    case PushNotificationClientId::kSafetyCheck: {
+      return kSafetyCheckNotificationKey;
     }
   }
 }

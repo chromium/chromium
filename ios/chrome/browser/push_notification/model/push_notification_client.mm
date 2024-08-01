@@ -47,10 +47,9 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
         break;
       case PushNotificationClientId::kTips:
       case PushNotificationClientId::kCommerce:
+      case PushNotificationClientId::kSafetyCheck:
         // Features do not support feedback.
         NOTREACHED_IN_MIGRATION();
-        break;
-      default:
         break;
     }
   }

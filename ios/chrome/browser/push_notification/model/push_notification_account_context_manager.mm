@@ -203,6 +203,7 @@ struct PermissionsPref {
               prefs::kFeaturePushNotificationPermissions, clientKey};
     }
     case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSafetyCheck:
       return {GetApplicationContext()->GetLocalState(),
               prefs::kAppLevelPushNotificationPermissions, clientKey};
   }

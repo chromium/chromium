@@ -1021,6 +1021,7 @@ the generic promo launch. -->
   <int value="2" label="Content"/>
   <int value="3" label="Tips"/>
   <int value="4" label="Sports"/>
+  <int value="5" label="Safety Check"/>
 </enum>
 
 <enum name="PushNotificationLifecycleEvent">
