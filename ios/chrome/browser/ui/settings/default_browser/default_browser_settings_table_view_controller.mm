@@ -242,11 +242,15 @@ enum class DefaultBrowserSettingsPageUsage {
 
 // Adds default browser video instructions view as a background view.
 - (void)addDefaultBrowserVideoInstructionsView {
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc] init];
   DefaultBrowserInstructionsView* instructionsView =
       [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
                                                    hasRemindMeLater:NO
                                                            hasSteps:YES
-                                                      actionHandler:self];
+                                                      actionHandler:self
+                                          alertScreenViewController:alertScreen
+                                                          titleText:nil];
 
   self.tableView.backgroundView = [[UIView alloc] init];
   [self.tableView.backgroundView

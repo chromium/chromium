@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+
 @protocol ConfirmationAlertActionHandler;
 
 // The accessibility identifier of the default browser instructions view
@@ -20,12 +22,15 @@ extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
 // View for the displaying default browser instructions.
 @interface DefaultBrowserInstructionsView : UIView
 
-// Creates the view based on provided parameters.
-- (instancetype)initWithDismissButton:(BOOL)hasDismissButton
-                     hasRemindMeLater:(BOOL)hasRemindMeLater
-                             hasSteps:(BOOL)hasSteps
-                        actionHandler:
-                            (id<ConfirmationAlertActionHandler>)actionHandler;
+// Creates the view with specified `titleText` based on provided parameters.
+// If `titleText` is nil, default title will be used.
+- (instancetype)
+        initWithDismissButton:(BOOL)hasDismissButton
+             hasRemindMeLater:(BOOL)hasRemindMeLater
+                     hasSteps:(BOOL)hasSteps
+                actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler
+    alertScreenViewController:(ConfirmationAlertViewController*)alertScreen
+                    titleText:(NSString*)titleText;
 
 @end
 

@@ -7,7 +7,6 @@
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -40,8 +39,10 @@ constexpr CGFloat kTabletCenterOffset = 40;
 
 // Custom animation view used in the full-screen promo.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
+
 // Custom animation view used in the full-screen promo in dark mode.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapperDarkMode;
+
 // Subview for information and action part of the view.
 @property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
 
@@ -55,23 +56,28 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 @implementation DefaultBrowserInstructionsView
 
-- (instancetype)initWithDismissButton:(BOOL)hasDissmissButton
-                     hasRemindMeLater:(BOOL)hasRemindMeLater
-                             hasSteps:(BOOL)hasSteps
-                        actionHandler:
-                            (id<ConfirmationAlertActionHandler>)actionHandler {
-  self = [super init];
-  if (self) {
+- (instancetype)
+        initWithDismissButton:(BOOL)hasDismissButton
+             hasRemindMeLater:(BOOL)hasRemindMeLater
+                     hasSteps:(BOOL)hasSteps
+                actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler
+    alertScreenViewController:(ConfirmationAlertViewController*)alertScreen
+                    titleText:(NSString*)titleText {
+  if (self = [super init]) {
+    CHECK(alertScreen);
     [self addVideoSection];
-    [self addInformationSection:hasDissmissButton
-               hasRemindMeLater:hasRemindMeLater
-                       hasSteps:hasSteps
-                  actionHandler:actionHandler];
+    [self addInformationSectionWithDismissButton:hasDismissButton
+                                hasRemindMeLater:hasRemindMeLater
+                                        hasSteps:hasSteps
+                                   actionHandler:actionHandler
+                       alertScreenViewController:alertScreen
+                                       titleText:titleText];
     [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
   }
-
   return self;
 }
+
+#pragma mark - UIViewController
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -175,16 +181,23 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 }
 
 // Adds the bottom section of the view which contains instructions and buttons.
-- (void)addInformationSection:(BOOL)hasDissmissButton
-             hasRemindMeLater:(BOOL)hasRemindMeLater
-                     hasSteps:(BOOL)hasSteps
-                actionHandler:
-                    (id<ConfirmationAlertActionHandler>)actionHandler {
-  ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
+// If `titleText` is nil, default title will be used.
+- (void)addInformationSectionWithDismissButton:(BOOL)hasDismissButton
+                              hasRemindMeLater:(BOOL)hasRemindMeLater
+                                      hasSteps:(BOOL)hasSteps
+                                 actionHandler:
+                                     (id<ConfirmationAlertActionHandler>)
+                                         actionHandler
+                     alertScreenViewController:
+                         (ConfirmationAlertViewController*)alertScreen
+                                     titleText:(NSString*)titleText {
   alertScreen.actionHandler = actionHandler;
-  alertScreen.titleString =
-      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT);
+  if (!titleText) {
+    alertScreen.titleString =
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT);
+  } else {
+    alertScreen.titleString = titleText;
+  }
   alertScreen.primaryActionString = l10n_util ::GetNSString(
       IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   alertScreen.imageHasFixedSize = YES;
@@ -221,7 +234,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT);
   }
 
-  if (hasDissmissButton) {
+  if (hasDismissButton) {
     alertScreen.secondaryActionString = l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
   }
