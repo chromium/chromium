@@ -77,13 +77,23 @@ class UpdateWprTest(unittest.TestCase):
       'live',
     ])
     self.assertListEqual(wpr_updater_cls.mock_calls, [
-      mock.call(argparse.Namespace(
-        binary='<binary>', command='live', device_id='H2345234FC33',
-        repeat=1, story='foo:bar:story:2019', bug_id='1234',
-        bss='mobile_system_health_story_set',
-        reviewers=['test_user1@chromium.org', 'test_user2@chromium.org'])),
-      mock.call().LiveRun(),
-      mock.call().Cleanup(),
+        mock.call(
+            argparse.Namespace(binary='<binary>',
+                               command='live',
+                               device_id='H2345234FC33',
+                               repeat=1,
+                               story='foo:bar:story:2019',
+                               bug_id='1234',
+                               cb_wprgo_file=None,
+                               bss='mobile_system_health_story_set',
+                               is_cb=False,
+                               output_dir=None,
+                               reviewers=[
+                                   'test_user1@chromium.org',
+                                   'test_user2@chromium.org'
+                               ])),
+        mock.call().LiveRun(),
+        mock.call().Cleanup(),
     ])
 
   @mock.patch('shutil.rmtree')
@@ -541,6 +551,60 @@ class UpdateWprTest(unittest.TestCase):
     with self.assertRaises(RuntimeError):
       self.wpr_updater.StartPinpointJobs(['<config>'])
     new_job.assert_not_called()
+
+  def _CreateCrossbenchWprUpdater(self):
+    update_wpr.CrossbenchWprUpdater._LoadArchiveInfo = mock.MagicMock()
+    with mock.patch('os.path.exists', return_value=False), \
+        mock.patch('pathlib.Path'):
+      return update_wpr.CrossbenchWprUpdater(
+          argparse.Namespace(story='test_story',
+                             device_id=None,
+                             repeat=1,
+                             binary=None,
+                             bug_id=None,
+                             reviewers=None,
+                             cb_wprgo_file=None,
+                             is_cb=True,
+                             output_dir='/tmp/dir',
+                             bss='test_benchmark'))
+
+  def _CrossbenchCommonExpectedCommand(self):
+    return update_wpr.PY_EXECUTABLE + [
+        update_wpr.CrossbenchWprUpdater._CB_TOOL,
+        'test_benchmark',
+        '--repeat=1',
+        f'--browser=adb:{update_wpr.CrossbenchWprUpdater._DEFAULT_PKG}',
+        '--verbose',
+        '--debug',
+        '--no-symlinks',
+        '--out-dir=/tmp/dir/<tstamp>/cb',
+    ]
+
+  def testCrossbenchRecordWpr(self):
+    update_wpr.CrossbenchWprUpdater._LoadArchiveInfo = mock.MagicMock()
+    self.wpr_updater = self._CreateCrossbenchWprUpdater()
+    self.wpr_updater.RecordWpr()
+    self._check_log.assert_called_once_with(
+        self._CrossbenchCommonExpectedCommand() + [
+            '--probe=wpr',
+            '--story=test_story',
+        ],
+        log_path='/tmp/dir/<tstamp>/record.log',
+        env={'LC_ALL': 'en_US.UTF-8'},
+    )
+
+  @mock.patch('os.path.exists', return_value=True)
+  def testCrossbenchReplayWpr(self, _):
+    self.wpr_updater = self._CreateCrossbenchWprUpdater()
+    self.wpr_updater.ReplayWpr()
+    self._check_log.assert_called_once_with(
+        self._CrossbenchCommonExpectedCommand() + [
+            '--network={type:"wpr", path:"/tmp/dir/<tstamp>/cb/archive.wprgo"}',
+            '--story=test_story',
+        ],
+        log_path='/tmp/dir/<tstamp>/replay.log',
+        env={'LC_ALL': 'en_US.UTF-8'},
+    )
 
 
 if __name__ == "__main__":
