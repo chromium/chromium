@@ -99,6 +99,10 @@ namespace enterprise_management =
 using enterprise_management::ApplicationSettings;
 using enterprise_management::OmahaSettingsClientProto;
 
+// The project's position is that component builds are not portable outside of
+// the build directory. Therefore, installation of component builds is not
+// expected to work and these tests do not run on component builders.
+// See crbug.com/1112527.
 #if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 void ExpectNoUpdateSequence(ScopedServer* test_server,
@@ -713,10 +717,6 @@ class IntegrationTest : public ::testing::Test {
 #define MAYBE_UpdateServiceStress UpdateServiceStress
 #endif
 
-// The project's position is that component builds are not portable outside of
-// the build directory. Therefore, installation of component builds is not
-// expected to work and these tests do not run on component builders.
-// See crbug.com/1112527.
 #if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 // Tests the setup and teardown of the fixture.
@@ -3808,7 +3808,6 @@ TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
-#endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 #if BUILDFLAG(IS_MAC)
 
@@ -4243,5 +4242,7 @@ TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
 }
 
 #endif  // BUILDFLAG(IS_MAC)
+
+#endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 }  // namespace updater::test
