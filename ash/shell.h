@@ -13,7 +13,6 @@
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
-#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/metrics/unlock_throughput_recorder.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
@@ -60,6 +59,7 @@ class DisplayChangeObserver;
 class DisplayConfigurator;
 class DisplayManager;
 class DisplayPortObserver;
+class NativeDisplayDelegate;
 }  // namespace display
 
 namespace gfx {
@@ -179,6 +179,7 @@ class InputDeviceKeyAliasManager;
 class InputDeviceSettingsControllerImpl;
 class InputDeviceSettingsDispatcher;
 class InputDeviceTracker;
+class InSessionAuthDialogControllerImpl;
 class WebAuthNDialogController;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
