@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("network") {
+  sources = [
+    "network_portal_signin_window.cc",
+    "network_portal_signin_window.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//chromeos/crosapi/mojom",
+    "//components/device_event_log",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/sessions:session_id",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/network" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "network_portal_signin_window_ash_browsertest.cc" ]
+
+    deps = [
+      ":network",
+      "//chrome/browser/ash/net",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//chromeos/ash/components/network/portal_detector",
+      "//components/captive_portal/content",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  source_set("lacros_chrome_browsertests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "network_portal_signin_window_lacros_browsertest.cc" ]
+
+    deps = [
+      ":network",
+      "//chrome/test:test_support_ui",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

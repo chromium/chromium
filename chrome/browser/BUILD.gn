@@ -6133,6 +6133,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/chromeos/kcer",
+      "//chrome/browser/chromeos/network",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/chromeos/read_write_cards",
@@ -6189,6 +6190,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/kcer",
+      "//chrome/browser/chromeos/network",
       "//chrome/browser/policy:onc",
 
       # TODO(b/215757706): Find a way to avoid the circular include.
