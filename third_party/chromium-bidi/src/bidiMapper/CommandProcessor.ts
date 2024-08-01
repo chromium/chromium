@@ -30,6 +30,7 @@ import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
+import type {MapperOptions} from './BidiServer.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
@@ -82,6 +83,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
+    initConnection: (options: MapperOptions) => Promise<void>,
     logger?: LoggerFn
   ) {
     super();
@@ -118,7 +120,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     );
     this.#sessionProcessor = new SessionProcessor(
       eventManager,
-      browserCdpClient
+      browserCdpClient,
+      initConnection
     );
     this.#storageProcessor = new StorageProcessor(
       browserCdpClient,

@@ -19,12 +19,8 @@ import http from 'http';
 import debug from 'debug';
 import * as websocket from 'websocket';
 
-import type {MapperOptions} from '../bidiMapper/BidiServer.js';
-import {
-  ErrorCode,
-  InvalidArgumentException,
-  Session,
-} from '../protocol/protocol.js';
+import {ErrorCode, type Session} from '../protocol/protocol.js';
+import {Deferred} from '../utils/Deferred.js';
 import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
@@ -45,9 +41,9 @@ type Session = {
 };
 
 type SessionOptions = {
-  readonly mapperOptions: MapperOptions;
   readonly chromeOptions: ChromeOptions;
   readonly verbose: boolean;
+  readonly sessionNewBody: string;
 };
 
 export class WebSocketServer {
@@ -143,8 +139,8 @@ export class WebSocketServer {
         browserInstancePromise: undefined,
         sessionOptions: {
           chromeOptions: this.#getChromeOptions(jsonBody.capabilities),
-          mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
           verbose: this.#verbose,
+          sessionNewBody: `{"id":0,"method":"session.new","params":${body.toString()}}`,
         },
       };
       this.#sessions.set(sessionId, session);
@@ -303,15 +299,14 @@ export class WebSocketServer {
             chromeOptions: this.#getChromeOptions(
               parsedCommandData.params?.capabilities
             ),
-            mapperOptions: this.#getMapperOptions(
-              parsedCommandData.params?.capabilities
-            ),
             verbose: this.#verbose,
+            sessionNewBody: plainCommandData,
           };
 
           const browserInstance = await this.#launchBrowserInstance(
             connection,
-            sessionOptions
+            sessionOptions,
+            true
           );
 
           const sessionId = uuidv4();
@@ -332,19 +327,6 @@ export class WebSocketServer {
           );
           return;
         }
-
-        // TODO: extend with capabilities.
-        this.#sendClientMessage(
-          {
-            id: parsedCommandData.id,
-            type: 'success',
-            result: {
-              sessionId: session.sessionId,
-              capabilities: {},
-            },
-          },
-          connection
-        );
         return;
       }
 
@@ -450,47 +432,6 @@ export class WebSocketServer {
     void browserInstance.close();
   }
 
-  #getMapperOptions(capabilities: any): MapperOptions {
-    const acceptInsecureCerts =
-      capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
-    const unhandledPromptBehavior = this.#getUnhandledPromptBehavior(
-      capabilities?.alwaysMatch?.unhandledPromptBehavior
-    );
-
-    return {acceptInsecureCerts, unhandledPromptBehavior};
-  }
-
-  #getUnhandledPromptBehavior(
-    capabilityValue: unknown
-  ): Session.UserPromptHandler | undefined {
-    if (capabilityValue === undefined) {
-      return undefined;
-    }
-    if (typeof capabilityValue === 'object') {
-      // Do not validate capabilities. Incorrect ones will be ignored by Mapper.
-      return capabilityValue as Session.UserPromptHandler;
-    }
-    if (typeof capabilityValue !== 'string') {
-      throw new InvalidArgumentException(
-        `Unexpected 'unhandledPromptBehavior' type: ${typeof capabilityValue}`
-      );
-    }
-    switch (capabilityValue) {
-      case 'accept':
-      case 'accept and notify':
-        return {default: Session.UserPromptHandlerType.Accept};
-      case 'dismiss':
-      case 'dismiss and notify':
-        return {default: Session.UserPromptHandlerType.Dismiss};
-      case 'ignore':
-        return {default: Session.UserPromptHandlerType.Ignore};
-      default:
-        throw new InvalidArgumentException(
-          `Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`
-        );
-    }
-  }
-
   #getChromeOptions(capabilities: any): ChromeOptions {
     const chromeCapabilities =
       capabilities?.alwaysMatch?.['goog:chromeOptions'];
@@ -502,14 +443,36 @@ export class WebSocketServer {
 
   async #launchBrowserInstance(
     connection: websocket.connection,
-    sessionOptions: SessionOptions
+    sessionOptions: SessionOptions,
+    passSessionNewThrough = false
   ): Promise<BrowserInstance> {
     debugInfo('Scheduling browser launch...');
     const browserInstance = await BrowserInstance.run(
       sessionOptions.chromeOptions,
-      sessionOptions.mapperOptions,
       sessionOptions.verbose
     );
+
+    const body = JSON.parse(sessionOptions.sessionNewBody);
+    const id = body.id;
+    const sessionCreated = new Deferred<void>();
+    const sessionResponseListener = (message: string) => {
+      const jsonMessage = JSON.parse(message);
+      if (jsonMessage['id'] === id) {
+        debugInfo('Receiving session.new response from mapper', message);
+        sessionCreated.resolve();
+        if (passSessionNewThrough) {
+          this.#sendClientMessageString(message, connection);
+        }
+      }
+    };
+
+    browserInstance.bidiSession().on('message', sessionResponseListener);
+    debugInfo('Sending session.new to mapper', sessionOptions.sessionNewBody);
+    await browserInstance
+      .bidiSession()
+      .sendCommand(sessionOptions.sessionNewBody);
+    await sessionCreated;
+    browserInstance.bidiSession().off('message', sessionResponseListener);
 
     // Forward messages from BiDi Mapper to the client unconditionally.
     browserInstance.bidiSession().on('message', (message) => {
@@ -517,6 +480,7 @@ export class WebSocketServer {
     });
 
     debugInfo('Browser is launched!');
+
     return browserInstance;
   }
 

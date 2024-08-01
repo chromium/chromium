@@ -80,7 +80,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     browserCdpClient: CdpClient,
     selfTargetId: string,
     defaultUserContextId: Browser.UserContext,
-    options?: MapperOptions,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn
   ) {
@@ -99,19 +98,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       logger
     );
-    new CdpTargetManager(
-      cdpConnection,
-      browserCdpClient,
-      selfTargetId,
-      this.#eventManager,
-      this.#browsingContextStorage,
-      this.#realmStorage,
-      networkStorage,
-      this.#preloadScriptStorage,
-      defaultUserContextId,
-      options?.unhandledPromptBehavior,
-      logger
-    );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
@@ -121,6 +107,42 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#preloadScriptStorage,
       networkStorage,
       parser,
+      async (options: MapperOptions) => {
+        // This is required to ignore certificate errors when service worker is fetched.
+        await browserCdpClient.sendCommand(
+          'Security.setIgnoreCertificateErrors',
+          {
+            ignore: options.acceptInsecureCerts ?? false,
+          }
+        );
+        new CdpTargetManager(
+          cdpConnection,
+          browserCdpClient,
+          selfTargetId,
+          this.#eventManager,
+          this.#browsingContextStorage,
+          this.#realmStorage,
+          networkStorage,
+          this.#preloadScriptStorage,
+          defaultUserContextId,
+          options?.unhandledPromptBehavior,
+          logger
+        );
+
+        // Needed to get events about new targets.
+        await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
+          discover: true,
+        });
+
+        // Needed to automatically attach to new targets.
+        await browserCdpClient.sendCommand('Target.setAutoAttach', {
+          autoAttach: true,
+          waitForDebuggerOnStart: true,
+          flatten: true,
+        });
+
+        await this.#topLevelContextsLoaded();
+      },
       this.#logger
     );
     this.#eventManager.on(EventManagerEvents.Event, ({message, event}) => {
@@ -142,7 +164,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     cdpConnection: CdpConnection,
     browserCdpClient: CdpClient,
     selfTargetId: string,
-    options?: MapperOptions,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn
   ): Promise<BidiServer> {
@@ -153,10 +174,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     const [{browserContextIds}, {targetInfos}] = await Promise.all([
       browserCdpClient.sendCommand('Target.getBrowserContexts'),
       browserCdpClient.sendCommand('Target.getTargets'),
-      // This is required to ignore certificate errors when service worker is fetched.
-      browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-        ignore: options?.acceptInsecureCerts ?? false,
-      }),
     ]);
     let defaultUserContextId = 'default';
     for (const info of targetInfos) {
@@ -175,23 +192,10 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       selfTargetId,
       defaultUserContextId,
-      options,
       parser,
       logger
     );
-    // Needed to get events about new targets.
-    await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
-      discover: true,
-    });
 
-    // Needed to automatically attach to new targets.
-    await browserCdpClient.sendCommand('Target.setAutoAttach', {
-      autoAttach: true,
-      waitForDebuggerOnStart: true,
-      flatten: true,
-    });
-
-    await server.#topLevelContextsLoaded();
     return server;
   }
 

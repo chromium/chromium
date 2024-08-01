@@ -18,7 +18,6 @@
 import debug, {type Debugger} from 'debug';
 import type {Protocol} from 'devtools-protocol';
 
-import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import type {MapperCdpClient} from '../cdp/CdpClient.js';
 import type {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import type {LogPrefix, LogType} from '../utils/log.js';
@@ -47,15 +46,13 @@ export class MapperServerCdpConnection {
   static async create(
     cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
-    verbose: boolean,
-    mapperOptions: MapperOptions
+    verbose: boolean
   ): Promise<MapperServerCdpConnection> {
     try {
       const bidiSession = await this.#initMapper(
         cdpConnection,
         mapperTabSource,
-        verbose,
-        mapperOptions
+        verbose
       );
       return new MapperServerCdpConnection(cdpConnection, bidiSession);
     } catch (e) {
@@ -140,10 +137,9 @@ export class MapperServerCdpConnection {
   static async #initMapper(
     cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
-    verbose: boolean,
-    mapperOptions: MapperOptions
+    verbose: boolean
   ): Promise<SimpleTransport> {
-    debugInternal('Initializing Mapper.', mapperOptions);
+    debugInternal('Initializing Mapper.');
 
     const browserClient = await cdpConnection.createBrowserSession();
 
@@ -214,10 +210,9 @@ export class MapperServerCdpConnection {
       expression: mapperTabSource,
     });
 
+    // TODO: handle errors in all these evaluate calls!
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.runMapperInstance('${mapperTabTargetId}', ${JSON.stringify(
-        mapperOptions
-      )})`,
+      expression: `window.runMapperInstance('${mapperTabTargetId}')`,
       awaitPromise: true,
     });
 

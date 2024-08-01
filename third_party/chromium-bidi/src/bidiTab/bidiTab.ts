@@ -18,7 +18,6 @@
  */
 
 import {BidiServer} from '../bidiMapper/BidiMapper.js';
-import type {MapperOptions} from '../bidiMapper/BidiServer';
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
@@ -70,10 +69,7 @@ const cdpConnection = new MapperCdpConnection(cdpTransport, log);
  * @param {string} selfTargetId
  * @param options Mapper options. E.g. `acceptInsecureCerts`.
  */
-async function runMapperInstance(
-  selfTargetId: string,
-  options?: MapperOptions
-) {
+async function runMapperInstance(selfTargetId: string) {
   // eslint-disable-next-line no-console
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
@@ -85,7 +81,6 @@ async function runMapperInstance(
      */
     await cdpConnection.createBrowserSession(),
     selfTargetId,
-    options,
     new BidiParser(),
     log
   );
@@ -98,7 +93,7 @@ async function runMapperInstance(
 /**
  * Set `window.runMapper` to a function which launches the BiDi mapper instance.
  * @param selfTargetId Needed to filter out info related to BiDi target.
- * @param options Mapper options. E.g. `acceptInsecureCerts`. */
-window.runMapperInstance = async (selfTargetId, options?: MapperOptions) => {
-  await runMapperInstance(selfTargetId, options);
+ */
+window.runMapperInstance = async (selfTargetId) => {
+  await runMapperInstance(selfTargetId);
 };

@@ -28,7 +28,6 @@ import {
 import debug from 'debug';
 import WebSocket from 'ws';
 
-import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
@@ -58,7 +57,6 @@ export class BrowserInstance {
 
   static async run(
     chromeOptions: ChromeOptions,
-    mapperOptions: MapperOptions,
     verbose: boolean
   ): Promise<BrowserInstance> {
     const profileDir = await mkdtemp(
@@ -121,8 +119,7 @@ export class BrowserInstance {
     const mapperCdpConnection = await MapperServerCdpConnection.create(
       cdpConnection,
       mapperTabSource,
-      verbose,
-      mapperOptions
+      verbose
     );
 
     return new BrowserInstance(mapperCdpConnection, browserProcess);
