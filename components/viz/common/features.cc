@@ -238,16 +238,6 @@ BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
              "AllowForceMergeRenderPassWithRequireOverlayQuads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// On platforms using SkiaOutputDeviceBufferQueue and not yet universally using
-// SkiaRenderer-allocated images, when this is true SkiaRenderer will allocate
-// and maintain a buffer queue of images for the root render pass, instead of
-// SkiaOutputDeviceBufferQueue itself.
-BASE_FEATURE(kRendererAllocatesImages,
-             "RendererAllocatesImages",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-#endif
 
 // If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
 // DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
@@ -520,12 +510,6 @@ int MaxOverlaysConsidered() {
 bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
 }
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-bool ShouldRendererAllocateImages() {
-  return base::FeatureList::IsEnabled(kRendererAllocatesImages);
-}
-#endif
 
 bool IsOnBeginFrameAcksEnabled() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameAcks);
