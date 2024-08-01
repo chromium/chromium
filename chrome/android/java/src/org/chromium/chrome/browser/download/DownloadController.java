@@ -48,8 +48,8 @@ public class DownloadController {
             @Nullable Tab tab, DownloadInfo downloadInfo, boolean isDownloadSafe) {
         MediaStoreHelper.addImageToGalleryOnSDCard(
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
-        if (!PdfUtils.shouldOpenPdfInline()
-                || tab == null
+        if (tab == null
+                || !PdfUtils.shouldOpenPdfInline(tab.isIncognito())
                 || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)) {
             return;
         }
@@ -142,7 +142,7 @@ public class DownloadController {
 
     @CalledByNative
     private static void onPdfDownloadStarted(Tab tab, DownloadInfo downloadInfo) {
-        if (!PdfUtils.shouldOpenPdfInline()) {
+        if (!PdfUtils.shouldOpenPdfInline(tab.isIncognito())) {
             return;
         }
         String downloadUrl = downloadInfo.getUrl().getSpec();
