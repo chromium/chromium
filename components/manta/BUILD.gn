@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 
 component("manta") {
   sources = [
+    "anchovy/anchovy_proto_helper.h",
     "anchovy/anchovy_provider.cc",
     "anchovy/anchovy_provider.h",
     "anchovy/anchovy_requests.cc",
@@ -21,6 +23,14 @@ component("manta") {
     "manta_status.h",
     "provider_params.h",
   ]
+
+  if (is_chrome_branded) {
+    sources += [
+      "//components/accessibility/internal/anchovy/anchovy_proto_helper.cc",
+    ]
+  } else {
+    sources += [ "anchovy/anchovy_proto_helper.cc" ]
+  }
 
   defines = [ "IS_MANTA_IMPL" ]
 

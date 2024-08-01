@@ -23,6 +23,7 @@ source_set("lib") {
     "//services/data_decoder/public/mojom",
     "//services/image_annotation/public/mojom",
     "//services/network/public/cpp",
+    "//ui/accessibility:ax_base",
     "//url",
   ]
 }
@@ -52,6 +53,7 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//components/manta:manta",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/data_decoder/public/cpp",
@@ -66,6 +68,7 @@ source_set("tests") {
     "//services/service_manager/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/accessibility:ax_base",
     "//url",
   ]
 }

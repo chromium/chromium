@@ -5,6 +5,7 @@ include_rules = [
   "+services/data_decoder",
   "+services/network",
   "+third_party/skia",
+  "+ui/accessibility",
   "+ui/gfx",
   "+url",
 ]

@@ -8,10 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 
 namespace manta::anchovy {
-struct ImageDescriptionRequest {
+struct COMPONENT_EXPORT(MANTA) ImageDescriptionRequest {
   ImageDescriptionRequest(std::string source_id,
                           std::string lang_tag,
                           const std::vector<uint8_t>& bytes);
