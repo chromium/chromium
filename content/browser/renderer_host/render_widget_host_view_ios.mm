@@ -782,6 +782,7 @@ ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {
 
 void RenderWidgetHostViewIOS::GestureEventAck(
     const blink::WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.

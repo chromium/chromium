@@ -127,6 +127,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   ui::Compositor* GetCompositor() override;
   void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
