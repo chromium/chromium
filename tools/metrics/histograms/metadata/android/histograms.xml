@@ -6761,6 +6761,9 @@ chromium-metrics-reviews@google.com.
     We deprecated Android.WebView.StorageAccessRelation in favor of this because
     that metric checked for any manfiest reference but we only want to compare
     storage access requests against manifest metadata moving forwards.
+
+    Note: We cache our storage access request results so this metric is only
+    recorded the first time SAA is requested pre-cache.
   </summary>
 </histogram>
 

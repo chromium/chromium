@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_util.h"
@@ -248,10 +249,18 @@ class AwPermissionManager::PendingRequest {
   bool cancelled_;
 };
 
+// Regarding the saa_cache_ size: 99% of WebView site visits fall
+// into this count (based on Android.WebView.SitesVisitedWeekly) in a week so we
+// will cache those for revisits but not going above it to avoid using up too
+// much memory for any heavy case. This will cache in memory so every app reload
+// will require a new request. This will also be duplicated across profiles
+// which may be a useful property in the future so we aren't going to design
+// around that.
 AwPermissionManager::AwPermissionManager(
     const AwContextPermissionsDelegate& context_delegate)
     : context_delegate_(context_delegate),
-      result_cache_(new LastRequestResultCache) {}
+      result_cache_(new LastRequestResultCache),
+      saa_cache_(10) {}
 
 AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
@@ -261,6 +270,8 @@ void AwPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto const& permissions = request_description.permissions;
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
@@ -382,10 +393,23 @@ void AwPermissionManager::RequestPermissions(
             render_frame_host->GetOutermostMainFrame()
                 ->GetLastCommittedOrigin();
 
-        delegate->RequestStorageAccess(
-            outer_origin,
-            base::BindOnce(&OnRequestResponse, weak_ptr_factory_.GetWeakPtr(),
-                           request_id, permissions[i]));
+        auto cached_value = saa_cache_->Get(outer_origin.Serialize());
+        if (cached_value != saa_cache_->end()) {
+          auto is_granted = cached_value->second ? PermissionStatus::GRANTED
+                                                 : PermissionStatus::DENIED;
+          pending_request_raw->SetPermissionStatus(permissions[i], is_granted);
+          break;
+        }
+
+        auto on_saa_response =
+            base::BindOnce(&CacheAutoSAA, weak_ptr_factory_.GetWeakPtr(),
+                           outer_origin)
+                .Then(base::BindOnce(&OnRequestResponse,
+                                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                                     permissions[i]));
+
+        delegate->RequestStorageAccess(outer_origin,
+                                       std::move(on_saa_response));
         break;
       }
       case PermissionType::MIDI:
@@ -430,6 +454,27 @@ void AwPermissionManager::RequestPermissions(
 }
 
 // static
+bool AwPermissionManager::CacheAutoSAA(
+    const base::WeakPtr<AwPermissionManager>& manager,
+    const url::Origin& origin,
+    bool allowed) {
+  // All delegate functions should be cancelled when the manager runs
+  // destructor. Therefore |manager| should be always valid here.
+  CHECK(manager);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager->sequence_checker_);
+
+  DVLOG(1) << "Caching auto granted SAA result " << allowed << " for origin "
+           << origin;
+
+  manager->saa_cache_->Put({
+      origin.Serialize(),
+      allowed,
+  });
+
+  return allowed;
+}
+
+// static
 void AwPermissionManager::OnRequestResponse(
     const base::WeakPtr<AwPermissionManager>& manager,
     int request_id,
@@ -437,7 +482,7 @@ void AwPermissionManager::OnRequestResponse(
     bool allowed) {
   // All delegate functions should be cancelled when the manager runs
   // destructor. Therefore |manager| should be always valid here.
-  DCHECK(manager);
+  CHECK(manager);
 
   PermissionStatus status =
       allowed ? PermissionStatus::GRANTED : PermissionStatus::DENIED;

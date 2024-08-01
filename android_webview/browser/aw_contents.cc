@@ -845,10 +845,6 @@ void AwContents::RequestStorageAccess(const url::Origin& top_level_origin,
     return;
   }
 
-  // TODO(crbug.com/355206388): Add caching to our results.
-  // Our network stack is likely already caching the actual network requests so
-  // we likely don't have to care about these details. We can probably store
-  // the result per domain depending on how costly this is.
   constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
   asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
       top_level_origin, kRelationship,

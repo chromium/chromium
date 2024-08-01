@@ -90,6 +90,10 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
                 }]
         """;
 
+    private static final String ASSET_STATEMENT_PATH = "/.well-known/assetlinks.json";
+    private static final String SAA_GRANT_TIME_HISTOGRAM =
+            "Android.WebView.StorageAccessAutoGrantTime";
+
     private final DomAutomationController mDomAutomationController = new DomAutomationController();
     private TestWebServer mTestWebServer;
     private String mPage;
@@ -349,15 +353,14 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    public void testAutoGrantedStorageAccess() throws Exception {
-        var grantTimeHistogram = "Android.WebView.StorageAccessAutoGrantTime";
+    public void testAutoGrantSAA_trusted() throws Exception {
         var histogramWatcher =
-                HistogramWatcher.newBuilder().expectAnyRecord(grantTimeHistogram).build();
+                HistogramWatcher.newBuilder().expectAnyRecord(SAA_GRANT_TIME_HISTOGRAM).build();
         var buildInfo = BuildInfo.getInstance();
 
         // We add an asset statement to always trust the test app for auto granting.
         mTestWebServer.setResponse(
-                "/.well-known/assetlinks.json",
+                ASSET_STATEMENT_PATH,
                 String.format(
                         ASSET_STATEMENT_TEMPLATE,
                         buildInfo.hostPackageName,
@@ -367,21 +370,53 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
         String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
         Assert.assertEquals("\"granted\"", result);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        // Confirm this is resolved against the test server the first time
+        Assert.assertEquals(1, mTestWebServer.getRequestCount(ASSET_STATEMENT_PATH));
 
-        histogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(grantTimeHistogram).build();
-        result = requestEmbeddedStorageAccess(/* isInAppStatement= */ false);
+        result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
+        Assert.assertEquals("\"granted\"", result);
+        // Confirm that subsequent calls are from cached results
+        Assert.assertEquals(1, mTestWebServer.getRequestCount(ASSET_STATEMENT_PATH));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoGrantSAA_untrustedDomain() throws Exception {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(SAA_GRANT_TIME_HISTOGRAM).build();
+        var buildInfo = BuildInfo.getInstance();
+
+        // We add an asset statement to always trust the test app for auto granting.
+        mTestWebServer.setResponse(
+                ASSET_STATEMENT_PATH,
+                String.format(
+                        ASSET_STATEMENT_TEMPLATE,
+                        buildInfo.hostPackageName,
+                        buildInfo.getHostSigningCertSha256()),
+                null);
+
+        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ false);
         Assert.assertEquals("\"not granted\"", result);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
 
-        histogramWatcher =
-                HistogramWatcher.newBuilder().expectAnyRecord(grantTimeHistogram).build();
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    public void testAutoGrantSAA_untrustedApp() throws Exception {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectAnyRecord(SAA_GRANT_TIME_HISTOGRAM).build();
+
+        // In this test's case, we make the site only trust an app we are not.
         mTestWebServer.setResponse(
-                "/.well-known/assetlinks.json",
+                ASSET_STATEMENT_PATH,
                 String.format(ASSET_STATEMENT_TEMPLATE, "some other app", "some hash"),
                 null);
 
-        result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
+        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
         Assert.assertEquals("\"not granted\"", result);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
