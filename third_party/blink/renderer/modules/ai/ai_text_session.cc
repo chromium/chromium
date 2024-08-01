@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -37,15 +38,19 @@ using mojom::blink::ModelStreamingResponseStatus;
 // result through a promise.
 class AITextSession::Responder final
     : public GarbageCollected<AITextSession::Responder>,
-      public blink::mojom::blink::ModelStreamingResponder {
+      public blink::mojom::blink::ModelStreamingResponder,
+      public ContextLifecycleObserver {
  public:
   explicit Responder(ScriptState* script_state)
       : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
             script_state)),
-        receiver_(this, ExecutionContext::From(script_state)) {}
+        receiver_(this, ExecutionContext::From(script_state)) {
+    SetContextLifecycleNotifier(ExecutionContext::From(script_state));
+  }
   ~Responder() override = default;
 
-  void Trace(Visitor* visitor) const {
+  void Trace(Visitor* visitor) const override {
+    ContextLifecycleObserver::Trace(visitor);
     visitor->Trace(resolver_);
     visitor->Trace(receiver_);
   }
@@ -85,14 +90,23 @@ class AITextSession::Responder final
           AIMetrics::GetAISessionResponseCallbackCountMetricName(
               AIMetrics::AISessionType::kText),
           response_callback_count_);
-      keep_alive_.Clear();
+      Cleanup();
       return;
     }
     // When the status is kOngoing, update the response with the latest value.
     response_ = text;
   }
 
+  // ContextLifecycleObserver implementation.
+  void ContextDestroyed() override { Cleanup(); }
+
  private:
+  void Cleanup() {
+    resolver_ = nullptr;
+    receiver_.reset();
+    keep_alive_.Clear();
+  }
+
   Member<ScriptPromiseResolver<IDLString>> resolver_;
   WTF::String response_;
   int response_callback_count_;
