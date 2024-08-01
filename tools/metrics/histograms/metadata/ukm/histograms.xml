@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UKM.AppVersionDifferentWhenPurging" enum="BooleanChanged"
     expires_after="2025-01-05">
-  <owner>jwd@google.com</owner>
+  <owner>rkaplow@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Logged when doing a partial purges of unsent UKM logs. If the unsent log has
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
     expires_after="2025-05-01">
-  <owner>jwd@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     The hashed name of the UKM entry being dropped. The hash is the same hash

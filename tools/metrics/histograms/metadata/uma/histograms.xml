@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
     expires_after="2025-02-28">
-  <owner>jwd@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Tracks if the machine ID is generated successfully and if it changes from
@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.MetricsIDsReset" enum="BooleanHit"
     expires_after="2025-02-28">
-  <owner>jwd@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records when the metrics IDs (client id and low entry source) are reset due
@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.SamplingRatePerMille" units="samples per mille"
     expires_after="2024-09-01">
-  <owner>jwd@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Sample rate applied to this client, expressed as number of clients per 1000
