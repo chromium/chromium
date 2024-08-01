@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -53,6 +54,8 @@ class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
   std::vector<std::pair<PickerSearchResult, SelectItemCallback>> entries_;
+
+  base::WeakPtrFactory<PickerItemWithSubmenuView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemWithSubmenuView, PickerItemView)
