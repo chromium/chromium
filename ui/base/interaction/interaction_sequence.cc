@@ -633,8 +633,7 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
     // point it's not valid to do a transition, so we'll mark that the next
     // transition has happened.
     if (processing_step_) {
-      trigger_during_callback_ = true;
-      next_step()->context = element->context();
+      OnTriggerDuringStepTransition(element);
     } else {
       DoStepTransition(element);
     }
@@ -647,13 +646,24 @@ void InteractionSequence::OnTriggerDuringStepTransition(
     return;
 
   switch (next_step()->type) {
-    case StepType::kHidden:
     case StepType::kActivated:
     case StepType::kShown:
       // We should know the identifier and name ahead of time for activation
       // steps, so just make sure nothing has gone awry.
       DCHECK(element->identifier() == next_step()->id);
       DCHECK(MatchesNameIfSpecified(element, next_step()->element_name));
+      break;
+    case StepType::kHidden:
+      // We should know the identifier and name ahead of time for activation
+      // steps, so just make sure nothing has gone awry.
+      DCHECK(element->identifier() == next_step()->id);
+      if (next_step()->uses_named_element()) {
+        // Because the named elements list use safe references, they may already
+        // be nulled out. Therefore, it's fine if there's no element, but not if
+        // there is an element that's different than the one we care about.
+        auto* const named = GetNamedElement(next_step()->element_name);
+        DCHECK(!named || named == element);
+      }
       break;
     case StepType::kCustomEvent:
       // Since we don't specify the element ID when registering for custom
