@@ -6428,9 +6428,6 @@ crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timelin
 crbug.com/1447101 media/video-source-none-supported.html [ Failure Pass Timeout ]
 crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/permissions-policy-fenced-frame.https.js [ Pass Timeout ]
 
-# Sheriff 2023-05-26
-crbug.com/1448255 [ Linux ] virtual/netinfo-constant-type/netinfo/multiple-frames.html [ Failure Pass ]
-
 crbug.com/1449459 [ Mac13 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 
 # Sheriff 2023-05-29

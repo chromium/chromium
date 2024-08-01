@@ -2101,15 +2101,6 @@
     "expires": "Aug 1, 2024"
   },
   {
-    "prefix": "netinfo-constant-type",
-    "platforms": ["Linux"],
-    "bases": ["netinfo/"],
-    "args": [
-      "--enable-blink-features=NetInfoConstantType"
-    ],
-    "expires": "Dec 1, 2023"
-  },
-  {
     "prefix": "new-text-size-adjust",
     "owners": ["pdr@chromium.org"],
     "platforms": ["Linux", "Mac"],
