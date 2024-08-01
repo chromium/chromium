@@ -59,6 +59,9 @@ class BrowserStateInfoCache {
   void SetBrowserStateForSceneID(std::string_view scene_id,
                                  std::string_view browser_state_name);
 
+  // Returns the name of the browser state associated to the given scene.
+  const std::string& GetBrowserStateNameForSceneID(std::string_view scene_id);
+
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

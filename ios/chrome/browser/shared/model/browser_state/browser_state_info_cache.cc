@@ -186,6 +186,13 @@ void BrowserStateInfoCache::SetBrowserStateForSceneID(
   cache.Set(scene_id, browser_state_name);
 }
 
+const std::string& BrowserStateInfoCache::GetBrowserStateNameForSceneID(
+    std::string_view scene_id) {
+  const std::string* browser_state_name =
+      prefs_->GetDict(prefs::kBrowserStateForScene).FindString(scene_id);
+  return browser_state_name ? *browser_state_name : base::EmptyString();
+}
+
 // static
 void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kBrowserStateInfoCache);
