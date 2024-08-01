@@ -618,26 +618,41 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
 
   void run(const MatchFinder::MatchResult& result) override {
     const clang::SourceManager& source_manager = *result.SourceManager;
-
     const clang::FunctionDecl* fct_decl =
         result.Nodes.getNodeAs<clang::FunctionDecl>("fct_decl");
+    const clang::CXXMethodDecl* method_decl =
+        result.Nodes.getNodeAs<clang::CXXMethodDecl>("fct_decl");
 
-    std::string key = GetKey(fct_decl, source_manager);
-    if (auto* prev_decl = fct_decl->getPreviousDecl()) {
-      std::string prev_key = GetKey(prev_decl, source_manager);
-      fct_sig_pairs_.push_back({prev_key, key});
+    const std::string current_key = GetKey(fct_decl, source_manager);
+
+    // Function related by separate declaration and definition:
+    {
+      for (auto* previous_decl = fct_decl->getPreviousDecl(); previous_decl;
+           previous_decl = previous_decl->getPreviousDecl()) {
+        // TODO(356666773): The `previous_decl` might be part of third_party/.
+        // Then it won't be matched by the matcher. So only one of the pair
+        // would have a node.
+        const std::string previous_key = GetKey(previous_decl, source_manager);
+        fct_sig_pairs_.push_back({
+            current_key,
+            previous_key,
+        });
+      }
     }
 
-    if (const clang::CXXMethodDecl* method_decl =
-            result.Nodes.getNodeAs<clang::CXXMethodDecl>("fct_decl")) {
+    // Function related by overriding:
+    if (method_decl) {
       for (auto* m : method_decl->overridden_methods()) {
-        std::string prev_key = GetKey(m, source_manager);
-        fct_sig_pairs_.push_back({prev_key, key});
+        const std::string previous_key = GetKey(m, source_manager);
+        fct_sig_pairs_.push_back({
+            current_key,
+            previous_key,
+        });
       }
     }
 
     Node n = getNodeFromMatchResult(result);
-    fct_sig_nodes_[key].insert(n);
+    fct_sig_nodes_[current_key].insert(n);
   }
 
  private:
@@ -1102,8 +1117,17 @@ int main(int argc, const char* argv[]) {
   // other or if one is a function declaration while the other is its
   // corresponding definition.
   for (auto& [l, r] : fct_sig_pairs) {
+    // By construction, only the left side of the pair is guaranteed to have a
+    // matching set of nodes.
     assert(fct_sig_nodes.find(l) != fct_sig_nodes.end());
-    assert(fct_sig_nodes.find(r) != fct_sig_nodes.end());
+
+    // TODO(356666773): Handle the case where both side of the pair haven't
+    // been matched. This happens when a function is declared in third_party/,
+    // but implemented in first party.
+    if (fct_sig_nodes.find(r) == fct_sig_nodes.end()) {
+      continue;
+    }
+
     auto& s1 = fct_sig_nodes[l];
     auto& s2 = fct_sig_nodes[r];
     assert(s1.size() == s2.size());
