@@ -22,7 +22,10 @@ be describing additional metrics about the same event.
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Metrics recorded each time a SRP navigation/page load is abandoned.
+    Metrics recorded each time a SRP navigation/page load is abandoned (e.g. the
+    navigation got cancelled, or the user backgrounded the app while the page
+    load is not finished yet, etc. See AbandonedPageLoadMetricsObserver for more
+    details).
   </summary>
   <metric name="AbandonReason">
     <summary>
