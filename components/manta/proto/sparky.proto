@@ -109,6 +109,10 @@ message Click {
   optional int32 y_pos = 2;
 }
 
+message FileAction {
+  optional string launch_file_path = 1;
+}
+
 message Action {
   reserved 4;
 
@@ -116,6 +120,7 @@ message Action {
   optional string launch_app_id = 2;
   optional Click click = 3;
   optional bool all_done = 5;
+  optional FileAction file_action = 6;
 }
 
 message DiagnosticsRequest {
@@ -124,10 +129,28 @@ message DiagnosticsRequest {
 
 message SettingsDataRequest {}
 
-message ContextRequest {
-  reserved 2;
+message FileRequest {
+  repeated string paths = 1;
+}
 
+message File {
+  optional string path = 1;
+  optional string name = 2;
+  optional int64 size_in_bytes = 3;
+  // Returns a relative date if the file date was yesterday or today
+  //`Today 11:44` or it returns the date in the format of `22 July 2024, 13:38`.
+  optional string date_modified = 4;
+  optional bytes serialized_bytes = 5;
+  optional string summary = 6;
+}
+
+message FilesData {
+  repeated File files = 1;
+}
+
+message ContextRequest {
   optional DiagnosticsRequest diagnostics = 1;
+  optional FileRequest files = 2;
   optional SettingsDataRequest settings = 3;
 }
 
@@ -148,8 +171,6 @@ message WebContent {
 }
 
 message SparkyContextData {
-  reserved 8;
-
   optional Task task = 1;
   optional DiagnosticsData diagnostics_data = 2;
   optional SettingsData settings_data = 3;
@@ -157,5 +178,6 @@ message SparkyContextData {
   optional Image screenshot = 5;
   optional AppsData apps_data = 6;
   optional WebContent web_contents = 7;
+  optional FilesData files_data = 8;
   optional ServerConfig server_config = 9;
 }

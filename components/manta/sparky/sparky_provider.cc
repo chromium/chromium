@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -143,6 +144,10 @@ void SparkyProvider::OnScreenshotObtained(
     auto* diagnostics_proto = sparky_context_data->mutable_diagnostics_data();
     AddDiagnosticsProto(sparky_context->diagnostics_data, diagnostics_proto);
   }
+  if (!sparky_context->files.empty()) {
+    auto* files_proto = sparky_context_data->mutable_files_data();
+    AddFilesData(sparky_context->files, files_proto);
+  }
 
   // This parameter contains the address of one of the backends which the
   // request is passed through to once it is pushed up in a manta request.
@@ -230,6 +235,15 @@ void SparkyProvider::RequestAdditionalInformation(
     std::move(done_callback).Run(status, nullptr);
     return;
   }
+  if (context_request.has_files()) {
+    std::set<std::string> files = GetSelectedFilePaths(context_request.files());
+    sparky_delegate_->GetMyFiles(
+        base::BindOnce(
+            &SparkyProvider::OnFilesObtained, weak_ptr_factory_.GetWeakPtr(),
+            std::move(sparky_context), std::move(done_callback), status),
+        /*obtain_bytes=*/true, /*allowed_file_paths=*/files);
+    return;
+  }
 
   // Occurs if no valid request can be found.
   std::move(done_callback).Run(status, nullptr);
@@ -310,11 +324,28 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
       if (action.has_click()) {
         sparky_delegate_->Click(action.click().x_pos(), action.click().y_pos());
       }
+      if (action.has_file_action() &&
+          action.file_action().has_launch_file_path()) {
+        sparky_delegate_->LaunchFile(action.file_action().launch_file_path());
+      }
     }
   }
 
   DialogTurn latest_dialog_struct = ConvertDialogToStruct(&latest_reply);
   std::move(done_callback).Run(status, &latest_dialog_struct);
+}
+
+void SparkyProvider::OnFilesObtained(
+    std::unique_ptr<SparkyContext> sparky_context,
+    SparkyShowAnswerCallback done_callback,
+    manta::MantaStatus status,
+    std::vector<FileData> files_data) {
+  if (!files_data.empty()) {
+    sparky_context->files = std::move(files_data);
+    QuestionAndAnswer(std::move(sparky_context), std::move(done_callback));
+  } else {
+    std::move(done_callback).Run(status, nullptr);
+  }
 }
 
 }  // namespace manta

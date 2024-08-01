@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                          std::vector<Diagnostics> diagnostics_vector,
                          std::unique_ptr<StorageData> storage_data);
 
+  void OnFilesObtained(std::unique_ptr<SparkyContext> sparky_context,
+                       SparkyShowAnswerCallback done_callback,
+                       manta::MantaStatus status,
+                       std::vector<FileData> files_data);
+
   void OnDiagnosticsReceived(std::unique_ptr<SparkyContext> sparky_context,
                              SparkyShowAnswerCallback done_callback,
                              manta::MantaStatus status,

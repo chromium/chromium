@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -41,6 +42,10 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
   void LaunchApp(const std::string& app_id) override;
   void ObtainStorageInfo(manta::StorageDataCallback storage_callback) override;
   void Click(int x, int y) override;
+  void GetMyFiles(manta::FilesDataCallback callback,
+                  bool obtain_bytes,
+                  std::set<std::string> allowed_file_paths) override;
+  void LaunchFile(const std::string& file_path) override;
 
   // SizeCalculator::Observer:
   void OnSizeCalculated(

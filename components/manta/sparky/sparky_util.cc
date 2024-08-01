@@ -259,6 +259,26 @@ void AddAppsData(base::span<const AppsData> apps_data,
   }
 }
 
+void AddFilesData(base::span<const FileData> files_data,
+                  proto::FilesData* files_proto) {
+  for (const manta::FileData& file : files_data) {
+    proto::File* file_proto = files_proto->add_files();
+    file_proto->set_name(file.name);
+    file_proto->set_path(file.path);
+    file_proto->set_date_modified(file.date_modified);
+    if (file.bytes.has_value()) {
+      file_proto->set_serialized_bytes(
+          std::string(file.bytes->begin(), file.bytes->end()));
+    }
+    if (file.size_in_bytes) {
+      file_proto->set_size_in_bytes(file.size_in_bytes);
+    }
+    if (!file.summary.empty()) {
+      file_proto->set_summary(file.summary);
+    }
+  }
+}
+
 std::unique_ptr<SettingsData> ObtainSettingFromProto(
     proto::Setting setting_proto) {
   auto pref_type = VerifyValueAndConvertSettingTypeToPrefType(
@@ -332,6 +352,16 @@ void AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
       }
     }
   }
+}
+
+std::set<std::string> COMPONENT_EXPORT(MANTA)
+    GetSelectedFilePaths(const proto::FileRequest& file_request) {
+  std::set<std::string> set_file_paths;
+  int file_size = file_request.paths_size();
+  for (int index = 0; index < file_size; index++) {
+    set_file_paths.emplace(file_request.paths(index));
+  }
+  return set_file_paths;
 }
 
 }  // namespace manta

@@ -325,4 +325,16 @@ void SparkyDelegateImpl::OnStorageInfoUpdated() {
           base::UTF16ToUTF8(ui::FormatBytes(total_bytes))));
 }
 
+void SparkyDelegateImpl::LaunchFile(const std::string& file_path) {
+  // TODO (B:355316313) Implement this function.
+}
+
+void SparkyDelegateImpl::GetMyFiles(manta::FilesDataCallback callback,
+                                    bool obtain_bytes,
+                                    std::set<std::string> allowed_file_paths) {
+  // TODO (B:355316313) Implement this function.
+  auto files = std::vector<manta::FileData>();
+  std::move(callback).Run(files);
+}
+
 }  // namespace ash

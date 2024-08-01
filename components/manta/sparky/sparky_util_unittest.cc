@@ -5,6 +5,7 @@
 #include "components/manta/sparky/sparky_util.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
@@ -120,6 +121,17 @@ class SparkyUtilTest : public testing::Test {
       }
     }
     return false;
+  }
+
+  std::optional<proto::File> ObtainFileProto(
+      const google::protobuf::RepeatedPtrField<proto::File>& repeated_field,
+      std::string file_path) {
+    for (const proto::File& proto_file : repeated_field) {
+      if (proto_file.path() == file_path) {
+        return std::make_optional(proto_file);
+      }
+    }
+    return std::nullopt;
   }
 };
 
@@ -322,6 +334,49 @@ TEST_F(SparkyUtilTest, AddDialog) {
                              Role::kUser, {}));
   ASSERT_TRUE(ContainsDialog(dialog_proto, "Okay I have opened the text app",
                              Role::kAssistant, &launch_actions));
+}
+
+TEST_F(SparkyUtilTest, AddFilesData) {
+  std::vector<manta::FileData> files_data;
+  auto file_1 = FileData("path1", "name1", "2024");
+  file_1.summary = "file 1 summary";
+  file_1.bytes =
+      std::make_optional(std::vector<uint8_t>({2, 4, 6, 7, 4, 7, 2, 8}));
+  file_1.size_in_bytes = 8;
+
+  files_data.emplace_back(file_1);
+  files_data.emplace_back("path2", "name2", "2023");
+
+  proto::SparkyContextData sparky_context_data;
+  manta::proto::FilesData* files_proto =
+      sparky_context_data.mutable_files_data();
+  AddFilesData(std::move(files_data), files_proto);
+  auto files = files_proto->files();
+  ASSERT_EQ(files_proto->files_size(), 2);
+  std::optional<proto::File> proto_file_1 = ObtainFileProto(files, "path1");
+  ASSERT_TRUE(proto_file_1.has_value());
+  ASSERT_EQ(proto_file_1->name(), "name1");
+  ASSERT_EQ(proto_file_1->date_modified(), "2024");
+  ASSERT_EQ(proto_file_1->serialized_bytes(), "\x2\x4\x6\a\x4\a\x2\b");
+  ASSERT_EQ(proto_file_1->summary(), "file 1 summary");
+  std::optional<proto::File> proto_file_2 = ObtainFileProto(files, "path2");
+  ASSERT_TRUE(proto_file_2.has_value());
+  ASSERT_EQ(proto_file_2->name(), "name2");
+  ASSERT_EQ(proto_file_2->date_modified(), "2023");
+}
+
+TEST_F(SparkyUtilTest, GetSelectedFilePaths) {
+  proto::FileRequest file_request;
+
+  std::set<std::string> empty_set = GetSelectedFilePaths(file_request);
+  ASSERT_TRUE(empty_set.empty());
+
+  file_request.add_paths("my/file/path");
+  file_request.add_paths("my/second/file/path/");
+  std::set<std::string> file_set = GetSelectedFilePaths(file_request);
+  ASSERT_EQ((int)file_set.size(), 2);
+  ASSERT_TRUE(file_set.contains("my/file/path"));
+  ASSERT_TRUE(file_set.contains("my/second/file/path/"));
 }
 
 }  // namespace manta
