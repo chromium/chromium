@@ -1946,6 +1946,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="8"
       label="Failed as the screenshot and display have different orientations"/>
   <int value="9" label="Failed on DLP checking"/>
+  <int value="10" label="Failed in guest or public user session"/>
 </enum>
 
 <enum name="SeaPenActionMenuItem">
