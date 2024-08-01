@@ -18,43 +18,40 @@ import {BasicNode, BasicRootNode} from './basic_node.js';
 import {GroupNode} from './group_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+const RoleType = chrome.automation.RoleType;
 
 /**
  * This class handles the behavior of keyboard nodes directly associated with a
  * single AutomationNode.
  */
 export class KeyboardNode extends BasicNode {
-  /**
-   * @param {!AutomationNode} node
-   * @param {!SARootNode} parent
-   */
-  constructor(node, parent) {
+  static resetting = false;
+
+  constructor(node: AutomationNode, parent: SARootNode) {
     super(node, parent);
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
+  override get actions(): MenuAction[] {
     return [MenuAction.SELECT];
   }
 
   // ================= General methods =================
 
-  /** @override */
-  asRootNode() {
-    return null;
+  override asRootNode(): SARootNode | undefined {
+    return undefined;
   }
 
-  /** @override */
-  isGroup() {
+  override isGroup(): boolean {
     return false;
   }
 
-  /** @override */
-  isValidAndVisible() {
+  override isValidAndVisible(): boolean {
     if (super.isValidAndVisible()) {
       return true;
     }
@@ -62,7 +59,7 @@ export class KeyboardNode extends BasicNode {
         Navigator.byItem.currentGroupHasChild(this)) {
       // TODO(crbug/1130773): move this code to another location, if possible
       KeyboardNode.resetting = true;
-      KeyboardRootNode.ignoreNextExit_ = true;
+      KeyboardRootNode.ignoreNextExit = true;
       Navigator.byItem.exitKeyboard().then(
           () => Navigator.byItem.enterKeyboard());
     }
@@ -70,8 +67,7 @@ export class KeyboardNode extends BasicNode {
     return false;
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     if (action !== MenuAction.SELECT) {
       return ActionResponse.NO_ACTION_TAKEN;
     }
@@ -96,29 +92,28 @@ export class KeyboardNode extends BasicNode {
  * of the Keyboard tree.
  */
 export class KeyboardRootNode extends BasicRootNode {
-  /**
-   * @param {!AutomationNode} groupNode
-   * @private
-   */
-  constructor(groupNode) {
+  static ignoreNextExit = false;
+  private static isVisible_ = false;
+  private static explicitStateChange_ = false;
+  private static object_?: AutomationNode;
+
+
+  private constructor(groupNode: AutomationNode) {
     super(groupNode);
     KeyboardNode.resetting = false;
   }
 
   // ================= General methods =================
 
-
-  /** @override */
-  isValidGroup() {
+  override isValidGroup(): boolean {
     // To ensure we can find the keyboard root node to appropriately respond to
     // visibility changes, never mark it as invalid.
     return true;
   }
 
-  /** @override */
-  onExit() {
-    if (KeyboardRootNode.ignoreNextExit_) {
-      KeyboardRootNode.ignoreNextExit_ = false;
+  override onExit(): void {
+    if (KeyboardRootNode.ignoreNextExit) {
+      KeyboardRootNode.ignoreNextExit = false;
       return;
     }
 
@@ -132,18 +127,14 @@ export class KeyboardRootNode extends BasicRootNode {
     AutoScanManager.setInKeyboard(false);
   }
 
-  /** @override */
-  refreshChildren() {
+  override refreshChildren(): void {
     KeyboardRootNode.findAndSetChildren_(this);
   }
 
   // ================= Static methods =================
 
-  /**
-   * Creates the tree structure for the system menu.
-   * @return {!KeyboardRootNode}
-   */
-  static buildTree() {
+  /** Creates the tree structure for the keyboard. */
+  static override buildTree(): KeyboardRootNode {
     KeyboardRootNode.loadKeyboard_();
     AutoScanManager.setInKeyboard(true);
 
@@ -159,49 +150,37 @@ export class KeyboardRootNode extends BasicRootNode {
     return root;
   }
 
-  /**
-   * Start listening for keyboard open/closed.
-   */
-  static startWatchingVisibility() {
+  /** Start listening for keyboard open/closed. */
+  static startWatchingVisibility(): void {
     const keyboardObject = KeyboardRootNode.getKeyboardObject();
     if (!keyboardObject) {
       SwitchAccess.findNodeMatching(
-          {role: chrome.automation.RoleType.KEYBOARD},
-          KeyboardRootNode.startWatchingVisibility);
+          {role: RoleType.KEYBOARD}, KeyboardRootNode.startWatchingVisibility);
       return;
     }
 
     KeyboardRootNode.isVisible_ = KeyboardRootNode.isKeyboardVisible_();
 
     new EventHandler(
-        keyboardObject, chrome.automation.EventType.LOAD_COMPLETE,
+        keyboardObject, EventType.LOAD_COMPLETE,
         KeyboardRootNode.checkVisibilityChanged_)
         .start();
     new EventHandler(
-        keyboardObject, chrome.automation.EventType.STATE_CHANGED,
+        keyboardObject, EventType.STATE_CHANGED,
         KeyboardRootNode.checkVisibilityChanged_, {exactMatch: true})
         .start();
   }
 
   // ================= Private static methods =================
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  static isKeyboardVisible_() {
+  private static isKeyboardVisible_(): boolean {
     const keyboardObject = KeyboardRootNode.getKeyboardObject();
     return Boolean(
         keyboardObject && SwitchAccessPredicate.isVisible(keyboardObject) &&
-        keyboardObject.find({role: chrome.automation.RoleType.ROOT_WEB_AREA}));
+        keyboardObject.find({role: RoleType.ROOT_WEB_AREA}));
   }
 
-  /**
-   * @param {chrome.automation.AutomationEvent} event
-   * @private
-   */
-  static checkVisibilityChanged_(event) {
-    const keyboardObject = KeyboardRootNode.getKeyboardObject();
+  private static checkVisibilityChanged_(_event: AutomationEvent): void {
     const currentlyVisible = KeyboardRootNode.isKeyboardVisible_();
     if (currentlyVisible === KeyboardRootNode.isVisible_) {
       return;
@@ -223,40 +202,29 @@ export class KeyboardRootNode extends BasicRootNode {
     }
   }
 
-  /**
-   * Helper function to connect tree elements, given the root node.
-   * @param {!KeyboardRootNode} root
-   * @private
-   */
-  static findAndSetChildren_(root) {
-    const childConstructor = node => new KeyboardNode(node, root);
+  /** Helper function to connect tree elements, given the root node. */
+  private static findAndSetChildren_(root: KeyboardRootNode): void {
+    const childConstructor =
+        (node: AutomationNode): KeyboardNode => new KeyboardNode(node, root);
     const interestingChildren =
-        root.automationNode.findAll({role: chrome.automation.RoleType.BUTTON});
-    /** @type {!Array<!SAChildNode>} */
-    const children = GroupNode.separateByRow(
+        root.automationNode.findAll({role: RoleType.BUTTON});
+    const children: SAChildNode[] = GroupNode.separateByRow(
         interestingChildren.map(childConstructor), root.automationNode);
 
     children.push(new BackButtonNode(root));
     root.children = children;
   }
 
-  /**
-   * @return {AutomationNode}
-   * @private
-   */
-  static getKeyboardObject() {
+  private static getKeyboardObject(): AutomationNode {
     if (!this.object_ || !this.object_.role) {
       this.object_ = Navigator.byItem.desktopNode.find(
-          {role: chrome.automation.RoleType.KEYBOARD});
+          {role: RoleType.KEYBOARD});
     }
     return this.object_;
   }
 
-  /**
-   * Loads the keyboard.
-   * @private
-   */
-  static loadKeyboard_() {
+  /** Loads the keyboard. */
+  private static loadKeyboard_(): void {
     if (KeyboardRootNode.isVisible_) {
       return;
     }
@@ -266,14 +234,13 @@ export class KeyboardRootNode extends BasicRootNode {
 }
 
 BasicRootNode.builders.push({
-  predicate: rootNode => rootNode.role === chrome.automation.RoleType.KEYBOARD,
+  predicate: rootNode => rootNode.role === RoleType.KEYBOARD,
   builder: KeyboardRootNode.buildTree,
 });
 
 /**
  * The delay between keydown and keyup events on the virtual keyboard,
  * allowing the key press animation to display.
- * @const {number}
  */
 const VK_KEY_PRESS_DURATION_MS = 100;
 
