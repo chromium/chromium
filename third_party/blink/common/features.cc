@@ -2218,10 +2218,6 @@ const base::FeatureParam<base::TimeDelta>
                                             "sw_warm_up_duration",
                                             base::Minutes(10)};
 
-// Warms up service workers when the anchor is inserted into DOM.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_inserted_into_dom", false};
-
 // Warms up service workers when a pointerover event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerover", true};

@@ -54,7 +54,7 @@ class CORE_EXPORT AnchorElementObserverForServiceWorker
 
   // The following `pending_warm_up_links_` keeps the pending warm-up requests
   // until the document is loaded to prioritize loading the document.
-  HeapDeque<Member<HTMLAnchorElement>> pending_warm_up_links_;
+  Links pending_warm_up_links_;
 
   // Sent URL count to browser process.
   int total_request_count_ = 0;

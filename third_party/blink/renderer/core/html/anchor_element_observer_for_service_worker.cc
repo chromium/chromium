@@ -123,23 +123,14 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
 
   const uint32_t kMaxBatchSize =
       features::kSpeculativeServiceWorkerWarmUpBatchSize.Get();
-  // TODO(crbug.com/1431792): Move `kFifo` to the caller.
-  const bool kFifo =
-      features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get();
 
   const KURL& document_url = GetDocument().Url();
   HashSet<KURL> url_set;
   Vector<KURL> urls;
   urls.reserve(std::min(pending_warm_up_links_.size(), kMaxBatchSize));
   while (!pending_warm_up_links_.empty()) {
-    KURL url;
-    if (kFifo) {
-      url = pending_warm_up_links_.front()->Url();
-      pending_warm_up_links_.pop_front();
-    } else {
-      url = pending_warm_up_links_.back()->Url();
-      pending_warm_up_links_.pop_back();
-    }
+    KURL url = pending_warm_up_links_.back()->Url();
+    pending_warm_up_links_.pop_back();
 
     if (!url.IsValid() || !url.ProtocolIsInHTTPFamily() ||
         EqualIgnoringFragmentIdentifier(document_url, url)) {
@@ -160,9 +151,7 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
       break;
     }
   }
-  if (!kFifo) {
-    urls.Reverse();
-  }
+  urls.Reverse();
   local_frame->MaybeStartOutermostMainFrameNavigation(std::move(urls));
 
   // Send remaining requests later.
