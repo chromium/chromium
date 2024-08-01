@@ -108,21 +108,19 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                              : IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID;
 
     std::u16string subtitle_text;
-    if (base::FeatureList::IsEnabled(features::kEvDetailsInPageInfo)) {
-      // Only show the EV certificate details if there are no errors or mixed
-      // content.
-      if (identity_info.identity_status ==
-              PageInfo::SITE_IDENTITY_STATUS_EV_CERT &&
-          identity_info.connection_status ==
-              PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
-        // An EV cert is required to have an organization name and a country.
-        if (!certificate_->subject().organization_names.empty() &&
-            !certificate_->subject().country_name.empty()) {
-          subtitle_text = l10n_util::GetStringFUTF16(
-              IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
-              base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
-              base::UTF8ToUTF16(certificate_->subject().country_name));
-        }
+    // Only show the EV certificate details if there are no errors or mixed
+    // content.
+    if (identity_info.identity_status ==
+            PageInfo::SITE_IDENTITY_STATUS_EV_CERT &&
+        identity_info.connection_status ==
+            PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
+      // An EV cert is required to have an organization name and a country.
+      if (!certificate_->subject().organization_names.empty() &&
+          !certificate_->subject().country_name.empty()) {
+        subtitle_text = l10n_util::GetStringFUTF16(
+            IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
+            base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
+            base::UTF8ToUTF16(certificate_->subject().country_name));
       }
     }
 
