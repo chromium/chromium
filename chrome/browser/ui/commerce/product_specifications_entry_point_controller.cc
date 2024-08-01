@@ -11,11 +11,13 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 
@@ -137,10 +139,6 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   if (!current_entry_point_info_.has_value()) {
     return;
   }
-  // Reset entry point show gap time.
-  browser_->profile()->GetPrefs()->SetInteger(
-      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
-  DCHECK(product_specifications_service_);
   std::set<GURL> urls;
   auto candidate_products =
       current_entry_point_info_->similar_candidate_products;
@@ -150,6 +148,26 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
     }
   }
   std::vector<GURL> urls_in_set(urls.begin(), urls.end());
+  auto* prefs = browser_->profile()->GetPrefs();
+  if (!prefs) {
+    return;
+  }
+  // If user has not accepted the latest disclosure, show the disclosure dialog
+  // first.
+  if (prefs->GetInteger(kProductSpecificationsAcceptedDisclosureVersion) !=
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kV1)) {
+    DialogArgs dialog_args(urls_in_set, current_entry_point_info_->title,
+                           /*in_new_tab=*/true);
+    ProductSpecificationsDisclosureDialog::ShowDialog(
+        browser_->profile(),
+        browser_->tab_strip_model()->GetActiveWebContents(),
+        std::move(dialog_args));
+    return;
+  }
+  // Reset entry point show gap time.
+  browser_->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
   const std::optional<ProductSpecificationsSet> set =
       product_specifications_service_->AddProductSpecificationsSet(
           current_entry_point_info_->title, std::move(urls_in_set));

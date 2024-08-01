@@ -113,6 +113,14 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
               ShowFeedbackForProductSpecifications,
               (const std::string& log_id),
               (override));
+  MOCK_METHOD(void,
+              ShowProductSpecificationsDisclosureDialog,
+              (const std::vector<GURL>& urls, const std::string& name),
+              (override));
+  MOCK_METHOD(void,
+              ShowProductSpecificationsSetForUuid,
+              (const base::Uuid& uuid, bool in_new_tab),
+              (override));
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
@@ -835,9 +843,9 @@ TEST_F(ShoppingServiceHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
 
 TEST_F(ShoppingServiceHandlerTest, TestShowProductSpecificationsSetForUuid) {
   const base::Uuid uuid = base::Uuid::GenerateRandomV4();
-  const GURL url = commerce::GetProductSpecsTabUrlForID(uuid);
-  EXPECT_CALL(*delegate_, OpenUrlInNewTab(url)).Times(1);
-  handler_->ShowProductSpecificationsSetForUuid(uuid);
+  EXPECT_CALL(*delegate_, ShowProductSpecificationsSetForUuid(uuid, true))
+      .Times(1);
+  handler_->ShowProductSpecificationsSetForUuid(uuid, true);
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
@@ -1164,6 +1172,43 @@ TEST_F(ShoppingServiceHandlerTest, TestSetUrlsForProductSpecificationsSet) {
           &uuid)
           .Then(run_loop.QuitClosure()));
 
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestMaybeShowProductSpecificationDisclosure_NotShow) {
+  EXPECT_CALL(*delegate_, ShowProductSpecificationsDisclosureDialog).Times(0);
+
+  pref_service_->SetInteger(
+      kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kV1));
+
+  base::RunLoop run_loop;
+  handler_->MaybeShowProductSpecificationDisclosure(
+      {}, "", base::BindOnce([](bool show) {
+                ASSERT_FALSE(show);
+              }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestMaybeShowProductSpecificationDisclosure_Show) {
+  std::vector<GURL> urls{GURL(kTestUrl1)};
+  std::string name = "test_name";
+  EXPECT_CALL(*delegate_, ShowProductSpecificationsDisclosureDialog(urls, name))
+      .Times(1);
+
+  pref_service_->SetInteger(
+      kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
+
+  base::RunLoop run_loop;
+  handler_->MaybeShowProductSpecificationDisclosure(
+      urls, name, base::BindOnce([](bool show) {
+                    ASSERT_TRUE(show);
+                  }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

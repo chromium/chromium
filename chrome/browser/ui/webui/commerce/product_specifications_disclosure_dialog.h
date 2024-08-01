@@ -15,12 +15,32 @@ class BrowserContext;
 
 namespace commerce {
 
+inline constexpr char kDialogArgsName[] = "name";
+inline constexpr char kDialogArgsUrls[] = "urls";
+inline constexpr char kDialogArgsInNewTab[] = "in_new_tab";
+
+struct DialogArgs {
+  DialogArgs(std::vector<GURL> urls, std::string name, bool in_new_tab);
+  ~DialogArgs();
+  DialogArgs(const DialogArgs&);
+  DialogArgs& operator=(const DialogArgs&);
+
+  base::Value::Dict ToValue();
+
+  std::vector<GURL> urls;
+  std::string name;
+  bool in_new_tab;
+};
+
 class ProductSpecificationsDisclosureDialog : public ui::WebDialogDelegate {
  public:
   // Show the dialog. If there is a dialog showing right now, the existing
   // dialog will be closed and a new one will be shown.
+  // `dialog_args` contains information about the potential product
+  // specification set that triggers the dialog.
   static void ShowDialog(content::BrowserContext* browser_context,
-                         content::WebContents* web_contents);
+                         content::WebContents* web_contents,
+                         DialogArgs dialog_args);
 
   ProductSpecificationsDisclosureDialog(
       const ProductSpecificationsDisclosureDialog&) = delete;
@@ -33,8 +53,8 @@ class ProductSpecificationsDisclosureDialog : public ui::WebDialogDelegate {
   }
 
  private:
-  explicit ProductSpecificationsDisclosureDialog(
-      content::WebContents* contents);
+  ProductSpecificationsDisclosureDialog(content::WebContents* contents,
+                                        DialogArgs dialog_args);
 
   static ProductSpecificationsDisclosureDialog* current_instance_;
 

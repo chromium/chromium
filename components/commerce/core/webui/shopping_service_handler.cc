@@ -782,11 +782,12 @@ void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {
 }
 
 void ShoppingServiceHandler::ShowProductSpecificationsSetForUuid(
-    const base::Uuid& uuid) {
+    const base::Uuid& uuid,
+    bool in_new_tab) {
   if (!delegate_) {
     return;
   }
-  delegate_->OpenUrlInNewTab(commerce::GetProductSpecsTabUrlForID(uuid));
+  delegate_->ShowProductSpecificationsSetForUuid(uuid, in_new_tab);
 }
 
 void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(
@@ -1043,6 +1044,21 @@ void ShoppingServiceHandler::SetProductSpecificationAcceptedDisclosureVersion(
 
   pref_service_->SetInteger(kProductSpecificationsAcceptedDisclosureVersion,
                             static_cast<int>(version));
+}
+
+void ShoppingServiceHandler::MaybeShowProductSpecificationDisclosure(
+    const std::vector<GURL>& urls,
+    const std::string& name,
+    MaybeShowProductSpecificationDisclosureCallback callback) {
+  bool show =
+      (pref_service_->GetInteger(
+           kProductSpecificationsAcceptedDisclosureVersion) ==
+       static_cast<int>(shopping_service::mojom::
+                            ProductSpecificationsDisclosureVersion::kUnknown));
+  if (show) {
+    delegate_->ShowProductSpecificationsDisclosureDialog(urls, name);
+  }
+  std::move(callback).Run(show);
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(

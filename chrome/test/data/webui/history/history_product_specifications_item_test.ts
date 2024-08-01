@@ -109,7 +109,7 @@ suite('ProductSpecificationsItemTest', () => {
           shoppingServiceApi.getCallCount(
               'showProductSpecificationsSetForUuid'));
       assertDeepEquals(
-          {value: 'ex1'},
+          [{value: 'ex1'}, true],
           shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
     });
 
@@ -121,7 +121,7 @@ suite('ProductSpecificationsItemTest', () => {
           shoppingServiceApi.getCallCount(
               'showProductSpecificationsSetForUuid'));
       assertDeepEquals(
-          {value: 'ex1'},
+          [{value: 'ex1'}, true],
           shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
     });
   });

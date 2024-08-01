@@ -52,6 +52,7 @@ build_webui("build") {
   icons_html_files = [ "images/icons.html" ]
 
   ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",

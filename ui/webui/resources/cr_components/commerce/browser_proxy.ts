@@ -32,7 +32,7 @@ export interface BrowserProxy {
   switchToOrOpenTab(url: Url): void;
   getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
   showBookmarkEditorForCurrentUrl(): void;
-  showProductSpecificationsSetForUuid(uuid: Uuid): void;
+  showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void;
   showFeedbackForPriceInsights(): void;
   getCallbackRouter(): PageCallbackRouter;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
@@ -52,6 +52,8 @@ export interface BrowserProxy {
   setProductSpecificationsUserFeedback(feedback: UserFeedback): void;
   setProductSpecificationDisclosureAcceptVersion(
       version: ProductSpecificationsDisclosureVersion): void;
+  maybeShowProductSpecificationDisclosure(urls: Url[], name: string):
+      Promise<{disclosureShown: boolean}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -150,8 +152,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.handler.showBookmarkEditorForCurrentUrl();
   }
 
-  showProductSpecificationsSetForUuid(uuid: Uuid) {
-    this.handler.showProductSpecificationsSetForUuid(uuid);
+  showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean) {
+    this.handler.showProductSpecificationsSetForUuid(uuid, inNewTab);
   }
 
   showFeedbackForPriceInsights() {
@@ -184,6 +186,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   setProductSpecificationsUserFeedback(feedback: UserFeedback) {
     this.handler.setProductSpecificationsUserFeedback(feedback);
+  }
+
+  maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
+    return this.handler.maybeShowProductSpecificationDisclosure(urls, name);
   }
 
   getCallbackRouter() {

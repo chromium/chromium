@@ -12,10 +12,13 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -186,6 +189,44 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
     return ukm::kInvalidSourceId;
   }
   return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+}
+
+void ShoppingUiHandlerDelegate::ShowProductSpecificationsDisclosureDialog(
+    const std::vector<GURL>& urls,
+    const std::string& name) {
+  auto* browser = chrome::FindTabbedBrowser(profile_, false);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+  // Currently this method is only used to trigger the dialog which will open
+  // the potential product specification set in the current tab.
+  DialogArgs dialog_args(urls, name, /*in_new_tab=*/false);
+  ProductSpecificationsDisclosureDialog::ShowDialog(profile_, web_contents,
+                                                    std::move(dialog_args));
+}
+
+void ShoppingUiHandlerDelegate::ShowProductSpecificationsSetForUuid(
+    const base::Uuid& uuid,
+    bool in_new_tab) {
+  const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
+  if (in_new_tab) {
+    OpenUrlInNewTab(product_spec_url);
+  } else {
+    auto* browser = chrome::FindLastActive();
+    if (!browser) {
+      return;
+    }
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return;
+    }
+    web_contents->GetController().LoadURL(product_spec_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                          /*extra_headers=*/std::string());
+  }
 }
 
 void ShoppingUiHandlerDelegate::NavigateToUrl(Browser* browser,

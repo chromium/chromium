@@ -79,6 +79,13 @@ class ShoppingServiceHandler
         const std::string& log_id) = 0;
 
     virtual ukm::SourceId GetCurrentTabUkmSourceId() = 0;
+
+    virtual void ShowProductSpecificationsDisclosureDialog(
+        const std::vector<GURL>& urls,
+        const std::string& name) = 0;
+
+    virtual void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
+                                                     bool in_new_tab) = 0;
   };
 
   ShoppingServiceHandler(
@@ -128,7 +135,8 @@ class ShoppingServiceHandler
   void GetParentBookmarkFolderNameForCurrentUrl(
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
-  void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid) override;
+  void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
+                                           bool in_new_tab) override;
   void ShowFeedbackForPriceInsights() override;
   void GetAllProductSpecificationsSets(
       GetAllProductSpecificationsSetsCallback callback) override;
@@ -150,9 +158,12 @@ class ShoppingServiceHandler
       SetUrlsForProductSpecificationsSetCallback callback) override;
   void SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback feedback) override;
-
   void SetProductSpecificationAcceptedDisclosureVersion(
       shopping_service::mojom::ProductSpecificationsDisclosureVersion) override;
+  void MaybeShowProductSpecificationDisclosure(
+      const std::vector<GURL>& urls,
+      const std::string& name,
+      MaybeShowProductSpecificationDisclosureCallback callback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

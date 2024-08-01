@@ -143,7 +143,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
-  private setName_: string;
+  private setName_: string|null = null;
   private showEmptyState_: boolean;
   private tableColumns_: TableColumn[] = [];
 
@@ -356,15 +356,27 @@ export class ProductSpecificationsElement extends PolymerElement {
     // TODO(b/330345730): Plumb through mojom
   }
 
-  private onUrlAdd_(e: CustomEvent<{url: string}>) {
+  private async onUrlAdd_(e: CustomEvent<{url: string}>) {
     if (this.isOffline_) {
       this.showOfflineToast_();
       return;
     }
-
     const urls = this.getTableUrls_();
     urls.push(e.detail.url);
-    this.modifyUrls_(urls);
+    // If there is already a current set, we won't be showing the disclosure and
+    // we can modify the set directly; otherwise, user is trying to add a url
+    // from empty state, and we'll try to show the disclosure.
+    if (this.id_) {
+      this.modifyUrls_(urls);
+      return;
+    }
+    const {disclosureShown} =
+        await this.shoppingApi_.maybeShowProductSpecificationDisclosure(
+            urls.map(url => ({url})), this.setName_ ? this.setName_ : '');
+    // If the disclosure is shown, we won't update the current set.
+    if (!disclosureShown) {
+      this.modifyUrls_(urls);
+    }
   }
 
   private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {

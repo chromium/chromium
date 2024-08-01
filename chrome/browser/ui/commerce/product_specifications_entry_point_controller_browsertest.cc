@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 const char kTitle[] = "test_tile";
@@ -67,6 +69,11 @@ class ProductSpecificationsEntryPointControllerBrowserTest
                       ->product_specifications_entry_point_controller();
     observer_ = std::make_unique<MockObserver>();
     controller_->AddObserver(observer_.get());
+    // Mock disclosure dialog has been accepted by default.
+    browser()->profile()->GetPrefs()->SetInteger(
+        commerce::kProductSpecificationsAcceptedDisclosureVersion,
+        static_cast<int>(shopping_service::mojom::
+                             ProductSpecificationsDisclosureVersion::kV1));
     // This is needed to make sure that the URL changes caused by navigations
     // will happen immediately.
     browser()->set_update_ui_immediately_for_testing();
@@ -579,6 +586,47 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                                      ui::PAGE_TRANSITION_LINK, true));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->ShouldExecuteEntryPointShow());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TestTriggerDisclosureDialog) {
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Set up observer.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Mock that disclosure dialog has not been accepted.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
+  controller_->OnEntryPointExecuted();
+
+  // Disclosure dialog has shown and product spec UI is not open.
+  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
+      current_instance_for_testing();
+  ASSERT_TRUE(dialog);
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
 }
 
 class ProductSpecificationsEntryPointControllerWithServerClusteringBrowserTest

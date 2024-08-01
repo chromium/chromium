@@ -74,6 +74,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'setUrlsForProductSpecificationsSet',
       'setProductSpecificationsUserFeedback',
       'setProductSpecificationDisclosureAcceptVersion',
+      'maybeShowProductSpecificationDisclosure',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -182,8 +183,8 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     this.methodCalled('showBookmarkEditorForCurrentUrl');
   }
 
-  showProductSpecificationsSetForUuid(uuid: Uuid) {
-    this.methodCalled('showProductSpecificationsSetForUuid', uuid);
+  showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean) {
+    this.methodCalled('showProductSpecificationsSetForUuid', uuid, inNewTab);
   }
 
   getAllProductSpecificationsSets() {
@@ -219,17 +220,22 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     this.methodCalled('setUrlsForProductSpecificationsSet', feedback);
   }
 
+  setProductSpecificationDisclosureAcceptVersion(
+      version: ProductSpecificationsDisclosureVersion) {
+    this.methodCalled(
+        'setProductSpecificationDisclosureAcceptVersion', version);
+  }
+
+  maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
+    this.methodCalled('maybeShowProductSpecificationDisclosure', urls, name);
+    return Promise.resolve({disclosureShown: false});
+  }
+
   getCallbackRouter() {
     return this.callbackRouter;
   }
 
   getCallbackRouterRemote() {
     return this.callbackRouterRemote;
-  }
-
-  setProductSpecificationDisclosureAcceptVersion(
-      version: ProductSpecificationsDisclosureVersion) {
-    this.methodCalled(
-        'setProductSpecificationDisclosureAcceptVersion', version);
   }
 }

@@ -148,6 +148,9 @@ suite('AppTest', () => {
     loadTimeData.overrideValues({priceRowTitle: 'price'});
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+    shoppingServiceApi.setResultFor(
+        'maybeShowProductSpecificationDisclosure',
+        Promise.resolve({show: false}));
     BrowserProxyImpl.setInstance(shoppingServiceApi);
     router.reset();
     Router.setInstance(router);
@@ -878,6 +881,45 @@ suite('AppTest', () => {
     assertArrayEquals([{url: 'https://example.com/'}], args[1]);
   });
 
+  test('creating new set triggers disclosure', async () => {
+    const productTabs = [{
+      title: 'title',
+      url: stringToMojoUrl('https://example.com/'),
+    }];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+    // Mock that disclosure dialog should be shown.
+    shoppingServiceApi.setResultFor(
+        'maybeShowProductSpecificationDisclosure',
+        Promise.resolve({disclosureShown: true}));
+    createAppElement();
+
+    // Click on the "add column" button and select the first (only) item.
+    const newColSelector = appElement.$.newColumnSelector;
+    newColSelector.$.button.click();
+    await waitAfterNextRender(appElement);
+    const menu = newColSelector.$.productSelectionMenu;
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+    const dropdownItem =
+        crActionMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!dropdownItem);
+    dropdownItem.click();
+    await waitAfterNextRender(appElement);
+
+    await shoppingServiceApi.whenCalled(
+        'maybeShowProductSpecificationDisclosure');
+    const showArgs =
+        shoppingServiceApi.getArgs('maybeShowProductSpecificationDisclosure');
+    assertEquals('https://example.com/', showArgs[0][0][0].url);
+    // Product spec set title will be empty by default.
+    assertEquals('', showArgs[0][1]);
+    assertEquals(
+        0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
+  });
+
   test('add url for existing set', async () => {
     const dimensionValues = {
       summary: [],
@@ -944,6 +986,11 @@ suite('AppTest', () => {
     assertArrayEquals(
         [{url: 'https://example.com/'}, {url: 'https://example.com/2'}],
         args[1]);
+    // We should not try to show the disclosure when there is an existing set.
+    assertEquals(
+        0,
+        shoppingServiceApi.getCallCount(
+            'maybeShowProductSpecificationDisclosure'));
   });
 
   test('name change updates page title', async () => {
