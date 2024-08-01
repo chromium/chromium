@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/sequence_manager/atomic_flag_set.h"
 
 #include <bit>
@@ -15,9 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 AtomicFlagSet::AtomicFlagSet(
     scoped_refptr<const AssociatedThreadId> associated_thread)
@@ -71,7 +64,7 @@ void AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag() {
   if (group_->IsFull())
     outer_->AddToPartiallyFreeList(group_);
 
-  int index = Group::IndexOfFirstFlagSet(flag_bit_);
+  size_t index = Group::IndexOfFirstFlagSet(flag_bit_);
   DCHECK(!group_->flag_callbacks[index].is_null());
   group_->flag_callbacks[index] = RepeatingClosure();
   group_->allocated_flags &= ~flag_bit_;
@@ -97,8 +90,7 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
 
   DCHECK(partially_free_list_head_);
   Group* group = partially_free_list_head_;
-  size_t first_unoccupied_index =
-      static_cast<size_t>(group->FindFirstUnallocatedFlag());
+  size_t first_unoccupied_index = group->FindFirstUnallocatedFlag();
   DCHECK(!group->flag_callbacks[first_unoccupied_index]);
   group->flag_callbacks[first_unoccupied_index] = std::move(callback);
 
@@ -121,7 +113,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
         &iter->flags, size_t{0}, std::memory_order_acquire);
     // This is O(number of bits set).
     while (active_flags) {
-      int index = Group::IndexOfFirstFlagSet(active_flags);
+      size_t index = Group::IndexOfFirstFlagSet(active_flags);
       // Clear the flag.
       active_flags ^= size_t{1} << index;
       iter->flag_callbacks[index].Run();
@@ -145,18 +137,19 @@ bool AtomicFlagSet::Group::IsEmpty() const {
   return allocated_flags == 0u;
 }
 
-int AtomicFlagSet::Group::FindFirstUnallocatedFlag() const {
+size_t AtomicFlagSet::Group::FindFirstUnallocatedFlag() const {
   size_t unallocated_flags = ~allocated_flags;
   DCHECK_NE(unallocated_flags, 0u);
-  int index = IndexOfFirstFlagSet(unallocated_flags);
-  DCHECK_LT(index, kNumFlags);
+  size_t index = IndexOfFirstFlagSet(unallocated_flags);
+  DCHECK_LT(index, static_cast<size_t>(kNumFlags));
   return index;
 }
 
 // static
-int AtomicFlagSet::Group::IndexOfFirstFlagSet(size_t flag) {
+size_t AtomicFlagSet::Group::IndexOfFirstFlagSet(size_t flag) {
   DCHECK_NE(flag, 0u);
-  return std::countr_zero(flag);
+  // std::countr_zero is non-negative.
+  return static_cast<size_t>(std::countr_zero(flag));
 }
 
 void AtomicFlagSet::AddToAllocList(std::unique_ptr<Group> group) {
@@ -213,6 +206,4 @@ void AtomicFlagSet::RemoveFromPartiallyFreeList(Group* group) {
   group->partially_free_list_next = nullptr;
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal
