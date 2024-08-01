@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -701,6 +702,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _accountDiscParticleBadgeImageView.layer.cornerRadius =
       _accountDiscParticleBadgeImageView.frame.size.width / 2;
   _accountDiscParticleBadgeImageView.clipsToBounds = YES;
+  _accountDiscParticleBadgeImageView.accessibilityIdentifier =
+      kNTPFeedHeaderIdentityDiscBadge;
 
   [_identityDiscView addSubview:_accountDiscParticleBadgeImageView];
 

@@ -34,6 +34,9 @@ extern NSString* const kNTPFeedHeaderIdentityDisc;
 // Represents the customization menu button of the feed header.
 extern NSString* const kNTPCustomizationMenuButtonIdentifier;
 
+// Represents the identity disc badge.
+extern NSString* const kNTPFeedHeaderIdentityDiscBadge;
+
 // The corner radius for the module containers on the Home surface.
 extern const CGFloat kHomeModuleContainerCornerRadius;
 

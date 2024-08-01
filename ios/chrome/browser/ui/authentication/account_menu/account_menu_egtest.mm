@@ -98,6 +98,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
       setTimeValue:base::Time::FromDeltaSinceWindowsEpoch(
                        marginToAllowIdentityConfirmationSnackbar)
        forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+  [ChromeEarlGrey signOutAndClearIdentities];
   [super tearDown];
 }
 
@@ -145,6 +146,25 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Close the account menu.
+- (void)closeAccountMenu {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // There is no stop button on ipad.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kAccountMenuCloseButtonId)]
+        assertWithMatcher:grey_nil()];
+    // Dismiss the menu by tapping on the identity disc particle.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kNTPFeedHeaderIdentityDisc)]
+        performAction:grey_tap()];
+  } else {
+    // Tap on the Close button.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kAccountMenuCloseButtonId)]
+        performAction:grey_tap()];
+  }
+}
+
 #pragma mark - Test open and close
 
 // Tests that the identity disc particle can be selected, and lead to opening
@@ -159,18 +179,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 - (void)testCloseButtonAccountMenu {
   [self selectIdentityDiscAndVerify];
 
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // There is no stop button on ipad.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kAccountMenuCloseButtonId)]
-        assertWithMatcher:grey_nil()];
-    return;
-  }
-
-  // Tap on the Close button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kAccountMenuCloseButtonId)]
-      performAction:grey_tap()];
+  [self closeAccountMenu];
 
   // Verify the Account Menu is dismissed.
   [self assertAccountMenuIsNotShown];
@@ -378,6 +387,51 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [self assertSnackbarNotShown];
+}
+
+#pragma mark - Test Error Badge
+
+- (void)testErrorBadge {
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the error badge shows on the ADP.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kNTPFeedHeaderIdentityDiscBadge)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [self selectIdentityDiscAndVerify];
+
+  // Check the error button is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuErrorActionButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Tap on the error action button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuErrorActionButtonId)]
+      performAction:grey_tap()];
+  // Verify that the passphrase view was opened.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Enter the passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+  // Entering the passphrase closes the view.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  [self closeAccountMenu];
+
+  [self assertAccountMenuIsNotShown];
+
+  // Verify the error badge on the ADP disappears.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kNTPFeedHeaderIdentityDiscBadge)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
