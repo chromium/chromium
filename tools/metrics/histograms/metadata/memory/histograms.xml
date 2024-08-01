@@ -847,17 +847,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Memory.Experimental.UserLevelMemoryPressureSignal.RendererPrivateMemoryFootprintAfter"
-    units="MB" expires_after="2019-09-30">
-  <owner>keishi@chromium.org</owner>
-  <owner>tasak@chromium.org</owner>
-  <summary>
-    The renderer process' private memory footprint 10 seconds after a memory
-    pressure signal is generated.
-  </summary>
-</histogram>
-
-<histogram
     name="Memory.Experimental.UserLevelMemoryPressureSignal.RendererPrivateMemoryFootprintBefore"
     units="MB" expires_after="2022-05-01">
   <owner>keishi@chromium.org</owner>
