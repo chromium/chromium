@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './battery_chart.html.js';
+import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsBatteryChartElement {
   $: {
@@ -32,14 +33,14 @@ export class HealthdInternalsBatteryChartElement extends PolymerElement {
     const UNITBASE_NO_CARRY: number = 1;
     const UNIT_PURE_NUMBER: string[] = [''];
     this.$.lineChart.initCanvasDrawer(UNIT_PURE_NUMBER, UNITBASE_NO_CARRY);
+
+    this.updateHelper = new UiUpdateHelper(() => {
+      this.$.lineChart.updateEndTime(Date.now());
+    });
   }
 
-  // Whether the current page is visible.
-  private isVisible: boolean = false;
-  // The update internal for line chart in milliseconds.
-  private updateInterval?: number = undefined;
-  // The data fetching interval ID used for cancelling the running interval.
-  private updateChartInternalId?: number = undefined;
+  // Helper for updating UI regularly. Init in `connectedCallback`.
+  private updateHelper: UiUpdateHelper;
 
   addDataSeries(batteryDataSeries: DataSeries[]) {
     for (const dataSeries of batteryDataSeries) {
@@ -48,34 +49,12 @@ export class HealthdInternalsBatteryChartElement extends PolymerElement {
   }
 
   updateVisibility(isVisible: boolean) {
-    this.isVisible = isVisible;
     this.$.lineChart.updateVisibility(isVisible);
-    this.setupUpdateChartRequests();
+    this.updateHelper.updateVisibility(isVisible);
   }
 
   updateUiUpdateInterval(intervalSeconds: number) {
-    this.updateInterval = intervalSeconds * 1000;
-    this.setupUpdateChartRequests();
-  }
-
-  private setupUpdateChartRequests() {
-    this.cancelUpdateChartRequests();
-
-    if (!this.isVisible || this.updateInterval === undefined ||
-        this.updateInterval === 0) {
-      return;
-    }
-    const updateChart = () => this.$.lineChart.updateEndTime(Date.now());
-    this.updateChartInternalId = setInterval(updateChart, this.updateInterval);
-    updateChart();
-  }
-
-  private cancelUpdateChartRequests() {
-    if (this.updateChartInternalId === undefined) {
-      return;
-    }
-    clearInterval(this.updateChartInternalId);
-    this.updateChartInternalId = undefined;
+    this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 }
 

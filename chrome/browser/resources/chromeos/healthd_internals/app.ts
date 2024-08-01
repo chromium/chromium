@@ -175,6 +175,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
       this.$.cpuFrequencyChart.updateVisibility(isVisible);
     } else if (pagePath === PagePath.CPU_USAGE) {
       this.$.cpuUsageChart.updateVisibility(isVisible);
+    } else if (pagePath === PagePath.TELEMETRY) {
+      this.$.telemetryPage.updateVisibility(isVisible);
     } else if (pagePath === PagePath.THERMAL) {
       this.$.thermalChart.updateVisibility(isVisible);
     }
@@ -185,6 +187,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
     this.$.batteryChart.updateUiUpdateInterval(interval);
     this.$.cpuFrequencyChart.updateUiUpdateInterval(interval);
     this.$.cpuUsageChart.updateUiUpdateInterval(interval);
+    this.$.telemetryPage.updateUiUpdateInterval(interval);
     this.$.thermalChart.updateUiUpdateInterval(interval);
   }
 
