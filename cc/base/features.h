@@ -194,6 +194,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDontAlwaysPushPictureLayerImpls);
 // Please see crbug.com/41496019 for more details.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWarmUpCompositor);
 
+// Kill switch for a bunch of optimizations for cc-slimming project.
+// Please see crbug.com/335450599 for more details.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kCCSlimming);
+// Check if the above feature is enabled. For performance purpose.
+CC_BASE_EXPORT bool IsCCSlimmingEnabled();
+
 // Modes for `kWaitForLateScrollEvents` changing event dispatch. Where the
 // default is to just always enqueue scroll events.
 //

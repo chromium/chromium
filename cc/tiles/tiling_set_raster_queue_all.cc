@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "cc/base/features.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
@@ -36,7 +37,9 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
   DCHECK(tiling_set_);
 
   // Early out if the tiling set has no tiles needing raster.
-  if (tiling_set_->all_tiles_done()) {
+  bool done = features::IsCCSlimmingEnabled() ? tiling_set_->all_tiles_done()
+                                              : !tiling_set_->num_tilings();
+  if (done) {
     return;
   }
 

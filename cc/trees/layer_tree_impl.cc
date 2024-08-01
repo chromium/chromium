@@ -2531,7 +2531,8 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPoint(
     const gfx::PointF& screen_space_point) {
   if (layer_list_.empty())
     return nullptr;
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return nullptr;
   }
@@ -2566,7 +2567,8 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPointInEventHandlerRegion(
     const Functor& func) {
   if (layer_list_.empty())
     return nullptr;
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return nullptr;
   }
@@ -2596,7 +2598,8 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
   std::vector<const LayerImpl*> layers;
   if (layer_list_.empty())
     return layers;
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return layers;
   }
@@ -2786,7 +2789,8 @@ ElementId LayerTreeImpl::FindFrameElementIdAtPoint(
     const gfx::PointF& screen_space_point) {
   if (layer_list_.empty())
     return {};
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return {};
   }

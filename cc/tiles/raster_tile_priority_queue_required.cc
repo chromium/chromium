@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "cc/base/features.h"
 #include "cc/tiles/tiling_set_raster_queue_required.h"
 
 namespace cc {
@@ -16,12 +17,13 @@ namespace {
 void AppendTilingSetRequiredQueues(
     const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
     std::vector<std::unique_ptr<TilingSetRasterQueueRequired>>* queues) {
+  const bool cc_slimming_enabled = features::IsCCSlimmingEnabled();
   for (PictureLayerImpl* layer : layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
-    if (tiling_set->all_tiles_done()) {
+    if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
     std::unique_ptr<TilingSetRasterQueueRequired> tiling_set_queue(
@@ -55,12 +57,13 @@ void RasterTilePriorityQueueRequired::Build(
 void RasterTilePriorityQueueRequired::BuildRequiredForDraw(
     const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
         active_layers) {
+  const bool cc_slimming_enabled = features::IsCCSlimmingEnabled();
   for (PictureLayerImpl* layer : active_layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
-    if (tiling_set->all_tiles_done()) {
+    if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
     std::unique_ptr<TilingSetRasterQueueRequired> tiling_set_queue(

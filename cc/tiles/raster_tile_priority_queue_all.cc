@@ -67,12 +67,13 @@ void CreateTilingSetRasterQueues(
     std::vector<std::unique_ptr<TilingSetRasterQueueAll>>* queues) {
   DCHECK(queues->empty());
 
+  const bool cc_slimming_enabled = features::IsCCSlimmingEnabled();
   for (PictureLayerImpl* layer : layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
-    if (tiling_set->all_tiles_done()) {
+    if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
     bool prioritize_low_res = tree_priority == SMOOTHNESS_TAKES_PRIORITY;
