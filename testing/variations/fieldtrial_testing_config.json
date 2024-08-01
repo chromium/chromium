@@ -968,22 +968,6 @@
             ]
         }
     ],
-    "ArcUnthrottleOnActiveAudio": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240307",
-                    "enable_features": [
-                        "ArcUnthrottleOnActiveAudio"
-                    ],
-                    "min_os_version": "15794.0.0"
-                }
-            ]
-        }
-    ],
     "ArcVmBlkMultipleWorkers": [
         {
             "platforms": [
