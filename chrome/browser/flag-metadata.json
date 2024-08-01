@@ -4795,11 +4795,6 @@
     "expiry_milestone": 131
   },
   {
-    "name": "filling-across-grouped-sites",
-    "owners": ["vsemeniuk@google.com", "vasilii@chromium.org", "shaikhitdin@google.com"],
-    "expiry_milestone": 128
-  },
-  {
     "name": "firmware-update-ui-v2",
     "owners": [
       "//ash/webui/firmware_update_ui/OWNERS",
