@@ -1412,6 +1412,21 @@
             ]
         }
     ],
+    "AuthPanelInSession": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAuthPanelInSession"
+                    ]
+                }
+            ]
+        }
+    ],
     "AuthenticateUsingUserConsentVerifierApi": [
         {
             "platforms": [
