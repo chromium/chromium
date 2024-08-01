@@ -2574,6 +2574,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             TinkerTankDelegate delegate = new TinkerTankDelegateImpl();
             delegate.maybeShowBottomSheet(
                     this,
+                    getProfileProviderSupplier().get().getOriginalProfile(),
                     mRootUiCoordinator.getBottomSheetController(),
                     getTabModelSelectorSupplier());
         }
