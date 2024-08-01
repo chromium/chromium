@@ -38,6 +38,35 @@ static constexpr char kManifestStub[] = R"({
   ]
 })";
 
+static constexpr char kFetchResourceScriptTemplate[] = R"(
+  // Verify that the web accessible resource can be fetched.
+  async function test(title, filename, useDynamicUrl, isAllowed) {
+    return new Promise(async resolve => {
+      const dynamicUrl = `chrome-extension://%s/${filename}`;
+      const staticUrl = `chrome-extension://%s/${filename}`;
+      const url = useDynamicUrl ? dynamicUrl : staticUrl;
+
+      // Fetch and verify the contents of fetched web accessible resources.
+      const verifyFetch = (actual) => {
+        if (isAllowed == (filename == actual)) {
+          resolve();
+        } else {
+          reject(`${title}. Expected: ${filename}. Actual: ${actual}`);
+        }
+      };
+      fetch(url)
+        .then(result => result.text())
+        .catch(error => verifyFetch(error))
+        .then(text => verifyFetch(text));
+    });
+  }
+
+  // Run tests with list example: [[title, filename, useDynamicUrl, isAllowed]].
+  const testCases = [%s];
+  const tests = testCases.map(testCase => test(...testCase));
+  Promise.all(tests).then(response => true);
+)";
+
 // Test manifest.json's use_dynamic_url restriction requiring only dynamic urls.
 class WebAccessibleResourcesBrowserTest : public ExtensionBrowserTest {
  public:
@@ -75,43 +104,14 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  static constexpr char kScriptTemplate[] = R"(
-    // Verify that the web accessible resource can be fetched.
-    async function test(title, filename, useDynamicUrl, isAllowed) {
-      return new Promise(async resolve => {
-        const dynamicUrl = `chrome-extension://%s/${filename}`;
-        const staticUrl = `chrome-extension://%s/${filename}`;
-        const url = useDynamicUrl ? dynamicUrl : staticUrl;
-
-        // Fetch and verify the contents of fetched web accessible resources.
-        const verifyFetch = (actual) => {
-          if (isAllowed == (filename == actual)) {
-            resolve();
-          } else {
-            reject(`${title}. Expected: ${filename}. Actual: ${actual}`);
-          }
-        };
-        fetch(url)
-          .then(result => result.text())
-          .catch(error => verifyFetch(error))
-          .then(text => verifyFetch(text));
-      });
-    }
-
-    // Run tests.
-    const testCases = [
-      // Arguments: [title, filename, useDynamicUrl, isAllowed].
+  std::string script =
+      base::StringPrintf(kFetchResourceScriptTemplate,
+                         extension->guid().c_str(), extension->id().c_str(), R"(
       ["Load a static resource with a dynamic url", 'static.html', true, true],
       ["Load a static resource with a static url", 'static.html', false, true],
       ["Load dynamic resource with a dynamic url", 'dynamic.html', true, true],
       ["Load dynamic resource with a static url", 'dynamic.html', false, false],
-    ];
-    const tests = testCases.map(testCase => test(...testCase));
-    Promise.all(tests).then(response => true);
-  )";
-
-  std::string script = base::StringPrintf(
-      kScriptTemplate, extension->guid().c_str(), extension->id().c_str());
+      )");
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
@@ -323,43 +323,14 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  static constexpr char kScriptTemplate[] = R"(
-    // Verify that the web accessible resource can be fetched.
-    async function test(title, filename, useDynamicUrl, isAllowed) {
-      return new Promise(async resolve => {
-        const dynamicUrl = `chrome-extension://%s/${filename}`;
-        const staticUrl = `chrome-extension://%s/${filename}`;
-        const url = useDynamicUrl ? dynamicUrl : staticUrl;
-
-        // Fetch and verify the contents of fetched web accessible resources.
-        const verifyFetch = (actual) => {
-          if (isAllowed == (filename == actual)) {
-            resolve();
-          } else {
-            reject(`${title}. Expected: ${filename}. Actual: ${actual}`);
-          }
-        };
-        fetch(url)
-          .then(result => result.text())
-          .catch(error => verifyFetch(error))
-          .then(text => verifyFetch(text));
-      });
-    }
-
-    // Run tests.
-    const testCases = [
-      // Arguments: [title, filename, useDynamicUrl, isAllowed].
+  std::string script =
+      base::StringPrintf(kFetchResourceScriptTemplate,
+                         extension->guid().c_str(), extension->id().c_str(), R"(
       ["Load a static resource with a dynamic url", 'static.html', true, false],
       ["Load a static resource with a static url", 'static.html', false, true],
       ["Load dynamic resource with a dynamic url", 'dynamic.html', true, false],
       ["Load dynamic resource with a static url", 'dynamic.html', false, true],
-    ];
-    const tests = testCases.map(testCase => test(...testCase));
-    Promise.all(tests).then(response => true);
-  )";
-
-  std::string script = base::StringPrintf(
-      kScriptTemplate, extension->guid().c_str(), extension->id().c_str());
+      )");
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
