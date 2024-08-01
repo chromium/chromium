@@ -41,10 +41,7 @@ DEVICE_SUBSTITUTIONS = {
     '0636': '36333630',
     '0c36': '36334330',
 }
-ANDROID_VULKAN_DEVICES = {
-    'oriole': GpuDevice('13b5', '92020010'),
-    'dm1q': GpuDevice('5143', '43050a01'),
-}
+
 
 def ChromeOSTelemetryRemote(test_config, _, tester_config):
   """Substitutes the correct CrOS remote Telemetry arguments.
@@ -125,10 +122,6 @@ def _IsSkylabBot(tester_config):
           and not tester_config.get('use_swarming', True))
 
 
-def _IsAndroid(tester_config):
-  return ('os_type' in tester_config and tester_config['os_type'] == 'android')
-
-
 def GPUExpectedVendorId(test_config, _, tester_config):
   """Substitutes the correct expected GPU vendor for certain GPU tests.
 
@@ -151,10 +144,6 @@ def GPUExpectedVendorId(test_config, _, tester_config):
   # being used.
   if 'gpu' in dimensions:
     gpus.extend(dimensions['gpu'].split('|'))
-  elif _IsAndroid(tester_config) and 'device_type' in dimensions:
-    vulkan_device = ANDROID_VULKAN_DEVICES.get(dimensions['device_type'])
-    if vulkan_device:
-      return ['--expected-vendor-id', vulkan_device.vendor]
 
   # We don't specify GPU on things like Android and certain CrOS devices, so
   # default to 0.
@@ -201,10 +190,6 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
   # being used.
   if 'gpu' in dimensions:
     gpus.extend(dimensions['gpu'].split('|'))
-  elif _IsAndroid(tester_config) and 'device_type' in dimensions:
-    vulkan_device = ANDROID_VULKAN_DEVICES.get(dimensions['device_type'])
-    if vulkan_device:
-      return ['--expected-device-id', vulkan_device.device]
 
   # We don't specify GPU on things like Android/CrOS devices, so default to 0.
   if not gpus:
