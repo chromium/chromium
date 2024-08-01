@@ -6,7 +6,7 @@ Result of Network.setCookie: {
     }
     sessionId : <string>
 }
-Num of cookies 1
+Cookies before update: Num of cookies 1
 name: foo, value: bar1, domain: 127.0.0.1, path: /, session
 Result of Network.setCookie to update existing one: {
     id : <number>
@@ -15,6 +15,6 @@ Result of Network.setCookie to update existing one: {
     }
     sessionId : <string>
 }
-Num of cookies 1
+Cookies after update: Num of cookies 1
 name: foo, value: second bar2, domain: 127.0.0.1, path: /, session
 
