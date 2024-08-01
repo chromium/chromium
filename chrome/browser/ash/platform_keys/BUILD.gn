@@ -22,6 +22,7 @@ static_library("platform_keys") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/network",
@@ -50,6 +51,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/platform_keys",
     "//crypto",
     "//testing/gmock",
   ]
@@ -77,6 +79,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

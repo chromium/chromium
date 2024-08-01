@@ -2213,6 +2213,7 @@ if (!is_android) {
         "//chrome/browser/chromeos/enterprise",
         "//chrome/browser/chromeos/enterprise/cloud_storage",
         "//chrome/browser/chromeos/network",
+        "//chrome/browser/chromeos/platform_keys",
         "//chromeos/dbus/dlp:dlp",
         "//components/onc",
         "//ui/chromeos",

@@ -391,6 +391,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/trusted_vault",
     "//chrome/browser/chromeos/kcer",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/feedback",
     "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -546,6 +547,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/chromeos/platform_keys",
   ]
 }
 
@@ -704,6 +706,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/chromeos:test_support",
     "//chrome/browser/chromeos/launcher_search:search_util",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/desks",

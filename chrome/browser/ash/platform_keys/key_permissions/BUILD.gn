@@ -35,6 +35,7 @@ static_library("key_permissions") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/components/kcer:chaps_proto",
@@ -45,6 +46,8 @@ static_library("key_permissions") {
     "//components/pref_registry",
     "//components/prefs",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/chromeos/platform_keys" ]
 }
 
 static_library("test_support") {
@@ -63,6 +66,7 @@ static_library("test_support") {
     ":key_permissions",
     "//base",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/platform_keys",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//testing/gmock",
@@ -84,6 +88,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys:test_support",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -112,6 +117,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys:test_support",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//content/test:test_support",

@@ -1106,6 +1106,7 @@ source_set("extensions") {
       "system_display/display_info_provider_utils.h",
     ]
     deps += [
+      "//chrome/browser/chromeos/platform_keys",
       "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
     ]
