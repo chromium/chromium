@@ -151,13 +151,10 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
   // Check the interactivity header value.
   const auto extra_request_headers =
       std::get<1>(post_interceptor_->GetRequests()[0]);
-  EXPECT_TRUE(extra_request_headers.HasHeader("X-Goog-Update-Interactivity"));
-  EXPECT_TRUE(extra_request_headers.HasHeader("Content-Type"));
-  std::string header;
-  extra_request_headers.GetHeader("X-Goog-Update-Interactivity", &header);
-  EXPECT_STREQ(is_foreground ? "fg" : "bg", header.c_str());
-  extra_request_headers.GetHeader("Content-Type", &header);
-  EXPECT_STREQ("application/json", header.c_str());
+  EXPECT_EQ(extra_request_headers.GetHeader("X-Goog-Update-Interactivity"),
+            is_foreground ? "fg" : "bg");
+  EXPECT_EQ(extra_request_headers.GetHeader("Content-Type"),
+            "application/json");
 }
 
 // Tests that the request succeeds using the second url after the first url

@@ -413,13 +413,12 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   const auto extra_request_headers =
       std::get<1>(post_interceptor_->GetRequests()[0]);
   EXPECT_TRUE(extra_request_headers.HasHeader("X-Goog-Update-Interactivity"));
-  std::string header;
-  extra_request_headers.GetHeader("X-Goog-Update-Interactivity", &header);
-  EXPECT_STREQ(is_foreground_ ? "fg" : "bg", header.c_str());
-  extra_request_headers.GetHeader("X-Goog-Update-Updater", &header);
-  EXPECT_STREQ("fake_prodid-30.0", header.c_str());
-  extra_request_headers.GetHeader("X-Goog-Update-AppId", &header);
-  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", header.c_str());
+  EXPECT_EQ(extra_request_headers.GetHeader("X-Goog-Update-Interactivity"),
+            is_foreground_ ? "fg" : "bg");
+  EXPECT_EQ(extra_request_headers.GetHeader("X-Goog-Update-Updater"),
+            "fake_prodid-30.0");
+  EXPECT_EQ(extra_request_headers.GetHeader("X-Goog-Update-AppId"),
+            "jebgalgnebhfojomionfpkfelancnnkf");
 }
 
 // Tests that an invalid "ap" is not serialized.
