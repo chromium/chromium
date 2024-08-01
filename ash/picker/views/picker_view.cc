@@ -298,6 +298,9 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
 
 void PickerView::AddedToWidget() {
   performance_metrics_.StartRecording(*GetWidget());
+  // Due to layout considerations, only populate the emoji bar after the
+  // PickerView has been added to a widget.
+  ResetEmojiBarToZeroState();
 }
 
 void PickerView::RemovedFromWidget() {
@@ -714,7 +717,6 @@ void PickerView::AddEmojiBarView() {
                          this, kPickerViewWidth,
                          /*is_gifs_enabled*/ delegate_->IsGifsEnabled()),
                      0);
-  ResetEmojiBarToZeroState();
 }
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
@@ -793,16 +795,7 @@ void PickerView::ResetEmojiBarToZeroState() {
   if (emoji_bar_view_ == nullptr) {
     return;
   }
-
-  if (delegate_ == nullptr) {
-    emoji_bar_view_->ClearSearchResults();
-    return;
-  }
-
-  std::vector<PickerSearchResult> emoji_bar_results =
-      delegate_->GetSuggestedEmoji();
-
-  emoji_bar_view_->SetSearchResults(std::move(emoji_bar_results));
+  emoji_bar_view_->SetSearchResults(delegate_->GetSuggestedEmoji());
 }
 
 bool PickerView::IsContainedInSubmenu(views::View* view) {
