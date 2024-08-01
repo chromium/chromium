@@ -1156,14 +1156,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "bounce-tracking-mitigations",
-    "owners": [
-      "wanderview@chromium.org",
-      "njeunje@chromium.org",
-      "//chrome/browser/dips/OWNERS"],
-      "expiry_milestone": 127
-  },
-  {
     "name": "boundary-event-dispatch-tracks-node-removal",
     "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
     "expiry_milestone": 129

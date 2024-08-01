@@ -176,9 +176,6 @@ extern const char kDesynchronizedWebglName[];
 extern const char kDesynchronizedWebglDescription[];
 #endif
 
-extern const char kDIPSName[];
-extern const char kDIPSDescription[];
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDemoModeComponentUpdaterTestTagName[];
 extern const char kDemoModeComponentUpdaterTestTagDescription[];

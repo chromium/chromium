@@ -278,10 +278,6 @@ const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";
 
-const char kDIPSName[] = "Bounce Tracking Mitigations";
-const char kDIPSDescription[] =
-    "This flag controls bounce tracking mitigations.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kDirectSocketsWebApiName[] = "Direct Sockets API";
 const char kDirectSocketsWebApiDescription[] =

@@ -9596,10 +9596,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTopLevelTpcdTrialSettingsDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kTopLevelTpcdTrialSettings)},
 
-    {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
-     flag_descriptions::kDIPSDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kDIPS)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBackgroundListeningName, flag_descriptions::kBackgroundListeningName,
      flag_descriptions::kBackgroundListeningDescription, kOsCrOS,
