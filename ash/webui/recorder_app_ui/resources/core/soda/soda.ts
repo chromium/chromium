@@ -9,6 +9,7 @@ import {
   FinalResult,
   PartialResult,
   SodaEvent,
+  SpeakerLabelCorrectionEvent,
   TimeDelta,
   TimingInfo,
 } from './types.js';
@@ -133,6 +134,49 @@ export class SodaEventTransformer {
     return new Transcription(tokens);
   }
 
+  private handleSpeakerLabelCorrectionEvent(
+    ev: SpeakerLabelCorrectionEvent,
+    offsetMs: number,
+  ) {
+    const {hypothesisParts} = ev;
+    for (const correctionPart of hypothesisParts) {
+      const speakerId = correctionPart.speakerLabel ?? null;
+      const startMs = toMs(correctionPart.alignment);
+      if (startMs === null) {
+        console.error('speaker label correction event without timestamp', ev);
+        continue;
+      }
+      // We search backward since it's more likely that the corrected token is
+      // recent.
+      // TODO(pihsun): assert that the tokens have increasing timestamp, and
+      // binary search for efficiency.
+      let found = false;
+      for (let i = this.tokens.length - 1; i >= 0; i--) {
+        const token = assertExists(this.tokens[i]);
+        if (token.kind === 'textSeparator') {
+          continue;
+        }
+        if (token.timeRange?.startMs === startMs + offsetMs &&
+            token.text === correctionPart.text[0]) {
+          // TODO(pihsun): This inline updates this.tokens, which works now
+          // since getTokens always return a copy, but ideally we want either
+          // immutable update, or signal/proxy with nested change detection, or
+          // have a clearer boundary on which values (especially object/array)
+          // should be immutably updated for lit change detection.
+          token.speakerLabel = speakerId;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        console.error(
+          'speaker label correction event without corresponding previous part?',
+          ev,
+        );
+      }
+    }
+  }
+
   /**
    * Adds a SODA event.
    * An offset can be passed to shift the timestamp in the event, since the
@@ -161,10 +205,16 @@ export class SodaEventTransformer {
       this.tokens.push(
         ...flattenEvent(finalResult, offsetMs, this.speakerIdEnabled),
       );
-    } else {
-      console.error('unknown event type', event);
+      return;
     }
-    // TODO: b/344794204 - Handle speaker label correction event.
+    if ('labelCorrectionEvent' in event) {
+      this.handleSpeakerLabelCorrectionEvent(
+        event.labelCorrectionEvent,
+        offsetMs,
+      );
+      return;
+    }
+    console.error('unknown event type', event);
   }
 }
 
