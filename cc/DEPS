@@ -14,7 +14,6 @@ include_rules = [
   "+gpu/command_buffer/common/discardable_handle.h",
   "+gpu/command_buffer/common/gl2_types.h",
   "+gpu/command_buffer/common/gpu_memory_allocation.h",
-  "+gpu/command_buffer/common/gpu_memory_buffer_support.h",
   "+gpu/command_buffer/common/mailbox.h",
   "+gpu/command_buffer/common/mailbox_holder.h",
   "+gpu/command_buffer/common/shared_image_capabilities.h",

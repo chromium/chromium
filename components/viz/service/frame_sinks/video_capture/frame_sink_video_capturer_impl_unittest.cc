@@ -38,7 +38,6 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/base/limits.h"
 #include "media/base/test_helpers.h"
