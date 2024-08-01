@@ -28,6 +28,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
+#include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
@@ -88,6 +89,7 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
@@ -305,6 +307,11 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   g_browser_process->platform_part()->GetTimezoneResolverManager();
 
   annotator_client_ = std::make_unique<AnnotatorClientImpl>();
+
+  if (ash::boca_util::IsEnabled()) {
+    boca_client_ = std::make_unique<ash::BocaAppClientImpl>();
+  }
+
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   projector_client_ = std::make_unique<ProjectorClientImpl>();
 
