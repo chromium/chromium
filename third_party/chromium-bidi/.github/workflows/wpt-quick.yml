@@ -124,6 +124,7 @@ jobs:
           UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport-interop.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
+          FAIL_NO_TEST: false
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3

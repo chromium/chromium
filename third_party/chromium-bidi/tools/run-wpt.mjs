@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {spawnSync} from 'child_process';
+import {spawnSync, spawn} from 'child_process';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 
@@ -90,7 +90,7 @@ if (RUN_TESTS === 'true' && !CHROMEDRIVER_BIN) {
 }
 
 // Whether to fail when 0 test are run or not
-const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'false';
+const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'true';
 
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
@@ -244,9 +244,36 @@ if (RUN_TESTS === 'true') {
 
   // TODO: escaping here is not quite correct.
   log(`${wptBinary} run ${wptRunArgs.map((arg) => `'${arg}'`).join(' ')}`);
-  runResult = spawnSync(wptBinary, ['run', ...wptRunArgs], {
+  let resolver;
+  let output = '';
+  const promise = new Promise((resolve) => (resolver = resolve));
+  const wptRun = spawn(wptBinary, ['run', ...wptRunArgs], {
     stdio: 'pipe',
   });
+
+  wptRun.stdout.setEncoding('utf8');
+  wptRun.stdout.pipe(process.stdout);
+  wptRun.stdout.on('data', (data) => {
+    output += data.toString();
+  });
+
+  wptRun.stderr.setEncoding('utf8');
+  wptRun.stderr.pipe(process.stderr);
+  wptRun.stderr.on('data', (data) => {
+    output += data.toString();
+  });
+
+  wptRun.on('error', () => {
+    runResult = {status: 1, output};
+    resolver();
+  });
+
+  wptRun.on('exit', (status) => {
+    runResult = {status, output};
+    resolver();
+  });
+
+  await promise;
 }
 
 if (
@@ -269,17 +296,19 @@ if (
   ];
   log(`${wptBinary} ${wptRunArgs.map((arg) => `'${arg}'`).join(' ')}`);
 
-  updateResult = spawnSync(wptBinary, wptRunArgs, {stdio: 'pipe'});
+  updateResult = spawnSync(wptBinary, wptRunArgs, {stdio: 'inherit'});
 }
 
 // If WPT tests themselves or the expectations update failed, return failure.
 let exitCode = 0;
 if ((runResult?.status ?? 0) !== 0) {
   if (
-    FAIL_NO_TEST === 'true' ||
-    !runResult.stdout
-      .toString()
-      .includes('Unable to find any tests at the path')
+    !(
+      FAIL_NO_TEST === 'false' &&
+      runResult.output
+        .toString()
+        .includes('Unable to find any tests at the path')
+    )
   ) {
     log('WPT test run failed');
     exitCode = runResult.status;
