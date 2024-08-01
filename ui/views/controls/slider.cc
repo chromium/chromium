@@ -82,6 +82,7 @@ Slider::Slider(SliderListener* listener) : listener_(listener) {
 #endif
 
   SchedulePaint();
+  UpdateAccessibleValue();
 }
 
 Slider::~Slider() = default;
@@ -206,7 +207,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
   if (accessibility_events_enabled_) {
     if (GetWidget() && GetWidget()->IsVisible()) {
       DCHECK(!pending_accessibility_value_change_);
-      NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+      UpdateAccessibleValue();
     } else {
       pending_accessibility_value_change_ = true;
     }
@@ -326,8 +327,6 @@ bool Slider::OnKeyPressed(const ui::KeyEvent& event) {
 void Slider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kSlider;
-  node_data->SetValue(base::UTF8ToUTF16(
-      base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
   node_data->AddAction(ax::mojom::Action::kIncrement);
   node_data->AddAction(ax::mojom::Action::kDecrement);
 }
@@ -472,6 +471,11 @@ int Slider::GetSliderExtraPadding() const {
     case RenderingStyle::kMinimalStyle:
       return kSliderPadding;
   }
+}
+
+void Slider::UpdateAccessibleValue() const {
+  GetViewAccessibility().SetValue(
+      base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5)));
 }
 
 BEGIN_METADATA(Slider)
