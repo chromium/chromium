@@ -371,12 +371,14 @@ class WebNNGraphImplBackendTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS)
   template <typename DataType>
-  void SetComputeResult(std::string output_name,
-                        std::vector<DataType> output_data) {
+  void SetComputeResult(
+      base::flat_map<std::string, std::vector<DataType>> name_to_data_map) {
     base::flat_map<std::string, std::vector<uint8_t>> output_tensors;
-    auto output_data_in_byte = base::as_bytes(base::make_span(output_data));
-    output_tensors[output_name] = std::vector<uint8_t>(
-        output_data_in_byte.begin(), output_data_in_byte.end());
+    for (auto& [output_name, output_data] : name_to_data_map) {
+      auto output_data_in_byte = base::as_bytes(base::make_span(output_data));
+      output_tensors[output_name] = std::vector<uint8_t>(
+          output_data_in_byte.begin(), output_data_in_byte.end());
+    }
     fake_service_connection_.SetOutputWebPlatformModelCompute(output_tensors);
   }
 #endif
@@ -396,6 +398,7 @@ void WebNNGraphImplBackendTest::SetUp() {
   static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
       "BuildAndComputeConcatWithConstants",
       "BuildAndComputeSingleOperatorGruCell",
+      "BuildAndComputeSingleOperatorGru",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
@@ -929,7 +932,8 @@ struct ElementWiseBinaryTester {
   OperandInfo<O> output;
   void Test(WebNNGraphImplBackendTest& helper) {
 #if BUILDFLAG(IS_CHROMEOS)
-    helper.SetComputeResult("output", output.values);
+    helper.SetComputeResult(base::flat_map<std::string, std::vector<O>>(
+        {{"output", output.values}}));
 #endif
 
     // Build the graph with mojo type.
@@ -1537,8 +1541,19 @@ struct GruTester {
   GruAttributes attributes;
   std::vector<OperandInfo<T>> outputs;
 
-  void Test(BuildAndComputeExpectation expectation =
+  void Test(WebNNGraphImplBackendTest& helper,
+            BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
+#if BUILDFLAG(IS_CHROMEOS)
+    base::flat_map<std::string, std::vector<T>> name_to_data_map;
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      std::string output_name =
+          base::StrCat({"output", base::NumberToString(i)});
+      name_to_data_map[std::move(output_name)] = outputs[i].values;
+    }
+
+    helper.SetComputeResult(std::move(name_to_data_map));
+#endif
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -1634,7 +1649,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                      .values = {-30., -30., -30., -30., -30., -210., -210.,
                                 -210., -210., -210., -552., -552., -552., -552.,
                                 -552.}}}}
-        .Test();
+        .Test(*this);
   }
   // Test gru with number directions = 2.
   {
@@ -1670,7 +1685,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                                 -552., -552., -552., -30.,  -30.,  -30.,
                                 -30.,  -30.,  -210., -210., -210., -210.,
                                 -210., -552., -552., -552., -552., -552.}}}}
-        .Test();
+        .Test(*this);
   }
   // Test gru with steps = 2.
   {
@@ -1706,7 +1721,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                                 15., 15., 24., 24., 24., 24., 24., 6.,
                                 6.,  6.,  6.,  6.,  15., 15., 15., 15.,
                                 15., 24., 24., 24., 24., 24.}}}}
-        .Test();
+        .Test(*this);
   }
   // Test gru with bias and recurrentbias.
   {
@@ -1749,7 +1764,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                      .values = {-42., -42., -42., -42., -42., -240., -240.,
                                 -240., -240., -240., -600., -600., -600., -600.,
                                 -600.}}}}
-        .Test();
+        .Test(*this);
   }
   // Test gru with bias and initial hidden state.
   {
@@ -1793,7 +1808,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                      .values = {-725., -725., -725., -725., -725., -2399.,
                                 -2399., -2399., -2399., -2399., -5045., -5045.,
                                 -5045., -5045., -5045.}}}}
-        .Test();
+        .Test(*this);
   }
   // Test gru with return_sequence = true;
   {
@@ -1849,7 +1864,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
               .values = {-725., -725., -725., -725., -725., -2399., -2399.,
                          -2399., -2399., -2399., -5045., -5045., -5045., -5045.,
                          -5045.}}}}
-        .Test();
+        .Test(*this);
   }
 }
 
@@ -1881,7 +1896,8 @@ struct GruCellTester {
             BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
 #if BUILDFLAG(IS_CHROMEOS)
-    helper.SetComputeResult("output", output.values);
+    helper.SetComputeResult(base::flat_map<std::string, std::vector<T>>(
+        {{"output", output.values}}));
 #endif
 
     // Build the graph with mojo type.
@@ -3440,7 +3456,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
   std::vector<float> expected_output = {0,  0,  0,  1,  2,  3,
                                         -1, -2, -3, -4, -5, -6};
 #if BUILDFLAG(IS_CHROMEOS)
-  SetComputeResult("output", expected_output);
+  SetComputeResult(base::flat_map<std::string, std::vector<float>>(
+      {{"output", expected_output}}));
 #endif
 
   // Build the mojom graph info.
