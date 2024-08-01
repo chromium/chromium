@@ -43,6 +43,7 @@ ts_modules = [
   "navigator_interfaces.ts",
   "nodes/back_button_node.ts",
   "nodes/basic_node.ts",
+  "nodes/combo_box_node.ts",
   "nodes/group_node.ts",
   "nodes/switch_access_node.ts",
   "nodes/window_node.ts",
@@ -57,7 +58,6 @@ ts_modules = [
 
 # JS files needed to compile TS.
 js_modules = [
-  "nodes/combo_box_node.js",
   "nodes/desktop_node.js",
   "nodes/editable_text_node.js",
   "nodes/keyboard_node.js",
