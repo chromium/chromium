@@ -15,11 +15,11 @@ BorrowedTransliterator::BorrowedTransliterator() : auto_lock_(GetLock()) {}
 
 BorrowedTransliterator::~BorrowedTransliterator() = default;
 
-void BorrowedTransliterator::Transliterate(icu::UnicodeString* text) const {
+void BorrowedTransliterator::Transliterate(icu::UnicodeString& text) const {
   if (GetTransliterator() != nullptr) {
-    GetTransliterator()->transliterate(*text);
+    GetTransliterator()->transliterate(text);
   } else {
-    *text = text->toLower();
+    text = text.toLower();
   }
 }
 
@@ -66,7 +66,7 @@ icu::Transliterator* BorrowedTransliterator::GetTransliterator() {
 std::u16string RemoveDiacriticsAndConvertToLowerCase(
     std::u16string_view value) {
   icu::UnicodeString result = icu::UnicodeString(value.data(), value.length());
-  BorrowedTransliterator().Transliterate(&result);
+  BorrowedTransliterator().Transliterate(result);
   return base::i18n::UnicodeStringToString16(result);
 }
 
