@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
-#include "chrome/renderer/accessibility/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -35,7 +34,21 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
     // Create simple AXTreeUpdate with a root node and 3 children.
-    ui::AXTreeUpdate snapshot = test::CreateInitialUpdate();
+    ui::AXTreeUpdate snapshot;
+    ui::AXNodeData node1;
+    node1.id = 2;
+
+    ui::AXNodeData node2;
+    node2.id = 3;
+
+    ui::AXNodeData node3;
+    node3.id = 4;
+
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = {node1.id, node2.id, node3.id};
+    snapshot.root_id = root.id;
+    snapshot.nodes = {root, node1, node2, node3};
     SetUpdateTreeID(&snapshot);
 
     AccessibilityEventReceived({snapshot});
@@ -44,7 +57,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
-    test::SetUpdateTreeID(update, tree_id_);
+    SetUpdateTreeID(update, tree_id_);
   }
 
   void SetDistillationInProgress(bool distillation) {
@@ -64,6 +77,13 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
       count += updates.size();
     }
     return count == 0;
+  }
+
+  void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id) {
+    ui::AXTreeData tree_data;
+    tree_data.tree_id = tree_id;
+    update->has_tree_data = true;
+    update->tree_data = tree_data;
   }
 
   void OnSettingsRestoredFromPrefs(
@@ -314,7 +334,7 @@ TEST_F(ReadAnythingAppModelTest,
   // PDF OCR output contains kBanner and kContentInfo (each with a static text
   // node child) to mark page start/end.
   ui::AXTreeUpdate update;
-  test::SetUpdateTreeID(&update, tree_id_);
+  SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData banner_node;
   banner_node.id = 2;
   banner_node.role = ax::mojom::Role::kBanner;
@@ -394,7 +414,7 @@ TEST_F(ReadAnythingAppModelTest, AddAndRemoveTrees) {
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 2; i++) {
     ui::AXTreeUpdate update;
-    test::SetUpdateTreeID(&update, tree_ids[i]);
+    SetUpdateTreeID(&update, tree_ids[i]);
     ui::AXNodeData node;
     node.id = 1;
     update.nodes = {node};
@@ -436,7 +456,7 @@ TEST_F(ReadAnythingAppModelTest,
   // Create a new tree.
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update_2;
-  test::SetUpdateTreeID(&update_2, tree_id_2);
+  SetUpdateTreeID(&update_2, tree_id_2);
   ui::AXNodeData node;
   node.id = 1;
   update_2.root_id = node.id;
