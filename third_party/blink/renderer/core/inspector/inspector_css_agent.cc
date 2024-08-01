@@ -1089,8 +1089,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         inherited_pseudo_id_matches,
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules,
-    Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*
-        css_position_fallback_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
         css_position_try_rules,
     Maybe<int>* active_position_fallback_index,
