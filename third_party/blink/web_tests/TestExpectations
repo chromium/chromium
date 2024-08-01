@@ -1472,6 +1472,12 @@ crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-025.html [ Failure ]
 
+# css-backgrounds
+crbug.com/354513209 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint.html [ Failure ]
+crbug.com/354513209 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint-parent.html [ Failure ]
+crbug.com/354513209 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint.html [ Failure ]
+crbug.com/354513209 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
@@ -3035,8 +3041,6 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-bo
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13-arm64 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
-crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint-parent.html [ Failure Pass ]
 crbug.com/626703 [ Linux ] external/wpt/svg/pservers/reftests/pattern-opacity-01.svg [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/svg/pservers/reftests/pattern-opacity-01.svg [ Failure ]
 crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Failure Timeout ]
