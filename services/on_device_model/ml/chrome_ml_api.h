@@ -105,15 +105,6 @@ struct ChromeMLExecutionOutput {
   // Null-terminated text content for this output chunk, or null if there is no
   // new text output.
   const char* text;
-
-  // Optional TS scores for the full output so far, up to and including this
-  // chunk. Only included as specified by `score_ts_interval` in
-  // ChromeMLExecuteOptions.
-  //
-  // If no new scores are provided for this output, this field is null and
-  // `num_ts_scores` is zero.
-  float* ts_scores;
-  size_t num_ts_scores;
 };
 
 // Status value indicating the result of ad hoc safety classification.
