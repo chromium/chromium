@@ -36,8 +36,8 @@ GURL SearchEngineURLStripHandler::StripExtraParams(GURL url) {
     // or from the search/keyword provider matches.
     const TemplateURL* template_url = GetConstTemplateURLWithKeyword(
         keyword_, stripped_destination_url.host());
-    if (template_url->SupportsReplacement(
-            template_url_service_->search_terms_data())) {
+    if (template_url && template_url->SupportsReplacement(
+                            template_url_service_->search_terms_data())) {
       template_url->KeepSearchTermsInURL(
           url, template_url_service_->search_terms_data(),
           keep_search_intent_params_, normalize_search_terms_,
