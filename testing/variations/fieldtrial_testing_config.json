@@ -6080,35 +6080,6 @@
             ]
         }
     ],
-    "CpssStringChange": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NewStringWithHats_20240221",
-                    "params": {
-                        "probability": "1.0",
-                        "probability_vector": "0.3,0.7",
-                        "prompt_disposition_filter": "LocationBarLeftQuietChip",
-                        "prompt_disposition_reason_filter": "OnDevicePredictionModel,PredictionService",
-                        "request_type_filter": "Notifications,Geolocation",
-                        "survey_display_time": "OnPromptAppearing",
-                        "trigger_id": "TfmwCkztT0ugnJ3q1cK0URBBSdir,FohGLzZdE0ugnJ3q1cK0QyypEaVo"
-                    },
-                    "enable_features": [
-                        "CpssQuietChipTextUpdate",
-                        "PermissionsPromptSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSAudioHfpMicSrToggle": [
         {
             "platforms": [
@@ -16833,6 +16804,35 @@
                     },
                     "enable_features": [
                         "PermissionElementPromptPositioning"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PermissionsPEPCHaTS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RecoverySurveyDismiss_20240729",
+                    "params": {
+                        "action_filter": "Dismissed",
+                        "initial_permission_status_filter": "deny",
+                        "probability": "0.5",
+                        "probability_vector": "0.5,0.5",
+                        "prompt_disposition_filter": "ElementAnchoredBubble",
+                        "request_type_filter": "VideoCapture,AudioCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "oqdSQ6wky0ugnJ3q1cK0WRpR8GW2,WCAaJD6T80ugnJ3q1cK0XaNn1zy3"
+                    },
+                    "enable_features": [
+                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
