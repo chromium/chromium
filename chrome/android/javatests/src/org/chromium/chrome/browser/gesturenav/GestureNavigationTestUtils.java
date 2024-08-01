@@ -12,13 +12,13 @@ import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** Utility class providing gesture actions for tests. */
-public final class GestureNavigationUtils {
+public final class GestureNavigationTestUtils {
     private final ChromeTabbedActivityTestRule mActivityTestRule;
     private final NavigationHandler mNavigationHandler;
     private final HistoryNavigationLayout mNavigationLayout;
     private float mEdgeWidthPx;
 
-    public GestureNavigationUtils(ChromeTabbedActivityTestRule rule) {
+    public GestureNavigationTestUtils(ChromeTabbedActivityTestRule rule) {
         mActivityTestRule = rule;
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mActivityTestRule

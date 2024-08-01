@@ -119,8 +119,8 @@ public class NavigationTransitionsTest {
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        GestureNavigationUtils utils =
-                                new GestureNavigationUtils(mActivityTestRule);
+                        GestureNavigationTestUtils utils =
+                                new GestureNavigationTestUtils(mActivityTestRule);
                         utils.enableGestureNavigationForTesting();
                     });
             backPressManager.setIsGestureNavEnabledSupplier(() -> false);

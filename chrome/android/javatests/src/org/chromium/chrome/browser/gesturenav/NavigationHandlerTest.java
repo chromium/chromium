@@ -87,7 +87,7 @@ public class NavigationHandlerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private GestureNavigationUtils mNavUtils;
+    private GestureNavigationTestUtils mNavUtils;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -96,7 +96,7 @@ public class NavigationHandlerTest {
                         InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
         CompositorAnimationHandler.setTestingMode(true);
-        mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
         mNavigationHandler = mNavUtils.getNavigationHandler();
         mNavigationLayout = mNavUtils.getLayout();
     }
@@ -149,7 +149,12 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.BACK_FORWARD_TRANSITIONS})
+    @CommandLineFlags.Add({
+        "enable-features=BackForwardTransitions<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
+                + "transition_to_native_pages/true"
+    })
     public void testSwipeBackToNTPWithTransition() throws InterruptedException {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -192,7 +197,74 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.BACK_FORWARD_TRANSITIONS})
+    @CommandLineFlags.Add({
+        "enable-features=BackForwardTransitions<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
+                + "transition_to_native_pages/false"
+    })
+    public void testSwipeBackToNTPWithoutTransition() throws InterruptedException {
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+
+        mNavUtils.swipeFromEdgeAndHold(true);
+        Assert.assertEquals(
+                "Back forward transition is not enabled for native pages",
+                AnimationStage.NONE,
+                tab.getWebContents().getCurrentBackForwardTransitionStage());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.NONE
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "Back forward transition is not enabled for native pages");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        "enable-features=BackForwardTransitions<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:transition_from_native_pages/false/"
+                + "transition_to_native_pages/false"
+    })
+    public void testSwipeBackFromNTPWithoutTransition() throws InterruptedException {
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        mNavUtils.swipeFromEdgeAndHold(true);
+        Assert.assertEquals(
+                "Back forward transition is not enabled for native pages",
+                AnimationStage.NONE,
+                tab.getWebContents().getCurrentBackForwardTransitionStage());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.NONE
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "Back forward transition is not enabled for native pages");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        "enable-features=BackForwardTransitions<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
+                + "transition_to_native_pages/true"
+    })
     public void testSwipeBackToNativeBookmarksPageWithTransition() throws InterruptedException {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl("chrome-native://bookmarks/folder/0");

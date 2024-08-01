@@ -30,7 +30,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -57,7 +56,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "hide-scrollbars",
-    "enable-features=" + BlinkFeatures.BACK_FORWARD_TRANSITIONS
+    "enable-features=BackForwardTransitions<Study",
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
+            + "transition_to_native_pages/true"
 })
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -220,7 +222,7 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
-        GestureNavigationUtils mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -267,7 +269,7 @@ public class ScreenshotCaptureTest {
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
-        GestureNavigationUtils mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();

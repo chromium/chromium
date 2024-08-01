@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -406,12 +407,15 @@ public class ToolbarManager
             }
             mBackGestureInProgress = false;
             int res = BackPressResult.SUCCESS;
-            // When enabled, the content/ native will trigger the navigation.
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+            // When enabled, the content/ native will trigger the navigation; otherwise,
+            // the back gesture should be consumed by ToolbarManager.
+            if (!GestureNavigationUtils.allowTransition(
+                    mActivityTabProvider.get(), /* forward= */ false)) {
                 res = ToolbarManager.this.handleBackPress();
             }
-            // For U+ only.
+
             if (mHandler != null) mHandler.onBackInvoked();
+            mHandler = null;
             return res;
         }
 
@@ -459,7 +463,8 @@ public class ToolbarManager
 
             mStartNavDuringOngoingGesture = false;
             mBackGestureInProgress = true;
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return;
+            if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) return;
+
             mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
 
             // Gestural navigation navigates backwards from both edges since this is an OS-level
