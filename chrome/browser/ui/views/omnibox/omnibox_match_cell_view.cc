@@ -296,7 +296,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                  : icon_view_->GetPreferredSize());
 
   // Used for non-weather answer images (e.g. calc answers).
-  const auto apply_vector_icon = [=](const gfx::VectorIcon& vector_icon) {
+  const auto apply_vector_icon = [=, this](const gfx::VectorIcon& vector_icon) {
     const auto* color_provider = GetColorProvider();
     const auto foreground_color_id =
         OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()

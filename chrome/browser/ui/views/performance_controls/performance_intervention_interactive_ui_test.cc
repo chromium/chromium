@@ -147,14 +147,14 @@ class PerformanceInterventionInteractiveTest
   }
 
   auto CloseTab(int index) {
-    return Do(base::BindLambdaForTesting([=]() {
+    return Do(base::BindLambdaForTesting([=, this]() {
       browser()->tab_strip_model()->CloseWebContentsAt(
           index, TabCloseTypes::CLOSE_NONE);
     }));
   }
 
   auto CheckTabDiscardStatus(int index, bool discarded) {
-    return Check([=]() {
+    return Check([=, this]() {
       TabStripModel* const tab_strip_model = browser()->tab_strip_model();
       return tab_strip_model->GetWebContentsAt(index)->WasDiscarded() ==
              discarded;

@@ -195,7 +195,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
 
   auto ActivateMenuItemWithElementId(
       absl::variant<ui::ElementIdentifier, actions::ActionId> id) {
-    return Do([=]() {
+    return Do([=, this]() {
       int command_id = -1;
       for (size_t i = 0; i < responsive_elements_.size(); ++i) {
         const auto& overflow_id = responsive_elements_[i].overflow_id;
@@ -238,12 +238,12 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto CheckActionItemOverflowed(actions::ActionId id, bool overflowed) {
-    return CheckResult([=]() { return delegate()->IsOverflowed(id); },
+    return CheckResult([=, this]() { return delegate()->IsOverflowed(id); },
                        overflowed);
   }
 
   auto PinBookmarkToToolbar() {
-    return Steps(Do([=]() {
+    return Steps(Do([=, this]() {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_BOOKMARK_SIDE_PANEL);
                  }),
@@ -254,7 +254,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto PinReadingModeToToolbar() {
-    return Steps(Do([=]() {
+    return Steps(Do([=, this]() {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_READING_MODE_SIDE_PANEL);
                  }),
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       EnsureNotPresent(kSidePanelElementId),
 
       // Open bookmark side panel.
-      Do([=]() {
+      Do([=, this]() {
         chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_SIDE_PANEL);
       }),
       WaitForShow(kSidePanelElementId), FlushEvents(),

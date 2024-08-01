@@ -863,11 +863,11 @@ class IOTaskBrowserTest
       Policy type = Policy::kDlp) {
     bool is_move = action == dlp::FileAction::kMove;
     auto warn_on_check =
-        [=](std::optional<file_manager::io_task::IOTaskId> task_id,
-            const std::vector<storage::FileSystemURL>& transferred_files,
-            storage::FileSystemURL destination, bool is_move,
-            DlpFilesControllerAsh::CheckIfTransferAllowedCallback
-                result_callback) {
+        [=, this](std::optional<file_manager::io_task::IOTaskId> task_id,
+                  const std::vector<storage::FileSystemURL>& transferred_files,
+                  storage::FileSystemURL destination, bool is_move,
+                  DlpFilesControllerAsh::CheckIfTransferAllowedCallback
+                      result_callback) {
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
                  const bool expected_should_proceed,
@@ -918,11 +918,11 @@ class IOTaskBrowserTest
       const std::vector<base::FilePath>& blocked_files) {
     bool is_move = (action == dlp::FileAction::kMove) ? true : false;
     auto block_on_check =
-        [=](std::optional<file_manager::io_task::IOTaskId> task_id,
-            const std::vector<storage::FileSystemURL>& transferred_files,
-            storage::FileSystemURL destination, bool is_move,
-            DlpFilesControllerAsh::CheckIfTransferAllowedCallback
-                result_callback) {
+        [=, this](std::optional<file_manager::io_task::IOTaskId> task_id,
+                  const std::vector<storage::FileSystemURL>& transferred_files,
+                  storage::FileSystemURL destination, bool is_move,
+                  DlpFilesControllerAsh::CheckIfTransferAllowedCallback
+                      result_callback) {
           fpnm_->ShowDlpBlockedFiles(task_id.value(), blocked_files, action);
           // Return transferred files as blocked.
           std::move(result_callback).Run(transferred_files);
@@ -945,11 +945,11 @@ class IOTaskBrowserTest
       const std::vector<base::FilePath>& blocked_files) {
     bool is_move = (action == dlp::FileAction::kMove) ? true : false;
     auto warn_on_check =
-        [=](std::optional<file_manager::io_task::IOTaskId> task_id,
-            const std::vector<storage::FileSystemURL>& transferred_files,
-            storage::FileSystemURL destination, bool is_move,
-            DlpFilesControllerAsh::CheckIfTransferAllowedCallback
-                result_callback) {
+        [=, this](std::optional<file_manager::io_task::IOTaskId> task_id,
+                  const std::vector<storage::FileSystemURL>& transferred_files,
+                  storage::FileSystemURL destination, bool is_move,
+                  DlpFilesControllerAsh::CheckIfTransferAllowedCallback
+                      result_callback) {
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
                  const std::vector<storage::FileSystemURL>& transferred_files,
@@ -982,11 +982,11 @@ class IOTaskBrowserTest
       const std::vector<base::FilePath>& warning_files) {
     bool is_move = (action == dlp::FileAction::kMove) ? true : false;
     auto warn_on_check =
-        [=](std::optional<file_manager::io_task::IOTaskId> task_id,
-            const std::vector<storage::FileSystemURL>& transferred_files,
-            storage::FileSystemURL destination, bool is_move,
-            DlpFilesControllerAsh::CheckIfTransferAllowedCallback
-                result_callback) {
+        [=, this](std::optional<file_manager::io_task::IOTaskId> task_id,
+                  const std::vector<storage::FileSystemURL>& transferred_files,
+                  storage::FileSystemURL destination, bool is_move,
+                  DlpFilesControllerAsh::CheckIfTransferAllowedCallback
+                      result_callback) {
           auto warn_cb = base::BindOnce(
               [](DlpFilesControllerAsh::CheckIfTransferAllowedCallback cb,
                  const std::vector<storage::FileSystemURL>& transferred_files,

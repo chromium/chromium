@@ -3230,7 +3230,7 @@ TEST_F(ChromeShelfControllerWithArcTest, DISABLED_ArcCustomAppIcon) {
   ASSERT_TRUE(item_delegate);
   base::RunLoop().RunUntilIdle();
 
-  auto get_icon = [=]() {
+  auto get_icon = [=, this]() {
     return *shelf_controller_->GetItem(arc_shelf_id)->image.bitmap();
   };
   const SkBitmap default_icon = get_icon();

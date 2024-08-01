@@ -1097,8 +1097,8 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
       mock_callback1,
       Run(MountError::kSuccess,
           Field(&DiskMountManager::MountPoint::mount_path, kMountPath1)))
-      .WillOnce([=](MountError error,
-                    const DiskMountManager::MountPoint& mount_info) {
+      .WillOnce([=, this](MountError error,
+                          const DiskMountManager::MountPoint& mount_info) {
         // Try remount the same path and verify it fails.
         base::MockCallback<DiskMountManager::MountPathCallback> mock_callback2;
         EXPECT_CALL(mock_callback2, Run(MountError::kPathAlreadyMounted, _));

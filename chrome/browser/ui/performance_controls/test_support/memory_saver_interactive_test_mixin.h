@@ -33,19 +33,20 @@ class MemorySaverInteractiveTestMixin : public MemorySaverBrowserTestMixin<T> {
       const MemorySaverInteractiveTestMixin&) = delete;
 
   auto CheckTabIsDiscarded(int tab_index, bool is_discarded) {
-    return T::Check([=]() {
+    return T::Check([=, this]() {
       return MemorySaverBrowserTestMixin<T>::IsTabDiscarded(tab_index) ==
              is_discarded;
     });
   }
 
   auto TryDiscardTab(int tab_index) {
-    return T::Do(
-        [=]() { MemorySaverBrowserTestMixin<T>::TryDiscardTabAt(tab_index); });
+    return T::Do([=, this]() {
+      MemorySaverBrowserTestMixin<T>::TryDiscardTabAt(tab_index);
+    });
   }
 
   auto ForceRefreshMemoryMetrics() {
-    return T::Do([=]() {
+    return T::Do([=, this]() {
       MemorySaverBrowserTestMixin<T>::ForceRefreshMemoryMetricsAndWait();
     });
   }

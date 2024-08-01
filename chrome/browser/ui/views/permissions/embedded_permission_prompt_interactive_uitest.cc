@@ -169,7 +169,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
       permissions::ElementAnchoredBubbleAction action,
       permissions::ElementAnchoredBubbleVariant variant,
       int screen_counter) {
-    return Steps(Do([=] {
+    return Steps(Do([=, this] {
       auto entries = ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
       CHECK_EQ(entries.size(), 1U);
 

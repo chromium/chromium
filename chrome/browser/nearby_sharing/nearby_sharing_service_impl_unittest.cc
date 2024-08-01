@@ -1056,7 +1056,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         EXPECT_CALL(transfer_callback, OnTransferUpdate).Times(updates.size());
 
     for (TransferMetadata::Status status : updates) {
-      expectation.WillOnce(testing::Invoke([=](const ShareTarget& share_target,
+      expectation.WillOnce(testing::Invoke([=, this](
+                                               const ShareTarget& share_target,
                                                TransferMetadata metadata) {
         EXPECT_EQ(target.id, share_target.id);
         EXPECT_EQ(status, metadata.status());

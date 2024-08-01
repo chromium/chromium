@@ -119,7 +119,7 @@ class TabHoverCardInteractiveUiTest
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/40249296): Fix for mac
     return Steps(Do(base::BindLambdaForTesting(
-        [=]() { SimulateHoverTab(browser(), index); })));
+        [=, this]() { SimulateHoverTab(browser(), index); })));
 #else
     const char kTabToHover[] = "Tab to hover";
     return Steps(
@@ -134,7 +134,7 @@ class TabHoverCardInteractiveUiTest
   auto UnhoverTab() {
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/40249296): Fix for mac
-    return Steps(Do(base::BindLambdaForTesting([=]() {
+    return Steps(Do(base::BindLambdaForTesting([=, this]() {
       TabStrip* const tab_strip = GetTabStrip(browser());
       HoverCardDestroyedWaiter waiter(tab_strip);
       ui::MouseEvent stop_hover_event(ui::EventType::kMouseExited, gfx::Point(),
@@ -175,7 +175,7 @@ class TabHoverCardInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        MAYBE_HoverCardHidesOnAnyKeyPressInSameWindow) {
   RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
-                  Check(base::BindLambdaForTesting([=]() {
+                  Check(base::BindLambdaForTesting([=, this]() {
                     return ui_test_utils::SendKeyPressSync(
                         browser(), ui::VKEY_DOWN, false, false, false, false);
                   })),
@@ -486,7 +486,7 @@ class TabHoverCardFadeFooterInteractiveUiTest
         WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
         CheckView(
             TabHoverCardBubbleView::kHoverCardBubbleElementId,
-            [=](TabHoverCardBubbleView* bubble) {
+            [=, this](TabHoverCardBubbleView* bubble) {
               views::Label* const alert_label =
                   GetPrimaryAlertRowFromHoverCard(bubble)->footer_label();
               return alert_label->GetText().find(expected_text) !=
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       CheckHovercardIsOpen(),
       CheckView(
           TabHoverCardBubbleView::kHoverCardBubbleElementId,
-          [=](TabHoverCardBubbleView* bubble) {
+          [=, this](TabHoverCardBubbleView* bubble) {
             views::Label* const performance_label =
                 GetPrimaryPerformanceRowFromHoverCard(bubble)->footer_label();
             return performance_label->GetText().find(l10n_util::GetStringFUTF16(

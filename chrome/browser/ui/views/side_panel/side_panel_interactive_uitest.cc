@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
                         ->GetLastCommittedURL();
                   }),
                   second_tab_url),
-      Do(base::BindLambdaForTesting([=]() {
+      Do(base::BindLambdaForTesting([=, this]() {
         content::WebContents* active_contents =
             browser()->tab_strip_model()->GetActiveWebContents();
         auto* registry = SidePanelRegistry::Get(active_contents);
@@ -168,7 +168,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto OpenReadingModeSidePanel() {
-    return Steps(Do(base::BindLambdaForTesting([=]() {
+    return Steps(Do(base::BindLambdaForTesting([=, this]() {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_READING_MODE_SIDE_PANEL);
                  })),
@@ -176,7 +176,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto OpenCustomizeChromeSidePanel() {
-    return Steps(Do(base::BindLambdaForTesting([=]() {
+    return Steps(Do(base::BindLambdaForTesting([=, this]() {
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
                  })),
@@ -197,7 +197,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto ShowSidePanelForKey(SidePanelEntryKey key) {
-    return Do(base::BindLambdaForTesting([=]() {
+    return Do(base::BindLambdaForTesting([=, this]() {
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())->Show(key);
     }));
   }

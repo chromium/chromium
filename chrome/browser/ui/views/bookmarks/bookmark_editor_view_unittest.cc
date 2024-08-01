@@ -567,8 +567,8 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
   // confirmation.
   const bookmarks::BookmarkNode* f11 = GetNode("f11a")->parent();
 
-  DeleteNode(
-      base::BindLambdaForTesting([=](const bookmarks::BookmarkNode* node) {
+  DeleteNode(base::BindLambdaForTesting(
+      [=, this](const bookmarks::BookmarkNode* node) {
         // Before the user confirms the deletion, something else (e.g.
         // extension) could delete the very same bookmark.
         this->model()->Remove(

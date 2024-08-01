@@ -400,7 +400,7 @@ void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
   // permission.
   auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
   auto* browser_context = GetBrowserContext();
-  std::erase_if(device_clients_, [=](const auto& client) {
+  std::erase_if(device_clients_, [=, this](const auto& client) {
     auto* device_info =
         delegate->GetDeviceInfo(browser_context, client->device_guid());
     if (!device_info)

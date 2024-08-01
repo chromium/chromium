@@ -86,7 +86,7 @@ class MemorySaverDiscardPolicyInteractiveTest
   }
 
   auto PressKeyboard() {
-    return Do(base::BindLambdaForTesting([=]() {
+    return Do(base::BindLambdaForTesting([=, this]() {
       // Send multiple key presses to reduce flakiness.
       ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
                                                   false, false, false));
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       // exception list
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
-      Do(base::BindLambdaForTesting([=]() {
+      Do(base::BindLambdaForTesting([=, this]() {
         PrefService* const pref_service = browser()->profile()->GetPrefs();
         const base::Value::Dict& discard_exception =
             pref_service->GetDict(performance_manager::user_tuning::prefs::
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       Do(base::BindLambdaForTesting(
-          [=]() { GetTabStrip()->StopAnimating(true); })),
+          [=, this]() { GetTabStrip()->StopAnimating(true); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
           kPerformanceSettingsTab,
           GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))),
       Do(base::BindLambdaForTesting(
-          [=]() { GetTabStrip()->StopAnimating(true); })),
+          [=, this]() { GetTabStrip()->StopAnimating(true); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));

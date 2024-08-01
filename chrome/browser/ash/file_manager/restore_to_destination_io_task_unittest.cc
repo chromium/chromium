@@ -340,7 +340,8 @@ TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {
   // Set the DLP to warn, which pauses the task, and then resume.
   EXPECT_CALL(*files_controller_, CheckIfTransferAllowed)
       .WillOnce(
-          ([=](std::optional<file_manager::io_task::IOTaskId> task_id,
+          ([=, this](
+               std::optional<file_manager::io_task::IOTaskId> task_id,
                const std::vector<storage::FileSystemURL>& transferred_files,
                storage::FileSystemURL destination, bool is_move,
                policy::DlpFilesControllerAsh::CheckIfTransferAllowedCallback

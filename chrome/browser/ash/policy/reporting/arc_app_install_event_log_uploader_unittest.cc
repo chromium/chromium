@@ -112,7 +112,8 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   void CompleteSerialize() {
     EXPECT_CALL(delegate_, SerializeForUpload_)
         .WillOnce(WithArgs<0>(Invoke(
-            [=](ArcAppInstallEventLogUploader::Delegate::SerializationCallback&
+            [=, this](
+                ArcAppInstallEventLogUploader::Delegate::SerializationCallback&
                     callback) { std::move(callback).Run(&log_); })));
   }
 

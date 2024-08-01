@@ -35,9 +35,10 @@ class TestLayoutManagerBase : public LayoutManagerBase {
  public:
   std::vector<const View*> GetIncludedChildViews() const {
     std::vector<const View*> included;
-    base::ranges::copy_if(
-        host_view()->children(), std::back_inserter(included),
-        [=](const View* child) { return IsChildIncludedInLayout(child); });
+    base::ranges::copy_if(host_view()->children(), std::back_inserter(included),
+                          [=, this](const View* child) {
+                            return IsChildIncludedInLayout(child);
+                          });
     return included;
   }
 

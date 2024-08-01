@@ -514,7 +514,7 @@ bool WindowOcclusionTracker::WindowHasContent(const Window* window) const {
 }
 
 void WindowOcclusionTracker::CleanupAnimatedWindows() {
-  base::EraseIf(animated_windows_, [=](Window* window) {
+  base::EraseIf(animated_windows_, [=, this](Window* window) {
     ui::LayerAnimator* const animator = window->layer()->GetAnimator();
     if (animator->IsAnimatingOnePropertyOf(
             kOcclusionCanChangeWhenPropertyAnimationEnds))
@@ -901,12 +901,13 @@ void WindowOcclusionTracker::OnWindowHierarchyChanged(
 }
 
 void WindowOcclusionTracker::OnWindowAdded(Window* window) {
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(
-      window, [=]() { return WindowMoveMayAffectOcclusionStates(window); });
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
+    return WindowMoveMayAffectOcclusionStates(window);
+  });
 }
 
 void WindowOcclusionTracker::OnWillRemoveWindow(Window* window) {
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return !WindowOrParentIsAnimated(window) &&
            WindowOrDescendantCanOccludeOtherWindows(window);
   });
@@ -915,7 +916,7 @@ void WindowOcclusionTracker::OnWillRemoveWindow(Window* window) {
 void WindowOcclusionTracker::OnWindowVisibilityChanged(Window* window,
                                                        bool visible) {
   MaybeObserveAnimatedWindow(window);
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     // A child isn't visible when its parent isn't IsVisible(). Therefore, there
     // is no need to compute occlusion when Show() or Hide() is called on a
     // window with a hidden parent.
@@ -934,7 +935,7 @@ void WindowOcclusionTracker::OnWindowBoundsChanged(
   const bool animation_started =
       (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
       MaybeObserveAnimatedWindow(window);
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return animation_started || WindowMoveMayAffectOcclusionStates(window);
   });
 }
@@ -947,14 +948,14 @@ void WindowOcclusionTracker::OnWindowOpacitySet(
   const bool animation_started =
       (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
       MaybeObserveAnimatedWindow(window);
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return animation_started ||
            WindowOpacityChangeMayAffectOcclusionStates(window);
   });
 }
 
 void WindowOcclusionTracker::OnWindowAlphaShapeSet(Window* window) {
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return WindowOpacityChangeMayAffectOcclusionStates(window);
   });
 }
@@ -967,7 +968,7 @@ void WindowOcclusionTracker::OnWindowTransparentChanged(
   const bool animation_started =
       (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
       MaybeObserveAnimatedWindow(window);
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return animation_started ||
            WindowOpacityChangeMayAffectOcclusionStates(window);
   });
@@ -981,14 +982,15 @@ void WindowOcclusionTracker::OnWindowTransformed(
   const bool animation_started =
       (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
       MaybeObserveAnimatedWindow(window);
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return animation_started || WindowMoveMayAffectOcclusionStates(window);
   });
 }
 
 void WindowOcclusionTracker::OnWindowStackingChanged(Window* window) {
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(
-      window, [=]() { return WindowMoveMayAffectOcclusionStates(window); });
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
+    return WindowMoveMayAffectOcclusionStates(window);
+  });
 }
 
 void WindowOcclusionTracker::OnWindowDestroyed(Window* window) {
@@ -1041,7 +1043,7 @@ void WindowOcclusionTracker::OnWindowOpaqueRegionsForOcclusionChanged(
   // If the opaque regions for occlusion change, the occlusion state may be
   // affected if the effective opacity of the window changes (e.g. clearing the
   // regions for occlusion), or if their bounds change.
-  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=]() {
+  MarkRootWindowAsDirtyAndMaybeComputeOcclusionIf(window, [=, this]() {
     return WindowOpacityChangeMayAffectOcclusionStates(window) ||
            WindowMoveMayAffectOcclusionStates(window);
   });

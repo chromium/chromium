@@ -1663,7 +1663,7 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
   bool is_webui = host_ && host_->web_ui();
 
   urls.erase(std::remove_if(urls.begin(), urls.end(),
-                            [=](const GURL& url) {
+                            [=, this](const GURL& url) {
                               return !client_->MayAttachToURL(url, is_webui);
                             }),
              urls.end());

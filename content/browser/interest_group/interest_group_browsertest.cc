@@ -7949,13 +7949,13 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
     // private aggregation event is sent.
     EXPECT_CALL(mock_private_aggregation_cb_, Run)
         .WillRepeatedly(testing::Invoke(
-            [=](PrivateAggregationHost::ReportRequestGenerator generator,
-                std::vector<
-                    blink::mojom::AggregatableReportHistogramContribution>
-                    contributions,
-                PrivateAggregationBudgetKey budget_key,
-                PrivateAggregationBudgeter::BudgetDeniedBehavior
-                    budget_denied_behavior) {
+            [=, this](PrivateAggregationHost::ReportRequestGenerator generator,
+                      std::vector<
+                          blink::mojom::AggregatableReportHistogramContribution>
+                          contributions,
+                      PrivateAggregationBudgetKey budget_key,
+                      PrivateAggregationBudgeter::BudgetDeniedBehavior
+                          budget_denied_behavior) {
               AggregatableReportRequest request =
                   std::move(generator).Run(contributions);
               ASSERT_EQ(request.payload_contents().contributions.size(), 1u);

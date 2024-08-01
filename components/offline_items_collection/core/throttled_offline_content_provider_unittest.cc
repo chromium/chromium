@@ -334,23 +334,23 @@ TEST_F(ThrottledOfflineContentProviderTest, TestPokingProviderFlushesQueue) {
 
   // Set up reentrancy calls back into the provider.
   EXPECT_CALL(wrapped_provider_, OpenItem(_, _))
-      .WillRepeatedly(InvokeWithoutArgs([=]() {
+      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
         wrapped_provider_.NotifyOnItemUpdated(item2, std::nullopt);
       }));
   EXPECT_CALL(wrapped_provider_, RemoveItem(_))
-      .WillRepeatedly(InvokeWithoutArgs([=]() {
+      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
         wrapped_provider_.NotifyOnItemUpdated(item3, std::nullopt);
       }));
   EXPECT_CALL(wrapped_provider_, CancelDownload(_))
-      .WillRepeatedly(InvokeWithoutArgs([=]() {
+      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
         wrapped_provider_.NotifyOnItemUpdated(item4, std::nullopt);
       }));
   EXPECT_CALL(wrapped_provider_, PauseDownload(_))
-      .WillRepeatedly(InvokeWithoutArgs([=]() {
+      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
         wrapped_provider_.NotifyOnItemUpdated(item5, std::nullopt);
       }));
   EXPECT_CALL(wrapped_provider_, ResumeDownload(_))
-      .WillRepeatedly(InvokeWithoutArgs([=]() {
+      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
         wrapped_provider_.NotifyOnItemUpdated(item6, std::nullopt);
       }));
 

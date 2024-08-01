@@ -217,13 +217,13 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   auto CheckHistogramCounts(const std::string& name,
                             int sample,
                             int expected_count) {
-    return Do([=]() {
+    return Do([=, this]() {
       histogram_tester_.ExpectUniqueSample(name, sample, expected_count);
     });
   }
 
   auto SetTabletMode(const bool enable) {
-    return Do([=]() {
+    return Do([=, this]() {
       if (InTabletMode() == enable) {
         return;
       }
@@ -334,8 +334,9 @@ class CampaignsManagerInteractiveUiNudgeTest
 
  protected:
   auto LaunchSystemWebApp(ash::SystemWebAppType type) {
-    return Do(
-        [=]() { ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type); });
+    return Do([=, this]() {
+      ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type);
+    });
   }
 
   bool ShouldUseTabletMode() { return std::get<0>(GetParam()); }
@@ -467,7 +468,7 @@ class CampaignsManagerInteractiveUiNotificationTest
   // If a notification with `notification_id` is displayed, simulates clicking
   // on that notification with `button_index` button.
   auto Click(std::optional<int> button_index) {
-    return Do([=]() {
+    return Do([=, this]() {
       GetNotification()->delegate()->Click(button_index, std::nullopt);
     });
   }

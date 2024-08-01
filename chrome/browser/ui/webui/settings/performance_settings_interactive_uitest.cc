@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,
       WaitForElementToRender(kPerformanceSettingsPage, kExceptionDialogEntry),
 
       // Dialog entry should hide when its corresponding tab is closed
-      Do(base::BindLambdaForTesting([=]() {
+      Do(base::BindLambdaForTesting([=, this]() {
         browser()->tab_strip_model()->CloseWebContentsAt(
             1, TabCloseTypes::CLOSE_NONE);
       })),

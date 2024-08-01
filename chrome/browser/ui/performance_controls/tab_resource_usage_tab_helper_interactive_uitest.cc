@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperTest, MemoryUsagePopulated) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      ForceRefreshMemoryMetrics(), Check([=]() {
+      ForceRefreshMemoryMetrics(), Check([=, this]() {
         content::WebContents* const web_contents =
             browser()->tab_strip_model()->GetWebContentsAt(0);
         auto* const resource_usage =

@@ -68,7 +68,7 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
       icon_label_spacing;
   security_summary_label_->SizeToFit(min_label_width_);
 
-  auto start_secondary_row = [=]() {
+  auto start_secondary_row = [=, this]() {
     layout->AddRows(1, views::TableLayout::kFixedSize);
     AddChildView(std::make_unique<views::View>());  // Skipping the icon column.
   };
