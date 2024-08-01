@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
 
@@ -87,15 +88,15 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   CHECK(!current_callback_.is_null())
       << "Results were obtained after \"no more results\"";
   const PickerSectionType section_type = SectionTypeFromSearchSource(source);
+  UnpublishedResults& accumulated =
+      accumulated_results_[base::to_underlying(section_type)];
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
   if (section_type == PickerSectionType::kNone) {
     // Suggested results cannot have more results, since it's not a proper
     // category.
     CHECK(!has_more_results);
-    base::ranges::move(
-        results, std::back_inserter(
-                     accumulated_results_[PickerSectionType::kNone].results));
+    base::ranges::move(results, std::back_inserter(accumulated.results));
     return;
   }
 
@@ -109,9 +110,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     return;
   }
 
-  const auto& [unused, inserted] = accumulated_results_.emplace(
-      section_type, UnpublishedResults(std::move(results), has_more_results));
-  CHECK(inserted);
+  CHECK(accumulated.results.empty());
+  accumulated = UnpublishedResults(std::move(results), has_more_results);
 }
 
 void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
@@ -204,14 +204,12 @@ base::WeakPtr<PickerSearchAggregator> PickerSearchAggregator::GetWeakPtr() {
 
 PickerSearchAggregator::UnpublishedResults*
 PickerSearchAggregator::AccumulatedResultsForSection(PickerSectionType type) {
-  auto it = accumulated_results_.find(type);
-  if (it == accumulated_results_.end()) {
+  UnpublishedResults& accumulated =
+      accumulated_results_[base::to_underlying(type)];
+  if (accumulated.results.empty()) {
     return nullptr;
   }
-  if (it->second.results.empty()) {
-    return nullptr;
-  }
-  return &it->second;
+  return &accumulated;
 }
 
 }  // namespace ash

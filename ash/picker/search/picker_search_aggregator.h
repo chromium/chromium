@@ -5,6 +5,8 @@
 #ifndef ASH_PICKER_SEARCH_PICKER_SEARCH_AGGREGATOR_H_
 #define ASH_PICKER_SEARCH_PICKER_SEARCH_AGGREGATOR_H_
 
+#include <array>
+#include <cstddef>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
 
@@ -69,10 +72,12 @@ class ASH_EXPORT PickerSearchAggregator {
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
+  static constexpr size_t kNumSections =
+      base::to_underlying(PickerSectionType::kMaxValue) + 1;
   // Unpublished results that are accumulated before burn-in.
-  // Results are only published after burn-in if they exist in this map, and the
-  // `results` vector is not empty.
-  base::flat_map<PickerSectionType, UnpublishedResults> accumulated_results_;
+  // Results are only published after burn-in if the `results` vector is not
+  // empty.
+  std::array<UnpublishedResults, kNumSections> accumulated_results_;
 
   base::WeakPtrFactory<PickerSearchAggregator> weak_ptr_factory_{this};
 };
