@@ -72,6 +72,9 @@ void CreateTilingSetRasterQueues(
       continue;
 
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
+    if (tiling_set->all_tiles_done()) {
+      continue;
+    }
     bool prioritize_low_res = tree_priority == SMOOTHNESS_TAKES_PRIORITY;
     std::unique_ptr<TilingSetRasterQueueAll> tiling_set_queue =
         std::make_unique<TilingSetRasterQueueAll>(
