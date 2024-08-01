@@ -134,7 +134,7 @@ void ArcVmmManager::SetSwapState(SwapState state) {
     // The disable request will be sent immediately so the verify is
     // unnecessarily.
     SendSwapRequest(op, base::DoNothing());
-    enabled_state_heartbeat_timer_.Reset();
+    enabled_state_heartbeat_timer_.Stop();
     return;
   }
 
