@@ -46,12 +46,12 @@ class ASH_EXPORT PickerSearchAggregator {
   base::WeakPtr<PickerSearchAggregator> GetWeakPtr();
 
  private:
-  struct PickerSearchResults {
-    PickerSearchResults();
-    PickerSearchResults(std::vector<PickerSearchResult> results, bool has_more);
-    PickerSearchResults(PickerSearchResults&& other);
-    PickerSearchResults& operator=(PickerSearchResults&& other);
-    ~PickerSearchResults();
+  struct UnpublishedResults {
+    UnpublishedResults();
+    UnpublishedResults(std::vector<PickerSearchResult> results, bool has_more);
+    UnpublishedResults(UnpublishedResults&& other);
+    UnpublishedResults& operator=(UnpublishedResults&& other);
+    ~UnpublishedResults();
 
     std::vector<PickerSearchResult> results;
     bool has_more = false;
@@ -66,7 +66,10 @@ class ASH_EXPORT PickerSearchAggregator {
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
-  base::flat_map<PickerSectionType, PickerSearchResults> results_;
+  // Unpublished results that are accumulated before burn-in.
+  // Results are only published after burn-in if they exist in this map, and the
+  // `results` vector is not empty.
+  base::flat_map<PickerSectionType, UnpublishedResults> accumulated_results_;
 
   base::WeakPtrFactory<PickerSearchAggregator> weak_ptr_factory_{this};
 };

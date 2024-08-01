@@ -94,8 +94,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     // category.
     CHECK(!has_more_results);
     base::ranges::move(
-        results,
-        std::back_inserter(results_[PickerSectionType::kNone].results));
+        results, std::back_inserter(
+                     accumulated_results_[PickerSectionType::kNone].results));
     return;
   }
 
@@ -109,8 +109,8 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     return;
   }
 
-  const auto& [unused, inserted] = results_.emplace(
-      section_type, PickerSearchResults(std::move(results), has_more_results));
+  const auto& [unused, inserted] = accumulated_results_.emplace(
+      section_type, UnpublishedResults(std::move(results), has_more_results));
   CHECK(inserted);
 }
 
@@ -128,21 +128,21 @@ void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
   current_callback_.Reset();
 }
 
-PickerSearchAggregator::PickerSearchResults::PickerSearchResults() = default;
+PickerSearchAggregator::UnpublishedResults::UnpublishedResults() = default;
 
-PickerSearchAggregator::PickerSearchResults::PickerSearchResults(
+PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
     std::vector<PickerSearchResult> results,
     bool has_more)
     : results(std::move(results)), has_more(has_more) {}
 
-PickerSearchAggregator::PickerSearchResults::PickerSearchResults(
-    PickerSearchResults&& other) = default;
+PickerSearchAggregator::UnpublishedResults::UnpublishedResults(
+    UnpublishedResults&& other) = default;
 
-PickerSearchAggregator::PickerSearchResults&
-PickerSearchAggregator::PickerSearchResults::operator=(
-    PickerSearchResults&& other) = default;
+PickerSearchAggregator::UnpublishedResults&
+PickerSearchAggregator::UnpublishedResults::operator=(
+    UnpublishedResults&& other) = default;
 
-PickerSearchAggregator::PickerSearchResults::~PickerSearchResults() = default;
+PickerSearchAggregator::UnpublishedResults::~UnpublishedResults() = default;
 
 bool PickerSearchAggregator::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
@@ -153,8 +153,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
   base::flat_set<PickerSectionType> published_types;
 
   // The None section always goes first.
-  if (auto it = results_.find(PickerSectionType::kNone);
-      it != results_.end() && !it->second.results.empty()) {
+  if (auto it = accumulated_results_.find(PickerSectionType::kNone);
+      it != accumulated_results_.end() && !it->second.results.empty()) {
     sections.emplace_back(PickerSectionType::kNone,
                           std::move(it->second.results),
                           /*has_more=*/false);
@@ -168,8 +168,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kDriveFiles,
            PickerSectionType::kClipboard,
        }) {
-    if (auto it = results_.find(type);
-        it != results_.end() &&
+    if (auto it = accumulated_results_.find(type);
+        it != accumulated_results_.end() &&
         base::ranges::any_of(it->second.results, &ShouldPromote)) {
       sections.emplace_back(type, std::move(it->second.results),
                             it->second.has_more);
@@ -189,8 +189,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
     if (published_types.contains(type)) {
       continue;
     }
-    if (auto it = results_.find(type);
-        it != results_.end() && !it->second.results.empty()) {
+    if (auto it = accumulated_results_.find(type);
+        it != accumulated_results_.end() && !it->second.results.empty()) {
       sections.emplace_back(type, std::move(it->second.results),
                             it->second.has_more);
     }
