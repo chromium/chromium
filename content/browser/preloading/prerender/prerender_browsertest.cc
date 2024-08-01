@@ -10424,7 +10424,7 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
           {{"max_num_of_running_speculation_rules_eager_prerenders",
             base::NumberToString(MaxNumOfRunningPrerenders())}}},
          memory_controls},
-        {features::kPrerender2BypassMemoryLimitCheck});
+        {});
   }
 
  private:

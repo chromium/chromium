@@ -8,15 +8,6 @@
 
 namespace features {
 
-// Kill-switch controlled by the field trial. When this feature is enabled,
-// PrerenderHostRegistry doesn't query about the current memory footprint and
-// bypasses the memory limit check, while it still checks the limit on the
-// number of ongoing prerendering requests and memory pressure events to prevent
-// excessive memory usage. See https://crbug.com/1382697 for details.
-BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
-             "Prerender2BypassMemoryLimitCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This was used for enabling a new limit and scheduler for prerender triggers
 // (crbug.com/1464021). Now the new implementation is used by default and this
 // flag is just for injecting parameters through field trials.

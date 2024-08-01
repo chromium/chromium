@@ -43,8 +43,6 @@
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -222,10 +220,6 @@ bool IsNavigationInSessionHistoryPredictorDomain(NavigationHandle* handle) {
   // navigations that are same-site or which don't use the HTTP cache, they are
   // still included in the domain.
   return true;
-}
-
-bool IsDevToolsOpen(WebContents& web_contents) {
-  return DevToolsAgentHost::HasFor(&web_contents);
 }
 
 PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
@@ -918,17 +912,10 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
-      // Check the current memory usage and destroy a prerendering if the entire
-      // browser uses excessive memory. This occurs asynchronously.
-      DestroyWhenUsingExcessiveMemory(frame_tree_node_id);
-
       // Update the `running_prerender_host_id` to the starting prerender's id.
       running_prerender_host_id_ = frame_tree_node_id;
       break;
     case PreloadingTriggerType::kEmbedder:
-      // We don't check the memory usage for embedder triggered prerenderings
-      // for now.
-
       // `running_prerender_host_id` only tracks the id for speculation rules
       // trigger, so we also don't update it in the case of embedder.
       break;
@@ -1869,74 +1856,6 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
       return host_count < base::GetFieldTrialParamByFeatureAsInt(
                               features::kPrerender2NewLimitAndScheduler,
                               kMaxNumOfRunningEmbedderPrerenders, 2);
-  }
-}
-
-void PrerenderHostRegistry::DestroyWhenUsingExcessiveMemory(
-    int frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPrerender2MemoryControls)) {
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kPrerender2BypassMemoryLimitCheck)) {
-    return;
-  }
-
-  // Override the memory restriction when the DevTools is open.
-  if (IsDevToolsOpen(*web_contents())) {
-    return;
-  }
-
-  memory_instrumentation::MemoryInstrumentation::GetInstance()
-      ->RequestPrivateMemoryFootprint(
-          base::kNullProcessId,
-          base::BindOnce(&PrerenderHostRegistry::DidReceiveMemoryDump,
-                         weak_factory_.GetWeakPtr(), frame_tree_node_id));
-}
-
-void PrerenderHostRegistry::DidReceiveMemoryDump(
-    int frame_tree_node_id,
-    bool success,
-    std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump) {
-  CHECK(
-      base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls));
-
-  // Override the memory restriction when the DevTools is open.
-  if (IsDevToolsOpen(*web_contents())) {
-    return;
-  }
-
-  if (!success) {
-    // Give up checking the memory consumption and continue prerendering. This
-    // case commonly happens due to lifecycle changes of renderer processes
-    // during the query. Skipping the check should be safe for other safety
-    // measures: the limit on the number of ongoing prerendering requests and
-    // memory pressure events should prevent excessive memory usage.
-    return;
-  }
-
-  int64_t private_footprint_total_kb = 0;
-  for (const auto& pmd : dump->process_dumps()) {
-    private_footprint_total_kb += pmd.os_dump().private_footprint_kb;
-  }
-
-  // The default acceptable percent is 60% of the system memory.
-  int acceptable_percent_of_system_memory =
-      base::GetFieldTrialParamByFeatureAsInt(
-          blink::features::kPrerender2MemoryControls,
-          blink::features::
-              kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName,
-          60);
-
-  // When the current memory usage is higher than
-  // `acceptable_percent_of_system_memory` % of the system memory, cancel a
-  // prerendering with `frame_tree_node_id`.
-  if (private_footprint_total_kb * 1024 >=
-      acceptable_percent_of_system_memory * 0.01 *
-          base::SysInfo::AmountOfPhysicalMemory()) {
-    CancelHost(frame_tree_node_id, PrerenderFinalStatus::kMemoryLimitExceeded);
   }
 }
 
