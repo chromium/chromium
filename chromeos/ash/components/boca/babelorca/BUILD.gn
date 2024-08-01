@@ -11,6 +11,8 @@ static_library("babelorca") {
   sources = [
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
+    "response_callback_wrapper.h",
+    "response_callback_wrapper_impl.h",
     "token_data_wrapper.h",
     "token_fetcher.h",
     "token_manager.cc",
@@ -44,6 +46,7 @@ source_set("unit_tests") {
 
   sources = [
     "oauth_token_fetcher_unittest.cc",
+    "response_callback_wrapper_impl_unittest.cc",
     "token_manager_unittest.cc",
   ]
 
@@ -52,6 +55,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca/babelorca/proto:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
