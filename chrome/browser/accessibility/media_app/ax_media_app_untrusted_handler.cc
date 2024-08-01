@@ -84,6 +84,9 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     : browser_context_(context),
       native_window_(native_window),
       media_app_page_(std::move(page)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
+    return;
+  }
   auto* profile =
       Profile::FromBrowserContext(base::to_address(browser_context_));
   ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
@@ -158,7 +161,8 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
 }
 
 bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
-  return accessibility_state_utils::IsScreenReaderEnabled();
+  return base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
+         accessibility_state_utils::IsScreenReaderEnabled();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -4203,6 +4203,9 @@ extern const char kMahiDescription[];
 extern const char kMahiFeatureKeyName[];
 extern const char kMahiFeatureKeyDescription[];
 
+extern const char kMediaAppPdfA11yOcrName[];
+extern const char kMediaAppPdfA11yOcrDescription[];
+
 extern const char kMediaAppPdfMahiName[];
 extern const char kMediaAppPdfMahiDescription[];
 
