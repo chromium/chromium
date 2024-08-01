@@ -5,8 +5,8 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents the `MLOperandType` in the WebIDL definition.
 enum DataType {
@@ -1146,6 +1146,6 @@ interface WebNNGraph {
   // the tensor in the graph, the value is the MLBuffer containing the tensor
   // data.
   // TODO(crbug.com/331351967): remove Compute().
-  Dispatch(map<string, mojo_base.mojom.UnguessableToken> named_inputs,
-    map<string, mojo_base.mojom.UnguessableToken> named_outputs);
+  Dispatch(map<string, blink.mojom.WebNNBufferToken> named_inputs,
+    map<string, blink.mojom.WebNNBufferToken> named_outputs);
 };

@@ -296,7 +296,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 
   ContextProperties context_properties = context_impl->properties();
-  const base::UnguessableToken& context_handle = context_impl->handle();
+  const blink::WebNNContextToken& context_handle = context_impl->handle();
   impls_.emplace(base::WrapUnique<WebNNContextImpl>(context_impl));
 
   auto success = mojom::CreateContextSuccess::New(std::move(remote),

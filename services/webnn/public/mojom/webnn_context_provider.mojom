@@ -4,12 +4,12 @@
 
 module webnn.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_buffer.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
 import "services/webnn/public/mojom/webnn_graph_builder.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents options of creating `WebNNContext` interface.
 struct CreateContextOptions {
@@ -133,7 +133,7 @@ struct CreateContextSuccess {
   // the context from the renderer. The token is only valid for the lifetime
   // of the context and is used to resolve a buffer in the service using the
   // context corresponding to this handle.
-  mojo_base.mojom.UnguessableToken context_handle;
+  blink.mojom.WebNNContextToken context_handle;
 };
 
 // Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.
@@ -151,7 +151,7 @@ struct CreateBufferSuccess {
   // from the renderer. The token is only valid for the lifetime
   // of the buffer and is used by context operations in the service using the
   // buffer corresponding to this handle.
-  mojo_base.mojom.UnguessableToken buffer_handle;
+  blink.mojom.WebNNBufferToken buffer_handle;
 };
 
 // Represents the return value of `WebNNContext::CreateBuffer()`. Let it be

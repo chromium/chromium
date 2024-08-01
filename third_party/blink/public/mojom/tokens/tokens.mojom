@@ -145,3 +145,11 @@ union WebGPUExecutionContextToken {
   SharedWorkerToken shared_worker_token;
   ServiceWorkerToken service_worker_token;
 };
+
+struct WebNNContextToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
+struct WebNNBufferToken {
+  mojo_base.mojom.UnguessableToken value;
+};

@@ -63,7 +63,6 @@ component("webnn_service") {
     "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
-    "webnn_object_impl.cc",
     "webnn_object_impl.h",
   ]
 

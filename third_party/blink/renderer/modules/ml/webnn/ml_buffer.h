@@ -62,7 +62,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
 
   uint64_t PackedByteLength() const;
 
-  const base::UnguessableToken& handle() const { return webnn_handle_; }
+  const blink::WebNNBufferToken& handle() const { return webnn_handle_; }
 
   const MLContext* context() const { return ml_context_.Get(); }
 
@@ -92,7 +92,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   const webnn::OperandDescriptor descriptor_;
 
   // Identifies this `WebNNBuffer` mojo instance in the service process.
-  const base::UnguessableToken webnn_handle_;
+  const blink::WebNNBufferToken webnn_handle_;
 
   // The `WebNNBuffer` is a buffer that can be used by the hardware
   // accelerated OS machine learning API.

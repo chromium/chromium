@@ -399,7 +399,7 @@ class WebNNContextHelper {
   WebNNContextHelper() = default;
   ~WebNNContextHelper() = default;
 
-  void ConnectWebNNBufferImpl(const base::UnguessableToken& handle,
+  void ConnectWebNNBufferImpl(const blink::WebNNBufferToken& handle,
                               std::unique_ptr<FakeWebNNBuffer> buffer) {
     const auto it = buffer_impls_.find(handle);
     ASSERT_TRUE(it == buffer_impls_.end());
@@ -407,12 +407,12 @@ class WebNNContextHelper {
   }
 
   void DisconnectAndDestroyWebNNBufferImpl(
-      const base::UnguessableToken& handle) {
+      const blink::WebNNBufferToken& handle) {
     buffer_impls_.erase(handle);
   }
 
  private:
-  std::map<base::UnguessableToken, std::unique_ptr<FakeWebNNBuffer>>
+  std::map<blink::WebNNBufferToken, std::unique_ptr<FakeWebNNBuffer>>
       buffer_impls_;
 
   mojo::UniqueAssociatedReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
@@ -443,8 +443,8 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
 
   // Just return for testing the validation of inputs and outputs.
   void Dispatch(
-      const HashMap<WTF::String, base::UnguessableToken>& named_inputs,
-      const HashMap<WTF::String, base::UnguessableToken>& named_outputs)
+      const HashMap<WTF::String, blink::WebNNBufferToken>& named_inputs,
+      const HashMap<WTF::String, blink::WebNNBufferToken>& named_outputs)
       override {}
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
@@ -456,7 +456,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   FakeWebNNBuffer(
       WebNNContextHelper& helper,
       mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
-      const base::UnguessableToken& buffer_handle,
+      const blink::WebNNBufferToken& buffer_handle,
       blink_mojom::BufferInfoPtr buffer_info)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
@@ -471,7 +471,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   FakeWebNNBuffer(const FakeWebNNBuffer&) = delete;
   FakeWebNNBuffer(FakeWebNNBuffer&&) = delete;
 
-  const base::UnguessableToken& handle() const { return handle_; }
+  const blink::WebNNBufferToken& handle() const { return handle_; }
 
  private:
   void ReadBuffer(ReadBufferCallback callback) override {
@@ -495,7 +495,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
   mojo::AssociatedReceiver<blink_mojom::WebNNBuffer> receiver_;
 
-  const base::UnguessableToken handle_;
+  const blink::WebNNBufferToken handle_;
 
   mojo_base::BigBuffer buffer_;
 };
@@ -547,7 +547,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
                     CreateBufferCallback callback) override {
     mojo::PendingAssociatedRemote<blink_mojom::WebNNBuffer> blink_remote;
     auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();
-    base::UnguessableToken buffer_handle = base::UnguessableToken::Create();
+    blink::WebNNBufferToken buffer_handle;
     context_helper_.ConnectWebNNBufferImpl(
         buffer_handle, std::make_unique<FakeWebNNBuffer>(
                            context_helper_, std::move(blink_receiver),
@@ -637,7 +637,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          webnn::SupportedDataTypes::All()});
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(context_properties),
-        base::UnguessableToken::Create());
+        blink::WebNNContextToken());
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

@@ -112,7 +112,7 @@ void WebNNContextImpl::DidCreateWebNNBufferImpl(
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
-    const base::UnguessableToken& handle) {
+    const blink::WebNNBufferToken& handle) {
   const auto it = buffer_impls_.find(handle);
   CHECK(it != buffer_impls_.end());
   // Upon calling erase, the handle will no longer refer to a valid
@@ -126,7 +126,7 @@ void WebNNContextImpl::OnLost(std::string_view message) {
 }
 
 base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
-    const base::UnguessableToken& buffer_handle) {
+    const blink::WebNNBufferToken& buffer_handle) {
   const auto it = buffer_impls_.find(buffer_handle);
   if (it == buffer_impls_.end()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);

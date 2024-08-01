@@ -60,7 +60,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
-  const base::UnguessableToken& handle() const { return webnn_handle_; }
+  const blink::WebNNContextToken& handle() const { return webnn_handle_; }
 
   // IDL interface:
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
@@ -165,7 +165,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   webnn::ContextProperties properties_;
 
   // Identifies this `WebNNContext` mojo instance in the service process.
-  const base::UnguessableToken webnn_handle_;
+  const blink::WebNNContextToken webnn_handle_;
 };
 
 }  // namespace blink

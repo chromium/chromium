@@ -69,12 +69,12 @@ class BadMessageTestHelper {
 
 struct CreateContextSuccess {
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  base::UnguessableToken webnn_context_handle;
+  blink::WebNNContextToken webnn_context_handle;
 };
 
 struct CreateBufferSuccess {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  base::UnguessableToken webnn_buffer_handle;
+  blink::WebNNBufferToken webnn_buffer_handle;
 };
 
 #if BUILDFLAG(IS_WIN)

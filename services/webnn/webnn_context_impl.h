@@ -37,7 +37,7 @@ class WebNNGraphBuilderImpl;
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public mojom::WebNNContext,
-      public WebNNObjectImpl {
+      public WebNNObjectImpl<blink::WebNNContextToken> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
@@ -68,12 +68,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Called when a `WebNNBuffer` instance has a connection error. After this
   // call, it is no longer safe to use the WebNNBufferImpl.
   void DisconnectAndDestroyWebNNBufferImpl(
-      const base::UnguessableToken& handle);
+      const blink::WebNNBufferToken& handle);
 
   // Retrieves a `WebNNBufferImpl` instance created from this context.
   // Emits a bad message if a buffer with the given handle does not exist.
   base::optional_ref<WebNNBufferImpl> GetWebNNBufferImpl(
-      const base::UnguessableToken& handle);
+      const blink::WebNNBufferToken& handle);
 
   // Report the currently dispatching Message as bad and remove the GraphBuilder
   // receiver which received it.
@@ -155,8 +155,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // identify and use them from the renderer process in MLContext operations.
   // This cache only contains valid BufferImpls whose size is managed by the
   // lifetime of the buffers it contains.
-  base::flat_set<std::unique_ptr<WebNNBufferImpl>,
-                 WebNNObjectImpl::Comparator<WebNNBufferImpl>>
+  base::flat_set<
+      std::unique_ptr<WebNNBufferImpl>,
+      WebNNObjectImpl<blink::WebNNBufferToken>::Comparator<WebNNBufferImpl>>
       buffer_impls_;
 
  private:

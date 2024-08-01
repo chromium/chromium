@@ -21,7 +21,7 @@ class WebNNContextImpl;
 // Owned by the WebNNContextImpl which created it.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
     : public mojom::WebNNBuffer,
-      public WebNNObjectImpl {
+      public WebNNObjectImpl<blink::WebNNBufferToken> {
  public:
   explicit WebNNBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
