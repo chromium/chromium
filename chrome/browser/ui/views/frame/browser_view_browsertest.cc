@@ -64,12 +64,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #endif
 
@@ -473,10 +474,10 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
 
           // Enable real-time URL checks.
           profile->GetPrefs()->SetInteger(
-              prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-              safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+              enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+              enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
           profile->GetPrefs()->SetInteger(
-              prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+              enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
               policy::POLICY_SCOPE_MACHINE);
 
           auto testing_factory =

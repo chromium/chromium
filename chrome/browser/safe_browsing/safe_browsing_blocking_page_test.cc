@@ -70,6 +70,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -3319,10 +3321,10 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
   }
   void SetUpEnterpriseUrlCheck() {
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-        REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+        enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
     SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   }

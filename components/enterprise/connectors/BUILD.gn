@@ -19,18 +19,21 @@ source_set("connectors") {
     "service_provider_config.h",
   ]
 
+  public_deps = [ "//components/enterprise/common/proto:connectors_proto" ]
+
   deps = [
     "//base",
-    "//components/download/public/common:public",
-    "//components/enterprise/buildflags:buildflags",
-    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/buildflags",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings:components_strings_grit",
     "//ui/gfx/range",
   ]
+
+  if (!is_ios) {
+    deps += [ "//components/download/public/common:public" ]
+  }
 
   if (enterprise_client_certificates) {
     deps += [ "//components/enterprise/client_certificates/core" ]

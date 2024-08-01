@@ -77,6 +77,7 @@
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
 #include "components/enterprise/connectors/device_trust/prefs.h"
 #include "components/enterprise/content/copy_prevention_settings_policy_handler.h"
@@ -150,7 +151,6 @@
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/media_router/common/pref_names.h"
@@ -2387,8 +2387,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kEnterpriseRealTimeUrlCheckMode,
-          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, chrome_schema));
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+          chrome_schema));
 #if BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(
       std::make_unique<ContextualSearchPolicyHandlerAndroid>());

@@ -279,7 +279,7 @@ std::vector<std::string> ContextInfoFetcher::GetAnalysisConnectorProviders(
   return connectors_service_->GetAnalysisServiceProviderNames(connector);
 }
 
-safe_browsing::EnterpriseRealTimeUrlCheckMode
+enterprise_connectors::EnterpriseRealTimeUrlCheckMode
 ContextInfoFetcher::GetRealtimeUrlCheckMode() {
   return connectors_service_->GetAppliedRealTimeUrlCheck();
 }

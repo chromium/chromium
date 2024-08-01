@@ -4,8 +4,8 @@
 
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -16,9 +16,7 @@ constexpr char kProfileDMToken[] = "profile_dm_token";
 
 class TestConnectorsService : public ConnectorsServiceBase {
  public:
-  TestConnectorsService() {
-    safe_browsing::RegisterProfilePrefs(prefs_.registry());
-  }
+  TestConnectorsService() { RegisterProfilePrefs(prefs_.registry()); }
 
   void set_machine_dm_token() {
     machine_dm_token_ = ConnectorsServiceBase::DmToken(
@@ -33,8 +31,7 @@ class TestConnectorsService : public ConnectorsServiceBase {
   void set_connectors_enabled(bool enabled) { connectors_enabled_ = enabled; }
 
   std::optional<DmToken> GetDmToken(const char* scope_pref) const override {
-    switch (prefs_.GetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope)) {
+    switch (prefs_.GetInteger(kEnterpriseRealTimeUrlCheckScope)) {
       case policy::POLICY_SCOPE_MACHINE:
         return machine_dm_token_;
       case policy::POLICY_SCOPE_USER:
@@ -62,100 +59,84 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_NoTokenOrPolicies) {
   TestConnectorsService service;
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_connectors_enabled(true);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 }
 
 TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_InvalidProfilePolicy) {
   TestConnectorsService service;
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
-      policy::POLICY_SCOPE_USER);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                 REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                 policy::POLICY_SCOPE_USER);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_connectors_enabled(true);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_machine_dm_token();
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 }
 
 TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_InvalidMachinePolicy) {
   TestConnectorsService service;
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
-      policy::POLICY_SCOPE_MACHINE);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                 REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                 policy::POLICY_SCOPE_MACHINE);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_connectors_enabled(true);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_profile_dm_token();
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
-  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_DISABLED);
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 }
 
 TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_ValidProfilePolicy) {
   TestConnectorsService service;
   service.set_connectors_enabled(true);
   service.set_profile_dm_token();
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
-      policy::POLICY_SCOPE_USER);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                 REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                 policy::POLICY_SCOPE_USER);
 
   ASSERT_TRUE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(*service.GetDMTokenForRealTimeUrlCheck(), kProfileDMToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+            REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
 }
 
 TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_ValidMachinePolicy) {
   TestConnectorsService service;
   service.set_connectors_enabled(true);
   service.set_machine_dm_token();
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  service.GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
-      policy::POLICY_SCOPE_MACHINE);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                 REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  service.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                 policy::POLICY_SCOPE_MACHINE);
 
   ASSERT_TRUE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(*service.GetDMTokenForRealTimeUrlCheck(), kMachineDMToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
-            safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+            REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
 }
 
 }  // namespace enterprise_connectors
