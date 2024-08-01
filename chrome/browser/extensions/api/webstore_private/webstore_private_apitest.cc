@@ -99,8 +99,9 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
   }
 
   void Wait() {
-    if (received_success_ || received_failure_)
+    if (received_success_ || received_failure_) {
       return;
+    }
 
     waiting_ = true;
     loop_.Run();
@@ -210,8 +211,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, MissingDownloadDir) {
   ASSERT_TRUE(RunInstallTest("accepted.html", "extension.crx"));
 
   // Cleanup.
-  if (base::DirectoryExists(missing_directory))
+  if (base::DirectoryExists(missing_directory)) {
     EXPECT_TRUE(base::DeletePathRecursively(missing_directory));
+  }
 }
 
 // Tests passing a localized name.
@@ -694,8 +696,9 @@ class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
  protected:
   void RunTest(bool webgl_allowed) {
     // If Gpu access is disallowed then WebGL will not be available.
-    if (!content::GpuDataManager::GetInstance()->GpuAccessAllowed(nullptr))
+    if (!content::GpuDataManager::GetInstance()->GpuAccessAllowed(nullptr)) {
       webgl_allowed = false;
+    }
 
     static const char kEmptyArgs[] = "[]";
     static const char kWebGLStatusAllowed[] = "webgl_allowed";

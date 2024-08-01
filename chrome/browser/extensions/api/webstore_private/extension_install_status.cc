@@ -49,8 +49,9 @@ bool IsExtensionInstallBlockedByPolicy(
       break;
   }
 
-  if (extension_management->IsInstallationExplicitlyAllowed(extension_id))
+  if (extension_management->IsInstallationExplicitlyAllowed(extension_id)) {
     return false;
+  }
 
   // Extension is allowed by wildcard or update_url, checks required permissions
   // and manifest type.
@@ -126,14 +127,17 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     return kCustodianApprovalRequired;
   }
 
-  if (registry->enabled_extensions().Contains(extension_id))
+  if (registry->enabled_extensions().Contains(extension_id)) {
     return kEnabled;
+  }
 
-  if (registry->terminated_extensions().Contains(extension_id))
+  if (registry->terminated_extensions().Contains(extension_id)) {
     return kTerminated;
+  }
 
-  if (registry->blocklisted_extensions().Contains(extension_id))
+  if (registry->blocklisted_extensions().Contains(extension_id)) {
     return kBlocklisted;
+  }
 
   // When manifest version is not allowed, the extension is blocked and can't be
   // requested.
