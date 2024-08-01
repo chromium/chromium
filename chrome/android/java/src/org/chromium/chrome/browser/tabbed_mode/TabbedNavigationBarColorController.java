@@ -74,6 +74,7 @@ class TabbedNavigationBarColorController
     // May be null if we return from the constructor early. Otherwise will be set.
     private final @Nullable TabModelSelector mTabModelSelector;
     private final @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver;
     private final @Nullable FullscreenManager.Observer mFullscreenObserver;
     private @Nullable LayoutStateProvider mLayoutManager;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
@@ -199,16 +200,13 @@ class TabbedNavigationBarColorController
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        updateNavigationBarColor();
-                    }
-
-                    @Override
                     public void onChange() {
                         updateActiveTab();
                     }
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mCurrentTabModelObserver = (tabModel) -> updateNavigationBarColor();
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -263,7 +261,10 @@ class TabbedNavigationBarColorController
 
     /** Destroy this {@link TabbedNavigationBarColorController} instance. */
     public void destroy() {
-        if (mTabModelSelector != null) mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        if (mTabModelSelector != null) {
+            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+        }
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
         if (mLayoutManager != null) {
             mLayoutManager.removeObserver(mLayoutStateObserver);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 
 /** A provider that notifies its observers when incognito mode is entered or exited. */
@@ -17,8 +18,8 @@ public class IncognitoStateProvider {
     /** List of {@link IncognitoStateObserver}s. These are used to broadcast events to listeners. */
     private final ObserverList<IncognitoStateObserver> mIncognitoStateObservers;
 
-    /** A {@link TabModelSelectorObserver} used to know when incognito mode is entered or exited. */
-    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    /** Used to know when incognito mode is entered or exited. */
+    private final Callback<TabModel> mCurrentTabModelObserver;
 
     /** A {@link TabModelSelector} used to know when incognito mode is entered or exited. */
     private TabModelSelector mTabModelSelector;
@@ -26,13 +27,10 @@ public class IncognitoStateProvider {
     public IncognitoStateProvider() {
         mIncognitoStateObservers = new ObserverList<IncognitoStateObserver>();
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        // TODO(jinsukkim): Emit this only if the state is different.
-                        emitIncognitoStateChanged(newModel.isIncognito());
-                    }
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    // TODO(jinsukkim): Emit this only if the state is different.
+                    emitIncognitoStateChanged(tabModel.isIncognito());
                 };
     }
 
@@ -64,14 +62,14 @@ public class IncognitoStateProvider {
      */
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         emitIncognitoStateChanged(mTabModelSelector.isIncognitoSelected());
     }
 
     /** Destroy {@link IncognitoStateProvider} object. */
     public void destroy() {
         if (mTabModelSelector != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelector = null;
         }
         mIncognitoStateObservers.clear();

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
@@ -80,6 +81,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private Tab mTab;
     @Mock private NavigationBarColorProvider.Observer mObserver;
+    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
 
     @Captor private ArgumentCaptor<Integer> mWindowDividerColorCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarColorChangedCaptor;
@@ -101,6 +103,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mDecorView.getRootView()).thenReturn(mRootView);
         when(mRootView.getContext()).thenReturn(mContext);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
         mNavColorController =
                 new TabbedNavigationBarColorController(

@@ -244,12 +244,9 @@ public class StripLayoutHelperManager
     private float mStripEndPadding;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private final TabModelSelectorObserver mTabModelSelectorObserver =
-            new TabModelSelectorObserver() {
-                @Override
-                public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                    tabModelSwitched(newModel.isIncognito());
-                }
+    private final Callback<TabModel> mCurrentTabModelObserver =
+            (tabModel) -> {
+                tabModelSwitched(tabModel.isIncognito());
             };
 
     private TabModelObserver mTabModelObserver;
@@ -661,7 +658,7 @@ public class StripLayoutHelperManager
                     .getTabModelFilterProvider()
                     .removeTabModelFilterObserver(mTabModelObserver);
 
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelectorTabModelObserver.destroy();
             mTabModelSelectorTabObserver.destroy();
         }
@@ -1319,7 +1316,7 @@ public class StripLayoutHelperManager
                     }
                 };
 
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         if (mTabDragSource != null) {
             mTabDragSource.setTabModelSelector(mTabModelSelector);
         }
