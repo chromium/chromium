@@ -6707,6 +6707,7 @@
       'android_limited_capacity_gtests': {},
       'android_smoke_tests': {},
       'android_trichrome_smoke_tests': {},
+      'chrome_public_tests': {},
     },
 
     'android_14_emulator_gtests': {

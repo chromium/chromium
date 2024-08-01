@@ -131,6 +131,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "android_14_device_fyi_gtests",
     basic_suites = {
+        # TODO(crbug.com/352811552): Remove this group after tests are green
         "chrome_public_tests": None,
         "system_webview_shell_instrumentation_tests": None,
         "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
@@ -150,6 +151,7 @@ targets.legacy_matrix_compound_suite(
         "android_limited_capacity_gtests": None,
         "android_trichrome_smoke_tests": None,
         "android_smoke_tests": None,
+        "chrome_public_tests": None,
     },
 )
 
