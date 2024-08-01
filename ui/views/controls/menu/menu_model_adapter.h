@@ -97,6 +97,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   void WillHideMenu(MenuItemView* menu) override;
   void OnMenuClosed(MenuItemView* menu) override;
   std::optional<SkColor> GetLabelColor(int command_id) const override;
+  bool IsTearingDown() const override;
 
  private:
   // Implementation of BuildMenu().

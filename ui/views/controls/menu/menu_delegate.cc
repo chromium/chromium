@@ -155,4 +155,8 @@ bool MenuDelegate::ShouldTryPositioningBesideAnchor() const {
   return true;
 }
 
+bool MenuDelegate::IsTearingDown() const {
+  return false;
+}
+
 }  // namespace views

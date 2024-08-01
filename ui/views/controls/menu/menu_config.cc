@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/menu/menu_config.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/no_destructor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -45,11 +46,19 @@ int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
 
 bool MenuConfig::ShouldShowAcceleratorText(const MenuItemView* item,
                                            std::u16string* text) const {
-  if (!show_accelerators || !item->GetDelegate() || !item->GetCommand())
+  if (!show_accelerators || !item->GetDelegate() || !item->GetCommand()) {
     return false;
+  }
+  if (item->GetDelegate()->IsTearingDown()) {
+    // The delegate should not be used once teardown has begun. Remove this once
+    // crash root cause has been determined (crbug.com/1283454).
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
   ui::Accelerator accelerator;
-  if (!item->GetDelegate()->GetAccelerator(item->GetCommand(), &accelerator))
+  if (!item->GetDelegate()->GetAccelerator(item->GetCommand(), &accelerator)) {
     return false;
+  }
   if (item->GetMenuController() && item->GetMenuController()->IsContextMenu() &&
       !show_context_menu_accelerators) {
     return false;
