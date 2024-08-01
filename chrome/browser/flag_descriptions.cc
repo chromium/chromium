@@ -228,6 +228,13 @@ const char kDefaultBrowserPromptRefreshDescription[] =
     "after it has been declined, depending on the time that the info bar was "
     "last declined, and how many times it has been declined.";
 
+const char kDeferRendererTasksAfterInputName[] =
+    "Defer Renderer Tasks After Input";
+const char kDeferRendererTasksAfterInputDescription[] =
+    "If enabled, tasks in the renderer will be deferred after discrete input "
+    "events, e.g. keypress, until after the subsequent frame. The associated "
+    "policy controls which tasks types can be deferred.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kDesynchronizedCanvas2DName[] = "Optimize desynchronized canvas 2D.";
 const char kDesynchronizedCanvas2DDescription[] =

@@ -1951,6 +1951,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "defer-renderer-tasks-after-input",
+    "owners": [ "shaseley@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "delay-media-sink-discovery",
     "owners": [
       "muyaoxu@google.com",

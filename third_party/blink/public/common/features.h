@@ -285,6 +285,41 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCreateImageBitmapOrientationNone);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDefaultViewportIsDeviceWidth);
 
+// If enabled, some task queues are disabled between a discrete input event and
+// the subsequent frame. Which task types are deferrable depends on the
+// `TaskDeferralPolicy`.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeferRendererTasksAfterInput);
+enum class TaskDeferralPolicy {
+  // A minimal set of task types are deferrable, including DOM Manipulation
+  // tasks (for popover) and low priority tasks.
+  kMinimalTypes,
+  // Existing "deferrable" task types are deferrable, excluding user-blocking
+  // web scheduling tasks.
+  kNonUserBlockingDeferrableTypes,
+  // All per-frame task types are deferrable, excluding user-blocking web
+  // scheduling tasks.
+  kNonUserBlockingTypes,
+  // All existing "deferrable" task types are deferrable.
+  kAllDeferrableTypes,
+  // All per-frame task types are deferrable.
+  kAllTypes,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<TaskDeferralPolicy>
+    kTaskDeferralPolicyParam;
+// Constants to expose the policy in about:flags.
+BLINK_COMMON_EXPORT extern const char
+    kDeferRendererTasksAfterInputPolicyParamName[];
+BLINK_COMMON_EXPORT extern const char
+    kDeferRendererTasksAfterInputMinimalTypesPolicyName[];
+BLINK_COMMON_EXPORT extern const char
+    kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName[];
+BLINK_COMMON_EXPORT extern const char
+    kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyName[];
+BLINK_COMMON_EXPORT extern const char
+    kDeferRendererTasksAfterInputAllDeferrableTypesPolicyName[];
+BLINK_COMMON_EXPORT extern const char
+    kDeferRendererTasksAfterInputAllTypesPolicyName[];
+
 // If enabled, async script execution will be delayed than usual.
 // See https://crbug.com/1340837.
 //

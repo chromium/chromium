@@ -535,6 +535,39 @@ BASE_FEATURE(kDefaultViewportIsDeviceWidth,
              "DefaultViewportIsDeviceWidth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeferRendererTasksAfterInput,
+             "DeferRendererTasksAfterInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDeferRendererTasksAfterInputPolicyParamName[] = "policy";
+const char kDeferRendererTasksAfterInputMinimalTypesPolicyName[] =
+    "minimal-types";
+const char
+    kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName[] =
+        "non-user-blocking-deferrable-types";
+const char kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyName[] =
+    "non-user-blocking-types";
+const char kDeferRendererTasksAfterInputAllDeferrableTypesPolicyName[] =
+    "all-deferrable-types";
+const char kDeferRendererTasksAfterInputAllTypesPolicyName[] = "all-types";
+
+const base::FeatureParam<TaskDeferralPolicy>::Option kTaskDeferralOptions[] = {
+    {TaskDeferralPolicy::kMinimalTypes,
+     kDeferRendererTasksAfterInputPolicyParamName},
+    {TaskDeferralPolicy::kNonUserBlockingDeferrableTypes,
+     kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName},
+    {TaskDeferralPolicy::kNonUserBlockingTypes,
+     kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyName},
+    {TaskDeferralPolicy::kAllDeferrableTypes,
+     kDeferRendererTasksAfterInputAllDeferrableTypesPolicyName},
+    {TaskDeferralPolicy::kAllTypes,
+     kDeferRendererTasksAfterInputAllTypesPolicyName}};
+
+const base::FeatureParam<TaskDeferralPolicy> kTaskDeferralPolicyParam{
+    &kDeferRendererTasksAfterInput,
+    kDeferRendererTasksAfterInputPolicyParamName,
+    TaskDeferralPolicy::kAllDeferrableTypes, &kTaskDeferralOptions};
+
 BASE_FEATURE(kDelayAsyncScriptExecution,
              "DelayAsyncScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -45,8 +45,11 @@ enum class UseCase {
   //
   // TODO(crbug.com/40589651): Try to remove this `UseCase`.
   kMainThreadCustomInputHandling,
+  // A discrete input (e.g. keypress, click), was detected and we're waiting for
+  // the subsequent paint.
+  kDiscreteInputResponse,
 
-  kMaxValue = kMainThreadCustomInputHandling
+  kMaxValue = kDiscreteInputResponse
 };
 
 PLATFORM_EXPORT const char* UseCaseToString(UseCase);
