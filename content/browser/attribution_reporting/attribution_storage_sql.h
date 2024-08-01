@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -18,9 +19,9 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
+#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_resolver.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/event_level_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -37,6 +38,7 @@ class SuitableOrigin;
 
 namespace base {
 class Time;
+class TimeDelta;
 class Uuid;
 }  // namespace base
 
@@ -48,7 +50,10 @@ namespace content {
 
 class AggregatableDebugReport;
 class AttributionResolverDelegate;
+class AttributionTrigger;
+class CreateReportResult;
 class StorableSource;
+
 struct AttributionInfo;
 
 enum class RateLimitResult : int;
@@ -353,7 +358,7 @@ class CONTENT_EXPORT AttributionStorageSql {
       const url::Origin& context_origin,
       AttributionReport::Type);
 
-  AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
+  attribution_reporting::mojom::EventLevelResult MaybeStoreEventLevelReport(
       AttributionReport& report,
       const StoredSource& source,
       std::optional<uint64_t> dedup_key,
@@ -366,7 +371,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in
   // `GenerateNullAggregatableReportsAndStoreReports()`.
-  AttributionTrigger::AggregatableResult
+  attribution_reporting::mojom::AggregatableResult
   MaybeStoreAggregatableAttributionReportData(
       AttributionReport& report,
       StoredSource::Id source_id,

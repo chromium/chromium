@@ -779,8 +779,6 @@ EventLevelResult AttributionResolverImpl::MaybeCreateEventLevelReport(
     const AttributionTrigger& trigger,
     std::optional<AttributionReport>& report,
     std::optional<uint64_t>& dedup_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (source.attribution_logic() == StoredSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(source.active_state(),
               StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
@@ -852,8 +850,6 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
     std::optional<uint64_t>& dedup_key,
     std::optional<int>& max_aggregatable_reports_per_destination,
     std::optional<int64_t>& rate_limits_max_attributions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
@@ -945,8 +941,6 @@ bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
     const StoredSource* source,
     std::optional<AttributionReport>& new_aggregatable_report,
     std::optional<base::Time>& min_null_aggregatable_report_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   std::optional<base::Time> attributed_source_time;
 
   if (new_aggregatable_report) {
@@ -1015,8 +1009,6 @@ bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
 base::Time AttributionResolverImpl::GetAggregatableReportTime(
     const AttributionTrigger& trigger,
     base::Time trigger_time) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (trigger.registration()
           .aggregatable_trigger_config
           .ShouldCauseAReportToBeSentUnconditionally()) {

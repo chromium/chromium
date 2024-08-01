@@ -323,8 +323,9 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 
   base::flat_map<base::Time, RandomizedResponse> randomized_responses_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::flat_map<base::Time, base::flat_set<int>>
-      null_aggregatable_reports_days_;
+      null_aggregatable_reports_days_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 void Handle(const AttributionSimulationEvent::StartRequest& event,

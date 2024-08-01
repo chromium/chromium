@@ -95,11 +95,10 @@ using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
-using AttributionFilterData = ::attribution_reporting::FilterData;
-
 using ::attribution_reporting::AggregatableValues;
 using ::attribution_reporting::AggregatableValuesValue;
 using ::attribution_reporting::FilterConfig;
+using ::attribution_reporting::FilterData;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::kDefaultFilteringId;
 using ::attribution_reporting::MaxEventLevelReports;
@@ -2470,7 +2469,7 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
       SourceBuilder()
           .SetDestinationSites({net::SchemefulSite(origin)})
           .SetReportingOrigin(origin)
-          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
+          .SetFilterData(*FilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(
               *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
@@ -3317,11 +3316,11 @@ TEST_F(AttributionResolverTest, TriggerDataSanitized) {
 
 TEST_F(AttributionResolverTest, SourceFilterData_RoundTrips) {
   storage()->StoreSource(SourceBuilder()
-                             .SetFilterData(AttributionFilterData())
+                             .SetFilterData(FilterData())
                              .SetSourceType(SourceType::kNavigation)
                              .Build());
 
-  const auto filter_data = AttributionFilterData::Create({{"abc", {"x", "y"}}});
+  const auto filter_data = FilterData::Create({{"abc", {"x", "y"}}});
   ASSERT_TRUE(filter_data.has_value());
 
   storage()->StoreSource(SourceBuilder()
@@ -3330,7 +3329,7 @@ TEST_F(AttributionResolverTest, SourceFilterData_RoundTrips) {
                              .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(SourceFilterDataIs(AttributionFilterData()),
+              ElementsAre(SourceFilterDataIs(FilterData()),
                           SourceFilterDataIs(filter_data)));
 }
 
@@ -3373,7 +3372,7 @@ TEST_F(AttributionResolverTest, MatchingTriggerData_UsesCorrectData) {
           .SetSourceType(SourceType::kNavigation)
           .SetDestinationSites({net::SchemefulSite(origin)})
           .SetReportingOrigin(origin)
-          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
+          .SetFilterData(*FilterData::Create({{"abc", {"123"}}}))
           .Build());
 
   task_environment_.FastForwardBy(kReportDelay);
@@ -3463,7 +3462,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
       SourceBuilder()
           .SetDestinationSites({net::SchemefulSite(origin)})
           .SetReportingOrigin(origin)
-          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
+          .SetFilterData(*FilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(
               *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
