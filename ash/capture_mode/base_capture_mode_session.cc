@@ -53,12 +53,11 @@ void BaseCaptureModeSession::Shutdown() {
   ShutdownInternal();
 
   if (!is_stopping_to_start_video_recording_) {
-    // Does this check need to be here for the null session? When would we need
-    // to kill the preview? Kill the camera preview when the capture mode
-    // session ends without starting any recording. Note that we need to kill
-    // the camera preview before aborting the client initiated capture mode
-    // session that requires the camera to avoid repareting the camera preview
-    // widget which will lead to crash.
+    // Kill the camera preview when the capture mode session ends without
+    // starting any recording. Note that we need to kill the camera preview
+    // before aborting the client initiated capture mode session that requires
+    // the camera to avoid repareting the camera preview widget which will lead
+    // to crash.
     if (!controller_->is_recording_in_progress()) {
       controller_->camera_controller()->SetShouldShowPreview(false);
     }

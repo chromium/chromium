@@ -1516,6 +1516,8 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
     cursor_manager->LockCursor();
   }
 
+  // Attempt the capture image. Note the callback `OnImageCaptured()` will only
+  // be invoked if an image was successfully captured.©
   ui::GrabWindowSnapshotAsPNG(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
@@ -1531,6 +1533,8 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
   capture_mode_util::TriggerAccessibilityAlert(
       IDS_ASH_SCREEN_CAPTURE_ALERT_SCREENSHOT_CAPTURED);
 
+  // Notifies DLP that taking a screenshot was attempted so that it may report
+  // the event or show a warning if restricted content was captured.
   delegate_->OnCaptureImageAttempted(capture_params.window,
                                      capture_params.bounds);
 }
