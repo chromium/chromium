@@ -60,18 +60,21 @@ void BaseCaptureModeSession::Shutdown() {
     // to crash.
     if (!controller_->is_recording_in_progress()) {
       controller_->camera_controller()->SetShouldShowPreview(false);
+
+      // Reset the camera selection if it was auto-selected in a client-
+      // initiated (e.g. Projector or Game Dashboard) capture mode session if
+      // this session is ending and no video recording is active. We need to do
+      // this to avoid the camera selection settings of the next default capture
+      // mode session being overridden by the client-initiated capture mode
+      // session. We also need to do this only if no recording is currently
+      // active since an active recording must have come from a previous
+      // different session than `this` (see http://b/353883311).
+      controller_->camera_controller()->MaybeRevertAutoCameraSelection();
     }
 
     if (controller_->type() == CaptureModeType::kVideo) {
       controller_->NotifyRecordingStartAborted();
     }
-
-    // Reset the camera selection if it was auto-selected in the
-    // projector-initiated capture mode session when the capture mode session
-    // ended before video recording starts to avoid the camera selection
-    // settings of the normal capture mode session being overridden by the
-    // projector-initiated capture mode session.
-    controller_->camera_controller()->MaybeRevertAutoCameraSelection();
 
     // The session is about to end and recording won't start afterwards. The
     // active behavior may have overwritten some of the configs, we need to
