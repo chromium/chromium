@@ -8,6 +8,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/web/public/web_state.h"
 
 SamplePanelModel::SamplePanelModel() {}
@@ -33,10 +34,14 @@ void SamplePanelModel::FetchConfigurationForWebState(
   item_configuration->accessibility_label = "Sample entrypoint";
   item_configuration->entrypoint_message = "Large entrypoint";
   item_configuration->entrypoint_image_name = "chrome_product";
-  item_configuration->iph_title = "Sample rich IPH";
+  item_configuration->iph_title = "Sample IPH";
   item_configuration->iph_text =
       "Sample rich IPH for the CP, which should appear 3 times a day.";
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   item_configuration->iph_image_name = "chrome_search_engine_choice_icon";
+#else
+  item_configuration->iph_image_name = "chromium_search_engine_choice_icon";
+#endif
   item_configuration->iph_feature =
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   item_configuration->iph_entrypoint_used_event_name =

@@ -18,6 +18,7 @@ source_set("model") {
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
   ]
 }
 
@@ -31,6 +32,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",

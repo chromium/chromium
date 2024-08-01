@@ -2203,13 +2203,17 @@ enum class ToolbarKind {
 
   _contextualPanelEntrypointHelpPresenter =
       [[BubbleViewControllerPresenter alloc]
-               initWithText:base::SysUTF8ToNSString(config_ref.iph_text)
+               initWithText:ShouldShowRichContextualPanelEntrypointIPH()
+                                ? base::SysUTF8ToNSString(config_ref.iph_text)
+                                : base::SysUTF8ToNSString(config_ref.iph_title)
                       title:base::SysUTF8ToNSString(config_ref.iph_title)
                       image:image
              arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
                                             : BubbleArrowDirectionUp
                   alignment:BubbleAlignmentTopOrLeading
-                 bubbleType:BubbleViewTypeRich
+                 bubbleType:ShouldShowRichContextualPanelEntrypointIPH()
+                                ? BubbleViewTypeRich
+                                : BubbleViewTypeDefault
           dismissalCallback:dismissalCallback];
 
   _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement =
