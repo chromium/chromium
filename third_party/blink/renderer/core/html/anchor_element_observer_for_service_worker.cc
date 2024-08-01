@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
-#include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
-#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -59,68 +57,6 @@ AnchorElementObserverForServiceWorker::AnchorElementObserverForServiceWorker(
           this,
           &AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests) {
   CHECK(document.IsInOutermostMainFrame());
-  if (features::kSpeculativeServiceWorkerWarmUpIntersectionObserver.Get()) {
-    intersection_observer_ = IntersectionObserver::Create(
-        document,
-        WTF::BindRepeating(
-            &AnchorElementObserverForServiceWorker::UpdateVisibleAnchors,
-            WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-        IntersectionObserver::Params{
-            .thresholds = {std::numeric_limits<float>::min()},
-            .behavior = IntersectionObserver::kPostTaskToDeliver,
-            .delay = base::Milliseconds(
-                features::
-                    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay
-                        .Get())});
-  }
-}
-
-void AnchorElementObserverForServiceWorker::ObserveAnchorElementVisibility(
-    HTMLAnchorElement& element) {
-  if (features::kSpeculativeServiceWorkerWarmUpIntersectionObserver.Get()) {
-    TRACE_EVENT0("ServiceWorker",
-                 "AnchorElementObserverForServiceWorker::"
-                 "ObserveAnchorElementVisibility");
-    intersection_observer_->observe(&element);
-  }
-}
-
-void AnchorElementObserverForServiceWorker::UpdateVisibleAnchors(
-    const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  if (!features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
-    return;
-  }
-
-  TRACE_EVENT0("ServiceWorker",
-               "AnchorElementObserverForServiceWorker::UpdateVisibleAnchors");
-
-  Links links;
-  for (const auto& entry : entries) {
-    if (!entry->isIntersecting()) {
-      continue;
-    }
-
-    Element* element = entry->target();
-    if (!element) {
-      continue;
-    }
-
-    // Once an element is evaluated, we stop observing the element to reduce the
-    // computational load caused by IntersectionObserver.
-    intersection_observer_->unobserve(element);
-
-    HTMLAnchorElement* anchor = DynamicTo<HTMLAnchorElement>(element);
-    if (!anchor) {
-      anchor = DynamicTo<HTMLAreaElement>(element);
-    }
-    if (anchor && anchor->IsLink() &&
-        !already_handled_links_.Contains(anchor)) {
-      links.push_back(anchor);
-    }
-  }
-
-  MaybeSendNavigationTargetLinks(links);
 }
 
 void AnchorElementObserverForServiceWorker::MaybeSendNavigationTargetLinks(
@@ -235,7 +171,6 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
 
 void AnchorElementObserverForServiceWorker::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
-  visitor->Trace(intersection_observer_);
   visitor->Trace(already_handled_links_);
   visitor->Trace(pending_warm_up_links_);
   visitor->Trace(batch_timer_);

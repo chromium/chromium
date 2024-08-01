@@ -2218,22 +2218,6 @@ const base::FeatureParam<base::TimeDelta>
                                             "sw_warm_up_duration",
                                             base::Minutes(10)};
 
-// Enable IntersectionObserver to detect anchor's visibility.
-const base::FeatureParam<bool>
-    kSpeculativeServiceWorkerWarmUpIntersectionObserver{
-        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_intersection_observer",
-        true};
-
-// Duration from previous IntersectionObserver event to the next event.
-const base::FeatureParam<int>
-    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay{
-        &kSpeculativeServiceWorkerWarmUp,
-        "sw_warm_up_intersection_observer_delay", 100};
-
-// Warms up service workers when the anchor becomes visible.
-const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnVisible{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_visible", true};
-
 // Warms up service workers when the anchor is inserted into DOM.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_inserted_into_dom", false};
