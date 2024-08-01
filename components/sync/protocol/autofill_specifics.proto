@@ -60,9 +60,8 @@ message AutofillProfileSpecifics {
   // from the Windows epoch.
   optional int64 use_date = 23;
 
-  // A user chosen profile label that is used to identify the profile.
-  // The value of the label can be freely chosen by the user. Two possible label
-  // values are '$HOME$' or '$WORK$' which have a special meaning.
+  // A label intended to be chosen by the user. This was however never
+  // implemented and is currently unused.
   optional string profile_label = 62;
 
   // Contact info name fields.

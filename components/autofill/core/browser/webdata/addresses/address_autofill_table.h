@@ -44,10 +44,8 @@ namespace autofill {
 //                      display. For example, a JP address with "ja" language
 //                      code starts with the postal code, but a JP address with
 //                      "ja-latn" language code starts with the recipient name.
-//   label              A user-chosen and user-visible label for the profile to
-//                      help identifying the semantics of the profile. The user
-//                      can choose an arbitrary string in principle, but the
-//                      values '$HOME$' and '$WORK$' indicate a special meaning.
+//   label              A label intended to be chosen by the user. This was
+//                      however never implemented and is currently unused.
 //   initial_creator_id The application that initially created the profile.
 //                      Represented as an integer. See AutofillProfile.
 //   last_modifier_id   The application that performed the last non-metadata
