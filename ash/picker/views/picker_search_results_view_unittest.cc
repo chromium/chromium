@@ -587,23 +587,15 @@ class PickerSearchResultsViewResultSelectionTest
   AshColorProvider ash_color_provider_;
 };
 
-// TODO(crbug.com/356559078): fails on ASAN, fix the failure and re-enable the
-// test.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_LeftClickSelectsResult DISABLED_LeftClickSelectsResult
-#else
-#define MAYBE_LeftClickSelectsResult LeftClickSelectsResult
-#endif
-TEST_P(PickerSearchResultsViewResultSelectionTest,
-       MAYBE_LeftClickSelectsResult) {
+TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   const PickerSearchResultTestCase& test_case = GetParam();
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  widget->SetFullscreen(true);
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerPreviewBubbleController preview_controller;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller,
