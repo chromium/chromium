@@ -84,7 +84,4 @@
 #define _LIBCPP_HAS_NO_INT128
 #endif
 
-// TODO(thakis): Remove this after LLVM 19's libc++ is rolled in.
-#define _LIBCPP_CHAR_TRAITS_REMOVE_BASE_SPECIALIZATION
-
 #endif // _LIBCPP_CONFIG_SITE
