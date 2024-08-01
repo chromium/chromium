@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -33,26 +33,26 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 // static
-std::unique_ptr<MediaRouterContextualMenu> MediaRouterContextualMenu::Create(
+std::unique_ptr<CastContextualMenu> CastContextualMenu::Create(
     Browser* browser,
     Observer* observer) {
-  return std::make_unique<MediaRouterContextualMenu>(
+  return std::make_unique<CastContextualMenu>(
       browser,
-      MediaRouterActionController::IsActionShownByPolicy(browser->profile()),
+      CastToolbarButtonController::IsActionShownByPolicy(browser->profile()),
       observer);
 }
 
-MediaRouterContextualMenu::MediaRouterContextualMenu(Browser* browser,
+CastContextualMenu::CastContextualMenu(Browser* browser,
                                                      bool shown_by_policy,
                                                      Observer* observer)
     : browser_(browser),
       observer_(observer),
       shown_by_policy_(shown_by_policy) {}
 
-MediaRouterContextualMenu::~MediaRouterContextualMenu() = default;
+CastContextualMenu::~CastContextualMenu() = default;
 
 std::unique_ptr<ui::SimpleMenuModel>
-MediaRouterContextualMenu::CreateMenuModel() {
+CastContextualMenu::CreateMenuModel() {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model->AddItemWithStringId(IDC_MEDIA_ROUTER_ABOUT,
                                   IDS_MEDIA_ROUTER_ABOUT);
@@ -88,17 +88,17 @@ MediaRouterContextualMenu::CreateMenuModel() {
   return menu_model;
 }
 
-bool MediaRouterContextualMenu::GetAlwaysShowActionPref() const {
-  return MediaRouterActionController::GetAlwaysShowActionPref(
+bool CastContextualMenu::GetAlwaysShowActionPref() const {
+  return CastToolbarButtonController::GetAlwaysShowActionPref(
       browser_->profile());
 }
 
-void MediaRouterContextualMenu::SetAlwaysShowActionPref(bool always_show) {
-  return MediaRouterActionController::SetAlwaysShowActionPref(
+void CastContextualMenu::SetAlwaysShowActionPref(bool always_show) {
+  return CastToolbarButtonController::SetAlwaysShowActionPref(
       browser_->profile(), always_show);
 }
 
-bool MediaRouterContextualMenu::IsCommandIdChecked(int command_id) const {
+bool CastContextualMenu::IsCommandIdChecked(int command_id) const {
   PrefService* pref_service = browser_->profile()->GetPrefs();
   switch (command_id) {
     case IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION:
@@ -111,15 +111,15 @@ bool MediaRouterContextualMenu::IsCommandIdChecked(int command_id) const {
   }
 }
 
-bool MediaRouterContextualMenu::IsCommandIdEnabled(int command_id) const {
+bool CastContextualMenu::IsCommandIdEnabled(int command_id) const {
   return command_id != IDC_MEDIA_ROUTER_SHOWN_BY_POLICY;
 }
 
-bool MediaRouterContextualMenu::IsCommandIdVisible(int command_id) const {
+bool CastContextualMenu::IsCommandIdVisible(int command_id) const {
   return true;
 }
 
-void MediaRouterContextualMenu::ExecuteCommand(int command_id,
+void CastContextualMenu::ExecuteCommand(int command_id,
                                                int event_flags) {
   const char kAboutPageUrl[] =
       "https://www.google.com/chrome/devices/chromecast/";
@@ -156,15 +156,15 @@ void MediaRouterContextualMenu::ExecuteCommand(int command_id,
   }
 }
 
-void MediaRouterContextualMenu::OnMenuWillShow(ui::SimpleMenuModel* source) {
+void CastContextualMenu::OnMenuWillShow(ui::SimpleMenuModel* source) {
   observer_->OnContextMenuShown();
 }
 
-void MediaRouterContextualMenu::MenuClosed(ui::SimpleMenuModel* source) {
+void CastContextualMenu::MenuClosed(ui::SimpleMenuModel* source) {
   observer_->OnContextMenuHidden();
 }
 
-void MediaRouterContextualMenu::ToggleMediaRemoting() {
+void CastContextualMenu::ToggleMediaRemoting() {
   PrefService* pref_service = browser_->profile()->GetPrefs();
   pref_service->SetBoolean(
       media_router::prefs::kMediaRouterMediaRemotingEnabled,
@@ -173,7 +173,7 @@ void MediaRouterContextualMenu::ToggleMediaRemoting() {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void MediaRouterContextualMenu::ReportIssue() {
+void CastContextualMenu::ReportIssue() {
   ShowSingletonTab(
       browser_,
       GURL(base::StrCat({"chrome://", chrome::kChromeUICastFeedbackHost})));

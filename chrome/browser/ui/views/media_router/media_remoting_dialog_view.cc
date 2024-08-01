@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -46,7 +46,7 @@ bool MediaRemotingDialogCoordinatorViews::Show(
   Profile* const profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   PrefService* const pref_service = profile->GetPrefs();
-  MediaRouterActionController* const action_controller =
+  CastToolbarButtonController* const action_controller =
       MediaRouterUIService::Get(profile)->action_controller();
 
   auto remoting_dialog = std::make_unique<MediaRemotingDialogView>(
@@ -70,7 +70,7 @@ bool MediaRemotingDialogCoordinatorViews::IsShowing() const {
 MediaRemotingDialogView::MediaRemotingDialogView(
     views::View* anchor_view,
     PrefService* pref_service,
-    MediaRouterActionController* action_controller,
+    CastToolbarButtonController* action_controller,
     MediaRemotingDialogCoordinator::PermissionCallback callback)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       pref_service_(pref_service),

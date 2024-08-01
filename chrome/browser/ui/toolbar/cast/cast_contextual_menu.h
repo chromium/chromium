@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
-#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_CAST_CAST_CONTEXTUAL_MENU_H_
+#define CHROME_BROWSER_UI_TOOLBAR_CAST_CAST_CONTEXTUAL_MENU_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +14,7 @@
 class Browser;
 
 // The class for the contextual menu for the Cast toolbar icon.
-class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
+class CastContextualMenu : public ui::SimpleMenuModel::Delegate {
  public:
   class Observer {
    public:
@@ -24,35 +24,35 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
 
   // Creates an instance for a Cast toolbar icon shown in the toolbar.
   // |observer| must outlive the context menu.
-  static std::unique_ptr<MediaRouterContextualMenu> Create(Browser* browser,
+  static std::unique_ptr<CastContextualMenu> Create(Browser* browser,
                                                            Observer* observer);
 
   // Constructor called by the static Create* methods above and tests.
-  MediaRouterContextualMenu(Browser* browser,
+  CastContextualMenu(Browser* browser,
                             bool shown_by_policy,
                             Observer* observer);
 
-  MediaRouterContextualMenu(const MediaRouterContextualMenu&) = delete;
-  MediaRouterContextualMenu& operator=(const MediaRouterContextualMenu&) =
+  CastContextualMenu(const CastContextualMenu&) = delete;
+  CastContextualMenu& operator=(const CastContextualMenu&) =
       delete;
 
-  ~MediaRouterContextualMenu() override;
+  ~CastContextualMenu() override;
 
   // Creates a menu model with |this| as its delegate.
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            ToggleCloudServicesItem);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            ShowCloudServicesDialog);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            ToggleAlwaysShowIconItem);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            ToggleMediaRemotingItem);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            ActionShownByPolicy);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            NotifyActionController);
 
   // Gets or sets the "Always show icon" option.
@@ -83,4 +83,4 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   const bool shown_by_policy_;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_CAST_CAST_CONTEXTUAL_MENU_H_

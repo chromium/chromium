@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_CAST_CAST_TOOLBAR_BUTTON_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TOOLBAR_CAST_CAST_TOOLBAR_BUTTON_CONTROLLER_H_
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -20,10 +20,9 @@
 // Controller for the Cast toolbar icon that determines when to show and hide
 // icon. There should be one instance of this class per profile, and it should
 // only be used on the UI thread.
-// TODO(takumif): Rename this class to CastToolbarIconController.
-class MediaRouterActionController : public media_router::IssuesObserver,
+class CastToolbarButtonController : public media_router::IssuesObserver,
                                     public media_router::MediaRoutesObserver,
-                                    public MediaRouterContextualMenu::Observer {
+                                    public CastContextualMenu::Observer {
  public:
   // TODO(takumif): CastToolbarIcon is the only Observer implementation.
   // Observer should be renamed to make it clear that it is responsible for
@@ -42,16 +41,16 @@ class MediaRouterActionController : public media_router::IssuesObserver,
     virtual void DeactivateIcon() {}
   };
 
-  explicit MediaRouterActionController(Profile* profile);
+  explicit CastToolbarButtonController(Profile* profile);
   // Constructor for injecting dependencies in tests.
-  MediaRouterActionController(Profile* profile,
+  CastToolbarButtonController(Profile* profile,
                               media_router::MediaRouter* router);
 
-  MediaRouterActionController(const MediaRouterActionController&) = delete;
-  MediaRouterActionController& operator=(const MediaRouterActionController&) =
+  CastToolbarButtonController(const CastToolbarButtonController&) = delete;
+  CastToolbarButtonController& operator=(const CastToolbarButtonController&) =
       delete;
 
-  ~MediaRouterActionController() override;
+  ~CastToolbarButtonController() override;
 
   // Whether the media router action is shown by an administrator policy.
   static bool IsActionShownByPolicy(Profile* profile);
@@ -74,7 +73,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   virtual void OnDialogShown();
   virtual void OnDialogHidden();
 
-  // MediaRouterContextualMenu::Observer:
+  // CastContextualMenu::Observer:
   void OnContextMenuShown() override;
   void OnContextMenuHidden() override;
 
@@ -93,10 +92,10 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   bool ShouldEnableAction() const;
 
  private:
-  friend class MediaRouterActionControllerUnitTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
+  friend class CastToolbarButtonControllerUnitTest;
+  FRIEND_TEST_ALL_PREFIXES(CastToolbarButtonControllerUnitTest,
                            EphemeralIconForIssues);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterActionControllerUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(CastToolbarButtonControllerUnitTest,
                            EphemeralIconForDialog);
 
   // Adds or removes the Cast icon to/from the toolbar if necessary,
@@ -131,7 +130,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<MediaRouterActionController> weak_factory_{this};
+  base::WeakPtrFactory<CastToolbarButtonController> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_MEDIA_ROUTER_ACTION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_CAST_CAST_TOOLBAR_BUTTON_CONTROLLER_H_

@@ -15,9 +15,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_contextual_menu.h"
-#include "chrome/browser/ui/toolbar/media_router/mock_media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
+#include "chrome/browser/ui/toolbar/cast/mock_cast_toolbar_button_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -48,13 +48,13 @@ bool HasCommandId(ui::MenuModel* menu_model, int command_id) {
 std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   auto controller =
-      std::make_unique<NiceMock<MockMediaRouterActionController>>(profile);
+      std::make_unique<NiceMock<MockCastToolbarButtonController>>(profile);
   return std::make_unique<media_router::MediaRouterUIService>(
       profile, std::move(controller));
 }
 
-class MockMediaRouterContextualMenuObserver
-    : public MediaRouterContextualMenu::Observer {
+class MockCastContextualMenuObserver
+    : public CastContextualMenu::Observer {
  public:
   MOCK_METHOD(void, OnContextMenuShown, ());
   MOCK_METHOD(void, OnContextMenuHidden, ());
@@ -62,14 +62,14 @@ class MockMediaRouterContextualMenuObserver
 
 }  // namespace
 
-class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
+class CastContextualMenuUnitTest : public BrowserWithTestWindowTest {
  public:
-  MediaRouterContextualMenuUnitTest() = default;
-  MediaRouterContextualMenuUnitTest(const MediaRouterContextualMenuUnitTest&) =
+  CastContextualMenuUnitTest() = default;
+  CastContextualMenuUnitTest(const CastContextualMenuUnitTest&) =
       delete;
-  MediaRouterContextualMenuUnitTest& operator=(
-      const MediaRouterContextualMenuUnitTest&) = delete;
-  ~MediaRouterContextualMenuUnitTest() override = default;
+  CastContextualMenuUnitTest& operator=(
+      const CastContextualMenuUnitTest&) = delete;
+  ~CastContextualMenuUnitTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -79,7 +79,7 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
 
     // Pin the Cast icon to the toolbar.
-    MediaRouterActionController::SetAlwaysShowActionPref(profile(), true);
+    CastToolbarButtonController::SetAlwaysShowActionPref(profile(), true);
 
     media_router::MediaRouterUIServiceFactory::GetInstance()->SetTestingFactory(
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
@@ -114,11 +114,11 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
       identity_test_env_adaptor_;
 
   raw_ptr<ToolbarActionsModel> toolbar_actions_model_ = nullptr;
-  MockMediaRouterContextualMenuObserver observer_;
+  MockCastContextualMenuObserver observer_;
 };
 
 // Tests the basic state of the contextual menu.
-TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
+TEST_F(CastContextualMenuUnitTest, Basic) {
   // About
   // -----
   // Learn more
@@ -134,7 +134,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
   expected_number_items += 2;
 #endif
 
-  MediaRouterContextualMenu menu(browser(), kShownByUser, &observer_);
+  CastContextualMenu menu(browser(), kShownByUser, &observer_);
   std::unique_ptr<ui::SimpleMenuModel> model = menu.CreateMenuModel();
   EXPECT_EQ(model->GetItemCount(), expected_number_items);
 
@@ -159,8 +159,8 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // "Report an issue" should be present for normal profiles as well as for
 // incognito.
-TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
-  MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
+TEST_F(CastContextualMenuUnitTest, EnableAndDisableReportIssue) {
+  CastContextualMenu menu(browser(), kShownByPolicy, &observer_);
   EXPECT_TRUE(
       menu.CreateMenuModel()
           ->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE)
@@ -171,7 +171,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
       CreateBrowser(profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                     Browser::TYPE_NORMAL, false, window.get()));
 
-  MediaRouterContextualMenu incognito_menu(incognito_browser.get(),
+  CastContextualMenu incognito_menu(incognito_browser.get(),
                                            kShownByPolicy, &observer_);
   EXPECT_TRUE(
       incognito_menu.CreateMenuModel()
@@ -180,8 +180,8 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
 }
 #endif
 
-TEST_F(MediaRouterContextualMenuUnitTest, ToggleMediaRemotingItem) {
-  MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
+TEST_F(CastContextualMenuUnitTest, ToggleMediaRemotingItem) {
+  CastContextualMenu menu(browser(), kShownByPolicy, &observer_);
 
   PrefService* pref_service = browser()->profile()->GetPrefs();
   pref_service->SetBoolean(
@@ -199,29 +199,29 @@ TEST_F(MediaRouterContextualMenuUnitTest, ToggleMediaRemotingItem) {
       media_router::prefs::kMediaRouterMediaRemotingEnabled));
 }
 
-TEST_F(MediaRouterContextualMenuUnitTest, ToggleAlwaysShowIconItem) {
-  MediaRouterContextualMenu menu(browser(), kShownByUser, &observer_);
+TEST_F(CastContextualMenuUnitTest, ToggleAlwaysShowIconItem) {
+  CastContextualMenu menu(browser(), kShownByUser, &observer_);
 
   // Whether the option is checked should reflect the pref.
-  MediaRouterActionController::SetAlwaysShowActionPref(profile(), true);
+  CastToolbarButtonController::SetAlwaysShowActionPref(profile(), true);
   EXPECT_TRUE(
       menu.IsCommandIdChecked(IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION));
 
-  MediaRouterActionController::SetAlwaysShowActionPref(profile(), false);
+  CastToolbarButtonController::SetAlwaysShowActionPref(profile(), false);
   EXPECT_FALSE(
       menu.IsCommandIdChecked(IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION));
 
   // Executing the option should toggle the pref.
   menu.ExecuteCommand(IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION, 0);
-  EXPECT_TRUE(MediaRouterActionController::GetAlwaysShowActionPref(profile()));
+  EXPECT_TRUE(CastToolbarButtonController::GetAlwaysShowActionPref(profile()));
 
   menu.ExecuteCommand(IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION, 0);
-  EXPECT_FALSE(MediaRouterActionController::GetAlwaysShowActionPref(profile()));
+  EXPECT_FALSE(CastToolbarButtonController::GetAlwaysShowActionPref(profile()));
 }
 
-TEST_F(MediaRouterContextualMenuUnitTest, ActionShownByPolicy) {
+TEST_F(CastContextualMenuUnitTest, ActionShownByPolicy) {
   // Create a contextual menu for an icon shown by administrator policy.
-  MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
+  CastContextualMenu menu(browser(), kShownByPolicy, &observer_);
 
   // The item "Added by your administrator" should be shown disabled.
   EXPECT_TRUE(menu.IsCommandIdVisible(IDC_MEDIA_ROUTER_SHOWN_BY_POLICY));
@@ -232,9 +232,9 @@ TEST_F(MediaRouterContextualMenuUnitTest, ActionShownByPolicy) {
                             IDC_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION));
 }
 
-TEST_F(MediaRouterContextualMenuUnitTest, NotifyActionController) {
+TEST_F(CastContextualMenuUnitTest, NotifyActionController) {
   EXPECT_CALL(observer_, OnContextMenuShown());
-  auto menu = std::make_unique<MediaRouterContextualMenu>(
+  auto menu = std::make_unique<CastContextualMenu>(
       browser(), kShownByUser, &observer_);
   std::unique_ptr<ui::SimpleMenuModel> model = menu->CreateMenuModel();
   menu->OnMenuWillShow(model.get());

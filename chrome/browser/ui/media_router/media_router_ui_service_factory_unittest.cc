@@ -41,7 +41,7 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
   void SetUp() override {
     TestingProfile::Builder builder;
     ClearMediaRouterStoredPrefsForTesting();
-    // MediaRouterUIService instantiates MediaRouterActionController, which
+    // MediaRouterUIService instantiates CastToolbarButtonController, which
     // requires ToolbarActionsModel.
     builder.AddTestingFactory(
         ToolbarActionsModelFactory::GetInstance(),

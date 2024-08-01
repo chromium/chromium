@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -17,7 +17,7 @@
 using media_router::MediaRoute;
 using testing::NiceMock;
 
-class FakeCastToolbarIcon : public MediaRouterActionController::Observer {
+class FakeCastToolbarIcon : public CastToolbarButtonController::Observer {
  public:
   FakeCastToolbarIcon() = default;
   ~FakeCastToolbarIcon() override = default;
@@ -35,27 +35,27 @@ class FakeCastToolbarIcon : public MediaRouterActionController::Observer {
   bool icon_shown_ = false;
 };
 
-class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
+class CastToolbarButtonControllerUnitTest : public BrowserWithTestWindowTest {
  public:
-  MediaRouterActionControllerUnitTest()
+  CastToolbarButtonControllerUnitTest()
       : issue_(media_router::IssueInfo(
             "title notification",
             media_router::IssueInfo::Severity::NOTIFICATION,
             "sinkId1")) {}
 
-  MediaRouterActionControllerUnitTest(
-      const MediaRouterActionControllerUnitTest&) = delete;
-  MediaRouterActionControllerUnitTest& operator=(
-      const MediaRouterActionControllerUnitTest&) = delete;
+  CastToolbarButtonControllerUnitTest(
+      const CastToolbarButtonControllerUnitTest&) = delete;
+  CastToolbarButtonControllerUnitTest& operator=(
+      const CastToolbarButtonControllerUnitTest&) = delete;
 
-  ~MediaRouterActionControllerUnitTest() override = default;
+  ~CastToolbarButtonControllerUnitTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
     router_ = std::make_unique<NiceMock<media_router::MockMediaRouter>>();
     controller_ =
-        std::make_unique<MediaRouterActionController>(profile(), router_.get());
+        std::make_unique<CastToolbarButtonController>(profile(), router_.get());
     controller_->AddObserver(&icon_);
 
     SetAlwaysShowActionPref(false);
@@ -94,12 +94,12 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
-    MediaRouterActionController::SetAlwaysShowActionPref(profile(),
+    CastToolbarButtonController::SetAlwaysShowActionPref(profile(),
                                                          always_show);
   }
 
  protected:
-  std::unique_ptr<MediaRouterActionController> controller_;
+  std::unique_ptr<CastToolbarButtonController> controller_;
   std::unique_ptr<media_router::MockMediaRouter> router_;
   FakeCastToolbarIcon icon_;
 
@@ -114,7 +114,7 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   const media_router::Issue issue_;
 };
 
-TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutes) {
+TEST_F(CastToolbarButtonControllerUnitTest, EphemeralIconForRoutes) {
   EXPECT_FALSE(IsIconShown());
   // A local mirroring route should show the action icon.
   UpdateRoutesAndExpectIconShown({local_mirroring_route_});
@@ -126,7 +126,7 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutes) {
   UpdateRoutesAndExpectIconHidden({non_local_mirroring_route_});
 }
 
-TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForIssues) {
+TEST_F(CastToolbarButtonControllerUnitTest, EphemeralIconForIssues) {
   EXPECT_FALSE(IsIconShown());
 
   // Creating an issue should show the action icon.
@@ -147,7 +147,7 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForIssues) {
   UpdateRoutesAndExpectIconHidden({});
 }
 
-TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForDialog) {
+TEST_F(CastToolbarButtonControllerUnitTest, EphemeralIconForDialog) {
   EXPECT_FALSE(IsIconShown());
 
   // Showing a dialog should show the icon.
@@ -182,7 +182,7 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForDialog) {
   EXPECT_FALSE(IsIconShown());
 }
 
-TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForContextMenu) {
+TEST_F(CastToolbarButtonControllerUnitTest, EphemeralIconForContextMenu) {
   EXPECT_FALSE(IsIconShown());
 
   controller_->OnDialogShown();
@@ -198,7 +198,7 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForContextMenu) {
   EXPECT_FALSE(IsIconShown());
 }
 
-TEST_F(MediaRouterActionControllerUnitTest, ObserveAlwaysShowPrefChange) {
+TEST_F(CastToolbarButtonControllerUnitTest, ObserveAlwaysShowPrefChange) {
   EXPECT_FALSE(IsIconShown());
 
   SetAlwaysShowActionPref(true);

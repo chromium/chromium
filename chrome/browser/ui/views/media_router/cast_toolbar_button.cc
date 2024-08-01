@@ -46,10 +46,9 @@ std::unique_ptr<CastToolbarButton> CastToolbarButton::Create(Browser* browser) {
     return nullptr;
   }
 
-  std::unique_ptr<MediaRouterContextualMenu> context_menu =
-      MediaRouterContextualMenu::Create(
-          browser,
-          MediaRouterUIService::Get(browser->profile())->action_controller());
+  std::unique_ptr<CastContextualMenu> context_menu = CastContextualMenu::Create(
+      browser,
+      MediaRouterUIService::Get(browser->profile())->action_controller());
   return std::make_unique<CastToolbarButton>(
       browser, MediaRouterFactory::GetApiForBrowserContext(browser->profile()),
       std::move(context_menu));
@@ -58,7 +57,7 @@ std::unique_ptr<CastToolbarButton> CastToolbarButton::Create(Browser* browser) {
 CastToolbarButton::CastToolbarButton(
     Browser* browser,
     MediaRouter* media_router,
-    std::unique_ptr<MediaRouterContextualMenu> context_menu)
+    std::unique_ptr<CastContextualMenu> context_menu)
     : ToolbarButton(base::BindRepeating(&CastToolbarButton::ButtonPressed,
                                         base::Unretained(this)),
                     context_menu->CreateMenuModel(),
@@ -227,7 +226,7 @@ void CastToolbarButton::UpdateIcon() {
   UpdateLayoutInsetDelta();
 }
 
-MediaRouterActionController* CastToolbarButton::GetActionController() const {
+CastToolbarButtonController* CastToolbarButton::GetActionController() const {
   return MediaRouterUIService::Get(profile_)->action_controller();
 }
 

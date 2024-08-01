@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
@@ -19,15 +19,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-MediaRouterActionController::MediaRouterActionController(Profile* profile)
-    : MediaRouterActionController(
+CastToolbarButtonController::CastToolbarButtonController(Profile* profile)
+    : CastToolbarButtonController(
           profile,
           media_router::MediaRouterFactory::GetApiForBrowserContext(profile)) {}
 
-MediaRouterActionController::~MediaRouterActionController() = default;
+CastToolbarButtonController::~CastToolbarButtonController() = default;
 
 // static
-bool MediaRouterActionController::IsActionShownByPolicy(Profile* profile) {
+bool CastToolbarButtonController::IsActionShownByPolicy(Profile* profile) {
   CHECK(profile);
   const PrefService::Preference* pref =
       profile->GetPrefs()->FindPreference(prefs::kShowCastIconInToolbar);
@@ -38,29 +38,29 @@ bool MediaRouterActionController::IsActionShownByPolicy(Profile* profile) {
 }
 
 // static
-bool MediaRouterActionController::GetAlwaysShowActionPref(Profile* profile) {
+bool CastToolbarButtonController::GetAlwaysShowActionPref(Profile* profile) {
   CHECK(profile);
   return profile->GetPrefs()->GetBoolean(prefs::kShowCastIconInToolbar);
 }
 
 // static
-void MediaRouterActionController::SetAlwaysShowActionPref(Profile* profile,
+void CastToolbarButtonController::SetAlwaysShowActionPref(Profile* profile,
                                                           bool always_show) {
   CHECK(profile);
   profile->GetPrefs()->SetBoolean(prefs::kShowCastIconInToolbar, always_show);
 }
 
-void MediaRouterActionController::OnIssue(const media_router::Issue& issue) {
+void CastToolbarButtonController::OnIssue(const media_router::Issue& issue) {
   has_issue_ = true;
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::OnIssuesCleared() {
+void CastToolbarButtonController::OnIssuesCleared() {
   has_issue_ = false;
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::OnRoutesUpdated(
+void CastToolbarButtonController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes) {
   has_local_display_route_ =
       base::ranges::any_of(
@@ -88,14 +88,14 @@ void MediaRouterActionController::OnRoutesUpdated(
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::OnDialogShown() {
+void CastToolbarButtonController::OnDialogShown() {
   dialog_count_++;
   MaybeAddOrRemoveAction();
   for (Observer& observer : observers_)
     observer.ActivateIcon();
 }
 
-void MediaRouterActionController::OnDialogHidden() {
+void CastToolbarButtonController::OnDialogHidden() {
   DCHECK_GT(dialog_count_, 0u);
   if (dialog_count_)
     dialog_count_--;
@@ -106,12 +106,12 @@ void MediaRouterActionController::OnDialogHidden() {
     // doesn't get hidden until we have a chance to show a context menu.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&MediaRouterActionController::MaybeAddOrRemoveAction,
+        base::BindOnce(&CastToolbarButtonController::MaybeAddOrRemoveAction,
                        weak_factory_.GetWeakPtr()));
   }
 }
 
-void MediaRouterActionController::OnContextMenuShown() {
+void CastToolbarButtonController::OnContextMenuShown() {
   DCHECK(!context_menu_shown_);
   context_menu_shown_ = true;
   // Once the context menu is shown, we no longer need to keep track of the
@@ -120,56 +120,56 @@ void MediaRouterActionController::OnContextMenuShown() {
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::OnContextMenuHidden() {
+void CastToolbarButtonController::OnContextMenuHidden() {
   DCHECK(context_menu_shown_);
   context_menu_shown_ = false;
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::KeepIconShownOnPressed() {
+void CastToolbarButtonController::KeepIconShownOnPressed() {
   DCHECK(!keep_visible_for_right_click_or_hold_);
   keep_visible_for_right_click_or_hold_ = true;
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::MaybeHideIconOnReleased() {
+void CastToolbarButtonController::MaybeHideIconOnReleased() {
   keep_visible_for_right_click_or_hold_ = false;
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::AddObserver(Observer* observer) {
+void CastToolbarButtonController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void MediaRouterActionController::RemoveObserver(Observer* observer) {
+void CastToolbarButtonController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool MediaRouterActionController::ShouldEnableAction() const {
+bool CastToolbarButtonController::ShouldEnableAction() const {
   return shown_by_policy_ || has_local_display_route_ || has_issue_ ||
          dialog_count_ || context_menu_shown_ ||
          keep_visible_for_right_click_or_hold_ ||
          GetAlwaysShowActionPref(profile_);
 }
 
-MediaRouterActionController::MediaRouterActionController(
+CastToolbarButtonController::CastToolbarButtonController(
     Profile* profile,
     media_router::MediaRouter* router)
     : media_router::IssuesObserver(router->GetIssueManager()),
       media_router::MediaRoutesObserver(router),
       profile_(profile),
       shown_by_policy_(
-          MediaRouterActionController::IsActionShownByPolicy(profile)) {
+          CastToolbarButtonController::IsActionShownByPolicy(profile)) {
   CHECK(profile_);
   media_router::IssuesObserver::Init();
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kShowCastIconInToolbar,
-      base::BindRepeating(&MediaRouterActionController::MaybeAddOrRemoveAction,
+      base::BindRepeating(&CastToolbarButtonController::MaybeAddOrRemoveAction,
                           base::Unretained(this)));
 }
 
-void MediaRouterActionController::MaybeAddOrRemoveAction() {
+void CastToolbarButtonController::MaybeAddOrRemoveAction() {
   if (ShouldEnableAction()) {
     for (Observer& observer : observers_)
       observer.ShowIcon();
