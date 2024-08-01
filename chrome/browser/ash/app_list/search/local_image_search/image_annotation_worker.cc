@@ -266,6 +266,13 @@ void ImageAnnotationWorker::OnDlcInstalled() {
       return;
     }
 
+    // The installation status of `image_content_annotator_` only updates when
+    // function `EnsureAnnotatorIsConnected()` is called. Thus, at each retry we
+    // should trigger it again so that it attempts to bind the annotator.
+    if (use_ica_) {
+      image_content_annotator_.EnsureAnnotatorIsConnected();
+    }
+
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
