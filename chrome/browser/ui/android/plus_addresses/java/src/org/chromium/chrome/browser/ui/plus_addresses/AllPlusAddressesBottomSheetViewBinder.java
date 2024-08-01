@@ -69,8 +69,6 @@ class AllPlusAddressesBottomSheetViewBinder {
             plusAddressChip
                     .getPrimaryTextView()
                     .setContentDescription(plusProfile.getPlusAddress());
-            plusAddressChip.setIcon(
-                    R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
 
             setPlusProfileIcon(view, helper.getDefaultIcon(plusProfile.getOrigin()));
             helper.fetchFavicon(
