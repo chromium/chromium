@@ -184,7 +184,7 @@
     Remove from lists
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_INFO" desc="Info disclaimer text for product specifications tab in history." translateable="false">
-    Tabs you delete from your product specifications tables will still show up in your Chrome history.
+    Tabs you delete from your Chrome history will still show up in your product specifications tables
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in Product Specifications history" translateable="false">
     More actions for product set <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph>
