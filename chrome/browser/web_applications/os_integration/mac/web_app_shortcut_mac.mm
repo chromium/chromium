@@ -106,11 +106,27 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
-  WebAppShortcutCreator shortcut_creator(
-      internals::GetShortcutDataDir(shortcut_info), GetChromeAppsFolder(),
-      &shortcut_info);
+
+  bool has_shortcuts = false;
+  const std::string bundle_id = GetBundleIdentifierForShim(
+      shortcut_info.app_id, shortcut_info.is_multi_profile
+                                ? base::FilePath()
+                                : shortcut_info.profile_path);
+  if (!BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder())
+           .empty()) {
+    has_shortcuts = true;
+  } else if (shortcut_info.is_multi_profile) {
+    // If in multi-profile mode, search using the profile-scoped bundle id, in
+    // case the user has an old shim hanging around.
+    const std::string profile_scoped_bundle_id = GetBundleIdentifierForShim(
+        shortcut_info.app_id, shortcut_info.profile_path);
+    has_shortcuts = !BundleInfoPlist::SearchForBundlesById(
+                         profile_scoped_bundle_id, GetChromeAppsFolder())
+                         .empty();
+  }
+
   ShortcutLocations locations;
-  if (!shortcut_creator.GetAppBundlesById().empty()) {
+  if (has_shortcuts) {
     locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
   }
   return locations;
