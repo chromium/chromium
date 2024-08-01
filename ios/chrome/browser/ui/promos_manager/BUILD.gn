@@ -35,11 +35,11 @@ source_set("utils") {
     "//components/policy/core/common",
     "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/policy/ui_bundled:user_policy_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
   ]
 }
 
