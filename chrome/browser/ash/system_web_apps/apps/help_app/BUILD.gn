@@ -51,6 +51,7 @@ static_library("help_app") {
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/feedback",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/web_applications",

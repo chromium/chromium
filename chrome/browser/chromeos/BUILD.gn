@@ -157,8 +157,6 @@ source_set("chromeos") {
     "reporting/websites/website_usage_observer.h",
     "reporting/websites/website_usage_telemetry_sampler.cc",
     "reporting/websites/website_usage_telemetry_sampler.h",
-    "upload_office_to_cloud/upload_office_to_cloud.cc",
-    "upload_office_to_cloud/upload_office_to_cloud.h",
     "video_conference/video_conference_manager_client.cc",
     "video_conference/video_conference_manager_client.h",
     "video_conference/video_conference_manager_client_common.cc",
