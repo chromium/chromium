@@ -11,6 +11,8 @@
 
 <settings-toggle-button
     pref="{{prefs.optimization_guide.model_execution_main_toggle_setting_state}}"
+    hidden="[[!shouldShowMainToggle_(showComposeControl_,
+        showTabOrganizationControl_, showWallpaperSearchControl_)]]"
     numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
     label="$i18n{aiPageMainLabel}"

@@ -98,6 +98,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         FeatureOptInState.ENABLED;
   }
 
+  private shouldShowMainToggle_(): boolean {
+    return this.showComposeControl_ || this.showTabOrganizationControl_ ||
+        this.showWallpaperSearchControl_;
+  }
+
   private getTabOrganizationHrCssClass_(): string {
     return this.showComposeControl_ ? 'hr' : '';
   }
