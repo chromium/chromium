@@ -35,6 +35,12 @@ const int kMinVisibleHeight = 30;
 // Minimum width of the visible part of a window.
 const int kMinVisibleWidth = 30;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// This specifies the minimum percentage of a window's dimension (either width
+// or height) that must remain visible with the display area.
+constexpr float kMinVisibleRatio = 0.3f;
+#endif
+
 BrowserWindow* FindMostRecentBrowserWindow(
     base::FunctionRef<bool(Browser*)> matcher) {
   for (Browser* last_active :
@@ -393,12 +399,22 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   if (bounds->y() < work_area.y() || bounds->bottom() > work_area.bottom())
     bounds->set_y(work_area.y());
 #else
-  // On non-Mac platforms, we are less aggressive about repositioning.  Simply
-  // ensure that at least kMinVisibleWidth * kMinVisibleHeight is visible.
-  const int min_y = work_area.y() + kMinVisibleHeight - bounds->height();
-  const int min_x = work_area.x() + kMinVisibleWidth - bounds->width();
-  const int max_y = work_area.bottom() - kMinVisibleHeight;
-  const int max_x = work_area.right() - kMinVisibleWidth;
+  // On non-Mac platforms, we are less aggressive about repositioning. Simply
+  // ensure that at least kMinVisibleWidth * kMinVisibleHeight is visible or
+  // `kMinVisibleRatio` of width and height is visible on ChromeOS.
+  int min_visible_width = kMinVisibleWidth;
+  int min_visible_height = kMinVisibleHeight;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  min_visible_width = std::max(
+      min_visible_width, base::ClampRound(bounds->width() * kMinVisibleRatio));
+  min_visible_height =
+      std::max(min_visible_height,
+               base::ClampRound(bounds->height() * kMinVisibleRatio));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  const int min_y = work_area.y() + min_visible_height - bounds->height();
+  const int min_x = work_area.x() + min_visible_width - bounds->width();
+  const int max_y = work_area.bottom() - min_visible_height;
+  const int max_x = work_area.right() - min_visible_width;
   // TODO(crbug.com/40192413): Make sure these use correct ranges (lo <= hi)
   // and migrate to std::clamp().
   bounds->set_y(BrokenClampThatShouldNotBeUsed(bounds->y(), min_y, max_y));

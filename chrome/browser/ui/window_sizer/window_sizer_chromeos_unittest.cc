@@ -321,9 +321,11 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
-            .WithLastActiveBounds(gfx::Rect(10, 728, 500, 400))
+            .WithLastActiveBounds(gfx::Rect(10, 638, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(gfx::Rect(10 + kWindowTilePixels, 738, 500, 400).ToString(),
+    // The y position is the display height (768) minus the minimum visible
+    // height (0.3f * 400).
+    EXPECT_EQ(gfx::Rect(10 + kWindowTilePixels, 648, 500, 400).ToString(),
               window_bounds.ToString());
   }
 
@@ -333,10 +335,9 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
-            .WithLastActiveBounds(gfx::Rect(10, 729, 500, 400))
+            .WithLastActiveBounds(gfx::Rect(20, 639, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(gfx::Rect(10 + kWindowTilePixels, 738 /* not 739 */, 500, 400)
-                  .ToString(),
+    EXPECT_EQ(gfx::Rect(20 + kWindowTilePixels, 648, 500, 400).ToString(),
               window_bounds.ToString());
   }
 
@@ -346,9 +347,11 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
-            .WithLastActiveBounds(gfx::Rect(984, 10, 500, 400))
+            .WithLastActiveBounds(gfx::Rect(864, 10, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(gfx::Rect(994, 10 + kWindowTilePixels, 500, 400).ToString(),
+    // The x position is the display width (1024) minus the minimum visible
+    // width (0.3f * 500).
+    EXPECT_EQ(gfx::Rect(874, 10 + kWindowTilePixels, 500, 400).ToString(),
               window_bounds.ToString());
   }
 
@@ -358,10 +361,9 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
-            .WithLastActiveBounds(gfx::Rect(985, 10, 500, 400))
+            .WithLastActiveBounds(gfx::Rect(865, 20, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(gfx::Rect(994 /* not 995 */, 10 + kWindowTilePixels, 500, 400)
-                  .ToString(),
+    EXPECT_EQ(gfx::Rect(874, 20 + kWindowTilePixels, 500, 400).ToString(),
               window_bounds.ToString());
   }
 
@@ -371,11 +373,10 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds =
         WindowSizerTestUtil()
             .WithMonitorBounds(p1024x768)
-            .WithLastActiveBounds(gfx::Rect(985, 729, 500, 400))
+            .WithLastActiveBounds(gfx::Rect(865, 639, 500, 400))
             .GetWindowBounds();
-    EXPECT_EQ(
-        gfx::Rect(994 /* not 995 */, 738 /* not 739 */, 500, 400).ToString(),
-        window_bounds.ToString());
+    EXPECT_EQ(gfx::Rect(874, 648, 500, 400).ToString(),
+              window_bounds.ToString());
   }
 }
 
