@@ -22,3 +22,7 @@ message SignInGaiaRequest {
   RegisterData register_data = 2;
   string app = 4;
 }
+
+message SignInGaiaResponse {
+  AuthToken auth_token = 4;
+}
