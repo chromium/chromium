@@ -335,13 +335,11 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
                   std::move(screenshots),
                   base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
                                  weak_ptr_factory_.GetWeakPtr(), surface,
-                                 expected_package_id, data.value(), dialog,
-                                 std::move(callback)));
+                                 data.value(), dialog, std::move(callback)));
 }
 
 void AppInstallServiceAsh::InstallIfDialogAccepted(
     AppInstallSurface surface,
-    PackageId expected_package_id,
     AppInstallData data,
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
     base::OnceCallback<void(AppInstallResult)> callback,
@@ -351,16 +349,14 @@ void AppInstallServiceAsh::InstallIfDialogAccepted(
     return;
   }
 
-  PerformInstall(
-      surface, data,
-      base::BindOnce(&AppInstallServiceAsh::ProcessInstallResult,
-                     weak_ptr_factory_.GetWeakPtr(), surface,
-                     expected_package_id, data, dialog, std::move(callback)));
+  PerformInstall(surface, data,
+                 base::BindOnce(&AppInstallServiceAsh::ProcessInstallResult,
+                                weak_ptr_factory_.GetWeakPtr(), surface, data,
+                                dialog, std::move(callback)));
 }
 
 void AppInstallServiceAsh::ProcessInstallResult(
     AppInstallSurface surface,
-    PackageId expected_package_id,
     AppInstallData data,
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
     base::OnceCallback<void(AppInstallResult)> callback,
@@ -378,10 +374,10 @@ void AppInstallServiceAsh::ProcessInstallResult(
     return;
   }
 
-  dialog->SetInstallFailed(base::BindOnce(
-      &AppInstallServiceAsh::InstallIfDialogAccepted,
-      weak_ptr_factory_.GetWeakPtr(), surface, expected_package_id,
-      std::move(data), dialog, std::move(callback)));
+  dialog->SetInstallFailed(
+      base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
+                     weak_ptr_factory_.GetWeakPtr(), surface, std::move(data),
+                     dialog, std::move(callback)));
 }
 
 void AppInstallServiceAsh::PerformInstall(
