@@ -474,10 +474,6 @@ void OptimizationGuideKeyedService::Initialize() {
               model_quality_logs_uploader_service_
                   ? model_quality_logs_uploader_service_->GetWeakPtr()
                   : nullptr);
-
-      RecordModelExecutionFeatureSyntheticFieldTrial(
-          optimization_guide::UserVisibleFeatureKey::kHistorySearch,
-          "HistorySearch");
     }
   }
 
@@ -805,14 +801,4 @@ void OptimizationGuideKeyedService::RemoveModelExecutionSettingsEnabledObserver(
     return;
   }
   model_execution_features_controller_->RemoveObserver(observer);
-}
-
-void OptimizationGuideKeyedService::
-    RecordModelExecutionFeatureSyntheticFieldTrial(
-        optimization_guide::UserVisibleFeatureKey feature,
-        const std::string_view feature_name) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      base::StrCat({"SyntheticModelExecutionFeature", feature_name}),
-      ShouldFeatureBeCurrentlyEnabledForUser(feature) ? "Enabled" : "Disabled",
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }

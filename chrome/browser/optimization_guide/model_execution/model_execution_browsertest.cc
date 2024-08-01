@@ -622,29 +622,6 @@ IN_PROC_BROWSER_TEST_F(
                                         /*debug_reason=*/nullptr));
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       PRE_HistorySearchRecordsSyntheticFieldTrail) {
-  EnableSignin();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kHistorySearch),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      "SyntheticModelExecutionFeatureHistorySearch", "Disabled"));
-}
-
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       HistorySearchRecordsSyntheticFieldTrail) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(IsSignedIn());
-#endif
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kHistorySearch));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      "SyntheticModelExecutionFeatureHistorySearch", "Enabled"));
-}
-
 class ModelExecutionInternalsPageBrowserTest
     : public ModelExecutionEnabledBrowserTest {
  public:
@@ -861,8 +838,6 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
 #endif
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kHistorySearch));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      "SyntheticModelExecutionFeatureHistorySearch", "Disabled"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
