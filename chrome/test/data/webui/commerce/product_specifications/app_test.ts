@@ -1383,43 +1383,35 @@ suite('AppTest', () => {
       assertTrue(appElement.$.offlineToast.open);
     });
 
-    // TODO(b/330345730): Add expected API calls for #addToNewGroup and #seeAll.
-    ([
-      ['#addToNewGroup', null],
-      ['#delete', 'deleteProductSpecificationsSet'],
-      ['#seeAll', null],
-    ] as Array<[string, keyof BrowserProxyImpl | null]>)
-        .forEach(([menuItem, expectedApiCall]) => {
-          test(
-              `shows offline toast instead of making api call when ${
-                  menuItem} is clicked`,
-              async () => {
-                // Arrange.
-                const promiseValues = createAppPromiseValues({
-                  urlsParam: ['https://example.com/'],
-                  specsSet: createSpecsSet(),
-                });
-                await createAppElementWithPromiseValues(promiseValues);
-                windowProxy.setResultFor('onLine', false);
-                assertFalse(appElement.$.offlineToast.open);
+    test(
+        `shows offline toast instead of making api call when
+                  #delete is clicked`,
+        async () => {
+          // Arrange.
+          const promiseValues = createAppPromiseValues({
+            urlsParam: ['https://example.com/'],
+            specsSet: createSpecsSet(),
+          });
+          await createAppElementWithPromiseValues(promiseValues);
+          windowProxy.setResultFor('onLine', false);
+          assertFalse(appElement.$.offlineToast.open);
 
-                // Act.
-                const header = appElement.$.header;
-                header.$.menuButton.click();
-                const menu = header.$.menu.$.menu;
-                const menuItemButton =
-                    menu.get().querySelector<HTMLElement>(menuItem);
-                assertTrue(!!menuItemButton);
-                menuItemButton.click();
-                await flushTasks();
+          // Act.
+          const header = appElement.$.header;
+          header.$.menuButton.click();
+          const menu = header.$.menu.$.menu;
+          const menuItemButton =
+              menu.get().querySelector<HTMLElement>('#delete');
+          assertTrue(!!menuItemButton);
+          menuItemButton.click();
+          await flushTasks();
 
-                // Assert.
-                assertTrue(appElement.$.offlineToast.open);
-                if (expectedApiCall) {
-                  assertEquals(
-                      0, shoppingServiceApi.getCallCount(expectedApiCall));
-                }
-              });
+          // Assert.
+          assertTrue(appElement.$.offlineToast.open);
+          assertEquals(
+              0,
+              shoppingServiceApi.getCallCount(
+                  'deleteProductSpecificationsSet'));
         });
 
     test(

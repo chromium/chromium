@@ -22,6 +22,7 @@ import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_to
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -317,14 +318,6 @@ export class ProductSpecificationsElement extends PolymerElement {
     return !this.loadingState_.loading && !this.showEmptyState_;
   }
 
-  private addToNewGroup_() {
-    if (this.isOffline_) {
-      this.showOfflineToast_();
-      return;
-    }
-    // TODO(b/330345730): Plumb through mojom.
-  }
-
   private deleteSet_() {
     if (this.isOffline_) {
       this.showOfflineToast_();
@@ -349,11 +342,8 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private seeAllSets_() {
-    if (this.isOffline_) {
-      this.showOfflineToast_();
-      return;
-    }
-    // TODO(b/330345730): Plumb through mojom
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('productSpecificationsManagementUrl'));
   }
 
   private async onUrlAdd_(e: CustomEvent<{url: string}>) {

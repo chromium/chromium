@@ -79,7 +79,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"acceptDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT},
-      {"addToNewGroup", IDS_PRODUCT_SPECIFICATIONS_ADD_TO_NEW_GROUP},
       {"declineDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE},
       {"delete", IDS_PRODUCT_SPECIFICATIONS_DELETE},
       {"disclosureAboutItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ABOUT_ITEM},
@@ -111,8 +110,9 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("message", "Some example content...");
   source->AddString("pageTitle", "Product Specifications");
+  source->AddString("productSpecificationsManagementUrl",
+                    kChromeUICompareListsUrl);
   source->AddString("summaryTitle", "Summary");
 }
 
