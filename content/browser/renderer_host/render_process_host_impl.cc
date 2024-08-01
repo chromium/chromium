@@ -4778,6 +4778,15 @@ void RenderProcessHostImpl::ProcessDied(
 
   within_process_died_observer_ = false;
 
+  if (!sent_process_created_) {
+    // Observers who listen for process creation will not get the
+    // RenderProcessExited event if the process fails to launch and dies
+    // before creation, so we send a different event to the creation observers.
+    for (auto* observer : GetAllCreationObservers()) {
+      observer->OnRenderProcessHostCreationFailed(this, info);
+    }
+  }
+
   // Initialize a new ChannelProxy in case this host is re-used for a new
   // process. This ensures that new messages can be sent on the host ASAP
   // (even before Init()) and they'll eventually reach the new process.
@@ -5123,6 +5132,10 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 
   // Send the initial system color info to the renderer.
   ThemeHelper::GetInstance()->SendSystemColorInfo(GetRendererInterface());
+
+  // Remember when we call the creation observers, so we know when to send
+  // creation failed events to the observers.
+  sent_process_created_ = true;
 
   // NOTE: This needs to be before flushing queued messages, because
   // ExtensionService uses this notification to initialize the renderer

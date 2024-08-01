@@ -10,6 +10,7 @@
 namespace content {
 
 class RenderProcessHost;
+struct ChildProcessTerminationInfo;
 
 // An observer that gets notified any time a new RenderProcessHost is created.
 // This can only be used on the UI thread.
@@ -31,6 +32,13 @@ class CONTENT_EXPORT RenderProcessHostCreationObserver {
   // destroyed (i.e. `RenderProcessHostObserver::RenderProcessHostDestroyed` is
   // not called).
   virtual void OnRenderProcessHostCreated(RenderProcessHost* process_host) = 0;
+
+  // This method is invoked when a renderer process failed to launch
+  // successfully, and `OnRenderProcessHostCreated` hasn't yet been fired for
+  // the `RenderProcessHost`.
+  virtual void OnRenderProcessHostCreationFailed(
+      RenderProcessHost* host,
+      const ChildProcessTerminationInfo& info);
 
  protected:
   RenderProcessHostCreationObserver();

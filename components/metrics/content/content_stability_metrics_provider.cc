@@ -119,6 +119,18 @@ void ContentStabilityMetricsProvider::OnRenderProcessHostCreated(
   }
 }
 
+void ContentStabilityMetricsProvider::OnRenderProcessHostCreationFailed(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+#if BUILDFLAG(IS_IOS)
+  helper_.LogRendererCrash();
+#elif !BUILDFLAG(IS_ANDROID)
+  helper_.LogRendererCrash(
+      DetermineHostedContentType(host, extensions_helper_.get()), info.status,
+      info.exit_code);
+#endif
+}
+
 void ContentStabilityMetricsProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {

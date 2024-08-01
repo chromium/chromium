@@ -1111,6 +1111,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-stability-core@google.com</owner>
   <summary>
     The launch error codes for failed renderer process launches.
+
+    In M129 we are more accurately tracking renderer process launch failures,
+    and expect to find a significant spike in volume.
   </summary>
 </histogram>
 
@@ -1120,7 +1123,12 @@ chromium-metrics-reviews@google.com.
 
   <owner>wfh@chromium.org</owner>
   <owner>chrome-stability-core@google.com</owner>
-  <summary>Count of renderer process launch failures grouped by type.</summary>
+  <summary>
+    Count of renderer process launch failures grouped by type.
+
+    In M129 we are more accurately tracking renderer process launch failures,
+    and expect to find a significant spike in volume.
+  </summary>
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.Cleanup.DelayReason"

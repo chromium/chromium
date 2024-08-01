@@ -349,6 +349,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Collects various counters related to stability. The majority of them are
     crash types.
+
+    In M129 we are more accurately tracking renderer process launch failures,
+    and expect to find a significant spike in volume for this bucket.
   </summary>
 </histogram>
 
