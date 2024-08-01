@@ -3682,6 +3682,9 @@ def CheckSpamLogging(input_api, output_api):
             r"^chrome/browser/diagnostics/diagnostics_writer\.cc$",
             r"^chrome/chrome_elf/dll_hash/dll_hash_main\.cc$",
             r"^chrome/installer/setup/.*",
+            # crdmg runs as a separate binary which intentionally does
+            # not depend on base logging.
+            r"^chrome/utility/safe_browsing/mac/crdmg\.cc$",
             r"^chromecast/",
             r"^components/cast",
             r"^components/media_control/renderer/media_playback_options\.cc$",
