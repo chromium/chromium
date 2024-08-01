@@ -3110,7 +3110,9 @@ void AppsGridView::AddPendingPromiseAppRemoval(
     const ui::ImageModel& default_image) {
   auto found = pending_promise_apps_removals_.find(id);
   if (found != pending_promise_apps_removals_.end()) {
-    NOTREACHED_IN_MIGRATION();
+    // A promise app might share app id with other apps in the same package.
+    // If a promise app removal is already scheduled to be removed for this
+    // package, just return normally.
     return;
   }
 
