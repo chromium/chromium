@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // mini_installer.exe is the first exe that is run when chrome is being
 // installed or upgraded. It is designed to be extremely small (~5KB with no
 // extra resources linked) and it has two main jobs:

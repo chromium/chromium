@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // NOTE: This code is a legacy utility API for partners to check whether
 //       Chrome can be installed and launched. Recent updates are being made
 //       to add new functionality. These updates use code from Chromium, the old

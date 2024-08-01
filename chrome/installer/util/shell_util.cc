@@ -7,6 +7,11 @@
 // work is done by the local functions defined in anonymous namespace in
 // this class.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/shell_util.h"
 
 #include <objbase.h>

@@ -4,6 +4,11 @@
 //
 // MTPDeviceObjectEnumerator unit tests.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media_galleries/win/mtp_device_object_enumerator.h"
 
 #include <stddef.h>

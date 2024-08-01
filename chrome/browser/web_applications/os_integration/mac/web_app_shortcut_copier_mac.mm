@@ -4,6 +4,11 @@
 //
 // Copies files from argv[1] to argv[2]
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 #include <unistd.h>
