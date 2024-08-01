@@ -79,6 +79,11 @@ gfx::Image OmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   return gfx::Image();
 }
 
+std::optional<lens::proto::LensOverlayInteractionResponse>
+OmniboxClient::GetLensOverlayInteractionResponse() const {
+  return std::nullopt;
+}
+
 bool OmniboxClient::ProcessExtensionKeyword(const std::u16string& text,
                                             const TemplateURL* template_url,
                                             const AutocompleteMatch& match,

@@ -167,6 +167,10 @@ class OmniboxClient {
   // icon.
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
 
+  // Returns the LensOverlayInteractionResponse if available.
+  virtual std::optional<lens::proto::LensOverlayInteractionResponse>
+  GetLensOverlayInteractionResponse() const;
+
   // Checks whether |template_url| is an extension keyword; if so, asks the
   // ExtensionOmniboxEventRouter to process |match| for it and returns true.
   // Otherwise returns false. |observer| is the OmniboxNavigationObserver
