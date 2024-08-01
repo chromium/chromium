@@ -867,7 +867,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                         <input type='text' id='text1' name='username'
                             placeholder='placeholder@placeholder.com'
                             autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'
+                        <input type='password' id='passwordid' name='passwordname'>
                         <input type='submit'>
                     </form>""");
         int cnt = 0;
@@ -925,7 +925,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                         <input type='text' id='text1' name='username'
                             placeholder='placeholder@placeholder.com'
                             autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'
+                        <input type='password' id='passwordid' name='passwordname'>
                         <input type='submit'>
                     </form>""");
         int cnt = 0;
@@ -1245,7 +1245,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 """
                     <form action='a.html' name='formname' id='formid'>
                         <input type='password' id='passwordid'
-                            name='passwordname' <input type='submit'>
+                            name='passwordname'> <input type='submit'>
                     </form>""");
         DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "passwordid");
         // Note that we currently depend on keyboard app's behavior.
@@ -3736,7 +3736,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     }
 
     /**
-     * Loads an HTML snippet which will be used by the test to execute JS commands on. This snipped
+     * Loads an HTML snippet which will be used by the test to execute JS commands on. This snippet
      * is loaded on the test web server.
      *
      * @param htmlBody The body of the HTML snippet to be loaded.
