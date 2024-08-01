@@ -159,7 +159,7 @@ class ModelExecutionFeaturesController
 
   // Obtained from the user account capability. Updated whenever sign-in changes
   // or account capability changes.
-  bool can_use_model_execution_features_ = false;
+  bool account_allows_model_execution_features_ = false;
 
   base::ObserverList<SettingsEnabledObserver> observers_;
 

@@ -156,7 +156,7 @@ ModelExecutionFeaturesController::ModelExecutionFeaturesController(
   is_signed_in_ = identity_manager && identity_manager->HasPrimaryAccount(
                                           signin::ConsentLevel::kSignin);
   if (is_signed_in_) {
-    can_use_model_execution_features_ =
+    account_allows_model_execution_features_ =
         CanUseModelExecutionFeatures(identity_manager);
   }
 
@@ -235,23 +235,22 @@ ModelExecutionFeaturesController::UserValidityResult
 ModelExecutionFeaturesController::GetCurrentUserValidityResult(
     UserVisibleFeatureKey feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  bool require_account =
+      !base::Contains(features_allowed_for_unsigned_user_, feature);
 
-  // Sign-in check.
-  if (!is_signed_in_ &&
-      !base::Contains(features_allowed_for_unsigned_user_, feature)) {
-    return ModelExecutionFeaturesController::UserValidityResult::
-        kInvalidUnsignedUser;
+  if (require_account) {
+    // Sign-in check.
+    if (!is_signed_in_) {
+      return ModelExecutionFeaturesController::UserValidityResult::
+          kInvalidUnsignedUser;
+    }
+
+    // Check user account is allowed to use model execution, when signed-in.
+    if (!account_allows_model_execution_features_) {
+      return ModelExecutionFeaturesController::UserValidityResult::
+          kInvalidModelExecutionCapability;
+    }
   }
-
-  // Check user account is allowed to use model execution, when signed-in.
-  if (is_signed_in_ && !can_use_model_execution_features_) {
-    return ModelExecutionFeaturesController::UserValidityResult::
-        kInvalidModelExecutionCapability;
-  }
-
-  DCHECK(!is_signed_in_ || can_use_model_execution_features_)
-      << "At this point, the user must be either signed out or allowed to use "
-         "MES";
 
   if (GetEnterprisePolicyValue(feature) ==
       model_execution::prefs::ModelExecutionEnterprisePolicyValue::kDisable) {
@@ -424,11 +423,11 @@ void ModelExecutionFeaturesController::OnPrimaryAccountChanged(
   }
 
   if (!is_signed_in_) {
-    can_use_model_execution_features_ = false;
+    account_allows_model_execution_features_ = false;
     ResetInvalidFeaturePrefs();
     return;
   }
-  can_use_model_execution_features_ =
+  account_allows_model_execution_features_ =
       CanUseModelExecutionFeatures(identity_manager_);
   ResetInvalidFeaturePrefs();
 }
@@ -438,11 +437,11 @@ void ModelExecutionFeaturesController::OnExtendedAccountInfoUpdated(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!is_signed_in_) {
-    can_use_model_execution_features_ = false;
+    account_allows_model_execution_features_ = false;
     ResetInvalidFeaturePrefs();
     return;
   }
-  can_use_model_execution_features_ =
+  account_allows_model_execution_features_ =
       CanUseModelExecutionFeaturesFromAccountInfo(info);
   ResetInvalidFeaturePrefs();
 }
