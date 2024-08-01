@@ -197,7 +197,7 @@ void ThreadWrapper::BlockingCallImpl(rtc::FunctionView<void()> functor,
   while (!pending_send.done_event.IsSignaled()) {
     base::WaitableEvent* events[] = {&pending_send.done_event,
                                      &current_thread->pending_send_event_};
-    size_t event = base::WaitableEvent::WaitMany(events, std::size(events));
+    size_t event = base::WaitableEvent::WaitMany(events);
     DCHECK(event == 0 || event == 1);
 
     if (event == 1) {
