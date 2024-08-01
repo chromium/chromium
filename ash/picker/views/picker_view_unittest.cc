@@ -677,6 +677,41 @@ TEST_F(PickerViewTest, SearchingWithCategoryKeepsShowingBackButton) {
                   .GetVisible());
 }
 
+TEST_F(PickerViewTest, SelectingCategoryHidesEmojiBar) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks,
+                               PickerCategory::kExpressions},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+
+  LeftClickOn(category_item_view);
+
+  EXPECT_FALSE(picker_view->emoji_bar_view_for_testing()->GetVisible());
+}
+
+TEST_F(PickerViewTest, ReturningToZeroStateFromCategoryPageShowsEmojiBar) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks,
+                               PickerCategory::kExpressions},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_BACK, ui::EF_NONE);
+
+  EXPECT_TRUE(picker_view->emoji_bar_view_for_testing()->GetVisible());
+}
+
 TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},

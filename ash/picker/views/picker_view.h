@@ -192,6 +192,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Sets `page_view` as the active page in `main_container_view_`.
   void SetActivePage(PickerPageView* page_view);
 
+  // Sets emoji bar visibility, or does nothing if the emoji bar is not enabled.
+  void SetEmojiBarVisibleIfEnabled(bool visible);
+
   // Moves pseudo focus between different parts of the PickerView, i.e. between
   // the emoji bar and the main container.
   void AdvanceActiveItemContainer(PickerPseudoFocusDirection direction);
@@ -213,8 +216,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Returns true if `view` is contained in a submenu of this PickerView.
   bool IsContainedInSubmenu(views::View* view);
 
-  // Called when the main container height might have changed.
-  void OnMainContainerViewHeightChanged();
+  // Called to indicate that the Picker widget bounds need to be be updated
+  // (e.g. to re-align the Picker search field after results have changed).
+  void SetWidgetBoundsNeedsUpdate();
 
   std::optional<PickerCategory> selected_category_;
 

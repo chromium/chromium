@@ -330,7 +330,7 @@ PickerActionType PickerView::GetActionForResult(
 }
 
 void PickerView::OnSearchResultsViewHeightChanged() {
-  OnMainContainerViewHeightChanged();
+  SetWidgetBoundsNeedsUpdate();
 }
 
 void PickerView::GetZeroStateSuggestedResults(
@@ -350,7 +350,7 @@ void PickerView::RequestPseudoFocus(views::View* view) {
 }
 
 void PickerView::OnZeroStateViewHeightChanged() {
-  OnMainContainerViewHeightChanged();
+  SetWidgetBoundsNeedsUpdate();
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
@@ -643,6 +643,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   search_field_view_->SetBackButtonVisible(true);
+  SetEmojiBarVisibleIfEnabled(false);
   StartSearchWithNewQuery(std::u16string(query));
 
   if (query.empty()) {
@@ -724,7 +725,15 @@ void PickerView::SetActivePage(PickerPageView* page_view) {
   SetPseudoFocusedView(nullptr);
   active_item_container_ = page_view;
   SetPseudoFocusedView(active_item_container_->GetTopItem());
-  OnMainContainerViewHeightChanged();
+  SetWidgetBoundsNeedsUpdate();
+}
+
+void PickerView::SetEmojiBarVisibleIfEnabled(bool visible) {
+  if (emoji_bar_view_ == nullptr) {
+    return;
+  }
+  emoji_bar_view_->SetVisible(visible);
+  SetWidgetBoundsNeedsUpdate();
 }
 
 void PickerView::AdvanceActiveItemContainer(
@@ -785,6 +794,7 @@ void PickerView::OnSearchBackButtonPressed() {
       delegate_->GetMode(),
       IsEditorAvailable(delegate_->GetAvailableCategories())));
   search_field_view_->SetBackButtonVisible(false);
+  SetEmojiBarVisibleIfEnabled(true);
   selected_category_ = std::nullopt;
   StartSearchWithNewQuery(u"");
   CHECK_EQ(main_container_view_->active_page(), zero_state_view_)
@@ -803,7 +813,7 @@ bool PickerView::IsContainedInSubmenu(views::View* view) {
          submenu_controller_.GetSubmenuView()->Contains(view);
 }
 
-void PickerView::OnMainContainerViewHeightChanged() {
+void PickerView::SetWidgetBoundsNeedsUpdate() {
   widget_bounds_needs_update_ = true;
 }
 
