@@ -479,18 +479,32 @@ void DeleteTypedUrlFromClient(const GURL& url) {
   history_service->DeleteURLs({url});
 }
 
-void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
+namespace {
+// Add a sync passphrase and returns its key_params.
+syncer::KeyParamsForTesting AddSyncPassphraseInternal(
+    const std::string& sync_passphrase) {
   syncer::KeyParamsForTesting key_params =
       syncer::Pbkdf2PassphraseKeyParamsForTesting(sync_passphrase);
+  fake_server::SetNigoriInFakeServer(
+      syncer::BuildCustomPassphraseNigoriSpecifics(key_params),
+      gSyncFakeServer.get());
+  return key_params;
+}
+}  // namespace
+
+void AddSyncPassphrase(const std::string& sync_passphrase) {
+  AddSyncPassphraseInternal(sync_passphrase);
+}
+
+void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
+  syncer::KeyParamsForTesting key_params =
+      AddSyncPassphraseInternal(sync_passphrase);
   std::unique_ptr<syncer::LoopbackServerEntity> server_entity =
       CreateBookmarkServerEntity("PBKDF2-encrypted bookmark",
                                  GURL("http://example.com/doesnt-matter"));
   server_entity->SetSpecifics(GetEncryptedBookmarkEntitySpecifics(
       server_entity->GetSpecifics().bookmark(), key_params));
   gSyncFakeServer->InjectEntity(std::move(server_entity));
-  fake_server::SetNigoriInFakeServer(
-      syncer::BuildCustomPassphraseNigoriSpecifics(key_params),
-      gSyncFakeServer.get());
 }
 
 }  // namespace chrome_test_util

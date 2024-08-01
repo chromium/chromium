@@ -71,8 +71,6 @@
 - (void)tearDown {
   [SigninEarlGrey signOut];
 
-  // Tests that use `addBookmarkWithSyncPassphrase` must ensure that Sync
-  // data is cleared before tear down to reset the Sync password state.
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];

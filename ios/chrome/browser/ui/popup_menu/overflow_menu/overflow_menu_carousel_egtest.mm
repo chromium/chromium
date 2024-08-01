@@ -144,7 +144,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   // Sign in in butter mode while keeping sync disabled.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -178,7 +178,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   // Sign in and Sync account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

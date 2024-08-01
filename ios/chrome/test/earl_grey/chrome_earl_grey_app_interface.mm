@@ -1072,6 +1072,10 @@ NSString* SerializedValue(const base::Value* value) {
       base::SysNSStringToUTF8(syncPassphrase));
 }
 
++ (void)addSyncPassphrase:(NSString*)syncPassphrase {
+  chrome_test_util::AddSyncPassphrase(base::SysNSStringToUTF8(syncPassphrase));
+}
+
 + (BOOL)isSyncHistoryDataTypeSelected {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();

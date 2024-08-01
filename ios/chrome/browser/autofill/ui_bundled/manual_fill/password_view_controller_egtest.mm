@@ -1019,7 +1019,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 - (void)testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES

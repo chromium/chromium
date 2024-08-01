@@ -54,8 +54,6 @@
 
 namespace {
 
-NSString* const kSyncPassphrase = @"hello";
-
 // Returns matcher for UMA manage link.
 id<GREYMatcher> ManageUMALinkMatcher() {
   return grey_allOf(grey_accessibilityLabel(@"Manage"),

@@ -557,8 +557,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (std::string)syncCacheGUID;
 
 // Adds a bookmark with a sync passphrase. The sync server will need the sync
-// passphrase to start.
+// passphrase to start. In order to work, this need to be called before the
+// primary user is signed-in.
 - (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
+
+// Add a sync passphrase requirement to start the sync server.
+- (void)addSyncPassphrase:(NSString*)syncPassphrase;
 
 #pragma mark - WebState Utilities (EG2)
 

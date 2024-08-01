@@ -990,7 +990,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
 - (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

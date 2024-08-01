@@ -768,7 +768,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the account settings is with a user actionable error; enter
 // passphrase error.
 - (void)testAccountSettingsWithError {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1443,7 +1443,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the account settings and the user actionable error view are dismissed
 // on account removal.
 - (void)testAccountSettingsWithErrorDismissed {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1476,7 +1476,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the passphrase error view is dismissed when "Cancel" button is pressed.
 - (void)testErrorViewFromAccountSettingsDismissed {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1550,7 +1550,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // and cleared when account is removed from device.
 - (void)testRememberCustomPassphraseAfterSignout {
   // Enable custom passphrase.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

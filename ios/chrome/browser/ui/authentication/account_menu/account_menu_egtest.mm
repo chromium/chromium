@@ -88,7 +88,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [super setUp];
   // Adding the sync passphrase must be done before signin due to limitation of
   // the fakes.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
 }
 

@@ -1052,6 +1052,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isSyncHistoryDataTypeSelected];
 }
 
+- (void)addSyncPassphrase:(NSString*)syncPassphrase {
+  [ChromeEarlGreyAppInterface addSyncPassphrase:syncPassphrase];
+}
+
 #pragma mark - Window utilities (EG2)
 
 - (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {

@@ -852,7 +852,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Set up a custom passphrase.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   // Sign in and turn on Sync-the-feature.
   [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
