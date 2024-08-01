@@ -43,6 +43,11 @@
 extern "C" void* __libc_memalign(size_t align, size_t s);
 #endif
 
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h"
+#endif
+
 namespace allocator_shim {
 namespace {
 
@@ -886,6 +891,70 @@ TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {
             AllocatorShimTest::MockGetSizeEstimate);
   RemoveAllocatorDispatchForTesting(&non_empty_dispatch);
 }
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+std::atomic_size_t g_mock_free_with_advanced_checks_count;
+void MockFreeWithAdvancedChecks(const AllocatorDispatch* self,
+                                void* address,
+                                void* context) {
+  g_mock_free_with_advanced_checks_count++;
+  self->next->free_function(self->next, address, context);
+}
+
+void* MockReallocWithAdvancedChecks(const AllocatorDispatch* self,
+                                    void* address,
+                                    size_t size,
+                                    void* context) {
+  // no-op.
+  return self->next->realloc_function(self->next, address, size, context);
+}
+
+TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
+  // To prevent flakiness introduced by sampling-based dispatch inserted,
+  // replace the chain head within this test.
+  AutoResetAllocatorDispatchChainForTesting chain_reset;
+
+  g_mock_free_with_advanced_checks_count = 0u;
+  AllocatorDispatch dispatch{nullptr};
+  dispatch.free_function = &MockFreeWithAdvancedChecks;
+  dispatch.realloc_function = &MockReallocWithAdvancedChecks;
+
+  // Insert a normal dispatch.
+  InsertAllocatorDispatch(&g_mock_dispatch);
+
+  // Using `new` and `delete` instead of `malloc()` and `free()`.
+  // On `IS_APPLE` platforms, `free()` may be deferred and not reliably
+  // testable.
+  int* alloc_ptr = new int;
+  delete alloc_ptr;
+
+  // `free()` -> `g_mock_dispatch` -> default allocator.
+  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
+
+  InstallDispatchToPartitionAllocWithAdvancedChecks(&dispatch);
+
+  alloc_ptr = new int;
+  delete alloc_ptr;
+
+  // `free()` -> `g_mock_dispatch` -> `dispatch` -> default allocator.
+  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_GE(g_mock_free_with_advanced_checks_count, 1u);
+
+  UninstallDispatchToPartitionAllocWithAdvancedChecks();
+  g_mock_free_with_advanced_checks_count = 0u;
+
+  alloc_ptr = new int;
+  delete alloc_ptr;
+
+  // `free()` -> `g_mock_dispatch` -> default allocator.
+  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
+
+  RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
+}
+#endif
 
 }  // namespace
 }  // namespace allocator_shim

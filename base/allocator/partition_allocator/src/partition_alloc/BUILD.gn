@@ -162,6 +162,7 @@ pa_buildflag_header("buildflags") {
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
+    "ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=$enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support",
     "DCHECKS_ARE_ON=$dchecks_are_on",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
@@ -760,6 +761,10 @@ if (is_clang_or_gcc) {
           [ "shim/allocator_shim_default_dispatch_to_partition_alloc.cc" ]
       shim_headers +=
           [ "shim/allocator_shim_default_dispatch_to_partition_alloc.h" ]
+    }
+    if (enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support) {
+      shim_sources += [ "shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.cc" ]
+      shim_headers += [ "shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h" ]
     }
     if (is_android) {
       shim_headers += [
