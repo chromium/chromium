@@ -5,6 +5,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/branded_strings.h"
@@ -18,8 +19,7 @@
 namespace extensions {
 
 void ShowMv2DeprecationDisabledDialog(
-    Profile* profile,
-    gfx::NativeWindow parent,
+    Browser* browser,
     const std::vector<ExtensionId>& extension_ids,
     base::OnceClosure remove_callback,
     base::OnceClosure manage_callback,
@@ -51,8 +51,8 @@ void ShowMv2DeprecationDisabledDialog(
       .DisableCloseOnDeactivate()
       .SetCloseActionCallback(std::move(close_callback));
 
-  auto* extension_registry = ExtensionRegistry::Get(profile);
-  auto* extension_prefs = ExtensionPrefs::Get(profile);
+  auto* extension_registry = ExtensionRegistry::Get(browser->profile());
+  auto* extension_prefs = ExtensionPrefs::Get(browser->profile());
 
   if (extensions_size == 1) {
     const Extension* extension =
@@ -83,11 +83,7 @@ void ShowMv2DeprecationDisabledDialog(
     }
   }
 
-  ExtensionsToolbarContainer* const extensions_container =
-      parent ? GetExtensionsToolbarContainer(parent) : nullptr;
-  DCHECK(extensions_container);
-
-  ShowDialog(extensions_container, extension_ids, dialog_builder.Build());
+  ShowDialog(browser, dialog_builder.Build());
 }
 
 }  // namespace extensions

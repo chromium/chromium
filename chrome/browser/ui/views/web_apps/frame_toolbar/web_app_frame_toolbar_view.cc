@@ -195,7 +195,12 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
-  return right_container_->extensions_container()->GetExtensionsButton();
+  ExtensionsToolbarContainer* extensions_container =
+      GetExtensionsToolbarContainer();
+  if (extensions_container && extensions_container->GetVisible()) {
+    return extensions_container->GetExtensionsButton();
+  }
+  return GetAppMenuButton();
 }
 
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(

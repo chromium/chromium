@@ -1145,8 +1145,9 @@ gfx::Size ToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* ToolbarView::GetDefaultExtensionDialogAnchorView() {
-  if (extensions_container_)
+  if (extensions_container_ && extensions_container_->GetVisible()) {
     return extensions_container_->GetExtensionsButton();
+  }
   return GetAppMenuButton();
 }
 

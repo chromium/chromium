@@ -38,8 +38,7 @@ class Mv2DeprecationDisabledDialogBrowserTest
     scoped_refptr<const extensions::Extension> extension_B =
         AddMV2ExtensionAndDisable(u"Extension A");
     extensions::ShowMv2DeprecationDisabledDialog(
-        browser()->profile(), browser()->window()->GetNativeWindow(),
-        {extension_A->id(), extension_B->id()},
+        browser(), {extension_A->id(), extension_B->id()},
         /*remove_callback=*/base::DoNothing(),
         /*manage_callback=*/base::DoNothing(),
         /*close_callback=*/base::DoNothing());

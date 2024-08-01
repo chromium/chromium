@@ -105,10 +105,8 @@ void Mv2DisabledDialogController::MaybeShowDisabledDialog() {
     return;
   }
 
-  CHECK(browser_->window());
-  gfx::NativeWindow parent = browser_->window()->GetNativeWindow();
   ShowMv2DeprecationDisabledDialog(
-      browser_->profile(), parent, extensions_to_include,
+      browser_, extensions_to_include,
       base::BindOnce(&Mv2DisabledDialogController::OnRemoveSelected,
                      weak_ptr_factory_.GetWeakPtr(), extensions_to_include),
       base::BindOnce(&Mv2DisabledDialogController::OnManageSelected,
