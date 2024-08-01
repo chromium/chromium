@@ -28,16 +28,13 @@
 
 #include <utility>
 
-#include "cc/input/scroll_snap_data.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
-#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
-#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -47,8 +44,6 @@
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
-#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
@@ -56,7 +51,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
 
@@ -95,10 +89,11 @@ PseudoElement* PseudoElement::Create(Element* parent,
   } else if (ResolvePseudoIdAlias(pseudo_id) == kPseudoIdScrollMarkerGroup) {
     return MakeGarbageCollected<ScrollMarkerGroupPseudoElement>(parent,
                                                                 pseudo_id);
+  } else if (pseudo_id == kPseudoIdScrollMarker) {
+    return MakeGarbageCollected<ScrollMarkerPseudoElement>(parent);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
-         pseudo_id == kPseudoIdScrollMarker);
+         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              view_transition_name);
 }
@@ -223,9 +218,6 @@ PseudoElement::PseudoElement(Element* parent,
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentOrShadowHostNode(parent);
   SetHasCustomStyleCallbacks();
-  if (pseudo_id == kPseudoIdScrollMarker) {
-    SetTabIndexExplicitly();
-  }
   if ((pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) &&
       parent->HasTagName(html_names::kInputTag)) {
     UseCounter::Count(parent->GetDocument(),
@@ -349,9 +341,8 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdAfter:
       break;
     case kPseudoIdScrollMarker: {
-      CHECK(context.parent->IsScrollMarkerGroup());
       To<ScrollMarkerGroupPseudoElement>(context.parent->GetNode())
-          ->AddToFocusGroup(*this);
+          ->AddToFocusGroup(*To<ScrollMarkerPseudoElement>(this));
       break;
     }
     default: {
@@ -395,10 +386,6 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   context.counters_context.LeaveElement(*this);
 }
 
-int PseudoElement::DefaultTabIndex() const {
-  return 0;
-}
-
 bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return PseudoElementLayoutObjectIsNeeded(GetPseudoId(), style,
                                            parentElement());
@@ -418,9 +405,6 @@ bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
 }
 
 Node* PseudoElement::InnerNodeForHitTesting() {
-  if (IsScrollMarkerPseudoElement()) {
-    return this;
-  }
   Node* parent = ParentOrShadowHostNode();
   if (parent && parent->IsPseudoElement())
     return To<PseudoElement>(parent)->InnerNodeForHitTesting();
@@ -444,25 +428,6 @@ Element* PseudoElement::OriginatingElement() const {
     parent = parent->parentElement();
 
   return parent;
-}
-
-void PseudoElement::DefaultEventHandler(Event& event) {
-  Element* originating_element = OriginatingElement();
-  bool is_click =
-      event.IsMouseEvent() && event.type() == event_type_names::kClick;
-  bool is_enter = event.IsKeyboardEvent() &&
-                  To<KeyboardEvent>(event).keyCode() == VKEY_RETURN;
-  bool should_intercept = event.target() == this && originating_element &&
-                          IsScrollMarkerPseudoElement() &&
-                          (is_click || is_enter);
-  if (should_intercept) {
-    mojom::blink::ScrollIntoViewParamsPtr params =
-        scroll_into_view_util::CreateScrollIntoViewParams(
-            *originating_element->GetComputedStyle());
-    originating_element->ScrollIntoViewNoVisualUpdate(std::move(params));
-    event.SetDefaultHandled();
-  }
-  Element::DefaultEventHandler(event);
 }
 
 bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,

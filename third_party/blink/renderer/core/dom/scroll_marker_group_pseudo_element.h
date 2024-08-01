@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_MARKER_GROUP_PSEUDO_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 
 namespace blink {
 
@@ -22,33 +23,20 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
 
   bool IsScrollMarkerGroupPseudoElement() const final { return true; }
 
-  // TODO(332396355): Replace Element with ScrollMarker and remove CHECK.
-  void AddToFocusGroup(PseudoElement& scroll_marker) {
-    CHECK(scroll_marker.IsScrollMarkerPseudoElement());
-    focus_group_.push_back(scroll_marker);
-  }
-  Element* FindFocusableElementForward(const Element& current) {
-    if (wtf_size_t id = focus_group_.Find(current); id != kNotFound) {
-      return focus_group_[id == focus_group_.size() - 1 ? 0u : id + 1];
-    }
-    return nullptr;
-  }
-  Element* FindFocusableElementBackward(const Element& current) {
-    if (wtf_size_t id = focus_group_.Find(current); id != kNotFound) {
-      return focus_group_[id == 0u ? focus_group_.size() - 1 : id - 1];
-    }
-    return nullptr;
-  }
-  void ClearFocusGroup() { focus_group_.clear(); }
+  void AddToFocusGroup(ScrollMarkerPseudoElement& scroll_marker);
+  void RemoveFromFocusGroup(const ScrollMarkerPseudoElement& scroll_marker);
+  void ClearFocusGroup();
+  ScrollMarkerPseudoElement* FindFocusableElementForward(
+      const Element& current);
+  ScrollMarkerPseudoElement* FindFocusableElementBackward(
+      const Element& current);
 
-  void Trace(Visitor* v) const final {
-    v->Trace(focus_group_);
-    PseudoElement::Trace(v);
-  }
+  void Dispose() final;
+  void Trace(Visitor* v) const final;
 
  private:
   // TODO(332396355): Add spec link, once it's created.
-  HeapVector<Member<Element>> focus_group_;
+  HeapVector<Member<ScrollMarkerPseudoElement>> focus_group_;
 };
 
 template <>
