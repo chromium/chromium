@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Datachannel should be able to send and receive all blob messages on close
-  assert_equals: expected "OperationError" but got "NotSupportedError"
-[FAIL] Negotiated datachannel should be able to send and receive all blob messages on close
-  assert_equals: expected "OperationError" but got "NotSupportedError"
-Harness: the test ran to completion.
-
