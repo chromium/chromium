@@ -92,13 +92,13 @@ EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
 EditorMenuView::~EditorMenuView() = default;
 
 // static
-views::UniqueWidgetPtr EditorMenuView::CreateWidget(
+std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
     EditorMenuMode editor_menu_mode,
     const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -107,8 +107,7 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.name = kWidgetName;
 
-  views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
+  auto widget = std::make_unique<views::Widget>(std::move(params));
   EditorMenuView* editor_menu_view =
       widget->SetContentsView(std::make_unique<EditorMenuView>(
           editor_menu_mode, preset_text_queries, anchor_view_bounds, delegate));

@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_PROMO_CARD_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_PROMO_CARD_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -38,7 +39,7 @@ class EditorMenuPromoCardView : public views::View,
 
   ~EditorMenuPromoCardView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
+  static std::unique_ptr<views::Widget> CreateWidget(
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
 

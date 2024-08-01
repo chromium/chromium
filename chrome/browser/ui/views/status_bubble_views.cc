@@ -707,13 +707,11 @@ void StatusBubbleViews::InitPopup() {
     DCHECK(!expand_view_);
     popup_ = std::make_unique<views::Widget>();
 
-#if BUILDFLAG(IS_MAC)
     views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+#if BUILDFLAG(IS_MAC)
         views::Widget::InitParams::TYPE_TOOLTIP);
 #else
-    views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
 #endif
 

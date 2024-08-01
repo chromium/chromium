@@ -21,7 +21,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos::editor_menu {
@@ -71,7 +70,7 @@ TEST_F(EditorMenuViewTest, CreatesChips) {
       PresetTextQuery("ID1", u"Shorten", PresetQueryCategory::kShorten),
       PresetTextQuery("ID2", u"Elaborate", PresetQueryCategory::kElaborate)};
 
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   auto* editor_menu_view =
@@ -96,7 +95,7 @@ TEST_F(EditorMenuViewTest, CreatesChipsInMultipleRows) {
       PresetTextQuery("ID4", u"Elaborate", PresetQueryCategory::kElaborate),
       PresetTextQuery("ID5", u"Formalize", PresetQueryCategory::kFormalize)};
 
-  const views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   auto* editor_menu_view =
@@ -119,7 +118,7 @@ TEST_F(EditorMenuViewTest, TabKeyMovesFocus) {
       PresetTextQuery("ID5", u"Formalize", PresetQueryCategory::kFormalize)};
 
   // Create and focus the editor menu.
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -166,7 +165,7 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsPresetQuery) {
       PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
 
   // Create and show the editor menu.
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -192,7 +191,7 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsFreeformQuery) {
   NiceMock<MockEditorMenuViewDelegate> delegate;
 
   // Create and show the editor menu.
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kWrite, PresetTextQueries(),
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -221,7 +220,7 @@ TEST_F(EditorMenuViewTest, DisablesMenu) {
       PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
       PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
 
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
