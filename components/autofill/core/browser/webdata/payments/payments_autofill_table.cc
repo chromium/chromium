@@ -2133,10 +2133,8 @@ bool PaymentsAutofillTable::
 
 bool PaymentsAutofillTable::
     MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn() {
-  return !DoesColumnExist(db_, kGenericPaymentInstrumentsTable,
-                          "payment_instrument_type") ||
-         DropColumn(db_, kGenericPaymentInstrumentsTable,
-                    "payment_instrument_type");
+  return DropColumnIfExists(db_, kGenericPaymentInstrumentsTable,
+                            "payment_instrument_type");
 }
 
 void PaymentsAutofillTable::AddMaskedCreditCards(

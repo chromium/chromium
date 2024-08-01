@@ -119,6 +119,13 @@ bool DropColumn(sql::Database* db,
   ;
 }
 
+bool DropColumnIfExists(sql::Database* db,
+                        std::string_view table_name,
+                        std::string_view column_name) {
+  return !DoesColumnExist(db, table_name, column_name) ||
+         DropColumn(db, table_name, column_name);
+}
+
 bool DropTableIfExists(sql::Database* db, std::string_view table_name) {
   return db->Execute(base::StrCat({"DROP TABLE IF EXISTS ", table_name}));
 }
