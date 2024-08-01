@@ -106,8 +106,9 @@ class StorageApiUnittest : public ApiUnitTest {
     std::optional<base::Value> result = RunFunctionAndReturnValue(
         new StorageStorageAreaGetFunction(),
         base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
-    if (!result)
+    if (!result) {
       return testing::AssertionFailure() << "No result";
+    }
 
     const base::Value::Dict* dict = result->GetIfDict();
     if (!dict) {

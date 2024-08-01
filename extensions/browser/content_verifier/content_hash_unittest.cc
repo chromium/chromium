@@ -45,8 +45,9 @@ class ContentHashUnittest : public ExtensionsTest {
     scoped_refptr<Extension> extension = file_util::LoadExtension(
         builder.extension_path(), builder.extension_id(),
         mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
-    if (!extension)
+    if (!extension) {
       ADD_FAILURE() << " error:'" << error << "'";
+    }
     return extension;
   }
 

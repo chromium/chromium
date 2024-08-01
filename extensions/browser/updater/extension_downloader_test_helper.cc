@@ -117,8 +117,9 @@ void ExtensionDownloaderTestHelper::StartUpdateCheck(
 
 network::TestURLLoaderFactory::PendingRequest*
 ExtensionDownloaderTestHelper::GetPendingRequest(size_t index) {
-  if (index >= test_url_loader_factory_.pending_requests()->size())
+  if (index >= test_url_loader_factory_.pending_requests()->size()) {
     return nullptr;
+  }
   return &(*test_url_loader_factory_.pending_requests())[index];
 }
 

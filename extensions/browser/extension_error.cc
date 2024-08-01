@@ -156,8 +156,9 @@ void RuntimeError::CleanUpInit() {
   // sometimes the background page - but the error is thrown from the script.)
   // Make the source match the stack trace, since that is more likely the cause
   // of the error.
-  if (!stack_trace_.empty() && source_ != stack_trace_[0].source)
+  if (!stack_trace_.empty() && source_ != stack_trace_[0].source) {
     source_ = stack_trace_[0].source;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

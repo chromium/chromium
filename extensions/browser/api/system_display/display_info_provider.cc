@@ -58,8 +58,9 @@ DisplayInfoProvider* DisplayInfoProvider::Get() {
 // static
 void DisplayInfoProvider::InitializeForTesting(
     DisplayInfoProvider* display_info_provider) {
-  if (g_display_info_provider)
+  if (g_display_info_provider) {
     delete g_display_info_provider;
+  }
   g_display_info_provider = display_info_provider;
 }
 

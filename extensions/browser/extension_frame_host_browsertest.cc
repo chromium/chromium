@@ -42,8 +42,9 @@ class TestExtensionFrameHost : public ExtensionFrameHost {
                RequestCallback callback) override {
     // If the name of |params| is set to an invalid request, it sets it to
     // an empty string so that the request causes an error.
-    if (invalid_request_ == params->name)
+    if (invalid_request_ == params->name) {
       params->name = std::string();
+    }
     ExtensionFrameHost::Request(std::move(params), std::move(callback));
   }
 

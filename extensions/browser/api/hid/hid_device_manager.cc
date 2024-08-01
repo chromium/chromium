@@ -342,10 +342,11 @@ void HidDeviceManager::LazyInitialize() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     auto receiver = hid_manager_.BindNewPipeAndPassReceiver();
     const auto& binder = GetHidManagerBinderOverride();
-    if (binder)
+    if (binder) {
       binder.Run(std::move(receiver));
-    else
+    } else {
       content::GetDeviceService().BindHidManager(std::move(receiver));
+    }
   }
   // Enumerate HID devices and set client.
   std::vector<device::mojom::HidDeviceInfoPtr> empty_devices;

@@ -29,8 +29,9 @@ bool MemoryInfoProvider::QueryInfo() {
 
 // static
 MemoryInfoProvider* MemoryInfoProvider::Get() {
-  if (provider_.Get().get() == nullptr)
+  if (provider_.Get().get() == nullptr) {
     provider_.Get() = new MemoryInfoProvider();
+  }
   return provider_.Get().get();
 }
 

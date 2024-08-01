@@ -258,8 +258,9 @@ class ExtensionRegistrarTest : public ExtensionsTest {
   }
 
   void TryDisablingNotAshKeeplistedExtension(bool expect_extension_disabled) {
-    if (expect_extension_disabled)
+    if (expect_extension_disabled) {
       EXPECT_CALL(delegate_, PostDeactivateExtension(extension_));
+    }
 
     // Disable extension because it is not in the ash keep list.
     registrar_->DisableExtension(extension_->id(),

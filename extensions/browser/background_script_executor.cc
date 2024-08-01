@@ -150,8 +150,9 @@ bool BackgroundScriptExecutor::ExecuteScriptInServiceWorker() {
     return false;
   }
 
-  if (result_capture_method_ == ResultCapture::kSendScriptResult)
+  if (result_capture_method_ == ResultCapture::kSendScriptResult) {
     script_result_queue_ = std::make_unique<ScriptResultQueue>();
+  }
 
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension_->id(),

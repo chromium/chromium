@@ -290,8 +290,9 @@ bool ZipFileInstaller::ShouldExtractFile(bool is_theme,
     const base::FilePath::StringType extension =
         base::ToLowerASCII(file_path.FinalExtension());
     // Allow filenames with no extension.
-    if (extension.empty())
+    if (extension.empty()) {
       return true;
+    }
     return base::Contains(kAllowedThemeFiletypes, extension);
   }
   return !base::FilePath::CompareEqualIgnoreCase(file_path.FinalExtension(),

@@ -88,8 +88,9 @@ class WorkerIdSetTest : public ExtensionsTest {
 
   bool AreWorkerIdsEqual(const std::vector<WorkerId>& expected,
                          const std::vector<WorkerId>& actual) {
-    if (expected.size() != actual.size())
+    if (expected.size() != actual.size()) {
       return false;
+    }
 
     std::vector<WorkerId> expected_copy = expected;
     std::vector<WorkerId> actual_copy = actual;

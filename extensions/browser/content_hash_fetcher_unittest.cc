@@ -61,8 +61,9 @@ class ContentHashFetcherTest : public ExtensionsTest {
     // fetched verified_contents.json file there.
     extension_ =
         UnzipToTempDirAndLoad(test_dir_base_.AppendASCII("source.zip"));
-    if (!extension_.get())
+    if (!extension_.get()) {
       return false;
+    }
 
     // Make sure there isn't already a verified_contents.json file there.
     EXPECT_FALSE(VerifiedContentsFileExists());

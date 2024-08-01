@@ -427,8 +427,9 @@ ValueStoreCache* StorageFrontend::GetValueStoreCache(
     settings_namespace::Namespace settings_namespace) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = caches_.find(settings_namespace);
-  if (it != caches_.end())
+  if (it != caches_.end()) {
     return it->second;
+  }
   return nullptr;
 }
 

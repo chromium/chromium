@@ -396,8 +396,9 @@ StorageStorageAreaSetAccessLevelFunction::Run() {
   std::optional<api::storage::StorageArea::SetAccessLevel::Params> params =
       api::storage::StorageArea::SetAccessLevel::Params::Create(args());
 
-  if (!params)
+  if (!params) {
     return RespondNow(BadMessage());
+  }
 
   // The parsing code ensures `access_level` is sane.
   DCHECK(params->access_options.access_level ==

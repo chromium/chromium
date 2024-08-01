@@ -201,8 +201,9 @@ ExtensionFunction::ResponseValue EventsEventAddRulesFunction::RunInternal() {
   std::vector<const api::events::Rule*> rules_out;
   std::string error = rules_registry_->AddRules(
       extension_id(), std::move(params_->rules), &rules_out);
-  if (!error.empty())
+  if (!error.empty()) {
     return Error(error);
+  }
 
   base::Value::List rules_value;
   rules_value.reserve(rules_out.size());

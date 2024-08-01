@@ -83,8 +83,9 @@ double TestStorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
       break;
     }
   }
-  if (++callback_count_ == expected_call_count_)
+  if (++callback_count_ == expected_call_count_) {
     run_loop_.QuitWhenIdle();
+  }
   return result;
 }
 

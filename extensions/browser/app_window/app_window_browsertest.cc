@@ -130,8 +130,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest,
   // eviction.
   content::RenderFrameSubmissionObserver submission_observer(
       app_window->web_contents());
-  if (!submission_observer.render_frame_count())
+  if (!submission_observer.render_frame_count()) {
     submission_observer.WaitForAnyFrameSubmission();
+  }
 
   // Helper function as this test requires inspecting a number of content::
   // internal objects.

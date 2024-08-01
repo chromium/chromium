@@ -194,8 +194,9 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
   if (!extension) {
     // Note that blob/filesystem schemes associated with an inner URL of
     // chrome-untrusted will be considered regular pages.
-    if (url && url->SchemeIs(content::kChromeUIUntrustedScheme))
+    if (url && url->SchemeIs(content::kChromeUIUntrustedScheme)) {
       return mojom::ContextType::kUntrustedWebUi;
+    }
 
     return mojom::ContextType::kWebPage;
   }

@@ -62,8 +62,9 @@ void ExtensionInstaller::Install(
 bool ExtensionInstaller::GetInstalledFile(const std::string& file,
                                           base::FilePath* installed_file) {
   base::FilePath relative_path = base::FilePath::FromUTF8Unsafe(file);
-  if (relative_path.IsAbsolute() || relative_path.ReferencesParent())
+  if (relative_path.IsAbsolute() || relative_path.ReferencesParent()) {
     return false;
+  }
   *installed_file = extension_root_.Append(relative_path);
   if (!extension_root_.IsParent(*installed_file) ||
       !base::PathExists(*installed_file)) {

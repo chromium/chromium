@@ -59,8 +59,9 @@ void FileReader::ReadFilesOnFileSequence() {
     }
 
     remaining_length -= file_data->size();
-    if (optional_file_sequence_task_)
+    if (optional_file_sequence_task_) {
       optional_file_sequence_task_.Run(file_data);
+    }
   }
 
   // Release any potentially-bound references from the file sequence task.

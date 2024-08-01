@@ -50,8 +50,9 @@ void PreloadCheckRunner::OnCheckComplete(const PreloadCheck::Errors& errors) {
   called_ = true;
   errors_ = errors;
 
-  if (run_loop_)
+  if (run_loop_) {
     run_loop_->Quit();
+  }
 }
 
 // PreloadCheckStub:

@@ -52,8 +52,9 @@ ExtensionDownloaderTask::~ExtensionDownloaderTask() = default;
 
 void ExtensionDownloaderTask::OnStageChanged(
     ExtensionDownloaderDelegate::Stage stage) {
-  if (delegate)
+  if (delegate) {
     delegate->OnExtensionDownloadStageChanged(id, stage);
+  }
 }
 
 }  // namespace extensions

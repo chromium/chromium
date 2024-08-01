@@ -50,8 +50,9 @@ class TestUpstartClient : public ash::FakeUpstartClient {
 
   // Triggers the next queue'd start request to succeed or fail.
   bool HandleNextUpstartRequest(bool should_succeed) {
-    if (pending_upstart_request_callbacks_.empty())
+    if (pending_upstart_request_callbacks_.empty()) {
       return false;
+    }
 
     chromeos::VoidDBusMethodCallback callback =
         std::move(pending_upstart_request_callbacks_.front());

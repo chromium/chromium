@@ -17,8 +17,9 @@ ScriptResultQueue::~ScriptResultQueue() = default;
 
 void ScriptResultQueue::OnScriptResult(const base::Value& script_result) {
   results_.Append(script_result.Clone());
-  if (quit_closure_)
+  if (quit_closure_) {
     std::move(quit_closure_).Run();
+  }
 }
 
 base::Value ScriptResultQueue::GetNextResult() {

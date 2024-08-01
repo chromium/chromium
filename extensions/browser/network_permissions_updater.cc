@@ -31,8 +31,9 @@ void SetCorsOriginAccessListForExtensionHelper(
     // profile if the extension is actually allowed to run in an incognito
     // profile (not just by the extension manifest, but also by user
     // preferences).
-    if (browser_context->IsOffTheRecord())
+    if (browser_context->IsOffTheRecord()) {
       DCHECK(util::IsIncognitoEnabled(extension.id(), browser_context));
+    }
 
     content::CorsOriginPatternSetter::Set(
         browser_context, extension.origin(), mojo::Clone(allow_patterns),

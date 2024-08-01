@@ -89,8 +89,9 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
     std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), ParamsToJSON(params));
-    if (!result_value)
+    if (!result_value) {
       return testing::AssertionFailure() << "No result";
+    }
 
     auto result = ReadLogSourceResult::FromValue(*result_value);
     if (!result) {

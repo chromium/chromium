@@ -60,8 +60,9 @@ bool ChannelEndpoint::IsValid() const {
         ->HasServiceWorker(GetWorkerId());
   }
 
-  if (is_for_render_frame())
+  if (is_for_render_frame()) {
     return GetRenderFrameHost() != nullptr;
+  }
 
   DCHECK(is_for_native_host());
   return true;

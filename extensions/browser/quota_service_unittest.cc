@@ -131,8 +131,9 @@ class QuotaLimitHeuristicTest : public testing::Test {
       EXPECT_TRUE(lim->Apply(b, start_time + base::Seconds(10 + m)));
       EXPECT_TRUE(b->has_tokens());
 
-      if (i == an_unexhausted_minute)
+      if (i == an_unexhausted_minute) {
         continue;  // Don't exhaust all tokens this minute.
+      }
 
       EXPECT_TRUE(lim->Apply(b, start_time + base::Seconds(15 + m)));
       EXPECT_FALSE(b->has_tokens());

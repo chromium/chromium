@@ -16,8 +16,9 @@ namespace {
 
 content::GlobalRenderFrameHostId GetFrameRoutingId(
     content::RenderFrameHost* host) {
-  if (!host)
+  if (!host) {
     return content::GlobalRenderFrameHostId();
+  }
 
   return host->GetGlobalId();
 }
