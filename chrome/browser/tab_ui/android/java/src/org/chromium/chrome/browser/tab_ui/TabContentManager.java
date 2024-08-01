@@ -659,8 +659,10 @@ public class TabContentManager {
                 .setCaptureMinRequestTimeForTesting(mNativeTabContentManager, timeMs);
     }
 
-    public int getInFlightCapturesForTesting() {
-        return TabContentManagerJni.get().getInFlightCapturesForTesting(mNativeTabContentManager);
+    /** Returns whether a thumbnail capture for a tab is in flight for testing. */
+    public boolean isTabCaptureInFlightForTesting(int tabId) {
+        return TabContentManagerJni.get()
+                .isTabCaptureInFlightForTesting(mNativeTabContentManager, tabId);
     }
 
     @CalledByNative
@@ -711,7 +713,7 @@ public class TabContentManager {
 
         void setCaptureMinRequestTimeForTesting(long nativeTabContentManager, int timeMs);
 
-        int getInFlightCapturesForTesting(long nativeTabContentManager);
+        boolean isTabCaptureInFlightForTesting(long nativeTabContentManager, int tabId);
 
         void destroy(long nativeTabContentManager);
     }

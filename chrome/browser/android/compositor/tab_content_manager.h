@@ -100,7 +100,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       jboolean save_jpeg,
       const base::android::JavaParamRef<jobject>& j_callback);
   void SetCaptureMinRequestTimeForTesting(JNIEnv* env, jint timeMs);
-  jint GetInFlightCapturesForTesting(JNIEnv* env);
+  jboolean IsTabCaptureInFlightForTesting(JNIEnv* env, jint tab_id);
 
   // ThumbnailCacheObserver implementation;
   void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;

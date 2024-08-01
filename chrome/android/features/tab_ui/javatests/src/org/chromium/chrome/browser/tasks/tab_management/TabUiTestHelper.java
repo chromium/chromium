@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -590,31 +591,9 @@ public class TabUiTestHelper {
 
             TabModel currentTabModel = cta.getTabModelSelector().getCurrentModel();
             int currentTabIndex = currentTabModel.index();
+            Tab currentTab = currentTabModel.getTabAt(currentTabIndex);
 
-            boolean fixPendingReadbacks =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () -> {
-                                return cta.getTabContentManager().getInFlightCapturesForTesting()
-                                        != 0;
-                            });
-
-            // When there are pending readbacks due to detached Tabs, try to fix it by switching
-            // back to that tab.
-            if (fixPendingReadbacks && previousTabIndex != TabModel.INVALID_TAB_INDEX) {
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                previousTabModel.setIndex(
-                                        previousTabIndex, TabSelectionType.FROM_USER));
-            }
-
-            checkThumbnailsExist(previousTab);
-
-            if (fixPendingReadbacks) {
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                currentTabModel.setIndex(
-                                        currentTabIndex, TabSelectionType.FROM_USER));
-            }
+            waitForThumbnailsToCapture(cta, previousTab, currentTab);
         }
 
         ChromeTabUtils.waitForTabPageLoaded(
@@ -624,14 +603,48 @@ public class TabUiTestHelper {
                 numTabs + previousTabCount,
                 rule.getActivity().getTabModelSelector().getModel(isIncognito).getCount());
 
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            rule.getActivity()
-                                    .getTabContentManager()
-                                    .getInFlightCapturesForTesting(),
-                            is(0));
-                });
+        // Don't wait on the current tab to fetch. It should be fetched either when entering the
+        // tab switcher or as a side-effect of unsticking the last tab.
+    }
+
+    private static void waitForThumbnailsToCapture(
+            ChromeTabbedActivity cta, Tab previousTab, Tab currentTab) {
+        if (previousTab == null) return;
+
+        boolean fixPendingReadbacks = false;
+        try {
+            // Wait for the capture.
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        return !cta.getTabContentManager()
+                                .isTabCaptureInFlightForTesting(previousTab.getId());
+                    });
+        } catch (CriteriaHelper.TimeoutException e) {
+            // Capture is likely stuck.
+            fixPendingReadbacks = true;
+        }
+        // Return to the tab to try to get a surface back for the tab so the capture can finish.
+        if (fixPendingReadbacks) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        TabModelUtils.selectTabById(
+                                cta.getTabModelSelector(),
+                                previousTab.getId(),
+                                TabSelectionType.FROM_USER);
+                    });
+        }
+        // Poll for the file to exist on disk.
+        checkThumbnailsExist(previousTab);
+        // Return to the previous tab.
+        if (fixPendingReadbacks && currentTab != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        TabModelUtils.selectTabById(
+                                cta.getTabModelSelector(),
+                                currentTab.getId(),
+                                TabSelectionType.FROM_USER);
+                    });
+        }
     }
 
     public static void verifyAllTabsHaveThumbnail(TabModel tabModel) {

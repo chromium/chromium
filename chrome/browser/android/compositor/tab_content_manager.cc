@@ -437,8 +437,9 @@ void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
   thumbnail_cache_->SetCaptureMinRequestTimeForTesting(timeMs);
 }
 
-jint TabContentManager::GetInFlightCapturesForTesting(JNIEnv* env) {
-  return in_flight_captures_.size();
+jboolean TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
+                                                           jint tab_id) {
+  return in_flight_captures_.find(tab_id) != in_flight_captures_.end();
 }
 
 // ----------------------------------------------------------------------------
