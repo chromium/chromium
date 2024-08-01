@@ -2072,18 +2072,24 @@ TEST_F(ReadAnythingAppModelTest, OnSelection_HandlesClickAndDragEvents) {
 }
 
 TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
-  ui::AXTreeUpdate initial_update;
-  SetUpdateTreeID(&initial_update);
-  ui::AXNodeData initial_node = test::TextNode(/* id= */ 2, u"Old Name");
-  initial_update.nodes = {initial_node};
-  AccessibilityEventReceived({initial_update});
+  ui::AXTreeUpdate inital_update;
+  SetUpdateTreeID(&inital_update);
+  ui::AXNodeData inital_node;
+  inital_node.id = 2;
+  inital_node.role = ax::mojom::Role::kStaticText;
+  inital_node.SetNameChecked("Old Name");
+  inital_update.nodes = {inital_node};
+  AccessibilityEventReceived({inital_update});
 
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  ui::AXNodeData updated_node = test::TextNode(initial_node.id, u"New Name");
+  ui::AXNodeData updated_node;
+  updated_node.id = inital_node.id;
+  updated_node.role = ax::mojom::Role::kStaticText;
+  updated_node.SetNameChecked("New Name");
   update.nodes = {updated_node};
-  SetLastExpandedNodeId(initial_node.id);
-  EXPECT_EQ(LastExpandedNodeId(), initial_node.id);
+  SetLastExpandedNodeId(inital_node.id);
+  EXPECT_EQ(LastExpandedNodeId(), inital_node.id);
   AccessibilityEventReceived({update});
 
   EXPECT_FALSE(RequiresPostProcessSelection());

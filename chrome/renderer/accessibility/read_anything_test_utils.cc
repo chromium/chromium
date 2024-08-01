@@ -33,16 +33,4 @@ ui::AXTreeUpdate& CreateInitialUpdate() {
   return *snapshot;
 }
 
-ui::AXNodeData TextNode(int id, std::u16string text_content) {
-  ui::AXNodeData node;
-  node.id = id;
-  node.role = ax::mojom::Role::kStaticText;
-  node.SetNameChecked(text_content);
-  return node;
-}
-
-ui::AXNodeData TextNode(int id) {
-  return TextNode(id, base::NumberToString16(id));
-}
-
 }  // namespace test
