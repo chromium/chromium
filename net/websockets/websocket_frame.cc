@@ -107,15 +107,7 @@ size_t GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header) {
 
 int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
                               const WebSocketMaskingKey* masking_key,
-                              char* buffer_ptr,
-                              int buffer_size) {
-  base::span<uint8_t> buffer = base::as_writable_bytes(
-      // TODO(crbug.com/40284755): It's not possible to construct this span
-      // soundedly here. WriteWebSocketFrameHeader() should receive a span
-      // instead of a pointer and length.
-      UNSAFE_BUFFERS(
-          base::span(buffer_ptr, base::checked_cast<size_t>(buffer_size))));
-
+                              base::span<uint8_t> buffer) {
   DCHECK((header.opcode & kOpCodeMask) == header.opcode)
       << "header.opcode must fit to kOpCodeMask.";
   DCHECK(header.payload_length <= static_cast<uint64_t>(INT64_MAX))

@@ -18,6 +18,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/ranges/algorithm.h"
 #include "net/base/net_errors.h"
@@ -29,17 +30,16 @@ namespace {
 
 TEST(WebSocketFrameHeaderTest, FrameLengths) {
   struct TestCase {
-    const char* frame_header;
-    size_t frame_header_length;
+    const std::string_view frame_header;
     uint64_t frame_length;
   };
   static constexpr TestCase kTests[] = {
-      {"\x81\x00", 2, UINT64_C(0)},
-      {"\x81\x7D", 2, UINT64_C(125)},
-      {"\x81\x7E\x00\x7E", 4, UINT64_C(126)},
-      {"\x81\x7E\xFF\xFF", 4, UINT64_C(0xFFFF)},
-      {"\x81\x7F\x00\x00\x00\x00\x00\x01\x00\x00", 10, UINT64_C(0x10000)},
-      {"\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
+      {{"\x81\x00", 2}, UINT64_C(0)},
+      {{"\x81\x7D", 2}, UINT64_C(125)},
+      {{"\x81\x7E\x00\x7E", 4}, UINT64_C(126)},
+      {{"\x81\x7E\xFF\xFF", 4}, UINT64_C(0xFFFF)},
+      {{"\x81\x7F\x00\x00\x00\x00\x00\x01\x00\x00", 10}, UINT64_C(0x10000)},
+      {{"\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10},
        UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
   for (const auto& test : kTests) {
@@ -47,12 +47,12 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
     header.final = true;
     header.payload_length = test.frame_length;
 
-    std::vector<char> expected_output(
-        test.frame_header, test.frame_header + test.frame_header_length);
+    std::vector<char> expected_output(test.frame_header.begin(),
+                                      test.frame_header.end());
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(header, nullptr, output.data(),
-                                        output.size()));
+              WriteWebSocketFrameHeader(header, nullptr,
+                                        base::as_writable_byte_span(output)));
     EXPECT_EQ(expected_output, output);
   }
 }
@@ -63,18 +63,17 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
                 "incorrect masking key size");
 
   struct TestCase {
-    const char* frame_header;
-    size_t frame_header_length;
+    const std::string_view frame_header;
     uint64_t frame_length;
   };
   static constexpr TestCase kTests[] = {
-      {"\x81\x80\xDE\xAD\xBE\xEF", 6, UINT64_C(0)},
-      {"\x81\xFD\xDE\xAD\xBE\xEF", 6, UINT64_C(125)},
-      {"\x81\xFE\x00\x7E\xDE\xAD\xBE\xEF", 8, UINT64_C(126)},
-      {"\x81\xFE\xFF\xFF\xDE\xAD\xBE\xEF", 8, UINT64_C(0xFFFF)},
-      {"\x81\xFF\x00\x00\x00\x00\x00\x01\x00\x00\xDE\xAD\xBE\xEF", 14,
+      {{"\x81\x80\xDE\xAD\xBE\xEF", 6}, UINT64_C(0)},
+      {{"\x81\xFD\xDE\xAD\xBE\xEF", 6}, UINT64_C(125)},
+      {{"\x81\xFE\x00\x7E\xDE\xAD\xBE\xEF", 8}, UINT64_C(126)},
+      {{"\x81\xFE\xFF\xFF\xDE\xAD\xBE\xEF", 8}, UINT64_C(0xFFFF)},
+      {{"\x81\xFF\x00\x00\x00\x00\x00\x01\x00\x00\xDE\xAD\xBE\xEF", 14},
        UINT64_C(0x10000)},
-      {"\x81\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xDE\xAD\xBE\xEF", 14,
+      {{"\x81\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xDE\xAD\xBE\xEF", 14},
        UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
   WebSocketMaskingKey masking_key;
@@ -86,73 +85,71 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
     header.masked = true;
     header.payload_length = test.frame_length;
 
-    std::vector<char> expected_output(
-        test.frame_header, test.frame_header + test.frame_header_length);
+    std::vector<char> expected_output(test.frame_header.begin(),
+                                      test.frame_header.end());
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(header, &masking_key, output.data(),
-                                        output.size()));
+              WriteWebSocketFrameHeader(header, &masking_key,
+                                        base::as_writable_byte_span(output)));
     EXPECT_EQ(expected_output, output);
   }
 }
 
 TEST(WebSocketFrameHeaderTest, FrameOpCodes) {
   struct TestCase {
-    const char* frame_header;
-    size_t frame_header_length;
+    const std::string_view frame_header;
     WebSocketFrameHeader::OpCode opcode;
   };
   static constexpr TestCase kTests[] = {
-      {"\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation},
-      {"\x81\x00", 2, WebSocketFrameHeader::kOpCodeText},
-      {"\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary},
-      {"\x88\x00", 2, WebSocketFrameHeader::kOpCodeClose},
-      {"\x89\x00", 2, WebSocketFrameHeader::kOpCodePing},
-      {"\x8A\x00", 2, WebSocketFrameHeader::kOpCodePong},
+      {{"\x80\x00", 2}, WebSocketFrameHeader::kOpCodeContinuation},
+      {{"\x81\x00", 2}, WebSocketFrameHeader::kOpCodeText},
+      {{"\x82\x00", 2}, WebSocketFrameHeader::kOpCodeBinary},
+      {{"\x88\x00", 2}, WebSocketFrameHeader::kOpCodeClose},
+      {{"\x89\x00", 2}, WebSocketFrameHeader::kOpCodePing},
+      {{"\x8A\x00", 2}, WebSocketFrameHeader::kOpCodePong},
       // These are undefined opcodes, but the builder should accept them anyway.
-      {"\x83\x00", 2, 0x3},
-      {"\x84\x00", 2, 0x4},
-      {"\x85\x00", 2, 0x5},
-      {"\x86\x00", 2, 0x6},
-      {"\x87\x00", 2, 0x7},
-      {"\x8B\x00", 2, 0xB},
-      {"\x8C\x00", 2, 0xC},
-      {"\x8D\x00", 2, 0xD},
-      {"\x8E\x00", 2, 0xE},
-      {"\x8F\x00", 2, 0xF}};
+      {{"\x83\x00", 2}, 0x3},
+      {{"\x84\x00", 2}, 0x4},
+      {{"\x85\x00", 2}, 0x5},
+      {{"\x86\x00", 2}, 0x6},
+      {{"\x87\x00", 2}, 0x7},
+      {{"\x8B\x00", 2}, 0xB},
+      {{"\x8C\x00", 2}, 0xC},
+      {{"\x8D\x00", 2}, 0xD},
+      {{"\x8E\x00", 2}, 0xE},
+      {{"\x8F\x00", 2}, 0xF}};
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(test.opcode);
     header.final = true;
     header.payload_length = 0;
 
-    std::vector<char> expected_output(
-        test.frame_header, test.frame_header + test.frame_header_length);
+    std::vector<char> expected_output(test.frame_header.begin(),
+                                      test.frame_header.end());
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(header, nullptr, output.data(),
-                                        output.size()));
+              WriteWebSocketFrameHeader(header, nullptr,
+                                        base::as_writable_byte_span(output)));
     EXPECT_EQ(expected_output, output);
   }
 }
 
 TEST(WebSocketFrameHeaderTest, FinalBitAndReservedBits) {
   struct TestCase {
-    const char* frame_header;
-    size_t frame_header_length;
+    const std::string_view frame_header;
     bool final;
     bool reserved1;
     bool reserved2;
     bool reserved3;
   };
   static constexpr TestCase kTests[] = {
-      {"\x81\x00", 2, true, false, false, false},
-      {"\x01\x00", 2, false, false, false, false},
-      {"\xC1\x00", 2, true, true, false, false},
-      {"\xA1\x00", 2, true, false, true, false},
-      {"\x91\x00", 2, true, false, false, true},
-      {"\x71\x00", 2, false, true, true, true},
-      {"\xF1\x00", 2, true, true, true, true}};
+      {{"\x81\x00", 2}, true, false, false, false},
+      {{"\x01\x00", 2}, false, false, false, false},
+      {{"\xC1\x00", 2}, true, true, false, false},
+      {{"\xA1\x00", 2}, true, false, true, false},
+      {{"\x91\x00", 2}, true, false, false, true},
+      {{"\x71\x00", 2}, false, true, true, true},
+      {{"\xF1\x00", 2}, true, true, true, true}};
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -162,12 +159,12 @@ TEST(WebSocketFrameHeaderTest, FinalBitAndReservedBits) {
     header.reserved3 = test.reserved3;
     header.payload_length = 0;
 
-    std::vector<char> expected_output(
-        test.frame_header, test.frame_header + test.frame_header_length);
+    std::vector<char> expected_output(test.frame_header.begin(),
+                                      test.frame_header.end());
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(header, nullptr, output.data(),
-                                        output.size()));
+              WriteWebSocketFrameHeader(header, nullptr,
+                                        base::as_writable_byte_span(output)));
     EXPECT_EQ(expected_output, output);
   }
 }
@@ -199,11 +196,13 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
     header.masked = test.masked;
     header.payload_length = test.payload_length;
 
-    char dummy_buffer[14];
+    std::array<uint8_t, 14> dummy_buffer;
     // Set an insufficient size to |buffer_size|.
-    EXPECT_EQ(ERR_INVALID_ARGUMENT,
-              WriteWebSocketFrameHeader(header, nullptr, dummy_buffer,
-                                        test.expected_header_size - 1));
+    EXPECT_EQ(
+        ERR_INVALID_ARGUMENT,
+        WriteWebSocketFrameHeader(
+            header, nullptr,
+            base::span(dummy_buffer).first(test.expected_header_size - 1)));
   }
 }
 

@@ -219,34 +219,32 @@ int WebSocketBasicStream::WriteFrames(
   int total_size = CalculateSerializedSizeAndTurnOnMaskBit(frames);
   auto combined_buffer = base::MakeRefCounted<IOBufferWithSize>(total_size);
 
-  char* dest = combined_buffer->data();
-  int remaining_size = total_size;
+  base::span<char> dest = combined_buffer->span();
   for (const auto& frame : *frames) {
     net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_SENT_FRAME_HEADER,
                       [&] { return NetLogFrameHeaderParam(&frame->header); });
     WebSocketMaskingKey mask = generate_websocket_masking_key_();
-    int result =
-        WriteWebSocketFrameHeader(frame->header, &mask, dest, remaining_size);
+    int result = WriteWebSocketFrameHeader(frame->header, &mask,
+                                           base::as_writable_bytes(dest));
     DCHECK_NE(ERR_INVALID_ARGUMENT, result)
-        << "WriteWebSocketFrameHeader() says that " << remaining_size
+        << "WriteWebSocketFrameHeader() says that " << dest.size()
         << " is not enough to write the header in. This should not happen.";
     CHECK_GE(result, 0) << "Potentially security-critical check failed";
-    dest += result;
-    remaining_size -= result;
+    dest = dest.subspan(result);
 
     CHECK_LE(frame->header.payload_length,
-             static_cast<uint64_t>(remaining_size));
-    const int frame_size = static_cast<int>(frame->header.payload_length);
+             base::checked_cast<uint64_t>(dest.size()));
+    const size_t frame_size = frame->header.payload_length;
     if (frame_size > 0) {
-      const char* const frame_data = frame->payload;
-      std::copy(frame_data, frame_data + frame_size, dest);
-      MaskWebSocketFramePayload(mask, 0, dest, frame_size);
-      dest += frame_size;
-      remaining_size -= frame_size;
+      base::span<const char> frame_data =
+          base::make_span(frame->payload, frame_size);
+      dest.copy_prefix_from(frame_data);
+      MaskWebSocketFramePayload(mask, 0, dest.data(), frame_size);
+      dest = dest.subspan(frame_size);
     }
   }
-  DCHECK_EQ(0, remaining_size) << "Buffer size calculation was wrong; "
-                               << remaining_size << " bytes left over.";
+  DCHECK(dest.empty()) << "Buffer size calculation was wrong; " << dest.size()
+                       << " bytes left over.";
   auto drainable_buffer = base::MakeRefCounted<DrainableIOBuffer>(
       std::move(combined_buffer), total_size);
   return WriteEverything(drainable_buffer);
