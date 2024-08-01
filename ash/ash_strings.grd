@@ -3812,6 +3812,9 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_NO_NETWORKS" desc="The message to display in the network info bubble when it is otherwise empty.">
         No network information available
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_UPDATING" desc="The message to display in the network info bubble when modem firmware is updating.">
+        Updating
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS" desc="The message to display in the network list when no mobile networks are available.">
         No mobile networks set up
       </message>

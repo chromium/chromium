@@ -63,6 +63,10 @@ ASH_EXPORT bool IsNetworkInhibited(
     const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
         network_properties);
 
+ASH_EXPORT bool IsCellularDeviceFlashing(
+    const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+        network_properties);
+
 ASH_EXPORT int GetStringIdForNetworkDetailedViewTitleRow(
     NetworkDetailedViewListType list_type);
 }  // namespace ash
