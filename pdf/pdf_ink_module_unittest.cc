@@ -602,13 +602,13 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentryWithQuickMoves) {
                                kQuickPageExitAndReentryPoints,
                                kTwoPageVerticalLayoutPoint2InsidePage0);
 
-  // TODO(crbug.com/352578791): The strokes should be:
-  // 1) `kTwoPageVerticalLayoutPageExitAndReentrySegment1`
-  // 2) {gfx::PointF(6.666667f, 0.0f), gfx::PointF(10.0f, 10.0f)}
-  EXPECT_THAT(StrokeInputPositions(),
-              ElementsAre(Pair(
-                  0, ElementsAre(ElementsAre(gfx::PointF(5.0f, 5.0f)),
-                                 ElementsAre(gfx::PointF(10.0f, 10.0f))))));
+  EXPECT_THAT(
+      StrokeInputPositions(),
+      ElementsAre(Pair(
+          0, ElementsAre(ElementsAreArray(
+                             kTwoPageVerticalLayoutPageExitAndReentrySegment1),
+                         ElementsAreArray({gfx::PointF(6.666667f, 0.0f),
+                                           gfx::PointF(10.0f, 10.0f)})))));
 }
 
 TEST_F(PdfInkModuleStrokeTest, EraseStroke) {

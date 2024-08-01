@@ -149,7 +149,8 @@ class PdfInkModule {
     // The event position for the last input.  Coordinates match the
     // screen-based position that are provided during stroking from
     // `blink::WebMouseEvent` positions.  Used after stroking has already
-    // started, to support invalidation.
+    // started, for invalidation and for extrapolating where a stroke crosses
+    // the page boundary.
     std::optional<gfx::PointF> input_last_event_position;
 
     // The points that make up the current stroke, divided into
