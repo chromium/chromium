@@ -266,6 +266,10 @@ class PdfInkModule {
       const gfx::PointF& position,
       int page_index);
 
+  // Helper to convert `position` to a canonical position and record it into
+  // `current_tool_state_`. Can only be called when drawing.
+  void RecordStrokePosition(const gfx::PointF& position);
+
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
   void ApplyUndoRedoCommandsHelper(std::set<size_t> ids, bool should_draw);
 

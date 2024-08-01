@@ -359,16 +359,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
     if (boundary_position != last_position) {
       // Record the last point before leaving the page, if `last_position` was
       // not already on the page boundary.
-      gfx::PointF canonical_boundary_position =
-          ConvertEventPositionToCanonicalPosition(boundary_position,
-                                                  state.page_index);
-      base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
-      state.inputs.back().push_back({
-          .position = InkPoint{canonical_boundary_position.x(),
-                               canonical_boundary_position.y()},
-          .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
-      });
-
+      RecordStrokePosition(boundary_position);
       client_->Invalidate(
           state.brush->GetInvalidateArea(last_position, boundary_position));
     }
@@ -389,26 +380,12 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position) {
         last_position);
     if (boundary_position != position) {
       // Record the first point after entering the page.
-      gfx::PointF canonical_boundary_position =
-          ConvertEventPositionToCanonicalPosition(boundary_position,
-                                                  state.page_index);
-      base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
-      state.inputs.back().push_back({
-          .position = InkPoint{canonical_boundary_position.x(),
-                               canonical_boundary_position.y()},
-          .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
-      });
+      RecordStrokePosition(boundary_position);
       invalidation_position = boundary_position;
     }
   }
 
-  gfx::PointF canonical_position =
-      ConvertEventPositionToCanonicalPosition(position, state.page_index);
-  base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
-  state.inputs.back().push_back({
-      .position = InkPoint{canonical_position.x(), canonical_position.y()},
-      .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
-  });
+  RecordStrokePosition(position);
 
   // Invalidate area covering a straight line between this position and the
   // previous one.
@@ -668,6 +645,18 @@ gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
   return EventPositionToCanonicalPosition(position, client_->GetOrientation(),
                                           page_contents_rect,
                                           client_->GetZoom());
+}
+
+void PdfInkModule::RecordStrokePosition(const gfx::PointF& position) {
+  CHECK(is_drawing_stroke());
+  DrawingStrokeState& state = drawing_stroke_state();
+  gfx::PointF canonical_position =
+      ConvertEventPositionToCanonicalPosition(position, state.page_index);
+  base::TimeDelta time_diff = base::Time::Now() - state.start_time.value();
+  state.inputs.back().push_back({
+      .position = InkPoint{canonical_position.x(), canonical_position.y()},
+      .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
+  });
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(
