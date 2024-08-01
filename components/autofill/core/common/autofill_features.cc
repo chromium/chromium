@@ -673,14 +673,9 @@ BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
 
 // Sends text change events for contenteditable elements. When this is off,
 // only input elements and maybe textarea elements send text change events.
-// Enabled by default for Mac and Windows platforms.
 BASE_FEATURE(kAutofillContentEditableChangeEvents,
              "AutofillContentEditableChangeEvents",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Causes Autofill to announce the Compose popup less assertively.

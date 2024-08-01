@@ -1583,25 +1583,6 @@
             ]
         }
     ],
-    "AutofillContentEditableChangeEvents": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillContentEditableChangeEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillCreditCardUserPerceptionSurvey": [
         {
             "platforms": [
