@@ -14,9 +14,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kPinnedSearchCompanionMigrationComplete, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kPinnedChromeLabsMigrationComplete, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 }  // namespace toolbar

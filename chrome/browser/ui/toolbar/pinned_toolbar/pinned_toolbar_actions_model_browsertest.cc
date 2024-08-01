@@ -105,7 +105,6 @@ class PinnedToolbarActionsModelBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     model_ =
         PinnedToolbarActionsModelFactory::GetForProfile(browser()->profile());
-    model_->UpdatePinnedState(kActionShowChromeLabs, false);
     model_observer_ =
         std::make_unique<PinnedToolbarActionsModelTestObserver>(model_);
   }
