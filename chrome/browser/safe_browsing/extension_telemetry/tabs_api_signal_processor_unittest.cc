@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
 
 #include <array>
@@ -204,19 +199,19 @@ TEST_F(TabsApiSignalProcessorTest, EnforcesMaxUniqueCallDetails) {
 }
 
 TEST_F(TabsApiSignalProcessorTest, IncludesJSCallStacksInSignalInfo) {
-  extensions::StackTrace stack_trace[] = {
-      {{1, 1, u"foo1.js", u"chrome.tabs.create"},
-       {2, 2, u"foo2.js", u"Func2"},
-       {3, 3, u"foo3.js", u"Func3"},
-       {4, 4, u"foo4.js", u"Func4"},
-       {5, 5, u"foo5.js", u"Func5"}},
-      {{1, 1, u"foo1.js", u"chrome.tabs.update"},
-       {2, 2, u"foo2.js", u"Func2"},
-       {3, 3, u"foo3.js", u"Func3"},
-       {5, 5, u"foo5.js", u"Func4"}},
-      {{1, 1, u"foo1.js", u"chrome.tabs.remove"},
-       {2, 2, u"foo2.js", u"Func2"},
-       {3, 3, u"foo3.js", u"Func3"}}};
+  const std::array<extensions::StackTrace, 3> stack_trace = {
+      {{{1, 1, u"foo1.js", u"chrome.tabs.create"},
+        {2, 2, u"foo2.js", u"Func2"},
+        {3, 3, u"foo3.js", u"Func3"},
+        {4, 4, u"foo4.js", u"Func4"},
+        {5, 5, u"foo5.js", u"Func5"}},
+       {{1, 1, u"foo1.js", u"chrome.tabs.update"},
+        {2, 2, u"foo2.js", u"Func2"},
+        {3, 3, u"foo3.js", u"Func3"},
+        {5, 5, u"foo5.js", u"Func4"}},
+       {{1, 1, u"foo1.js", u"chrome.tabs.remove"},
+        {2, 2, u"foo2.js", u"Func2"},
+        {3, 3, u"foo3.js", u"Func3"}}}};
 
   // Process 3 signals, each corresponding to a different tabs API method.
   {

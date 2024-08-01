@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 
 #include "base/command_line.h"
@@ -67,13 +62,13 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr const char* kExtensionId[] = {
-    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "cccccccccccccccccccccccccccccccc", "dddddddddddddddddddddddddddddddd",
-    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"};
-constexpr const char* kExtensionName[] = {
-    "Test Extension 0", "Test Extension 1", "Test Extension 2",
-    "Test Extension 3", "Test Extension 4"};
+constexpr auto kExtensionId = std::to_array(
+    {"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "cccccccccccccccccccccccccccccccc", "dddddddddddddddddddddddddddddddd",
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"});
+constexpr auto kExtensionName =
+    std::to_array({"Test Extension 0", "Test Extension 1", "Test Extension 2",
+                   "Test Extension 3", "Test Extension 4"});
 constexpr const char kExtensionVersion[] = "1";
 constexpr const char kScriptCode[] = "document.write('Hello World')";
 constexpr const char kCookieName[] = "cookie-1";

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 
 #include <array>
@@ -27,8 +22,8 @@ using TabsExecuteScriptInfo =
 using ScriptInfo =
     ExtensionTelemetryReportRequest_SignalInfo_TabsExecuteScriptInfo_ScriptInfo;
 
-constexpr const char* kExtensionId[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
-                                        "eeeeeeeeffffffffgggggggghhhhhhhh"};
+constexpr auto kExtensionId = std::to_array(
+    {"aaaaaaaabbbbbbbbccccccccdddddddd", "eeeeeeeeffffffffgggggggghhhhhhhh"});
 
 struct ScriptData {
   explicit ScriptData(const std::string& script_code)
