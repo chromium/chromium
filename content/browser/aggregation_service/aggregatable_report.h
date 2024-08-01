@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -267,6 +268,41 @@ class CONTENT_EXPORT AggregatableReport {
   static bool IsNumberOfHistogramContributionsValid(
       size_t number,
       blink::mojom::AggregationServiceMode aggregation_mode);
+
+  // Computes the length in bytes of a TEE-based payload's plaintext CBOR
+  // serialization. See `AggregationServicePayload` for the format's definition.
+  static constexpr base::CheckedNumeric<size_t>
+  ComputeTeeBasedPayloadLengthInBytes(
+      size_t num_contributions,
+      std::optional<size_t> filtering_id_max_bytes) {
+    constexpr base::CheckedNumeric<size_t> kOverheadLen{
+        1                                           // map(2)
+        + 1 + std::string_view("operation").size()  // text(9)
+        + 1 + std::string_view("histogram").size()  // text(9)
+        + 1 + std::string_view("data").size()       // text(4)
+        + 1                                         // array(_)
+    };
+    constexpr base::CheckedNumeric<size_t> kContributionLenWithoutId{
+        1                                        // map(_)
+        + 1 + std::string_view("bucket").size()  // text(6)
+        + 1 + 16                                 // bytes(16)
+        + 1 + std::string_view("value").size()   // text(5)
+        + 1 + 4                                  // bytes(4)
+    };
+    static_assert(kOverheadLen.ValueOrDie() == 27);
+    static_assert(kContributionLenWithoutId.ValueOrDie() == 36);
+
+    if (!filtering_id_max_bytes.has_value()) {
+      return kOverheadLen + (num_contributions * kContributionLenWithoutId);
+    }
+
+    const base::CheckedNumeric<size_t> contribution_len_with_id =
+        kContributionLenWithoutId            //
+        + 1 + std::string_view("id").size()  // text(2)
+        + 1 + *filtering_id_max_bytes;       // bytes(_)
+
+    return kOverheadLen + (num_contributions * contribution_len_with_id);
+  }
 
  private:
   // This vector should have an entry for each processing URL specified in

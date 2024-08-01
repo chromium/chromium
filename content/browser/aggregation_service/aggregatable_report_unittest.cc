@@ -1561,5 +1561,36 @@ TEST_F(AggregatableReportTest, AggregationCoordinator_SetInReport) {
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
+TEST(AggregatableReportPayloadLengthTest, With20Contributions) {
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+                /*num_contributions=*/20,
+                /*filtering_id_max_bytes=*/std::nullopt)
+                .ValueOrDie(),
+            747);
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+                /*num_contributions=*/20, /*filtering_id_max_bytes=*/1)
+                .ValueOrDie(),
+            847);
+}
+
+TEST(AggregatableReportPayloadLengthTest, With100Contributions) {
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+                /*num_contributions=*/100,
+                /*filtering_id_max_bytes=*/std::nullopt)
+                .ValueOrDie(),
+            3627);
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+                /*num_contributions=*/100, /*filtering_id_max_bytes=*/1)
+                .ValueOrDie(),
+            4127);
+}
+
+TEST(AggregatableReportPayloadLengthTest, OutOfRange) {
+  EXPECT_FALSE(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+                   /*num_contributions=*/std::numeric_limits<size_t>::max(),
+                   /*filtering_id_max_bytes=*/1)
+                   .IsValid());
+}
+
 }  // namespace
 }  // namespace content

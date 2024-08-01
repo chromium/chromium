@@ -23,7 +23,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -495,25 +494,6 @@ proto::AggregatableReportRequest ConvertReportRequestToProto(
   return request_proto;
 }
 
-void MaybeVerifyPayloadLength(size_t max_contributions_allowed,
-                              size_t payload_length,
-                              std::optional<size_t> filtering_id_max_bytes) {
-  // TODO(alexmt): Replace with a more general method to ensure that the payload
-  // length is deterministic.
-  // Note that the 747 byte expectation derives from the following:
-  // 27 (baseline size with no contributions) + 20 * 36 (size per contribution)
-  // Adding filtering IDs adds 20 * (4 + filtering_id_max_bytes.value()).
-  if (max_contributions_allowed == 20) {
-    size_t expected_payload_length = 747;
-    if (filtering_id_max_bytes.has_value()) {
-      expected_payload_length += 80 + 20 * filtering_id_max_bytes.value();
-    }
-    if (payload_length != expected_payload_length) {
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-}
-
 // Note that null filtering IDs are considered to 'fit in' to all max bytes and
 // only null filtering IDs are considered to 'fit in' to a null max bytes.
 bool FilteringIdsFitInMaxBytes(
@@ -901,10 +881,14 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
         return std::nullopt;
       }
 
-      MaybeVerifyPayloadLength(
-          report_request.payload_contents().max_contributions_allowed,
-          /*payload_length=*/payload->size(),
-          report_request.payload_contents().filtering_id_max_bytes);
+      // Validate that the payload length is a deterministic function of
+      // `max_contributions_allowed` and `filtering_id_max_bytes`.
+      const size_t expected_payload_length =
+          ComputeTeeBasedPayloadLengthInBytes(
+              report_request.payload_contents().max_contributions_allowed,
+              report_request.payload_contents().filtering_id_max_bytes)
+              .ValueOrDie();
+      CHECK_EQ(payload->size(), expected_payload_length);
 
       unencrypted_payloads.emplace_back(*std::move(payload));
       break;
