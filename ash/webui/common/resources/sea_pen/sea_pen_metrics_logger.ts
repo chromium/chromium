@@ -16,6 +16,12 @@ const enum HistogramName {
   SEA_PEN_THUMBNAIL_CLICKED = 'Ash.SeaPen.ThumbnailClicked',
   SEA_PEN_CREATE_BUTTON = 'Ash.SeaPen.CreateButton',
   SEA_PEN_WORD_COUNT = 'Ash.SeaPen.WordCount',
+  SEA_PEN_SUGGESTION_CLICKED = `Ash.SeaPen.Freeform.Suggestion.Clicked`,
+  SEA_PEN_SUGGESTION_SHUFFLE_CLICKED =
+      `Ash.SeaPen.Freeform.Suggestion.Shuffle.Clicked`,
+  SEA_PEN_SAMPLE_PROMPT_CLICKED = `Ash.SeaPen.Freeform.SamplePrompt.Clicked`,
+  SEA_PEN_SAMPLE_PROMPT_SHUFFLE_CLICKED =
+      `Ash.SeaPen.Freeform.SamplePrompt.Shuffle.Clicked`,
 }
 
 function getTemplateIdForMetrics(templateId: SeaPenTemplateId|Query): number {
@@ -99,4 +105,24 @@ export function logSeaPenThumbnailClicked(templateId: SeaPenTemplateId|Query) {
 export function logNumWordsInTextQuery(wordCount: number) {
   chrome.metricsPrivate.recordCount(
       HistogramName.SEA_PEN_WORD_COUNT, wordCount);
+}
+
+export function logSuggestionClicked() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.SEA_PEN_SUGGESTION_CLICKED, true);
+}
+
+export function logSuggestionShuffleClicked() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.SEA_PEN_SUGGESTION_SHUFFLE_CLICKED, true);
+}
+
+export function logSamplePromptClicked() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.SEA_PEN_SAMPLE_PROMPT_CLICKED, true);
+}
+
+export function logSamplePromptShuffleClicked() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.SEA_PEN_SAMPLE_PROMPT_SHUFFLE_CLICKED, true);
 }

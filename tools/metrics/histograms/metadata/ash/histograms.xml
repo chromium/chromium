@@ -7590,6 +7590,42 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="SeaPenApiType"/>
 </histogram>
 
+<histogram name="Ash.SeaPen.Freeform.SamplePrompt.Clicked"
+    enum="BooleanClicked" expires_after="2025-07-31">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emmitted when the user clicks a sample prompt for a freeform query.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.SamplePrompt.Shuffle.Clicked"
+    enum="BooleanClicked" expires_after="2025-07-31">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emmitted when the user shuffles the sample prompts for a freeform query.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Suggestion.Clicked" enum="BooleanClicked"
+    expires_after="2025-07-31">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emmitted when the user clicks a suggestion for a freeform query.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Suggestion.Shuffle.Clicked"
+    enum="BooleanClicked" expires_after="2025-07-31">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emmitted when the user shuffles the suggestions for a freeform query.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SeaPen.Freeform.{AppName}.RecentImage.ActionMenu"
     enum="SeaPenActionMenuItem" expires_after="2025-06-06">
   <owner>thuongphan@google.com</owner>

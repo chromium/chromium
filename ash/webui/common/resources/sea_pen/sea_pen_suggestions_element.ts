@@ -14,6 +14,7 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
 import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
@@ -73,7 +74,7 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
 
   private resetSuggestions_() {
     this.hiddenSuggestions_ = new Set();
-    this.onShuffleClicked_();
+    this.shuffleSuggestions_();
   }
 
   private onClickSuggestion_(event: Event&{model: {index: number}}) {
@@ -83,9 +84,15 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
     this.splice('suggestions_', event.model.index, 1);
     this.hiddenSuggestions_.add(suggestion);
+    logSuggestionClicked();
   }
 
   private onShuffleClicked_() {
+    logSuggestionShuffleClicked();
+    this.shuffleSuggestions_();
+  }
+
+  private shuffleSuggestions_() {
     // Run shuffle (5 times at most) until the shuffled suggestions are
     // different from current; which is highly likely to happen the first time.
     for (let i = 0; i < 5; i++) {

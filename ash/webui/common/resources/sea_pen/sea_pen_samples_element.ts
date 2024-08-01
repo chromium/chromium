@@ -18,6 +18,7 @@ import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/pers
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SeaPenSamplePrompt} from './constants.js';
+import {logSamplePromptClicked} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_samples_element.html.js';
 
 const SeaPenSamplesElementBase = I18nMixin(PolymerElement);
@@ -64,6 +65,7 @@ export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
 
   private onClickSample_(e: WallpaperGridItemSelectedEvent&
                          {model: {sample: SeaPenSamplePrompt}}) {
+    logSamplePromptClicked();
     this.dispatchEvent(new SeaPenSampleSelectedEvent(e.model.sample.prompt));
   }
 }
