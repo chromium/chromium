@@ -11,7 +11,7 @@ export const DEFAULT_TIME_SCALE: number = 100;
 /**
  * The minimum scale of the line chart.
  */
-export const MIN_TIME_SCALE: number = 10;
+export const MIN_TIME_SCALE: number = 5;
 
 /**
  * The maximum scale of the line chart.
