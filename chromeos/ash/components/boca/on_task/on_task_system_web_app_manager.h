@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/sessions/core/session_id.h"
 
 namespace ash {
 
@@ -24,14 +25,16 @@ class OnTaskSystemWebAppManager {
   virtual void LaunchSystemWebAppAsync(
       base::OnceCallback<void(bool)> callback) = 0;
 
-  // Closes the active Boca SWA window.
-  virtual void CloseActiveSystemWebAppWindow() = 0;
+  // Closes the specified Boca SWA window.
+  virtual void CloseSystemWebAppWindow(SessionID window_id) = 0;
 
-  // Returns true if there is an active Boca SWA window. False otherwise.
-  virtual bool HasActiveSystemWebAppWindow() = 0;
+  // Returns a valid window id associated with the active Boca SWA window. If
+  // there is no such active window, it returns `SessionID::InvalidValue()`.
+  virtual SessionID GetActiveSystemWebAppWindowID() = 0;
 
-  // Pins/unpins the active Boca SWA window based on the specified value.
-  virtual void SetPinStateForActiveSystemWebAppWindow(bool pinned) = 0;
+  // Pins/unpins the specified Boca SWA window based on the specified value.
+  virtual void SetPinStateForSystemWebAppWindow(bool pinned,
+                                                SessionID window_id) = 0;
 
  protected:
   OnTaskSystemWebAppManager() = default;

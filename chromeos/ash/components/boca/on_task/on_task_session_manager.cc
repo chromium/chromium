@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "components/sessions/core/session_id.h"
 
 namespace ash {
 
@@ -22,14 +23,16 @@ OnTaskSessionManager::OnTaskSessionManager(
 OnTaskSessionManager::~OnTaskSessionManager() = default;
 
 void OnTaskSessionManager::OnSessionStarted(const std::string& session_id) {
-  if (system_web_app_manager_->HasActiveSystemWebAppWindow()) {
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
     // Close all pre-existing SWA instances before we reopen a new one to set
     // things up for OnTask. We should rarely get here because relevant
     // notifiers ensure the SWA is closed at the onset of a session.
     //
     // TODO (b/354007279): Look out for and break from loop should window close
     // fail more than once.
-    system_web_app_manager_->CloseActiveSystemWebAppWindow();
+    system_web_app_manager_->CloseSystemWebAppWindow(window_id);
     OnSessionStarted(session_id);
     return;
   }
@@ -40,11 +43,11 @@ void OnTaskSessionManager::OnSessionStarted(const std::string& session_id) {
 }
 
 void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
-  if (!system_web_app_manager_->HasActiveSystemWebAppWindow()) {
-    // No SWA instance open. Do nothing.
-    return;
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->CloseSystemWebAppWindow(window_id);
   }
-  system_web_app_manager_->CloseActiveSystemWebAppWindow();
 }
 
 void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
@@ -55,11 +58,13 @@ void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
 
   // Facilitate seamless transition between bundle modes by pre-configuring
   // the Boca SWA.
-  if (system_web_app_manager_->HasActiveSystemWebAppWindow()) {
-    system_web_app_manager_->SetPinStateForActiveSystemWebAppWindow(
-        /*pinned=*/true);
-    system_web_app_manager_->SetPinStateForActiveSystemWebAppWindow(
-        /*pinned-*/ false);
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
+        /*pinned=*/true, window_id);
+    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
+        /*pinned-*/ false, window_id);
   }
 }
 

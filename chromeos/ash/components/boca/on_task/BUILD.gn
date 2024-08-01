@@ -17,6 +17,7 @@ static_library("on_task") {
     "//ash/webui/boca_ui",
     "//ash/webui/boca_ui/proto",
     "//base",
+    "//components/sessions:session_id",
   ]
 }
 
@@ -29,5 +30,6 @@ source_set("unit_tests") {
     ":on_task",
     "//base",
     "//chrome/test:test_support",
+    "//components/sessions:session_id",
   ]
 }

@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,11 +28,11 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               LaunchSystemWebAppAsync,
               (base::OnceCallback<void(bool)>),
               (override));
-  MOCK_METHOD(void, CloseActiveSystemWebAppWindow, (), (override));
-  MOCK_METHOD(bool, HasActiveSystemWebAppWindow, (), (override));
+  MOCK_METHOD(void, CloseSystemWebAppWindow, (SessionID window_id), (override));
+  MOCK_METHOD(SessionID, GetActiveSystemWebAppWindowID, (), (override));
   MOCK_METHOD(void,
-              SetPinStateForActiveSystemWebAppWindow,
-              (bool pinned),
+              SetPinStateForSystemWebAppWindow,
+              (bool pinned, SessionID window_id),
               (override));
 };
 
@@ -50,9 +51,9 @@ class OnTaskSessionManagerTest : public ::testing::Test {
 };
 
 TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
-  EXPECT_CALL(*system_web_app_manager_ptr_, HasActiveSystemWebAppWindow())
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .Times(2)
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly(Return(SessionID::InvalidValue()));
   EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
@@ -61,15 +62,17 @@ TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
+  const SessionID kWindowId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              HasActiveSystemWebAppWindow())
-      .WillOnce(Return(false))  // Initial check before launch.
-      .WillOnce(Return(true));
+              GetActiveSystemWebAppWindowID())
+      .WillOnce(
+          Return(SessionID::InvalidValue()))  // Initial check before launch.
+      .WillOnce(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForActiveSystemWebAppWindow(true))
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForActiveSystemWebAppWindow(false))
+              SetPinStateForSystemWebAppWindow(false, kWindowId))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
@@ -79,10 +82,11 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
-  EXPECT_CALL(*system_web_app_manager_ptr_, HasActiveSystemWebAppWindow())
-      .WillOnce(Return(true))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(*system_web_app_manager_ptr_, CloseActiveSystemWebAppWindow())
+  const SessionID kWindowId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(kWindowId))
+      .WillRepeatedly(Return(SessionID::InvalidValue()));
+  EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
@@ -92,17 +96,18 @@ TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
-  EXPECT_CALL(*system_web_app_manager_ptr_, HasActiveSystemWebAppWindow())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*system_web_app_manager_ptr_, CloseActiveSystemWebAppWindow())
+  const SessionID kWindowId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
       .Times(1);
   session_manager_->OnSessionEnded("test_session_id");
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnSessionEnd) {
-  EXPECT_CALL(*system_web_app_manager_ptr_, HasActiveSystemWebAppWindow())
-      .WillOnce(Return(false));
-  EXPECT_CALL(*system_web_app_manager_ptr_, CloseActiveSystemWebAppWindow())
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(SessionID::InvalidValue()));
+  EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(_))
       .Times(0);
   session_manager_->OnSessionEnded("test_session_id");
 }

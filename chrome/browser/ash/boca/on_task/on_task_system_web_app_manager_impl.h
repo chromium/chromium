@@ -10,8 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 
-// Forward declaration of the browser profile.
+// Forward declaration of the browser profile and `SessionID`.
 class Profile;
+class SessionID;
 
 namespace ash {
 
@@ -26,9 +27,10 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   // OnTaskSystemWebAppManager:
   void LaunchSystemWebAppAsync(
       base::OnceCallback<void(bool)> callback) override;
-  void CloseActiveSystemWebAppWindow() override;
-  bool HasActiveSystemWebAppWindow() override;
-  void SetPinStateForActiveSystemWebAppWindow(bool pinned) override;
+  void CloseSystemWebAppWindow(SessionID window_id) override;
+  SessionID GetActiveSystemWebAppWindowID() override;
+  void SetPinStateForSystemWebAppWindow(bool pinned,
+                                        SessionID window_id) override;
 
  private:
   raw_ptr<Profile> profile_;

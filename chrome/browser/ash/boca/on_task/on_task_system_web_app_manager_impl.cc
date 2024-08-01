@@ -11,11 +11,30 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace ash {
+namespace {
+
+// Returns a pointer to the browser window with the specified id. Returns
+// nullptr if there is no match.
+Browser* GetBrowserWindowWithID(SessionID window_id) {
+  if (!window_id.is_valid()) {
+    return nullptr;
+  }
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->session_id() == window_id) {
+      return browser;
+    }
+  }
+
+  // No window found with specified ID.
+  return nullptr;
+}
+}  // namespace
 
 OnTaskSystemWebAppManagerImpl::OnTaskSystemWebAppManagerImpl(Profile* profile)
     : profile_(profile) {}
@@ -37,27 +56,33 @@ void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
           std::move(callback)));
 }
 
-void OnTaskSystemWebAppManagerImpl::CloseActiveSystemWebAppWindow() {
+void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
+    SessionID window_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Browser* const browser =
-      FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA);
+  Browser* const browser = GetBrowserWindowWithID(window_id);
   if (browser) {
     browser->TryToCloseWindow(/*skip_beforeunload=*/true, base::DoNothing());
   }
 }
 
-bool OnTaskSystemWebAppManagerImpl::HasActiveSystemWebAppWindow() {
+SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO (b/354007279): Filter out SWA window instances that are not managed by
+  // OnTask (for instance, those manually spawned by consumers).
   Browser* const browser =
       FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA);
-  return (browser != nullptr);
+  if (!browser) {
+    return SessionID::InvalidValue();
+  }
+  return browser->session_id();
 }
 
-void OnTaskSystemWebAppManagerImpl::SetPinStateForActiveSystemWebAppWindow(
-    bool pinned) {
+void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
+    bool pinned,
+    SessionID window_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Browser* const browser =
-      FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA);
+  Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
   }
