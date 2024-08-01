@@ -65,8 +65,8 @@ suite('SeaPenFreeformElementTest', function() {
         !!freeformElement.shadowRoot!.querySelector('#tabContainer'),
         'tab container is not shown');
     assertTrue(
-        !!freeformElement.shadowRoot!.querySelector('#samplesTitle'),
-        'Sample Prompts title is shown');
+        !!freeformElement.shadowRoot!.querySelector('#promptingGuide'),
+        'Prompting guide is shown');
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
         'sea-pen-samples shown on freeform page');
