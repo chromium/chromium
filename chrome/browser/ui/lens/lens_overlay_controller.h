@@ -218,6 +218,11 @@ class LensOverlayController : public LensSearchboxClient,
   // `handler`.
   void SetSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
 
+  // Passes ownership of the realbox handler to the search bubble controller.
+  // This is called by the WebUIController when the WebUI is executing
+  // javascript and has bound the handler.
+  void SetContextualSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+
   // This method is used to release the owned `SearchboxHandler`. It should be
   // called before the embedding web contents is destroyed since it contains a
   // reference to that web contents.
@@ -925,6 +930,10 @@ class LensOverlayController : public LensSearchboxClient,
   base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
       omnibox_tab_helper_observer_{this};
 
+  // Owns the search bubble that shows over the overlay, before the side panel
+  // is showing.
+  std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
+
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,
   // like in the case of side panel opening. In addition, the handler may be
@@ -955,10 +964,6 @@ class LensOverlayController : public LensSearchboxClient,
   raw_ptr<views::View> overlay_view_;
   // Pointer to the web view within the overlay view if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
-
-  // Owns the search bubble that shows over the overlay, before the side panel
-  // is showing.
-  std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
 
   // Preselection toast bubble. Weak; owns itself. NULL when closed.
   raw_ptr<views::Widget> preselection_widget_ = nullptr;

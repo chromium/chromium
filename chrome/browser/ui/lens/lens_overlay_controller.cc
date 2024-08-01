@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -90,33 +91,6 @@ constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
-
-// When a WebUIController for lens overlay is created, we need a mechanism to
-// glue that instance to the LensOverlayController that spawned it. This class
-// is that glue. The lifetime of this instance is scoped to the lifetime of the
-// LensOverlayController, which semantically "owns" this instance.
-class LensOverlayControllerGlue
-    : public content::WebContentsUserData<LensOverlayControllerGlue> {
- public:
-  ~LensOverlayControllerGlue() override = default;
-
-  LensOverlayController* controller() { return controller_; }
-
- private:
-  friend WebContentsUserData;
-
-  LensOverlayControllerGlue(content::WebContents* contents,
-                            LensOverlayController* controller)
-      : content::WebContentsUserData<LensOverlayControllerGlue>(*contents),
-        controller_(controller) {}
-
-  // Semantically owns this class.
-  raw_ptr<LensOverlayController> controller_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerGlue);
 
 // Allows lookup of a LensOverlayController from a WebContents associated with a
 // tab.
@@ -456,7 +430,8 @@ void LensOverlayController::CloseUISync(
 // static
 LensOverlayController* LensOverlayController::GetController(
     content::WebUI* web_ui) {
-  return LensOverlayControllerGlue::FromWebContents(web_ui->GetWebContents())
+  return lens::LensOverlayControllerGlue::FromWebContents(
+             web_ui->GetWebContents())
       ->controller();
 }
 
@@ -471,7 +446,7 @@ LensOverlayController* LensOverlayController::GetController(
 LensOverlayController*
 LensOverlayController::GetControllerFromWebViewWebContents(
     content::WebContents* contents) {
-  auto* glue = LensOverlayControllerGlue::FromWebContents(contents);
+  auto* glue = lens::LensOverlayControllerGlue::FromWebContents(contents);
   return glue ? glue->controller() : nullptr;
 }
 
@@ -548,6 +523,11 @@ void LensOverlayController::SetSearchboxHandler(
   searchbox_handler_ = std::move(handler);
 }
 
+void LensOverlayController::SetContextualSearchboxHandler(
+    std::unique_ptr<RealboxHandler> handler) {
+  search_bubble_controller_->SetContextualSearchboxHandler(std::move(handler));
+}
+
 void LensOverlayController::ResetSearchboxHandler() {
   searchbox_handler_.reset();
 }
@@ -565,8 +545,8 @@ views::WebView* LensOverlayController::GetOverlayWebViewForTesting() {
 }
 
 void LensOverlayController::CreateGlueForWebView(views::WebView* web_view) {
-  LensOverlayControllerGlue::CreateForWebContents(web_view->GetWebContents(),
-                                                  this);
+  lens::LensOverlayControllerGlue::CreateForWebContents(
+      web_view->GetWebContents(), this);
   glued_webviews_.push_back(web_view);
 }
 
@@ -574,7 +554,7 @@ void LensOverlayController::RemoveGlueForWebView(views::WebView* web_view) {
   auto it = std::find(glued_webviews_.begin(), glued_webviews_.end(), web_view);
   if (it != glued_webviews_.end()) {
     web_view->GetWebContents()->RemoveUserData(
-        LensOverlayControllerGlue::UserDataKey());
+        lens::LensOverlayControllerGlue::UserDataKey());
     glued_webviews_.erase(it);
   }
 }
@@ -1893,6 +1873,7 @@ void LensOverlayController::IssueSearchBoxRequest(
         std::make_optional(initialization_data_->selected_region_bitmap_));
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  CloseSearchBubble();
   RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;

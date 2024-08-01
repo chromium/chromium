@@ -12,8 +12,6 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
-class RealboxHandler;
-
 namespace ui {
 class ColorChangeHandler;
 }
@@ -55,7 +53,6 @@ class SearchBubbleUI : public TopChromeWebUIController,
 
   std::unique_ptr<SearchBubblePageHandler> page_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-  std::unique_ptr<RealboxHandler> contextual_searchbox_handler_;
   raw_ptr<content::WebUI> web_ui_;
 
   mojo::Receiver<lens::mojom::SearchBubblePageHandlerFactory>

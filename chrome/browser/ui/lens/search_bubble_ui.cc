@@ -59,11 +59,16 @@ void SearchBubbleUI::BindInterface(
 
 void SearchBubbleUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  contextual_searchbox_handler_ = std::make_unique<RealboxHandler>(
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  CHECK(controller);
+  auto contextual_searchbox_handler = std::make_unique<RealboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui_),
       web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/nullptr,
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller,
       /*omnibox_controller=*/nullptr);
+  controller->SetContextualSearchboxHandler(
+      std::move(contextual_searchbox_handler));
 }
 
 void SearchBubbleUI::BindInterface(
