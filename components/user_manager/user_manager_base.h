@@ -44,6 +44,10 @@ namespace user_manager {
 // Feature that removes legacy supervised users.
 BASE_DECLARE_FEATURE(kRemoveLegacySupervisedUsersOnStartup);
 
+// Feature that removes deprecated ARC kiosk users.
+USER_MANAGER_EXPORT
+BASE_DECLARE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup);
+
 // Base implementation of the UserManager interface.
 class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
  public:
@@ -54,7 +58,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // should stop supporting devices with LSUs by 2024.
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
-  // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+  // "LegacySupervisedUserStatus" in
+  // src/tools/metrics/histograms/metadata/families/enums.xml.
   enum class LegacySupervisedUserStatus {
     // Non-LSU Gaia user displayed on login screen.
     kGaiaUserDisplayed = 0,
@@ -64,10 +69,30 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
     // LSU attempted to delete cryptohome. Expect this count to decline to zero
     // over time as we delete LSUs.
     kLSUDeleted = 2,
-    // Add future entires above this comment, in sync with
-    // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+    // Add future entries above this comment, in sync with
+    // "LegacySupervisedUserStatus" in
+    // src/tools/metrics/histograms/metadata/families/enums.xml.
     // Update kMaxValue to the last value.
     kMaxValue = kLSUDeleted
+  };
+
+  // These enum values represent a deprecated ARC kiosk user's status on the
+  // sign in screen.
+  // TODO(b/355590943): Remove once all ARC kiosk users are deleted in the wild.
+  // ARC Kiosk has been deprecated and removed in m126. However, the accounts
+  // still exist on the devices if configured prior to m126, but hidden. These
+  // values are logged to UMA. Entries should not be renumbered and numeric
+  // values should never be reused. Please keep in sync with
+  // "DeprecatedArcKioskUserStatus" in src/tools/metrics/histograms/enums.xml.
+  enum class DeprecatedArcKioskUserStatus {
+    // ARC kiosk hidden on login screen. Expect this count to decline to zero
+    // over
+    // time.
+    kHidden = 0,
+    // Attempted to delete cryptohome. Expect this count to decline to zero
+    // over time.
+    kDeleted = 1,
+    kMaxValue = kDeleted
   };
 
   // Delegate interface to inject //chrome/* dependency.
@@ -116,6 +141,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Histogram for tracking the number of deprecated legacy supervised user
   // cryptohomes remaining in the wild.
   static const char kLegacySupervisedUsersHistogramName[];
+
+  // Histogram for tracking the number of deprecated ARC kiosk user
+  // cryptohomes remaining in the wild.
+  // TODO(b/355590943): clean up once there is no ARC kiosk records.
+  static const char kDeprecatedArcKioskUsersHistogramName[];
 
   // Registers UserManagerBase preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -413,6 +443,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                              const std::string& resolved_locale);
 
   void RemoveLegacySupervisedUser(const AccountId& account_id);
+
+  // Returns true if |account_id| is a deprecated ARC kiosk account.
+  // TODO(b/355590943): Check if it is not used anymore and remove it.
+  bool IsDeprecatedArcKioskAccountId(const AccountId& account_id) const;
+  void RemoveDeprecatedArcKioskUser(const AccountId& account_id);
 
   std::unique_ptr<Delegate> delegate_;
 

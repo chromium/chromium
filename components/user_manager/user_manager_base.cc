@@ -103,6 +103,14 @@ BASE_FEATURE(kRemoveLegacySupervisedUsersOnStartup,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
+const char UserManagerBase::kDeprecatedArcKioskUsersHistogramName[] =
+    "Kiosk.DeprecatedArcKioskUsers";
+// static
+BASE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup,
+             "RemoveDeprecatedArcKioskUsersOnStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// static
 void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kRegularUsersPref);
   registry->RegisterStringPref(prefs::kLastLoggedInGaiaUser, std::string());
@@ -1230,6 +1238,12 @@ void UserManagerBase::LoadDeviceLocalAccounts(
   ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
   for (const AccountId& account_id : device_local_accounts) {
+    if (IsDeprecatedArcKioskAccountId(account_id)) {
+      RemoveDeprecatedArcKioskUser(account_id);
+      // Remove or hide deprecated ARC kiosk users from the login screen.
+      continue;
+    }
+
     auto type =
         delegate_->GetDeviceLocalAccountUserType(account_id.GetUserEmail());
     if (!type.has_value()) {
@@ -1679,6 +1693,26 @@ void UserManagerBase::RemoveLegacySupervisedUser(const AccountId& account_id) {
   } else {
     base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
                                   LegacySupervisedUserStatus::kLSUHidden);
+  }
+}
+
+bool UserManagerBase::IsDeprecatedArcKioskAccountId(
+    const AccountId& account_id) const {
+  return gaia::ExtractDomainName(account_id.GetUserEmail()) == kArcKioskDomain;
+}
+
+// TODO(b/355590943): Remove dormant deprecated ARC kiosk user cryptohomes.
+// Remove this once confident that all ARC kiosk cryptohomes are cleaned up.
+void UserManagerBase::RemoveDeprecatedArcKioskUser(
+    const AccountId& account_id) {
+  CHECK(IsDeprecatedArcKioskAccountId(account_id));
+  if (base::FeatureList::IsEnabled(kRemoveDeprecatedArcKioskUsersOnStartup)) {
+    RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN);
+    base::UmaHistogramEnumeration(kDeprecatedArcKioskUsersHistogramName,
+                                  DeprecatedArcKioskUserStatus::kDeleted);
+  } else {
+    base::UmaHistogramEnumeration(kDeprecatedArcKioskUsersHistogramName,
+                                  DeprecatedArcKioskUserStatus::kHidden);
   }
 }
 
