@@ -181,10 +181,8 @@ PreloadingDecider::PreloadingDecider(RenderFrameHost* rfh)
             &OnPrefetchDestroyed, rfh->GetWeakDocumentPtr()));
   }
 
-  if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {
-    prerenderer_->SetPrerenderCancellationCallback(
-        base::BindRepeating(&OnPrerenderCanceled, rfh->GetWeakDocumentPtr()));
-  }
+  prerenderer_->SetPrerenderCancellationCallback(
+      base::BindRepeating(&OnPrerenderCanceled, rfh->GetWeakDocumentPtr()));
 }
 
 PreloadingDecider::~PreloadingDecider() = default;

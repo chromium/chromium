@@ -304,8 +304,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       std::optional<blink::mojom::SpeculationEagerness> eagerness);
 
   // Returns the number of hosts that prerender_host_by_frame_tree_node_id_
-  // holds by trigger type / limit group.
-  int GetHostCountByTriggerType(PreloadingTriggerType trigger_type);
+  // holds by limit group.
   int GetHostCountByLimitGroup(PrerenderLimitGroup limit_group);
 
   // Returns whether a certain type of PreloadingTriggerType is allowed to be

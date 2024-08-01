@@ -17,8 +17,9 @@ BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
              "Prerender2BypassMemoryLimitCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a new limit and scheduler for prerender triggers.
-// See crbug.com/1464021 for more details.
+// This was used for enabling a new limit and scheduler for prerender triggers
+// (crbug.com/1464021). Now the new implementation is used by default and this
+// flag is just for injecting parameters through field trials.
 BASE_FEATURE(kPrerender2NewLimitAndScheduler,
              "Prerender2NewLimitAndScheduler",
              base::FEATURE_ENABLED_BY_DEFAULT);
