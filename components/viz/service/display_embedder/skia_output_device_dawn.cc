@@ -162,8 +162,8 @@ bool SkiaOutputDeviceDawn::Reshape(const ReshapeParams& params) {
   sample_count_ = params.sample_count;
 
 #if BUILDFLAG(IS_WIN)
-  if (child_window_.window() && !child_window_.Resize(size_)) {
-    return false;
+  if (child_window_.window()) {
+    child_window_.Resize(size_);
   }
 #endif
 
