@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/system/power/tray_power.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -217,6 +218,8 @@ class ASH_EXPORT UnifiedSystemTray
   friend class NotificationGroupingControllerTest;
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
+  friend class PowerTrayViewTest;
+  friend class StatusAreaBatteryPixelTest;
 
   // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
@@ -254,6 +257,7 @@ class ASH_EXPORT UnifiedSystemTray
   raw_ptr<HotspotTrayView> hotspot_tray_view_ = nullptr;
   raw_ptr<NetworkTrayView> network_tray_view_ = nullptr;
   raw_ptr<ChannelIndicatorView> channel_indicator_view_ = nullptr;
+  raw_ptr<PowerTrayView> power_tray_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<raw_ptr<TrayItemView, CtnExperimental>> tray_items_;

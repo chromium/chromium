@@ -16,9 +16,12 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/media/quick_settings_media_view_controller.h"
+#include "ash/system/model/fake_power_status.h"
+#include "ash/system/model/scoped_fake_power_status.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
+#include "ash/system/power/tray_power.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -860,6 +863,44 @@ TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
 
   tray->ShowDisplayDetailedViewBubble();
   EXPECT_FALSE(IsBubbleShown());
+}
+
+class PowerTrayViewTest : public UnifiedSystemTrayTest {
+ public:
+  FakePowerStatus* GetFakePowerStatus() {
+    return scoped_fake_power_status_.get()->fake_power_status();
+  }
+
+  PowerTrayView* power_tray_view() {
+    return GetPrimaryUnifiedSystemTray()->power_tray_view_;
+  }
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    scoped_fake_power_status_ = std::make_unique<ScopedFakePowerStatus>();
+  }
+
+  // AshTestBase:
+  void TearDown() override {
+    scoped_fake_power_status_.reset();
+    AshTestBase::TearDown();
+  }
+
+ private:
+  std::unique_ptr<ScopedFakePowerStatus> scoped_fake_power_status_;
+};
+
+TEST_F(PowerTrayViewTest, BatteryVisibility) {
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsBatteryPresent(false);
+
+  // OnPowerStatusChanged() is called in an asynchronous method, but for the
+  // purpose of this test, it is called explicitly to ensure that the visibility
+  // is set before the check.
+  power_tray_view()->OnPowerStatusChanged();
+
+  EXPECT_FALSE(power_tray_view()->GetVisible());
 }
 
 }  // namespace ash
