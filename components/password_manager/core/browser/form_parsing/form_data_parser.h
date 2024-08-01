@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
@@ -90,9 +91,11 @@ struct ProcessedField {
 // Wrapper around the parsing result.
 struct FormParsingResult {
   FormParsingResult();
-  FormParsingResult(std::unique_ptr<PasswordForm> password_form,
-                    UsernameDetectionMethod username_detection_method,
-                    bool is_new_password_reliable);
+  FormParsingResult(
+      std::unique_ptr<PasswordForm> password_form,
+      UsernameDetectionMethod username_detection_method,
+      bool is_new_password_reliable,
+      std::vector<autofill::FieldRendererId> suggestion_banned_fields);
   FormParsingResult(FormParsingResult&& other);
   ~FormParsingResult();
 
@@ -109,6 +112,9 @@ struct FormParsingResult {
   // Only set on form parsing for filling. Used as signal for
   // password generation eligibility.
   bool is_new_password_reliable = false;
+
+  // List of fields that should have no Password Manager filling suggestions.
+  std::vector<autofill::FieldRendererId> suggestion_banned_fields;
 };
 
 // This class takes care of parsing FormData into PasswordForm and managing

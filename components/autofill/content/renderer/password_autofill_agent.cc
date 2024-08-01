@@ -1054,6 +1054,11 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
   if (!element) {
     return false;
   }
+  if (suggestion_banned_fields_.contains(GetFieldRendererId(element))) {
+    // No suggestion for `element` since there is a reliable signal that
+    // `element` is a non-credential field.
+    return false;
+  }
   if (element.FormControlTypeForAutofill() != kInputPassword) {
     *username_element = element;
   } else {
@@ -1476,6 +1481,7 @@ void PasswordAutofillAgent::SetPasswordFillData(
         &GetPasswordManagerDriver());
     logger->LogMessage(Logger::STRING_ON_FILL_PASSWORD_FORM_METHOD);
   }
+  suggestion_banned_fields_ = form_data.suggestion_banned_fields;
 
   bool username_password_fields_not_set =
       form_data.username_element_renderer_id.is_null() &&
@@ -1845,6 +1851,7 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   autofilled_elements_cache_.clear();
   all_autofilled_elements_.clear();
   field_renderer_id_to_submit_ = FieldRendererId();
+  suggestion_banned_fields_.clear();
 #if BUILDFLAG(IS_ANDROID)
   keyboard_replacing_surface_state_ =
       KeyboardReplacingSurfaceState::kShouldShow;

@@ -4650,6 +4650,35 @@ TEST_P(PasswordFormManagerTest, ClientShouldNotShowKeychainErrorMessage) {
                 password_manager::prefs::kRelaunchChromeBubbleDismissedCounter),
             0);
 }
+
+// Expects banned field to be sent to the `PasswordManagerDriver` if server
+// finds credit card field.
+TEST_P(PasswordFormManagerTest, SetCreditCardFieldsAsBanned) {
+  FormFieldData field;
+  field.set_name(u"credit_card_field");
+  field.set_id_attribute(field.name());
+  field.set_name_attribute(field.name());
+  field.set_form_control_type(autofill::FormControlType::kInputPassword);
+  field.set_renderer_id(autofill::FieldRendererId(6));
+  test_api(observed_form_).fields().push_back(field);
+
+  CreateFormManager(observed_form_);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  // Server prediction marks element on index three as a credit card field.
+  std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
+      observed_form_, {std::make_pair(3, autofill::CREDIT_CARD_NAME_FULL)});
+
+  PasswordFormFillData fill_data;
+  EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
+  form_manager_->ProcessServerPredictions(predictions);
+
+  // Expect credit card field to be sent to the `PasswordManagerDriver` as a
+  // filling suggestion banned field.
+  EXPECT_THAT(fill_data.suggestion_banned_fields,
+              ElementsAre(field.renderer_id()));
+}
+
 #endif
 
 INSTANTIATE_TEST_SUITE_P(All,

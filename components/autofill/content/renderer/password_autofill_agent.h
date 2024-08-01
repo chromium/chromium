@@ -532,6 +532,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   PasswordToLoginMap password_to_username_;
   // The chronologically last insertion into `web_input_to_password_info_`.
   WebInputToPasswordInfoMap::iterator last_supplied_password_info_iter_;
+  // Set of fields that are reliably identified as non-credential fields.
+  base::flat_set<FieldRendererId> suggestion_banned_fields_;
 
   bool should_show_popup_without_passwords_ = false;
 

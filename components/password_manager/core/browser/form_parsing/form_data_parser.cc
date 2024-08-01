@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -1087,10 +1088,12 @@ FormParsingResult::FormParsingResult() = default;
 FormParsingResult::FormParsingResult(
     std::unique_ptr<PasswordForm> password_form,
     UsernameDetectionMethod username_detection_method,
-    bool is_new_password_reliable)
+    bool is_new_password_reliable,
+    std::vector<autofill::FieldRendererId> suggestion_banned_fields)
     : password_form(std::move(password_form)),
       username_detection_method(username_detection_method),
-      is_new_password_reliable(is_new_password_reliable) {}
+      is_new_password_reliable(is_new_password_reliable),
+      suggestion_banned_fields(std::move(suggestion_banned_fields)) {}
 
 FormParsingResult::FormParsingResult(FormParsingResult&& other) = default;
 
@@ -1137,6 +1140,12 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   // Fields with server prediction `CREDIT_CARD_FIELD`, `CREDIT_CARD_NUMBER`,
   // `NOT_USERNAME`, and `NOT_PASSWORD` must not be considered in base
   // heuristics parsing or parsing using autocomplete attributes.
+  std::vector<autofill::FieldRendererId> suggestion_banned_fields;
+  for (const ProcessedField& field : processed_fields) {
+    if (field.server_hints_non_credential_field) {
+      suggestion_banned_fields.push_back(field.field->renderer_id());
+    }
+  }
   std::erase_if(processed_fields, [](ProcessedField field) {
     return field.server_hints_non_credential_field;
   });
@@ -1239,7 +1248,7 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
       AssemblePasswordForm(form_data, significant_fields,
                            std::move(all_alternative_passwords),
                            std::move(all_alternative_usernames), predictions_),
-      method, is_new_password_reliable);
+      method, is_new_password_reliable, suggestion_banned_fields);
 }
 
 std::unique_ptr<PasswordForm> FormDataParser::Parse(

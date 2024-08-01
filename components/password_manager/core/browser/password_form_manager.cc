@@ -1172,7 +1172,8 @@ void PasswordFormManager::FillNow() {
       client_, driver_.get(), *parsed_observed_form_.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), metrics_recorder_.get(),
-      WebAuthnCredentialsAvailable());
+      WebAuthnCredentialsAvailable(),
+      form_parsing_result.suggestion_banned_fields);
   // No logic should be added after the call to `SendFillInformationToRenderer`.
   // That function can cause this `PasswordFormManager` to be destroyed, it can
   // happen when there are saved credentials available for filling on this

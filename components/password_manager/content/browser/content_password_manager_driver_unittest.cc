@@ -208,7 +208,8 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   url::Origin page_origin = url::Origin::Create(GURL("https://foo.com/"));
 
   return CreatePasswordFormFillData(form_on_page, matches, preferred_match,
-                                    page_origin, true);
+                                    page_origin, /*wait_for_username=*/true,
+                                    /*suggestion_banned_fields=*/{});
 }
 
 MATCHER(WerePasswordsCleared, "Passwords not cleared") {
