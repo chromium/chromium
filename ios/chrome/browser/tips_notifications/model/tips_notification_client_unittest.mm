@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
@@ -203,6 +204,14 @@ class TipsNotificationClientTest : public PlatformTest {
         prefs::kIosDefaultBrowserPromoLastAction);
   }
 
+  // Creates a mock command handler and starts dispatching to it.
+  id MockHandler(Protocol* protocol) {
+    id mock_handler = OCMProtocolMock(protocol);
+    [browser_->GetCommandDispatcher() startDispatchingToTarget:mock_handler
+                                                   forProtocol:protocol];
+    return mock_handler;
+  }
+
   base::test::TaskEnvironment task_environment_;
   const base::HistogramTester histogram_tester_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -256,7 +265,8 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
   StubGetPendingRequests(nil);
   SetSentNotifications({TipsNotificationType::kWhatsNew,
                         TipsNotificationType::kSignin,
-                        TipsNotificationType::kSetUpListContinuation});
+                        TipsNotificationType::kSetUpListContinuation,
+                        TipsNotificationType::kDocking});
 
   ExpectNotificationRequest(TipsNotificationType::kDefaultBrowser);
   base::RunLoop run_loop;
@@ -292,15 +302,12 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
 // Tests that the client handles a Default Browser notification response.
 TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
   StubPrepareToPresentModal();
-  id mock_handler = OCMProtocolMock(@protocol(SettingsCommands));
+  id mock_handler = MockHandler(@protocol(SettingsCommands));
   OCMExpect([mock_handler
       showDefaultBrowserSettingsFromViewController:nil
                                       sourceForUMA:
                                           DefaultBrowserSettingsPageSource::
                                               kTipsNotification]);
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_handler
-                   forProtocol:@protocol(SettingsCommands)];
 
   id mock_response = MockRequestResponse(TipsNotificationType::kDefaultBrowser);
   client_->HandleNotificationInteraction(mock_response);
@@ -315,6 +322,8 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
 TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
   WriteFirstRunSentinel();
   SetTrueChromeLikelyDefaultBrowser();
+  SetSentNotifications({TipsNotificationType::kSetUpListContinuation});
+
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kWhatsNew);
 
@@ -330,11 +339,8 @@ TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
 // Tests that the client handles a Whats New notification response.
 TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
   StubPrepareToPresentModal();
-  id mock_handler = OCMProtocolMock(@protocol(WhatsNewCommands));
+  id mock_handler = MockHandler(@protocol(WhatsNewCommands));
   OCMExpect([mock_handler showWhatsNew]);
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_handler
-                   forProtocol:@protocol(WhatsNewCommands)];
 
   id mock_response = MockRequestResponse(TipsNotificationType::kWhatsNew);
   client_->HandleNotificationInteraction(mock_response);
@@ -347,9 +353,6 @@ TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
 // Tests that the client can register a SetUpList Continuation notification.
 TEST_F(TipsNotificationClientTest, SetUpListContinuationRequest) {
   WriteFirstRunSentinel();
-  SetSentNotifications({TipsNotificationType::kDefaultBrowser,
-                        TipsNotificationType::kWhatsNew,
-                        TipsNotificationType::kSignin});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
 
@@ -366,11 +369,8 @@ TEST_F(TipsNotificationClientTest, SetUpListContinuationRequest) {
 // Tests that the client handles a SetUpList Continuation notification response.
 TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
   StubPrepareToPresentModal();
-  id mock_handler = OCMProtocolMock(@protocol(ContentSuggestionsCommands));
+  id mock_handler = MockHandler(@protocol(ContentSuggestionsCommands));
   OCMExpect([mock_handler showSetUpListSeeMoreMenu]);
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_handler
-                   forProtocol:@protocol(ContentSuggestionsCommands)];
 
   id mock_response =
       MockRequestResponse(TipsNotificationType::kSetUpListContinuation);
@@ -380,4 +380,36 @@ TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
   histogram_tester_.ExpectUniqueSample(
       "IOS.Notifications.Tips.Interaction",
       TipsNotificationType::kSetUpListContinuation, 1);
+}
+
+// Tests that the client can register a Docking promo notification.
+TEST_F(TipsNotificationClientTest, DockingRequest) {
+  WriteFirstRunSentinel();
+  SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
+                        TipsNotificationType::kWhatsNew,
+                        TipsNotificationType::kDefaultBrowser});
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kDocking);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
+                                       TipsNotificationType::kDocking, 1);
+}
+
+// Tests that the client handles a Docking promo notification response.
+TEST_F(TipsNotificationClientTest, DockingHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(DockingPromoCommands));
+  OCMExpect([mock_handler showDockingPromo:YES]);
+
+  id mock_response = MockRequestResponse(TipsNotificationType::kDocking);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kDocking, 1);
 }

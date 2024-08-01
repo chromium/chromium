@@ -79,8 +79,11 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a WhatsNew notification should be sent.
   bool ShouldSendWhatsNew();
 
-  // returns true if a SetUpList continuation notification should be sent.
+  // Returns true if a SetUpList continuation notification should be sent.
   bool ShouldSendSetUpListContinuation();
+
+  // Returns true if a Docking promo notification should be sent.
+  bool ShouldSendDocking();
 
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
@@ -92,6 +95,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowWhatsNew();
   void ShowSignin();
   void ShowSetUpListContinuation();
+  void ShowDocking();
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

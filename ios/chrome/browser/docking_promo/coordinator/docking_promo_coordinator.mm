@@ -128,8 +128,8 @@
 
 #pragma mark - DockingPromoCommands
 
-- (void)showDockingPromo {
-  if (![self.mediator canShowDockingPromo] ||
+- (void)showDockingPromo:(BOOL)forced {
+  if ((!forced && ![self.mediator canShowDockingPromo]) ||
       [self.viewController isBeingPresented]) {
     return;
   }

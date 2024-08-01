@@ -99,6 +99,7 @@ class DockingPromoMediatorTest : public PlatformTest {
   void ClearUsageData() {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kFirstRunRecencyKey];
+    ClearDefaultBrowserPromoData();
   }
 
   void WriteFirstRunSentinel() {
