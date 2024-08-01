@@ -57,14 +57,21 @@ void MediaActionButton::Update(int button_id,
   if (button_id != kEmptyMediaActionButtonId) {
     SetID(button_id);
   }
+  foreground_color_id_ = foreground_color_id;
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
   views::SetImageFromVectorIconWithColorId(
-      this, vector_icon, foreground_color_id, foreground_disabled_color_id_,
+      this, vector_icon, foreground_color_id_, foreground_disabled_color_id_,
       icon_size_);
 }
 
 void MediaActionButton::UpdateText(int tooltip_text_id) {
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
+}
+
+void MediaActionButton::UpdateIcon(const gfx::VectorIcon& vector_icon) {
+  views::SetImageFromVectorIconWithColorId(
+      this, vector_icon, foreground_color_id_, foreground_disabled_color_id_,
+      icon_size_);
 }
 
 BEGIN_METADATA(MediaActionButton)

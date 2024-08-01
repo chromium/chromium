@@ -119,6 +119,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display:test_support",
     "//ui/events:test_support",
+    "//ui/gfx:test_support",
     "//ui/views:test_support",
   ]
 }

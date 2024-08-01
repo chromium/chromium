@@ -85,6 +85,7 @@ class CastDeviceSelectorView
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
 
   // Helper functions for testing:
+  bool GetHasIssueForTesting();
   global_media_controls::MediaActionButton* GetCloseButtonForTesting();
   views::View* GetDeviceContainerViewForTesting();
 
@@ -105,7 +106,11 @@ class CastDeviceSelectorView
   // Callback for when the close button is pressed.
   void CloseButtonPressed();
 
+  // Records whether the device list is expanded.
   bool is_expanded_ = false;
+
+  // Records whether any of the available devices has an issue to be displayed.
+  bool has_issue_ = false;
 
   raw_ptr<global_media_controls::MediaItemUIUpdatedView>
       media_item_ui_updated_view_ = nullptr;

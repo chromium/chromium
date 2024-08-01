@@ -12,6 +12,7 @@
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -337,6 +338,25 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
             views::InkDrop::Get(view()->GetStartCastingButtonForTesting())
                 ->GetInkDrop()
                 ->GetTargetInkDropState());
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewIssueCheck) {
+  SkBitmap bitmap = *view()
+                         ->GetStartCastingButtonForTesting()
+                         ->GetImage(views::Button::STATE_NORMAL)
+                         .bitmap();
+  view()->UpdateDeviceSelectorIssue(/*has_issue=*/true);
+  SkBitmap bitmap_with_issue = *view()
+                                    ->GetStartCastingButtonForTesting()
+                                    ->GetImage(views::Button::STATE_NORMAL)
+                                    .bitmap();
+  EXPECT_FALSE(gfx::test::AreBitmapsEqual(bitmap, bitmap_with_issue));
+  view()->UpdateDeviceSelectorIssue(/*has_issue=*/false);
+  SkBitmap bitmap_without_issue = *view()
+                                       ->GetStartCastingButtonForTesting()
+                                       ->GetImage(views::Button::STATE_NORMAL)
+                                       .bitmap();
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(bitmap, bitmap_without_issue));
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, FooterViewCheck) {

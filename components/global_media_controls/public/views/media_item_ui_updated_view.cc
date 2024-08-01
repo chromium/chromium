@@ -514,6 +514,11 @@ void MediaItemUIUpdatedView::UpdateFooterView(
   UpdateMediaActionButtonsVisibility();
 }
 
+void MediaItemUIUpdatedView::UpdateDeviceSelectorIssue(bool has_issue) {
+  start_casting_button_->UpdateIcon(has_issue ? vector_icons::kCastWarningIcon
+                                              : vector_icons::kCastIcon);
+}
+
 MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
     views::View* parent,
     int button_id,

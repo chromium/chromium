@@ -45,6 +45,7 @@ aggregate_vector_icons("components_vector_icons") {
     "caret_down.icon",
     "caret_up.icon",
     "cast.icon",
+    "cast_warning.icon",
     "celebration.icon",
     "certificate_chrome_refresh.icon",
     "certificate_off_chrome_refresh.icon",

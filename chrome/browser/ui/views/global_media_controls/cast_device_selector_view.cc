@@ -193,6 +193,7 @@ bool CastDeviceSelectorView::IsDeviceSelectorExpanded() {
 void CastDeviceSelectorView::OnDevicesUpdated(
     std::vector<global_media_controls::mojom::DevicePtr> devices) {
   device_container_view_->RemoveAllChildViews();
+  has_issue_ = false;
   for (const auto& device : devices) {
     auto device_view = BuildCastDeviceEntryView(
         base::BindRepeating(&CastDeviceSelectorView::OnCastDeviceSelected,
@@ -204,6 +205,7 @@ void CastDeviceSelectorView::OnDevicesUpdated(
   if (media_item_ui_updated_view_) {
     media_item_ui_updated_view_->UpdateDeviceSelectorAvailability(
         device_container_view_->children().size() > 0);
+    media_item_ui_updated_view_->UpdateDeviceSelectorIssue(has_issue_);
   }
   UpdateVisibility();
 }
@@ -236,6 +238,7 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
         std::move(callback), icon, device_name, status_text,
         media_color_theme_.secondary_foreground_color_id,
         media_color_theme_.error_foreground_color_id);
+    has_issue_ = true;
   } else {
     // Create the device entry button with a static icon view.
     device_entry_button = std::make_unique<HoverButton>(
@@ -286,6 +289,10 @@ void CastDeviceSelectorView::CloseButtonPressed() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions for testing:
+
+bool CastDeviceSelectorView::GetHasIssueForTesting() {
+  return has_issue_;
+}
 
 global_media_controls::MediaActionButton*
 CastDeviceSelectorView::GetCloseButtonForTesting() {

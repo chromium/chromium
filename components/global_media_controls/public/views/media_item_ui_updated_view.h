@@ -118,6 +118,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateDeviceSelectorView(
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view);
   void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
+  void UpdateDeviceSelectorIssue(bool has_issue);
 
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
