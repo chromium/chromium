@@ -54,6 +54,4 @@ window.addEventListener('DOMContentLoaded', () => {
   // In that case, observe <body> until it is.
   const observer = new MutationObserver(mutationCallback);
   observer.observe(document.body, {childList: true});
-
-  ColorChangeUpdater.forDocument().start();
 });
