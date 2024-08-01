@@ -1,8 +1,4 @@
 <style include="cr-shared-style">
-  .expand-row {
-    padding-inline-start: 0;
-  }
-
   .header-row {
     display: flex;
     font-weight: 500;
@@ -22,11 +18,9 @@
   .no-certs {
     border-top: none;
   }
-
 </style>
 
-<cr-expand-button class="cr-row first expand-row"
-    expanded="{{expanded_}}">
+<cr-expand-button class="cr-row first" expanded="{{expanded_}}">
   <div class="header-row">
     [[headerText]]
     <div class="header-buttons">
