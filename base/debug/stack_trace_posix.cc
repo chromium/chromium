@@ -249,7 +249,7 @@ void ProcessBacktrace(span<const void* const> traces,
       IsValueInRangeForNumericType<int>(traces.size())) {
 #if defined(HAVE_DLADDR)
     Dl_info dl_info;
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < traces.size(); ++i) {
       if (!prefix_string.empty()) {
         handler->HandleOutput(prefix_string.c_str());
       }
@@ -266,7 +266,7 @@ void ProcessBacktrace(span<const void* const> traces,
         handler->HandleOutput("???");
       }
       handler->HandleOutput(" ");
-      OutputPointer(trace[i], handler);
+      OutputPointer(traces[i], handler);
 
       handler->HandleOutput("\n");
     }
