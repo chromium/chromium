@@ -31,6 +31,7 @@
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/features.h"
@@ -141,6 +142,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kQuietNotificationPrompts,
     &features::kWebNfc,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
+    &feature_engagement::kIPHRtlGestureNavigationFeature,
     &feed::kFeedContainment,
     &feed::kFeedDynamicColors,
     &feed::kFeedFollowUiUpdate,

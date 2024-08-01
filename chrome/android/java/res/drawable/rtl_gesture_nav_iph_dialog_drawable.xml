@@ -81,7 +81,8 @@ found in the LICENSE file.
                                 android:pathData="M 107.333 24.501 L 109.668 24.501 C 109.85 24.501 110 24.351 110 24.169 L 110 20.334 C 110 20.151 109.85 20.001 109.668 20.001 L 107.333 20.001 C 107.15 20.001 107 20.151 107 20.334 L 107 24.169 C 107 24.351 107.15 24.501 107.333 24.501 Z"
                                 android:strokeWidth="1" />
                         </group>
-                        <group android:name="touch">
+                        <group android:name="touch"
+                               android:translateY="-5" >
                             <path
                                 android:name="path_6"
                                 android:fillAlpha="0.2"

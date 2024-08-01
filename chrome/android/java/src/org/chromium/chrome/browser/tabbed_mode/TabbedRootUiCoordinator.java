@@ -137,6 +137,7 @@ import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
@@ -146,6 +147,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -618,6 +620,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 // Back navigation gesture performs what the back button would do.
                                 mActivity.getOnBackPressedDispatcher().onBackPressed();
                             }
+
+                            @Override
+                            public void onGestureUnhandled() {
+                                if (mRtlGestureNavIphController != null) {
+                                    mRtlGestureNavIphController.onGestureUnhandled();
+                                }
+                            }
+
+                            @Override
+                            public void onGestureHandled() {
+                                if (mRtlGestureNavIphController != null) {
+                                    mRtlGestureNavIphController.onGestureHandled();
+                                }
+                            }
                         },
                         () -> mCompositorViewHolderSupplier.get());
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
@@ -983,8 +999,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivityTabProvider, mAddToHomescreenIPHController);
         if (!didTriggerPromo
                 && mWindowAndroid.getWindow() != null
-                && UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
-            mRtlGestureNavIphController = new RtlGestureNavIphController(mActivityTabProvider);
+                && LocalizationUtils.isLayoutRtl()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+                && ChromeFeatureList.isEnabled(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)
+                && !UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
+            mRtlGestureNavIphController =
+                    new RtlGestureNavIphController(mActivityTabProvider, mProfileSupplier);
         }
 
         Tab tab = mActivityTabProvider.get();
@@ -1220,6 +1240,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     public NavigationSheet getNavigationSheetForTesting() {
         return mNavigationSheet;
+    }
+
+    public RtlGestureNavIphController getRtlGestureNavIphControllerForTesting() {
+        return mRtlGestureNavIphController;
     }
 
     /** Called when a link is copied through context menu. */

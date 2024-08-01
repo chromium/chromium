@@ -274,6 +274,9 @@ class NavigationHandler implements TouchEventObserver {
                 mStartNavDuringOngoingGesture = false;
                 mBackGestureForTabHistoryInProgress = true;
             }
+            mBackActionDelegate.onGestureHandled();
+        } else {
+            mBackActionDelegate.onGestureUnhandled();
         }
 
         return true;
