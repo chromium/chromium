@@ -202,7 +202,6 @@ void Installer::InstallWithSyncPrimitives(
                                                 base::BlockingType::WILL_BLOCK);
   const auto result = InstallHelper(unpack_path, std::move(install_params),
                                     std::move(progress_callback));
-  base::DeletePathRecursively(unpack_path);
   std::move(callback).Run(result);
 }
 

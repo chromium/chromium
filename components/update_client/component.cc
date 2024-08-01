@@ -25,6 +25,9 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
 #include "components/update_client/configurator.h"
@@ -133,16 +136,22 @@ void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              InstallOnBlockingTaskRunnerCompleteCallback callback,
              const base::FilePath& unpack_path,
              const CrxInstaller::Result& installer_result) {
-            base::DeletePathRecursively(unpack_path);
-            const ErrorCategory error_category = installer_result.error
-                                                     ? ErrorCategory::kInstaller
-                                                     : ErrorCategory::kNone;
+            {
+              base::ScopedBlockingCall scoped_blocking_call(
+                  FROM_HERE, base::BlockingType::WILL_BLOCK);
+              for (size_t i = 0;
+                   i < 5 && !base::DeletePathRecursively(unpack_path); ++i) {
+                base::PlatformThread::Sleep(base::Seconds(1));
+              }
+            }
             main_task_runner->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback), error_category,
-                               static_cast<int>(installer_result.error),
-                               installer_result.extended_error,
-                               installer_result));
+                base::BindOnce(
+                    std::move(callback),
+                    installer_result.error ? ErrorCategory::kInstaller
+                                           : ErrorCategory::kNone,
+                    static_cast<int>(installer_result.error),
+                    installer_result.extended_error, installer_result));
           },
           main_task_runner, std::move(callback), unpack_path,
           installer_result));
