@@ -934,7 +934,7 @@
     ],
     "args": ["--enable-font-antialiasing", "--enable-features=UseGammaContrastRegistrySettings",
              "--text-contrast=0.97", "--text-gamma=1.97"],
-    "expires": "August 1, 2024"
+    "expires": "July 1, 2025"
   },
   {
     "prefix": "hdr",
