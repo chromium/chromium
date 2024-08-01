@@ -34,15 +34,8 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
   icon_ = AddChildView(std::make_unique<views::ImageView>());
 
   label_ = AddChildView(
-      chromeos::features::IsJellyEnabled()
-          ? CreateShareLabel(std::u16string(), TypographyToken::kCrosButton2,
-                             cros_tokens::kCrosSysPrimary, gfx::ALIGN_CENTER)
-          : CreateShareLabel(
-                std::u16string(), CONTEXT_SHARESHEET_BUBBLE_BODY,
-                kPrimaryTextLineHeight,
-                AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kButtonLabelColorBlue),
-                gfx::ALIGN_CENTER));
+      CreateShareLabel(std::u16string(), TypographyToken::kCrosButton2,
+                       cros_tokens::kCrosSysPrimary, gfx::ALIGN_CENTER));
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
   SetToDefaultState();
 }

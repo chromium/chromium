@@ -197,10 +197,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         /*thickness=*/1,
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium),
-        chromeos::features::IsJellyEnabled()
-            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOutline)
-            : AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kSeparatorColor)));
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOutline)));
   }
 
   void AddRowToImageContainerView() {
@@ -285,17 +282,9 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
   text_view_->AddChildView(
-      chromeos::features::IsJellyEnabled()
-          ? CreateShareLabel(
-                l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-                TypographyToken::kCrosTitle1, cros_tokens::kCrosSysOnSurface,
-                gfx::ALIGN_LEFT)
-          : CreateShareLabel(
-                l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-                CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
-                AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kTextColorPrimary),
-                gfx::ALIGN_LEFT));
+      CreateShareLabel(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+                       TypographyToken::kCrosTitle1,
+                       cros_tokens::kCrosSysOnSurface, gfx::ALIGN_LEFT));
 
   ShowTextPreview();
   if (has_files) {
@@ -425,15 +414,9 @@ SharesheetHeaderView::ExtractShareText() {
 
 std::unique_ptr<views::Label> SharesheetHeaderView::CreatePreviewLabel(
     const std::u16string& text) {
-  return chromeos::features::IsJellyEnabled()
-             ? CreateShareLabel(text, TypographyToken::kCrosBody2,
-                                cros_tokens::kCrosSysOnSurfaceVariant,
-                                gfx::ALIGN_LEFT)
-             : CreateShareLabel(
-                   text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
-                   AshColorProvider::Get()->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::kTextColorPrimary),
-                   gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY);
+  return CreateShareLabel(text, TypographyToken::kCrosBody2,
+                          cros_tokens::kCrosSysOnSurfaceVariant,
+                          gfx::ALIGN_LEFT);
 }
 
 const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
