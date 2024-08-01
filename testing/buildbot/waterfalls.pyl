@@ -4842,7 +4842,11 @@
           'win10_nvidia_rtx_4070_super_stable',
           'limited_capacity_bot',
         ],
-        'test_suites': {},
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
+          'isolated_scripts': 'gpu_fyi_win_optional_isolated_scripts',
+        },
       },
       'Win10 FYI x64 Release (NVIDIA)': {
         'os_type': 'win',

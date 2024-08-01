@@ -458,6 +458,13 @@ OVERLAY_CONFIGS = {
                     supports_scaled_video=True,
                     supported_codecs=[
                         ZeroCopyCodec.H264])),
+        0x2783: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support()\
+                .WithHardwareYUY2Support()\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
     },
     constants.GpuVendor.QUALCOMM: {
         0x41333430: BasicDirectCompositionConfig()\
