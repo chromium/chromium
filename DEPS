@@ -2585,6 +2585,12 @@ deps = {
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
+  #
+  # The local directory is called "third_party/wuffs" (matching upstream Skia
+  # and other non-Chromium, Skia-using projects) even though the git repo we
+  # clone is called "wuffs-mirror-release-c". The reasons for using w-m-r-c are
+  # listed in the https://crrev.com/c/3086053 commit message. One reason is
+  # that the w-m-r-c subset is much smaller and changes much less frequently.
   'src/third_party/wuffs/src':
     Var('skia_git') + '/external/github.com/google/wuffs-mirror-release-c.git' + '@' +  Var('wuffs_revision'),
 
