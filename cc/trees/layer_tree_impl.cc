@@ -1634,6 +1634,7 @@ void LayerTreeImpl::SetElementIdsForTesting() {
 }
 
 bool LayerTreeImpl::UpdateDrawProperties(
+    bool update_tiles,
     bool update_image_animation_controller,
     LayerImplList* output_update_layer_list_for_testing) {
   if (!needs_update_draw_properties_)
@@ -1649,6 +1650,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
   // Calling UpdateDrawProperties must clear this flag, so there can be no
   // early outs before this.
   needs_update_draw_properties_ = false;
+  needs_update_tiles_ = false;
 
   // For max_texture_size. When a new output surface is received the needs
   // update draw properties flag is set again.
@@ -1740,29 +1742,14 @@ bool LayerTreeImpl::UpdateDrawProperties(
   // Resourceless draw do not need tiles and should not affect existing tile
   // priorities.
   if (!is_in_resourceless_software_draw_mode()) {
-    TRACE_EVENT_BEGIN2(
-        "cc,benchmark", "LayerTreeImpl::UpdateDrawProperties::UpdateTiles",
-        "IsActive", IsActiveTree(), "SourceFrameNumber", source_frame_number_);
-    size_t layers_updated_count = 0;
-    bool tile_priorities_updated = false;
-    const bool release_tile_resources_for_hidden_layers =
-        settings().release_tile_resources_for_hidden_layers;
-    for (PictureLayerImpl* layer : picture_layers_) {
-      if (!layer->HasValidTilePriorities()) {
-        if (release_tile_resources_for_hidden_layers)
-          layer->ReleaseResources();
-        continue;
-      }
-      ++layers_updated_count;
-      tile_priorities_updated |= layer->UpdateTiles();
+    needs_update_tiles_ = true;
+    bool tile_priorities_may_be_updated = true;
+    if (update_tiles) {
+      tile_priorities_may_be_updated = UpdateTiles();
     }
-
-    if (tile_priorities_updated)
-      DidModifyTilePriorities();
-
-    TRACE_EVENT_END1("cc,benchmark",
-                     "LayerTreeImpl::UpdateDrawProperties::UpdateTiles",
-                     "layers_updated_count", layers_updated_count);
+    if (tile_priorities_may_be_updated) {
+      DidModifyTilePriorities(/*pending_update_tiles=*/!update_tiles);
+    }
   }
 
   if (update_image_animation_controller && image_animation_controller()) {
@@ -1774,6 +1761,35 @@ bool LayerTreeImpl::UpdateDrawProperties(
   DCHECK(!needs_update_draw_properties_)
       << "CalcDrawProperties should not set_needs_update_draw_properties()";
   return true;
+}
+
+bool LayerTreeImpl::UpdateTiles() {
+  if (!needs_update_tiles_) {
+    return false;
+  }
+  needs_update_tiles_ = false;
+
+  TRACE_EVENT_BEGIN2("cc,benchmark", "LayerTreeImpl::UpdateTiles", "IsActive",
+                     IsActiveTree(), "SourceFrameNumber", source_frame_number_);
+  size_t layers_updated_count = 0;
+  bool tile_priorities_updated = false;
+  const bool release_tile_resources_for_hidden_layers =
+      settings().release_tile_resources_for_hidden_layers;
+  for (PictureLayerImpl* layer : picture_layers_) {
+    if (!layer->HasValidTilePriorities()) {
+      if (release_tile_resources_for_hidden_layers) {
+        layer->ReleaseResources();
+      }
+      continue;
+    }
+    ++layers_updated_count;
+    tile_priorities_updated |= layer->UpdateTiles();
+  }
+
+  TRACE_EVENT_END1("cc,benchmark",
+                   "LayerTreeImpl::UpdateDrawProperties::UpdateTiles",
+                   "layers_updated_count", layers_updated_count);
+  return tile_priorities_updated;
 }
 
 const RenderSurfaceList& LayerTreeImpl::GetRenderSurfaceList() const {
@@ -2163,8 +2179,8 @@ void LayerTreeImpl::BreakSwapPromises(SwapPromise::DidNotSwapReason reason) {
   }
 }
 
-void LayerTreeImpl::DidModifyTilePriorities() {
-  host_impl_->DidModifyTilePriorities();
+void LayerTreeImpl::DidModifyTilePriorities(bool pending_update_tiles) {
+  host_impl_->DidModifyTilePriorities(pending_update_tiles);
 }
 
 void LayerTreeImpl::set_ui_resource_request_queue(
@@ -2515,8 +2531,10 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPoint(
     const gfx::PointF& screen_space_point) {
   if (layer_list_.empty())
     return nullptr;
-  if (!UpdateDrawProperties())
+  if (!UpdateDrawProperties(/*update_tiles=*/false,
+                            /*update_image_animation_controller=*/true)) {
     return nullptr;
+  }
   FindClosestMatchingLayerState state;
   FindClosestMatchingLayer(screen_space_point, layer_list_[0].get(),
                            HitTestVisibleScrollableOrTouchableFunctor(),
@@ -2548,8 +2566,10 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPointInEventHandlerRegion(
     const Functor& func) {
   if (layer_list_.empty())
     return nullptr;
-  if (!UpdateDrawProperties())
+  if (!UpdateDrawProperties(/*update_tiles=*/false,
+                            /*update_image_animation_controller=*/true)) {
     return nullptr;
+  }
   FindClosestMatchingLayerState state;
   FindClosestMatchingLayer(screen_space_point, layer_list_[0].get(), func,
                            &state);
@@ -2576,8 +2596,10 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
   std::vector<const LayerImpl*> layers;
   if (layer_list_.empty())
     return layers;
-  if (!UpdateDrawProperties())
+  if (!UpdateDrawProperties(/*update_tiles=*/false,
+                            /*update_image_animation_controller=*/true)) {
     return layers;
+  }
 
   // If we hit a layer in a 3d context we can't rely on layer orders, we need
   // to sort the layers by distance to hit. This is used only if the first_hit
@@ -2764,8 +2786,10 @@ ElementId LayerTreeImpl::FindFrameElementIdAtPoint(
     const gfx::PointF& screen_space_point) {
   if (layer_list_.empty())
     return {};
-  if (!UpdateDrawProperties())
+  if (!UpdateDrawProperties(/*update_tiles=*/false,
+                            /*update_image_animation_controller=*/true)) {
     return {};
+  }
   FindClosestMatchingLayerState state;
   FindClosestMatchingLayerForAttribution(screen_space_point,
                                          layer_list_[0].get(), &state);

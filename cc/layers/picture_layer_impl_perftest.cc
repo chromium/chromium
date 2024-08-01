@@ -69,7 +69,8 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
                                              int num_tiles,
                                              const gfx::Rect& viewport_rect) {
     host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {
@@ -99,7 +100,8 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
         ->scroll_tree_mutable()
         .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
                                           gfx::PointF(viewport.origin()));
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {
@@ -117,7 +119,8 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
                                                int num_tiles,
                                                const gfx::Rect& viewport_rect) {
     host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {
@@ -147,7 +150,8 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
         ->scroll_tree_mutable()
         .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
                                           gfx::PointF(viewport.origin()));
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {

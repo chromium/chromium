@@ -1193,7 +1193,8 @@ TEST_F(TileManagerTilePriorityQueueTest,
       pending_child_layer->element_id(), 0.0f);
 
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
-  host_impl()->pending_tree()->UpdateDrawProperties();
+  host_impl()->pending_tree()->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
   // Renew all of the tile priorities.
   gfx::Rect viewport(layer_bounds);

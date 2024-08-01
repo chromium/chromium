@@ -806,8 +806,10 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   // We can avoid updating the ImageAnimationController during this
   // DrawProperties update since it will be done when we animate the controller
   // below.
+  bool update_tiles = true;
   bool update_image_animation_controller = false;
-  sync_tree()->UpdateDrawProperties(update_image_animation_controller);
+  sync_tree()->UpdateDrawProperties(update_tiles,
+                                    update_image_animation_controller);
 
   // Defer invalidating images until UpdateDrawProperties is performed since
   // that updates whether an image should be animated based on its visibility
@@ -1085,6 +1087,9 @@ void LayerTreeHostImpl::AnimateInternal() {
 
 bool LayerTreeHostImpl::PrepareTiles() {
   DCHECK(!settings_.is_display_tree);
+
+  tile_priorities_dirty_ |= active_tree() && active_tree()->UpdateTiles();
+  tile_priorities_dirty_ |= pending_tree() && pending_tree()->UpdateTiles();
 
   if (!tile_priorities_dirty_)
     return false;
@@ -1632,7 +1637,8 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   // we tick worklet animations and apply that output here instead.
   mutator_host_->TickWorkletAnimations();
 
-  bool ok = active_tree_->UpdateDrawProperties();
+  bool ok = active_tree_->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
   DCHECK(ok) << "UpdateDrawProperties failed during draw";
 
   if (!settings_.is_display_tree) {
@@ -1861,17 +1867,20 @@ void LayerTreeHostImpl::UpdateTileManagerMemoryPolicy(
       global_tile_state_.soft_memory_limit_in_bytes,
       global_tile_state_.num_resources_limit);
 
-  DidModifyTilePriorities();
+  DidModifyTilePriorities(/*pending_update_tiles=*/false);
 }
 
-void LayerTreeHostImpl::DidModifyTilePriorities() {
+void LayerTreeHostImpl::DidModifyTilePriorities(bool pending_update_tiles) {
   if (settings_.is_display_tree) {
     return;
   }
 
-  // Mark priorities as dirty and schedule a PrepareTiles().
-  tile_priorities_dirty_ = true;
-  tile_manager_.DidModifyTilePriorities();
+  // Mark priorities as (maybe) dirty and schedule a PrepareTiles().
+  if (!pending_update_tiles) {
+    tile_priorities_dirty_ = true;
+    tile_manager_.DidModifyTilePriorities();
+  }
+
   client_->SetNeedsPrepareTilesOnImplThread();
 }
 
@@ -2992,7 +3001,8 @@ void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   DCHECK(layer_context_);
 
   if (!active_tree()->LayerListIsEmpty()) {
-    bool ok = active_tree()->UpdateDrawProperties();
+    bool ok = active_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
     DCHECK(ok) << "UpdateDrawProperties failed during display tree update";
   }
 
@@ -3190,7 +3200,8 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   // return true to indicate that there might be damage in this frame.
   if (settings_.enable_early_damage_check && recent_frame_had_no_damage &&
       CanDraw()) {
-    bool ok = active_tree()->UpdateDrawProperties();
+    bool ok = active_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
     DCHECK(ok);
     DamageTracker::UpdateDamageTracking(active_tree_.get());
     bool has_damage = HasDamage();
@@ -3595,7 +3606,7 @@ void LayerTreeHostImpl::ActivateSyncTree() {
   // If we have any picture layers, then by activating we also modified tile
   // priorities.
   if (!active_tree_->picture_layers().empty())
-    DidModifyTilePriorities();
+    DidModifyTilePriorities(/*pending_update_tiles=*/false);
 
   auto screenshot_token = active_tree()->TakeScreenshotDestinationToken();
   if (child_local_surface_id_allocator_.GetCurrentLocalSurfaceId().is_valid()) {
@@ -4724,7 +4735,7 @@ void LayerTreeHostImpl::SetTreePriority(TreePriority priority) {
   if (global_tile_state_.tree_priority == priority)
     return;
   global_tile_state_.tree_priority = priority;
-  DidModifyTilePriorities();
+  DidModifyTilePriorities(/*pending_update_tiles=*/false);
 }
 
 TreePriority LayerTreeHostImpl::GetTreePriority() const {

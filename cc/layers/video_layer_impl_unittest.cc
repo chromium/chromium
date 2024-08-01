@@ -128,7 +128,8 @@ TEST(VideoLayerImplTest, OccludesOtherLayers) {
       gfx::Size(10, 10), base::TimeDelta());
   provider.set_frame(video_frame);
   active_tree->set_needs_update_draw_properties();
-  active_tree->UpdateDrawProperties();
+  active_tree->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
   // We have a frame now, so the video occludes the layer below it.
   EXPECT_TRUE(draw_properties.occlusion_in_content_space.IsOccluded(visible));

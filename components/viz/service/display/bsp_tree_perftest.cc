@@ -81,7 +81,8 @@ class BspTreePerfTest : public cc::LayerTreeTest {
     cc::LayerTreeImpl* active_tree = host_impl->active_tree();
     // First build the tree and then we'll start running tests on layersorter
     // itself
-    host_impl->active_tree()->UpdateDrawProperties();
+    host_impl->active_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     cc::LayerImplList base_list;
     BuildLayerImplList(active_tree->root_layer(), &base_list);
