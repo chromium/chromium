@@ -63,10 +63,6 @@ declare_args() {
   # Enables usage of notifications via Chrome's MessageCenter.
   enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 
-  # Whether to enable the component updater. Code is in
-  # //components/component_updater.
-  enable_component_updater = true
-
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
@@ -76,13 +72,6 @@ declare_args() {
   # Enables use of the session service, which is enabled by default.
   # Android stores them separately on the Java side.
   enable_session_service = !is_android
-
-  # Enables usage of the system-provided notification center.
-  enable_system_notifications =
-      is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
-
-  # Indicates if Wayland display server support is enabled.
-  enable_wayland_server = is_chromeos_ash
 
   # Enables the webui certificate viewer dialog.
   enable_webui_certificate_viewer = toolkit_views

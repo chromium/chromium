@@ -48,7 +48,6 @@ source_set("app_service") {
   }
 
   if (is_chromeos_ash) {
-    assert(enable_system_notifications)
     deps += [
       "//ash/components/arc:arc_base",
       "//ash/public/cpp",
@@ -71,7 +70,6 @@ source_set("app_service") {
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
     sources += [
       "lacros_web_apps_controller.cc",
       "lacros_web_apps_controller.h",

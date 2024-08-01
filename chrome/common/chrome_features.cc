@@ -950,7 +950,6 @@ const base::FeatureParam<std::string>
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.
-#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kNativeNotifications,
              "NativeNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -958,7 +957,6 @@ BASE_FEATURE(kNativeNotifications,
 BASE_FEATURE(kSystemNotifications,
              "SystemNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 
 #if BUILDFLAG(IS_MAC)
 // Enables the usage of Apple's new Notification API.

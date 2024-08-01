@@ -73,9 +73,7 @@ extern const char kDisableAutoMaximizeForTests[];
 extern const char kDisableBackgroundNetworking[];
 extern const char kDisableClientSidePhishingDetection[];
 extern const char kDisableComponentExtensionsWithBackgroundPages[];
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 extern const char kDisableComponentUpdate[];
-#endif
 extern const char kDisableCrashpadForTesting[];
 extern const char kDisableDefaultApps[];
 extern const char kDisableDomainReliability[];

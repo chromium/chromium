@@ -42,10 +42,8 @@ AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
 
   arc_prefs_observer_.Observe(prefs);
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (full_restore::IsArcGhostWindowEnabled())
     window_handler_ = std::make_unique<full_restore::ArcGhostWindowHandler>();
-#endif
 
   // Create full restore arc app launch handler.
   GetFullRestoreArcAppQueueRestoreHandler();
@@ -138,10 +136,8 @@ void AppRestoreArcTaskHandler::OnTaskDescriptionChanged(
 void AppRestoreArcTaskHandler::OnAppConnectionReady() {
   app_connection_ready_ = true;
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (window_handler_)
     window_handler_->OnAppInstanceConnected();
-#endif
 
   for (auto& [unused, launcher] : arc_app_queue_restore_handlers_)
     launcher->OnAppConnectionReady();

@@ -182,9 +182,7 @@ const char kDisableBackgroundNetworking[] = "disable-background-networking";
 const char kDisableComponentExtensionsWithBackgroundPages[] =
     "disable-component-extensions-with-background-pages";
 
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 const char kDisableComponentUpdate[] = "disable-component-update";
-#endif
 
 // Disables crashpad initialization for testing. The crashpad binary will not
 // run, and thus will not detect and symbolize crashes.

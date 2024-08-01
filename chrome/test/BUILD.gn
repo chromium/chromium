@@ -7101,8 +7101,11 @@ test("unit_tests") {
       "../browser/media/cdm_document_service_impl_test.cc",
       "../browser/media/media_foundation_service_monitor_unittest.cc",
       "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
+      "../browser/notifications/notification_platform_bridge_win_unittest.cc",
       "../browser/notifications/win/fake_notification_image_retainer.cc",
       "../browser/notifications/win/fake_notification_image_retainer.h",
+      "../browser/notifications/win/notification_helper_launches_chrome_unittest.cc",
+      "../browser/notifications/win/notification_launch_id_unittest.cc",
       "../browser/notifications/win/notification_template_builder_unittest.cc",
       "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",
       "../browser/policy/browser_dm_token_storage_win_unittest.cc",
@@ -7142,6 +7145,7 @@ test("unit_tests") {
       "//chrome",
       "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_1",
       "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_2",
+      "//chrome/notification_helper",
     ]
 
     deps += [
@@ -7156,7 +7160,9 @@ test("unit_tests") {
       "//chrome/chrome_elf:constants",
       "//chrome/common/notifications",
       "//chrome/install_static:install_static_util",
+      "//chrome/installer/setup:lib",
       "//chrome/installer/util:strings",
+      "//chrome/installer/util:with_no_strings",
       "//chrome/services/util_win:lib",
       "//chrome/test:credential_provider_test_utils",
       "//chrome/updater:browser_sources",
@@ -8819,7 +8825,6 @@ test("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
     sources += [
       "../browser/lacros/account_manager/account_manager_util_unittest.cc",
       "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
@@ -8872,27 +8877,6 @@ test("unit_tests") {
       "//components/reporting/metrics:metrics_data_collection",
       "//components/reporting/metrics/fakes:test_support",
     ]
-  }
-
-  if (enable_system_notifications) {
-    if (is_linux) {
-      sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
-    }
-
-    if (is_win) {
-      sources += [
-        "../browser/notifications/notification_platform_bridge_win_unittest.cc",
-        "../browser/notifications/win/notification_helper_launches_chrome_unittest.cc",
-        "../browser/notifications/win/notification_launch_id_unittest.cc",
-      ]
-
-      deps += [
-        "//chrome/installer/setup:lib",
-        "//chrome/installer/util:with_no_strings",
-      ]
-
-      data_deps += [ "//chrome/notification_helper" ]
-    }
   }
 
   if (is_linux || is_chromeos) {
@@ -9453,6 +9437,7 @@ test("unit_tests") {
 
   if (is_linux) {
     sources += [
+      "../browser/notifications/notification_platform_bridge_linux_unittest.cc",
       "../browser/shell_integration_linux_unittest.cc",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_linux_unittest.cc",

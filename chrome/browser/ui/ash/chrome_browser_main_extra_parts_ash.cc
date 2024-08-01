@@ -109,10 +109,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
-
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
 #include "chrome/browser/exo_parts.h"
-#endif
 
 namespace {
 ChromeBrowserMainExtraPartsAsh* g_instance = nullptr;
@@ -297,13 +294,11 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<SelectFileDialogExtensionFactory>());
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   exo_parts_ = ExoParts::CreateIfNecessary();
   if (exo_parts_) {
     exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
         std::make_unique<ExoAppTypeResolver>());
   }
-#endif
 
   // Result is unused, but `TimezoneResolverManager` must be created here for
   // its internal initialization to succeed.
@@ -460,11 +455,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // crbug.com/1163269.
   ash::Shell::Get()->ShutdownEventDispatch();
 
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   // ExoParts uses state from ash, delete it before ash so that exo can
   // uninstall correctly.
   exo_parts_.reset();
-#endif
 
   mahi_manager_.reset();
   mobile_data_notifications_.reset();

@@ -4596,7 +4596,6 @@ static_library("browser") {
   }
 
   if (is_chromeos_ash) {
-    assert(enable_system_notifications)
     sources += [
       "accessibility/media_app/ax_media_app.h",
       "accessibility/media_app/ax_media_app_handler_factory.cc",
@@ -4635,6 +4634,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
       "enterprise/reporting/android_app_info_generator.cc",
       "enterprise/reporting/android_app_info_generator.h",
+      "exo_parts.cc",
+      "exo_parts.h",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.cc",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.h",
       "icon_loader_chromeos.cc",
@@ -5373,6 +5374,8 @@ static_library("browser") {
       "//components/device_signals/core/browser/ash",
       "//components/digital_goods/mojom",
       "//components/drive",
+      "//components/exo",
+      "//components/exo/server",
       "//components/memory_pressure",
       "//components/metrics/structured",
       "//components/metrics/structured:external_metrics",
@@ -5711,7 +5714,6 @@ static_library("browser") {
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
     sources += [
       "accessibility/live_caption/live_caption_surface.cc",
       "accessibility/live_caption/live_caption_surface.h",
@@ -6243,8 +6245,16 @@ static_library("browser") {
       "net/chrome_mojo_proxy_resolver_win.h",
       "net/service_providers_win.cc",
       "net/service_providers_win.h",
+      "notifications/notification_platform_bridge_win.cc",
+      "notifications/notification_platform_bridge_win.h",
+      "notifications/win/notification_launch_id.cc",
+      "notifications/win/notification_launch_id.h",
+      "notifications/win/notification_metrics.cc",
+      "notifications/win/notification_metrics.h",
       "notifications/win/notification_template_builder.cc",
       "notifications/win/notification_template_builder.h",
+      "notifications/win/notification_util.cc",
+      "notifications/win/notification_util.h",
       "obsolete_system/obsolete_system_win.cc",
       "password_manager/password_manager_util_win.cc",
       "password_manager/password_manager_util_win.h",
@@ -6361,19 +6371,6 @@ static_library("browser") {
     ]
 
     all_dependent_configs = [ ":browser_win_linker_flags" ]
-
-    if (enable_system_notifications) {
-      sources += [
-        "notifications/notification_platform_bridge_win.cc",
-        "notifications/notification_platform_bridge_win.h",
-        "notifications/win/notification_launch_id.cc",
-        "notifications/win/notification_launch_id.h",
-        "notifications/win/notification_metrics.cc",
-        "notifications/win/notification_metrics.h",
-        "notifications/win/notification_util.cc",
-        "notifications/win/notification_util.h",
-      ]
-    }
 
     if (is_chrome_branded) {
       deps += [
@@ -6900,6 +6897,8 @@ static_library("browser") {
       sources += [
         "download/download_status_updater_linux.cc",
         "icon_loader_auralinux.cc",
+        "notifications/notification_platform_bridge_linux.cc",
+        "notifications/notification_platform_bridge_linux.h",
         "platform_util_linux.cc",
         "shell_integration_linux.cc",
         "shell_integration_linux.h",
@@ -6907,13 +6906,6 @@ static_library("browser") {
         "upgrade_detector/directory_monitor.h",
         "upgrade_detector/get_installed_version_linux.cc",
       ]
-
-      if (enable_system_notifications) {
-        sources += [
-          "notifications/notification_platform_bridge_linux.cc",
-          "notifications/notification_platform_bridge_linux.h",
-        ]
-      }
     }
 
     if (is_linux) {
@@ -8203,17 +8195,6 @@ static_library("browser") {
     } else {
       deps += [ "//device/vr/public/mojom:isolated_xr_service" ]
     }
-  }
-
-  if (enable_wayland_server) {
-    deps += [
-      "//components/exo",
-      "//components/exo/server",
-    ]
-    sources += [
-      "exo_parts.cc",
-      "exo_parts.h",
-    ]
   }
 
   if (enable_lens_desktop_google_branded_features) {

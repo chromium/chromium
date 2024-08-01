@@ -200,10 +200,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
-
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 #include "chrome/browser/component_updater/registration.h"
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 
 #if BUILDFLAG(ENABLE_UPDATER)
 #include "chrome/browser/updater/scheduler.h"
@@ -576,7 +573,7 @@ bool ShouldInstallSodaDuringPostProfileInit(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);
-#elif !BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(ENABLE_COMPONENT_UPDATER)
+#elif !BUILDFLAG(IS_CHROMEOS_LACROS)
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #else
   return false;
@@ -1653,12 +1650,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // Needs to be done before PostProfileInit, since the SODA Installer setup is
   // called inside PostProfileInit and depends on it.
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
   }
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 
   // `profile` may be nullptr if the profile picker is shown.
   Profile* profile = profile_info.profile;

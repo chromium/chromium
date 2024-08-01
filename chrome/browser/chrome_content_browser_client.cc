@@ -8187,13 +8187,9 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 }
 
 bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   return !is_minimal_mode_ &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableComponentUpdate);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr
