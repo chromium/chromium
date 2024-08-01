@@ -321,11 +321,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     TabUiFeatureUtilities.shouldUseListMode()
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID;
+            ViewGroup container = mDialogView.findViewById(R.id.dialog_container_view);
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
-                            mRootView,
-                            mDialogView.findViewById(R.id.dialog_container_view),
+                            container,
+                            container,
                             mBrowserControlsStateProvider,
                             mCurrentTabModelFilterSupplier,
                             mTabContentManager,
