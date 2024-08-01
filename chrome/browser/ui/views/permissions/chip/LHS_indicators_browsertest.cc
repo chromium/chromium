@@ -550,8 +550,10 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
-                       InvokeUi_NotificationsRequest_VeryUnlikelyGrant) {
+// TODO(crbug.com/356894557): Flaky on Windows.
+IN_PROC_BROWSER_TEST_F(
+    LHSIndicatorsUiBrowserTest,
+    DISABLED_InvokeUi_NotificationsRequest_VeryUnlikelyGrant) {
   SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
                       std::nullopt);
   RequestPermission(permissions::RequestType::kNotifications);
