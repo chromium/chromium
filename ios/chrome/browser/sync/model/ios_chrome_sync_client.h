@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 
@@ -25,6 +26,10 @@ namespace password_manager {
 class PasswordStoreInterface;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 class IOSChromeSyncClient : public syncer::SyncClient {
  public:
   explicit IOSChromeSyncClient(ChromeBrowserState* browser_state);
@@ -34,12 +39,14 @@ class IOSChromeSyncClient : public syncer::SyncClient {
 
   ~IOSChromeSyncClient() override;
 
+  // TODO(crbug.com/335688372): Inline this in the sync_service_factory.mm.
+  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
+      syncer::SyncService* sync_service);
+
   // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
-  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
-      syncer::SyncService* sync_service) override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;

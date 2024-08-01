@@ -12,6 +12,7 @@
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -39,12 +40,14 @@ class ChromeSyncClient : public syncer::SyncClient {
 
   ~ChromeSyncClient() override;
 
+  // TODO(crbug.com/335688372): Inline this in the sync_service_factory.cc.
+  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
+      syncer::SyncService* sync_service);
+
   // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
-  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
-      syncer::SyncService* sync_service) override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;

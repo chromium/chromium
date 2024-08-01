@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/service/model_type_controller.h"
 
 class PrefService;
 
@@ -29,7 +28,6 @@ namespace syncer {
 struct LocalDataDescription;
 class SyncEngineFactory;
 class SyncInvalidationsService;
-class SyncService;
 class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup;
 
 // Interface for clients of the Sync API to plumb through necessary dependent
@@ -53,10 +51,6 @@ class SyncClient {
   // Returns the path to the folder used for storing the local sync database.
   // It is only used when sync is running against a local backend.
   virtual base::FilePath GetLocalSyncBackendFolder() = 0;
-
-  // Returns a vector with all supported datatypes and their controllers.
-  virtual ModelTypeController::TypeVector CreateModelTypeControllers(
-      SyncService* sync_service) = 0;
 
   virtual SyncInvalidationsService* GetSyncInvalidationsService() = 0;
   virtual trusted_vault::TrustedVaultClient* GetTrustedVaultClient() = 0;

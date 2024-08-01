@@ -189,8 +189,6 @@ class SyncServiceImplTest : public ::testing::Test {
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
-    ON_CALL(*sync_client, CreateModelTypeControllers)
-        .WillByDefault(Return(ByMove(std::move(controllers))));
     ON_CALL(*sync_client, IsPasswordSyncAllowed).WillByDefault(Return(true));
     ON_CALL(*sync_client, GetIdentityManager)
         .WillByDefault(Return(identity_manager()));
@@ -198,7 +196,7 @@ class SyncServiceImplTest : public ::testing::Test {
     service_ = std::make_unique<SyncServiceImpl>(
         sync_service_impl_bundle_.CreateBasicInitParams(
             std::move(sync_client)));
-    service_->Initialize();
+    service_->Initialize(std::move(controllers));
   }
 
   void InitializeServiceWithLocalSyncBackend() {
@@ -213,8 +211,6 @@ class SyncServiceImplTest : public ::testing::Test {
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
-    ON_CALL(*sync_client, CreateModelTypeControllers)
-        .WillByDefault(Return(ByMove(std::move(controllers))));
     ON_CALL(*sync_client, GetIdentityManager)
         .WillByDefault(Return(identity_manager()));
 
@@ -224,7 +220,7 @@ class SyncServiceImplTest : public ::testing::Test {
     prefs()->SetBoolean(prefs::kEnableLocalSyncBackend, true);
 
     service_ = std::make_unique<SyncServiceImpl>(std::move(init_params));
-    service_->Initialize();
+    service_->Initialize(std::move(controllers));
   }
 
   std::unique_ptr<SyncServiceImpl> ShutdownAndReleaseService() {

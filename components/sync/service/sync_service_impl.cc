@@ -281,6 +281,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
     identity_manager_->AddObserver(this);
   }
 
+  observers_.emplace();
+
   // Based on the information cached in preferences, it might be required to
   // register a synthetic field trial group. This should be done as early as
   // possible to avoid untagged metrics if they get logged before other events
@@ -330,15 +332,11 @@ SyncServiceImpl::~SyncServiceImpl() {
   DCHECK(!engine_);
 }
 
-void SyncServiceImpl::Initialize() {
+void SyncServiceImpl::Initialize(ModelTypeController::TypeVector controllers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  observers_.emplace();
-
-  // TODO(crbug.com/335688372): The controllers map should be provided as
-  // argument.
   data_type_manager_ = std::make_unique<DataTypeManagerImpl>(
-      sync_client_->CreateModelTypeControllers(this), &crypto_, this);
+      std::move(controllers), &crypto_, this);
 
   // It's safe to pass a raw ptr, since SyncServiceImpl outlives
   // SyncUserSettingsImpl.

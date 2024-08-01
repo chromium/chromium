@@ -33,6 +33,7 @@
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -100,9 +101,10 @@ class SyncServiceImpl : public SyncService,
 
   ~SyncServiceImpl() override;
 
-  // Initializes the object. This must be called at most once, and
-  // immediately after an object of this class is constructed.
-  void Initialize();
+  // Initializes the object. This must be called at most once, and immediately
+  // after an object of this class is constructed. `controllers` determines all
+  // supported types and their controllers.
+  void Initialize(ModelTypeController::TypeVector controllers);
 
   // SyncService implementation
 #if BUILDFLAG(IS_ANDROID)

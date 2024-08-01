@@ -526,7 +526,6 @@ test("ios_web_view_unittests") {
     "internal/signin/web_view_gaia_auth_fetcher_unittest.mm",
     "internal/sync/cwv_sync_controller_unittest.mm",
     "internal/sync/cwv_trusted_vault_observer_unittest.mm",
-    "internal/sync/web_view_sync_client_unittest.mm",
     "internal/translate/cwv_translation_controller_unittest.mm",
     "internal/translate/cwv_translation_language_unittest.mm",
     "internal/translate/cwv_translation_policy_unittest.mm",

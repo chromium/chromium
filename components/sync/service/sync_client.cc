@@ -4,6 +4,7 @@
 
 #include "components/sync/service/sync_client.h"
 
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 
 namespace syncer {
