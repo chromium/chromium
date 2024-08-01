@@ -341,15 +341,9 @@ class AX_EXPORT AXNode final {
   GetIntAttributes() const {
     return data().int_attributes;
   }
-  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const {
-    return data().HasIntAttribute(attribute);
-  }
-  int GetIntAttribute(ax::mojom::IntAttribute attribute) const {
-    return data().GetIntAttribute(attribute);
-  }
-  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const {
-    return data().GetIntAttribute(attribute, value);
-  }
+  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
+  int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
+  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
 
   const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
   GetStringAttributes() const {

@@ -36,6 +36,14 @@ bool IsAccessibilityPruneRedundantInlineTextEnabled() {
       ::features::kAccessibilityPruneRedundantInlineText);
 }
 
+BASE_FEATURE(kAccessibilityPruneRedundantInlineConnectivity,
+             "AccessibilityPruneRedundantInlineConnectivity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityPruneRedundantInlineConnectivityEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityPruneRedundantInlineConnectivity);
+}
+
 BASE_FEATURE(kImageDescriptionsAlternateRouting,
              "ImageDescriptionsAlternateRouting",
              base::FEATURE_DISABLED_BY_DEFAULT);

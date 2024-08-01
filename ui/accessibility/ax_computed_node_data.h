@@ -61,6 +61,7 @@ class AX_EXPORT AXComputedNodeData final {
   // Given an accessibility attribute, returns whether the attribute is
   // currently present in the node's data, or if it can always be computed on
   // demand.
+  bool HasOrCanComputeAttribute(const ax::mojom::IntAttribute attribute) const;
   bool HasOrCanComputeAttribute(
       const ax::mojom::StringAttribute attribute) const;
   bool HasOrCanComputeAttribute(
@@ -76,6 +77,8 @@ class AX_EXPORT AXComputedNodeData final {
       const ax::mojom::StringAttribute attribute) const;
   const std::vector<int32_t>& GetOrComputeAttribute(
       const ax::mojom::IntListAttribute attribute) const;
+  std::optional<int> GetOrComputeAttribute(
+      const ax::mojom::IntAttribute attribute) const;
 
   // Retrieves from the cache or computes the on-screen text that is found
   // inside the associated node and all its descendants, caches the result, and
