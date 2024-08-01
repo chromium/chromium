@@ -4,6 +4,7 @@
 
 #include "chrome/test/supervised_user/test_state_seeded_observer.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -161,7 +162,8 @@ bool AreSafeSitesConfigured(const FamilyMember& member) {
   PrefService* pref_service = member.browser()->profile()->GetPrefs();
   CHECK(pref_service);
 
-  if (!IsSafeSitesEnabled(*pref_service)) {
+  if ((member.supervised_user_service() == nullptr) ||
+      !pref_service->GetBoolean(prefs::kSupervisedUserSafeSites)) {
     return false;
   }
 
