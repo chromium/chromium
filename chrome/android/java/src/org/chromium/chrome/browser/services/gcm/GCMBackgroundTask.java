@@ -11,6 +11,7 @@ import android.os.SystemClock;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -39,8 +40,11 @@ public class GCMBackgroundTask implements BackgroundTask {
         PersistableBundle extras = taskParameters.getExtras();
         GCMMessage message = GCMMessage.createFromPersistableBundle(extras);
         if (message == null) {
+            RecordHistogram.recordBooleanHistogram("GCM.MessageValid", false);
             Log.e(TAG, "The received bundle containing message data could not be validated.");
             return false;
+        } else {
+            RecordHistogram.recordBooleanHistogram("GCM.MessageValid", true);
         }
 
         ChromeGcmListenerServiceImpl.dispatchMessageToDriver(message);

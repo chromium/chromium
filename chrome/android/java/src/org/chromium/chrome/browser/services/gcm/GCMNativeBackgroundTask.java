@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.PersistableBundle;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.components.gcm_driver.GCMDriver;
@@ -27,8 +28,11 @@ public class GCMNativeBackgroundTask extends NativeBackgroundTask {
         PersistableBundle extras = taskParameters.getExtras();
         mMessage = GCMMessage.createFromPersistableBundle(extras);
         if (mMessage == null) {
+            RecordHistogram.recordBooleanHistogram("GCM.MessageValid", false);
             Log.e(TAG, "The received bundle containing message data could not be validated.");
             return NativeBackgroundTask.StartBeforeNativeResult.DONE;
+        } else {
+            RecordHistogram.recordBooleanHistogram("GCM.MessageValid", true);
         }
         return NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE;
     }
