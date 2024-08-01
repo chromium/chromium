@@ -115,9 +115,7 @@ HoldingSpaceDisplayClient::UpdateMetadata::~UpdateMetadata() = default;
 // HoldingSpaceDisplayClient ---------------------------------------------------
 
 HoldingSpaceDisplayClient::HoldingSpaceDisplayClient(Profile* profile)
-    : DisplayClient(profile) {
-  CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
-}
+    : DisplayClient(profile) {}
 
 HoldingSpaceDisplayClient::~HoldingSpaceDisplayClient() = default;
 

@@ -19,10 +19,8 @@
 namespace crosapi {
 
 DownloadStatusUpdaterAsh::DownloadStatusUpdaterAsh(Profile* profile) {
-  if (ash::features::IsSysUiDownloadsIntegrationV2Enabled()) {
-    display_manager_ =
-        std::make_unique<ash::download_status::DisplayManager>(profile, this);
-  }
+  display_manager_ =
+      std::make_unique<ash::download_status::DisplayManager>(profile, this);
 }
 
 DownloadStatusUpdaterAsh::~DownloadStatusUpdaterAsh() = default;

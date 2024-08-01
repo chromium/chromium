@@ -11324,13 +11324,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowDescription,
      kOsAll, FEATURE_VALUE_TYPE(features::kTearOffWebAppTabOpensWebAppWindow)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"system-ui-downloads-integration-v2",
-     flag_descriptions::kSysUiDownloadIntegrationV2Name,
-     flag_descriptions::kSysUiDownloadIntegrationV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSysUiDownloadsIntegrationV2)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-local-iban",
      flag_descriptions::kAutofillEnableLocalIbanName,

@@ -288,9 +288,7 @@ gfx::Image GetNotificationImage(const gfx::ImageSkia& original_image) {
 }  // namespace
 
 NotificationDisplayClient::NotificationDisplayClient(Profile* profile)
-    : DisplayClient(profile) {
-  CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
-}
+    : DisplayClient(profile) {}
 
 NotificationDisplayClient::~NotificationDisplayClient() = default;
 

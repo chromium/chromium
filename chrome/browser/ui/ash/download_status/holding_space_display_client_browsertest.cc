@@ -105,11 +105,6 @@ gfx::Image CreateHoldingSpaceIcon(const gfx::ImageSkia& icon,
 class HoldingSpaceDisplayClientBrowserTest
     : public HoldingSpaceUiBrowserTestBase {
  public:
-  HoldingSpaceDisplayClientBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSysUiDownloadsIntegrationV2);
-  }
-
   // HoldingSpaceUiBrowserTestBase:
   void SetUpOnMainThread() override {
     HoldingSpaceUiBrowserTestBase::SetUpOnMainThread();

@@ -4503,9 +4503,6 @@ extern const char kLauncherSystemInfoAnswerCardsDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
-extern const char kSysUiDownloadIntegrationV2Name[];
-extern const char kSysUiDownloadIntegrationV2Description[];
-
 extern const char kSysUiShouldHoldbackGifRecordingName[];
 extern const char kSysUiShouldHoldbackGifRecordingDescription[];
 

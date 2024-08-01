@@ -2039,11 +2039,6 @@ BASE_FEATURE(kNewLockScreenReauthLayout,
              "NewLockScreenReauthLayout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the new downloads integration with System UI surfaces.
-BASE_FEATURE(kSysUiDownloadsIntegrationV2,
-             "SysUiDownloadsIntegrationV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature Management flag for the Sys UI holdback experiment, used to avoid
 // certain devices.
 BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
@@ -4213,10 +4208,6 @@ bool IsOAuthIppEnabled() {
 
 bool IsNewLockScreenReauthLayoutEnabled() {
   return base::FeatureList::IsEnabled(kNewLockScreenReauthLayout);
-}
-
-bool IsSysUiDownloadsIntegrationV2Enabled() {
-  return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);
 }
 
 bool IsNotificationCenterControllerEnabled() {

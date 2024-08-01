@@ -197,11 +197,6 @@ AshNotificationView* GetPopupView(Profile* profile,
 class NotificationDisplayClientBrowserTest
     : public SystemWebAppBrowserTestBase {
  public:
-  NotificationDisplayClientBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSysUiDownloadsIntegrationV2);
-  }
-
   // Updates download through the download status updater.
   void Update(crosapi::mojom::DownloadStatusPtr status) {
     download_status_updater_remote_->Update(std::move(status));

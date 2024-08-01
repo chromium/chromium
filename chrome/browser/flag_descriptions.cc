@@ -7776,11 +7776,6 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
-const char kSysUiDownloadIntegrationV2Name[] =
-    "Lacros Browser Downloads on ChromeOS";
-const char kSysUiDownloadIntegrationV2Description[] =
-    "Downloads paradigm between Chrome Browser and ChromeOS on Lacros.";
-
 const char kSysUiShouldHoldbackGifRecordingName[] =
     "Holdback for GIF recording on ChromeOS";
 const char kSysUiShouldHoldbackGifRecordingDescription[] =

@@ -189,7 +189,6 @@ DisplayManager::DisplayManager(
     Profile* profile,
     crosapi::DownloadStatusUpdaterAsh* download_status_updater)
     : profile_(profile), download_status_updater_(download_status_updater) {
-  CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
   CHECK(download_status_updater_);
 
   CHECK(profile_);

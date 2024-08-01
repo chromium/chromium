@@ -18,11 +18,10 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_utils.h"
 #include "components/download/public/common/simple_download_manager.h"
@@ -79,29 +78,9 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
                   DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()))));
 }
 
-// Returns the singleton `crosapi::DownloadControllerAsh` if it exists.
-crosapi::DownloadControllerAsh* GetDownloadControllerAsh() {
-  return crosapi::CrosapiManager::IsInitialized()
-             ? crosapi::CrosapiManager::Get()
-                   ->crosapi_ash()
-                   ->download_controller_ash()
-             : nullptr;
-}
-
 // Returns whether the specified `mojo_download_item` is complete.
 bool IsComplete(const crosapi::mojom::DownloadItem* mojo_download_item) {
   return mojo_download_item->state == crosapi::mojom::DownloadState::kComplete;
-}
-
-// Returns whether or not the specified `mojo_download_item` is eligible for
-// in-progress downloads integration.
-bool IsEligibleForInProgressIntegration(
-    const crosapi::mojom::DownloadItem* mojo_download_item) {
-  // The `has_is_insecure` field was the last field to be implemented in
-  // Lacros. Its presence indicates that other required metadata and APIs (e.g.
-  // pause, resume, cancel, etc.) are also implemented and is therefore used to
-  // gate eligibility.
-  return mojo_download_item->has_is_insecure;
 }
 
 // Returns whether the specified `mojo_download_item` is in progress.
@@ -138,7 +117,6 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
  public:
   enum class Type {
     kAsh,     // See `InProgressAshDownload`.
-    kLacros,  // See `InProgressLacrosDownload`.
   };
 
   InProgressDownload(Type type,
@@ -537,84 +515,6 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
       download_item_observation_{this};
 };
 
-// HoldingSpaceDownloadsDelegate::InProgressLacrosDownload ---------------------
-
-// A wrapper around an in-progress `crosapi::mojom::DownloadItem` originating
-// from the Lacros Chrome browser. NOTE: Instances of this class are immediately
-// destroyed when the underlying download is no longer in-progress or when the
-// associated in-progress holding space item is removed from the model.
-class HoldingSpaceDownloadsDelegate::InProgressLacrosDownload
-    : public HoldingSpaceDownloadsDelegate::InProgressDownload,
-      public crosapi::DownloadControllerAsh::DownloadControllerObserver {
- public:
-  InProgressLacrosDownload(HoldingSpaceDownloadsDelegate* delegate,
-                           crosapi::mojom::DownloadItemPtr mojo_download_item)
-      : InProgressDownload(Type::kLacros,
-                           delegate,
-                           std::move(mojo_download_item)) {
-    CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->AddObserver(this);
-  }
-
-  InProgressLacrosDownload(const InProgressLacrosDownload&) = delete;
-  InProgressLacrosDownload& operator=(const InProgressLacrosDownload&) = delete;
-
-  ~InProgressLacrosDownload() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->RemoveObserver(this);
-  }
-
- private:
-  // InProgressDownload:
-  void Cancel() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->Cancel(GetGuid(), /*user_cancel=*/true);
-  }
-
-  void Pause() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->Pause(GetGuid());
-  }
-
-  void Resume() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->Resume(GetGuid(), /*user_resume=*/true);
-  }
-
-  std::optional<ItemLaunchFailureReason> OpenWhenComplete() override {
-    if (GetOpenWhenComplete())
-      return ItemLaunchFailureReason::kReattemptToOpenWhenComplete;
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash) {
-      download_controller_ash->SetOpenWhenComplete(GetGuid(), true);
-      return std::nullopt;
-    }
-    return ItemLaunchFailureReason::kCrosApiNotFound;
-  }
-
-  // crosapi::DownloadControllerAsh::DownloadControllerObserver:
-  void OnLacrosDownloadUpdated(
-      const crosapi::mojom::DownloadItem& mojo_download_item) override {
-    if (mojo_download_item.guid != GetGuid())
-      return;
-    // NOTE: This method invocation may result in destruction of `this`,
-    // depending on the state of the underlying download.
-    UpdateMojoDownloadItem(mojo_download_item.Clone());
-  }
-
-  void OnLacrosDownloadDestroyed(
-      const crosapi::mojom::DownloadItem& mojo_download_item) override {
-    if (mojo_download_item.guid == GetGuid())
-      UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
-  }
-};
-
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
 
 HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
@@ -622,12 +522,7 @@ HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
     HoldingSpaceModel* model)
     : HoldingSpaceKeyedServiceDelegate(service, model) {}
 
-HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
-  // Lacros Chrome downloads.
-  auto* const download_controller_ash = GetDownloadControllerAsh();
-  if (download_controller_ash)
-    download_controller_ash->RemoveObserver(this);
-}
+HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
 
 std::optional<holding_space_metrics::ItemLaunchFailureReason>
 HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
@@ -650,18 +545,6 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
 
   // Ash Chrome downloads.
   download_notifier_.AddProfile(profile());
-
-  // Lacros Chrome downloads.
-  // NOTE: If the downloads integration V2 feature is enabled, the download
-  // status updater, rather than the download controller, is observed for Lacros
-  // downloads.
-  if (!features::IsSysUiDownloadsIntegrationV2Enabled()) {
-    if (auto* const download_controller_ash = GetDownloadControllerAsh()) {
-      download_controller_ash->GetAllDownloads(base::BindOnce(
-          &HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced,
-          weak_factory_.GetWeakPtr()));
-    }
-  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
@@ -764,46 +647,6 @@ void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
   service()->AddItemOfType(HoldingSpaceItem::Type::kArcDownload, path);
 }
 
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
-    const crosapi::mojom::DownloadItem& mojo_download_item) {
-  CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-
-  // NOTE: If ineligible for in-progress download handling, the download will
-  // still be added to holding space on completion.
-  if (IsInProgress(&mojo_download_item) &&
-      IsEligibleForInProgressIntegration(&mojo_download_item)) {
-    in_progress_downloads_.emplace(std::make_unique<InProgressLacrosDownload>(
-        this, mojo_download_item.Clone()));
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
-    const crosapi::mojom::DownloadItem& mojo_download_item) {
-  CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-
-  // NOTE: It is only necessary to add a holding space item on completion here
-  // if the download was ineligible for in-progress download handling.
-  if (IsComplete(&mojo_download_item) &&
-      !IsEligibleForInProgressIntegration(&mojo_download_item)) {
-    service()->AddItemOfType(HoldingSpaceItem::Type::kLacrosDownload,
-                             mojo_download_item.target_file_path);
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced(
-    std::vector<crosapi::mojom::DownloadItemPtr> mojo_download_items) {
-  CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-
-  // After the initial sync, observe updates to Lacros downloads.
-  auto* const download_controller_ash = GetDownloadControllerAsh();
-  if (download_controller_ash)
-    download_controller_ash->AddObserver(this);
-
-  // Sync `in_progress_downloads_` with `mojo_download_items` state.
-  for (const auto& mojo_download_item : mojo_download_items)
-    OnLacrosDownloadCreated(*mojo_download_item);
-}
-
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
     InProgressDownload* in_progress_download,
     bool invalidate_image) {
@@ -856,9 +699,6 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
     switch (in_progress_download->GetType()) {
       case InProgressDownload::Type::kAsh:
         type = HoldingSpaceItem::Type::kDownload;
-        break;
-      case InProgressDownload::Type::kLacros:
-        type = HoldingSpaceItem::Type::kLacrosDownload;
         break;
     }
     const std::string& id = service()->AddItemOfType(
