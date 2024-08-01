@@ -38,33 +38,38 @@
     flex-direction: column;
   }
 </style>
-<h2 class="subsection-header bottom-divider" id="deviceName">[[name]]</h2>
-<template is="dom-if" if="[[isWelcomeExperienceEnabled]]">
-  <div class="device-info bottom-divider">
-    <template is="dom-if" if="[[shouldShowPlaceholder(deviceDisplayState)]]">
-      <div class="icon-container"></div>
-    </template>
-    <template is="dom-if"
-        if="[[shouldShowDeviceIcon(deviceDisplayState)]]" restamp>
-      <iron-icon icon="[[icon]]" class="icon-container" id="deviceIcon">
-      </iron-icon>
-    </template>
-    <img
-        class="device-image"
-        src="[[deviceImageDataUrl]]"
-        hidden="[[!deviceImageDataUrl]]"
-        alt="">
-    <div class="device-details">
-      <div class="device-info-header" id="deviceInfoName">
-        [[name]]
-      </div>
-      <template is="dom-if" if="[[showBatteryInfo(batteryInfo.*)]]">
-        <bluetooth-battery-icon-percentage
-            id="batteryIcon"
-            device="[[bluetoothDevice]]"
-            battery-type="[[getDefaultBatteryType()]]">
-        </bluetooth-battery-icon-percentage>
+<div role="region" aria-label="[[getAriaLabel(name, batteryInfo.*)]]">
+  <h2 aria-hidden="true" class="subsection-header bottom-divider"
+      id="deviceName">
+    [[name]]
+  </h2>
+  <template is="dom-if" if="[[isWelcomeExperienceEnabled]]">
+    <div aria-hidden="true" class="device-info bottom-divider">
+      <template is="dom-if" if="[[shouldShowPlaceholder(deviceDisplayState)]]">
+        <div class="icon-container"></div>
       </template>
+      <template is="dom-if"
+          if="[[shouldShowDeviceIcon(deviceDisplayState)]]" restamp>
+        <iron-icon icon="[[icon]]" class="icon-container" id="deviceIcon">
+        </iron-icon>
+      </template>
+      <img
+          class="device-image"
+          src="[[deviceImageDataUrl]]"
+          hidden="[[!deviceImageDataUrl]]"
+          alt="">
+      <div class="device-details">
+        <div class="device-info-header" id="deviceInfoName">
+          [[name]]
+        </div>
+        <template is="dom-if" if="[[showBatteryInfo(batteryInfo.*)]]">
+          <bluetooth-battery-icon-percentage
+              id="batteryIcon"
+              device="[[bluetoothDevice]]"
+              battery-type="[[getDefaultBatteryType()]]">
+          </bluetooth-battery-icon-percentage>
+        </template>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
+</div>
