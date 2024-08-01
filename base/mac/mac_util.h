@@ -115,7 +115,6 @@ enum class SystemSettingsPane {
   kPrivacySecurity_Accessibility,
 
   // Privacy & Security > Bluetooth
-  // Available on macOS 11 and later.
   kPrivacySecurity_Bluetooth,
 
   // Privacy & Security > Camera
