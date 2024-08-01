@@ -139,7 +139,6 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTestBase.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeIntegrationTest.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/DigitalIdentitySafetyInterstitialIntegrationTest.java",
   ]
 
   deps = [

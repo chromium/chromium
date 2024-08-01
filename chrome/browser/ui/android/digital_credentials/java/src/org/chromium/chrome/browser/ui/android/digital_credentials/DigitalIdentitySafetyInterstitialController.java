@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.android.webid;
+package org.chromium.chrome.browser.ui.android.digital_credentials;
 
 import android.content.Context;
 import android.content.res.Resources;
