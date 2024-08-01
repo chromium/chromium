@@ -9,6 +9,8 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
 
+#include <array>
+
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -26,8 +28,8 @@ using CallDetails =
 constexpr const char* kExtensionIds[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
                                          "eeeeeeeeffffffffgggggggghhhhhhhh",
                                          "aaaaeeeebbbbffffccccggggddddhhhh"};
-constexpr TabsApiInfo::ApiMethod kApiMethods[] = {
-    TabsApiInfo::CREATE, TabsApiInfo::UPDATE, TabsApiInfo::REMOVE};
+constexpr auto kApiMethods = std::to_array(
+    {TabsApiInfo::CREATE, TabsApiInfo::UPDATE, TabsApiInfo::REMOVE});
 constexpr const char* kUrls[] = {"http://www.example1.com/",
                                  "https://www.example2.com/"};
 

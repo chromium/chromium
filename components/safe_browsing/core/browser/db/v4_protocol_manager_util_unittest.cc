@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
+#include <array>
 #include <vector>
 
 #include "base/base64.h"
@@ -159,12 +155,13 @@ TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
 // Tests the url canonicalization according to the Safe Browsing spec.
 // See: https://developers.google.com/safe-browsing/v4/urls-hashing
 TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
-  struct {
-    const char* input_url;
-    const char* expected_canonicalized_hostname;
-    const char* expected_canonicalized_path;
-    const char* expected_canonicalized_query;
-  } tests[] = {
+  struct TestCase {
+    std::string_view input_url;
+    std::string_view expected_canonicalized_hostname;
+    std::string_view expected_canonicalized_path;
+    std::string_view expected_canonicalized_query;
+  };
+  constexpr std::array<TestCase, 37> tests = {{
       {"http://host/%25%32%35", "host", "/%25", ""},
       {"http://host/%25%32%35%25%32%35", "host", "/%25%25", ""},
       {"http://host/%2525252525252525", "host", "/%25", ""},
@@ -172,7 +169,8 @@ TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
       {"http://host/%%%25%32%35asd%%", "host", "/%25%25%25asd%25%25", ""},
       {"http://host/%%%25%32%35asd%%", "host", "/%25%25%25asd%25%25", ""},
       {"http://www.google.com/", "www.google.com", "/", ""},
-      {"http://%31%36%38%2e%31%38%38%2e%39%39%2e%32%36/%2E%73%65%63%75%72%65/"
+      {"http://%31%36%38%2e%31%38%38%2e%39%39%2e%32%36/"
+       "%2E%73%65%63%75%72%65/"
        "%77"
        "%77%77%2E%65%62%61%79%2E%63%6F%6D/",
        "168.188.99.26", "/.secure/www.ebay.com/", ""},
@@ -184,7 +182,8 @@ TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
        ".eBaysecure=updateuserdataxplimnbqmn-xplmv"
        "alidateinfoswqpcmlx=hgplmcx/",
        ""},
-      {"http://host.com/%257Ea%2521b%2540c%2523d%2524e%25f%255E00%252611%252A"
+      {"http://host.com/"
+       "%257Ea%2521b%2540c%2523d%2524e%25f%255E00%252611%252A"
        "22%252833%252944_55%252B",
        "host.com", "/~a!b@c%23d$e%25f^00&11*22(33)44_55+", ""},
       {"http://3279880203/blah", "195.127.0.11", "/blah", ""},
@@ -216,10 +215,10 @@ TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
       {"data:text/html;charset=utf-8,%0D%0A", "", "", ""},
       {"javascript:alert()", "", "", ""},
       {"mailto:abc@example.com", "", "", ""},
-  };
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    SCOPED_TRACE(base::StringPrintf("Test: %s", tests[i].input_url));
-    GURL url(tests[i].input_url);
+  }};
+  for (const TestCase& test : tests) {
+    SCOPED_TRACE(base::StringPrintf("Test: %s", test.input_url.data()));
+    GURL url(test.input_url);
 
     std::string canonicalized_hostname;
     std::string canonicalized_path;
@@ -228,9 +227,9 @@ TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
                                            &canonicalized_path,
                                            &canonicalized_query);
 
-    EXPECT_EQ(tests[i].expected_canonicalized_hostname, canonicalized_hostname);
-    EXPECT_EQ(tests[i].expected_canonicalized_path, canonicalized_path);
-    EXPECT_EQ(tests[i].expected_canonicalized_query, canonicalized_query);
+    EXPECT_EQ(test.expected_canonicalized_hostname, canonicalized_hostname);
+    EXPECT_EQ(test.expected_canonicalized_path, canonicalized_path);
+    EXPECT_EQ(test.expected_canonicalized_query, canonicalized_query);
   }
 }
 

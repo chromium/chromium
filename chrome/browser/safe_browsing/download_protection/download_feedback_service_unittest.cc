@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <utility>
 #include <vector>
 
@@ -311,11 +307,10 @@ TEST_F(DownloadFeedbackServiceTest, MultiplePendingFeedbackComplete) {
   const std::string ping_response = "resp";
   const size_t kNumDownloads = 3;
 
-  download::DownloadItem::AcquireFileCallback
-      download_discarded_callback[kNumDownloads];
-
-  base::FilePath file_path[kNumDownloads];
-  download::MockDownloadItem item[kNumDownloads];
+  std::array<download::DownloadItem::AcquireFileCallback, kNumDownloads>
+      download_discarded_callback;
+  std::array<base::FilePath, kNumDownloads> file_path;
+  std::array<download::MockDownloadItem, kNumDownloads> item;
   for (size_t i = 0; i < kNumDownloads; ++i) {
     file_path[i] = CreateTestFile(i);
     EXPECT_CALL(item[i], GetDangerType())
@@ -386,11 +381,10 @@ TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
   const std::string ping_response = "resp";
   const size_t kNumDownloads = 3;
 
-  download::DownloadItem::AcquireFileCallback
-      download_discarded_callback[kNumDownloads];
-
-  base::FilePath file_path[kNumDownloads];
-  download::MockDownloadItem item[kNumDownloads];
+  std::array<download::DownloadItem::AcquireFileCallback, kNumDownloads>
+      download_discarded_callback;
+  std::array<base::FilePath, kNumDownloads> file_path;
+  std::array<download::MockDownloadItem, kNumDownloads> item;
   for (size_t i = 0; i < kNumDownloads; ++i) {
     file_path[i] = CreateTestFile(i);
     EXPECT_CALL(item[i], GetDangerType())

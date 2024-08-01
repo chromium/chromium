@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -25,10 +21,13 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/utility/safe_browsing/mac/dmg_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 namespace dmg {
+
+using ::testing::ElementsAre;
 
 struct MemoryReadStreamTest {
   void SetUp() {}
@@ -136,7 +135,7 @@ TYPED_TEST(ReadStreamTest, Read) {
 }
 
 TYPED_TEST(ReadStreamTest, CopyStreamToFileTest) {
-  const size_t kStreamSize = 4242;
+  constexpr size_t kStreamSize = 4242;
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(kStreamSize);
   base::FilePath temp_path;
@@ -148,8 +147,9 @@ TYPED_TEST(ReadStreamTest, CopyStreamToFileTest) {
                   base::File::FLAG_DELETE_ON_CLOSE));
   EXPECT_TRUE(CopyStreamToFile(*stream, temp_file));
   EXPECT_EQ(kStreamSize, static_cast<size_t>(temp_file.GetLength()));
-  uint8_t file_buf[kStreamSize];
-  uint8_t expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+  std::array<uint8_t, kStreamSize> file_buf;
+  std::array<uint8_t, 15> expected = {0, 1, 2,  3,  4,  5,  6, 7,
+                                      8, 9, 10, 11, 12, 13, 14};
   temp_file.ReadAndCheck(0, file_buf);
   // Range is set to 1020 - 1035 to check the copying loop point of
   // the CopyStreamToFile function which is 1024.
@@ -215,7 +215,7 @@ TYPED_TEST(ReadStreamTest, SeekEnd) {
 TYPED_TEST(ReadStreamTest, SeekCur) {
   std::unique_ptr<ReadStream> stream =
       ReadStreamTest<TypeParam>::CreateStream(100);
-  uint8_t buf[32] = {0};
+  std::array<uint8_t, 32> buf;
   size_t bytes_read;
 
   {
@@ -224,8 +224,8 @@ TYPED_TEST(ReadStreamTest, SeekCur) {
 
   {
     EXPECT_TRUE(stream->Read(buf, &bytes_read));
-    EXPECT_EQ(sizeof(buf), bytes_read);
-    for (size_t i = 0; i < sizeof(buf); ++i) {
+    EXPECT_EQ(buf.size(), bytes_read);
+    for (size_t i = 0; i < buf.size(); ++i) {
       EXPECT_EQ(i, buf[i]);
     }
     EXPECT_EQ(32, stream->Seek(0, SEEK_CUR));
@@ -235,8 +235,7 @@ TYPED_TEST(ReadStreamTest, SeekCur) {
     EXPECT_EQ(30, stream->Seek(-2, SEEK_CUR));
     EXPECT_TRUE(stream->Read(base::span(buf).first(3u), &bytes_read));
     EXPECT_EQ(3u, bytes_read);
-    uint8_t expected[] = { 30, 31, 32 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_THAT(base::span(buf).first(3u), ElementsAre(30, 31, 32));
   }
 
   {

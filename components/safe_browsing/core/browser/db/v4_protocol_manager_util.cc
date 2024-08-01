@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 #include <string_view>
@@ -459,13 +454,13 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 
   // 2. Do URL unescaping until no more hex encoded characters exist.
   std::string url_unescaped_str(Unescape(url_without_fragment.spec()));
+  std::string_view url_unescaped_str_view(url_unescaped_str);
   url::Parsed parsed = url::ParseStandardURL(url_unescaped_str);
 
   // 3. In hostname, remove all leading and trailing dots.
   std::string_view host;
   if (parsed.host.is_nonempty())
-    host = std::string_view(url_unescaped_str.data() + parsed.host.begin,
-                            parsed.host.len);
+    host = url_unescaped_str_view.substr(parsed.host.begin, parsed.host.len);
 
   std::string_view host_without_end_dots =
       base::TrimString(host, ".", base::TrimPositions::TRIM_ALL);
@@ -477,8 +472,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   // 5. In path, replace runs of consecutive slashes with a single slash.
   std::string_view path;
   if (parsed.path.is_nonempty())
-    path = std::string_view(url_unescaped_str.data() + parsed.path.begin,
-                            parsed.path.len);
+    path = url_unescaped_str_view.substr(parsed.path.begin, parsed.path.len);
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
 
   url::Replacements<char> hp_replacements;

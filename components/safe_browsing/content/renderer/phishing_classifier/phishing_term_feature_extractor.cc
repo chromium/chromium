@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 
 #include <list>
@@ -153,7 +148,7 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
     if (state_->iterator->IsWord()) {
       const size_t start = state_->iterator->prev();
       const size_t length = state_->iterator->pos() - start;
-      HandleWord(std::u16string_view(page_text_->data() + start, length));
+      HandleWord(std::u16string_view(*page_text_).substr(start, length));
       ++num_words;
     }
 

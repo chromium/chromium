@@ -15,6 +15,7 @@
 #include <uuid/uuid.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -45,7 +46,7 @@ namespace dmg {
 struct UDIFChecksum {
   uint32_t type;
   uint32_t size;
-  uint32_t data[32];
+  std::array<uint32_t, 32> data;
 };
 
 static void ConvertBigEndian(UDIFChecksum* checksum) {

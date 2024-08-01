@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer_win.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -27,14 +23,14 @@
 namespace safe_browsing {
 
 std::vector<base::FilePath> GetCriticalBinariesPath() {
-  static const base::FilePath::CharType* const kUnversionedFiles[] = {
+  static constexpr auto kUnversionedFiles = std::to_array({
       FILE_PATH_LITERAL("chrome.exe"),
-  };
-  static const base::FilePath::CharType* const kVersionedFiles[] = {
+  });
+  static constexpr auto kVersionedFiles = std::to_array({
       FILE_PATH_LITERAL("chrome.dll"),
       FILE_PATH_LITERAL("chrome_child.dll"),
       FILE_PATH_LITERAL("chrome_elf.dll"),
-  };
+  });
 
   // Find where chrome.exe is installed.
   base::FilePath chrome_exe_dir;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 
 #include "base/feature_list.h"
@@ -66,7 +61,7 @@ bool SevenZipAnalyzer::OnEntry(const seven_zip::EntryInfo& entry,
     return false;
   }
 
-  output = base::span<uint8_t>(mapped_file_->data(), mapped_file_->length());
+  output = mapped_file_->mutable_bytes();
   return true;
 }
 
