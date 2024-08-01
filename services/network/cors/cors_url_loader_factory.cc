@@ -534,10 +534,11 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   bool request_network_isolation_info_present =
       request.trusted_params &&
       !request.trusted_params->isolation_info.IsEmpty();
-  if (request.load_flags & net::LOAD_RESTRICTED_PREFETCH &&
+  if (request.load_flags & net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME &&
       !request_network_isolation_info_present) {
     mojo::ReportBadMessage(
-        "CorsURLLoaderFactory: Request with LOAD_RESTRICTED_PREFETCH flag is "
+        "CorsURLLoaderFactory: Request with "
+        "LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME flag is "
         "not trusted");
     return false;
   }

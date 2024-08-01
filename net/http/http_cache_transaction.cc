@@ -1683,7 +1683,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   }
 
   if (response_.restricted_prefetch &&
-      !(request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH)) {
+      !(request_->load_flags &
+        LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME)) {
     TransitionToState(STATE_SEND_REQUEST);
     return OK;
   }
@@ -1691,7 +1692,7 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   // When a restricted prefetch is reused, we lift its reuse restriction.
   bool restricted_prefetch_reuse =
       response_.restricted_prefetch &&
-      request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH;
+      request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   DCHECK(!restricted_prefetch_reuse || response_.unused_since_prefetch);
 
   if (response_.unused_since_prefetch !=
@@ -1704,7 +1705,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
     updated_prefetch_response_->unused_since_prefetch =
         !response_.unused_since_prefetch;
     if (response_.restricted_prefetch &&
-        request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH) {
+        request_->load_flags &
+            LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
       updated_prefetch_response_->restricted_prefetch = false;
     }
 

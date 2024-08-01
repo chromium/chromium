@@ -470,12 +470,12 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
   if (resource_request_->AllowsStaleResponse()) {
     load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
   }
-  if (resource_request_->PrefetchMaybeForTopLeveNavigation()) {
+  if (resource_request_->PrefetchMaybeForTopLevelNavigation()) {
     CHECK_EQ(resource_request_->GetRequestContext(),
              blink::mojom::blink::RequestContextType::PREFETCH);
     if (!resource_request_->RequestorOrigin()->IsSameOriginWith(
             SecurityOrigin::Create(resource_request_->Url()).get())) {
-      load_flags |= net::LOAD_RESTRICTED_PREFETCH;
+      load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
     }
   }
 

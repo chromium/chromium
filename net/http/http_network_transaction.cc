@@ -241,7 +241,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
     response_.unused_since_prefetch = true;
   }
 
-  if (request_->load_flags & LOAD_RESTRICTED_PREFETCH) {
+  if (request_->load_flags & LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     DCHECK(response_.unused_since_prefetch);
     response_.restricted_prefetch = true;
   }

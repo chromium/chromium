@@ -1900,7 +1900,7 @@ TEST_F(CorsURLLoaderTest, TrustedParamsWithUntrustedFactoryFailsBeforeCORS) {
   }
 }
 
-// Test that when a request has LOAD_RESTRICTED_PREFETCH and a
+// Test that when a request has LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME and a
 // NetworkAnonymizationKey, CorsURLLoaderFactory does not reject the request.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
@@ -1917,7 +1917,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = GURL("http://other.example.com/foo.png");
   request.request_initiator = initiator;
-  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH;
+  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   request.trusted_params = ResourceRequest::TrustedParams();
 
   // Fill up the `trusted_params` NetworkAnonymizationKey member.
@@ -1942,10 +1942,10 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   EXPECT_TRUE(GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
 }
 
-// Test that when a request has LOAD_RESTRICTED_PREFETCH but no
+// Test that when a request has LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME but no
 // NetworkAnonymizationKey, CorsURLLoaderFactory rejects the request. This is
-// because the LOAD_RESTRICTED_PREFETCH flag must only appear on requests that
-// make use of their TrustedParams' `isolation_info`.
+// because the LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME flag must only appear on
+// requests that make use of their TrustedParams' `isolation_info`.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
 
@@ -1961,7 +1961,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = GURL("http://other.example.com/foo.png");
   request.request_initiator = initiator;
-  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH;
+  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   request.trusted_params = ResourceRequest::TrustedParams();
 
   CreateLoaderAndStart(request);
@@ -1972,9 +1972,11 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   EXPECT_FALSE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
-  EXPECT_THAT(bad_message_helper.bad_message_reports(),
-              ElementsAre("CorsURLLoaderFactory: Request with "
-                          "LOAD_RESTRICTED_PREFETCH flag is not trusted"));
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre(
+          "CorsURLLoaderFactory: Request with "
+          "LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME flag is not trusted"));
 }
 
 TEST_F(CorsURLLoaderTest, DevToolsObserverOnCorsErrorCallback) {
