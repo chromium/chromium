@@ -112,6 +112,31 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
                                        base::Time trigger_time) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  enum class ReplaceReportResult {
+    kError,
+    kAddNewReport,
+    kDropNewReport,
+    kDropNewReportSourceDeactivated,
+    kReplaceOldReport,
+  };
+  [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
+      const AttributionReport& report,
+      const StoredSource& source,
+      int num_attributions,
+      std::optional<AttributionReport>& replaced_report)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  attribution_reporting::mojom::EventLevelResult MaybeStoreEventLevelReport(
+      AttributionReport& report,
+      const StoredSource& source,
+      std::optional<uint64_t> dedup_key,
+      int num_attributions,
+      std::optional<AttributionReport>& replaced_report,
+      std::optional<AttributionReport>& dropped_report,
+      std::optional<int>& max_event_level_reports_per_destination,
+      std::optional<int64_t>& rate_limits_max_attributions)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   std::unique_ptr<AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

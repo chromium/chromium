@@ -731,37 +731,11 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
       remaining_aggregatable_debug_budget);
 }
 
-// Checks whether a new report is allowed to be stored for the given source
-// based on `GetDefaultAttributionsPerSource()`. If there's sufficient capacity,
-// the new report should be stored. Otherwise, if all existing reports were from
-// an earlier window, the corresponding source is deactivated and the new
-// report should be dropped. Otherwise, If there's insufficient capacity, checks
-// the new report's priority against all existing ones for the same source.
-// If all existing ones have greater priority, the new report should be dropped;
-// otherwise, the existing one with the lowest priority is deleted and the new
-// one should be stored.
-AttributionStorageSql::ReplaceReportResult
-AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
-    const AttributionReport& report,
-    const StoredSource& source,
-    int num_attributions,
-    std::optional<AttributionReport>& replaced_report) {
-  DCHECK_GE(num_attributions, 0);
-
-  const auto* data =
-      absl::get_if<AttributionReport::EventLevelData>(&report.data());
-  DCHECK(data);
-
-  // TODO(crbug.com/40287976): The logic in this method doesn't properly handle
-  // the case in which there are different report windows for different trigger
-  // data. Prior to enabling `attribution_reporting::features::kTriggerConfig`,
-  // this must be fixed.
-  DCHECK(source.trigger_specs().SingleSharedSpec());
-
-  // If there's already capacity for the new report, there's nothing to do.
-  if (num_attributions < source.trigger_specs().max_event_level_reports()) {
-    return ReplaceReportResult::kAddNewReport;
-  }
+base::expected<std::optional<AttributionStorageSql::ReportIdAndPriority>,
+               AttributionStorageSql::Error>
+AttributionStorageSql::GetReportWithMinPriority(StoredSource::Id source_id,
+                                                base::Time report_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Prioritization is scoped within report windows.
   // This is reasonably optimized as is because we only store a ~small number
@@ -774,8 +748,8 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // row deletion.
   sql::Statement min_priority_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kMinPrioritySql));
-  min_priority_statement.BindInt64(0, *source.source_id());
-  min_priority_statement.BindTime(1, report.initial_report_time());
+  min_priority_statement.BindInt64(0, *source_id);
+  min_priority_statement.BindTime(1, report_time);
 
   std::optional<AttributionReport::Id> conversion_id_with_min_priority;
   int64_t min_priority;
@@ -799,48 +773,28 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   }
 
   if (!min_priority_statement.Succeeded()) {
-    return ReplaceReportResult::kError;
+    return base::unexpected(Error());
   }
 
-  // Deactivate the source at event-level as a new report will never be
-  // generated in the future.
   if (!conversion_id_with_min_priority.has_value()) {
-    static constexpr char kDeactivateSql[] =
-        "UPDATE sources SET event_level_active=0 WHERE source_id=?";
-    sql::Statement deactivate_statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
-    deactivate_statement.BindInt64(0, *source.source_id());
-    return deactivate_statement.Run()
-               ? ReplaceReportResult::kDropNewReportSourceDeactivated
-               : ReplaceReportResult::kError;
+    return std::nullopt;
   }
 
-  // If the new report's priority is less than all existing ones, or if its
-  // priority is equal to the minimum existing one and it is more recent, drop
-  // it. We could explicitly check the trigger time here, but it would only
-  // be relevant in the case of an ill-behaved clock, in which case the rest of
-  // the attribution functionality would probably also break.
-  if (data->priority <= min_priority) {
-    return ReplaceReportResult::kDropNewReport;
-  }
+  return ReportIdAndPriority{
+      .id = *conversion_id_with_min_priority,
+      .priority = min_priority,
+  };
+}
 
-  std::optional<AttributionReport> replaced =
-      GetReportInternal(*conversion_id_with_min_priority);
-  if (!replaced.has_value()) {
-    return ReplaceReportResult::kError;
-  }
+bool AttributionStorageSql::DeactivateSourceAtEventLevel(StoredSource::Id id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Otherwise, delete the existing report with the lowest priority and the
-  // corresponding attribution rate-limit record.
-  if (!DeleteReportInternal(*conversion_id_with_min_priority) ||
-      !rate_limit_table_.DeleteAttributionRateLimit(
-          &db_, RateLimitTable::Scope::kEventLevelAttribution,
-          replaced->id())) {
-    return ReplaceReportResult::kError;
-  }
-
-  replaced_report = std::move(replaced);
-  return ReplaceReportResult::kReplaceOldReport;
+  static constexpr char kDeactivateSql[] =
+      "UPDATE sources SET event_level_active=0 WHERE source_id=?";
+  sql::Statement deactivate_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
+  deactivate_statement.BindInt64(0, *id);
+  return deactivate_statement.Run();
 }
 
 bool AttributionStorageSql::FindMatchingSourceForTrigger(
@@ -887,133 +841,16 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   return statement.Succeeded();
 }
 
-EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
-    AttributionReport& report,
-    const StoredSource& source,
-    std::optional<uint64_t> dedup_key,
-    int num_attributions,
-    std::optional<AttributionReport>& replaced_report,
-    std::optional<AttributionReport>& dropped_report,
-    std::optional<int>& max_event_level_reports_per_destination,
-    std::optional<int64_t>& rate_limits_max_attributions) {
+bool AttributionStorageSql::IncrementNumAttributions(StoredSource::Id id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* event_level_data =
-      absl::get_if<AttributionReport::EventLevelData>(&report.data());
-  DCHECK(event_level_data);
 
-  if (source.active_state() ==
-      StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
-    dropped_report = std::move(report);
-    return EventLevelResult::kExcessiveReports;
-  }
-
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin()) {
-    return EventLevelResult::kInternalError;
-  }
-
-  const auto maybe_replace_lower_priority_report_result =
-      MaybeReplaceLowerPriorityEventLevelReport(
-          report, source, num_attributions, replaced_report);
-
-  const auto commit_and_return = [&](EventLevelResult result) {
-    return transaction.Commit() ? result : EventLevelResult::kInternalError;
-  };
-
-  switch (maybe_replace_lower_priority_report_result) {
-    case ReplaceReportResult::kError:
-      return EventLevelResult::kInternalError;
-    case ReplaceReportResult::kDropNewReport:
-    case ReplaceReportResult::kDropNewReportSourceDeactivated:
-      dropped_report = std::move(report);
-
-      return commit_and_return(maybe_replace_lower_priority_report_result ==
-                                       ReplaceReportResult::kDropNewReport
-                                   ? EventLevelResult::kPriorityTooLow
-                                   : EventLevelResult::kExcessiveReports);
-    case ReplaceReportResult::kAddNewReport: {
-      switch (AttributionAllowedForAttributionLimit(
-          report.attribution_info(), source,
-          RateLimitTable::Scope::kEventLevelAttribution)) {
-        case RateLimitResult::kAllowed:
-          break;
-        case RateLimitResult::kNotAllowed:
-          rate_limits_max_attributions =
-              delegate_->GetRateLimits().max_attributions;
-          return commit_and_return(EventLevelResult::kExcessiveAttributions);
-        case RateLimitResult::kError:
-          return EventLevelResult::kInternalError;
-      }
-
-      switch (CapacityForStoringReport(report.attribution_info().context_origin,
-                                       AttributionReport::Type::kEventLevel)) {
-        case ConversionCapacityStatus::kHasCapacity:
-          break;
-        case ConversionCapacityStatus::kNoCapacity:
-          max_event_level_reports_per_destination =
-              delegate_->GetMaxReportsPerDestination(
-                  AttributionReport::Type::kEventLevel);
-          return commit_and_return(
-              EventLevelResult::kNoCapacityForConversionDestination);
-        case ConversionCapacityStatus::kError:
-          return EventLevelResult::kInternalError;
-      }
-
-      // Only increment the number of conversions associated with the source if
-      // we are adding a new one, rather than replacing a dropped one.
-      static constexpr char kUpdateImpressionForConversionSql[] =
-          "UPDATE sources SET num_attributions=num_attributions+1 "
-          "WHERE source_id=?";
-      sql::Statement impression_update_statement(db_.GetCachedStatement(
-          SQL_FROM_HERE, kUpdateImpressionForConversionSql));
-
-      // Update the attributed source.
-      impression_update_statement.BindInt64(0, *source.source_id());
-      if (!impression_update_statement.Run()) {
-        return EventLevelResult::kInternalError;
-      }
-      break;
-    }
-    case ReplaceReportResult::kReplaceOldReport:
-      break;
-  }
-
-  // Reports with `AttributionLogic::kNever` should be included in all
-  // attribution operations and matching, but only `kTruthfully` should generate
-  // reports that get sent.
-  const bool create_report =
-      source.attribution_logic() == StoredSource::AttributionLogic::kTruthfully;
-
-  if (create_report) {
-    std::optional<AttributionReport::Id> report_id = StoreAttributionReport(
-        source.source_id(), report.attribution_info().time,
-        report.initial_report_time(), report.external_report_id(),
-        report.attribution_info().debug_key,
-        report.attribution_info().context_origin, report.reporting_origin(),
-        event_level_data->trigger_data, event_level_data->priority);
-
-    if (!report_id.has_value()) {
-      return EventLevelResult::kInternalError;
-    }
-
-    report.set_id(*report_id);
-  }
-
-  // If a dedup key is present, store it. We do this regardless of whether
-  // `create_report` is true to avoid leaking whether the report was actually
-  // stored.
-  if (dedup_key.has_value() &&
-      !StoreDedupKey(source.source_id(), *dedup_key,
-                     AttributionReport::Type::kEventLevel)) {
-    return EventLevelResult::kInternalError;
-  }
-
-  return commit_and_return(
-      create_report ? (maybe_replace_lower_priority_report_result ==
-                               ReplaceReportResult::kReplaceOldReport
-                           ? EventLevelResult::kSuccessDroppedLowerPriority
-                           : EventLevelResult::kSuccess)
-                    : EventLevelResult::kNeverAttributedSource);
+  static constexpr char kUpdateImpressionForConversionSql[] =
+      "UPDATE sources SET num_attributions=num_attributions+1 "
+      "WHERE source_id=?";
+  sql::Statement impression_update_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateImpressionForConversionSql));
+  impression_update_statement.BindInt64(0, *id);
+  return impression_update_statement.Run();
 }
 
 // Helper to deserialize report rows. See `GetReport()` for the expected
@@ -1201,11 +1038,7 @@ std::optional<AttributionReport> AttributionStorageSql::GetReport(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return std::nullopt;
   }
-  return GetReportInternal(id);
-}
 
-std::optional<AttributionReport> AttributionStorageSql::GetReportInternal(
-    AttributionReport::Id id) {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kGetReportSql));
   statement.BindInt64(0, *id);
@@ -1594,6 +1427,8 @@ bool AttributionStorageSql::ReadDedupKeys(
 bool AttributionStorageSql::StoreDedupKey(StoredSource::Id source_id,
                                           uint64_t dedup_key,
                                           AttributionReport::Type report_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   static constexpr char kInsertDedupKeySql[] =
       "INSERT INTO dedup_keys(source_id,report_type,dedup_key)VALUES(?,?,?)";
   sql::Statement statement(
@@ -2761,6 +2596,14 @@ AttributionStorageSql::GetSourcesToDeactivateForDestinationLimit(
 
   return rate_limit_table_.GetSourcesToDeactivateForDestinationLimit(
       &db_, source, source_time);
+}
+
+bool AttributionStorageSql::DeleteAttributionRateLimit(
+    RateLimitTable::Scope scope,
+    AttributionReport::Id report_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return rate_limit_table_.DeleteAttributionRateLimit(&db_, scope, report_id);
 }
 
 }  // namespace content
