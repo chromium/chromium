@@ -61,7 +61,7 @@ export class HealthdInternalsLineChartScrollbarElement extends PolymerElement {
     return this.$.outerDiv.offsetHeight;
   }
 
-  getRange(): number {
+  getScrollableRange(): number {
     return this.scrollableRange;
   }
 
@@ -83,7 +83,7 @@ export class HealthdInternalsLineChartScrollbarElement extends PolymerElement {
   // Set the scrollable range to `range`. Use the inner div's width to control
   // the scrollable range. If position go out of range after range update, set
   // it to the boundary value.
-  setRange(range: number) {
+  setScrollableRange(range: number) {
     this.scrollableRange = range;
     this.$.innerDiv.style.width =
         (this.visibleWidth + this.scrollableRange) + 'px';

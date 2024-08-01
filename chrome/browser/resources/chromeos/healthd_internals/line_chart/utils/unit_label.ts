@@ -40,8 +40,8 @@ export class UnitLabel {
   private height: number = 0;
   // The maximum precision for the number of the label.
   private precision: number = 1;
-  // See `getScale()`.
-  private scale: number = 1;
+  // Vertical scale of line chart. The real value between two pixels.
+  private valueScale: number = 1;
   // True if the label need not be regenerated.
   private isCache: boolean = false;
 
@@ -54,11 +54,11 @@ export class UnitLabel {
   }
 
   /**
-   * The scale of the real value and the y coordinate of the chart.
+   * Get the vertical scale of line chart.
    */
-  getScale(): number {
+  getValueScale(): number {
     this.updateLabelsAndScale();
-    return this.scale;
+    return this.valueScale;
   }
 
   /**
@@ -143,7 +143,7 @@ export class UnitLabel {
     this.labels = labels;
 
     const realTopValue = this.getRealValueWithCurrentUnit(topLabelValue);
-    this.scale = this.height / realTopValue;
+    this.valueScale = realTopValue / this.height;
   }
 
   /**

@@ -152,9 +152,10 @@ export class DataSeries {
   }
 
   /**
-   * Find the index of lower bound point by simple binary search.
+   * Find the index of point which time is greater than or equal to `time` by
+   * simple binary search.
    */
-  findLowerBoundPointIndex(time: number): number {
+  private findLowerBoundPointIndex(time: number): number {
     let lower: number = 0;
     let upper: number = this.dataPoints.length;
     while (lower < upper) {
@@ -175,7 +176,7 @@ export class DataSeries {
    * If there are many data points in the query interval, return their average.
    * If there is no data point in the query interval, return null.
    */
-  getSampleValue(firstIndex: number, endTime: number):
+  private getSampleValue(firstIndex: number, endTime: number):
       {value: number|null, nextIndex: number} {
     let nextIndex: number = firstIndex;
     let currentValueSum: number = 0;

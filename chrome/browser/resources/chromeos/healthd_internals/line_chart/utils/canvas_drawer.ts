@@ -10,13 +10,13 @@ import {UnitLabel} from './unit_label.js';
 /**
  * Find the minimum time step for rendering time labels.
  * @param minSpacing - The minimum spacing between two time tick.
- * @param scale - The scale of the line chart.
+ * @param timeScale - The horizontal scale of the line chart.
  */
-function getMinimumTimeStep(minSpacing: number, scale: number): number {
+function getMinimumTimeStep(minSpacing: number, timeScale: number): number {
   const timeStepUnits: number[] = TIME_STEP_UNITS;
   let timeStep: number = 0;
   for (let i: number = 0; i < timeStepUnits.length; ++i) {
-    if (timeStepUnits[i] / scale >= minSpacing) {
+    if (timeStepUnits[i] / timeScale >= minSpacing) {
       timeStep = timeStepUnits[i];
       break;
     }
@@ -40,7 +40,8 @@ export class CanvasDrawer {
   // List of displayed data.
   private dataSeriesList: DataSeries[] = [];
 
-  // See `setMaxValue()`.
+  // The fixed maximum value in line chart. If this value is null, the maximum
+  // value of unit label will be set from the real maximum value of data series.
   private maxValue: number|null = null;
 
   // The step size between two data points, in millisecond.
@@ -67,9 +68,7 @@ export class CanvasDrawer {
     this.dataSeriesList.push(dataSeries);
   }
 
-  // Overwrite the maximum value of this sub chart. If this value is not null,
-  // the maximum value of the unit label will be set to this value instead of
-  // the real maximum value of data series.
+  // Overwrite the maximum value of this chart.
   setMaxValue(maxValue: number|null) {
     this.maxValue = maxValue;
     this.updateMaxValue();
@@ -84,7 +83,7 @@ export class CanvasDrawer {
   renderCanvas(
       context: CanvasRenderingContext2D, canvasWidth: number,
       canvasHeight: number, scrollbarPosition: number, startTime: number,
-      scale: number) {
+      timeSscale: number) {
     this.initAndClearContext(context, canvasWidth, canvasHeight);
 
     this.graphWidth = canvasWidth;
@@ -96,19 +95,19 @@ export class CanvasDrawer {
     this.offset = scrollbarPosition % SAMPLE_RATE;
 
     // Draw a data point on every `SAMPLE_RATE` pixels.
-    this.stepSize = scale * SAMPLE_RATE;
+    this.stepSize = timeSscale * SAMPLE_RATE;
 
     // First point's position(`queryStartTime`) may go out of the canvas to make
     // the line chart continuous at the begin of the visible range, as well as
     // the last points.
-    const visibleStartTime: number = startTime + scrollbarPosition * scale;
-    this.queryStartTime = visibleStartTime - this.offset * scale;
+    const visibleStartTime: number = startTime + scrollbarPosition * timeSscale;
+    this.queryStartTime = visibleStartTime - this.offset * timeSscale;
     const queryWidth: number = this.graphWidth + this.offset;
     this.numOfPoint = Math.ceil(queryWidth / SAMPLE_RATE) + 1;
 
     this.updateMaxValue();
     this.renderChartGrid(context);
-    this.renderTimeLabels(context, visibleStartTime, scale);
+    this.renderTimeLabels(context, visibleStartTime, timeSscale);
     this.renderUnitLabels(context);
     this.renderLines(context);
   }
@@ -131,11 +130,11 @@ export class CanvasDrawer {
 
   // Render the time label under the line chart.
   private renderTimeLabels(
-      context: CanvasRenderingContext2D, startTime: number, scale: number) {
+      context: CanvasRenderingContext2D, startTime: number, timeScale: number) {
     const sampleText: string = new Date(startTime).toLocaleTimeString();
     const minSpacing: number = context.measureText(sampleText).width +
         MIN_TIME_LABEL_HORIZONTAL_SPACING;
-    const timeStep: number = getMinimumTimeStep(minSpacing, scale);
+    const timeStep: number = getMinimumTimeStep(minSpacing, timeScale);
     if (timeStep === 0) {
       console.warn('Render time label failed. Cannot find minimum time unit.');
       return;
@@ -151,7 +150,7 @@ export class CanvasDrawer {
     const firstTimeTick: number = Math.ceil(startTime / timeStep) * timeStep;
     let time: number = firstTimeTick;
     while (true) {
-      const xCoord: number = Math.round((time - startTime) / scale);
+      const xCoord: number = Math.round((time - startTime) / timeScale);
       if (xCoord >= this.graphWidth) {
         break;
       }
@@ -165,7 +164,7 @@ export class CanvasDrawer {
   }
 
   // Render the lines of all data series.
-  renderLines(context: CanvasRenderingContext2D) {
+  private renderLines(context: CanvasRenderingContext2D) {
     const dataSeriesList: DataSeries[] = this.dataSeriesList;
     for (let i: number = 0; i < dataSeriesList.length; ++i) {
       this.renderLineOfDataSeries(context, dataSeriesList[i]);
@@ -182,12 +181,12 @@ export class CanvasDrawer {
     context.fillStyle = dataSeries.getColor();
     context.beginPath();
 
-    const valueScale: number = this.unitLabel.getScale();
+    const valueScale: number = this.unitLabel.getValueScale();
     let firstXCoord: number = this.graphWidth;
     let xCoord: number = -this.offset;
     for (let i: number = 0; i < values.length; ++i) {
       if (values[i] !== null) {
-        const chartYCoord: number = Math.round(values[i]! * valueScale);
+        const chartYCoord: number = Math.round(values[i]! / valueScale);
         const realYCoord: number = this.graphHeight - 1 - chartYCoord;
         context.lineTo(xCoord, realYCoord);
         if (firstXCoord > xCoord) {
@@ -210,7 +209,7 @@ export class CanvasDrawer {
   }
 
   // Render the unit label on the right side of line chart.
-  renderUnitLabels(context: CanvasRenderingContext2D) {
+  private renderUnitLabels(context: CanvasRenderingContext2D) {
     // Cannot draw the line at the top and the bottom pixel.
     const labelHeight: number = this.graphHeight - 2;
     this.unitLabel.setLayout(labelHeight, /* precision */ 2);
