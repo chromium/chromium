@@ -101,12 +101,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
         /*disabled_features=*/{});
   }
 
-  // TODO(crbug.com/40285326): This fails with the field trial testing config.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-
   void SetUp() override {
     prerender_helper().RegisterServerRequestMonitor(&search_engine_server_);
     PlatformBrowserTest::SetUp();
