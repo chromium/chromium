@@ -169,7 +169,10 @@ public class PasswordManagerHelper {
         if (warningType != PasswordAccessLossWarningType.NONE) {
             new PasswordAccessLossDialogSettingsCoordinator()
                     .showPasswordAccessLossDialog(
-                            context, modalDialogManagerSupplier.get(), warningType);
+                            context,
+                            modalDialogManagerSupplier.get(),
+                            warningType,
+                            PasswordManagerHelper::launchGmsUpdate);
             return;
         }
 

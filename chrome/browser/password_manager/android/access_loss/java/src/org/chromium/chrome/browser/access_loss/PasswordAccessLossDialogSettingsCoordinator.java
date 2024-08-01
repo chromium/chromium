@@ -9,6 +9,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -20,13 +21,20 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class PasswordAccessLossDialogSettingsCoordinator
         implements ModalDialogProperties.Controller {
+    private Context mContext;
     private ModalDialogManager mModalDialogManager;
+    private @PasswordAccessLossWarningType int mWarningType;
+    private Callback<Context> mLaunchGmsUpdate;
 
     public void showPasswordAccessLossDialog(
             Context context,
             @NonNull ModalDialogManager modalDialogManager,
-            @PasswordAccessLossWarningType int warningType) {
+            @PasswordAccessLossWarningType int warningType,
+            Callback<Context> launchGmsUpdate) {
+        mContext = context;
         mModalDialogManager = modalDialogManager;
+        mWarningType = warningType;
+        mLaunchGmsUpdate = launchGmsUpdate;
         mModalDialogManager.showDialog(
                 createDialogModel(context, warningType), ModalDialogManager.ModalDialogType.APP);
     }
@@ -129,9 +137,29 @@ public class PasswordAccessLossDialogSettingsCoordinator
         return 0;
     }
 
+    private void runPositiveButtonCallback() {
+        switch (mWarningType) {
+            case PasswordAccessLossWarningType.NO_GMS_CORE:
+            case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
+                // TODO(crbug.com/353285841): Launch export flow here.
+                break;
+            case PasswordAccessLossWarningType.NO_UPM:
+            case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
+                mLaunchGmsUpdate.onResult(mContext);
+                break;
+            case PasswordAccessLossWarningType.NONE:
+                assert false
+                        : "Illegal value `PasswordAccessLossWarningType.NONE` when trying to show"
+                                + " password access loss warning";
+                break;
+        }
+    }
+
     @Override
     public void onClick(PropertyModel model, int buttonType) {
-        // TODO(b/353285038) Implement positive button click.
+        if (buttonType == ButtonType.POSITIVE) {
+            runPositiveButtonCallback();
+        }
         mModalDialogManager.dismissDialog(
                 model,
                 buttonType == ButtonType.POSITIVE
