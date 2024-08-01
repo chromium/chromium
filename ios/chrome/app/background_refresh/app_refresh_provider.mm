@@ -8,6 +8,7 @@
 
 @interface AppRefreshProvider ()
 
+// Key storing the last run time.
 @property(nonatomic, readonly) NSString* defaultsKey;
 
 @end
@@ -24,25 +25,26 @@
 }
 
 - (base::Time)lastRun {
-  // TODO(crbug.com/354918222): Support correctly storing and tracking the last
-  // run time.
-  return base::Time::FromNSDate([NSDate distantPast]);
+  NSDate* lastRunDate =
+      [[NSUserDefaults standardUserDefaults] objectForKey:self.defaultsKey];
+  // If the provider was never run before, return a time in the distant past.
+  base::Time lastRunTime = lastRunDate
+                               ? base::Time::FromNSDate(lastRunDate)
+                               : base::Time::FromNSDate([NSDate distantPast]);
+  return lastRunTime;
 }
 
 - (void)setLastRun:(base::Time)lastRun {
-  // TODO(crbug.com/354918222): Support correctly storing and tracking the last
-  // run time. No-op for now, should store this in local storage (on the main
-  // thread).
+  // Store the last run time.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setObject:lastRun.ToNSDate() forKey:self.defaultsKey];
 }
 
 - (BOOL)isDue {
-  return base::Time::Now() - self.lastRun < self.refreshInterval;
+  return base::Time::Now() - self.lastRun > self.refreshInterval;
 }
 
 - (NSString*)defaultsKey {
-  // TODO(crbug.com/354918222): Determine whether to use user defaults (for
-  // thread safety) or local storage (for compatibility) for storing this key.
-  // Returning an NSString assumes user deafults, but that's changeable.
   CHECK(self.identifier.length > 0)
       << "Subclasses of AppRefreshProvider must provide an identifier.";
   return

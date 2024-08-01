@@ -71,6 +71,7 @@
   };
 
   LOG(ERROR) << "REFRESH: Handling App Refresh -- " << stage;
+
   completion();
 }
 
