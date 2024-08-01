@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
@@ -78,13 +79,15 @@ class HttpStreamPool::Group {
   // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
   std::unique_ptr<HttpStreamPoolHandle> CreateHandle(
-      std::unique_ptr<StreamSocket> socket);
+      std::unique_ptr<StreamSocket> socket,
+      LoadTimingInfo::ConnectTiming connect_timing);
 
   // Creates a text-based HttpStream from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
   // `socket` must not be negotiated to use HTTP/2.
   std::unique_ptr<HttpStream> CreateTextBasedStream(
-      std::unique_ptr<StreamSocket> socket);
+      std::unique_ptr<StreamSocket> socket,
+      LoadTimingInfo::ConnectTiming connect_timing);
 
   // Releases a StreamSocket that was used to create a text-based HttpStream.
   void ReleaseStreamSocket(std::unique_ptr<StreamSocket> socket,

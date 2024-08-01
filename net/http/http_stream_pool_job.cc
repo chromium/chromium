@@ -10,10 +10,12 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -145,7 +147,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&Job::CreateTextBasedStreamAndNotify,
-                       base::Unretained(this), std::move(stream_socket)));
+                       base::Unretained(this), std::move(stream_socket),
+                       LoadTimingInfo::ConnectTiming()));
     return request;
   }
 
@@ -186,7 +189,9 @@ void HttpStreamPool::Job::OnServiceEndpointsUpdated() {
 void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
   CHECK(!service_endpoint_request_finished_);
   CHECK(service_endpoint_request_);
+
   service_endpoint_request_finished_ = true;
+  dns_resolution_end_time_ = base::TimeTicks::Now();
   resolve_error_info_ = service_endpoint_request_->GetResolveErrorInfo();
 
   if (rv != OK) {
@@ -221,7 +226,8 @@ void HttpStreamPool::Job::ProcessPendingRequest() {
 
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
-    CreateTextBasedStreamAndNotify(std::move(stream_socket));
+    CreateTextBasedStreamAndNotify(std::move(stream_socket),
+                                   LoadTimingInfo::ConnectTiming());
     return;
   }
 
@@ -329,6 +335,7 @@ void HttpStreamPool::Job::StartInternal(RequestPriority priority) {
 
 void HttpStreamPool::Job::ResolveServiceEndpoint(
     RequestPriority initial_priority) {
+  CHECK(!service_endpoint_request_);
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = initial_priority;
   parameters.secure_dns_policy = stream_key().secure_dns_policy();
@@ -337,6 +344,8 @@ void HttpStreamPool::Job::ResolveServiceEndpoint(
           HostResolver::Host(stream_key().destination()),
           stream_key().network_anonymization_key(), net_log(),
           std::move(parameters));
+
+  dns_resolution_start_time_ = base::TimeTicks::Now();
   int rv = service_endpoint_request_->Start(this);
   if (rv != ERR_IO_PENDING) {
     OnServiceEndpointRequestFinished(rv);
@@ -743,12 +752,13 @@ void HttpStreamPool::Job::ProcessPreconnectsAfterAttemptComplete(int rv) {
 }
 
 void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
-    std::unique_ptr<StreamSocket> stream_socket) {
+    std::unique_ptr<StreamSocket> stream_socket,
+    LoadTimingInfo::ConnectTiming connect_timing) {
   NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
   CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
 
-  std::unique_ptr<HttpStream> http_stream =
-      group_->CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
+      std::move(stream_socket), std::move(connect_timing));
   NotifyStreamReady(std::move(http_stream), negotiated_protocol);
   // `this` may be deleted.
 }
@@ -855,6 +865,13 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
     return;
   }
 
+  LoadTimingInfo::ConnectTiming connect_timing =
+      in_flight_attempt->attempt->connect_timing();
+  connect_timing.domain_lookup_start = dns_resolution_start_time_;
+  connect_timing.domain_lookup_end = dns_resolution_end_time_.is_null()
+                                         ? connect_timing.connect_start
+                                         : dns_resolution_end_time_;
+
   std::unique_ptr<StreamSocket> stream_socket =
       in_flight_attempt->attempt->ReleaseStreamSocket();
   CHECK(stream_socket);
@@ -865,8 +882,8 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
     CHECK(!spdy_session_pool()->FindAvailableSession(
         group_->spdy_session_key(), enable_ip_based_pooling_,
         /*is_websocket=*/false, net_log()));
-    std::unique_ptr<HttpStreamPoolHandle> handle =
-        group_->CreateHandle(std::move(stream_socket));
+    std::unique_ptr<HttpStreamPoolHandle> handle = group_->CreateHandle(
+        std::move(stream_socket), std::move(connect_timing));
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
             spdy_session_key(), std::move(handle), net_log(), &spdy_session_);
@@ -888,7 +905,8 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   ProcessPreconnectsAfterAttemptComplete(rv);
 
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
-  CreateTextBasedStreamAndNotify(std::move(stream_socket));
+  CreateTextBasedStreamAndNotify(std::move(stream_socket),
+                                 std::move(connect_timing));
 }
 
 void HttpStreamPool::Job::OnInFlightAttemptSlow(InFlightAttempt* raw_attempt) {

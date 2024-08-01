@@ -17,10 +17,12 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
@@ -551,7 +553,8 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
                                                     /*is_websocket=*/false));
     auto socket = FakeStreamSocket::CreateForSpdy();
     socket->set_peer_addr(peer_addr);
-    auto handle = group.CreateHandle(std::move(socket));
+    auto handle =
+        group.CreateHandle(std::move(socket), LoadTimingInfo::ConnectTiming());
 
     base::WeakPtr<SpdySession> spdy_session;
     int rv = spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
@@ -623,6 +626,100 @@ TEST_F(HttpStreamPoolJobTest, ResolveErrorInfo) {
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsError(ERR_NAME_NOT_RESOLVED));
   ASSERT_EQ(requester.resolve_error_info(), resolve_error_info);
+}
+
+TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
+  constexpr base::TimeDelta kDnsDelay = base::Milliseconds(30);
+  constexpr base::TimeDelta kTcpDelay = base::Milliseconds(20);
+  constexpr base::TimeDelta kTlsDelay = base::Milliseconds(90);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  MockConnectCompleter tcp_connect_completer;
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(&tcp_connect_completer));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  MockConnectCompleter tls_connect_completer;
+  auto ssl = std::make_unique<SSLSocketDataProvider>(&tls_connect_completer);
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  FastForwardBy(kDnsDelay);
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  ASSERT_FALSE(requester.result().has_value());
+
+  FastForwardBy(kTcpDelay);
+  tcp_connect_completer.Complete(OK);
+  RunUntilIdle();
+  ASSERT_FALSE(requester.result().has_value());
+
+  FastForwardBy(kTlsDelay);
+  tls_connect_completer.Complete(OK);
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
+
+  // Initialize `stream` to make load timing info available.
+  HttpRequestInfo request_info;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  stream->InitializeStream(/*can_send_early=*/false, RequestPriority::IDLE,
+                           NetLogWithSource(), base::DoNothing());
+
+  LoadTimingInfo timing_info;
+  ASSERT_TRUE(stream->GetLoadTimingInfo(&timing_info));
+  ASSERT_EQ(timing_info.connect_timing.domain_lookup_end -
+                timing_info.connect_timing.domain_lookup_start,
+            kDnsDelay);
+  ASSERT_EQ(timing_info.connect_timing.connect_end -
+                timing_info.connect_timing.connect_start,
+            kTcpDelay);
+  ASSERT_EQ(
+      timing_info.connect_timing.ssl_end - timing_info.connect_timing.ssl_start,
+      kTlsDelay);
+}
+
+TEST_F(HttpStreamPoolJobTest, ConnectTimingDnsResolutionNotFinished) {
+  constexpr base::TimeDelta kDnsUpdateDelay = base::Milliseconds(30);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination("http://a.test").RequestStream(pool());
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  FastForwardBy(kDnsUpdateDelay);
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  FastForwardBy(kDnsUpdateDelay);
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
+
+  // Initialize `stream` to make load timing info available.
+  HttpRequestInfo request_info;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  stream->InitializeStream(/*can_send_early=*/false, RequestPriority::IDLE,
+                           NetLogWithSource(), base::DoNothing());
+
+  LoadTimingInfo timing_info;
+  ASSERT_TRUE(stream->GetLoadTimingInfo(&timing_info));
+  ASSERT_EQ(timing_info.connect_timing.domain_lookup_end,
+            timing_info.connect_timing.connect_start);
 }
 
 TEST_F(HttpStreamPoolJobTest, SetPriority) {
@@ -1065,8 +1162,8 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
   Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
   std::vector<std::unique_ptr<HttpStream>> streams_a;
   for (size_t i = 0; i < kMaxPerGroup; ++i) {
-    streams_a.emplace_back(
-        group_a.CreateTextBasedStream(std::make_unique<FakeStreamSocket>()));
+    streams_a.emplace_back(group_a.CreateTextBasedStream(
+        std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming()));
   }
 
   ASSERT_FALSE(pool().ReachedMaxStreamLimit());
@@ -1231,8 +1328,8 @@ TEST_F(HttpStreamPoolJobTest, UseIdleStreamSocketAfterRelease) {
   // Create HttpStreams up to the group's limit.
   std::vector<std::unique_ptr<HttpStream>> streams;
   for (size_t i = 0; i < pool().max_stream_sockets_per_group(); ++i) {
-    std::unique_ptr<HttpStream> http_stream =
-        group.CreateTextBasedStream(std::make_unique<FakeStreamSocket>());
+    std::unique_ptr<HttpStream> http_stream = group.CreateTextBasedStream(
+        std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
     streams.emplace_back(std::move(http_stream));
   }
   ASSERT_EQ(group.ActiveStreamSocketCount(),
@@ -1284,8 +1381,8 @@ TEST_F(HttpStreamPoolJobTest,
 
   // Create an HttpStream in group B. The pool should reach its limit.
   Group& group_b = pool().GetOrCreateGroupForTesting(key_b);
-  std::unique_ptr<HttpStream> stream1 =
-      group_b.CreateTextBasedStream(std::make_unique<FakeStreamSocket>());
+  std::unique_ptr<HttpStream> stream1 = group_b.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
 
   // Request a stream in group B. The request should close an idle stream in
@@ -1424,8 +1521,8 @@ TEST_F(HttpStreamPoolJobTest,
   StreamRequester requester;
   requester.set_destination("https://a.test");
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::make_unique<FakeStreamSocket>());
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
 
   ssl_config_service()->NotifySSLContextConfigChange();
@@ -2194,7 +2291,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectReachedPoolLimit) {
 
   auto key_a = StreamKeyBuilder("http://a.test").Build();
   pool().GetOrCreateGroupForTesting(key_a).CreateTextBasedStream(
-      std::make_unique<FakeStreamSocket>());
+      std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 

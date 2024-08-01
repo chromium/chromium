@@ -5,6 +5,7 @@
 #include "net/http/http_stream_pool_group.h"
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session.h"
@@ -112,21 +113,26 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
 }
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
-    std::unique_ptr<StreamSocket> socket) {
+    std::unique_ptr<StreamSocket> socket,
+    LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
-  return std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
-                                                generation_);
+  auto handle = std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
+                                                       generation_);
+  handle->set_connect_timing(connect_timing);
+  return handle;
 }
 
 std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
-    std::unique_ptr<StreamSocket> socket) {
+    std::unique_ptr<StreamSocket> socket,
+    LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
-  return std::make_unique<HttpBasicStream>(CreateHandle(std::move(socket)),
-                                           /*is_for_get_to_http_proxy=*/false);
+  return std::make_unique<HttpBasicStream>(
+      CreateHandle(std::move(socket), std::move(connect_timing)),
+      /*is_for_get_to_http_proxy=*/false);
 }
 
 void HttpStreamPool::Group::ReleaseStreamSocket(

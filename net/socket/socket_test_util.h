@@ -72,6 +72,7 @@ enum {
 class AsyncSocket;
 class MockClientSocket;
 class MockTCPClientSocket;
+class MockSSLClientSocket;
 class SSLClientSocket;
 class StreamSocket;
 
@@ -118,6 +119,7 @@ class MockConnectCompleter {
 
  private:
   friend class MockTCPClientSocket;
+  friend class MockSSLClientSocket;
 
   // Sets a completion callback that is passed to Connect(). Called by
   // MockClientSocket implementations.
@@ -540,6 +542,7 @@ class StaticSocketDataProvider : public SocketDataProvider {
 // to Connect().
 struct SSLSocketDataProvider {
   SSLSocketDataProvider(IoMode mode, int result);
+  explicit SSLSocketDataProvider(MockConnectCompleter* completer);
   SSLSocketDataProvider(const SSLSocketDataProvider& other);
   ~SSLSocketDataProvider();
 

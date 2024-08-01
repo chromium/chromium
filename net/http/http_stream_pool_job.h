@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
@@ -245,7 +246,8 @@ class HttpStreamPool::Job
 
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
-      std::unique_ptr<StreamSocket> stream_socket);
+      std::unique_ptr<StreamSocket> stream_socket,
+      LoadTimingInfo::ConnectTiming connect_timing);
 
   void CreateSpdyStreamAndNotify();
 
@@ -294,6 +296,8 @@ class HttpStreamPool::Job
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;
   bool service_endpoint_request_finished_ = false;
+  base::TimeTicks dns_resolution_start_time_;
+  base::TimeTicks dns_resolution_end_time_;
 
   // Set to true when `this` cannot handle further requests. Used to ensure that
   // `this` doesn't accept further requests while notifying the failure to the

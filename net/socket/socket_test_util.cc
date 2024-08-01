@@ -421,6 +421,16 @@ SSLSocketDataProvider::SSLSocketDataProvider(IoMode mode, int result)
   SSLConnectionStatusSetCipherSuite(0x1301, &ssl_info.connection_status);
 }
 
+SSLSocketDataProvider::SSLSocketDataProvider(MockConnectCompleter* completer)
+    : connect(completer),
+      expected_ssl_version_min(kDefaultSSLVersionMin),
+      expected_ssl_version_max(kDefaultSSLVersionMax) {
+  SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_TLS1_3,
+                                &ssl_info.connection_status);
+  // Set to TLS_CHACHA20_POLY1305_SHA256
+  SSLConnectionStatusSetCipherSuite(0x1301, &ssl_info.connection_status);
+}
+
 SSLSocketDataProvider::SSLSocketDataProvider(
     const SSLSocketDataProvider& other) = default;
 
@@ -1421,6 +1431,10 @@ int MockSSLClientSocket::CancelReadIfReady() {
 int MockSSLClientSocket::Connect(CompletionOnceCallback callback) {
   DCHECK(stream_socket_->IsConnected());
   data_->is_connect_data_consumed = true;
+  if (data_->connect.completer) {
+    data_->connect.completer->SetCallback(std::move(callback));
+    return ERR_IO_PENDING;
+  }
   if (data_->connect.result == OK)
     connected_ = true;
   RunClosureIfNonNull(std::move(data_->connect_callback));

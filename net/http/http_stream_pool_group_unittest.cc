@@ -69,8 +69,8 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStream) {
   auto stream_socket = std::make_unique<FakeStreamSocket>();
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
@@ -81,8 +81,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUnused) {
   auto stream_socket = std::make_unique<FakeStreamSocket>();
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -102,8 +102,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUsed) {
   stream_socket->set_was_ever_used(true);
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -132,8 +132,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketNotIdle) {
   stream_socket->set_is_idle(false);
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -147,8 +147,8 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketDisconnected) {
   FakeStreamSocket* raw_stream_socket = stream_socket.get();
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -167,8 +167,8 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketReceivedDataUnexpectedly) {
   FakeStreamSocket* raw_stream_socket = stream_socket.get();
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -259,8 +259,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
   auto stream_socket = std::make_unique<FakeStreamSocket>();
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -280,8 +280,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {
   auto stream_socket = std::make_unique<FakeStreamSocket>();
 
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
@@ -304,8 +304,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeIgnored) {
 
   auto stream_socket = std::make_unique<FakeStreamSocket>();
   Group& group = GetTestGroup();
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStream(std::move(stream_socket));
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
