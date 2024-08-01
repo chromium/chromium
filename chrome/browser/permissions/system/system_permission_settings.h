@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_SYSTEM_SYSTEM_PERMISSION_SETTINGS_H_
 #define CHROME_BROWSER_PERMISSIONS_SYSTEM_SYSTEM_PERMISSION_SETTINGS_H_
 
+#include <memory>
+
+#include "base/functional/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {
@@ -16,6 +20,20 @@ namespace system_permission_settings {
 class PlatformHandle;
 
 using SystemPermissionResponseCallback = base::OnceCallback<void()>;
+using content_settings::mojom::ContentSettingsType;
+using SystemPermissionChangedCallback =
+    base::RepeatingCallback<void(ContentSettingsType /*type*/,
+                                 bool /*is_blocked*/)>;
+
+class ScopedObservation {
+ protected:
+  ScopedObservation() = default;
+
+ public:
+  ScopedObservation(ScopedObservation const&) = delete;
+  ScopedObservation& operator=(ScopedObservation const&) = delete;
+  virtual ~ScopedObservation() = default;
+};
 
 // For testing purposes only. Sets a fake / mock instance of
 // `PlatformHandle` to be used instead of the real implementation.
@@ -46,6 +64,9 @@ void OpenSystemSettings(content::WebContents* web_contents,
 // once the user's decision is made.
 void Request(ContentSettingsType type,
              SystemPermissionResponseCallback callback);
+
+std::unique_ptr<ScopedObservation> Observe(
+    SystemPermissionChangedCallback observer);
 
 class ScopedSettingsForTesting {
  public:

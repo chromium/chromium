@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/permissions/system/geolocation_observation.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
@@ -38,11 +40,8 @@ bool allowed(system_media_permissions::SystemPermission permission) {
   return system_media_permissions::SystemPermission::kAllowed == permission;
 }
 
-class PlatformHandleImpl
-    : public PlatformHandle,
-      public device::GeolocationSystemPermissionManager::PermissionObserver {
+class PlatformHandleImpl : public PlatformHandle {
  public:
-  // PlatformHandle:
   bool CanPrompt(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
@@ -147,13 +146,14 @@ class PlatformHandleImpl
         // The system permission prompt is modal and requires a user decision
         // (Allow or Deny) before it can be dismissed.
         if (geolocation_callbacks_.size() == 1u) {
-          auto* geolocation_system_permission_manager =
-              device::GeolocationSystemPermissionManager::GetInstance();
-          CHECK(geolocation_system_permission_manager);
-          CHECK(!observation_.IsObserving());
+          CHECK(!observation_);
           // Lazily setup geolocation status observation
-          observation_.Observe(geolocation_system_permission_manager);
-          geolocation_system_permission_manager->RequestSystemPermission();
+          SystemPermissionChangedCallback clb = base::BindRepeating(
+              &PlatformHandleImpl::OnSystemPermissionUpdated,
+              weak_factory_.GetWeakPtr());
+          observation_ = Observe(std::move(clb));
+          CHECK_DEREF(device::GeolocationSystemPermissionManager::GetInstance())
+              .RequestSystemPermission();
         }
         return;
       }
@@ -163,16 +163,21 @@ class PlatformHandleImpl
     }
   }
 
-  // device::GeolocationSystemPermissionManager::PermissionObserver:
-  void OnSystemPermissionUpdated(
-      device::LocationSystemPermissionStatus new_status) override {
-    // No further observation needed as all the current requests will now be
-    // resolved
-    observation_.Reset();
-    FlushGeolocationCallbacks();
+  std::unique_ptr<ScopedObservation> Observe(
+      SystemPermissionChangedCallback observer) override {
+    return std::make_unique<GeolocationObservation>(std::move(observer));
   }
 
  private:
+  void OnSystemPermissionUpdated(ContentSettingsType content_type,
+                                 bool /*is_blocked*/) {
+    CHECK(content_type == ContentSettingsType::GEOLOCATION);
+    // No further observation needed as all the current requests will now be
+    // resolved
+    observation_.reset();
+    FlushGeolocationCallbacks();
+  }
+
   void FlushGeolocationCallbacks() {
     auto callbacks = std::move(geolocation_callbacks_);
     for (auto& cb : callbacks) {
@@ -181,17 +186,13 @@ class PlatformHandleImpl
   }
 
   std::vector<SystemPermissionResponseCallback> geolocation_callbacks_;
-  base::ScopedObservation<
-      device::GeolocationSystemPermissionManager,
-      device::GeolocationSystemPermissionManager::PermissionObserver>
-      observation_{this};
+  std::unique_ptr<ScopedObservation> observation_;
+  base::WeakPtrFactory<PlatformHandleImpl> weak_factory_{this};
 };
-
 }  // namespace
 
 // static
 std::unique_ptr<PlatformHandle> PlatformHandle::Create() {
   return std::make_unique<PlatformHandleImpl>();
 }
-
 }  // namespace system_permission_settings

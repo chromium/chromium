@@ -503,6 +503,12 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param numCookies The number of cookies.
    */
   getNumCookiesString(numCookies: number): Promise<string>;
+
+  /**
+   * Gets the warning messages for the permissions types blocked at the OS
+   * level.
+   */
+  getOsGlobalPermissionStatus(): Promise<Record<ContentSettingsTypes, string>>;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -673,6 +679,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getNumCookiesString(numCookies: number) {
     return sendWithPromise('getNumCookiesString', numCookies);
+  }
+
+  getOsGlobalPermissionStatus() {
+    return sendWithPromise('getOsGlobalPermissionStatus');
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

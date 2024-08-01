@@ -2,8 +2,9 @@
     <div id="details" hidden$="[[shouldHideCategory_(site)]]">
       <div id="permissionItem"
           class$="list-item [[permissionInfoStringClass_(site.source,
-                                                         category,
-                                                         site.setting)]]">
+                                                  category,
+                                                  site.setting,
+                                                  permissionWarnings_)]]">
         <div>
           <iron-icon icon="[[icon]]" aria-hidden="true" role="presentation">
           </iron-icon>
@@ -12,12 +13,13 @@
           [[label]]
           <div class="secondary" id="permissionSecondary"
               hidden$="[[!hasPermissionInfoString_(site.source,
-                                                   category,
-                                                   site.setting)]]"
+                                        category,
+                                        site.setting, permissionWarnings_)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
                 category,
                 site.setting,
+                permissionWarnings_,
                 '$i18nPolymer{siteSettingsAllowlisted}',
                 '$i18nPolymer{siteSettingsAdsBlockBlocklistedSingular}',
                 '$i18nPolymer{siteSettingsAdsBlockNotBlocklistedSingular}',
@@ -40,7 +42,7 @@
             aria-describedby="permissionSecondary"
             on-change="onPermissionSelectionChange_"
             disabled$="[[!isPermissionUserControlled_(site.source, category,
-                                                      site.setting)]]">
+                                          site.setting, permissionWarnings_)]]">
           <option id="default" value$="[[contentSettingEnum_.DEFAULT]]">
             [[defaultSettingString_(
                 defaultSetting_,
@@ -64,7 +66,6 @@
           </option>
         </select>
       </div>
-
       <div class="list-frame" role="table">
         <template is="dom-repeat" items="[[chooserExceptions_]]">
           <site-details-permission-device-entry exception="[[item]]">

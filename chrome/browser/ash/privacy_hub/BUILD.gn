@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("privacy_hub") {
   sources = [
-    "content_block_observation.cc",
-    "content_block_observation.h",
     "privacy_hub_hats_trigger.cc",
     "privacy_hub_hats_trigger.h",
     "privacy_hub_util.cc",
