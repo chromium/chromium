@@ -343,7 +343,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   raw_ptr<ToolbarButton> close_side_panel_button_ = nullptr;
   // Used to ensure the button remains highlighted while active.
   std::optional<views::Button::ScopedAnchorHighlight>
-      close_side_panel_button_anchor_higlight_;
+      close_side_panel_button_anchor_highlight_;
 
   // The widgets currently popped out and, for each, the extension it is
   // associated with. See AnchoredWidget.
