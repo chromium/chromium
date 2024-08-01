@@ -404,21 +404,6 @@ const char kEnableFeedHeaderSettingsName[] =
 const char kEnableFeedHeaderSettingsDescription[] =
     "When enabled, some UI elements of the feed header can be modified.";
 
-const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[] =
-    "Enable friendlier safe browsing settings enhanced protection";
-const char
-    kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[] =
-        "Updates the text, layout, icons, and links on both the privacy guide "
-        "and the security settings page.";
-
-const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[] =
-    "Enable Friendlier Safe Browsing Settings for standard protection";
-const char
-    kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[] =
-        "Updates the text and layout on both the privacy guide and the "
-        "security "
-        "settings page.";
-
 const char kDisableLensCameraName[] = "Disable Lens camera experience";
 const char kDisableLensCameraDescription[] =
     "When enabled, the option use Lens to search for images from your device "

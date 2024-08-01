@@ -349,18 +349,6 @@ extern const char kEnableFollowIPHExpParamsDescription[];
 extern const char kEnableFollowUIUpdateName[];
 extern const char kEnableFollowUIUpdateDescription[];
 
-// Title and description for the flag to enable Friendlier Enhanced Safe
-// Browsing feature on iOS.
-extern const char kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionName[];
-extern const char
-    kEnableFriendlierSafeBrowsingSettingsEnhancedProtectionDescription[];
-
-// Title and description for the flag to enable Friendlier Standard Safe
-// Browsing feature on iOS.
-extern const char kEnableFriendlierSafeBrowsingSettingsStandardProtectionName[];
-extern const char
-    kEnableFriendlierSafeBrowsingSettingsStandardProtectionDescription[];
-
 // Title and description for the flag to disable the Lens input selection
 // and camera experience.
 extern const char kDisableLensCameraName[];
