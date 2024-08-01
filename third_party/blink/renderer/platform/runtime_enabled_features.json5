@@ -1008,16 +1008,19 @@
     },
     {
       // position-try-options has been renamed to position-try-fallbacks.
+      // This feature was shipped in M128, so this flag can be removed in M130.
       name: "CSSPositionTryFallbacks",
       depends_on: ["CSSAnchorPositioning"],
-      status: "experimental",
+      status: "stable",
     },
     {
-      // position-try-options has been renamed to position-try-fallbacks. Will
-      // be removed, but kept as a surrogate for now.
+      // Kill switch (inverted logic) to re-enable `position-try-options`. That
+      // property was renamed to `position-try-fallbacks` which is enabled via
+      // the CSSPositionTryFallbacks flag.
+      // This feature was disabled in M128, so this flag (and the code to
+      // implement `position-try-options`) can be removed in M130.
       name: "CSSPositionTryOptions",
       depends_on: ["CSSAnchorPositioning"],
-      status: "stable",
     },
     {
       // Support the position-try-order property.

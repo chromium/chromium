@@ -305,7 +305,7 @@ All changes to this list should go through Blink's feature review process: http:
     pointer-events
     position
     position-anchor
-    position-try-options
+    position-try-fallbacks
     position-try-order
     position-visibility
     quotes
@@ -735,7 +735,7 @@ All changes to this list should go through Blink's feature review process: http:
         align-self
         justify-self
     position-try
-        position-try-options
+        position-try-fallbacks
         position-try-order
     scroll-margin
         scroll-margin-bottom
