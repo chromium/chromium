@@ -24129,60 +24129,6 @@
             ]
         }
     ],
-    "V8Maglev": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Maglev"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8MaglevAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "MaglevAndTF",
-                    "enable_features": [
-                        "V8Maglev",
-                        "V8Turbofan"
-                    ]
-                },
-                {
-                    "name": "MaglevAndNoTF",
-                    "enable_features": [
-                        "V8Maglev"
-                    ],
-                    "disable_features": [
-                        "V8Turbofan"
-                    ]
-                },
-                {
-                    "name": "NoMaglevAndNoTF",
-                    "disable_features": [
-                        "V8Maglev",
-                        "V8Turbofan"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ScavengerHigherCapacity": [
         {
             "platforms": [
@@ -24357,46 +24303,6 @@
                     "enable_features": [
                         "V8SlowHistogramsSparkplugAndroid",
                         "V8Sparkplug"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8Turboshaft": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Turboshaft"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8TurboshaftInstructionSelection": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8TurboshaftInstructionSelection"
                     ]
                 }
             ]
