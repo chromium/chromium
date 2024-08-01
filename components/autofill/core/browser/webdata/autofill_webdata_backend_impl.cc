@@ -443,7 +443,7 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfiles(profile_source,
-                                                                 &profiles);
+                                                                 profiles);
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
       AUTOFILL_PROFILES_RESULT, std::move(profiles));
@@ -877,7 +877,7 @@ AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
   bool failures_observed = false;
   if (AddressAutofillTable::FromWebDatabase(db)
           ->RemoveAutofillDataModifiedBetween(delete_begin, delete_end,
-                                              &profiles)) {
+                                              profiles)) {
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
       for (auto& db_observer : db_observer_list_) {
         db_observer.AutofillProfileChanged(AutofillProfileChange(

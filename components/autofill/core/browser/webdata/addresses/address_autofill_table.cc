@@ -688,9 +688,8 @@ std::unique_ptr<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
 
 bool AddressAutofillTable::GetAutofillProfiles(
     AutofillProfile::Source profile_source,
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {
-  CHECK(profiles);
-  profiles->clear();
+    std::vector<std::unique_ptr<AutofillProfile>>& profiles) const {
+  profiles.clear();
 
   sql::Statement s;
   SelectBuilder(db_, s, GetProfileMetadataTable(profile_source), {kGuid});
@@ -701,7 +700,7 @@ bool AddressAutofillTable::GetAutofillProfiles(
     if (!profile) {
       continue;
     }
-    profiles->push_back(std::move(profile));
+    profiles.push_back(std::move(profile));
   }
 
   return s.Succeeded();
@@ -753,9 +752,8 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
 // TODO(crbug.com/40267335): This function's implementation is very similar to
 // `GetAutofillProfiles()`. Simplify somehow.
 bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {
-  DCHECK(profiles);
-  profiles->clear();
+    std::vector<std::unique_ptr<AutofillProfile>>& profiles) const {
+  profiles.clear();
 
   sql::Statement s;
   SelectBuilder(db_, s, kAutofillProfilesTable, {kGuid});
@@ -767,7 +765,7 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
     if (!profile) {
       continue;
     }
-    profiles->push_back(std::move(profile));
+    profiles.push_back(std::move(profile));
   }
 
   return s.Succeeded();
@@ -776,7 +774,7 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
 bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
     base::Time delete_begin,
     base::Time delete_end,
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) {
+    std::vector<std::unique_ptr<AutofillProfile>>& profiles) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
   time_t delete_begin_t = delete_begin.ToTimeT();
@@ -789,7 +787,7 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
       GetProfileMetadataTable(AutofillProfile::Source::kLocalOrSyncable),
       {kGuid}, kDateModified, delete_begin_t, delete_end_t);
 
-  profiles->clear();
+  profiles.clear();
   while (s_profiles_get.Step()) {
     std::string guid = s_profiles_get.ColumnString(0);
     std::unique_ptr<AutofillProfile> profile =
@@ -797,14 +795,14 @@ bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
     if (!profile) {
       return false;
     }
-    profiles->push_back(std::move(profile));
+    profiles.push_back(std::move(profile));
   }
   if (!s_profiles_get.Succeeded()) {
     return false;
   }
 
   // Remove Autofill profiles in the time range.
-  for (const std::unique_ptr<AutofillProfile>& profile : *profiles) {
+  for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
     if (!RemoveAutofillProfile(profile->guid(),
                                AutofillProfile::Source::kLocalOrSyncable)) {
       return false;
@@ -993,7 +991,7 @@ bool AddressAutofillTable::
   bool success = true;
   if (db_->DoesTableExist(kAutofillProfilesTable)) {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    success = GetAutofillProfilesFromLegacyTable(&profiles);
+    success = GetAutofillProfilesFromLegacyTable(profiles);
     // Migrate profiles to the new tables. Preserve the modification dates.
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
       success = success && AddAutofillProfileToTableVersion113(db_, *profile);
