@@ -140,11 +140,11 @@ std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return PreloadingTriggeringOutcome::kFailure;
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchNotStarted:
-    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return std::nullopt;
   }
   return std::nullopt;
