@@ -121,9 +121,6 @@ class OomInterventionTabHelper
   base::UnsafeSharedMemoryRegion shared_metrics_buffer_;
   base::WritableSharedMemoryMapping metrics_mapping_;
 
-  base::TimeTicks last_navigation_timestamp_;
-  base::TimeTicks start_monitor_timestamp_;
-
   base::ScopedObservation<crash_reporter::CrashMetricsReporter,
                           crash_reporter::CrashMetricsReporter::Observer>
       scoped_observation_{this};

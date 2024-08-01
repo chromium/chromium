@@ -759,41 +759,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Memory.Experimental.OomIntervention.RendererTimeSinceLastNavigationAtDetection"
-    units="seconds" expires_after="2019-07-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Records the time since last main frame navigation start on the renderer
-    process when high memory usage is detected. Record only when navigation
-    happened at least once.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.RendererTimeSinceLastNavigationAtOOM"
-    units="seconds" expires_after="M82">
-  <owner>ssid@chromium.org</owner>
-  <owner>haraken@chromium.org</owner>
-  <summary>
-    Records the time since last main frame navigation start on the renderer
-    process when it OOMs in foreground visible state. Record 0 if no navigation
-    was started.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.RendererTimeSinceStartMonitoringAtDetection"
-    units="seconds" expires_after="2019-07-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Records the time since starting monitor on renderer when high memory usage
-    is detected.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
     units="MB" expires_after="2024-12-24">
   <owner>tasak@google.com</owner>
