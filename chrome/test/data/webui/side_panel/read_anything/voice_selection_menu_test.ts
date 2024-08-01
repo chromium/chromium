@@ -327,7 +327,7 @@ suite('VoiceSelectionMenu', () => {
       test(
           'when preview finishes playing it flips the button back to play icon',
           () => {
-            voiceSelectionMenu.previewVoicePlaying = null;
+            voiceSelectionMenu.previewVoicePlaying = undefined;
             flush();
 
             stubAnimationFrame();

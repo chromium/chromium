@@ -414,8 +414,8 @@ export const AVAILABLE_GOOGLE_TTS_LOCALES = new Set([
 ]);
 
 export function areVoicesEqual(
-    voice1: SpeechSynthesisVoice|null,
-    voice2: SpeechSynthesisVoice|null): boolean {
+    voice1: SpeechSynthesisVoice|undefined,
+    voice2: SpeechSynthesisVoice|undefined): boolean {
   if (!voice1 || !voice2) {
     return false;
   }

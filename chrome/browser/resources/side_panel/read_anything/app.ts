@@ -240,7 +240,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private availableLangs_: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
   // Otherwise, this is undefined.
-  private previewVoicePlaying: SpeechSynthesisVoice|null;
+  private previewVoicePlaying: SpeechSynthesisVoice|undefined;
 
   private localeToDisplayName: {[locale: string]: string};
 
@@ -1133,7 +1133,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // the previously unavailable voice as an extra measure. This method should
   // only be called when speech synthesis returns an error.
   getAlternativeVoice(unavailableVoice: SpeechSynthesisVoice|
-                      null): SpeechSynthesisVoice|null {
+                      undefined): SpeechSynthesisVoice|undefined {
     const newVoice = this.defaultVoice();
 
     // If the default voice is not the same as the original, unavailable voice,
@@ -1156,7 +1156,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // attempt to fallback to the browser language, if we're using the page
     // language.
     if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
-      return null;
+      return undefined;
     }
 
     let voiceIndex = 0;
@@ -1171,7 +1171,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(b/336596926): Handle language updates if there aren't any available
     // voices in the current language other than the unavailable voice.
-    return null;
+    return undefined;
   }
 
   private getVoices_(refresh: boolean = false): SpeechSynthesisVoice[] {
@@ -1247,7 +1247,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // If there's no previewVoice, return after stopping the current preview
     if (!event.detail) {
-      this.previewVoicePlaying = null;
+      this.previewVoicePlaying = undefined;
       return;
     }
 
@@ -1262,11 +1262,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     utterance.rate = defaultUtteranceSettings.rate;
 
     utterance.onstart = event => {
-      this.previewVoicePlaying = event.utterance.voice;
+      this.previewVoicePlaying = event.utterance.voice || undefined;
     };
 
     utterance.onend = () => {
-      this.previewVoicePlaying = null;
+      this.previewVoicePlaying = undefined;
     };
 
     // TODO(b/40927698): There should probably be more sophisticated error
@@ -1274,7 +1274,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // voice to null should be sufficient to reset state if an error is
     // encountered during a preview.
     utterance.onerror = () => {
-      this.previewVoicePlaying = null;
+      this.previewVoicePlaying = undefined;
     };
 
     this.synth.speak(utterance);
@@ -1761,7 +1761,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // The voice designated in SpeechSynthesisUtterance voice attribute
       // is not available.
       if (error.error === 'voice-unavailable') {
-        let newVoice = this.selectedVoice_ ? this.selectedVoice_ : null;
+        let newVoice = this.selectedVoice_ ? this.selectedVoice_ : undefined;
         this.selectedVoice_ = undefined;
         newVoice = this.getAlternativeVoice(newVoice);
 

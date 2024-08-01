@@ -51,9 +51,9 @@ const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
-  selectedVoice: SpeechSynthesisVoice;
+  selectedVoice: SpeechSynthesisVoice|undefined;
   localeToDisplayName: {[lang: string]: string} = {};
-  previewVoicePlaying: SpeechSynthesisVoice|null;
+  previewVoicePlaying: SpeechSynthesisVoice|undefined;
   enabledLangs: string[];
   availableVoices: SpeechSynthesisVoice[];
 
