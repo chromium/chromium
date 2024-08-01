@@ -7018,6 +7018,9 @@ chromium-metrics-reviews@google.com.
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of camera devices available in the PageInfo combobox.
+    Note: There is a change for the zero device case starting from M128 where we
+    no longer record the zero case if the list of devices is not initialized
+    yet.
   </summary>
 </histogram>
 
@@ -7027,7 +7030,9 @@ chromium-metrics-reviews@google.com.
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of microphones (audio input) devices available in the
-    PageInfo combobox.
+    PageInfo combobox. Note: There is a change for the zero device case starting
+    from M128 where we no longer record the zero case if the list of devices is
+    not initialized yet.
   </summary>
 </histogram>
 
@@ -7038,6 +7043,9 @@ chromium-metrics-reviews@google.com.
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of camera devices available in the Permissions combobox.
+    Note: There is a change for the zero device case starting from M128 where we
+    no longer record the zero case if the list of devices is not initialized
+    yet.
   </summary>
 </histogram>
 
@@ -7047,7 +7055,9 @@ chromium-metrics-reviews@google.com.
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the number of microphones (audio input) devices available in the
-    Permissions combobox.
+    Permissions combobox. Note: There is a change for the zero device case
+    starting from M128 where we no longer record the zero case if the list of
+    devices is not initialized yet.
   </summary>
 </histogram>
 

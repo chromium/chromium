@@ -57,7 +57,7 @@ MicCoordinator::MicCoordinator(
 }
 
 MicCoordinator::~MicCoordinator() {
-  if (allow_device_selection_) {
+  if (allow_device_selection_ && mic_mediator_.IsDeviceListInitialized()) {
     RecordDeviceSelectionTotalDevices(metrics_context_,
                                       eligible_device_infos_.size());
   }
