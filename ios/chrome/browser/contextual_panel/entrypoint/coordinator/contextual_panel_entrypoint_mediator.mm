@@ -35,6 +35,9 @@
 @end
 
 @implementation ContextualPanelEntrypointMediator {
+  // Whether there currently are any Infobar badges being shown.
+  BOOL _infobarBadgesCurrentlyShown;
+
   // The command handler for contextual sheet commands.
   __weak id<ContextualSheetCommands> _contextualSheetHandler;
 
@@ -243,12 +246,14 @@
                            _webStateList->GetActiveWebState()));
 
   size_t badgesCount = tabHelper->GetInfobarBadgesCount();
-  if (badgesCount <= 0) {
+
+  BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
+  if (_infobarBadgesCurrentlyShown == infobarBadgesCurrentlyShown) {
     return;
   }
+  _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
 
-  // TODO(crbug.com/330701617): Mute the entrypoint when there are infobar
-  // badges being shown.
+  [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
 }
 
 #pragma mark - private
@@ -464,7 +469,8 @@
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
 
-  return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
+  return !_infobarBadgesCurrentlyShown &&
+         !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }

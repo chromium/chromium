@@ -18,6 +18,9 @@ struct ContextualPanelItemConfiguration;
 - (void)setEntrypointConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config;
 
+// Sets whether there are infobar badges currently being shown.
+- (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown;
+
 // Notify the consumer to hide the entrypoint.
 - (void)hideEntrypoint;
 

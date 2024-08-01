@@ -72,6 +72,9 @@
   self.contextualPanelIsOpen = opened;
 }
 
+- (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
+}
+
 @end
 
 // Fake test implementation of ContextualPanelEntrypointMediatorDelegate
