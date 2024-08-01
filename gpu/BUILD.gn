@@ -282,6 +282,7 @@ test("gl_tests") {
     "command_buffer/tests/gl_virtual_contexts_unittest.cc",
     "command_buffer/tests/gl_webgl_multi_draw_test.cc",
     "command_buffer/tests/occlusion_query_unittest.cc",
+    "config/gpu_info_collector_gl_test.cc",
     "ipc/client/gpu_context_tests.h",
     "ipc/client/gpu_in_process_context_tests.cc",
     "ipc/client/raster_in_process_context_tests.cc",
