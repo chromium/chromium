@@ -136,8 +136,6 @@ source_set("chromeos") {
     "printing/print_preview/print_view_manager_cros_basic.h",
     "printing/print_preview/printing_init_cros.cc",
     "printing/print_preview/printing_init_cros.h",
-    "quickoffice/quickoffice_prefs.cc",
-    "quickoffice/quickoffice_prefs.h",
     "reporting/local_state_reporting_settings.cc",
     "reporting/local_state_reporting_settings.h",
     "reporting/metric_default_utils.cc",
