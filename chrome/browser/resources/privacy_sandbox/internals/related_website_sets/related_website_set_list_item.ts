@@ -90,6 +90,10 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
     return parts.map(part =>
             part.toLowerCase() === queryLower ? html`<b>${part}</b>` : part);
   }
+
+  protected getIconImageUrl_(): string {
+    return `${this.primarySite}/favicon.ico`;
+  }
 }
 
 declare global {

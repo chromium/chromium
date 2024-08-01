@@ -11,6 +11,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './site_favicon.css.js';
 import {getHtml} from './site_favicon.html.js';
 
+const FAVICON_TIMEOUT_MS = 1000;
+
 /**
  * Ensures the URL has a scheme (assumes http if omitted).
  * @param url The URL with or without a scheme.
@@ -48,18 +50,25 @@ export class SiteFaviconElement extends CrLitElement {
     };
   }
 
-  protected domain: string = '';
-  protected url: string = '';
+  domain: string = '';
+  url: string = '';
   protected showDownloadedIcon_: boolean = false;
+  private faviconDownloadTimeout_: number|null = null;
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.faviconDownloadTimeout_ !== null) {
+      clearTimeout(this.faviconDownloadTimeout_);
+      this.faviconDownloadTimeout_ = null;
+    }
+  }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('url')) {
-      this.showDownloadedIcon_ = false;
+    if (changedProperties.has('url')) {
+      this.onUrlChanged_();
     }
   }
 
@@ -73,6 +82,8 @@ export class SiteFaviconElement extends CrLitElement {
 
   protected onLoadSuccess_() {
     this.showDownloadedIcon_ = true;
+    this.faviconDownloadTimeout_ && clearTimeout(this.faviconDownloadTimeout_);
+    this.faviconDownloadTimeout_ = null;
     this.dispatchEvent(new CustomEvent(
         'site-favicon-loaded', {bubbles: true, composed: true}));
   }
@@ -84,15 +95,13 @@ export class SiteFaviconElement extends CrLitElement {
   }
 
   protected onUrlChanged_() {
+    this.faviconDownloadTimeout_ = setTimeout(() => {
+      if (!this.$.downloadedFavicon.complete) {
+        // Reset src to cancel ongoing request.
+        this.$.downloadedFavicon.src = '';
+      }
+    }, FAVICON_TIMEOUT_MS);
     this.showDownloadedIcon_ = false;
-  }
-
-  setDomainForTesting(domain: string) {
-    this.domain = domain;
-  }
-
-  setUrlForTesting(url: string) {
-    this.url = url;
   }
 }
 
