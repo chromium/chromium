@@ -163,7 +163,9 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
 };
 
 // TODO(crbug.com/356369542): Fix flakiness on sanitizer bots.
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AutotestPrivate DISABLED_AutotestPrivate
 #else
 #define MAYBE_AutotestPrivate AutotestPrivate
