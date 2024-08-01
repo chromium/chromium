@@ -6,8 +6,10 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -61,8 +63,11 @@ void SetupChip(views::LabelButton* chip, bool first) {
   views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(4),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
-  chip->GetViewAccessibility().SetName(chip->GetText());
   chip->SetTooltipText(chip->GetText());
+
+  views::ViewAccessibility& view_accessibility = chip->GetViewAccessibility();
+  view_accessibility.SetName(chip->GetText());
+  view_accessibility.SetRole(ax::mojom::Role::kListItem);
 }
 
 void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
@@ -154,6 +159,12 @@ FocusModeChipCarousel::FocusModeChipCarousel(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
+
+  views::ViewAccessibility& scroll_contents_view_accessibility =
+      scroll_contents_->GetViewAccessibility();
+  scroll_contents_view_accessibility.SetRole(ax::mojom::Role::kList);
+  scroll_contents_view_accessibility.SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUGGESTED_TASKS));
 
   left_overflow_icon_ = AddChildView(std::make_unique<views::ImageButton>(
       base::BindRepeating(&FocusModeChipCarousel::OnChevronPressed,
