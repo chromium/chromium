@@ -793,12 +793,27 @@ source_set("unit_tests") {
 group("browser_tests") {
   testonly = true
 
-  deps = []
+  deps = [
+    # Browser tests from subdirectories.
+    "//chrome/browser/chromeos/kcer:browser_tests",
+  ]
 
   if (is_chromeos_ash) {
     deps += [
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/smart_reader:browser_tests",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  group("lacros_chrome_browsertests") {
+    testonly = true
+
+    deps = [
+      # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/kcer:lacros_chrome_browsertests",
+      "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
     ]
   }
 }

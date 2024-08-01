@@ -986,6 +986,7 @@ static_library("ash") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/drivefs",
+    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
