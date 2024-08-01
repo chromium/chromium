@@ -28,17 +28,6 @@
 
 namespace net {
 
-HttpStreamPool::SucceededStream::SucceededStream(
-    std::unique_ptr<HttpStream> stream,
-    NextProto negotiated_protocol)
-    : stream(std::move(stream)), negotiated_protocol(negotiated_protocol) {}
-
-HttpStreamPool::SucceededStream::SucceededStream(SucceededStream&&) = default;
-HttpStreamPool::SucceededStream& HttpStreamPool::SucceededStream::operator=(
-    SucceededStream&&) = default;
-
-HttpStreamPool::SucceededStream::~SucceededStream() = default;
-
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
     : http_network_session_(http_network_session),
@@ -61,39 +50,23 @@ HttpStreamPool::~HttpStreamPool() {
   }
 }
 
-HttpStreamPool::StreamResult HttpStreamPool::RequestStream(
+std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     const HttpStreamKey& stream_key,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
-  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
-
-  base::WeakPtr<SpdySession> spdy_session =
-      http_network_session_->spdy_session_pool()->FindAvailableSession(
-          spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
-          net_log);
-  if (spdy_session) {
-    std::set<std::string> dns_aliases =
-        http_network_session_->spdy_session_pool()->GetDnsAliasesForSessionKey(
-            spdy_session_key);
-    auto stream = std::make_unique<SpdyHttpStream>(
-        spdy_session, net_log.source(), std::move(dns_aliases));
-    return SucceededStream(std::move(stream), kProtoHTTP2);
-  }
-
-  Group& group = GetOrCreateGroup(stream_key, std::move(spdy_session_key));
-  return group.RequestStream(delegate, priority, allowed_bad_certs,
-                             enable_ip_based_pooling, net_log);
+  return GetOrCreateGroup(stream_key)
+      .RequestStream(delegate, priority, allowed_bad_certs,
+                     enable_ip_based_pooling, net_log);
 }
 
 int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                size_t num_streams,
                                CompletionOnceCallback callback) {
   CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
-  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
-  return GetOrCreateGroup(stream_key, std::move(spdy_session_key))
+  return GetOrCreateGroup(stream_key)
       .Preconnect(num_streams, std::move(callback));
 }
 
@@ -188,20 +161,14 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
-  SpdySessionKey spdy_session_key(
-      HostPortPair::FromSchemeHostPort(stream_key.destination()),
-      stream_key.privacy_mode(), ProxyChain::Direct(),
-      SessionUsage::kDestination, stream_key.socket_tag(),
-      stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
-      stream_key.disable_cert_network_fetches());
-  return GetOrCreateGroup(stream_key, std::move(spdy_session_key));
+  return GetOrCreateGroup(stream_key);
 }
 
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
-    const HttpStreamKey& stream_key,
-    SpdySessionKey spdy_session_key) {
+    const HttpStreamKey& stream_key) {
   auto it = groups_.find(stream_key);
   if (it == groups_.end()) {
+    SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
     it = groups_.try_emplace(
         it, stream_key,
         std::make_unique<Group>(this, stream_key, std::move(spdy_session_key)));

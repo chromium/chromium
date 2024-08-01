@@ -51,23 +51,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE Job;
 
-  // Represents a synchronous success result of RequestStream().
-  struct NET_EXPORT_PRIVATE SucceededStream {
-    SucceededStream(std::unique_ptr<HttpStream> stream,
-                    NextProto negotiated_protocol);
-
-    SucceededStream(SucceededStream&&);
-    SucceededStream& operator=(SucceededStream&&);
-
-    SucceededStream(const SucceededStream&) = delete;
-    SucceededStream& operator=(const SucceededStream&) = delete;
-
-    ~SucceededStream();
-
-    std::unique_ptr<HttpStream> stream;
-    NextProto negotiated_protocol;
-  };
-
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,
                           bool cleanup_on_ip_address_change = true);
 
@@ -76,12 +59,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   ~HttpStreamPool() override;
 
-  using StreamResult =
-      absl::variant<SucceededStream, std::unique_ptr<HttpStreamRequest>>;
-
-  // Requests an HttpStream. Can return an HttpStream synchronously. In that
-  // case, any methods of `delegate` won't be called.
-  StreamResult RequestStream(
+  // Requests an HttpStream.
+  std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
       const HttpStreamKey& stream_key,
       RequestPriority priority,
@@ -170,8 +149,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   }
 
  private:
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
-                          SpdySessionKey spdy_session_key);
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
   // Searches for a group that has the highest priority pending request and
   // hasn't reached reach the `max_stream_socket_per_group()` limit. Returns

@@ -144,15 +144,31 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
   requests_.Insert(std::move(entry), priority);
   MaybeChangeServiceEndpointRequestPriority();
 
-  // Check idle streams first. If found, notify the request that an HttpStream
-  // is ready. Use PostTask() since `delegate` doesn't expect the request
-  // finishes synchronously.
+  // Check if we already have SPDY session. When found, notify the request that
+  // an HttpStream is ready. Use PostTask() since `delegate` doesn't expect the
+  // request finishes synchronously.
+  if (!spdy_session_) {
+    spdy_session_ =
+        http_network_session()->spdy_session_pool()->FindAvailableSession(
+            spdy_session_key(), enable_ip_based_pooling_,
+            /*is_websocket=*/false, net_log);
+  }
+  if (spdy_session_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Job::CreateSpdyStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return request;
+  }
+
+  // Check idle streams. If found, notify the request that an HttpStream is
+  // ready. Use PostTask() since `delegate` doesn't expect the request finishes
+  // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&Job::CreateTextBasedStreamAndNotify,
-                       base::Unretained(this), std::move(stream_socket),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
                        LoadTimingInfo::ConnectTiming()));
     return request;
   }
@@ -411,7 +427,11 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
       group_->Refresh();
-      CreateSpdyStreamAndNotify();
+      // Use PostTask() because we could reach here from RequestStream()
+      // synchronously when the DNS resolution finishes immediately.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&Job::CreateSpdyStreamAndNotify,
+                                    weak_ptr_factory_.GetWeakPtr()));
       return true;
     }
   }
@@ -793,7 +813,6 @@ void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
 
 void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
   CHECK(spdy_session_);
-  CHECK(service_endpoint_request_);
   CHECK(!is_canceling_requests_);
   CHECK(!is_failing_);
 
@@ -805,9 +824,11 @@ void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 
+  std::set<std::string> dns_aliases =
+      http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
+          spdy_session_key());
   auto http_stream = std::make_unique<SpdyHttpStream>(
-      spdy_session_, net_log().source(),
-      service_endpoint_request_->GetDnsAliasResults());
+      spdy_session_, net_log().source(), std::move(dns_aliases));
   NotifyStreamReady(std::move(http_stream), NextProto::kProtoHTTP2);
   // `this` may be deleted.
 }

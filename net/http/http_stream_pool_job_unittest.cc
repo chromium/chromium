@@ -407,19 +407,9 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
-    HttpStreamPool::StreamResult result =
+    request_ =
         pool.RequestStream(this, stream_key, priority_, allowed_bad_certs_,
                            enable_ip_based_pooling_, NetLogWithSource());
-    if (absl::holds_alternative<std::unique_ptr<HttpStreamRequest>>(result)) {
-      request_ =
-          absl::get<std::unique_ptr<HttpStreamRequest>>(std::move(result));
-    } else if (absl::holds_alternative<HttpStreamPool::SucceededStream>(
-                   result)) {
-      auto success =
-          absl::get<HttpStreamPool::SucceededStream>(std::move(result));
-      stream_ = std::move(success.stream);
-      result_ = OK;
-    }
     return request_.get();
   }
 
@@ -1576,7 +1566,8 @@ TEST_F(HttpStreamPoolJobTest, SpdyAvailableSession) {
 
   CreateFakeSpdySession(requester.GetStreamKey());
   requester.RequestStream(pool());
-  EXPECT_THAT(*requester.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolJobTest, SpdyOk) {
@@ -1648,8 +1639,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyCreateSessionFail) {
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
 
-  ASSERT_TRUE(requester.result().has_value());
-  EXPECT_THAT(*requester.result(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_HTTP2_PROTOCOL_ERROR)));
 }
 
 TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
@@ -1664,13 +1654,15 @@ TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
   base::WeakPtr<SpdySession> spdy_session_a =
       CreateFakeSpdySession(requester_a.GetStreamKey());
   requester_a.RequestStream(pool());
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   StreamRequester requester_b;
   requester_b.set_destination("https://b.test");
   CreateFakeSpdySession(requester_b.GetStreamKey());
   requester_b.RequestStream(pool());
-  EXPECT_THAT(*requester_b.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
 
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_FALSE(pool().IsPoolStalled());
@@ -1719,7 +1711,8 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionOk) {
 
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
@@ -1743,7 +1736,8 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionAlreadyHaveSession) {
 
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
@@ -1762,6 +1756,33 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionAlreadyHaveSession) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
+TEST_F(HttpStreamPoolJobTest,
+       SpdyMatchingIpSessionDnsResolutionFinishSynchronously) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  StreamRequester requester_a;
+  requester_a.set_destination("https://www.example.org");
+
+  CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
+  requester_a.RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(*requester_a.result(), IsOk());
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request
+      ->add_endpoint(
+          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .set_start_result(OK);
+
+  StreamRequester requester_b;
+  requester_b.set_destination("https://example.test").RequestStream(pool());
+  ASSERT_FALSE(requester_b.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+}
+
 TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionDisabled) {
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("192.0.2.1", 443);
 
@@ -1770,7 +1791,8 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionDisabled) {
 
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
@@ -1806,7 +1828,8 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionKeyMismatch) {
 
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
@@ -1838,7 +1861,8 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionVerifyDomainFailed) {
 
   CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
   requester_a.RequestStream(pool());
-  EXPECT_THAT(*requester_a.result(), IsOk());
+  RunUntilIdle();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
