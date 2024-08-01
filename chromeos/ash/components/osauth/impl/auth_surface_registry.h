@@ -10,8 +10,6 @@
 
 namespace ash {
 
-class AuthHubConnector;
-
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSurfaceRegistry {
  public:
   enum class AuthSurface {
@@ -24,19 +22,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSurfaceRegistry {
   AuthSurfaceRegistry();
   ~AuthSurfaceRegistry();
 
-  using CallbackList =
-      base::OnceCallbackList<void(AuthHubConnector*, AuthSurface)>;
+  using CallbackList = base::OnceCallbackList<void(AuthSurface)>;
 
-  void NotifyLoginScreenAuthDialogShown(AuthHubConnector* connector);
-  void NotifyLockScreenAuthDialogShown(AuthHubConnector* connector);
-  void NotifyInSessionAuthDialogShown(AuthHubConnector* connector);
+  void NotifyLoginScreenAuthDialogShown();
+  void NotifyLockScreenAuthDialogShown();
+  void NotifyInSessionAuthDialogShown();
 
   base::CallbackListSubscription RegisterShownCallback(
       CallbackList::CallbackType on_shown);
 
  private:
-  base::OnceCallbackList<void(AuthHubConnector*, AuthSurface surface)>
-      callback_list_;
+  CallbackList callback_list_;
 };
 
 }  // namespace ash

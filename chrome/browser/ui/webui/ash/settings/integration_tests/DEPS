@@ -2,4 +2,8 @@ specific_include_rules = {
   '.*interactive_uitest\.cc': [
     '+ash/ash_element_identifiers.h',
   ],
+
+  '.*browsertest\.cc': [
+    '+ash/auth/active_session_auth_controller.h',
+  ],
 }

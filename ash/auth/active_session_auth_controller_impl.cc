@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -116,6 +117,8 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     AuthCompletionCallback on_auth_complete) {
   if (IsShown()) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
+    std::move(on_auth_complete)
+        .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
     return false;
   }
 
@@ -124,6 +127,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
       reason == Reason::kSettings
           ? IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT
           : IDS_ASH_IN_SESSION_AUTH_PASSWORD_MANAGER_PROMPT);
+  CHECK(!on_auth_complete_);
   on_auth_complete_ = std::move(on_auth_complete);
   auth_factor_editor_ =
       std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
@@ -197,6 +201,9 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
   user_context_ = std::move(user_context);
   MoveToTheCenter();
   widget_->Show();
+  ash::AuthParts::Get()
+      ->GetAuthSurfaceRegistry()
+      ->NotifyInSessionAuthDialogShown();
 }
 
 void ActiveSessionAuthControllerImpl::Close() {

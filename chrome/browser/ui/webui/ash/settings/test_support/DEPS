@@ -1,0 +1,6 @@
+specific_include_rules = {
+  '.*browser_test_base\.cc': [
+    '+ash/auth/active_session_auth_controller_impl.h',
+    '+ash/shell.h',
+  ],
+}
