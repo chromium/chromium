@@ -99,8 +99,6 @@ source_set("extensions") {
     "api/cookies/cookies_helpers.h",
     "api/debugger/debugger_api.cc",
     "api/debugger/debugger_api.h",
-    "api/debugger/debugger_api_constants.cc",
-    "api/debugger/debugger_api_constants.h",
     "api/debugger/extension_dev_tools_infobar_delegate.cc",
     "api/debugger/extension_dev_tools_infobar_delegate.h",
     "api/declarative_content/chrome_content_rules_registry.cc",
