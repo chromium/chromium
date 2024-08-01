@@ -13,12 +13,10 @@ import {effect, Signal} from './signal.js';
  * storage value change and write back to local storage on every signal value
  * change.
  */
-export function bindSignal<T extends JsonSerializable>(
-  s: Signal<T>,
-  key: Key,
-  schema: Schema<T>,
-  defaultValue: T,
-): void {
+export function bindSignal<
+  T extends JsonSerializable,
+  I extends JsonSerializable,
+>(s: Signal<T>, key: Key, schema: Schema<T, I>, defaultValue: T): void {
   s.value = localStorage.get(key, schema, defaultValue);
 
   /**
@@ -48,7 +46,7 @@ export function bindSignal<T extends JsonSerializable>(
     // Stops setting localStorage on signal change if the localStorage is
     // changed on the same tick, to prevent infinite recursion.
     if (!storageEventHappened) {
-      localStorage.set(key, s.value);
+      localStorage.set(key, schema, s.value);
     }
   });
 }

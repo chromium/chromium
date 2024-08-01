@@ -56,6 +56,7 @@ interface RecordingSessionConfig {
   includeSystemAudio: boolean;
   micId: string;
   platformHandler: PlatformHandler;
+  speakerIdEnabled: boolean;
 }
 
 let audioCtxGlobal: AudioContext|null = null;
@@ -80,7 +81,7 @@ interface SodaSessionInfo {
 export class RecordingSession {
   private readonly dataChunks: Blob[] = [];
 
-  private readonly sodaEventTransformer = new SodaEventTransformer();
+  private readonly sodaEventTransformer: SodaEventTransformer;
 
   private currentSodaSession: SodaSessionInfo|null = null;
 
@@ -112,7 +113,9 @@ export class RecordingSession {
     private readonly platformHandler: PlatformHandler,
     private readonly audioCtx: AudioContext,
     private readonly sourceStreams: MediaStream[],
+    speakerIdEnabled: boolean,
   ) {
+    this.sodaEventTransformer = new SodaEventTransformer(speakerIdEnabled);
     this.combinedInputNode = audioCtx.createMediaStreamDestination();
     this.audioProcessor = new AudioWorkletNode(audioCtx, 'audio-processor');
     this.mediaRecorder = new MediaRecorder(this.combinedInputNode.stream, {
@@ -293,6 +296,11 @@ export class RecordingSession {
 
     const audioCtx = await getAudioContext();
 
-    return new RecordingSession(config.platformHandler, audioCtx, streams);
+    return new RecordingSession(
+      config.platformHandler,
+      audioCtx,
+      streams,
+      config.speakerIdEnabled,
+    );
   }
 }

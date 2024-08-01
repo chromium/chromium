@@ -9,6 +9,8 @@ import './cra/cra-dialog.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
+import './speaker-id-consent-dialog.js';
+import './transcription-consent-dialog.js';
 
 import {
   Switch as CrosSwitch,
@@ -17,6 +19,7 @@ import {
   createRef,
   css,
   html,
+  live,
   nothing,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
@@ -27,6 +30,7 @@ import {ModelId} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {
   settings,
+  SpeakerIdEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
@@ -37,6 +41,7 @@ import {
 } from '../core/utils/assert.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {SpeakerIdConsentDialog} from './speaker-id-consent-dialog.js';
 import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
 /**
@@ -138,15 +143,15 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  private readonly dialog = createRef<CraDialog>();
+
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
-  private get dialog(): CraDialog|null {
-    return this.shadowRoot?.querySelector('cra-dialog') ?? null;
-  }
+  private readonly speakerIdConsentDialog = createRef<SpeakerIdConsentDialog>();
 
   show(): void {
-    this.dialog?.show();
+    this.dialog.value?.show();
   }
 
   private get summaryEnabled() {
@@ -254,18 +259,48 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
+  private onSpeakerIdToggle() {
+    switch (settings.value.speakerIdEnabled) {
+      case SpeakerIdEnableState.ENABLED:
+        settings.mutate((s) => {
+          s.speakerIdEnabled = SpeakerIdEnableState.DISABLED;
+        });
+        return;
+      case SpeakerIdEnableState.DISABLED:
+        settings.mutate((s) => {
+          s.speakerIdEnabled = SpeakerIdEnableState.ENABLED;
+        });
+        return;
+      case SpeakerIdEnableState.UNKNOWN:
+      case SpeakerIdEnableState.DISABLED_FIRST:
+        this.speakerIdConsentDialog.value?.show();
+        // This force the switch to be re-rendered so it'll catch the "live"
+        // value and set selected back to false.
+        this.requestUpdate();
+        return;
+      default:
+        assertExhaustive(settings.value.speakerIdEnabled);
+    }
+  }
+
   private renderTranscriptionDetailSettings() {
     if (!this.transcriptionEnabled ||
         this.platformHandler.sodaState.value.kind === 'notInstalled') {
       return nothing;
     }
+    const speakerIdEnabled =
+      settings.value.speakerIdEnabled === SpeakerIdEnableState.ENABLED;
     return html`
       <settings-row>
         <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
         <span slot="description">
           ${i18n.settingsOptionsSpeakerIdDescription}
         </span>
-        <cros-switch slot="action"></cros-switch>
+        <cros-switch
+          slot="action"
+          .selected=${live(speakerIdEnabled)}
+          @change=${this.onSpeakerIdToggle}
+        ></cros-switch>
       </settings-row>
       <!-- TODO: b/336963138 - Add transcription language. -->
       ${this.renderSummaryModelSettings()}
@@ -273,16 +308,34 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onCloseClick() {
-    this.dialog?.close();
+    this.dialog.value?.close();
   }
 
-  private onTranscriptionToggle(ev: Event) {
-    const target = assertInstanceof(ev.target, CrosSwitch);
-    settings.mutate((s) => {
-      s.transcriptionEnabled = target.selected ?
-        TranscriptionEnableState.ENABLED :
-        TranscriptionEnableState.DISABLED;
-    });
+  private onTranscriptionToggle() {
+    // TODO(pihsun): This is the same as in toggleTranscriptionEnabled in
+    // record-page.ts, consider how to centralize the logic for all
+    // transcription enable/available state transitions.
+    switch (settings.value.transcriptionEnabled) {
+      case TranscriptionEnableState.ENABLED:
+        settings.mutate((s) => {
+          s.transcriptionEnabled = TranscriptionEnableState.DISABLED;
+        });
+        return;
+      case TranscriptionEnableState.DISABLED:
+        settings.mutate((s) => {
+          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+        });
+        return;
+      case TranscriptionEnableState.UNKNOWN:
+      case TranscriptionEnableState.DISABLED_FIRST:
+        this.transcriptionConsentDialog.value?.show();
+        // This force the switch to be re-rendered so it'll catch the "live"
+        // value and set selected back to false.
+        this.requestUpdate();
+        return;
+      default:
+        assertExhaustive(settings.value.transcriptionEnabled);
+    }
   }
 
   private onInstallSodaClick() {
@@ -331,7 +384,7 @@ export class SettingsMenu extends ReactiveLitElement {
     const transcriptionToggle = html`
       <cros-switch
         slot="action"
-        .selected=${this.transcriptionEnabled}
+        .selected=${live(this.transcriptionEnabled)}
         @change=${this.onTranscriptionToggle}
       >
       </cros-switch>
@@ -396,8 +449,9 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    // TODO: b/354109582 - Implement actual functionality of all settings.
-    return html`<cra-dialog>
+    // TODO: b/354109582 - Implement actual functionality of DnD and keep
+    // screen on.
+    return html`<cra-dialog ${ref(this.dialog)}>
         <div slot="content">
           <div id="header">
             ${i18n.settingsHeader}
@@ -436,7 +490,9 @@ export class SettingsMenu extends ReactiveLitElement {
         </div>
       </cra-dialog>
       <transcription-consent-dialog ${ref(this.transcriptionConsentDialog)}>
-      </transcription-consent-dialog>`;
+      </transcription-consent-dialog>
+      <speaker-id-consent-dialog ${ref(this.speakerIdConsentDialog)}>
+      </speaker-id-consent-dialog>`;
   }
 }
 

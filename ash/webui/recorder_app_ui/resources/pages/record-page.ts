@@ -42,7 +42,11 @@ import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {RecordingCreateParams} from '../core/recording_data_manager.js';
 import {RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
-import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {
+  settings,
+  SpeakerIdEnableState,
+  TranscriptionEnableState,
+} from '../core/state/settings.js';
 import {
   assertExhaustive,
   assertExists,
@@ -346,6 +350,8 @@ export class RecordPage extends ReactiveLitElement {
         micId: assertExists(this.micId),
         includeSystemAudio: this.includeSystemAudio,
         platformHandler: this.platformHandler,
+        speakerIdEnabled:
+          settings.value.speakerIdEnabled === SpeakerIdEnableState.ENABLED,
       });
     } catch (e) {
       if (e instanceof DOMException &&

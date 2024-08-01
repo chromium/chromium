@@ -67,6 +67,7 @@ function parseTimingInfo(
 function flattenEvent(
   ev: FinalResult|PartialResult,
   offsetMs: number,
+  speakerIdEnabled: boolean,
 ): TextPart[] {
   const {hypothesisPart, timingEvent} = ev;
 
@@ -106,9 +107,7 @@ function flattenEvent(
       text: assertExists(part.text[0]),
       timeRange,
       leadingSpace: part.leadingSpace,
-      // TODO: b/344794204 - wire settings for speaker label consent, and filter
-      // this field when there's no consent.
-      speakerLabel: part.speakerLabel,
+      speakerLabel: speakerIdEnabled ? part.speakerLabel : null,
     });
   }
   return result;
@@ -120,6 +119,8 @@ export class SodaEventTransformer {
 
   // The last tokens from the PartialResult in SodaEvent with partial result.
   private partialResultTokens: TextToken[]|null = null;
+
+  constructor(private readonly speakerIdEnabled: boolean) {}
 
   getTranscription(): Transcription {
     const tokens = [...this.tokens];
@@ -142,7 +143,11 @@ export class SodaEventTransformer {
    */
   addEvent(event: SodaEvent, offsetMs: number): void {
     if ('partialResult' in event) {
-      this.partialResultTokens = flattenEvent(event.partialResult, offsetMs);
+      this.partialResultTokens = flattenEvent(
+        event.partialResult,
+        offsetMs,
+        this.speakerIdEnabled,
+      );
       // Don't update tokens since it'll be added in getTokens.
       return;
     }
@@ -153,7 +158,9 @@ export class SodaEventTransformer {
       if (this.tokens.length > 0) {
         this.tokens.push(textSeparator);
       }
-      this.tokens.push(...flattenEvent(finalResult, offsetMs));
+      this.tokens.push(
+        ...flattenEvent(finalResult, offsetMs, this.speakerIdEnabled),
+      );
     } else {
       console.error('unknown event type', event);
     }

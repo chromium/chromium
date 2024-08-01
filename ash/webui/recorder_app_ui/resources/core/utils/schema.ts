@@ -575,6 +575,24 @@ function createTransformSchema<T, I, NewT>(
   });
 }
 
+function createWithDefaultSchema<T, I>(
+  schema: Schema<T, I>,
+  defaultValue: T,
+): Schema<T, I|undefined> {
+  return new Schema({
+    test: schema.test,
+    decode(val, ctx) {
+      if (val === undefined) {
+        return defaultValue;
+      }
+      return schema.decode(val, ctx);
+    },
+    encode(val) {
+      return schema.encode(val);
+    },
+  });
+}
+
 /**
  * A minimal Zod-like interface.
  */
@@ -594,4 +612,5 @@ export const z = {
   'union': createUnionSchema,
   'intersection': createIntersectionSchema,
   'transform': createTransformSchema,
+  'withDefault': createWithDefaultSchema,
 };
