@@ -104,6 +104,10 @@ message AppsData {
   repeated App app = 1;
 }
 
+message KeyboardEntry {
+  optional string text = 1;
+}
+
 message Click {
   optional int32 x_pos = 1;
   optional int32 y_pos = 2;
@@ -114,11 +118,10 @@ message FileAction {
 }
 
 message Action {
-  reserved 4;
-
   optional Setting update_setting = 1;
   optional string launch_app_id = 2;
   optional Click click = 3;
+  optional KeyboardEntry keyboard_entry = 4;
   optional bool all_done = 5;
   optional FileAction file_action = 6;
 }

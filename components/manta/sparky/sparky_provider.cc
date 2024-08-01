@@ -324,6 +324,9 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
       if (action.has_click()) {
         sparky_delegate_->Click(action.click().x_pos(), action.click().y_pos());
       }
+      if (action.has_keyboard_entry()) {
+        sparky_delegate_->KeyboardEntry(action.keyboard_entry().text());
+      }
       if (action.has_file_action() &&
           action.file_action().has_launch_file_path()) {
         sparky_delegate_->LaunchFile(action.file_action().launch_file_path());

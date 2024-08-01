@@ -270,6 +270,10 @@ void SparkyDelegateImpl::Click(int x, int y) {
   }
 }
 
+void SparkyDelegateImpl::KeyboardEntry(std::string text) {
+  // TODO(b/351099209): To be implemented in a follow-up CL
+}
+
 void SparkyDelegateImpl::StartObservingCalculators() {
   total_disk_space_calculator_.AddObserver(this);
   free_disk_space_calculator_.AddObserver(this);

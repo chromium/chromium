@@ -115,6 +115,7 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual void LaunchApp(const std::string& app_id) = 0;
   virtual void ObtainStorageInfo(StorageDataCallback storage_callback) = 0;
   virtual void Click(int x, int y) = 0;
+  virtual void KeyboardEntry(std::string text) = 0;
   virtual void GetMyFiles(FilesDataCallback callback,
                           bool obtain_bytes,
                           std::set<std::string> allowed_file_paths) = 0;

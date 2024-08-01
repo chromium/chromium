@@ -89,6 +89,7 @@ class FakeSparkyDelegate : public SparkyDelegate {
   std::vector<AppsData> GetAppsList() override { return {}; }
   void LaunchApp(const std::string& app_id) override {}
   void Click(int x, int y) override {}
+  void KeyboardEntry(std::string text) override {}
   void GetMyFiles(FilesDataCallback callback,
                   bool obtain_bytes,
                   std::set<std::string> allowed_file_paths) override {}
