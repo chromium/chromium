@@ -242,6 +242,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     /* actual= */ "onBottomControlsHeightChanged",
                     bottomControlsHeight,
                     bottomControlsMinHeight);
+            if (isDispatchingYOffset()) {
+                repositionLayers(
+                        mBrowserControlsSizer.getBottomControlOffset(),
+                        mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                        false);
+            }
         }
     }
 

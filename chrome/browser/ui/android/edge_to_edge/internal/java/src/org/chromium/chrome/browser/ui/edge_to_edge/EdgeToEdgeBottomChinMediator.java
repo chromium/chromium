@@ -12,22 +12,31 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBott
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class EdgeToEdgeBottomChinMediator
         implements LayoutStateProvider.LayoutStateObserver,
                 EdgeToEdgeSupplier.ChangeObserver,
-                NavigationBarColorProvider.Observer {
+                NavigationBarColorProvider.Observer,
+                BottomControlsLayer {
     private static final String TAG = "E2EBottomChin";
 
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
-    private int mEdgeToEdgeBottomInset;
+    private @LayoutType int mCurrentLayoutType;
+    private int mEdgeToEdgeBottomInsetDp;
+    private int mEdgeToEdgeBottomInsetPx;
     private boolean mIsDrawingToEdge;
+    private boolean mIsPagedOptedIntoEdgeToEdge;
 
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
@@ -59,43 +68,65 @@ class EdgeToEdgeBottomChinMediator
         mNavigationBarColorProvider = navigationBarColorProvider;
         mBottomControlsStacker = bottomControlsStacker;
 
-        mModel.set(Y_OFFSET, 0);
-
+        // Add observers.
         mLayoutManager.addObserver(this);
         mEdgeToEdgeController.registerObserver(this);
         mNavigationBarColorProvider.addObserver(this);
+        mBottomControlsStacker.addLayer(this);
+
+        // Initialize model with appropriate values.
+        mModel.set(Y_OFFSET, 0);
+        mModel.set(COLOR, mNavigationBarColorProvider.getNavigationBarColor());
 
         // Call observer methods to trigger initial value.
         onToEdgeChange(
                 mEdgeToEdgeController.getBottomInsetPx(),
                 mEdgeToEdgeController.isDrawingToEdge(),
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+        updateHeightAndVisibility();
     }
 
     void destroy() {
         assert mLayoutManager != null;
         assert mEdgeToEdgeController != null;
         assert mNavigationBarColorProvider != null;
+        assert mBottomControlsStacker != null;
 
         mLayoutManager.removeObserver(this);
         mEdgeToEdgeController.unregisterObserver(this);
         mNavigationBarColorProvider.removeObserver(this);
+        mBottomControlsStacker.removeLayer(this);
     }
 
-    private void updateVisibility() {
-        // TODO(crbug.com/350754745) Check if other bottom browser controls are showing
-        // TODO add check for E2E website opt-in
-        boolean isChinAllowed =
-                isBottomChinAllowed(mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInset);
+    /**
+     * Updates the height and visibility for the bottom chin. If either of these changes, that will
+     * affect how the bottom chin interacts with the bottom controls, so a layer update will be
+     * requested - unifying height and visibility updates in a single method avoids potential
+     * redundant layer update requests.
+     */
+    private void updateHeightAndVisibility() {
+        int newHeight = mEdgeToEdgeBottomInsetPx;
+        boolean newVisibility =
+                mIsDrawingToEdge
+                        && !mIsPagedOptedIntoEdgeToEdge
+                        && isBottomChinAllowed(
+                                mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInsetDp);
 
-        mModel.set(IS_VISIBLE, isChinAllowed && mIsDrawingToEdge);
+        boolean heightChanged = mModel.get(HEIGHT) != newHeight;
+        boolean visibilityChanged = mModel.get(IS_VISIBLE) != newVisibility;
+
+        if (heightChanged) mModel.set(HEIGHT, newHeight);
+        if (visibilityChanged) mModel.set(IS_VISIBLE, newVisibility);
+        if (heightChanged || visibilityChanged) {
+            mBottomControlsStacker.requestLayerUpdate(false);
+        }
     }
 
     // LayoutStateProvider.LayoutStateObserver
 
     @Override
     public void onStartedShowing(int layoutType) {
-        updateVisibility();
+        updateHeightAndVisibility();
     }
 
     // EdgeToEdgeSupplier.ChangeObserver
@@ -103,13 +134,17 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void onToEdgeChange(
             int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
-        if (mEdgeToEdgeBottomInset == bottomInset && mIsDrawingToEdge == isDrawingToEdge) return;
+        if (mEdgeToEdgeBottomInsetDp == bottomInset
+                && mIsDrawingToEdge == isDrawingToEdge
+                && mIsPagedOptedIntoEdgeToEdge == isPageOptInToEdge) {
+            return;
+        }
 
-        mEdgeToEdgeBottomInset = bottomInset;
+        mEdgeToEdgeBottomInsetDp = bottomInset;
+        mEdgeToEdgeBottomInsetPx = mEdgeToEdgeController.getBottomInsetPx();
         mIsDrawingToEdge = isDrawingToEdge;
-
-        mModel.set(HEIGHT, bottomInset);
-        updateVisibility();
+        mIsPagedOptedIntoEdgeToEdge = isPageOptInToEdge;
+        updateHeightAndVisibility();
     }
 
     @Override
@@ -121,5 +156,35 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void onNavigationBarDividerChanged(int dividerColor) {
         mModel.set(DIVIDER_COLOR, dividerColor);
+    }
+
+    // BottomControlsLayer
+
+    @Override
+    public int getType() {
+        return LayerType.BOTTOM_CHIN;
+    }
+
+    @Override
+    public int getScrollBehavior() {
+        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+    }
+
+    @Override
+    public int getHeight() {
+        return mModel.get(HEIGHT);
+    }
+
+    @Override
+    public @LayerVisibility int getLayerVisibility() {
+        return mModel.get(IS_VISIBLE)
+                ? LayerVisibility.VISIBLE
+                : LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE;
+    }
+
+    @Override
+    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+        assert BottomControlsStacker.isDispatchingYOffset();
+        mModel.set(Y_OFFSET, layerYOffset);
     }
 }

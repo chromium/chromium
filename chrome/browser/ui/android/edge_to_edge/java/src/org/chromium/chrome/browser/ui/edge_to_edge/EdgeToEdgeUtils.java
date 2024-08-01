@@ -158,7 +158,9 @@ public class EdgeToEdgeUtils {
      */
     static boolean isBottomChinAllowed(@LayoutType int layoutType, int bottomInset) {
         boolean supportedLayoutType =
-                layoutType == LayoutType.BROWSING || layoutType == LayoutType.TOOLBAR_SWIPE;
+                layoutType == LayoutType.BROWSING
+                        || layoutType == LayoutType.TOOLBAR_SWIPE
+                        || layoutType == LayoutType.SIMPLE_ANIMATION;
 
         // Check that the bottom inset is greater than zero, otherwise there is no space to show the
         // bottom chin. A zero inset indicates a lack of "dismissable" bottom bar (e.g. fullscreen

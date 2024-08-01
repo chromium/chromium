@@ -474,6 +474,38 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(1009, 9);
     }
 
+    @Test
+    public void onBottomControlsHeightChanged_ThreeLayers() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        1000,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer mid =
+                new TestLayer(
+                        MID_LAYER,
+                        100,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        mBottomControlsStacker.onBottomControlsHeightChanged(1110, 0);
+
+        verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
+        assertLayerYOffset(top, -110);
+        assertLayerYOffset(mid, -10);
+        assertLayerYOffset(bottom, 0);
+    }
+
     // Reposition layer test
 
     @Test
