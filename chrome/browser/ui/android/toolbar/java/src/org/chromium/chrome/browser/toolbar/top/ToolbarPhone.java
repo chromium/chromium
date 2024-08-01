@@ -2640,9 +2640,7 @@ public class ToolbarPhone extends ToolbarLayout
                                 || mVisualState == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO)
                         && newVisualState == VisualState.NORMAL;
         boolean hasVisibleNtp = getToolbarDataProvider().getNewTabPageDelegate().wasShowingNtp();
-        if (ChromeFeatureList.sSurfacePolishForToolbarKillSwitch.isEnabled()
-                && isStartLoadingPhaseFromNtpToWebpage
-                && hasVisibleNtp) {
+        if (isStartLoadingPhaseFromNtpToWebpage && hasVisibleNtp) {
             mIsInLoadingPhaseFromNtpToWebpage = true;
         }
     }

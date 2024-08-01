@@ -178,7 +178,6 @@ BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kAccountReauthenticationRecentTimeWindow);
 BASE_DECLARE_FEATURE(kSurfacePolish);
-BASE_DECLARE_FEATURE(kSurfacePolishForToolbarKillSwitch);
 BASE_DECLARE_FEATURE(kTabResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);

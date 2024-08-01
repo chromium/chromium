@@ -313,7 +313,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
     &kSurfacePolish,
-    &kSurfacePolishForToolbarKillSwitch,
     &kUmaBackgroundSessions,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kVerticalAutomotiveBackButtonToolbar,
@@ -1010,10 +1009,6 @@ BASE_FEATURE(kAccountReauthenticationRecentTimeWindow,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSurfacePolish, "SurfacePolish", base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSurfacePolishForToolbarKillSwitch,
-             "SurfacePolishForToolbarKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabResumptionModuleAndroid,
              "TabResumptionModuleAndroid",

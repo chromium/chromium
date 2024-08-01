@@ -7444,12 +7444,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSurfacePolishDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSurfacePolish)},
 
-    {"enable-surface-polish-for-toolbar-kill-switch",
-     flag_descriptions::kSurfacePolishForToolbarKillSwitchName,
-     flag_descriptions::kSurfacePolishForToolbarKillSwitchDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSurfacePolishForToolbarKillSwitch)},
-
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMagicStackAndroid,

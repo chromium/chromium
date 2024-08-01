@@ -2822,9 +2822,6 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kSurfacePolishName[];
 extern const char kSurfacePolishDescription[];
 
-extern const char kSurfacePolishForToolbarKillSwitchName[];
-extern const char kSurfacePolishForToolbarKillSwitchDescription[];
-
 extern const char kTabGroupCreationDialogAndroidName[];
 extern const char kTabGroupCreationDialogAndroidDescription[];
 
