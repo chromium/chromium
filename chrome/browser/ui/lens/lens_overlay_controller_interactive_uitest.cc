@@ -234,7 +234,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         WaitForShow(RenderViewContextMenu::kRegionSearchItem),
         FlushEvents(),  // Required to fully render the menu before selection.
 
-        SelectMenuItem(RenderViewContextMenu::kRegionSearchItem));
+        SelectMenuItem(RenderViewContextMenu::kRegionSearchItem,
+                       InputType::kMouse));
   }
 
   InteractiveTestApi::MultiStep OpenLensOverlayFromImage() {
@@ -266,7 +267,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         WaitForShow(RenderViewContextMenu::kSearchForImageItem),
         FlushEvents(),  // Required to fully render the menu before selection.
 
-        SelectMenuItem(RenderViewContextMenu::kSearchForImageItem));
+        SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
+                       InputType::kMouse));
   }
 
   InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() {
@@ -293,7 +295,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         MoveMouseTo(kActiveTab, kPathToVideo), ClickMouse(ui_controls::RIGHT),
         WaitForShow(RenderViewContextMenu::kSearchForVideoFrameItem),
         FlushEvents(),  // Required to fully render the menu before selection.
-        SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem));
+        SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
+                       InputType::kMouse));
   }
 
  private:
@@ -304,8 +307,11 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
 //  (3) User clicks the "close" button to close lens overlay.
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
 // TODO(b/340343342): Reenable on MSAN.
-#if defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_OpenAndClose DISABLED_OpenAndClose
 #else
 #define MAYBE_OpenAndClose OpenAndClose
@@ -350,8 +356,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_OpenAndClose) {
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
 //  (3) User presses the escape key to close lens overlay.
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
 // TODO(b/340343342): Reenable on windows.
-#if BUILDFLAG(IS_WIN) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
 #define MAYBE_EscapeKeyClose DISABLED_EscapeKeyClose
 #else
 #define MAYBE_EscapeKeyClose EscapeKeyClose
@@ -553,7 +562,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
 //  (2) User opens lens overlay.
 //  (3) User drags to select a manual region on the overlay.
 //  (4) Side panel opens with results.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SelectManualRegion DISABLED_SelectManualRegion
+#else
+#define MAYBE_SelectManualRegion SelectManualRegion
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_SelectManualRegion) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
@@ -610,7 +627,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
 //  (1) User navigates to a website.
 //  (2) User right-clicks an image and opens lens overlay.
 //  (3) Side panel opens with results.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SearchForImage) {
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SearchForImage DISABLED_SearchForImage
+#else
+#define MAYBE_SearchForImage SearchForImage
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_SearchForImage) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
@@ -650,7 +675,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SearchForImage) {
 //  (1) User navigates to a website.
 //  (2) User right-clicks a video and opens "Search with Google Lens".
 //  (3) Side panel opens with results.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SearchForVideoFrame) {
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SearchForVideoFrame DISABLED_SearchForVideoFrame
+#else
+#define MAYBE_SearchForVideoFrame SearchForVideoFrame
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
+                       MAYBE_SearchForVideoFrame) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
@@ -696,7 +730,15 @@ class LensOverlayControllerPromoTest : public LensOverlayControllerCUJTest {
   ~LensOverlayControllerPromoTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, ShowsPromo) {
+// TODO(b/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowsPromo DISABLED_ShowsPromo
+#else
+#define MAYBE_ShowsPromo ShowsPromo
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, MAYBE_ShowsPromo) {
   // Use the same setup and initial sequence as `SelectManualRegion` above in
   // order to trigger the side panel.
 

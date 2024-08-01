@@ -261,9 +261,10 @@ lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
 void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                                    const GURL& src_url,
                                    lens::EntryPoint entry_point,
-                                   bool is_image_translate) {
-  bool use_side_panel = IsSidePanelEnabledForLens(web_contents());
-
+                                   bool is_image_translate,
+                                   bool force_open_in_new_tab) {
+  bool use_side_panel =
+      !force_open_in_new_tab && IsSidePanelEnabledForLens(web_contents());
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
                     lens::features::GetMaxPixelsForImageSearch(),
                     lens::features::GetMaxPixelsForImageSearch(),
@@ -275,7 +276,8 @@ void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
 }
 
 void CoreTabHelper::SearchWithLens(const gfx::Image& image,
-                                   lens::EntryPoint entry_point) {
+                                   lens::EntryPoint entry_point,
+                                   bool force_open_in_new_tab) {
   // Do not show the side panel on searches and modify the entry point if Lens
   // fullscreen search features are enabled.
   bool is_full_screen_request = lens::features::IsLensFullscreenSearchEnabled();
@@ -283,7 +285,8 @@ void CoreTabHelper::SearchWithLens(const gfx::Image& image,
       is_full_screen_request
           ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
           : entry_point;
-  bool use_side_panel = IsSidePanelEnabledForLens(web_contents());
+  bool use_side_panel =
+      !force_open_in_new_tab && IsSidePanelEnabledForLens(web_contents());
   bool is_companion_enabled = IsImageSearchSupportedForCompanion();
 
   auto lens_query_params = lens::GetQueryParametersForLensRequest(
