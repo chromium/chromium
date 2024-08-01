@@ -19,6 +19,11 @@ inline constexpr char kPinnedActions[] = "toolbar.pinned_actions";
 inline constexpr char kPinnedSearchCompanionMigrationComplete[] =
     "toolbar.pinned_search_companion_migration_complete";
 
+// Indicates whether the Chrome Labs pin state pref has been migrated to
+// the new toolbar container.
+inline constexpr char kPinnedChromeLabsMigrationComplete[] =
+    "toolbar.pinned_chrome_labs_migration_complete";
+
 }  // namespace prefs
 
 namespace toolbar {
