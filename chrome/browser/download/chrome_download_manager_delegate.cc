@@ -1234,6 +1234,10 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         return;
       }
 
+      if (download->GetMimeType() == pdf::kPDFMimeType) {
+        download::RecordDuplicatePdfDownloadTriggered(/*open_inline=*/false);
+      }
+
       if (!download_prefs_->PromptForDownload()) {
         DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
             download, suggested_path, web_contents, std::move(callback));

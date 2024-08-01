@@ -394,6 +394,17 @@ chromium-metrics-reviews@google.com.
   <summary>The size of successfully completed downloads.</summary>
 </histogram>
 
+<histogram name="Download.DuplicatePdfDownloadTriggered"
+    enum="BooleanOpenInline" expires_after="2025-01-26">
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records whether a download is a duplicate when user triggers a pdf download.
+    This is logged when the download starts, and is only recorded on Android.
+    The value logs whether the pdf will be opened inline.
+  </summary>
+</histogram>
+
 <histogram name="Download.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->

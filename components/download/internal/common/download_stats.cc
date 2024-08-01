@@ -641,4 +641,11 @@ void RecordInputStreamReadError(MojoResult mojo_result) {
   base::UmaHistogramEnumeration("Download.InputStreamReadError", error);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RecordDuplicatePdfDownloadTriggered(bool open_inline) {
+  base::UmaHistogramBoolean("Download.DuplicatePdfDownloadTriggered",
+                            open_inline);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace download

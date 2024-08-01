@@ -319,6 +319,9 @@ enum class BackgroudTargetDeterminationResultTypes {
   kMaxValue = kPathReservationFailed
 };
 
+COMPONENTS_DOWNLOAD_EXPORT void RecordDuplicatePdfDownloadTriggered(
+    bool open_inline);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace download
