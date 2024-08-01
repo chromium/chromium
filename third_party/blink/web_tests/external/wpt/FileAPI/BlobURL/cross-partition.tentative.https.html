@@ -21,6 +21,7 @@ const js_finished = "revoking blob_url js finished";
 async function fetch_contents_check(blob_url) {
   try {
     const blob = await fetch(blob_url).then(response => response.blob());
+    await blob.text();
   } catch(e) {
     return fetch_unsuccessful_response;
   }
@@ -46,6 +47,20 @@ const can_blob_url_be_revoked_js = (blob_url, response_queue_name) => `
     URL.revokeObjectURL(blob_url_1);
 
     return send("${response_queue_name}", "${js_finished}");
+  }
+  await test();
+`;
+
+const can_blob_url_be_fetched_js = (blob_url, response_queue_name) => `
+  async function test() {
+    try {
+      const blob = await fetch("${blob_url}").then(response => response.blob());
+      await blob.text();
+    } catch(e) {
+      return send("${response_queue_name}", "${fetch_unsuccessful_response}");
+    }
+
+    return send("${response_queue_name}", "${fetch_successful_response}");
   }
   await test();
 `;
@@ -91,8 +106,8 @@ promise_test(t => {
       const blob_url = window.URL.createObjectURL(blob);
 
       // Fetches blob URL to ensure that it's valid.
-      var blob_fetch = fetch_contents_check(blob_url);
-      if (blob_fetch === fetch_successful_response) {
+      const blob_fetch = await fetch_contents_check(blob_url);
+      if (blob_fetch !== fetch_successful_response) {
         reject("Blob URL invalid");
       }
 
@@ -139,29 +154,29 @@ const newWorker = (origin) => {
   return worker_token;
 }
 
+const create_dedicated_worker_js = (origin, response_queue_uuid) => `
+  const importScript = ${importScript};
+  await importScript("/html/cross-origin-embedder-policy/credentialless" +
+                    "/resources/common.js");
+  await importScript("/html/anonymous-iframe/resources/common.js");
+  await importScript("/common/utils.js");
+  const newWorker = ${newWorker};
+  await send("${response_queue_uuid}", newWorker("${origin}"));
+`;
+
 // Tests revoking blob URL from same and cross partition dedicated worker.
 promise_test(t => {
   return new Promise(async (resolve, reject) => {
     try {
       const response_queue_uuid = token();
 
-      const create_worker_js = (origin) => `
-        const importScript = ${importScript};
-        await importScript("/html/cross-origin-embedder-policy/credentialless" +
-                         "/resources/common.js");
-        await importScript("/html/anonymous-iframe/resources/common.js");
-        await importScript("/common/utils.js");
-        const newWorker = ${newWorker};
-        await send("${response_queue_uuid}", newWorker("${origin}"));
-      `;
-
       const [iframe_1_uuid, iframe_2_uuid] =
         await create_test_iframes(t, response_queue_uuid);
 
-      await send(iframe_1_uuid, create_worker_js(same_site_origin));
+      await send(iframe_1_uuid, create_dedicated_worker_js(same_site_origin, response_queue_uuid));
       const worker_1_uuid = await receive(response_queue_uuid);
 
-      await send(iframe_2_uuid, create_worker_js(same_site_origin));
+      await send(iframe_2_uuid, create_dedicated_worker_js(same_site_origin, response_queue_uuid));
       const worker_2_uuid = await receive(response_queue_uuid);
 
       const blob = new Blob(["blob data"], {type : "text/plain"});
@@ -202,31 +217,31 @@ const newSharedWorker = (origin) => {
   return worker_token;
 }
 
+const create_shared_worker_js = (origin, response_queue_uuid) => `
+  const importScript = ${importScript};
+  await importScript("/html/cross-origin-embedder-policy/credentialless" +
+                    "/resources/common.js");
+  await importScript("/html/anonymous-iframe/resources/common.js");
+  await importScript("/common/utils.js");
+  const newSharedWorker = ${newSharedWorker};
+  await send("${response_queue_uuid}", newSharedWorker("${origin}"));
+`;
+
 // Tests revoking blob URL from same and cross partition shared worker.
 promise_test(t => {
   return new Promise(async (resolve, reject) => {
     try {
       const response_queue_uuid = token();
 
-      const create_worker_js = (origin) => `
-        const importScript = ${importScript};
-        await importScript("/html/cross-origin-embedder-policy/credentialless" +
-                         "/resources/common.js");
-        await importScript("/html/anonymous-iframe/resources/common.js");
-        await importScript("/common/utils.js");
-        const newSharedWorker = ${newSharedWorker};
-        await send("${response_queue_uuid}", newSharedWorker("${origin}"));
-      `;
-
       const [iframe_1_uuid, iframe_2_uuid] =
         await create_test_iframes(t, response_queue_uuid);
 
       // Create a shared worker in the cross-top-level-site iframe.
-      await send(iframe_1_uuid, create_worker_js(same_site_origin));
+      await send(iframe_1_uuid, create_shared_worker_js(same_site_origin, response_queue_uuid));
       const worker_1_uuid = await receive(response_queue_uuid);
 
       // Create a shared worker in the same-top-level-site iframe.
-      await send(iframe_2_uuid, create_worker_js(same_site_origin));
+      await send(iframe_2_uuid, create_shared_worker_js(same_site_origin, response_queue_uuid));
       const worker_2_uuid = await receive(response_queue_uuid);
 
       const blob = new Blob(["blob data"], {type : "text/plain"});
@@ -272,27 +287,27 @@ const newServiceWorker = async (origin) => {
   return worker_token;
 }
 
+const create_service_worker_js = (origin, response_queue_uuid) => `
+  const importScript = ${importScript};
+  await importScript("/html/cross-origin-embedder-policy/credentialless" +
+                    "/resources/common.js");
+  await importScript("/html/anonymous-iframe/resources/common.js");
+  await importScript("/common/utils.js");
+  const newServiceWorker = ${newServiceWorker};
+  await send("${response_queue_uuid}", await newServiceWorker("${origin}"));
+`;
+
 // Tests revoking blob URL from a service worker.
 promise_test(t => {
   return new Promise(async (resolve, reject) => {
     try {
       const response_queue_uuid = token();
 
-      const create_worker_js = (origin) => `
-        const importScript = ${importScript};
-        await importScript("/html/cross-origin-embedder-policy/credentialless" +
-                         "/resources/common.js");
-        await importScript("/html/anonymous-iframe/resources/common.js");
-        await importScript("/common/utils.js");
-        const newServiceWorker = ${newServiceWorker};
-        await send("${response_queue_uuid}", await newServiceWorker("${origin}"));
-      `;
-
       const [iframe_1_uuid, iframe_2_uuid] =
         await create_test_iframes(t, response_queue_uuid);
 
       // Create a service worker in either iframe.
-      await send(iframe_1_uuid, create_worker_js(same_site_origin));
+      await send(iframe_1_uuid, create_service_worker_js(same_site_origin, response_queue_uuid));
       var worker_1_uuid = await receive(response_queue_uuid);
       t.add_cleanup(() =>
         send(worker_1_uuid, "self.registration.unregister();"));
@@ -313,5 +328,178 @@ promise_test(t => {
     }
   });
 }, "Blob URL shouldn't be revocable from a service worker");
+
+// Tests fetching blob URL for same and cross partition iframes.
+promise_test(t => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Creates blob URL.
+      const blob = new Blob(["blob data"], {type : "text/plain"});
+      const blob_url = window.URL.createObjectURL(blob);
+      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
+
+      // Fetches blob URL to ensure that it's valid.
+      const blob_fetch = await fetch_contents_check(blob_url);
+      if (blob_fetch !== fetch_successful_response) {
+        reject("Blob URL invalid");
+      }
+
+      // Creates same and cross partition iframes.
+      const response_queue_uuid = token();
+
+      const [iframe_1_uuid, iframe_2_uuid] =
+        await create_test_iframes(t, response_queue_uuid);
+
+      // Attempt to fetch blob URL in cross partition iframe.
+      await send(iframe_1_uuid, can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      var response_1 = await receive(response_queue_uuid);
+      if (response_1 !== fetch_unsuccessful_response) {
+        reject(`Blob URL was fetched in not-same-top-level-site iframe: ${response_1}`);
+      }
+
+      // Attempt to fetch blob URL in same partition iframe.
+      await send(iframe_2_uuid, can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      var response_2 = await receive(response_queue_uuid);
+      if (response_2 !== fetch_successful_response) {
+        reject(`Blob URL wasn't fetched in same-top-level-site iframe: ${response_2}`);
+      }
+
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}, "Blob URL shouldn't be fetched from a cross-partition iframe");
+
+// Tests fetching blob URL from same and cross partition dedicated worker.
+promise_test(t => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response_queue_uuid = token();
+
+      // Creates same and cross partition iframes.
+      const [iframe_1_uuid, iframe_2_uuid] =
+        await create_test_iframes(t, response_queue_uuid);
+
+      // Creates a dedicated worker in the cross-top-level-site iframe.
+      await send(iframe_1_uuid, create_dedicated_worker_js(same_site_origin, response_queue_uuid));
+      const worker_1_uuid = await receive(response_queue_uuid);
+
+      // Creates a dedicated worker in the same-top-level-site iframe.
+      await send(iframe_2_uuid, create_dedicated_worker_js(same_site_origin, response_queue_uuid));
+      const worker_2_uuid = await receive(response_queue_uuid);
+
+      const blob = new Blob(["blob data"], {type : "text/plain"});
+      const blob_url = window.URL.createObjectURL(blob);
+      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
+
+      // Attempts to fetch in the cross-top-level-site dedicated worker.
+      await send(worker_1_uuid, can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      var response_1 = await receive(response_queue_uuid);
+      if (response_1 !== fetch_unsuccessful_response) {
+        reject(`Blob URL was fetched in not-same-top-level-site dedicated worker: ${response_1}`);
+      }
+
+      // Attempts to fetch in the same-top-level-site dedicated worker.
+      await send(worker_2_uuid, can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      var response_2 = await receive(response_queue_uuid);
+      if (response_2 !== fetch_successful_response) {
+        reject(`Blob URL wasn't fetched in same-top-level-site dedicated worker: ${response_2}`);
+      }
+
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}, "Blob URL shouldn't be fetched from a cross-partition dedicated worker");
+
+// Tests fetching blob URL from same and cross partition shared worker.
+promise_test(t => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response_queue_uuid = token();
+
+      const [iframe_1_uuid, iframe_2_uuid] =
+        await create_test_iframes(t, response_queue_uuid);
+
+      // Create a shared worker in the cross-top-level-site iframe.
+      await send(iframe_1_uuid, create_shared_worker_js(same_site_origin, response_queue_uuid));
+      const worker_1_uuid = await receive(response_queue_uuid);
+
+      // Create a shared worker in the same-top-level-site iframe.
+      await send(iframe_2_uuid, create_shared_worker_js(same_site_origin, response_queue_uuid));
+      const worker_2_uuid = await receive(response_queue_uuid);
+
+      const blob = new Blob(["blob data"], {type : "text/plain"});
+      const blob_url = window.URL.createObjectURL(blob);
+      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
+
+      // Attempts to fetch in the cross-top-level-site shared worker.
+      await send(worker_1_uuid, can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      var response_1 = await receive(response_queue_uuid);
+      if (response_1 !== fetch_unsuccessful_response) {
+        reject(`Blob URL was fetched in not-same-top-level-site shared worker: ${response_1}`);
+      }
+
+      // Attempts to fetch in the same-top-level-site shared worker.
+      await send(worker_2_uuid, can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      var response_2 = await receive(response_queue_uuid);
+      if (response_2 !== fetch_successful_response) {
+        reject(`Blob URL wasn't fetched in same-top-level-site shared worker: ${response_2}`);
+      }
+
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}, "Blob URL shouldn't be fetched from a cross-partition shared worker");
+
+// Tests fetching blob URL from a cross partition service worker.
+promise_test(t => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response_queue_uuid = token();
+
+      const [iframe_1_uuid, iframe_2_uuid] =
+        await create_test_iframes(t, response_queue_uuid);
+
+      const blob = new Blob(["blob data"], {type : "text/plain"});
+      const blob_url = window.URL.createObjectURL(blob);
+      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
+
+      // Create a service worker in cross-top-level-site iframe.
+      await send(iframe_1_uuid, create_service_worker_js(same_site_origin, response_queue_uuid));
+      var worker_1_uuid = await receive(response_queue_uuid);
+      t.add_cleanup(() =>
+        send(worker_1_uuid, "self.registration.unregister();"));
+
+      await send(worker_1_uuid,
+           can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      const response_1 = await receive(response_queue_uuid);
+      if (response_1 !== fetch_unsuccessful_response) {
+        reject(`Blob URL was fetched in not-same-top-level-site service worker: ${response_1}`);
+      }
+
+      // Create a service worker in same-top-level-site iframe.
+      await send(iframe_2_uuid, create_service_worker_js(same_site_origin, response_queue_uuid));
+      var worker_2_uuid = await receive(response_queue_uuid);
+      t.add_cleanup(() =>
+        send(worker_2_uuid, "self.registration.unregister();"));
+
+      await send(worker_2_uuid,
+           can_blob_url_be_fetched_js(blob_url, response_queue_uuid));
+      const response_2 = await receive(response_queue_uuid);
+      if (response_2 !== fetch_successful_response) {
+        reject(`Blob URL wasn't fetched in same-top-level-site service worker: ${response_2}`);
+      }
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}, "Blob URL shouldn't be fetched from a cross-partition service worker");
+
 </script>
 </body>
