@@ -21,9 +21,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -196,9 +194,6 @@ public class BrowsingDataTest {
     /** Test that both local and account passwords are deleted. */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_NO_MIGRATION
-    })
     @Restriction({GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15})
     public void testLocalAndAccountPasswordsDeleted() throws Exception {
         // Set up a syncing user with one password in each store.
