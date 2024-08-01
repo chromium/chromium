@@ -30,8 +30,7 @@ class BocaAppHandler : public boca::mojom::PageHandler {
 
   // boca::mojom::PageHandler:
   void GetWindowsTabsList(GetWindowsTabsListCallback callback) override;
-  void ListCourses(const std::string& teacher_id,
-                   ListCoursesCallback callback) override;
+  void ListCourses(ListCoursesCallback callback) override;
   void ListStudents(const std::string& course_id,
                     ListStudentsCallback callback) override;
 
