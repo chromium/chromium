@@ -460,6 +460,9 @@ function validateSingleInputOperation(operationName) {
     const supportedDataTypes =
         context.opSupportLimits()[operationName].input.dataTypes;
     for (let dataType of supportedDataTypes) {
+      if (!context.opSupportLimits().input.dataTypes.includes(dataType)) {
+        continue;
+      }
       for (let dimensions of allWebNNDimensionsArray) {
         const input = builder.input(`input`, {dataType, dimensions});
         const output = builder[operationName](input);

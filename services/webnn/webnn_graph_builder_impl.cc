@@ -822,43 +822,73 @@ bool ValidateElu(const ContextProperties& context_properties,
   return true;
 }
 
-static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
-    mojom::ElementWiseUnary::Kind,
-    webnn::SupportedDataTypes>({
-    {mojom::ElementWiseUnary::Kind::kAbs,
-     DataTypeConstraint::kFloat16To32Int8To32},
-    {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kNeg,
-     DataTypeConstraint::kFloat16To32Int8To32},
-    {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kLogicalNot, DataTypeConstraint::kUint8},
-    {mojom::ElementWiseUnary::Kind::kIdentity, SupportedDataTypes::All()},
-    {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kReciprocal,
-     DataTypeConstraint::kFloat16To32},
-});
-
-bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
+bool ValidateElementWiseUnary(const ContextProperties& context_properties,
+                              const IdToOperandMap& id_to_operand_map,
                               const mojom::ElementWiseUnary& operation,
                               base::flat_set<uint64_t>& processed_operands) {
-  // List the validation of cast operator separately because its output data
-  // type is different from the input data type.
-  if (operation.kind == mojom::ElementWiseUnary::Kind::kCast) {
-    return ValidateCastOperation(id_to_operand_map, operation,
-                                 processed_operands);
+  switch (operation.kind) {
+    case mojom::ElementWiseUnary::Kind::kAbs:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.abs_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kCast:
+      return ValidateCastOperation(id_to_operand_map, operation,
+                                   processed_operands);
+    case mojom::ElementWiseUnary::Kind::kCeil:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.ceil_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kCos:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.cos_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kErf:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.erf_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kExp:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.exp_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kFloor:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.floor_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kIdentity:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.identity_input,
+          processed_operands);
+    case mojom::ElementWiseUnary::Kind::kLog:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.log_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kLogicalNot:
+      return ValidateUnaryOperation(id_to_operand_map, operation,
+                                    DataTypeConstraint::kUint8,
+                                    processed_operands);
+    case mojom::ElementWiseUnary::Kind::kNeg:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.neg_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kReciprocal:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.reciprocal_input,
+          processed_operands);
+    case mojom::ElementWiseUnary::Kind::kSin:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.sin_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kSqrt:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.sqrt_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kTan:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.tan_input, processed_operands);
   }
-  const auto constraints_iterator =
-      kUnaryOperatorConstraints.find(operation.kind);
-  CHECK(constraints_iterator != kUnaryOperatorConstraints.end());
-  return ValidateUnaryOperation(id_to_operand_map, operation,
-                                constraints_iterator->second,
-                                processed_operands);
 }
 
 bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
@@ -1869,7 +1899,7 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateElu(context_properties, id_to_operand_map,
                          *operation.get_elu(), processed_operands);
     case mojom::Operation::Tag::kElementWiseUnary:
-      return ValidateElementWiseUnary(id_to_operand_map,
+      return ValidateElementWiseUnary(context_properties, id_to_operand_map,
                                       *operation.get_element_wise_unary(),
                                       processed_operands);
     case mojom::Operation::Tag::kExpand:

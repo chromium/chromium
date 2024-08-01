@@ -60,6 +60,22 @@ dictionary MLOpSupportLimits {
   MLArgMinMaxSupportLimits argMin;
   MLArgMinMaxSupportLimits argMax;
   MLConcatSupportLimits concat;
+
+  // Element-wise unary ops.
+  MLSingleInputSupportLimits abs;
+  MLSingleInputSupportLimits ceil;
+  MLSingleInputSupportLimits cos;
+  MLSingleInputSupportLimits erf;
+  MLSingleInputSupportLimits exp;
+  MLSingleInputSupportLimits floor;
+  MLSingleInputSupportLimits identity;
+  MLSingleInputSupportLimits log;
+  MLSingleInputSupportLimits neg;
+  MLSingleInputSupportLimits reciprocal;
+  MLSingleInputSupportLimits sin;
+  MLSingleInputSupportLimits sqrt;
+  MLSingleInputSupportLimits tan;
+
   MLSingleInputSupportLimits elu;
   MLGatherSupportLimits gather;
   MLSingleInputSupportLimits gelu;

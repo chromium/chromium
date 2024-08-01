@@ -197,6 +197,86 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
 
+  // Element-wise unary ops.
+  MLSingleInputSupportLimits* abs = MLSingleInputSupportLimits::Create();
+  abs->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.abs_input));
+  abs->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.abs_input));
+  op_support_limits->setAbs(abs);
+  MLSingleInputSupportLimits* ceil = MLSingleInputSupportLimits::Create();
+  ceil->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.ceil_input));
+  ceil->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.ceil_input));
+  op_support_limits->setCeil(ceil);
+  MLSingleInputSupportLimits* cos = MLSingleInputSupportLimits::Create();
+  cos->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.cos_input));
+  cos->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.cos_input));
+  op_support_limits->setCos(cos);
+  MLSingleInputSupportLimits* erf = MLSingleInputSupportLimits::Create();
+  erf->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.erf_input));
+  erf->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.erf_input));
+  op_support_limits->setErf(erf);
+  MLSingleInputSupportLimits* exp = MLSingleInputSupportLimits::Create();
+  exp->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.exp_input));
+  exp->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.exp_input));
+  op_support_limits->setExp(exp);
+  MLSingleInputSupportLimits* floor = MLSingleInputSupportLimits::Create();
+  floor->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.floor_input));
+  floor->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.floor_input));
+  op_support_limits->setFloor(floor);
+  MLSingleInputSupportLimits* identity = MLSingleInputSupportLimits::Create();
+  identity->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.identity_input));
+  identity->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.identity_input));
+  op_support_limits->setIdentity(identity);
+  MLSingleInputSupportLimits* log = MLSingleInputSupportLimits::Create();
+  log->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.log_input));
+  log->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.log_input));
+  op_support_limits->setLog(log);
+  MLSingleInputSupportLimits* neg = MLSingleInputSupportLimits::Create();
+  neg->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.neg_input));
+  neg->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.neg_input));
+  op_support_limits->setNeg(neg);
+  MLSingleInputSupportLimits* reciprocal = MLSingleInputSupportLimits::Create();
+  reciprocal->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.reciprocal_input));
+  reciprocal->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.reciprocal_input));
+  op_support_limits->setReciprocal(reciprocal);
+  MLSingleInputSupportLimits* sin = MLSingleInputSupportLimits::Create();
+  sin->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.sin_input));
+  sin->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.sin_input));
+  op_support_limits->setSin(sin);
+  MLSingleInputSupportLimits* sqrt = MLSingleInputSupportLimits::Create();
+  sqrt->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.sqrt_input));
+  sqrt->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.sqrt_input));
+  op_support_limits->setSqrt(sqrt);
+  MLSingleInputSupportLimits* tan = MLSingleInputSupportLimits::Create();
+  tan->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.tan_input));
+  tan->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.tan_input));
+  op_support_limits->setTan(tan);
+
   MLSingleInputSupportLimits* elu = MLSingleInputSupportLimits::Create();
   elu->setInput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.elu_input));

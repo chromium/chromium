@@ -75,12 +75,34 @@ struct SupportedDataTypes {
 struct DataTypeLimits {
   SupportedDataTypes input;
   SupportedDataTypes constant;
+
+  // ArgMin/Max.
   SupportedDataTypes arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
+
   SupportedDataTypes concat_inputs;
+
+  // Element-wise unary ops.
+  SupportedDataTypes abs_input;
+  SupportedDataTypes ceil_input;
+  SupportedDataTypes cos_input;
+  SupportedDataTypes erf_input;
+  SupportedDataTypes exp_input;
+  SupportedDataTypes floor_input;
+  SupportedDataTypes identity_input;
+  SupportedDataTypes log_input;
+  SupportedDataTypes neg_input;
+  SupportedDataTypes reciprocal_input;
+  SupportedDataTypes sin_input;
+  SupportedDataTypes sqrt_input;
+  SupportedDataTypes tan_input;
+
   SupportedDataTypes elu_input;
+
+  // Gather.
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;
+
   SupportedDataTypes gelu_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes relu_input;
@@ -90,6 +112,8 @@ struct DataTypeLimits {
   SupportedDataTypes softplus_input;
   SupportedDataTypes softsign_input;
   SupportedDataTypes split_input;
+
+  // Where.
   SupportedDataTypes where_condition;
   SupportedDataTypes where_value;
 };

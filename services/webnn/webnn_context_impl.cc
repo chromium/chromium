@@ -144,6 +144,31 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
+  backend_context_properties.data_type_limits.abs_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.ceil_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.cos_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.erf_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.exp_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.floor_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.log_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.neg_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.reciprocal_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sin_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sqrt_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.tan_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+
   backend_context_properties.data_type_limits.elu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(

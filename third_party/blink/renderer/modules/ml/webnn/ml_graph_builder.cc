@@ -616,15 +616,12 @@ MLOperand* BuildElementWiseUnaryOperator(
     const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* input,
     const MLOperatorOptions* options) {
-  // The output tensor of unary operator has the same data type and dimensions
-  // as its input tensor.
   const std::string label = options->label().Utf8();
   if (!data_type_constraint.Has(input->DataType())) {
     exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String::Format(
-            "The input data type must be one of the %s types.",
-            webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        String(NotSupportedInputArgumentTypeError(input->DataType(),
+                                                  data_type_constraint)));
     return nullptr;
   }
 
@@ -1179,44 +1176,43 @@ BUILD_ELEMENTWISE_BINARY_OP(greaterOrEqual, kGreaterOrEqual)
 BUILD_ELEMENTWISE_BINARY_OP(lesser, kLesser)
 BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, kLesserOrEqual)
 
-#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind, data_type_constraint) \
-  MLOperand* MLGraphBuilder::op(const MLOperand* input,               \
-                                const MLOperatorOptions* options,     \
-                                ExceptionState& exception_state) {    \
-    THROW_AND_RETURN_IF_BUILT(nullptr);                               \
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);    \
-    return BuildElementWiseUnaryOperator(                             \
-        this, exception_state,                                        \
-        webnn::mojom::blink::ElementWiseUnary::Kind::op_kind,         \
-        data_type_constraint, input, options);                        \
+#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                          \
+  MLOperand* MLGraphBuilder::op(const MLOperand* input,                  \
+                                const MLOperatorOptions* options,        \
+                                ExceptionState& exception_state) {       \
+    THROW_AND_RETURN_IF_BUILT(nullptr);                                  \
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);       \
+    return BuildElementWiseUnaryOperator(                                \
+        this, exception_state,                                           \
+        webnn::mojom::blink::ElementWiseUnary::Kind::op_kind,            \
+        ml_context_->GetProperties().data_type_limits.op##_input, input, \
+        options);                                                        \
   }
 
-BUILD_ELEMENTWISE_UNARY_OP(abs,
-                           kAbs,
-                           webnn::DataTypeConstraint::kFloat16To32Int8To32)
-BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(cos, kCos, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(exp, kExp, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(floor,
-                           kFloor,
-                           webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(log, kLog, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(neg,
-                           kNeg,
-                           webnn::DataTypeConstraint::kFloat16To32Int8To32)
-BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(identity,
-                           kIdentity,
-                           webnn::SupportedDataTypes::All())
-BUILD_ELEMENTWISE_UNARY_OP(logicalNot,
-                           kLogicalNot,
-                           webnn::DataTypeConstraint::kUint8)
-BUILD_ELEMENTWISE_UNARY_OP(reciprocal,
-                           kReciprocal,
-                           webnn::DataTypeConstraint::kFloat16To32)
-BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt, webnn::DataTypeConstraint::kFloat16To32)
+BUILD_ELEMENTWISE_UNARY_OP(abs, kAbs)
+BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil)
+BUILD_ELEMENTWISE_UNARY_OP(cos, kCos)
+BUILD_ELEMENTWISE_UNARY_OP(exp, kExp)
+BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor)
+BUILD_ELEMENTWISE_UNARY_OP(log, kLog)
+BUILD_ELEMENTWISE_UNARY_OP(neg, kNeg)
+BUILD_ELEMENTWISE_UNARY_OP(sin, kSin)
+BUILD_ELEMENTWISE_UNARY_OP(tan, kTan)
+BUILD_ELEMENTWISE_UNARY_OP(erf, kErf)
+BUILD_ELEMENTWISE_UNARY_OP(identity, kIdentity)
+BUILD_ELEMENTWISE_UNARY_OP(reciprocal, kReciprocal)
+BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt)
+
+MLOperand* MLGraphBuilder::logicalNot(const MLOperand* input,
+                                      const MLOperatorOptions* options,
+                                      ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_BUILT(nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+  return BuildElementWiseUnaryOperator(
+      this, exception_state,
+      webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot,
+      webnn::DataTypeConstraint::kUint8, input, options);
+}
 
 MLOperand* MLGraphBuilder::cast(const MLOperand* input,
                                 const V8MLOperandDataType output_data_type,

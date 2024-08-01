@@ -91,11 +91,14 @@ class GraphImplTflite::GraphResources
     : public base::RefCountedThreadSafe<GraphResources> {
  public:
   static base::expected<scoped_refptr<GraphResources>, mojom::ErrorPtr> Create(
+      ContextProperties context_properties,
       const mojom::GraphInfo& graph_info) {
     auto self = base::MakeRefCounted<GraphResources>();
 
     ASSIGN_OR_RETURN(
-        self->model_content_, GraphBuilderTflite::CreateAndBuild(graph_info),
+        self->model_content_,
+        GraphBuilderTflite::CreateAndBuild(std::move(context_properties),
+                                           graph_info),
         [](std::string error) {
           return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                                    std::move(error));
@@ -361,7 +364,7 @@ GraphImplTflite::CreateAndBuild(mojom::GraphInfoPtr graph_info,
                                 ComputeResourceInfo compute_resource_info,
                                 ContextImplTflite* context) {
   ASSIGN_OR_RETURN(scoped_refptr<GraphResources> graph_resources,
-                   GraphResources::Create(*graph_info));
+                   GraphResources::Create(context->properties(), *graph_info));
 
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
                    ComputeResources::Create(graph_resources, context));

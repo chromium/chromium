@@ -251,8 +251,9 @@ std::vector<uint32_t> GetIndexOfSortedValue(base::span<const uint32_t> axes) {
 
 // static
 base::expected<flatbuffers::DetachedBuffer, std::string>
-GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
-  GraphBuilderTflite builder(graph_info);
+GraphBuilderTflite::CreateAndBuild(ContextProperties context_properties,
+                                   const mojom::GraphInfo& graph_info) {
+  GraphBuilderTflite builder(std::move(context_properties), graph_info);
 
   for (const auto& [operand_id, operand] : graph_info.id_to_operand_map) {
     RETURN_IF_ERROR(builder.SerializeOperand(operand_id, *operand));
@@ -270,6 +271,11 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   static constexpr SupportedDataTypes kFloat32{OperandDataType::kFloat32};
+  static constexpr SupportedDataTypes kAbsSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kInt32};
+  static constexpr SupportedDataTypes kNegSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kInt32,
+      OperandDataType::kInt64};
   static constexpr SupportedDataTypes kEluSupportedDataTypes{
       OperandDataType::kFloat32, OperandDataType::kInt8};
   static constexpr SupportedDataTypes kSliceSupportedDataTypes{
@@ -286,6 +292,21 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*arg_min_max_input=*/SupportedDataTypes::All(),
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        /*concat_inputs=*/SupportedDataTypes::All(),
+       /*abs_input=*/kAbsSupportedDataTypes,
+       /*ceil_input=*/kFloat32,
+       /*cos_input=*/kFloat32,
+       // Erf is not implemented.
+       /*erf_input=*/{},
+       /*exp_input=*/kFloat32,
+       /*floor_input=*/kFloat32,
+       // Identity is emulated by reshape.
+       /*identity_input=*/SupportedDataTypes::All(),
+       /*log_input=*/kFloat32,
+       /*neg_input=*/kNegSupportedDataTypes,
+       /*reciprocal_input=*/kFloat32,
+       /*sin_input=*/kFloat32,
+       /*sqrt_input=*/kFloat32,
+       /*tan_input=*/kFloat32,
        /*elu_input=*/kEluSupportedDataTypes,
        /*gather_input=*/SupportedDataTypes::All(),
        /*gather_indices=*/SupportedDataTypes::All(),
@@ -302,8 +323,10 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*where_value=*/SupportedDataTypes::All()});
 }
 
-GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)
-    : graph_info_(graph_info) {
+GraphBuilderTflite::GraphBuilderTflite(ContextProperties context_properties,
+                                       const mojom::GraphInfo& graph_info)
+    : context_properties_(std::move(context_properties)),
+      graph_info_(graph_info) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
@@ -1336,47 +1359,13 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
   const OperandDataType input_data_type =
       GetOperand(op.input_operand_id).descriptor.data_type();
   switch (op.kind) {
-    case mojom::ElementWiseUnary::Kind::kAbs:
-      CHECK(kFloatDataTypes.contains(input_data_type) ||
-            input_data_type == OperandDataType::kInt32 ||
-            input_data_type == OperandDataType::kInt8);
+    case mojom::ElementWiseUnary::Kind::kAbs: {
+      CHECK(
+          context_properties_.data_type_limits.abs_input.Has(input_data_type));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_ABS,
                                      input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kCeil:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_CEIL,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kCos:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_COS,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kExp:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_EXP,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kFloor:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_FLOOR,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kLog:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_LOG,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kNeg:
-      CHECK(kFloatDataTypes.contains(input_data_type) ||
-            input_data_type == OperandDataType::kInt32 ||
-            input_data_type == OperandDataType::kInt8);
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kSin:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_SIN,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kSqrt:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
-                                     input_tensor_index, output_tensor_index);
-    case mojom::ElementWiseUnary::Kind::kCast:
+    }
+    case mojom::ElementWiseUnary::Kind::kCast: {
       return SerializeCastOperation(
           input_tensor_index,
           OperandDataTypeToTFLite(
@@ -1384,25 +1373,84 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
           output_tensor_index,
           OperandDataTypeToTFLite(
               GetOperand(op.output_operand_id).descriptor.data_type()));
-    case mojom::ElementWiseUnary::Kind::kLogicalNot:
-      CHECK_EQ(input_data_type, OperandDataType::kUint8);
-      return SerializeLogicalNot(op);
-    case mojom::ElementWiseUnary::Kind::kIdentity:
+    }
+    case mojom::ElementWiseUnary::Kind::kCeil: {
+      CHECK(
+          context_properties_.data_type_limits.ceil_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_CEIL,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kCos: {
+      CHECK(
+          context_properties_.data_type_limits.cos_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_COS,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kExp: {
+      CHECK(
+          context_properties_.data_type_limits.exp_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_EXP,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kFloor: {
+      CHECK(context_properties_.data_type_limits.floor_input.Has(
+          input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_FLOOR,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      CHECK(context_properties_.data_type_limits.identity_input.Has(
+          input_data_type));
       // Implement WebNN identity operation with TFLite reshape operator, the
       // output shape is the same as input.
       // TODO(crbug.com/336399247): Skip identity implementation with
       // redirecting output tensor to input.
       return SerializeReshape(op.input_operand_id, op.output_operand_id);
-    case mojom::ElementWiseUnary::Kind::kTan:
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return SerializeTan(op);
-    case mojom::ElementWiseUnary::Kind::kReciprocal:
-      CHECK(kFloatDataTypes.contains(input_data_type));
+    }
+    case mojom::ElementWiseUnary::Kind::kLog: {
+      CHECK(
+          context_properties_.data_type_limits.log_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_LOG,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      CHECK_EQ(input_data_type, OperandDataType::kUint8);
+      return SerializeLogicalNot(op);
+    }
+    case mojom::ElementWiseUnary::Kind::kNeg: {
+      CHECK(
+          context_properties_.data_type_limits.neg_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      CHECK(context_properties_.data_type_limits.reciprocal_input.Has(
+          input_data_type));
       return SerializeReciprocal(op);
-    case mojom::ElementWiseUnary::Kind::kErf:
-      CHECK(kFloatDataTypes.contains(input_data_type));
+    }
+    case mojom::ElementWiseUnary::Kind::kSin: {
+      CHECK(
+          context_properties_.data_type_limits.sin_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_SIN,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kSqrt: {
+      CHECK(
+          context_properties_.data_type_limits.sqrt_input.Has(input_data_type));
+      return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
+                                     input_tensor_index, output_tensor_index);
+    }
+    case mojom::ElementWiseUnary::Kind::kTan: {
+      CHECK(
+          context_properties_.data_type_limits.tan_input.Has(input_data_type));
+      return SerializeTan(op);
+    }
+    case mojom::ElementWiseUnary::Kind::kErf: {
+      CHECK(
+          context_properties_.data_type_limits.erf_input.Has(input_data_type));
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
+    }
   }
 }
 
@@ -2689,10 +2737,8 @@ auto GraphBuilderTflite::SerializeReciprocal(
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(reciprocal.input_operand_id);
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type isn't supported.");
-  }
   CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+
   const int32_t constant_tensor_index = SerializeTensorWithBuffer<float>(
       /*buffer=*/std::array<float, 1>{1.0},
       /*dimensions=*/{});

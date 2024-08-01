@@ -55,7 +55,8 @@ class GraphBuilderTflite final {
   // Factory method that creates a GraphBuilderTflite and builds a TFLite
   // Flatbuffer Returns unexpected if it fails.
   [[nodiscard]] static base::expected<flatbuffers::DetachedBuffer, std::string>
-  CreateAndBuild(const mojom::GraphInfo& graph_info);
+  CreateAndBuild(ContextProperties context_properties,
+                 const mojom::GraphInfo& graph_info);
 
   static ContextProperties GetContextProperties();
 
@@ -67,7 +68,8 @@ class GraphBuilderTflite final {
   using TensorOffset = flatbuffers::Offset<::tflite::Tensor>;
   using StringOffset = flatbuffers::Offset<flatbuffers::String>;
 
-  explicit GraphBuilderTflite(const mojom::GraphInfo& graph_info);
+  GraphBuilderTflite(ContextProperties context_properties,
+                     const mojom::GraphInfo& graph_info);
   ~GraphBuilderTflite();
 
   // Serialize tensor for input, constant and output operand. It's output
@@ -389,6 +391,8 @@ class GraphBuilderTflite final {
   flatbuffers::DetachedBuffer FinishAndTakeFlatBuffer(
       base::span<const uint64_t> input_operands,
       base::span<const uint64_t> output_operands);
+
+  const ContextProperties context_properties_;
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to TFLite. The creator of `this` must ensure the GraphInfo reference passed

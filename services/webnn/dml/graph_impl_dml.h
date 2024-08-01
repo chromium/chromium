@@ -73,6 +73,7 @@ class GraphImplDml final : public WebNNGraphImpl {
     std::unordered_map<std::string, uint32_t> graph_output_name_to_index_map;
   };
   static base::expected<void, mojom::ErrorPtr> CreateAndBuildInternal(
+      const ContextProperties& context_properties,
       scoped_refptr<Adapter> adapter,
       mojom::GraphInfoPtr& graph_info,
       GraphBuilderDml& graph_builder,

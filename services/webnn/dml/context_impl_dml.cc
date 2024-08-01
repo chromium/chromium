@@ -59,6 +59,10 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kInt8,    OperandDataType::kUint8,
       OperandDataType::kInt32,   OperandDataType::kUint32};
 
+  static constexpr SupportedDataTypes kFloat16To32Int8To64{
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt8, OperandDataType::kInt32, OperandDataType::kInt64};
+
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
@@ -74,6 +78,49 @@ ContextProperties ContextImplDml::GetProperties(
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
        /*concat_inputs=*/kFloat16To32Ints8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_abs_operator_desc#tensor-support
+       /*abs_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_ceil_operator_desc#tensor-support
+       /*ceil_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_cos_operator_desc#tensor-support
+       /*cos_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_erf_operator_desc#tensor-support
+       /*erf_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_exp_operator_desc#tensor-support
+       /*exp_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_floor_operator_desc#tensor-support
+       /*floor_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_identity_operator_desc#tensor-support
+       /*identity_input=*/kFloat16To32Ints8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_log_operator_desc#tensor-support
+       /*log_input=*/DataTypeConstraint::kFloat16To32,
+
+       // Neg is emulated by DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC, so the
+       // data type limits is set based on the spec.
+       // DML_ELEMENT_WISE_NEGATE_OPERATOR_DESC introduced in feature level 5.0
+       // also supports int64.
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#tensor-support
+       /*neg_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_recip_operator_desc#tensor-support
+       /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sin_operator_desc#tensor-support
+       /*sin_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sqrt_operator_desc#tensor-support
+       /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_tan_operator_desc#tensor-support
+       /*tan_input=*/DataTypeConstraint::kFloat16To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_elu_operator_desc
        /*elu_input=*/DataTypeConstraint::kFloat16To32,
@@ -117,6 +164,8 @@ ContextProperties ContextImplDml::GetProperties(
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
     properties.data_type_limits.concat_inputs = SupportedDataTypes::All();
+    properties.data_type_limits.abs_input = kFloat16To32Int8To64;
+    properties.data_type_limits.identity_input = SupportedDataTypes::All();
     properties.data_type_limits.gather_input = SupportedDataTypes::All();
     properties.data_type_limits.slice_input = SupportedDataTypes::All();
     properties.data_type_limits.split_input = SupportedDataTypes::All();

@@ -117,8 +117,8 @@ class WebnnGraphLPMFuzzer {
                                                     *graph_info_ptr)
             .has_value()) {
       // Test the TFLite graph builder.
-      auto flatbuffer =
-          webnn::tflite::GraphBuilderTflite::CreateAndBuild(*graph_info_ptr);
+      auto flatbuffer = webnn::tflite::GraphBuilderTflite::CreateAndBuild(
+          std::move(tflite_properties), *graph_info_ptr);
     }
 
 #if BUILDFLAG(IS_WIN)
@@ -139,7 +139,7 @@ class WebnnGraphLPMFuzzer {
           graph_buffer_binding_info;
       auto create_operator_result =
           webnn::dml::GraphImplDml::CreateAndBuildInternal(
-              GetAdapter(), graph_info_ptr, graph_builder,
+              dml_properties, GetAdapter(), graph_info_ptr, graph_builder,
               constant_id_to_input_index_map, graph_buffer_binding_info);
       if (create_operator_result.has_value()) {
         auto dml_graph_builder = graph_builder.Compile(DML_EXECUTION_FLAG_NONE);

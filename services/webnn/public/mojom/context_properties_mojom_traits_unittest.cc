@@ -24,6 +24,19 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        webnn::SupportedDataTypes::All(),
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kUint64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
@@ -33,25 +46,10 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kUint8},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32}});
 
-  webnn::ContextProperties output(webnn::InputOperandLayout::kNhwc, {{},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {},
-                                                                     {}});
+  webnn::ContextProperties output(
+      webnn::InputOperandLayout::kNhwc,
+      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(
