@@ -17,11 +17,8 @@
 
 namespace gpu {
 class CommandBufferStub;
-class DXGISharedHandleManager;
 class MemoryTypeTracker;
-class SharedImageBacking;
 class SharedImageManager;
-class SharedImageRepresentationFactoryRef;
 class SharedImageStub;
 }  // namespace gpu
 
@@ -67,32 +64,12 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
 
   virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
 
-#if BUILDFLAG(IS_WIN)
-  virtual gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() = 0;
-#endif
-
-  // Checks whether the stub has been destroyed.
-  virtual bool HasStub() = 0;
-
-  // Makes the GL context current.
-  virtual bool MakeContextCurrent() = 0;
-
-  // Register a shared image backing
-  virtual std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
-      std::unique_ptr<gpu::SharedImageBacking> backing) = 0;
-
-  // Add a callback to be called when our stub is destroyed. This callback
-  // may not change the current context.
-  virtual void AddWillDestroyStubCB(WillDestroyStubCB callback) = 0;
 #endif
 
  protected:
   explicit CommandBufferHelper(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // TODO(sandersd): Deleting remaining textures upon destruction requires
-  // making the context current, which may be undesirable. Consider adding an
-  // explicit DestroyWithContext() API.
   virtual ~CommandBufferHelper() = default;
 
  private:
