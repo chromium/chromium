@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/sparky/keyboard_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/sparky/sparky_util.h"
 #include "components/manta/sparky/sparky_delegate.h"
@@ -224,10 +225,11 @@ void SparkyDelegateImpl::ObtainStorageInfo(
 
 void SparkyDelegateImpl::Click(int x, int y) {
   // Get the Window of the primary display.
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const auto& display = display::Screen::GetScreen()->GetPrimaryDisplay();
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  CHECK(host);
   aura::Window* window = host->window();
+  CHECK(window);
 
   // Create a point in window coordinates, which can be different from screen
   // coordinates if multiple screens are present.
@@ -271,7 +273,21 @@ void SparkyDelegateImpl::Click(int x, int y) {
 }
 
 void SparkyDelegateImpl::KeyboardEntry(std::string text) {
-  // TODO(b/351099209): To be implemented in a follow-up CL
+  // Get the window tree host for the primary display.
+  const auto& display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  CHECK(host);
+
+  auto key_events = KeyEventsForText(text);
+  if (!key_events) {
+    // TODO(b/351099209): report an error, `text` contains non-typeable
+    // characters.
+    return;
+  }
+
+  for (auto& key_event : key_events.value()) {
+    host->DeliverEventToSink(&key_event);
+  }
 }
 
 void SparkyDelegateImpl::StartObservingCalculators() {

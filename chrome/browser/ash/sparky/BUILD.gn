@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 static_library("sparky") {
   sources = [
+    "keyboard_util.cc",
+    "keyboard_util.h",
     "sparky_delegate_impl.cc",
     "sparky_delegate_impl.h",
     "sparky_manager_impl.cc",
