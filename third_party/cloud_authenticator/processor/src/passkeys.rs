@@ -125,6 +125,7 @@ pub(crate) fn do_assert(
     let pin_verified =
         maybe_validate_pin_from_request(&request, state, device_id, &security_domain_secret)?;
     let user_verification = matches!(auth_level, AuthLevel::UserVerification)
+        || matches!(auth_level, AuthLevel::SoftwareUserVerification)
         || pin_verified
         // If the client provided the security domain secret itself, then it could have
         // done the signing itself too. Thus this is sufficient to claim UV.
@@ -410,12 +411,10 @@ pub(crate) fn do_wrap_pin(
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    // Either UV or reauth is required to perform this command. The one-time
-    // UV is not enough.
+    // Reauth is required to perform this command.
     let device_id = match auth {
-        Authentication::Device(device_id, AuthLevel::UserVerification, _, _) => device_id,
         Authentication::Device(device_id, _, _, Reauth::Done) => device_id,
-        _ => return debug("not authenticated"),
+        _ => return debug("PIN change needs reauth via RAPT token"),
     };
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
         return debug("pin_hash required");

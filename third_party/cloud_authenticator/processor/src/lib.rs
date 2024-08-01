@@ -419,6 +419,9 @@ enum AuthLevel {
     /// The key is bound to the device and requires user verification before
     /// it can be used for signing.
     UserVerification,
+    // The key is kept in software, but user verification is performed before it is used for
+    // signing.
+    SoftwareUserVerification,
 }
 
 impl AuthLevel {
@@ -427,6 +430,7 @@ impl AuthLevel {
             AuthLevel::Software => "sw",
             AuthLevel::Hardware => "hw",
             AuthLevel::UserVerification => "uv",
+            AuthLevel::SoftwareUserVerification => "swuv",
         }
     }
 }
@@ -438,6 +442,7 @@ impl core::str::FromStr for AuthLevel {
             "sw" => Ok(AuthLevel::Software),
             "hw" => Ok(AuthLevel::Hardware),
             "uv" => Ok(AuthLevel::UserVerification),
+            "swuv" => Ok(AuthLevel::SoftwareUserVerification),
             _ => Err(()),
         }
     }
@@ -787,7 +792,12 @@ fn do_device_register(
                     if spki::parse(spki).is_none() {
                         return debug("cannot parse SPKI from pub_key entry");
                     };
-                    if k == AuthLevel::UserVerification.as_str() {
+                    if k == AuthLevel::UserVerification.as_str()
+                        || k == AuthLevel::SoftwareUserVerification.as_str()
+                    {
+                        if has_uv_key {
+                            return debug("can't register both uv and swuv key");
+                        }
                         has_uv_key = true;
                     }
                 }
@@ -890,6 +900,10 @@ fn do_device_add_uv_key(
     let Some(Value::Map(pub_keys)) = device.get(PUB_KEYS_KEY) else {
         return debug("device missing pub_keys");
     };
+    let swuv = MapKey::String(String::from(AuthLevel::SoftwareUserVerification.as_str()));
+    if pub_keys.contains_key(&swuv) {
+        return debug("software UV key already registered");
+    }
     let uv = MapKey::String(String::from(AuthLevel::UserVerification.as_str()));
     match pub_keys.get(&uv) {
         Some(Value::Bytestring(existing_uv_key)) => {
@@ -1361,6 +1375,47 @@ mod tests {
             CMD: "device/register",
             DEVICE_ID: (TEST_DEVICE_ID.clone()),
             PUB_KEYS: {"uv": (SPKI.as_slice())},
+            UV_KEY_PENDING: true,
+        }])
+        .to_bytes();
+        let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let (output, _) = process_client_msg(
+            ClientState::Initial,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+    }
+
+    #[test]
+    fn test_device_register_uv_and_swuv() {
+        // Can't register both a UV and SWUV key.
+        let encoded_register = cbor!([{
+            CMD: "device/register",
+            DEVICE_ID: (TEST_DEVICE_ID.clone()),
+            PUB_KEYS: {"uv": (SPKI.as_slice()), "swuv": (SPKI.as_slice())},
+        }])
+        .to_bytes();
+        let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let (output, _) = process_client_msg(
+            ClientState::Initial,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+    }
+
+    #[test]
+    fn test_device_register_software_uv_and_uv_pending() {
+        // Can't register both a software UV key and a UV-pending signal.
+        let encoded_register = cbor!([{
+            CMD: "device/register",
+            DEVICE_ID: (TEST_DEVICE_ID.clone()),
+            PUB_KEYS: {"swuv": (SPKI.as_slice())},
             UV_KEY_PENDING: true,
         }])
         .to_bytes();
