@@ -978,6 +978,51 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       ChainedBackGesture) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  // Navigate to a third page to enable two consecutive back navigations.
+  ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+  WaitForCopyableViewInWebContents(web_contents());
+
+  // First back gesture - start and progress partially
+  std::vector<GestureType> first_gesture_expected;
+  first_gesture_expected.push_back(GestureType::kStart);
+  first_gesture_expected.push_back(GestureType::k30ViewportWidth);
+  first_gesture_expected.push_back(GestureType::kInvoke);
+  HistoryBackNavAndAssertAnimatedTransition(first_gesture_expected);
+
+  // The first animation is expected to be aborted when replaced by
+  // the second one.
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+
+  // Second back gesture - start before the first one is completed.
+  std::vector<GestureType> second_gesture_expected;
+  second_gesture_expected.push_back(GestureType::kStart);
+  // The second gesture should immediately take over and progress.
+  second_gesture_expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(second_gesture_expected);
+
+  // The navigation should go back to the red page (two back navigations).
+  TestFrameNavigationObserver back_to_red(web_contents());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  cross_fade_displayed.Run();
+  destroyed.Run();
+  back_to_red.Wait();
+
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+  ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
+      NavigationEntryScreenshot::kUserDataKey));
+}
+
 // Assert that if the user does not start the navigation, we don't put the
 // fallback screenshot back.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,

@@ -66,7 +66,8 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     // reclaim all the resources).
     //
     // TODO(crbug.com/40261105): We need a proper UX to support this.
-    animator_.reset();
+    animator_->AbortAnimation();
+    DestroyAnimator();
   }
 
   // Handle the case where the screenshot's dimension does not match the
