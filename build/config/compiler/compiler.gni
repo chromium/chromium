@@ -77,8 +77,8 @@ declare_args() {
   # with some utilities such as icecc and ccache. Requires gold and
   # gcc >= 4.8 or clang.
   # http://gcc.gnu.org/wiki/DebugFission
-  use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
-                      !is_win && use_lld && cc_wrapper == ""
+  use_debug_fission = !is_android && !is_fuchsia && !is_apple && !is_win &&
+                      use_lld && cc_wrapper == ""
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
@@ -327,9 +327,9 @@ use_debug_fission = use_debug_fission && symbol_level == 2
 if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
-          is_component_build || !is_debug || is_ios || use_debug_fission ||
-          host_os == "win",
-      "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
+          is_component_build || is_fuchsia || is_apple || use_debug_fission ||
+          is_android || is_chromeos || host_os == "win",
+      "Can't do non-component builds at symbol_level=2 without use_debug_fission=true")
 }
 
 # TODO(crbug.com/40230692) For Windows, to assemble lzma_sdk's assembly files,
