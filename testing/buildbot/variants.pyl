@@ -457,6 +457,18 @@
       'ios_runtime_cache_17_5',
     ],
   },
+  'SIM_IPHONE_14_18_0': {
+    'identifier': 'iPhone 14 18.0',
+    'args': [
+      '--platform',
+      'iPhone 14',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
+    ],
+  },
   'SIM_IPHONE_14_PLUS_16_4': {
     'identifier': 'iPhone 14 Plus 16.4',
     'args': [
@@ -479,6 +491,18 @@
     ],
     'mixins': [
       'ios_runtime_cache_17_5',
+    ],
+  },
+  'SIM_IPHONE_14_PLUS_18_0': {
+    'identifier': 'iPhone 14 Plus 18.0',
+    'args': [
+      '--platform',
+      'iPhone 14 Plus',
+      '--version',
+      '18.0',
+    ],
+    'mixins': [
+      'ios_runtime_cache_18_0',
     ],
   },
   'SIM_IPHONE_14_PRO_MAX_17_5': {

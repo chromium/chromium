@@ -728,14 +728,14 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "gpu_angle_ios_end2end_gtests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_18_0",
             ],
         ),
         "gpu_angle_ios_white_box_gtests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_18_0",
             ],
         ),
     },
@@ -1049,6 +1049,7 @@ targets.legacy_matrix_compound_suite(
         "ios_blink_tests": targets.legacy_matrix_config(
             variants = [
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
     },
@@ -1084,10 +1085,9 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_PLUS_16_4",
-                "SIM_IPHONE_14_PLUS_17_5",
                 "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -1097,10 +1097,13 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
                 "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -1110,16 +1113,20 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
                 "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
                 "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
                 "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
     },
@@ -1177,8 +1184,8 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_PLUS_16_4",
                 "SIM_IPHONE_14_PLUS_17_5",
+                "SIM_IPHONE_14_PLUS_18_0",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -1186,10 +1193,10 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -1197,20 +1204,20 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPHONE_14_16_4",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
                 "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPHONE_15_18_0",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPHONE_14_16_4",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
     },
@@ -1221,8 +1228,8 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -1230,8 +1237,8 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -1239,14 +1246,14 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
     },
@@ -1263,6 +1270,7 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -1273,6 +1281,7 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
@@ -1285,6 +1294,10 @@ targets.legacy_matrix_compound_suite(
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPHONE_SE_3RD_GEN_17_5",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPHONE_14_PLUS_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPHONE_SE_3RD_GEN_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
         "ios_crash_xcuitests": targets.legacy_matrix_config(
@@ -1294,6 +1307,7 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "SIM_IPHONE_SE_3RD_GEN_16_4",
                 "SIM_IPHONE_SE_3RD_GEN_17_5",
+                "SIM_IPHONE_SE_3RD_GEN_18_0",
             ],
         ),
     },
@@ -1305,8 +1319,8 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -1314,16 +1328,16 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
                 "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
             ],
         ),
     },
@@ -1334,10 +1348,10 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_eg2_cq_tests": targets.legacy_matrix_config(
@@ -1345,10 +1359,10 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_eg2_tests": targets.legacy_matrix_config(
@@ -1356,18 +1370,18 @@ targets.legacy_matrix_compound_suite(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
         "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
     },
@@ -1378,10 +1392,10 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "ios_remoting_fyi_unittests": targets.legacy_matrix_config(
             variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
             ],
         ),
     },

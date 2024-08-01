@@ -1523,20 +1523,6 @@
       ],
     },
   },
-  'xcode_15_main': {
-    'args': [
-      '--xcode-build-version',
-      '15f31d',
-    ],
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_15f31d',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
   'xcode_16_beta': {
     'args': [
       '--xcode-build-version',

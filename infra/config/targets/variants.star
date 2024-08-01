@@ -289,6 +289,20 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_14_18_0",
+    identifier = "iPhone 14 18.0",
+    mixins = [
+        "ios_runtime_cache_18_0",
+    ],
+    args = [
+        "--platform",
+        "iPhone 14",
+        "--version",
+        "18.0",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_15_18_0",
     identifier = "iPhone 15 18.0",
     mixins = [
@@ -327,6 +341,20 @@ targets.variant(
         "iPhone 14 Plus",
         "--version",
         "17.5",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_14_PLUS_18_0",
+    identifier = "iPhone 14 Plus 18.0",
+    mixins = [
+        "ios_runtime_cache_18_0",
+    ],
+    args = [
+        "--platform",
+        "iPhone 14 Plus",
+        "--version",
+        "18.0",
     ],
 )
 
