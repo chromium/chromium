@@ -318,6 +318,7 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
   // focus yet.
   if (event.type() == ui::EventType::kGestureTap) {
     pseudo_focus_ = PseudoFocus::kMainButton;
+    UpdateAccessiblitySelectionAttribute();
   }
 
   Activate(CalculateActionForMainButtonClick(), event.flags());
@@ -421,12 +422,6 @@ void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
   // via AXNodeData::SetName.
   View::GetAccessibleNodeData(data);
   data->role = ax::mojom::Role::kMenuItem;
-
-  // In fitting with existing conventions for menu items, we treat clipboard
-  // history items as "selected" from an accessibility standpoint if pressing
-  // Enter will perform the item's default expected action: pasting.
-  data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                         IsMainButtonPseudoFocused());
 }
 
 void ClipboardHistoryItemView::Init() {
@@ -519,6 +514,7 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
                                    new_pseudo_focus == PseudoFocus::kMainButton;
 
   pseudo_focus_ = new_pseudo_focus;
+  UpdateAccessiblitySelectionAttribute();
   if (IsMainButtonPseudoFocused()) {
     NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
                              /*send_native_event=*/true);
@@ -536,6 +532,13 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
   if (repaint_main_button) {
     main_button_->SchedulePaint();
   }
+}
+
+void ClipboardHistoryItemView::UpdateAccessiblitySelectionAttribute() {
+  // In fitting with existing conventions for menu items, we treat clipboard
+  // history items as "selected" from an accessibility standpoint if pressing
+  // Enter will perform the item's default expected action: pasting.
+  GetViewAccessibility().SetIsSelected(IsMainButtonPseudoFocused());
 }
 
 BEGIN_METADATA(ClipboardHistoryItemView, ContentsView)
