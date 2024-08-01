@@ -2,11 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <tuple>
-
 #include "extensions/browser/service_worker/worker_id.h"
 
+#include <optional>
+#include <tuple>
+
+#include "extensions/common/extension_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+
 namespace extensions {
+
+WorkerId::WorkerId() = default;
+
+WorkerId::WorkerId(const ExtensionId& extension_id,
+                   int render_process_id,
+                   int64_t version_id,
+                   int thread_id)
+    : extension_id(extension_id),
+      render_process_id(render_process_id),
+      version_id(version_id),
+      thread_id(thread_id) {}
+
+WorkerId::WorkerId(const ExtensionId& extension_id,
+                   int render_process_id,
+                   int64_t version_id,
+                   int thread_id,
+                   const blink::ServiceWorkerToken& start_token)
+    : extension_id(extension_id),
+      render_process_id(render_process_id),
+      version_id(version_id),
+      thread_id(thread_id),
+      start_token(start_token) {}
 
 bool WorkerId::operator<(const WorkerId& other) const {
   // Note: The comparison order of |extension_id| and |render_process_id| below
