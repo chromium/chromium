@@ -1089,7 +1089,6 @@ static_library("ui") {
       "browser_action_prefs_listener.cc",
       "browser_action_prefs_listener.h",
       "browser_actions.cc",
-      "browser_actions.h",
       "browser_command_controller.cc",
       "browser_command_controller.h",
       "browser_commands.cc",

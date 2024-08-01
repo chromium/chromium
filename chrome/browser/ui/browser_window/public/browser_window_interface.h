@@ -29,6 +29,7 @@ namespace web_modal {
 class WebContentsModalDialogHost;
 }  // namespace web_modal
 
+class BrowserActions;
 class BrowserWindowFeatures;
 class ExclusiveAccessManager;
 class GURL;
@@ -90,6 +91,10 @@ class BrowserWindowInterface : public content::PageNavigator {
 
   // This class is responsible for controlling fullscreen and pointer lock.
   virtual ExclusiveAccessManager* GetExclusiveAccessManager() = 0;
+
+  // This class manages actions that a user can take that are scoped to a
+  // browser window (e.g. most of the 3-dot menu actions).
+  virtual BrowserActions* GetActions() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

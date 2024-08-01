@@ -8697,6 +8697,7 @@ source_set("primitives") {
   sources = [
     "command_updater.h",
     "platform_util.h",
+    "ui/browser_actions.h",
   ]
   public_deps = [
     "//base",

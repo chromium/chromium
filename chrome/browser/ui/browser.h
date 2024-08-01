@@ -889,6 +889,7 @@ class Browser : public TabStripModelObserver,
   base::CallbackListSubscription RegisterDidBecomeInactive(
       DidBecomeInactiveCallback callback) override;
   ExclusiveAccessManager* GetExclusiveAccessManager() override;
+  BrowserActions* GetActions() override;
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();

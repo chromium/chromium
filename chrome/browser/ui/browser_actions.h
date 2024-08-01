@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "chrome/browser/ui/browser_action_prefs_listener.h"
-#include "chrome/browser/ui/translate_browser_action_listener.h"
 
 class Browser;
+class BrowserActionPrefsListener;
+class TranslateBrowserActionListener;
 
 namespace actions {
 class ActionItem;

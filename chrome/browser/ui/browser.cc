@@ -1163,6 +1163,10 @@ ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
   return exclusive_access_manager();
 }
 
+BrowserActions* Browser::GetActions() {
+  return browser_actions();
+}
+
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
   did_become_active_callback_list_.Notify(this);
