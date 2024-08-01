@@ -1582,6 +1582,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   ve_logging_dict.Set("testing", ::features::kDevToolsVeLoggingTesting.Get());
   response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
 
+  response_dict.Set("isOffTheRecord", profile_->IsOffTheRecord());
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
