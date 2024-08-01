@@ -24,9 +24,6 @@ class SandboxedVfsDelegate : public sql::SandboxedVfs::Delegate {
   std::optional<sql::SandboxedVfs::PathAccessInfo> GetPathAccess(
       const base::FilePath& file_path) override;
   int DeleteFile(const base::FilePath& file_path, bool sync_dir) override;
-  bool SetFileLength(const base::FilePath& file_path,
-                     base::File& file,
-                     size_t size) override;
 
  private:
   const std::unique_ptr<FilesystemProxy> filesystem_;

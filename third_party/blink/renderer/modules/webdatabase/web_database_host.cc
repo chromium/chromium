@@ -61,12 +61,6 @@ int32_t WebDatabaseHost::GetFileAttributes(const String& vfs_file_name) {
   return rv;
 }
 
-bool WebDatabaseHost::SetFileSize(const String& vfs_file_name, int64_t size) {
-  bool rv = false;
-  GetWebDatabaseHost().SetFileSize(vfs_file_name, size, &rv);
-  return rv;
-}
-
 int64_t WebDatabaseHost::GetSpaceAvailableForOrigin(
     const SecurityOrigin& origin) {
   int64_t rv = 0LL;

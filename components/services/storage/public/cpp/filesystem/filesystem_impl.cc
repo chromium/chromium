@@ -252,13 +252,6 @@ void FilesystemImpl::LockFile(const base::FilePath& path,
   std::move(callback).Run(base::File::FILE_OK, std::move(lock));
 }
 
-void FilesystemImpl::SetOpenedFileLength(base::File file,
-                                         uint64_t length,
-                                         SetOpenedFileLengthCallback callback) {
-  bool success = file.SetLength(length);
-  std::move(callback).Run(success, std::move(file));
-}
-
 // static
 base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
     const base::FilePath& path,

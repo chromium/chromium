@@ -155,19 +155,4 @@ interface Directory {
   [Sync]
   LockFile(StrictRelativePath path) => (mojo_base.mojom.FileError error,
                                         pending_remote<FileLock>? lock);
-
-  // Asks the backend to set the length of the open file identified by |file|.
-  // |file| is returned back to the caller when done, regardless of success or
-  // failure.
-  //
-  // Note that this is a bit out-of-place on the Directory interface, but it's
-  // here out of an abundance of convenience and simplicity, to work around a
-  // (hopefully temporary) shortcoming of some sandbox configurations where
-  // enabling POSIX ftruncate() is not feasible.
-  //
-  // See https://crbug.com/1084565 for some history on this subject. In short,
-  // it's an issue with sandboxing on Mac OSX < 10.15.
-  [Sync]
-  SetOpenedFileLength(mojo_base.mojom.File file, uint64 size)
-      => (bool success, mojo_base.mojom.File file);
 };

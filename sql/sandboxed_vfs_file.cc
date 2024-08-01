@@ -252,17 +252,7 @@ int SandboxedVfsFile::Write(const void* buffer,
 }
 
 int SandboxedVfsFile::Truncate(sqlite3_int64 size) {
-  if (file_.SetLength(size))
-    return SQLITE_OK;
-
-  // On macOS < 10.15, the default sandbox blocks ftruncate(), so we have to use
-  // a sync mojo IPC to ask the browser process to call ftruncate() for us.
-  //
-  // TODO(crbug.com/40693199): Figure out if we can allow ftruncate() in
-  // renderer and utility processes. It would be useful for low-level storage
-  // APIs, like the upcoming filesystem API.
-  if (vfs_->delegate()->SetFileLength(file_path_, file_,
-                                      static_cast<size_t>(size))) {
+  if (file_.SetLength(size)) {
     return SQLITE_OK;
   }
 

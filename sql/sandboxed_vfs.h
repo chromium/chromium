@@ -58,23 +58,6 @@ class COMPONENT_EXPORT(SQL) SandboxedVfs {
     // given path does not exist.
     virtual std::optional<PathAccessInfo> GetPathAccess(
         const base::FilePath& file_path) = 0;
-
-    // Resizes a file.
-    //
-    // `file` is the result of a previous call to Delegate::OpenFile() with
-    // `file_path`. `size` is the new desired size in bytes, and may be smaller
-    // or larger than the current file size. Returns true if successful and
-    // false otherwise.
-    //
-    // Implementations can modify `file` directly, or operate on the filesystem
-    // via `file_path`.
-    //
-    // This is only called after the direct approach of base::File::SetLength()
-    // fails. So, the implementation should not bother trying to call
-    // SetLength() on `file`. This currently only happens on macOS < 10.15.
-    virtual bool SetFileLength(const base::FilePath& file_path,
-                               base::File& file,
-                               size_t size) = 0;
   };
 
   // We don't allow SandboxedVfs instances to be destroyed. Once created, they

@@ -20,9 +20,6 @@ class SandboxedVfsDelegate : public sql::SandboxedVfs::Delegate {
   int DeleteFile(const base::FilePath& file_path, bool sync_dir) override;
   std::optional<sql::SandboxedVfs::PathAccessInfo> GetPathAccess(
       const base::FilePath& file_path) override;
-  bool SetFileLength(const base::FilePath& file_path,
-                     base::File& file,
-                     size_t size) override;
 };
 
 }  // namespace blink
