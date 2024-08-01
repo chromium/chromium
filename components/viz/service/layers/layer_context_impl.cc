@@ -364,7 +364,7 @@ bool LayerContextImpl::IsReadyToActivate() {
 
 void LayerContextImpl::NotifyReadyToDraw() {}
 
-void LayerContextImpl::SetNeedsRedrawOnImplThread() {
+void LayerContextImpl::SetNeedsRedrawOnImplThread(cc::RedrawReason reason) {
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
 }
 
@@ -410,7 +410,8 @@ void LayerContextImpl::OnDrawForLayerTreeFrameSink(
     bool skip_draw) {}
 
 void LayerContextImpl::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation) {}
+    bool needs_first_draw_on_activation,
+    cc::RedrawReason reason) {}
 
 void LayerContextImpl::NotifyImageDecodeRequestFinished(int request_id,
                                                         bool decode_succeeded) {

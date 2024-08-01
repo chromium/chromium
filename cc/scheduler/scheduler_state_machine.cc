@@ -1123,7 +1123,8 @@ void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
 }
 
 void SchedulerStateMachine::SetNeedsImplSideInvalidation(
-    bool needs_first_draw_on_activation) {
+    bool needs_first_draw_on_activation,
+    RedrawReason reason) {
   needs_impl_side_invalidation_ = true;
   next_invalidation_needs_first_draw_on_activation_ |=
       needs_first_draw_on_activation;
@@ -1550,7 +1551,7 @@ void SchedulerStateMachine::SetSkipDraw(bool skip_draw) {
   skip_draw_ = skip_draw;
 }
 
-void SchedulerStateMachine::SetNeedsRedraw() {
+void SchedulerStateMachine::SetNeedsRedraw(RedrawReason reason) {
   needs_redraw_ = true;
 }
 

@@ -47,6 +47,7 @@
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
+#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/scheduler/video_frame_controller.h"
 #include "cc/tiles/tile_manager.h"
@@ -126,7 +127,7 @@ class LayerTreeHostImplClient {
   virtual void NotifyReadyToDraw() = 0;
   // Please call these 2 functions through
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
-  virtual void SetNeedsRedrawOnImplThread() = 0;
+  virtual void SetNeedsRedrawOnImplThread(RedrawReason reason) = 0;
   virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
   virtual void SetNeedsUpdateDisplayTreeOnImplThread() = 0;
   virtual void SetNeedsCommitOnImplThread() = 0;
@@ -147,8 +148,8 @@ class LayerTreeHostImplClient {
   virtual void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                            bool skip_draw) = 0;
 
-  virtual void SetNeedsImplSideInvalidation(
-      bool needs_first_draw_on_activation) = 0;
+  virtual void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
+                                            RedrawReason reason) = 0;
 
   virtual void NotifyImageDecodeRequestFinished(int request_id,
                                                 bool decode_succeeded) = 0;
@@ -709,7 +710,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool visible() const { return visible_; }
 
   void SetNeedsOneBeginImplFrame();
-  void SetNeedsRedraw();
+  void SetNeedsRedraw(RedrawReason reason);
   void SetNeedsUpdateDisplayTree();
 
   ManagedMemoryPolicy ActualManagedMemoryPolicy() const;
@@ -1070,7 +1071,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // Flags the tree as needing either a redraw or a display tree updating,
   // depending on whether or not it has a display tree.
-  void SetNeedsRedrawOrUpdateDisplayTree();
+  void SetNeedsRedrawOrUpdateDisplayTree(RedrawReason reason);
 
   // Returns the most up to date display color spaces.
   gfx::DisplayColorSpaces GetDisplayColorSpaces() const;

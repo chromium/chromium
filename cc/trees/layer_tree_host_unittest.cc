@@ -2961,7 +2961,7 @@ class LayerTreeHostTestSetNeedsCommitWithForcedRedraw
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (num_draws_ == 3) {
       host_impl->SetViewportDamage(invalid_rect_);
-      host_impl->SetNeedsRedraw();
+      host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
     }
   }
 
@@ -3345,7 +3345,7 @@ class LayerTreeHostTestFrameTimeUpdatesAfterDraw : public LayerTreeHostTest {
     frame_++;
     if (frame_ == 1) {
       first_frame_time_ = impl->CurrentBeginFrameArgs().frame_time;
-      impl->SetNeedsRedraw();
+      impl->SetNeedsRedraw(RedrawReason::kUntracked);
 
       // Since we might use a low-resolution clock on Windows, we need to
       // make sure that the clock has incremented past first_frame_time_.
@@ -9183,7 +9183,7 @@ class LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame
     } else if (begin_frame_count_ == 4) {
       PostIssueBeginFrame(false);
     }
-    host_impl->SetNeedsRedraw();
+    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
     host_impl->SetViewportDamage(gfx::Rect(1, 1));
   }
 
@@ -9702,7 +9702,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
     // Mark every frame as a dropped frame affecting smoothness.
     host_impl->dropped_frame_counter()->OnEndFrame(
         last_args_, CreateFakeImplDroppedFrameInfo());
-    host_impl->SetNeedsRedraw();
+    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
     --frames_counter_;
   }
 
@@ -9758,7 +9758,7 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
     // main-thread update.
     host_impl->dropped_frame_counter()->OnEndFrame(
         last_args_, CreateFakeImplDroppedFrameInfo());
-    host_impl->SetNeedsRedraw();
+    host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
     --frames_counter_;
   }
 
@@ -10145,7 +10145,7 @@ class LayerTreeHostTestDelayRecreateTiling
       host_impl->pending_tree()->set_needs_update_draw_properties();
 
       // to make sure Draw happen
-      host_impl->SetNeedsRedraw();
+      host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
     }
   }
 
@@ -10301,7 +10301,7 @@ class LayerTreeHostTestInvalidateImplSideForRerasterTiling
         // implside will be requested for rerastering tiling.
         ClearAnimationForLayer(host_impl->active_tree(), target_layer);
         ClearAnimationForLayer(host_impl->recycle_tree(), target_layer);
-        host_impl->SetNeedsRedraw();
+        host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
       }
     }
   }
@@ -10329,7 +10329,7 @@ class LayerTreeHostTestInvalidateImplSideForRerasterTiling
 
           // trigger draw to check if invalidating implside is not triggered
           // if animation is still active.
-          host_impl->SetNeedsRedraw();
+          host_impl->SetNeedsRedraw(RedrawReason::kUntracked);
         } else {
           // check if invalidation implside was requested successfully.
           // new tiling should be created.

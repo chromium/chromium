@@ -239,7 +239,9 @@ class LayerTreeHostImplTestBase : public testing::Test,
     return false;
   }
   void NotifyReadyToDraw() override {}
-  void SetNeedsRedrawOnImplThread() override { did_request_redraw_ = true; }
+  void SetNeedsRedrawOnImplThread(RedrawReason reason) override {
+    did_request_redraw_ = true;
+  }
   void SetNeedsOneBeginImplFrameOnImplThread() override {
     did_request_next_frame_ = true;
   }
@@ -277,8 +279,8 @@ class LayerTreeHostImplTestBase : public testing::Test,
     host_impl_->DidDrawAllLayers(*frame);
     last_on_draw_frame_ = std::move(frame);
   }
-  void SetNeedsImplSideInvalidation(
-      bool needs_first_draw_on_activation) override {
+  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
+                                    RedrawReason reason) override {
     did_request_impl_side_invalidation_ = true;
   }
   void NotifyImageDecodeRequestFinished(int request_id,
@@ -12169,7 +12171,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
 
   host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   DrawFrame();
 
   const auto& metadata_latency_after =
@@ -12190,7 +12192,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
   host_impl_->NotifyInputEvent();
   host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   auto args = viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1234));
@@ -12220,7 +12222,7 @@ TEST_P(LayerTreeHostImplTest, SelectionBoundsPassedToCompositorFrameMetadata) {
   selection.end = selection.start;
   host_impl_->active_tree()->RegisterSelection(selection);
 
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   RenderFrameMetadata metadata = StartDrawAndProduceRenderFrameMetadata();
 
   // Ensure the selection bounds have propagated to the frame metadata.
@@ -12254,7 +12256,7 @@ TEST_P(LayerTreeHostImplTest, HiddenSelectionBoundsStayHidden) {
   selection.end = selection.start;
   host_impl_->active_tree()->RegisterSelection(selection);
 
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   RenderFrameMetadata metadata = StartDrawAndProduceRenderFrameMetadata();
 
   // Ensure the selection bounds have propagated to the frame metadata.
@@ -12275,7 +12277,7 @@ TEST_P(LayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
     EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
     EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
 
-    host_impl_->SetNeedsRedraw();
+    host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   }
 
   {
@@ -12285,7 +12287,7 @@ TEST_P(LayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
 
     // Redraw with damage.
     host_impl_->SetFullViewportDamage();
-    host_impl_->SetNeedsRedraw();
+    host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   }
 
   {
@@ -12294,7 +12296,7 @@ TEST_P(LayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
     EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
 
     // Redraw without damage.
-    host_impl_->SetNeedsRedraw();
+    host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   }
 
   {
@@ -13521,7 +13523,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
   host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
 
   host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   DrawFrame();
 
   constexpr uint32_t frame_token_1 = 1;
@@ -13551,7 +13553,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
 
   host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   DrawFrame();
 
   constexpr uint32_t frame_token_1 = 1;
@@ -13598,7 +13600,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       new LatencyInfoSwapPromise(latency_info2));
   host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise2));
   host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   DrawFrame();
   constexpr uint32_t frame_token_2 = 2;
   viz::FrameTimingDetails mock_details2;
@@ -17123,7 +17125,7 @@ TEST_P(LayerTreeHostImplTest, SelectionBoundsPassedToRenderFrameMetadata) {
   EXPECT_FALSE(observer_ptr->last_metadata());
 
   // Trigger a draw-swap sequence.
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   DrawFrame();
 
   // Ensure the selection bounds propagated to the render frame metadata
@@ -17150,7 +17152,7 @@ TEST_P(LayerTreeHostImplTest, SelectionBoundsPassedToRenderFrameMetadata) {
   host_impl_->active_tree()->RegisterSelection(selection);
 
   // Trigger a draw-swap sequence.
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
   DrawFrame();
 
   // Ensure the selection bounds have propagated to the render frame metadata.
@@ -17240,7 +17242,7 @@ TEST_P(LayerTreeHostImplTest,
     }
 
     // Trigger draw.
-    host_impl_->SetNeedsRedraw();
+    host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
     DrawFrame();
 
     // Assert our expectation regarding the vertical scroll direction.

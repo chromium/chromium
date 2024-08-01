@@ -2056,7 +2056,7 @@ bool LayerTreeImpl::create_low_res_tiling() const {
 }
 
 void LayerTreeImpl::SetNeedsRedraw() {
-  host_impl_->SetNeedsRedraw();
+  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
 }
 
 void LayerTreeImpl::GetAllPrioritizedTilesForTracing(

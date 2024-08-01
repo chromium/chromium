@@ -260,7 +260,7 @@ class LayerTreeHostPictureTestChangeLiveTilesRectWithRecycleTree
         transform.Translate(0.f, -100000.f + 100.f);
         impl->active_tree()->SetTransformMutated(picture_impl->element_id(),
                                                  transform);
-        impl->SetNeedsRedraw();
+        impl->SetNeedsRedraw(RedrawReason::kUntracked);
         break;
       }
       case 2: {
@@ -272,7 +272,7 @@ class LayerTreeHostPictureTestChangeLiveTilesRectWithRecycleTree
         // Make the top of the layer visible again.
         impl->active_tree()->SetTransformMutated(picture_impl->element_id(),
                                                  gfx::Transform());
-        impl->SetNeedsRedraw();
+        impl->SetNeedsRedraw(RedrawReason::kUntracked);
         break;
       }
       case 3: {
@@ -554,7 +554,7 @@ class LayerTreeHostPictureTestRSLLMembershipWithScale
       // The ready to draw can race with a draw in which everything is
       // actually ready.  Therefore, just issue one more extra draw
       // here to force notify->draw ordering.
-      impl->SetNeedsRedraw();
+      impl->SetNeedsRedraw(RedrawReason::kUntracked);
     }
   }
 
