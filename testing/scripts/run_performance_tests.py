@@ -688,6 +688,7 @@ class CrossbenchTest(object):
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
+    self.network = []
     browser_arg = self._get_browser_arg(options.passthrough_args)
     self.is_android = self._is_android(browser_arg)
     self._find_browser(browser_arg)
