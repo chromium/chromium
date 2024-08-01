@@ -206,6 +206,8 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
   } else {
     GetViewAccessibility().SetIsEditable(true);
   }
+
+  UpdateAccessibleTextSelection();
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
@@ -276,6 +278,7 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
       OmniboxState::kKey,
       std::make_unique<OmniboxState>(state, GetRenderText()->GetAllSelections(),
                                      saved_selection_for_focus_change_));
+  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
@@ -364,6 +367,7 @@ void OmniboxViewViews::SetUserText(const std::u16string& text,
                                    bool update_popup) {
   saved_selection_for_focus_change_.clear();
   OmniboxView::SetUserText(text, update_popup);
+  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::SetAdditionalText(
@@ -405,6 +409,7 @@ void OmniboxViewViews::SelectAll(bool reversed) {
 void OmniboxViewViews::RevertAll() {
   saved_selection_for_focus_change_.clear();
   OmniboxView::RevertAll();
+  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::SetFocus(bool is_user_initiated) {
@@ -682,6 +687,8 @@ void OmniboxViewViews::SetSelectedRanges(
   SetSelectedRange(ranges[0]);
   for (size_t i = 1; i < ranges.size(); i++)
     AddSecondarySelectedRange(ranges[i]);
+
+  UpdateAccessibleTextSelection();
 }
 
 std::u16string OmniboxViewViews::GetSelectedText() const {
@@ -709,6 +716,24 @@ void OmniboxViewViews::OnOmniboxPaste() {
   state_before_change_.text.clear();
   InsertOrReplaceText(text);
   OnAfterPossibleChange(true);
+  UpdateAccessibleTextSelection();
+}
+
+void OmniboxViewViews::UpdateAccessibleTextSelection() {
+  std::u16string::size_type entry_start;
+  std::u16string::size_type entry_end;
+
+  if (!saved_selection_for_focus_change_.empty()) {
+    entry_start = saved_selection_for_focus_change_[0].start();
+    entry_end = saved_selection_for_focus_change_[0].end();
+  } else {
+    GetSelectionBounds(&entry_start, &entry_end);
+  }
+
+  GetViewAccessibility().SetTextSelStart(
+      entry_start + friendly_suggestion_text_prefix_length_);
+  GetViewAccessibility().SetTextSelEnd(entry_end +
+                                       friendly_suggestion_text_prefix_length_);
 }
 
 bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
@@ -785,6 +810,7 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
 
   SetWindowTextAndCaretPos(display_text, display_text.length(), false,
                            notify_text_changed);
+  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(
@@ -831,6 +857,7 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
   friendly_suggestion_text_.clear();
   friendly_suggestion_text_prefix_length_ = 0;
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  UpdateAccessibleTextSelection();
 }
 
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
@@ -1105,6 +1132,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
     // that happens for things like dragging, which are cases where having
     // invalidated this saved selection is still OK.
     saved_selection_for_focus_change_.clear();
+    UpdateAccessibleTextSelection();
   }
 
   // Show on-focus suggestions if either:
@@ -1215,6 +1243,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
     // If we're trying to select all on tap, invalidate any saved selection lest
     // restoring it fights with the "select all" action.
     saved_selection_for_focus_change_.clear();
+    UpdateAccessibleTextSelection();
   }
 
   // Show on-focus suggestions if either:
@@ -1289,22 +1318,6 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     popup_view_->AddPopupAccessibleNodeData(node_data);
   }
 
-  std::u16string::size_type entry_start;
-  std::u16string::size_type entry_end;
-  // Selection information is saved separately when focus is moved off the
-  // current window - use that when there is no focus and it's valid.
-  if (!saved_selection_for_focus_change_.empty()) {
-    entry_start = saved_selection_for_focus_change_[0].start();
-    entry_end = saved_selection_for_focus_change_[0].end();
-  } else {
-    GetSelectionBounds(&entry_start, &entry_end);
-  }
-  node_data->AddIntAttribute(
-      ax::mojom::IntAttribute::kTextSelStart,
-      entry_start + friendly_suggestion_text_prefix_length_);
-  node_data->AddIntAttribute(
-      ax::mojom::IntAttribute::kTextSelEnd,
-      entry_end + friendly_suggestion_text_prefix_length_);
 }
 
 bool OmniboxViewViews::HandleAccessibleAction(
@@ -1323,6 +1336,7 @@ bool OmniboxViewViews::HandleAccessibleAction(
     }
     InsertOrReplaceText(base::UTF8ToUTF16(action_data.value));
     TextChanged();
+    UpdateAccessibleTextSelection();
     return true;
   } else if (action_data.action == ax::mojom::Action::kSetSelection) {
     // Adjust for friendly text inserted at the start of the url.
@@ -1356,6 +1370,7 @@ void OmniboxViewViews::OnFocus() {
   if (!saved_selection_for_focus_change_.empty()) {
     SetSelectedRanges(saved_selection_for_focus_change_);
     saved_selection_for_focus_change_.clear();
+    UpdateAccessibleTextSelection();
   }
 
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
