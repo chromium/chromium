@@ -8801,6 +8801,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          webnn::mojom::features::kWebMachineLearningNeuralNetwork)},
 
+    {"experimental-web-machine-learning-neural-network",
+     flag_descriptions::kExperimentalWebMachineLearningNeuralNetworkName,
+     flag_descriptions::kExperimentalWebMachineLearningNeuralNetworkDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork)},
+
     {"one-time-permission", flag_descriptions::kOneTimePermissionName,
      flag_descriptions::kOneTimePermissionDescription, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},

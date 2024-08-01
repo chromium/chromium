@@ -1624,6 +1624,11 @@
       status: "experimental",
     },
     {
+      name: "ExperimentalMachineLearningNeuralNetwork",
+      // Enabled by webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork.
+      base_feature: "none",
+    },
+    {
       name: "ExperimentalPolicies",
       status: "experimental",
     },

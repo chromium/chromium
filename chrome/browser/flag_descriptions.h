@@ -1390,6 +1390,9 @@ extern const char kCanvas2DLayersDescription[];
 extern const char kWebMachineLearningNeuralNetworkName[];
 extern const char kWebMachineLearningNeuralNetworkDescription[];
 
+extern const char kExperimentalWebMachineLearningNeuralNetworkName[];
+extern const char kExperimentalWebMachineLearningNeuralNetworkDescription[];
+
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 

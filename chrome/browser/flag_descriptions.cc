@@ -2412,6 +2412,12 @@ const char kWebMachineLearningNeuralNetworkDescription[] =
     "Enables the Web Machine Learning Neural Network (WebNN) API. Spec at "
     "https://www.w3.org/TR/webnn/";
 
+const char kExperimentalWebMachineLearningNeuralNetworkName[] =
+    "Enables experimental WebNN API features";
+const char kExperimentalWebMachineLearningNeuralNetworkDescription[] =
+    "Enables additional, experimental features in Web Machine Learning Neural "
+    "Network (WebNN) API. Requires the \"WebNN API\" flag to be enabled.";
+
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =

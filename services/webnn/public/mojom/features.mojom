@@ -10,3 +10,9 @@ feature kWebMachineLearningNeuralNetwork {
   const string name = "WebMachineLearningNeuralNetwork";
   const bool default_state = false;
 };
+
+// Enables experimental Web Machine Learning Neural Network API features.
+feature kExperimentalWebMachineLearningNeuralNetwork {
+  const string name = "ExperimentalWebMachineLearningNeuralNetwork";
+  const bool default_state = false;
+};

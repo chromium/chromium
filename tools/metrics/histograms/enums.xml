@@ -22681,6 +22681,8 @@ from previous Chrome versions.
   <int value="997264173" label="MacLoopbackAudioForCast:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="998857679" label="DiscardExceptionsImprovements:enabled"/>
+  <int value="1000025209"
+      label="ExperimentalWebMachineLearningNeuralNetwork:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000630368" label="lacros-stability"/>
   <int value="1000706989" label="AutomaticTabDiscarding:disabled"/>
@@ -23183,6 +23185,8 @@ from previous Chrome versions.
   <int value="1214246730" label="TerminalAlternativeRenderer:enabled"/>
   <int value="1214455758" label="VideoRotateToFullscreen:disabled"/>
   <int value="1214580867" label="ArcS2Idle:disabled"/>
+  <int value="1214804717"
+      label="ExperimentalWebMachineLearningNeuralNetwork:enabled"/>
   <int value="1215512170" label="DrawEdgeToEdge:disabled"/>
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
