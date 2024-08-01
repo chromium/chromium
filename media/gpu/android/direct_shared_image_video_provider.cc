@@ -10,8 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,16 +33,11 @@ bool MakeContextCurrent(gpu::CommandBufferStub* stub) {
 }
 
 scoped_refptr<gpu::SharedContextState> GetSharedContext(
-    gpu::CommandBufferStub* stub,
-    gpu::ContextResult* result) {
+    gpu::CommandBufferStub* stub) {
+  gpu::ContextResult result;
   auto shared_context =
-      stub->channel()->gpu_channel_manager()->GetSharedContextState(result);
-  return (*result == gpu::ContextResult::kSuccess) ? shared_context : nullptr;
-}
-
-void ContextStateResultUMA(gpu::ContextResult result) {
-  base::UmaHistogramEnumeration(
-      "Media.GpuSharedImageVideoFactory.SharedContextStateResult", result);
+      stub->channel()->gpu_channel_manager()->GetSharedContextState(&result);
+  return (result == gpu::ContextResult::kSuccess) ? shared_context : nullptr;
 }
 
 }  // namespace
@@ -115,12 +108,10 @@ void GpuSharedImageVideoFactory::Initialize(
     return;
   }
 
-  gpu::ContextResult result;
-  auto shared_context = GetSharedContext(stub_, &result);
+  auto shared_context = GetSharedContext(stub_);
   if (!shared_context) {
     DLOG(ERROR)
         << "GpuSharedImageVideoFactory: Unable to get a shared context.";
-    ContextStateResultUMA(result);
     std::move(gpu_init_cb).Run(nullptr);
     return;
   }
@@ -131,10 +122,8 @@ void GpuSharedImageVideoFactory::Initialize(
   auto scoped_current = std::make_unique<ui::ScopedMakeCurrent>(
       shared_context->context(), shared_context->surface());
   if (!shared_context->IsCurrent(nullptr)) {
-    result = gpu::ContextResult::kTransientFailure;
     DLOG(ERROR)
         << "GpuSharedImageVideoFactory: Unable to make shared context current.";
-    ContextStateResultUMA(result);
     std::move(gpu_init_cb).Run(nullptr);
     return;
   }
@@ -243,12 +232,10 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
 
   const auto& coded_size = spec.coded_size;
 
-  gpu::ContextResult result;
-  auto shared_context = GetSharedContext(stub_, &result);
+  auto shared_context = GetSharedContext(stub_);
   if (!shared_context) {
     DLOG(ERROR)
         << "GpuSharedImageVideoFactory: Unable to get a shared context.";
-    ContextStateResultUMA(result);
     return false;
   }
 

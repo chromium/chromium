@@ -343,13 +343,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kBrowserSideTimerClosedWindow"/>
 </enum>
 
-<enum name="ContextResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="TransientFailure"/>
-  <int value="2" label="FatalFailure"/>
-  <int value="3" label="SurfaceFailure"/>
-</enum>
-
 <enum name="CrasInputStreamOpenSuccess">
   <int value="0" label="Success: Stream opened as indented."/>
   <int value="1" label="Error: Stream already opened."/>

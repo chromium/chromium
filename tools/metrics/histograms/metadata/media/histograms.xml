@@ -3827,16 +3827,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.GpuVideoFrameFactory.SharedContextStateResult"
-    enum="ContextResult" expires_after="2019-06-01">
-  <owner>vikassoni@chromium.org</owner>
-  <owner>liberato@chromium.org</owner>
-  <summary>
-    The error code returned when GetSharedContextState() fails or MakeCurrent()
-    on the SharedContextState fails.
-  </summary>
-</histogram>
-
 <histogram name="Media.HardwareAudioChannelCount" units="units"
     expires_after="never">
 <!-- expires-never: Media platform support planning metric. -->
