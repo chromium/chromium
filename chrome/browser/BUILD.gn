@@ -8324,6 +8324,8 @@ static_library("browser") {
         "metrics/structured/metadata_processor_ash.h",
         "metrics/structured/profile_observer.cc",
         "metrics/structured/profile_observer.h",
+        "metrics/structured/storage_manager_impl.cc",
+        "metrics/structured/storage_manager_impl.h",
         "metrics/structured/structured_metrics_key_events_observer.cc",
         "metrics/structured/structured_metrics_key_events_observer.h",
       ]
