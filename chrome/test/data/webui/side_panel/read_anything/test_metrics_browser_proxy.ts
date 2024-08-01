@@ -12,6 +12,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     MetricsBrowserProxy {
   constructor() {
     super([
+      'incrementMetricCount',
       'recordHighlightOff',
       'recordHighlightOn',
       'recordLanguage',
@@ -25,6 +26,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordVoiceSpeed',
       'recordVoiceType',
     ]);
+  }
+
+  incrementMetricCount(umaName: string) {
+    this.methodCalled('incrementMetricCount', umaName);
   }
 
   recordNewPage() {

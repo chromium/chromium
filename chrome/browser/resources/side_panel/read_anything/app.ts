@@ -459,28 +459,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
   }
 
-  // Record metrics
-  private recordPlayClick() {
-    this.incrementMetricCount('Play');
-  }
-
-  private recordPauseClick() {
-    this.incrementMetricCount('Pause');
-  }
-
-  private recordNextClick() {
-    this.incrementMetricCount('NextButton');
-  }
-
-  private recordPreviousClick() {
-    this.incrementMetricCount('PreviousButton');
-  }
-
-  private incrementMetricCount(action: string) {
-    chrome.readingMode.incrementMetricCount(
-        'Accessibility.ReadAnything.ReadAloud' + action + 'SessionCount');
-  }
-
   private getOffsetInAncestor(node: Node): number {
     if (this.highlightedNodeToOffsetInParent.has(node)) {
       return this.highlightedNodeToOffsetInParent.get(node)!;
@@ -1317,11 +1295,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private onPlayPauseClick_() {
     if (this.speechPlayingState.isSpeechActive) {
       this.logSpeechPlaySession_();
-      this.recordPauseClick();
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
     } else {
       this.playSessionStartTime = Date.now();
-      this.recordPlayClick();
       this.playSpeech();
     }
   }
@@ -1376,7 +1352,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private playNextGranularity_() {
-    this.recordNextClick();
     this.synth.cancel();
     this.resetPreviousHighlight_();
     // Reset the word boundary index whenever we move the granularity position.
@@ -1389,7 +1364,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private playPreviousGranularity_() {
-    this.recordPreviousClick();
     this.synth.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately

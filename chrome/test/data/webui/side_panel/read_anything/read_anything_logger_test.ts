@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, TimeFrom, TimeTo} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, SpeechControls, TimeFrom, TimeTo} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE} from 'chrome-untrusted://webui-test/chai_assert.js';
 // <if expr="chromeos_ash">
 import {ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -30,6 +30,19 @@ suite('Logger', () => {
     MetricsBrowserProxyImpl.setInstance(metrics);
 
     logger = new ReadAnythingLogger();
+  });
+
+  test('speech controls', async () => {
+    logger.logSpeechControlClick(SpeechControls.NEXT);
+    assertEquals(
+        'Accessibility.ReadAnything.ReadAloudNextButtonSessionCount',
+        await metrics.whenCalled('incrementMetricCount'));
+    metrics.reset();
+
+    logger.logSpeechControlClick(SpeechControls.PLAY);
+    assertEquals(
+        'Accessibility.ReadAnything.ReadAloudPlaySessionCount',
+        await metrics.whenCalled('incrementMetricCount'));
   });
 
   test('with speech logs speech played', () => {

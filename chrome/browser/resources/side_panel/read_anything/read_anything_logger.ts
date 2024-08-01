@@ -20,6 +20,13 @@ export enum TimeTo {
   CONSTRUCTOR = 'Constructor',
 }
 
+export enum SpeechControls {
+  PLAY = 'Play',
+  PAUSE = 'Pause',
+  NEXT = 'NextButton',
+  PREVIOUS = 'PreviousButton',
+}
+
 // Handles the business logic for logging.
 export class ReadAnythingLogger {
   private metrics: MetricsBrowserProxy = MetricsBrowserProxyImpl.getInstance();
@@ -137,8 +144,17 @@ export class ReadAnythingLogger {
     this.metrics.recordSpeechPlaybackLength(Date.now() - startTime);
   }
 
+  logSpeechControlClick(control: SpeechControls) {
+    this.metrics.incrementMetricCount(
+        'Accessibility.ReadAnything.ReadAloud' + control + 'SessionCount');
+  }
+
   static getInstance(): ReadAnythingLogger {
     return instance || (instance = new ReadAnythingLogger());
+  }
+
+  static setInstance(obj: ReadAnythingLogger) {
+    instance = obj;
   }
 }
 

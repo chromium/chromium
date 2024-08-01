@@ -95,8 +95,10 @@ export enum ReadAnythingSpeechError {
   COUNT = 9,
 }
 
-// A proxy for forwarding logging calls to chrome.metricsPrivate.
+// A proxy for forwarding logging calls to chrome.metricsPrivate or
+// chrome.readingMode.
 export interface MetricsBrowserProxy {
+  incrementMetricCount(action: string): void;
   recordHighlightOff(): void;
   recordHighlightOn(): void;
   recordLanguage(lang: string): void;
@@ -112,6 +114,10 @@ export interface MetricsBrowserProxy {
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
+  incrementMetricCount(umaName: string) {
+    chrome.readingMode.incrementMetricCount(umaName);
+  }
+
   recordSpeechError(error: ReadAnythingSpeechError) {
     chrome.metricsPrivate.recordEnumerationValue(
         UmaName.SPEECH_ERROR, error, ReadAnythingSpeechError.COUNT);
