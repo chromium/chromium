@@ -424,10 +424,17 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
     // Execute session.new for the newly-created mapper instance.
     base::Value::Dict bidi_cmd;
+    base::Value::Dict mapper_params = params.Clone();
+    // Mapper currently relies on getting capabilities processed by
+    // ChromeDriver. The mapper only considers the alwaysMatch part.
+    mapper_params.SetByDottedPath(
+        "capabilities.alwaysMatch.unhandledPromptBehavior",
+        session->unhandled_prompt_behavior.MapperOptionsView());
     bidi_cmd.Set("channel", "/init-bidi-session");
     bidi_cmd.Set("id", 1);
-    bidi_cmd.Set("params", params.Clone());
+    bidi_cmd.Set("params", std::move(mapper_params));
     bidi_cmd.Set("method", "session.new");
+    VLOG(0) << "Sending session.new to mapper: " << bidi_cmd;
     base::Value::Dict bidi_response;
     status = web_view->SendBidiCommand(
         std::move(bidi_cmd), Timeout(base::Seconds(20)), bidi_response);
