@@ -15,6 +15,15 @@ declare_args() {
                           is_chromeos || is_fuchsia || is_ios
 }
 
+if (is_ios) {
+  declare_args() {
+    # iOS is bring-your-own-model. If ios_on_device_llm_path is set to a
+    # non-empty value, bundles the given model file. Paths can be absolute or
+    # relative to the source root directory.
+    ios_on_device_llm_path = ""
+  }
+}
+
 declare_args() {
   # You can set the variable 'build_with_internal_optimization_guide' to true
   # even in a developer build in args.gn.  Setting this variable explicitly to true will
@@ -28,10 +37,12 @@ declare_args() {
   # relevant files not being present.
   # Mac: //chrome/installer/mac/signing/parts.py
   # Windows: //chrome/installer/mini_installer/chrome.release and internal archive files
-  if (is_fuchsia || is_ios || is_android) {
-    # Fuchsia, iOS, and Android should work but is not included in the set we release for, so we do
+  if (is_fuchsia || is_android) {
+    # Fuchsia and Android should work but is not included in the set we release for, so we do
     # not needlessly increase the binary size.
     build_with_internal_optimization_guide = false
+  } else if (is_ios) {
+    build_with_internal_optimization_guide = ios_on_device_llm_path != ""
   } else if (build_with_tflite_lib) {
     # When TFLite works for windows arm64, this lib should just work seamlessly.
     # Use is_chrome_branded as a proxy for "does src-internal exist".
