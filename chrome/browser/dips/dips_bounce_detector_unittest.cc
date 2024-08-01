@@ -1403,11 +1403,20 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
           SiteDataAccessType::kNone),
       MakeUrlAndId("http://e.test/"), false);
 
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://b.test/"),
+                                          CookieOperation::kChange));
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://d.test/"),
+                                          CookieOperation::kRead));
   EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://d.test/"),
                                           CookieOperation::kChange));
-  // Update c.test even though it preceded d.test:
-  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://c.test/"),
-                                          CookieOperation::kRead));
+  // Can't modify c.test record after d.test record already updated.
+  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://c.test/"),
+                                           CookieOperation::kRead));
+  // The failed attempt to add an access to c.test prevents additions to any
+  // other URL (since the c.test access is interpreted as a post-navigation
+  // cookie access).
+  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://d.test/"),
+                                           CookieOperation::kRead));
 
   context.AppendCommitted(
       MakeClientRedirect("http://e.test/", SiteDataAccessType::kNone),
@@ -1415,25 +1424,17 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
                           SiteDataAccessType::kRead),
       MakeUrlAndId("http://h.test/"), false);
 
+  // This late "write" will be merged with the "read" already recorded.
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://g.test/"),
+                                          CookieOperation::kChange));
+
   context.AppendCommitted(
       MakeClientRedirect("http://h.test/", SiteDataAccessType::kNone),
       MakeServerRedirects({"http://i.test/"}, SiteDataAccessType::kRead),
       MakeUrlAndId("http://j.test/"), false);
 
-  // Since kMaxLookback=5, AddLateCookieAccess() can attribute late accesses to
-  // the last 5 redirects:
-  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://i.test/"),
-                                          CookieOperation::kRead));
-  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://h.test/"),
-                                          CookieOperation::kRead));
-  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://g.test/"),
-                                          CookieOperation::kChange));
-  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://f.test/"),
-                                          CookieOperation::kRead));
-  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://e.test/"),
-                                          CookieOperation::kRead));
-  // But it will fail to update d.test since it's too far back in the chain.
-  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://d.test/"),
+  // Can't modify h.test since i.test already has a known cookie access.
+  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://h.test/"),
                                            CookieOperation::kRead));
 
   context.EndChain(MakeUrlAndId("http://j.test/"), false);
@@ -1445,19 +1446,19 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   EXPECT_THAT(
       chains[0].second,
       ElementsAre(AllOf(HasUrl("http://b.test/"),
-                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
-                  AllOf(HasUrl("http://c.test/"),
-                        HasSiteDataAccessType(SiteDataAccessType::kRead)),
-                  AllOf(HasUrl("http://d.test/"),
                         HasSiteDataAccessType(SiteDataAccessType::kWrite)),
+                  AllOf(HasUrl("http://c.test/"),
+                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
+                  AllOf(HasUrl("http://d.test/"),
+                        HasSiteDataAccessType(SiteDataAccessType::kReadWrite)),
                   AllOf(HasUrl("http://e.test/"),
-                        HasSiteDataAccessType(SiteDataAccessType::kRead)),
+                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
                   AllOf(HasUrl("http://f.test/"),
                         HasSiteDataAccessType(SiteDataAccessType::kRead)),
                   AllOf(HasUrl("http://g.test/"),
                         HasSiteDataAccessType(SiteDataAccessType::kReadWrite)),
                   AllOf(HasUrl("http://h.test/"),
-                        HasSiteDataAccessType(SiteDataAccessType::kRead)),
+                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
                   AllOf(HasUrl("http://i.test/"),
                         HasSiteDataAccessType(SiteDataAccessType::kRead))));
 }
