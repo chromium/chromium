@@ -751,10 +751,14 @@ TEST_F(HttpStreamPoolJobTest, SetPriority) {
       EndpointHelper().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointsUpdated();
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
+  ASSERT_EQ(request1->GetLoadState(), LOAD_STATE_CONNECTING);
+  ASSERT_EQ(request2->GetLoadState(), LOAD_STATE_CONNECTING);
 
   RunUntilIdle();
   ASSERT_FALSE(request1->completed());
   ASSERT_TRUE(request2->completed());
+  ASSERT_EQ(request1->GetLoadState(), LOAD_STATE_CONNECTING);
+  ASSERT_EQ(request2->GetLoadState(), LOAD_STATE_IDLE);
   std::unique_ptr<HttpStream> stream = requester2.ReleaseStream();
   ASSERT_TRUE(stream);
 }
@@ -820,13 +824,15 @@ TEST_F(HttpStreamPoolJobTest, TlsCryptoReadyDelayed) {
   socket_factory()->AddSSLSocketDataProvider(&ssl);
 
   StreamRequester requester;
-  requester.set_destination("https://a.test").RequestStream(pool());
+  HttpStreamRequest* request =
+      requester.set_destination("https://a.test").RequestStream(pool());
 
   endpoint_request
       ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
-  EXPECT_FALSE(requester.result().has_value());
+  ASSERT_FALSE(requester.result().has_value());
+  ASSERT_EQ(request->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
 
   endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
   RunUntilIdle();
@@ -1098,6 +1104,8 @@ TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   ASSERT_EQ(group.ActiveStreamSocketCount(), kMaxPerGroup);
   ASSERT_EQ(job->InFlightAttemptCount(), kMaxPerGroup);
   ASSERT_EQ(job->PendingRequestCount(), 1u);
+  ASSERT_EQ(stalled_request->GetLoadState(),
+            LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET);
 
   // Finish all in-flight attempts successfully.
   RunUntilIdle();
@@ -1204,6 +1212,8 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
   auto data2 = std::make_unique<SequencedSocketData>();
   data2->set_connect_data(MockConnect(ASYNC, OK));
   socket_factory()->AddSocketDataProvider(data2.get());
+  ASSERT_EQ(request2->GetLoadState(),
+            LOAD_STATE_WAITING_FOR_STALLED_SOCKET_POOL);
 
   RunUntilIdle();
   Job* job_b = group_b.GetJobForTesting();

@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -55,6 +56,10 @@ HttpStreamPool::Job::RequestEntry::CreateRequest(
 }
 
 LoadState HttpStreamPool::Job::RequestEntry::GetLoadState() const {
+  CHECK(request_);
+  if (request_->completed()) {
+    return LOAD_STATE_IDLE;
+  }
   return job_->GetLoadState();
 }
 
@@ -296,11 +301,34 @@ bool HttpStreamPool::Job::RequiresHTTP11() {
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
+  if (group_->ReachedMaxStreamLimit()) {
+    return LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET;
+  }
+
+  if (pool()->ReachedMaxStreamLimit()) {
+    return LOAD_STATE_WAITING_FOR_STALLED_SOCKET_POOL;
+  }
+
+  LoadState load_state = LOAD_STATE_IDLE;
+
+  // When there are in-flight attempts, use most advanced one.
+  for (const auto& in_flight_attempt : in_flight_attempts_) {
+    load_state =
+        std::max(load_state, in_flight_attempt->attempt->GetLoadState());
+    // There should not be a load state later than LOAD_STATE_SSL_HANDSHAKE.
+    if (load_state == LOAD_STATE_SSL_HANDSHAKE) {
+      break;
+    }
+  }
+
+  if (load_state != LOAD_STATE_IDLE) {
+    return load_state;
+  }
+
   if (service_endpoint_request_ && !service_endpoint_request_finished_) {
     return LOAD_STATE_RESOLVING_HOST;
   }
 
-  // TODO(crbug.com/346835898): Add more load state as we implement this class.
   return LOAD_STATE_IDLE;
 }
 
