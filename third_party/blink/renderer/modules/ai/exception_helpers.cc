@@ -42,9 +42,13 @@ void ThrowInvalidContextException(ExceptionState& exception_state) {
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
-  resolver->Reject(DOMException::Create(
+  resolver->Reject(CreateInternalErrorException());
+}
+
+DOMException* CreateInternalErrorException() {
+  return DOMException::Create(
       kExceptionMessageServiceUnavailable,
-      DOMException::GetErrorName(DOMExceptionCode::kOperationError)));
+      DOMException::GetErrorName(DOMExceptionCode::kOperationError));
 }
 
 namespace {

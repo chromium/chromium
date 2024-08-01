@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_text_session_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -27,16 +28,6 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // LINT.IfChange(AIModelAvailability)
-  enum class ModelAvailability {
-    kReadily = 0,
-    kAfterDownload = 1,
-    kNo = 2,
-
-    kMaxValue = kNo,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelAvailability)
-
   explicit AI(ExecutionContext* context);
   ~AI() override = default;
 
@@ -58,6 +49,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
+  AITextSessionFactory text_session_factory_;
 };
 
 }  // namespace blink

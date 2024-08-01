@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No">The model is not available for this device.</int>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai.h:AIModelAvailability) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_text_session_factory.h:AIModelAvailability) -->
 
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 

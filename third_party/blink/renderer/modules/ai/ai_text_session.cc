@@ -4,11 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
@@ -17,186 +13,146 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
-#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-using mojom::blink::ModelStreamingResponseStatus;
+using blink::mojom::blink::ModelStreamingResponseStatus;
 
-// Implementation of blink::mojom::blink::ModelStreamingResponder that
-// handles the streaming output of the model execution, and returns the full
-// result through a promise.
-class AITextSession::Responder final
-    : public GarbageCollected<AITextSession::Responder>,
-      public blink::mojom::blink::ModelStreamingResponder,
-      public ContextLifecycleObserver {
- public:
-  explicit Responder(ScriptState* script_state)
-      : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
-            script_state)),
-        receiver_(this, ExecutionContext::From(script_state)) {
-    SetContextLifecycleNotifier(ExecutionContext::From(script_state));
-  }
-  ~Responder() override = default;
+AITextSession::Responder::Responder(blink::ScriptState* script_state)
+    : resolver_(
+          MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state)),
+      receiver_(this, blink::ExecutionContext::From(script_state)) {
+  SetContextLifecycleNotifier(ExecutionContext::From(script_state));
+}
 
-  void Trace(Visitor* visitor) const override {
-    ContextLifecycleObserver::Trace(visitor);
-    visitor->Trace(resolver_);
-    visitor->Trace(receiver_);
-  }
+AITextSession::Responder::~Responder() = default;
 
-  ScriptPromiseResolver<IDLString>* GetResolver() { return resolver_; }
+void AITextSession::Responder::Trace(Visitor* visitor) const {
+  ContextLifecycleObserver::Trace(visitor);
+  visitor->Trace(resolver_);
+  visitor->Trace(receiver_);
+}
 
-  mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
-  BindNewPipeAndPassRemote(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return receiver_.BindNewPipeAndPassRemote(task_runner);
-  }
+ScriptPromiseResolver<IDLString>* AITextSession::Responder::GetResolver() {
+  return resolver_;
+}
 
-  // `blink::mojom::blink::ModelStreamingResponder` implementation.
-  void OnResponse(ModelStreamingResponseStatus status,
-                  const WTF::String& text) override {
-    base::UmaHistogramEnumeration(
-        AIMetrics::GetAISessionResponseStatusMetricName(
-            AIMetrics::AISessionType::kText),
-        status);
+mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
+AITextSession::Responder::BindNewPipeAndPassRemote(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return receiver_.BindNewPipeAndPassRemote(task_runner);
+}
 
-    response_callback_count_++;
+void AITextSession::Responder::OnResponse(ModelStreamingResponseStatus status,
+                                          const WTF::String& text) {
+  base::UmaHistogramEnumeration(AIMetrics::GetAISessionResponseStatusMetricName(
+                                    AIMetrics::AISessionType::kText),
+                                status);
 
-    if (status != ModelStreamingResponseStatus::kOngoing) {
-      // When the status is not kOngoing, the promise should either be resolved
-      // or rejected.
-      if (status == ModelStreamingResponseStatus::kComplete) {
-        resolver_->Resolve(response_);
-      } else {
-        resolver_->Reject(
-            ConvertModelStreamingResponseErrorToDOMException(status));
-      }
-      // Record the per execution metrics and run the complete callback.
-      base::UmaHistogramCounts1M(AIMetrics::GetAISessionResponseSizeMetricName(
-                                     AIMetrics::AISessionType::kText),
-                                 int(response_.CharactersSizeInBytes()));
-      base::UmaHistogramCounts1M(
-          AIMetrics::GetAISessionResponseCallbackCountMetricName(
-              AIMetrics::AISessionType::kText),
-          response_callback_count_);
-      Cleanup();
-      return;
+  response_callback_count_++;
+
+  if (status != ModelStreamingResponseStatus::kOngoing) {
+    // When the status is not kOngoing, the promise should either be resolved
+    // or rejected.
+    if (status == ModelStreamingResponseStatus::kComplete) {
+      resolver_->Resolve(response_);
+    } else {
+      resolver_->Reject(
+          ConvertModelStreamingResponseErrorToDOMException(status));
     }
-    // When the status is kOngoing, update the response with the latest value.
-    response_ = text;
-  }
-
-  // ContextLifecycleObserver implementation.
-  void ContextDestroyed() override { Cleanup(); }
-
- private:
-  void Cleanup() {
-    resolver_ = nullptr;
-    receiver_.reset();
-    keep_alive_.Clear();
-  }
-
-  Member<ScriptPromiseResolver<IDLString>> resolver_;
-  WTF::String response_;
-  int response_callback_count_;
-
-  HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder, Responder>
-      receiver_;
-  SelfKeepAlive<Responder> keep_alive_{this};
-};
-
-// Implementation of blink::mojom::blink::ModelStreamingResponder that
-// handles the streaming output of the model execution, and returns the full
-// result through a ReadableStream.
-class AITextSession::StreamingResponder final
-    : public UnderlyingSourceBase,
-      public blink::mojom::blink::ModelStreamingResponder {
- public:
-  explicit StreamingResponder(ScriptState* script_state)
-      : UnderlyingSourceBase(script_state),
-        script_state_(script_state),
-        receiver_(this, ExecutionContext::From(script_state)) {}
-  ~StreamingResponder() override = default;
-
-  void Trace(Visitor* visitor) const override {
-    UnderlyingSourceBase::Trace(visitor);
-    visitor->Trace(script_state_);
-    visitor->Trace(receiver_);
-  }
-
-  mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
-  BindNewPipeAndPassRemote(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return receiver_.BindNewPipeAndPassRemote(task_runner);
-  }
-
-  // `UnderlyingSourceBase` implementation.
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState& exception_state) override {
-    return ScriptPromiseUntyped::CastUndefined(script_state);
-  }
-
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState& exception_state) override {
-    return ScriptPromiseUntyped::CastUndefined(script_state);
-  }
-
-  // `blink::mojom::blink::ModelStreamingResponder` implementation.
-  void OnResponse(ModelStreamingResponseStatus status,
-                  const WTF::String& text) override {
-    base::UmaHistogramEnumeration(
-        AIMetrics::GetAISessionResponseStatusMetricName(
+    // Record the per execution metrics and run the complete callback.
+    base::UmaHistogramCounts1M(AIMetrics::GetAISessionResponseSizeMetricName(
+                                   AIMetrics::AISessionType::kText),
+                               int(response_.CharactersSizeInBytes()));
+    base::UmaHistogramCounts1M(
+        AIMetrics::GetAISessionResponseCallbackCountMetricName(
             AIMetrics::AISessionType::kText),
-        status);
-
-    response_callback_count_++;
-
-    if (status != ModelStreamingResponseStatus::kOngoing) {
-      // When the status is not kOngoing, the controller of
-      // ReadableStream should be closed.
-      if (status == ModelStreamingResponseStatus::kComplete) {
-        Controller()->Close();
-      } else {
-        Controller()->Error(
-            ConvertModelStreamingResponseErrorToDOMException(status));
-      }
-      // Record the per execution metrics and run the complete callback.
-      base::UmaHistogramCounts1M(AIMetrics::GetAISessionResponseSizeMetricName(
-                                     AIMetrics::AISessionType::kText),
-                                 response_size_);
-      base::UmaHistogramCounts1M(
-          AIMetrics::GetAISessionResponseCallbackCountMetricName(
-              AIMetrics::AISessionType::kText),
-          response_callback_count_);
-      return;
-    }
-    // When the status is kOngoing, update the response size and enqueue the
-    // latest response.
-    response_size_ = int(text.CharactersSizeInBytes());
-    v8::HandleScope handle_scope(script_state_->GetIsolate());
-    Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
+        response_callback_count_);
+    Cleanup();
+    return;
   }
+  // When the status is kOngoing, update the response with the latest value.
+  response_ = text;
+}
 
- private:
-  int response_size_;
-  int response_callback_count_;
-  Member<ScriptState> script_state_;
-  HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder,
-                   StreamingResponder>
-      receiver_;
-};
+void AITextSession::Responder::Cleanup() {
+  resolver_ = nullptr;
+  receiver_.reset();
+  keep_alive_.Clear();
+}
+
+AITextSession::StreamingResponder::StreamingResponder(ScriptState* script_state)
+    : UnderlyingSourceBase(script_state),
+      script_state_(script_state),
+      receiver_(this, ExecutionContext::From(script_state)) {}
+AITextSession::StreamingResponder::~StreamingResponder() = default;
+
+void AITextSession::StreamingResponder::Trace(Visitor* visitor) const {
+  UnderlyingSourceBase::Trace(visitor);
+  visitor->Trace(script_state_);
+  visitor->Trace(receiver_);
+}
+
+mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
+AITextSession::StreamingResponder::BindNewPipeAndPassRemote(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return receiver_.BindNewPipeAndPassRemote(task_runner);
+}
+
+ScriptPromiseUntyped AITextSession::StreamingResponder::Pull(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  return ScriptPromiseUntyped::CastUndefined(script_state);
+}
+
+ScriptPromiseUntyped AITextSession::StreamingResponder::Cancel(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
+  return ScriptPromiseUntyped::CastUndefined(script_state);
+}
+
+void AITextSession::StreamingResponder::OnResponse(
+    ModelStreamingResponseStatus status,
+    const WTF::String& text) {
+  base::UmaHistogramEnumeration(AIMetrics::GetAISessionResponseStatusMetricName(
+                                    AIMetrics::AISessionType::kText),
+                                status);
+
+  response_callback_count_++;
+
+  if (status != ModelStreamingResponseStatus::kOngoing) {
+    // When the status is not kOngoing, the controller of
+    // ReadableStream should be closed.
+    if (status == ModelStreamingResponseStatus::kComplete) {
+      Controller()->Close();
+    } else {
+      Controller()->Error(
+          ConvertModelStreamingResponseErrorToDOMException(status));
+    }
+    // Record the per execution metrics and run the complete callback.
+    base::UmaHistogramCounts1M(AIMetrics::GetAISessionResponseSizeMetricName(
+                                   AIMetrics::AISessionType::kText),
+                               response_size_);
+    base::UmaHistogramCounts1M(
+        AIMetrics::GetAISessionResponseCallbackCountMetricName(
+            AIMetrics::AISessionType::kText),
+        response_callback_count_);
+    return;
+  }
+  // When the status is kOngoing, update the response size and enqueue the
+  // latest response.
+  response_size_ = int(text.CharactersSizeInBytes());
+  v8::HandleScope handle_scope(script_state_->GetIsolate());
+  Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
+}
 
 AITextSession::AITextSession(
     ExecutionContext* context,

@@ -23,6 +23,8 @@ void ThrowInvalidContextException(ExceptionState& exception_state);
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
 
+DOMException* CreateInternalErrorException();
+
 DOMException* ConvertModelStreamingResponseErrorToDOMException(
     ModelStreamingResponseStatus error);
 
