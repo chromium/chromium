@@ -225,6 +225,10 @@ id<GREYMatcher> ShareButton() {
   return [ChromeMatchersAppInterface shareButton];
 }
 
+id<GREYMatcher> ShowFullURLFromWebContextMenuButton() {
+  return [ChromeMatchersAppInterface showFullURLFromWebContextMenu];
+}
+
 id<GREYMatcher> TabShareButton() {
   return [ChromeMatchersAppInterface tabShareButton];
 }

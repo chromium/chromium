@@ -543,6 +543,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_not([self tabShareButton]), grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)showFullURLFromWebContextMenu {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          contextMenuItemWithAccessibilityLabelID:
+              (IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL)],
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabShareButton {
   return grey_allOf(
       grey_anyOf(grey_accessibilityID(kToolbarShareButtonIdentifier),
