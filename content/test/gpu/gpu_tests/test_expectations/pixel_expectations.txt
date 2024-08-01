@@ -442,6 +442,8 @@ crbug.com/328649150 [ sonoma amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHi
 crbug.com/354152172 [ mac amd angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 crbug.com/354152172 [ mac intel angle-opengl ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
+crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
+
 
 # Fails almost consistently, but likely to pass when run on its own in the retry.
 crbug.com/1484212 [ win debug nvidia ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]

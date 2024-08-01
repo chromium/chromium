@@ -1321,7 +1321,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
-            "gpu": "1002:67ef",
+            "gpu": "1002:7340",
             "hidpi": "1",
             "os": "Mac-14.4.1",
             "pool": "chromium.tests.gpu",

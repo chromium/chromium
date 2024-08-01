@@ -678,7 +678,7 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
 
-crbug.com/328100306 [ amd-0x67ef angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328100306 [ amd angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 ## SkiaGraphite on Metal AMD ##
 
@@ -750,9 +750,9 @@ crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conforman
 # driver on 10.13.6 specifically, and are still flaky. Unfortunately when the
 # tests fail, they fail three times in a row, so we must mark them failing
 # rather than flaky.
-crbug.com/870856 [ mac amd-0x67ef angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
+crbug.com/870856 [ mac amd angle-opengl ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 
-crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
@@ -783,6 +783,13 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_lines.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
+
+crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance2/rendering/blitframebuffer-resolve-to-back-buffer.html [ Failure ]
+crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
+crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
+crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 
 ## Mac Intel ##
 
