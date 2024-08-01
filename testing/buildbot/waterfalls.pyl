@@ -269,7 +269,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'mac_10.15',
+          'mac_14_x64',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_isolated_script_tests',
