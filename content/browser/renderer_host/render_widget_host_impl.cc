@@ -1775,8 +1775,13 @@ void RenderWidgetHostImpl::AddSuppressShowingImeCallback(
 }
 
 void RenderWidgetHostImpl::RemoveSuppressShowingImeCallback(
-    const SuppressShowingImeCallback& callback) {
+    const SuppressShowingImeCallback& callback,
+    bool trigger_ime) {
   std::erase(suppress_showing_ime_callbacks_, callback);
+  if (trigger_ime && !saved_text_input_state_for_suppression_.is_null()) {
+    saved_text_input_state_for_suppression_->always_hide_ime = false;
+    TextInputStateChanged(std::move(saved_text_input_state_for_suppression_));
+  }
 }
 
 void RenderWidgetHostImpl::AddInputEventObserver(
@@ -2899,13 +2904,16 @@ TouchEmulatorImpl* RenderWidgetHostImpl::GetTouchEmulator(
 
 void RenderWidgetHostImpl::TextInputStateChanged(
     ui::mojom::TextInputStatePtr state) {
+  saved_text_input_state_for_suppression_.reset();
   if (!view_) {
     return;
   }
   for (auto& callback : suppress_showing_ime_callbacks_) {
     if (callback.Run()) {
       state->always_hide_ime = true;
-      break;
+      saved_text_input_state_for_suppression_ = std::move(state);
+      view_->TextInputStateChanged(*saved_text_input_state_for_suppression_);
+      return;
     }
   }
   view_->TextInputStateChanged(*state);

@@ -217,13 +217,16 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddMouseEventCallback(const MouseEventCallback& callback) = 0;
   virtual void RemoveMouseEventCallback(const MouseEventCallback& callback) = 0;
 
-  // Add/remove a callback that, when it returns true, will suppress IME
+  // Adds a callback that, when it returns true, will suppress IME
   // display.
   using SuppressShowingImeCallback = base::RepeatingCallback<bool()>;
   virtual void AddSuppressShowingImeCallback(
       const SuppressShowingImeCallback& callback) = 0;
+  // Removes the callback to suppress IME display. If `trigger_ime` is set tu
+  // true, it will also try to show the IME display after the callback removal.
   virtual void RemoveSuppressShowingImeCallback(
-      const SuppressShowingImeCallback& callback) = 0;
+      const SuppressShowingImeCallback& callback,
+      bool trigger_ime) = 0;
 
   // Observer for WebInputEvents.
   class InputEventObserver {

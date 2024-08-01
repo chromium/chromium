@@ -53,7 +53,8 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::Reset() {
   if (!suppress_callback_.is_null() && frame_driver_) {
     frame_driver_->render_frame_host()
         ->GetRenderWidgetHost()
-        ->RemoveSuppressShowingImeCallback(suppress_callback_);
+        ->RemoveSuppressShowingImeCallback(suppress_callback_,
+                                           /*trigger_ime=*/false);
   }
   suppress_callback_.Reset();
 }
