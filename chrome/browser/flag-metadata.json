@@ -6928,8 +6928,8 @@
   },
   {
     "name": "os-settings-revamp-wayfinding",
-    "owners": [ "wesokuhara@chromium.org", "cros-settings@google.com" ],
-    "expiry_milestone": 128
+    "owners": [ "wesokuhara@google.com", "cros-settings@google.com" ],
+    "expiry_milestone": 132
   },
   {
     "name": "overflow-menu-customization",
