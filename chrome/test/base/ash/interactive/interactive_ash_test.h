@@ -101,6 +101,11 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep
   OpenAddCustomApnDetailsDialog(const ui::ElementIdentifier& element_id);
 
+  // This function expects the Settings app to already be open and on the APN
+  // subpage.
+  ui::test::internal::InteractiveTestPrivate::MultiStep OpenApnSelectionDialog(
+      const ui::ElementIdentifier& element_id);
+
   // Open up the "Add built-in VPN" dialog. This function expects the Settings
   // app to already be open.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenAddBuiltInVpnDialog(

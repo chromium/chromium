@@ -719,8 +719,18 @@ void FakeHermesEuiccClient::CreateCellularService(
                                    base::Value(false));
   service_test->SetServiceProperty(service_path, shill::kVisibleProperty,
                                    base::Value(true));
-  // Add the default cellular APN. This is intended to simulate the
-  // auto-detecting APN in Shill.
+  CreateDefaultModbApn(service_path);
+
+  ShillProfileClient::TestInterface* profile_test =
+      ShillProfileClient::Get()->GetTestInterface();
+  profile_test->AddService(ShillProfileClient::GetSharedProfilePath(),
+                           service_path);
+}
+
+void FakeHermesEuiccClient::CreateDefaultModbApn(
+    const std::string& service_path) {
+  ShillServiceClient::TestInterface* service_test =
+      ShillServiceClient::Get()->GetTestInterface();
   auto apn_value =
       base::Value::Dict()
           .Set(shill::kApnProperty, kFakeDefaultApn)
@@ -728,15 +738,26 @@ void FakeHermesEuiccClient::CreateCellularService(
           .Set(shill::kApnLocalizedNameProperty, "localized test apn")
           .Set(shill::kApnUsernameProperty, "user name")
           .Set(shill::kApnPasswordProperty, "password")
-          .Set(shill::kApnAuthenticationProperty, "chap");
+          .Set(shill::kApnAuthenticationProperty, "chap")
+          .Set(shill::kApnTypesProperty, shill::kApnTypeDefault)
+          .Set(shill::kApnSourceProperty, shill::kApnSourceMoDb);
   service_test->SetServiceProperty(service_path,
                                    shill::kCellularLastGoodApnProperty,
-                                   base::Value(std::move(apn_value)));
+                                   base::Value(apn_value.Clone()));
+  service_test->SetServiceProperty(service_path, shill::kCellularApnProperty,
+                                   base::Value(apn_value.Clone()));
+  base::Value::List apn_list;
+  apn_list.Append(std::move(apn_value));
+  ShillDeviceClient::TestInterface* device_test =
+      ShillDeviceClient::Get()->GetTestInterface();
+  DCHECK(device_test);
 
-  ShillProfileClient::TestInterface* profile_test =
-      ShillProfileClient::Get()->GetTestInterface();
-  profile_test->AddService(ShillProfileClient::GetSharedProfilePath(),
-                           service_path);
+  std::string device_path =
+      device_test->GetDevicePathForType(shill::kTypeCellular);
+  CHECK(!device_path.empty());
+  device_test->SetDeviceProperty(device_path, shill::kCellularApnListProperty,
+                                 base::Value(std::move(apn_list)),
+                                 /*notify_change=*/false);
 }
 
 void FakeHermesEuiccClient::CallNotifyPropertyChanged(

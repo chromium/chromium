@@ -111,8 +111,36 @@ WebContentsInteractionTestUtil::DeepQuery ApnListFirstItem() {
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemName() {
+  return ApnListFirstItem() + "div#apnName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemSublabel() {
+  return ApnListFirstItem() + "div#subLabel";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItem(int n) {
   return InternetPage() + "apn-subpage" + "apn-list" +
-         "apn-list-item:first-of-type" + "div#apnName";
+         base::StringPrintf("apn-list-item:nth-of-type(%u)", n);
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemName(int n) {
+  return ApnListNthItem(n) + "div#apnName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton() {
+  return ApnSelectionDialog() + "cr-button#apnSelectionActionBtn";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionDialog() {
+  return InternetPage() + "apn-subpage" + "apn-list" + "apn-selection-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItem() {
+  return ApnSelectionDialog() + "apn-selection-dialog-list-item:first-of-type";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItemName() {
+  return ApnSelectionFirstItem() + "span#friendlyApnName";
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton() {
@@ -121,6 +149,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton() {
 
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
   return InternetPage() + "button#createCustomApnButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton() {
+  return InternetPage() + "button#discoverMoreApnsButton";
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent() {

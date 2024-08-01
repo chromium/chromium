@@ -377,6 +377,7 @@ TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles) {
 }
 
 TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {
+  InitCellular();
   AddESimProfile(hermes::profile::State::kActive, kTestESimCellularServicePath);
   InitMetricsLogger();
   histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 2);

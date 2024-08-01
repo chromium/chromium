@@ -241,6 +241,22 @@ InteractiveAshTest::OpenAddCustomApnDetailsDialog(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenApnSelectionDialog(
+    const ui::ElementIdentifier& element_id) {
+  return Steps(
+      WaitForElementEnabled(
+          element_id, ash::settings::cellular::ApnSubpageActionMenuButton()),
+      ClickElement(element_id,
+                   ash::settings::cellular::ApnSubpageActionMenuButton()),
+      WaitForElementEnabled(
+          element_id, ash::settings::cellular::ApnSubpageShowKnownApnsButton()),
+      ClickElement(element_id,
+                   ash::settings::cellular::ApnSubpageShowKnownApnsButton()),
+      WaitForElementExists(element_id,
+                           ash::settings::cellular::ApnSelectionDialog()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::OpenAddBuiltInVpnDialog(
     const ui::ElementIdentifier& element_id) {
   return Steps(

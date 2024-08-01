@@ -85,17 +85,41 @@ WebContentsInteractionTestUtil::DeepQuery ApnDialogUsernameInput();
 // The password input in APN details dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnDialogPasswordInput();
 
-// The first apn item in APN list.
+// The first APN item in APN list.
 WebContentsInteractionTestUtil::DeepQuery ApnListFirstItem();
 
-// The first apn item name in APN list.
+// The first APN item name in APN list.
 WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemName();
+
+// The first APN item sublabel in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemSublabel();
+
+// The n-th APN item in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItem(int n);
+
+// The n-th APN item in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemName(int n);
+
+// The confirm button in the APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton();
+
+// The APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionDialog();
+
+// The first APN in the APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItem();
+
+// The first APN in the APNs selection dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnSelectionFirstItemName();
 
 // The action menu button in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton();
 
 // The "Create new APN" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton();
+
+// The "Show known APNs" button in the action menu in APN subpage.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton();
 
 // The "Zero" state banner in APN subpage when there're no APNs.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent();

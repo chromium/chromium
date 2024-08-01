@@ -578,6 +578,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
 
 TEST_F(CellularESimProfileHandlerImplTest, IgnoresESimProfilesWithNoIccid) {
   const char kTestIccid[] = "1245671234567";
+  AddCellularDevice();
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
   Init();
   SetDevicePrefs();
