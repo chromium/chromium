@@ -55,15 +55,19 @@ PasswordPromoCardBase::PasswordPromoCardBase(const std::string& id,
   const base::Value::List& promo_card_prefs =
       prefs_->GetList(prefs::kPasswordManagerPromoCardsList);
   for (const auto& promo_card_pref : promo_card_prefs) {
-    if (*promo_card_pref.GetDict().FindString(kIdKey) == id) {
-      number_of_times_shown_ =
-          *promo_card_pref.GetDict().FindInt(kNumberOfTimesShownKey);
-      last_time_shown_ =
-          base::ValueToTime(promo_card_pref.GetDict().Find(kLastTimeShownKey))
-              .value();
-      was_dismissed_ = *promo_card_pref.GetDict().FindBool(kWasDismissedKey);
-      return;
+    auto* promo_id = promo_card_pref.GetDict().FindString(kIdKey);
+
+    if (promo_id == nullptr || *promo_id != id) {
+      continue;
     }
+
+    number_of_times_shown_ =
+        *promo_card_pref.GetDict().FindInt(kNumberOfTimesShownKey);
+    last_time_shown_ =
+        base::ValueToTime(promo_card_pref.GetDict().Find(kLastTimeShownKey))
+            .value();
+    was_dismissed_ = *promo_card_pref.GetDict().FindBool(kWasDismissedKey);
+    return;
   }
   // If there is no pref with matching ID, create one.
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordManagerPromoCardsList);
