@@ -28,6 +28,9 @@ class DeviceSwitcherResultDispatcher;
                  (segmentation_platform::DeviceSwitcherResultDispatcher*)
                      dispatcher;
 
+// Disconnects this mediator.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_DEFAULT_BROWSER_DEFAULT_BROWSER_SCREEN_MEDIATOR_H_

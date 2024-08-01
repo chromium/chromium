@@ -44,6 +44,11 @@
   return self;
 }
 
+- (void)disconnect {
+  _segmentationService = nullptr;
+  _deviceSwitcherResultDispatcher = nullptr;
+}
+
 - (void)setConsumer:(id<DefaultBrowserScreenConsumer>)consumer {
   _consumer = consumer;
   if (_consumer) {
@@ -77,52 +82,54 @@
 // Sets the Default Browser screen view title with targeted messaging based on
 // the user's segment.
 - (void)updatePromoTitleForConsumer {
-  if (_userSegment ==
-          segmentation_platform::DefaultBrowserUserSegment::kDesktopUser ||
-      _userSegment ==
-          segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher) {
-    [_consumer
-        setPromoTitle:
-            l10n_util::GetNSString(
-                UseIPadTailoredStringForDefaultBrowserPromo()
-                    ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
-                    : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE)];
-  } else {
-    [_consumer setPromoTitle:
-                   l10n_util::GetNSString(
-                       UseIPadTailoredStringForDefaultBrowserPromo()
-                           ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                           : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)];
+  int promoTitleStringID = 0;
+  switch (_userSegment) {
+    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
+    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
+      promoTitleStringID =
+          UseIPadTailoredStringForDefaultBrowserPromo()
+              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
+              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE;
+      break;
+    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
+    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
+      promoTitleStringID =
+          UseIPadTailoredStringForDefaultBrowserPromo()
+              ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+              : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE;
+      break;
   }
+  CHECK_NE(promoTitleStringID, 0);
+  [_consumer setPromoTitle:l10n_util::GetNSString(promoTitleStringID)];
 }
 
 // Sets the Default Browser screen view subtitle with targeted messaging based
 // on the user's segment.
 - (void)updatePromoSubtitleForConsumer {
-  if (_userSegment ==
-      segmentation_platform::DefaultBrowserUserSegment::kDesktopUser) {
-    [_consumer
-        setPromoSubtitle:
-            l10n_util::GetNSString(
-                UseIPadTailoredStringForDefaultBrowserPromo()
-                    ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
-                    : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE)];
-  } else if (_userSegment == segmentation_platform::DefaultBrowserUserSegment::
-                                 kAndroidSwitcher) {
-    [_consumer
-        setPromoSubtitle:
-            l10n_util::GetNSString(
-                UseIPadTailoredStringForDefaultBrowserPromo()
-                    ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
-                    : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE)];
-  } else {
-    [_consumer
-        setPromoSubtitle:
-            l10n_util::GetNSString(
-                UseIPadTailoredStringForDefaultBrowserPromo()
-                    ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-                    : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)];
+  int promoSubtitleStringID = 0;
+  switch (_userSegment) {
+    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
+      promoSubtitleStringID =
+          UseIPadTailoredStringForDefaultBrowserPromo()
+              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
+              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE;
+      break;
+    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
+      promoSubtitleStringID =
+          UseIPadTailoredStringForDefaultBrowserPromo()
+              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
+              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE;
+      break;
+    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
+    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
+      promoSubtitleStringID =
+          UseIPadTailoredStringForDefaultBrowserPromo()
+              ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
+              : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE;
+      break;
   }
+  CHECK_NE(promoSubtitleStringID, 0);
+  [_consumer setPromoSubtitle:l10n_util::GetNSString(promoSubtitleStringID)];
 }
 
 @end

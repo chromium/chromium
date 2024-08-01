@@ -78,6 +78,7 @@
   _viewController = nil;
   _delegate = nil;
   _mediator.consumer = nil;
+  [_mediator disconnect];
   _mediator = nil;
 
   [super stop];
