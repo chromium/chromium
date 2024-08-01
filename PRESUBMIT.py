@@ -4884,6 +4884,7 @@ def _CheckAndroidWebkitImports(input_api, output_api):
         files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS + input_api.
                        DEFAULT_FILES_TO_SKIP + (
                            r'^android_webview/glue/.*',
+                           r'^android_webview/support_library/.*',
                            r'^weblayer/.*',
                        )),
         files_to_check=[r'.*\.java$'])
