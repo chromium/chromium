@@ -59,6 +59,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
 #include "chrome/browser/media/chrome_media_session_client.h"
+#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -509,6 +510,13 @@ void BrowserProcessImpl::StartTearDown() {
     // free).
     profile_manager_.reset();
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (media_router::DualMediaSinkService::HasInstance()) {
+    media_router::DualMediaSinkService::GetInstance()
+        ->StopObservingPrefChanges();
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The `media_file_system_registry_` cannot be reset until the
