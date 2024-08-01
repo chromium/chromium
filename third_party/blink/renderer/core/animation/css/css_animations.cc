@@ -1872,10 +1872,6 @@ bool AffectsBackgroundColor(const AnimationEffect& effect) {
   return effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()));
 }
 
-bool AffectsClipPath(const AnimationEffect& effect) {
-  return effect.Affects(PropertyHandle(GetCSSPropertyClipPath()));
-}
-
 void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
                                    ComputedStyleBuilder& builder) {
   if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
@@ -1894,9 +1890,6 @@ void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
     builder.SetHasCurrentBackdropFilterAnimation(true);
   if (AffectsBackgroundColor(effect))
     builder.SetHasCurrentBackgroundColorAnimation(true);
-  if (AffectsClipPath(effect)) {
-    builder.SetHasCurrentClipPathAnimation(true);
-  }
 }
 
 // Called for animations that are newly created or updated.
