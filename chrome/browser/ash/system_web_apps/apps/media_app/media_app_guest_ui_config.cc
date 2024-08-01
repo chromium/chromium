@@ -107,8 +107,6 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("colorThemes", true);
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
-  source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(
-                                       ash::features::kMediaAppPdfA11yOcr));
   source->AddBoolean(
       "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&

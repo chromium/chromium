@@ -12,7 +12,6 @@
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
@@ -107,8 +106,7 @@ constexpr std::string_view kLoadingMessage =
 
 class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  public:
-  AXMediaAppUntrustedHandlerTest()
-      : feature_list_(ash::features::kMediaAppPdfA11yOcr) {}
+  AXMediaAppUntrustedHandlerTest() {}
   AXMediaAppUntrustedHandlerTest(
       const AXMediaAppUntrustedHandlerTest&) = delete;
   AXMediaAppUntrustedHandlerTest& operator=(
@@ -159,9 +157,6 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<TestAXMediaAppUntrustedHandler> handler_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 std::vector<PageMetadataPtr>

@@ -270,8 +270,7 @@ void MediaAppGuestUI::BindInterface(
 void MediaAppGuestUI::BindInterface(
     mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
         receiver) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
-      !base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
     return;
   }
 
@@ -285,9 +284,6 @@ void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
     mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
-    return;
-  }
   delegate_->CreateAndBindOcrHandler(
       *web_ui()->GetWebContents()->GetBrowserContext(),
       web_ui()->GetWebContents()->GetTopLevelNativeWindow(),
