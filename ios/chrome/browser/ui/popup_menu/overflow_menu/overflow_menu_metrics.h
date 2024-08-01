@@ -89,7 +89,8 @@ enum class IOSOverflowMenuAction {
   kHelp = 13,
   kShareChrome = 14,
   kEditActions = 15,
-  kMaxValue = kEditActions,
+  kLensOverlay = 16,
+  kMaxValue = kLensOverlay,
 };
 // LINT.ThenChange(overflow_menu_constants.h:actionType)
 

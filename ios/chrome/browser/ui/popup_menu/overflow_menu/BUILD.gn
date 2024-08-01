@@ -54,6 +54,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/follow/ui_bundled",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:policy_util",

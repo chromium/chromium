@@ -34,6 +34,7 @@ class BrowserPolicyConnectorIOS;
 @protocol FindInPageCommands;
 class FollowBrowserAgent;
 @protocol HelpCommands;
+@protocol LensOverlayCommands;
 @protocol OverflowMenuCustomizationCommands;
 @class OverflowMenuOrderer;
 class OverlayPresenter;
@@ -69,6 +70,7 @@ class WebStateList;
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
+@property(nonatomic, weak) id<LensOverlayCommands> lensOverlayHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
 @property(nonatomic, weak) id<FindInPageCommands> findInPageHandler;

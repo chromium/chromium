@@ -46,6 +46,7 @@ enum class ActionType {
   Help,
   ShareChrome,
   EditActions,
+  LensOverlay,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 
