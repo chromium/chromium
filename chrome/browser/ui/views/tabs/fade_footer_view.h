@@ -18,13 +18,13 @@
 struct AlertFooterRowData {
   std::optional<TabAlertState> alert_state;
   bool should_show_discard_status = false;
-  uint64_t memory_savings_in_bytes = 0;
+  int64_t memory_savings_in_bytes = 0;
 };
 
 struct PerformanceRowData {
   bool show_memory_usage = false;
   bool is_high_memory_usage = false;
-  uint64_t memory_usage_in_bytes = 0;
+  int64_t memory_usage_in_bytes = 0;
 };
 
 template <typename T>

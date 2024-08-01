@@ -45,7 +45,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
 namespace {
 // The lower limit of memory usage that we would display to the user in bytes.
 // This value is the equivalent of 10MB.
-constexpr uint64_t kMemoryUsageThresholdInBytes = 10 * 1024 * 1024;
+constexpr int64_t kMemoryUsageThresholdInBytes = 10 * 1024 * 1024;
 
 void AddBubbleBodyText(
     ui::DialogModel::Builder* dialog_model_builder,
