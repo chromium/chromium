@@ -139,8 +139,8 @@ class AddressAutofillTable : public WebDatabaseTable {
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
-  // GetCreditCard may change over time, but MigrateToVersionXX should never
-  // change.
+  // `GetAutofillProfile()` may change over time, but MigrateToVersionXX should
+  // never change.
   bool MigrateToVersion88AddNewNameColumns();
   bool MigrateToVersion90AddNewStructuredAddressColumns();
   bool MigrateToVersion91AddMoreStructuredAddressColumns();
