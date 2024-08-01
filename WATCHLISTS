@@ -1751,6 +1751,10 @@
     'page_load_metrics' : {
       'filepath': '/page_load_metrics/'
     },
+    'page_load_metrics_abandoned_navigations': {
+      'filepath': 'chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.(cc|h)$|' \
+                  'components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.(cc|h)$'
+    },
     'panels': {
       'filepath': 'chrome/browser/ui/panels'\
                   '|chrome/browser/ui/cocoa/panels'\
@@ -3101,6 +3105,7 @@
                            'loading-reviews+metrics@chromium.org',
                            'speed-metrics-reviews@chromium.org',
                            'haoliuk+watch@chromium.org'],
+    'page_load_metrics_abandoned_navigations': ['suzukikeita+watch@chromium.org'],
     'panels': ['dimich@chromium.org',
                'jennb@chromium.org',
                'jianli@chromium.org'],
