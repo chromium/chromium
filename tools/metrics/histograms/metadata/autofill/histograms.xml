@@ -3937,7 +3937,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer{ShowType}"
     enum="MandatoryReauthOptInBubbleOffer" expires_after="2025-07-01">
-  <owner>justinleewells@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks events related to offering the mandatory reauth opt-in feature, for
@@ -3952,7 +3952,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult{ShowType}"
     enum="MandatoryReauthOptInBubbleResult" expires_after="2025-07-01">
-  <owner>justinleewells@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks the reason the mandatory reauth opt-in prompt was closed. This metric
@@ -3967,7 +3967,7 @@ chromium-metrics-reviews@google.com.
     name="Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble"
     enum="MandatoryReauthOptInConfirmationBubbleMetric"
     expires_after="2025-07-01">
-  <owner>justinleewells@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks various events related to the mandatory reauth opt-in confirmation

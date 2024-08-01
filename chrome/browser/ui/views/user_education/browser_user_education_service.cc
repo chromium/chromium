@@ -209,7 +209,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(125, "justinleewells@chromium.org",
+          .SetMetadata(125, "alexandertekle@google.com",
                        "Triggered after a credit card benefit is displayed for "
                        "the first time.")));
 
@@ -248,7 +248,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(118, "alexandertekle@chromium.org",
+          .SetMetadata(118, "alexandertekle@google.com",
                        "Triggered after autofill popup appears.")));
 
   // kIPHAutofillVirtualCardSuggestionFeature:

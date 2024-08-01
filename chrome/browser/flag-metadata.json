@@ -725,7 +725,7 @@
   },
   {
     "name": "autofill-enable-merchant-domain-in-unmask-card-request",
-    "owners": [ "justinleewells@chromium.org" ],
+    "owners": [ "hdhandapani@google.com" ],
     "expiry_milestone": 130
   },
   {
