@@ -3,11 +3,6 @@
     padding-inline-start: 0;
   }
 
-  .cert-list {
-    padding-inline-end: var(--cr-section-padding);
-    padding-inline-start: var(--cr-section-padding);
-  }
-
   .header-row {
     display: flex;
     font-weight: 500;
@@ -49,7 +44,7 @@
     </div>
   </div>
 </cr-expand-button>
-<cr-collapse id="certs" class="cert-list" opened="[[expanded_]]">
+<cr-collapse id="certs" opened="[[expanded_]]">
   <template is="dom-repeat" items="[[certificates_]]">
     <certificate-entry-v2
         cert-source="[[certSource]]"
