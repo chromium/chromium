@@ -160,7 +160,9 @@ void ClassroomPageHandlerImpl::OnListStudentsFetched(
 std::unique_ptr<google_apis::RequestSender>
 ClassroomPageHandlerImpl::CreateRequestSender() {
   std::vector<std::string> scopes = {
-      GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope};
+      GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
+      GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+  };
   auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
   auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
   auto auth_service = std::make_unique<google_apis::AuthService>(
