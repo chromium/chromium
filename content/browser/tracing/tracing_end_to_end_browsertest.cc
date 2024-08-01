@@ -16,7 +16,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
-#include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 
@@ -87,18 +86,6 @@ perfetto::protos::gen::TraceConfig TraceConfigWithMetadata(
 
   return perfetto_config;
 }
-
-perfetto::protos::gen::TraceConfig TraceConfigWithMetadataMultisession(
-    const std::string& category_filter_string) {
-  auto perfetto_config =
-      base::test::DefaultTraceConfig(category_filter_string, false);
-
-  auto* data_source = perfetto_config.add_data_sources();
-  auto* source_config = data_source->mutable_config();
-  source_config->set_name("org.chromium.trace_metadata2");
-
-  return perfetto_config;
-}
 }  // namespace
 
 class TracingEndToEndBrowserTest : public ContentBrowserTest {};
@@ -155,39 +142,6 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, Metadata) {
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(std::vector<std::string>{"has_num_cpus"},
                                      std::vector<std::string>{"1"}));
-}
-
-IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, MetadataMultisession) {
-  base::test::TestTraceProcessor ttp;
-  ttp.StartTrace(TraceConfigWithMetadataMultisession("-*"));
-
-  absl::Status status = ttp.StopAndParseTrace();
-  ASSERT_TRUE(status.ok()) << status.message();
-
-  auto result = ttp.RunQuery(R"(
-    SELECT
-      str_value IS NOT NULL AS has_field_trial_hashes
-    FROM metadata
-    WHERE name = 'cr-a-field_trial_hashes'
-  )");
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(
-      result.value(),
-      ::testing::ElementsAre(std::vector<std::string>{"has_field_trial_hashes"},
-                             std::vector<std::string>{"1"}));
-
-#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
-  result = ttp.RunQuery(R"(
-    SELECT
-      str_value IS NOT NULL AS has_version_code
-    FROM metadata
-    WHERE name = 'cr-a-playstore_version_code'
-  )");
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(), ::testing::ElementsAre(
-                                  std::vector<std::string>{"has_version_code"},
-                                  std::vector<std::string>{"1"}));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TaskExecutionEvent) {
@@ -585,68 +539,6 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
   ASSERT_TRUE(result2.has_value()) << result2.error();
   EXPECT_THAT(result2.value(),
               ::testing::ElementsAre(std::vector<std::string>{"detail_level"}));
-}
-
-IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsMetadata) {
-  base::test::TestTraceProcessor ttp1, ttp2;
-  ttp1.StartTrace(TraceConfigWithMetadataMultisession("-*"));
-  ttp2.StartTrace(TraceConfigWithMetadataMultisession("-*"));
-
-  absl::Status status = ttp1.StopAndParseTrace();
-  ASSERT_TRUE(status.ok()) << status.message();
-
-  auto result = ttp1.RunQuery(R"(
-    SELECT
-      str_value IS NOT NULL AS has_field_trial_hashes
-    FROM metadata
-    WHERE name = 'cr-a-field_trial_hashes'
-  )");
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(
-      result.value(),
-      ::testing::ElementsAre(std::vector<std::string>{"has_field_trial_hashes"},
-                             std::vector<std::string>{"1"}));
-
-#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
-  result = ttp1.RunQuery(R"(
-    SELECT
-      str_value IS NOT NULL AS has_version_code
-    FROM metadata
-    WHERE name = 'cr-a-playstore_version_code'
-  )");
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(), ::testing::ElementsAre(
-                                  std::vector<std::string>{"has_version_code"},
-                                  std::vector<std::string>{"1"}));
-#endif
-
-  status = ttp2.StopAndParseTrace();
-  ASSERT_TRUE(status.ok()) << status.message();
-
-  result = ttp2.RunQuery(R"(
-    SELECT
-      str_value IS NOT NULL AS has_field_trial_hashes
-    FROM metadata
-    WHERE name = 'cr-a-field_trial_hashes'
-  )");
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(
-      result.value(),
-      ::testing::ElementsAre(std::vector<std::string>{"has_field_trial_hashes"},
-                             std::vector<std::string>{"1"}));
-
-#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
-  result = ttp2.RunQuery(R"(
-    SELECT
-      str_value IS NOT NULL AS has_version_code
-    FROM metadata
-    WHERE name = 'cr-a-playstore_version_code'
-  )");
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(), ::testing::ElementsAre(
-                                  std::vector<std::string>{"has_version_code"},
-                                  std::vector<std::string>{"1"}));
-#endif
 }
 
 #if BUILDFLAG(IS_POSIX)
