@@ -172,6 +172,14 @@ chromium-metrics-reviews@google.com.
     this other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
   </summary>
   <token key="EntryPoint">
+    <variant name="AutofillManualFallbackAddressEntry"
+        summary="Autofill manual fallback address entry"/>
+    <variant name="AutofillManualFallbackAllPasswordsEntry"
+        summary="Autofill manual fallback all passwords entry"/>
+    <variant name="AutofillManualFallbackPasswordEntry"
+        summary="Autofill manual fallback password entry"/>
+    <variant name="AutofillManualFallbackPaymentEntry"
+        summary="Autofill manual fallback payment entry"/>
     <variant name="BookmarkEntry" summary="Bookmark entry"/>
     <variant name="BookmarkFolder" summary="Bookmark folder"/>
     <variant name="HistoryEntry" summary="History entry"/>
@@ -187,6 +195,10 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGridAddTo" summary="Tab Grid Add To"/>
     <variant name="TabGridEdit" summary="Tab Grid Edit"/>
     <variant name="TabGridSearchResult" summary="Tab Grid Search Result"/>
+    <variant name="TabGroupEntry" summary="Tab group view entry"/>
+    <variant name="TabGroupsPanelEntry" summary="Tab group panel entry"/>
+    <variant name="TabGroupViewEntry"
+        summary="Tab group view entry in tab grid"/>
     <variant name="TabStrip" summary="Tab Strip tab"/>
     <variant name="Toolbar" summary="Menu from a toolbar button"/>
     <variant name="WebImage" summary="Image on a Web page"/>
