@@ -26,6 +26,9 @@ BufferImplTflite::Create(
   size_t size = buffer_info->descriptor.PackedByteLength();
 
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
+  //
+  // TODO(crbug.com/356670455): Consider moving this check to the renderer and
+  // throwing a TypeError.
   if (!base::IsValueInRangeForNumericType<int>(size)) {
     LOG(ERROR) << "[WebNN] Buffer is too large to create.";
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,

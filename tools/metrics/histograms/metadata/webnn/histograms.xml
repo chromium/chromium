@@ -37,7 +37,9 @@ chromium-metrics-reviews@google.com.
   <variant name="ModelOutputRead"
       summary="Time it took to read back the inference results."/>
   <variant name="ModelPredict"
-      summary="Time predictionFromFeatures took on the model."/>
+      summary="Time predictionFromFeatures took when calling compute()."/>
+  <variant name="ModelPredictWithDispatch"
+      summary="Time predictionFromFeatures took when calling dispatch()."/>
 </variants>
 
 <variants name="WebNNDMLActions">

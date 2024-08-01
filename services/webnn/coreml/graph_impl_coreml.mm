@@ -12,8 +12,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/containers/span_reader.h"
-#include "base/containers/span_writer.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -32,8 +30,10 @@
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "services/webnn/coreml/buffer_impl_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
+#include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -105,68 +105,6 @@ struct ScopedModelPaths {
   base::ScopedTempDir model_file_dir;
   base::ScopedTempDir compiled_model_dir;
 };
-
-uint32_t GetDataTypeByteSize(MLMultiArrayDataType data_type) {
-  switch (data_type) {
-    case MLMultiArrayDataTypeDouble:
-      return 8;
-    case MLMultiArrayDataTypeFloat32:
-    case MLMultiArrayDataTypeInt32:
-      return 4;
-    case MLMultiArrayDataTypeFloat16:
-      return 2;
-  }
-}
-
-void ExtractOutputRecursively(base::span<const uint8_t> bytes,
-                              base::span<const uint32_t> dimensions,
-                              base::span<const uint32_t> strides,
-                              uint32_t item_byte_size,
-                              base::span<uint8_t> output) {
-  // Data is packed, copy the whole thing.
-  // On the last dimension, the bytes could be more than the output because of
-  // strides from previous dimension, but as long as current stride is 1, we can
-  // copy continously.
-  if (bytes.size() == output.size() ||
-      (dimensions.size() == 1 && strides[0] == 1)) {
-    output.copy_from(bytes.first(output.size()));
-    return;
-  }
-
-  CHECK_EQ(output.size() % dimensions[0], 0u);
-  size_t subspan_size = output.size() / dimensions[0];
-
-  base::SpanReader<const uint8_t> reader(bytes);
-  base::SpanWriter<uint8_t> writer(output);
-  for (uint32_t i = 0; i < dimensions[0]; i++) {
-    auto output_subspan = writer.Skip(subspan_size);
-    CHECK(output_subspan);
-    auto subspan = reader.Read(strides[0] * item_byte_size);
-    CHECK(subspan);
-    if (dimensions.size() == 1) {
-      output_subspan->copy_from(subspan->first(item_byte_size));
-    } else {
-      ExtractOutputRecursively(*subspan, dimensions.subspan(1u),
-                               strides.subspan(1u), item_byte_size,
-                               output_subspan->subspan(0, subspan_size));
-    }
-  }
-}
-
-mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
-    base::span<const uint8_t> bytes,
-    uint32_t expected_byte_size,
-    uint32_t item_byte_size,
-    base::span<const uint32_t> dimensions,
-    base::span<const uint32_t> strides) {
-  mojo_base::BigBuffer output(expected_byte_size);
-
-  // Bytes size should match with the layout from the strides.
-  CHECK_EQ(bytes.size(), strides[0] * dimensions[0] * item_byte_size);
-  ExtractOutputRecursively(bytes, dimensions, strides, item_byte_size,
-                           base::span(output));
-  return output;
-}
 
 // Compute strides which may be used to construct an `MLMultiArray` given
 // `multi_array_constraint`.
@@ -479,19 +417,20 @@ void GraphImplCoreml::ComputeImpl(
   WebNNMLFeatureProvider* feature_provider =
       [[WebNNMLFeatureProvider alloc] initWithFeatures:feature_names
                                          featureValues:feature_values];
-  auto done_callback =
-      base::BindOnce(&GraphImplCoreml::DidPredict, weak_factory_.GetWeakPtr(),
-                     std::move(model_predict_timer), std::move(callback));
+  auto done_callback = base::BindOnce(
+      &GraphImplCoreml::DidPredictFromCompute, weak_factory_.GetWeakPtr(),
+      std::move(model_predict_timer), std::move(callback));
   [ml_model_ predictionFromFeatures:feature_provider
                   completionHandler:base::CallbackToBlock(
                                         base::BindPostTaskToCurrentDefault(
                                             std::move(done_callback)))];
 }
 
-void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
-                                 mojom::WebNNGraph::ComputeCallback callback,
-                                 id<MLFeatureProvider> output_features,
-                                 NSError* error) {
+void GraphImplCoreml::DidPredictFromCompute(
+    base::ElapsedTimer model_predict_timer,
+    mojom::WebNNGraph::ComputeCallback callback,
+    id<MLFeatureProvider> output_features,
+    NSError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelPredict",
@@ -504,77 +443,162 @@ void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
     return;
   }
 
+  // Read back the outputs.
   base::ElapsedTimer model_output_read_timer;
-  // Read back the outputs
-  // named_outputs is owned by the BarrierClosure. named_outputs
-  // is allocated here with make unique and then moved into the
-  // BarrierClosure's completion callback. Other completion
-  // handlers that run before the barrier closure get a
-  // raw_ptr to the named_outputs.
-  auto named_outputs = std::make_unique<
-      std::vector<std::pair<std::string, mojo_base::BigBuffer>>>();
-  named_outputs->reserve(output_features.featureNames.count);
-  auto* named_outputs_raw_ptr = named_outputs.get();
-  base::RepeatingClosure done_barrier = base::BarrierClosure(
-      output_features.featureNames.count,
-      base::BindOnce(
-          [](mojom::WebNNGraph::ComputeCallback callback,
-             std::unique_ptr<std::vector<
-                 std::pair<std::string, mojo_base::BigBuffer>>> named_outputs,
-             base::ElapsedTimer model_output_read_timer) {
-            UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelOutputRead",
-                                       model_output_read_timer.Elapsed());
-            std::move(callback).Run(mojom::ComputeResult::NewNamedOutputs(
-                std::move(*named_outputs)));
-          },
-          std::move(callback), std::move(named_outputs),
-          std::move(model_output_read_timer)));
+  std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs(
+      output_features.featureNames.count);
   for (NSString* feature_name in output_features.featureNames) {
     MLFeatureValue* feature_value =
         [output_features featureValueForName:feature_name];
     std::string name =
         coreml_name_to_operand_name_.at(base::SysNSStringToUTF8(feature_name));
 
-    MLMultiArray* multiarray_value = feature_value.multiArrayValue;
-    [multiarray_value getBytesWithHandler:^(const void* bytes, NSInteger size) {
-      OperandDescriptor expected_descriptor =
-          compute_resource_info().output_names_to_descriptors.at(name);
-
-      size_t number_of_items = multiarray_value.count;
-      CHECK_EQ(number_of_items, expected_descriptor.NumberOfElements());
-
-      uint32_t item_byte_size = GetDataTypeByteSize(multiarray_value.dataType);
-      CHECK_EQ(item_byte_size, OperandDescriptor::GetBytesPerElement(
-                                   expected_descriptor.data_type()));
-
-      std::vector<uint32_t> dimensions(multiarray_value.shape.count);
-      for (uint32_t i = 0; i < multiarray_value.shape.count; ++i) {
-        dimensions[i] = multiarray_value.shape[i].integerValue;
-      }
-      std::vector<uint32_t> strides(multiarray_value.strides.count);
-      for (uint32_t i = 0; i < multiarray_value.strides.count; ++i) {
-        strides[i] = multiarray_value.strides[i].integerValue;
-      }
-      CHECK_EQ(dimensions.size(), strides.size());
-
-      // SAFETY: -[MLMultiArray getBytesWithHandler:] guarantees that
-      // `bytes` points to at least `returned_size` valid bytes.
-      auto data = UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bytes),
-                                            base::checked_cast<size_t>(size)));
-      named_outputs_raw_ptr->push_back(
-          std::make_pair(name, ExtractMaybeNonContiguousOutput(
-                                   data, expected_descriptor.PackedByteLength(),
-                                   item_byte_size, dimensions, strides)));
-      done_barrier.Run();
-    }];
+    MLMultiArray* multi_array_value = feature_value.multiArrayValue;
+    mojo_base::BigBuffer output_buffer(compute_resource_info()
+                                           .output_names_to_descriptors.at(name)
+                                           .PackedByteLength());
+    ReadFromMLMultiArray(multi_array_value, output_buffer);
+    named_outputs.emplace_back(name, std::move(output_buffer));
   }
+
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelOutputRead",
+                             model_output_read_timer.Elapsed());
+  std::move(callback).Run(
+      mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
 
 void GraphImplCoreml::DispatchImpl(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs) {
-  // TODO(crbug.com/333392274): Implement MLBuffer for CoreML.
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("gpu", "webnn::coreml::GraphImpl::DispatchImpl");
+  CHECK(ml_model_);
+
+  base::ElapsedTimer model_predict_timer;
+
+  NSString* feature_name;
+  NSMutableSet* feature_names = [[NSMutableSet alloc] init];
+  NSMutableDictionary* feature_values = [[NSMutableDictionary alloc] init];
+
+  if (named_inputs.empty()) {
+    CHECK_EQ(ml_model_.modelDescription.inputDescriptionsByName.count, 1u);
+
+    NSString* placeholder_name = base::SysUTF8ToNSString(kPlaceholderInputName);
+    [feature_names addObject:placeholder_name];
+    NSError* error;
+    MLMultiArray* placeholder_input =
+        [[MLMultiArray alloc] initWithShape:@[ @1 ]
+                                   dataType:MLMultiArrayDataTypeFloat16
+                                      error:&error];
+    placeholder_input[0] = @0;
+    CHECK(!error);
+    feature_values[placeholder_name] =
+        [MLFeatureValue featureValueWithMultiArray:placeholder_input];
+  } else {
+    CHECK_EQ(named_inputs.size(),
+             ml_model_.modelDescription.inputDescriptionsByName.count);
+
+    // Create an `MLFeatureValue` for each of the `named_inputs`.
+    for (feature_name in ml_model_.modelDescription.inputDescriptionsByName) {
+      [feature_names addObject:feature_name];
+
+      MLFeatureDescription* feature_description =
+          ml_model_.modelDescription.inputDescriptionsByName[feature_name];
+      CHECK_EQ(feature_description.type,
+               MLFeatureType::MLFeatureTypeMultiArray);
+
+      auto operand_name_it = coreml_name_to_operand_name_.find(
+          base::SysNSStringToUTF8(feature_name));
+      CHECK(operand_name_it != coreml_name_to_operand_name_.end());
+
+      auto webnn_buffer_it = named_inputs.find(operand_name_it->second);
+      CHECK(webnn_buffer_it != named_inputs.end());
+
+      MLFeatureValue* feature_value =
+          static_cast<BufferImplCoreml*>(webnn_buffer_it->second)
+              ->AsFeatureValue();
+      if (!feature_value) {
+        LOG(ERROR) << "Input initialization error";
+        return;
+      }
+
+      // Assert that `feature_value` is compatible with `feature_description`.
+      CHECK([feature_description isAllowedValue:feature_value]);
+
+      feature_values[feature_name] = feature_value;
+    }
+  }
+
+  // Create an `MLFeatureValue` for each of the `named_outputs`.
+  MLPredictionOptions* options = [[MLPredictionOptions alloc] init];
+  NSMutableDictionary* output_backings = [[NSMutableDictionary alloc] init];
+  CHECK_EQ(named_outputs.size(),
+           ml_model_.modelDescription.outputDescriptionsByName.count);
+  for (feature_name in ml_model_.modelDescription.outputDescriptionsByName) {
+    MLFeatureDescription* feature_description =
+        ml_model_.modelDescription.outputDescriptionsByName[feature_name];
+    CHECK_EQ(feature_description.type, MLFeatureType::MLFeatureTypeMultiArray);
+
+    auto operand_name_it = coreml_name_to_operand_name_.find(
+        base::SysNSStringToUTF8(feature_name));
+    CHECK(operand_name_it != coreml_name_to_operand_name_.end());
+
+    auto webnn_buffer_it = named_outputs.find(operand_name_it->second);
+    CHECK(webnn_buffer_it != named_outputs.end());
+
+    MLFeatureValue* feature_value =
+        static_cast<BufferImplCoreml*>(webnn_buffer_it->second)
+            ->AsFeatureValue();
+    if (!feature_value) {
+      LOG(ERROR) << "Output initialization error";
+      return;
+    }
+
+    // Assert that `feature_value` is compatible with `feature_description`.
+    CHECK([feature_description isAllowedValue:feature_value]);
+
+    output_backings[feature_name] = feature_value.multiArrayValue;
+  }
+
+  [options setOutputBackings:output_backings];
+
+  WebNNMLFeatureProvider* feature_provider =
+      [[WebNNMLFeatureProvider alloc] initWithFeatures:feature_names
+                                         featureValues:feature_values];
+
+  // Run the MLModel synchronously.
+  //
+  // TODO(crbug.com/333392274): Run the model asynchronously. It is sync for now
+  // to avoid the need to handle concurrent calls to `dispatch()`.
+  NSError* error;
+  id<MLFeatureProvider> output_features =
+      [ml_model_ predictionFromFeatures:feature_provider
+                                options:options
+                                  error:&error];
+
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelPredictWithDispatch",
+                             model_predict_timer.Elapsed());
+
+  if (error) {
+    // TODO(crbug.com/41492165): Report this error on the context.
+    LOG(ERROR) << "[WebNN] PredictionError: " << error;
+    return;
+  }
+
+  // Ensure that the provided backing buffers were in fact used.
+  //
+  // TODO(crbug.com/333392274): Remove this check, eventually. The header file
+  // for `MLPredictionOptions` claims CoreML may not use the specified backing
+  // buffers in a handful of scenarios, including the vague case where "the
+  // model doesn't support the user allocated buffers". We shouldn't ship WebNN
+  // to users with this CHECK enabled, but in the meantime let's see if this
+  // check is ever hit...
+  NSString* output_feature_name;
+  for (output_feature_name in output_features.featureNames) {
+    CHECK_EQ([output_features featureValueForName:output_feature_name]
+                 .multiArrayValue,
+             output_backings[output_feature_name]);
+  }
 }
 
 GraphImplCoreml::Params::Params(

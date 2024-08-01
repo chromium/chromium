@@ -122,15 +122,17 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
   void ComputeImpl(
       base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
       mojom::WebNNGraph::ComputeCallback callback) override;
-  void DidPredict(base::ElapsedTimer model_predict_timer,
-                  mojom::WebNNGraph::ComputeCallback callback,
-                  id<MLFeatureProvider> output_features,
-                  NSError* error);
 
   void DispatchImpl(
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
       override;
+
+ private:
+  void DidPredictFromCompute(base::ElapsedTimer model_predict_timer,
+                             mojom::WebNNGraph::ComputeCallback callback,
+                             id<MLFeatureProvider> output_features,
+                             NSError* error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

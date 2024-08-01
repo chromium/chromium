@@ -114,10 +114,14 @@ component("webnn_service") {
 
   if (is_mac) {
     sources += [
+      "coreml/buffer_impl_coreml.h",
+      "coreml/buffer_impl_coreml.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
       "coreml/graph_impl_coreml.h",
       "coreml/graph_impl_coreml.mm",
+      "coreml/utils_coreml.h",
+      "coreml/utils_coreml.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
