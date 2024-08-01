@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -71,7 +72,7 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   // but is only initialized for normal browser windows. This simplifies the
   // logic for code shared by both normal and non-normal windows.
   lens_overlay_entry_point_controller_ =
-      std::make_unique<lens::LensOverlayEntryPointController>(browser);
+      std::make_unique<lens::LensOverlayEntryPointController>();
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -79,13 +80,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->is_type_normal()) {
-    // TODO(b/350508658): Ideally, we don't pass in a reference to browser as
-    // per the guidance in the comment above. However, currently, we need
-    // browser to properly determine if the lens overlay is enabled.
     // Cannot be in Init since needs to listen to the fullscreen controller
     // which is initialized after Init.
     if (lens::features::IsLensOverlayEnabled()) {
-      lens_overlay_entry_point_controller_->Initialize();
+      lens_overlay_entry_point_controller_->Initialize(
+          browser, browser->command_controller());
     }
 
     auto* experiment_manager =

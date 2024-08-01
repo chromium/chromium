@@ -5,14 +5,13 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 
 #include "base/system/sys_info.h"
+#include "chrome/browser/command_updater.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/lens/lens_features.h"
@@ -20,18 +19,23 @@
 
 namespace lens {
 
-LensOverlayEntryPointController::LensOverlayEntryPointController(
-    Browser* browser)
-    : browser_(browser) {}
+LensOverlayEntryPointController::LensOverlayEntryPointController() = default;
 
-void LensOverlayEntryPointController::Initialize() {
+void LensOverlayEntryPointController::Initialize(
+    BrowserWindowInterface* browser_window_interface,
+    CommandUpdater* command_updater) {
+  browser_window_interface_ = browser_window_interface;
+  command_updater_ = command_updater;
+
   // Observe changes to fullscreen state.
   fullscreen_observation_.Observe(
-      browser_->exclusive_access_manager()->fullscreen_controller());
+      browser_window_interface_->GetExclusiveAccessManager()
+          ->fullscreen_controller());
 
   // Observe changes to user's DSE.
   if (auto* const template_url_service =
-          TemplateURLServiceFactory::GetForProfile(browser_->profile())) {
+          TemplateURLServiceFactory::GetForProfile(
+              browser_window_interface_->GetProfile())) {
     template_url_service_observation_.Observe(template_url_service);
   }
 
@@ -39,10 +43,7 @@ void LensOverlayEntryPointController::Initialize() {
   UpdateEntryPointsState(/*hide_if_needed=*/true);
 }
 
-LensOverlayEntryPointController::~LensOverlayEntryPointController() {
-  // Don't leave the reference pointer dangling.
-  browser_ = nullptr;
-}
+LensOverlayEntryPointController::~LensOverlayEntryPointController() = default;
 
 bool LensOverlayEntryPointController::IsEnabled() {
   // This class is initialized if and only if it is observing.
@@ -57,15 +58,17 @@ bool LensOverlayEntryPointController::IsEnabled() {
 
   // Disable in fullscreen without top-chrome.
   if (!lens::features::GetLensOverlayEnableInFullscreen() &&
-      browser_->exclusive_access_manager()->context()->IsFullscreen() &&
-      !browser_->IsTabStripVisible()) {
+      browser_window_interface_->GetExclusiveAccessManager()
+          ->context()
+          ->IsFullscreen() &&
+      !browser_window_interface_->IsTabStripVisible()) {
     return false;
   }
 
   // Lens Overlay is disabled via enterprise policy.
   lens::prefs::LensOverlaySettingsPolicyValue policy_value =
       static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
-          browser_->profile()->GetPrefs()->GetInteger(
+          browser_window_interface_->GetProfile()->GetPrefs()->GetInteger(
               lens::prefs::kLensOverlaySettings));
   if (policy_value == lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
     return false;
@@ -73,7 +76,8 @@ bool LensOverlayEntryPointController::IsEnabled() {
 
   // Lens Overlay is only enabled if the user's default search engine is Google.
   if (lens::features::IsLensOverlayGoogleDseRequired() &&
-      !search::DefaultSearchProviderIsGoogle(browser_->profile())) {
+      !search::DefaultSearchProviderIsGoogle(
+          browser_window_interface_->GetProfile())) {
     return false;
   }
 
@@ -105,8 +109,8 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
   const bool enabled = IsEnabled();
 
   // Update the 3 dot menu entry point.
-  browser_->command_controller()->UpdateCommandEnabled(
-      IDC_CONTENT_CONTEXT_LENS_OVERLAY, enabled);
+  command_updater_->UpdateCommandEnabled(IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+                                         enabled);
 
   // Update the pinnable toolbar entry point
   if (auto* const toolbar_entry_point = GetToolbarEntrypoint()) {
@@ -118,9 +122,8 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
 }
 
 actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
-  BrowserActions* browser_actions = browser_->browser_actions();
   return actions::ActionManager::Get().FindAction(
       kActionSidePanelShowLensOverlayResults,
-      browser_actions->root_action_item());
+      /*scope=*/browser_window_interface_->GetActions()->root_action_item());
 }
 }  // namespace lens

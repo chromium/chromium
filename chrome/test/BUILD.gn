@@ -2938,7 +2938,6 @@ if (!is_android) {
       "../browser/ui/hats/hats_service_browsertest.cc",
       "../browser/ui/hats/trust_safety_sentiment_service_browsertest.cc",
       "../browser/ui/javascript_dialogs/javascript_dialog_browsertest.cc",
-      "../browser/ui/lens/lens_overlay_live_test.cc",
       "../browser/ui/login/login_handler_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
@@ -4560,6 +4559,8 @@ if (!is_android) {
         "//ui/views",
         "//url",
       ]
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/lens:browser_tests" ]
       if (use_aura) {
         deps += [ "//ui/aura:test_support" ]
       }
