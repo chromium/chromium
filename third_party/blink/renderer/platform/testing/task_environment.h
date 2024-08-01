@@ -24,6 +24,9 @@ namespace blink::test {
 // Only tests that need blink APIs should instantiate a
 // blink::test::TaskEnvironment. Use base::test::SingleThreadTaskEnvironment or
 // base::test::TaskEnvironment otherwise.
+//
+// Tests that render <video> may also need CSSDefaultStyleSheets::TestingScope
+// (see comments on that class).
 class TaskEnvironment : public base::test::TaskEnvironment {
  public:
   using ValidTraits = base::test::TaskEnvironment::ValidTraits;

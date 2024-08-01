@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -12,6 +13,12 @@ namespace blink::test {
 
 TaskEnvironment::~TaskEnvironment() {
   RunUntilIdle();
+
+  // Run a full GC before resetting the main thread overrider. This ensures that
+  // we can properly clean up objects like PerformanceMonitor that need to call
+  // MainThreadImpl::RemoveTaskTimeObserver().
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
   main_thread_overrider_.reset();
   main_thread_isolate_.reset();
   scheduler_->Shutdown();
