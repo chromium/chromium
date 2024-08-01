@@ -2084,6 +2084,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
 
 MinMaxSizesResult
 FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
+  UseCounter::Count(Node().GetDocument(),
+                    WebFeature::kFlexNewColumnWrapIntrinsicSize);
   MinMaxSizes largest_inline_size_contributions;
   // The algorithm for determining the max-content width of a column-wrap
   // container is simply: Run layout on the container but give the items an

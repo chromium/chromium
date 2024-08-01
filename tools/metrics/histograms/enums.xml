@@ -11268,6 +11268,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5035" label="WebGPUSubgroupsFeatures"/>
   <int value="5036" label="AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
+  <int value="5043" label="FlexNewColumnWrapIntrinsicSize"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
