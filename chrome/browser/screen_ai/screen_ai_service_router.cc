@@ -34,6 +34,9 @@
 
 namespace {
 
+// How often it would be checked that the service is idle and can be shutdown.
+constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // If any value is added, please update `ComponentAvailability` in `enums.xml`.
@@ -313,6 +316,10 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .Pass());
 
   screen_ai_service_factory_.reset_on_disconnect();
+
+  idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
+  idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
+                              &ScreenAIServiceRouter::ShutDownIfNoClients);
 }
 
 void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
@@ -442,6 +449,14 @@ bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {
 
 bool ScreenAIServiceRouter::IsProcessRunningForTesting() {
   return screen_ai_service_factory_.is_bound();
+}
+
+void ScreenAIServiceRouter::ShutDownIfNoClients() {
+  if (screen_ai_service_factory_.is_bound()) {
+    screen_ai_service_factory_->ShutDownIfNoClients();
+  } else {
+    idle_checking_timer_.reset();
+  }
 }
 
 }  // namespace screen_ai
