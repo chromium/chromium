@@ -12,6 +12,9 @@ source_set("core") {
     "connectors_service_base.h",
     "enterprise_connectors_policy_handler.cc",
     "enterprise_connectors_policy_handler.h",
+    "reporting_constants.h",
+    "reporting_service_settings.cc",
+    "reporting_service_settings.h",
   ]
 
   deps = [
@@ -35,6 +38,7 @@ source_set("unit_tests") {
   sources = [
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
+    "reporting_service_settings_unittest.cc",
   ]
 
   public_deps = [ ":core" ]

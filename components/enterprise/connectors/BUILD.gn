@@ -12,9 +12,6 @@ source_set("connectors") {
     "connectors_prefs.h",
     "device_trust/prefs.cc",
     "device_trust/prefs.h",
-    "reporting/constants.h",
-    "reporting/reporting_service_settings.cc",
-    "reporting/reporting_service_settings.h",
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
@@ -43,10 +40,7 @@ source_set("connectors") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "reporting/reporting_service_settings_unittest.cc",
-    "service_provider_config_unittest.cc",
-  ]
+  sources = [ "service_provider_config_unittest.cc" ]
 
   public_deps = [ ":connectors" ]
 

@@ -1911,6 +1911,7 @@ if (!is_android) {
       "//components/enterprise:test_support",
       "//components/enterprise/browser/identifiers:identifiers",
       "//components/enterprise/common/proto:connectors_proto",
+      "//components/enterprise/connectors/core",
       "//components/error_page/content/browser",
       "//components/favicon/content",
       "//components/favicon/core",

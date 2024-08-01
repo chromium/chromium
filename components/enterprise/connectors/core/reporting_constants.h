@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_REPORTING_CONSTANTS_H_
-#define COMPONENTS_ENTERPRISE_CONNECTORS_REPORTING_CONSTANTS_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_
 
 #include <array>
 
@@ -41,4 +41,4 @@ inline constexpr std::array<const char*, 12> kAllReportingEvents = {
 
 }  // namespace enterprise_connectors
 
-#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_REPORTING_CONSTANTS_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_CONSTANTS_H_

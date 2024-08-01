@@ -14,7 +14,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
-#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 

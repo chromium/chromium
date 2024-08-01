@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_SERVICE_SETTINGS_H_
-#define COMPONENTS_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_SERVICE_SETTINGS_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_SERVICE_SETTINGS_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_SERVICE_SETTINGS_H_
 
 #include <optional>
 #include <set>
@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/reporting/constants.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 
 namespace enterprise_connectors {
@@ -55,4 +55,4 @@ class ReportingServiceSettings {
 
 }  // namespace enterprise_connectors
 
-#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_SERVICE_SETTINGS_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_SERVICE_SETTINGS_H_

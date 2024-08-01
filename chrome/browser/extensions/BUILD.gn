@@ -905,6 +905,7 @@ source_set("extensions") {
     "//components/enterprise",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors",
+    "//components/enterprise/connectors/core",
     "//components/favicon/content",
     "//components/feedback",
     "//components/gcm_driver",

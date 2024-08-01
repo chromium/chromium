@@ -8,8 +8,8 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
-#include "components/enterprise/connectors/reporting/constants.h"
-#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 
 namespace enterprise_connectors {
 // These values are persisted to logs. Entries should not be renumbered and
