@@ -45,9 +45,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
-#include "components/subresource_filter/core/browser/ruleset_config.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/ruleset_config.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -193,6 +193,8 @@ class RulesetService {
   VerifiedRulesetDealer::Handle* GetRulesetDealer() {
     return publisher_->GetRulesetDealer();
   }
+
+  RulesetConfig config() const { return config_; }
 
  private:
   friend class SubresourceFilteringRulesetServiceTest;

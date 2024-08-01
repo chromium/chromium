@@ -8,14 +8,8 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "components/subresource_filter/core/browser/ruleset_config.h"
 
 namespace subresource_filter {
-
-// The config used to identify the original Safe Browsing ruleset for the
-// RulesetService. Encompasses a ruleset tag and top level directory name where
-// the ruleset should be stored.
-extern const RulesetConfig kSafeBrowsingRulesetConfig;
 
 // Paths under the top level directory
 // ------------------------------------

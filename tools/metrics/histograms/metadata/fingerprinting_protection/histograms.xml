@@ -68,6 +68,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FingerprintingProtection.IndexRuleset.Verify.Status"
+    enum="SubresourceFilterVerifyStatus" expires_after="2025-07-26">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    The result of the IndexRulesetMatcher Verify method. Either pass if both the
+    checksum and verifier succeeded, or a value indicating which combination of
+    them failed. Note that a zero checksum indicates that the checksum has not
+    yet been stored during indexing (for rulesets indexed prior to the
+    checksumming code). This is logged when the indexed ruleset is loaded on
+    Chrome start.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.IndexRuleset.Verify2.WallDuration"
+    units="ms" expires_after="2025-07-26">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Measures total time it took to verify the indexed ruleset in the browser
+    process. Logged every time verification occurs, which usually occurs when
+    the first page with activation is navigated to. This is logged when the
+    indexed ruleset is loaded on Chrome start.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.IndexRuleset.WallDuration" units="ms"
     expires_after="2025-06-28">
   <owner>rizvis@google.com</owner>

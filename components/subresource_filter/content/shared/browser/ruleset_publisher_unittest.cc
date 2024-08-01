@@ -24,7 +24,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -140,8 +140,9 @@ class MockRulesetPublisher : public RulesetPublisher {
 
   base::File* RulesetFileForProcess(content::RenderProcessHost* process) {
     auto it = last_file_.find(process);
-    if (it == last_file_.end())
+    if (it == last_file_.end()) {
       return nullptr;
+    }
     return it->second;
   }
 
@@ -153,8 +154,8 @@ class MockRulesetPublisher : public RulesetPublisher {
 TEST_F(SubresourceFilterRulesetPublisherTest, NoRuleset_NoIPCMessages) {
   NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
   MockRulesetPublisher service(
-      nullptr,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      nullptr, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      kSafeBrowsingRulesetConfig);
   NotifyingMockRenderProcessHost new_renderer(browser_context(), &service);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, service.RulesetSent());
@@ -174,8 +175,8 @@ TEST_F(SubresourceFilterRulesetPublisherTest,
   NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
   MockClosureTarget publish_callback_target;
   MockRulesetPublisher service(
-      nullptr,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      nullptr, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      kSafeBrowsingRulesetConfig);
   service.SetRulesetPublishedCallbackForTesting(base::BindOnce(
       &MockClosureTarget::Call, base::Unretained(&publish_callback_target)));
 
@@ -236,8 +237,8 @@ TEST_F(SubresourceFilterRulesetPublisherTest,
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
   NotifyingMockRenderProcessHost renderer_host(browser_context(), nullptr);
   base::RunLoop callback_waiter;
-  auto content_service =
-      std::make_unique<MockRulesetPublisher>(nullptr, blocking_task_runner);
+  auto content_service = std::make_unique<MockRulesetPublisher>(
+      nullptr, blocking_task_runner, kSafeBrowsingRulesetConfig);
   content_service->SetRulesetPublishedCallbackForTesting(
       callback_waiter.QuitClosure());
   auto* mock_publisher = content_service.get();

@@ -7,14 +7,8 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "components/subresource_filter/core/browser/ruleset_config.h"
 
 namespace subresource_filter {
-
-constexpr RulesetConfig kSafeBrowsingRulesetConfig = {
-    .filter_tag = std::string_view("subresource_filter"),
-    .top_level_directory = FILE_PATH_LITERAL("Subresource Filter"),
-    .uma_tag = std::string_view("SubresourceFilter")};
 
 constexpr base::FilePath::CharType kIndexedRulesetBaseDirectoryName[] =
     FILE_PATH_LITERAL("Indexed Rules");
