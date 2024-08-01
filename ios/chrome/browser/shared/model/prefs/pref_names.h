@@ -59,6 +59,10 @@ inline constexpr char kBrowserStatesLastActive[] =
 // browser states directories.
 inline constexpr char kBrowserStatesNumCreated[] = "profile.profiles_created";
 
+// A map of a scene and a browser state.
+inline constexpr char kBrowserStateForScene[] =
+    "ios.multiprofile.profile_for_scene";
+
 // A string of NSUUID used to access the WebKit storage per BrowserState.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 

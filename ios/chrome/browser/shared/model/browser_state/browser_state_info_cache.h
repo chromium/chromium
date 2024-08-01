@@ -55,6 +55,10 @@ class BrowserStateInfoCache {
   void SetBrowserStateIsAuthErrorAtIndex(size_t index, bool value);
   bool BrowserStateIsAuthErrorAtIndex(size_t index) const;
 
+  // Register the given browser state with the given scene.
+  void SetBrowserStateForSceneID(std::string_view scene_id,
+                                 std::string_view browser_state_name);
+
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

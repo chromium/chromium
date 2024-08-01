@@ -178,11 +178,20 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
+void BrowserStateInfoCache::SetBrowserStateForSceneID(
+    std::string_view scene_id,
+    std::string_view browser_state_name) {
+  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
+  base::Value::Dict& cache = update.Get();
+  cache.Set(scene_id, browser_state_name);
+}
+
 // static
 void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kBrowserStateInfoCache);
   registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 0);
   registry->RegisterListPref(prefs::kBrowserStatesLastActive);
+  registry->RegisterDictionaryPref(prefs::kBrowserStateForScene);
 }
 
 const base::Value::Dict* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(

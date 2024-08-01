@@ -99,6 +99,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -1014,6 +1015,14 @@ void OnListFamilyMembersResponse(
   // only profileState which should be set in SceneState initializer.
   ChromeBrowserState* browserState =
       self.sceneState.appState.mainProfile.browserState;
+
+  GetApplicationContext()
+      ->GetChromeBrowserStateManager()
+      ->GetBrowserStateInfoCache()
+      ->SetBrowserStateForSceneID(
+          base::SysNSStringToUTF8(sceneState.sceneSessionID),
+          browserState->GetBrowserStateName());
+
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:browserState
                                              sceneState:sceneState
