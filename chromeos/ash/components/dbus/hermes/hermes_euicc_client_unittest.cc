@@ -26,7 +26,7 @@ namespace {
 
 const char kInvalidPath[] = "/test/invalid/path";
 const char kTestRootSmds[] = "test.smds";
-const char kTestActivationCode[] = "abc123";
+const char kTestActivationCode[] = "   abc123   ";
 const char kTestConfirmationCode[] = "def456";
 const char kTestEuiccPath[] = "/org/chromium/hermes/Euicc/1";
 const char kTestCarrierProfilePath[] = "/org/chromium/hermes/Profile/1";
@@ -268,8 +268,10 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   method_call.SetSerial(123);
   EXPECT_CALL(*proxy_.get(),
               DoCallMethodWithErrorResponse(
-                  MatchInstallFromActivationCodeCall(kTestActivationCode,
-                                                     kTestConfirmationCode),
+                  MatchInstallFromActivationCodeCall(
+                      base::TrimWhitespaceASCII(kTestActivationCode,
+                                                base::TrimPositions::TRIM_ALL),
+                      kTestConfirmationCode),
                   _, _))
       .Times(7)
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
@@ -419,8 +421,10 @@ TEST_F(HermesEuiccClientTest, TestRefreshSmdxProfiles) {
   method_call.SetSerial(123);
   EXPECT_CALL(*proxy_.get(),
               DoCallMethodWithErrorResponse(
-                  MatchRefreshSmdxProfilesCall(kTestRootSmds,
-                                               /*expected_restore_slot=*/true),
+                  MatchRefreshSmdxProfilesCall(
+                      base::TrimWhitespaceASCII(kTestActivationCode,
+                                                base::TrimPositions::TRIM_ALL),
+                      /*expected_restore_slot=*/true),
                   _, _))
       .Times(2)
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
@@ -438,7 +442,7 @@ TEST_F(HermesEuiccClientTest, TestRefreshSmdxProfiles) {
   response_writer.AppendArrayOfObjectPaths(kProfilesToReturn);
   AddPendingMethodCallResult(std::move(response), nullptr);
   client_->RefreshSmdxProfiles(
-      test_euicc_path, kTestRootSmds, /*restore_slot=*/true,
+      test_euicc_path, kTestActivationCode, /*restore_slot=*/true,
       base::BindOnce(CopyRefreshSmdxProfilesResult, &status, &profiles));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kSuccess);
@@ -451,7 +455,7 @@ TEST_F(HermesEuiccClientTest, TestRefreshSmdxProfiles) {
                                           hermes::kErrorNoResponse, "");
   AddPendingMethodCallResult(nullptr, std::move(error_response));
   client_->RefreshSmdxProfiles(
-      test_euicc_path, kTestRootSmds, /*restore_slot=*/true,
+      test_euicc_path, kTestActivationCode, /*restore_slot=*/true,
       base::BindOnce(CopyRefreshSmdxProfilesResult, &status, &profiles));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kErrorNoResponse);
