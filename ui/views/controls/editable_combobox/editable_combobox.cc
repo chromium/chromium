@@ -390,6 +390,7 @@ EditableCombobox::EditableCombobox(
 
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
   GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxGrouping);
+  GetViewAccessibility().SetValue(GetText());
 }
 
 EditableCombobox::~EditableCombobox() {
@@ -445,11 +446,6 @@ void EditableCombobox::SetMenuDecorationStrategy(
 
 void EditableCombobox::UpdateMenu() {
   menu_model_->UpdateItemsShown();
-}
-
-void EditableCombobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->SetValue(GetText());
 }
 
 void EditableCombobox::RequestFocus() {
@@ -538,8 +534,6 @@ void EditableCombobox::OnItemSelected(size_t index) {
   // SetText does not actually notify the TextfieldController, so we call the
   // handling code directly.
   HandleNewContent(selected_item_text);
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged,
-                           /*send_native_event=*/true);
 }
 
 void EditableCombobox::HandleNewContent(const std::u16string& new_content) {
@@ -556,6 +550,7 @@ void EditableCombobox::HandleNewContent(const std::u16string& new_content) {
     menu_model_->EnableUpdateItemsShown();
   }
   UpdateMenu();
+  GetViewAccessibility().SetValue(GetText());
 }
 
 void EditableCombobox::ArrowButtonPressed(const ui::Event& event) {
