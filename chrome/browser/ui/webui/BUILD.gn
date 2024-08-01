@@ -124,6 +124,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/scalable_iph",
       "//chrome/browser/ui/webui/ash/sensor_info",
+      "//chrome/browser/ui/webui/ash/settings",
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/sys_internals",

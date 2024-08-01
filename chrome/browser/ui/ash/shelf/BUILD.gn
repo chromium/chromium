@@ -128,6 +128,7 @@ static_library("shelf") {
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/scalable_iph",

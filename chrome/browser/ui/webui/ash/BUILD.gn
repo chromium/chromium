@@ -247,6 +247,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
     "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
     "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
   ]
 }
 

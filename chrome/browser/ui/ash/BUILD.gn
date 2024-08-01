@@ -234,6 +234,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
+    "//chrome/browser/ui/webui/ash/settings",
     "//chrome/browser/web_applications",
     "//chrome/browser/webshare:storage",
     "//chrome/common",

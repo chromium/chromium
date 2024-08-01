@@ -206,6 +206,7 @@ static_library("input_method") {
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/feedback",
+    "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:channel_info",

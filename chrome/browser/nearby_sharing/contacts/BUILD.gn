@@ -18,6 +18,11 @@ source_set("contacts") {
     "nearby_share_contacts_sorter.h",
   ]
 
+  public_deps = [
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:rpc_resources_proto",
+  ]
+
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/client",
@@ -29,9 +34,7 @@ source_set("contacts") {
     "//components/cross_device/logging:logging",
     "//components/prefs",
     "//crypto",
-    "//third_party/nearby:contact_rpc_proto",
     "//third_party/nearby:device_rpc_proto",
-    "//third_party/nearby:rpc_resources_proto",
   ]
 }
 

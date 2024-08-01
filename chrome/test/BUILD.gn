@@ -8703,6 +8703,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/ash:unit_tests",
       "//chrome/browser/ui/webui/ash/enterprise_reporting:mojo_bindings",
       "//chrome/browser/ui/webui/ash/login",
+      "//chrome/browser/ui/webui/ash/settings",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/services/pdf:pdf_progressive_searchifier_test",

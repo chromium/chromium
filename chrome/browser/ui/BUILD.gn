@@ -2270,16 +2270,6 @@ static_library("ui") {
       "webui/ash/edu_coexistence/edu_coexistence_login_handler.h",
       "webui/ash/edu_coexistence/edu_coexistence_state_tracker.cc",
       "webui/ash/edu_coexistence/edu_coexistence_state_tracker.h",
-      "webui/ash/settings/app_management/app_management_uma.h",
-      "webui/ash/settings/calculator/size_calculator.cc",
-      "webui/ash/settings/calculator/size_calculator.h",
-      "webui/ash/settings/constants/constants_util.cc",
-      "webui/ash/settings/constants/constants_util.h",
-      "webui/ash/settings/os_settings_features_util.cc",
-      "webui/ash/settings/os_settings_features_util.h",
-      "webui/ash/settings/os_settings_identifier.h",
-      "webui/ash/settings/os_settings_ui.cc",
-      "webui/ash/settings/os_settings_ui.h",
       "webui/ash/settings/pages/a11y/accessibility_handler.cc",
       "webui/ash/settings/pages/a11y/accessibility_handler.h",
       "webui/ash/settings/pages/a11y/accessibility_section.cc",
@@ -2434,15 +2424,6 @@ static_library("ui") {
       "webui/ash/settings/pages/system_preferences/startup_section.h",
       "webui/ash/settings/pages/system_preferences/system_preferences_section.cc",
       "webui/ash/settings/pages/system_preferences/system_preferences_section.h",
-      "webui/ash/settings/pref_names.cc",
-      "webui/ash/settings/pref_names.h",
-      "webui/ash/settings/search/hierarchy.cc",
-      "webui/ash/settings/search/hierarchy.h",
-      "webui/ash/settings/search/search_concept.h",
-      "webui/ash/settings/search/search_handler.cc",
-      "webui/ash/settings/search/search_handler.h",
-      "webui/ash/settings/search/search_tag_registry.cc",
-      "webui/ash/settings/search/search_tag_registry.h",
       "webui/ash/settings/services/hats/os_settings_hats_manager.cc",
       "webui/ash/settings/services/hats/os_settings_hats_manager.h",
       "webui/ash/settings/services/hats/os_settings_hats_manager_factory.cc",
@@ -2801,6 +2782,9 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/print_preview_cros",
+      "//chrome/browser/ui/webui/ash/settings",
+      "//chrome/browser/ui/webui/ash/settings/app_management",
+      "//chrome/browser/ui/webui/ash/settings/search",
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/sys_internals",
@@ -3002,6 +2986,7 @@ static_library("ui") {
       "//chrome/browser/ash/quick_pair",
       "//chrome/browser/ash/usb",
       "//chrome/browser/ui/webui/ash/login",
+      "//chrome/browser/ui/webui/ash/settings/app_management",
     ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
@@ -3191,6 +3176,8 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/print_preview_cros",
+      "//chrome/browser/ui/webui/ash/settings",
+      "//chrome/browser/ui/webui/ash/settings/search",
       "//chrome/browser/ui/webui/ash/skyvault",
       "//chrome/browser/ui/webui/ash/smb_shares",
     ]
@@ -6424,34 +6411,6 @@ static_library("test_support") {
       "device_signals_consent/mock_consent_requester.h",
     ]
     deps += [ "//components/device_signals/core/browser" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "webui/ash/settings/test_support/fake_hierarchy.cc",
-      "webui/ash/settings/test_support/fake_hierarchy.h",
-      "webui/ash/settings/test_support/fake_os_settings_section.cc",
-      "webui/ash/settings/test_support/fake_os_settings_section.h",
-      "webui/ash/settings/test_support/fake_os_settings_sections.cc",
-      "webui/ash/settings/test_support/fake_os_settings_sections.h",
-    ]
-    deps += [
-      "//ash",
-      "//ash/public/cpp",
-      "//ash/public/mojom",
-      "//ash/webui/settings/public/constants:mojom",
-      "//chrome/browser/apps/app_service:app_service",
-      "//chrome/browser/apps/app_service:constants",
-      "//chrome/browser/ash:ash",
-      "//chrome/browser/ash/file_manager",
-      "//chrome/browser/ash/system_web_apps:system_web_apps",
-      "//chrome/browser/ui/ash",
-      "//chrome/browser/ui/ash:test_support",
-      "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
-      "//chromeos/ash/components/dbus",
-      "//chromeos/ui/base",
-      "//ui/events:test_support",
-    ]
   }
 
   if (enable_extensions) {

@@ -5311,6 +5311,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
+      "//chrome/browser/ui/webui/ash/settings",
+      "//chrome/browser/ui/webui/ash/settings/calculator",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/vm",
       "//chrome/services/sharing/public/cpp",
@@ -5351,7 +5353,6 @@ static_library("browser") {
       "//chromeos/ash/components/login/session",
       "//chromeos/ash/components/memory",
       "//chromeos/ash/components/nearby/common/client",
-      "//chromeos/ash/components/nearby/common/connections_manager",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/report",
       "//chromeos/ash/components/scalable_iph",
@@ -5382,7 +5383,6 @@ static_library("browser") {
       "//chromeos/ash/services/multidevice_setup/public/mojom",
       "//chromeos/ash/services/nearby/public/cpp",
       "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
-      "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings",
       "//chromeos/ash/services/network_config",
       "//chromeos/ash/services/network_config:in_process_instance",
@@ -5671,6 +5671,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/multidevice_setup",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
+      "//chrome/browser/ui/webui/ash/settings",
+      "//chrome/browser/ui/webui/ash/settings/calculator",
     ]
 
     if (is_chrome_branded) {
@@ -8501,7 +8503,9 @@ static_library("browser_public_dependencies") {
       "//chromeos/ash/components/dbus/spaced:spaced_proto",
       "//chromeos/ash/components/drivefs/mojom",
       "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
+      "//chromeos/ash/components/nearby/common/connections_manager",
       "//chromeos/ash/services/auth_factor_config/public/mojom",
+      "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/components/sharesheet:constants",
       "//components/enterprise/buildflags",
       "//components/lens:buildflags",
