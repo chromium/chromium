@@ -477,6 +477,11 @@ extern bool GetLensOverlayEnableInFullscreen();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlaySegmentationMaskCornerRadius();
 
+// Whether to show the translate button in the Lens Overlay to allow translation
+// of the screenshot of the page.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlayEnableTranslateButton();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

@@ -5,6 +5,7 @@
 import './cursor_tooltip.js';
 import './initial_gradient.js';
 import './selection_overlay.js';
+import './translate_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -74,6 +75,11 @@ export class LensOverlayAppElement extends PolymerElement {
       moreOptionsMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
+      },
+      isTranslateButtonVisible: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableOverlayTranslateButton'),
+        readOnly: true,
       },
       theme: {
         type: Object,

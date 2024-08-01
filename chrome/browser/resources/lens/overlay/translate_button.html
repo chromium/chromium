@@ -1,0 +1,46 @@
+<style>
+  #translateButton {
+    background-color: rgba(var(--color-scrim-rgb), 0.6);
+    border: none;
+    border-radius: 48px;
+    height: 50px;
+    min-width: 50px;
+    padding: 0;
+    pointer-events: all;
+    width: 117px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateButton {
+    background-color: var(--color-primary);
+    gap: 0px;
+    width: 50px;
+  }
+
+  #translateButtonLabel {
+    color: white;
+    font-size: 13px;
+    font-family: Roboto, Arial, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 50px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateButtonLabel {
+    display: none;
+  }
+
+  #translateIcon {
+    background-color: white;
+    display: block;
+    height: 24px;
+    mask-image: url('translate.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 24px;
+  }
+</style>
+<cr-button id="translateButton" on-click="onTranslateButtonClick">
+  <span id="translateIcon" slot="prefix-icon"></span>
+  <span id="translateButtonLabel">$i18n{translate}</span>
+</cr-button>

@@ -114,6 +114,8 @@ const base::FeatureParam<std::string> kResultsSearchLoadingDarkModeUrl{
     "b7b5c4f8c8891c881b7a20344f5298b0.svg"};
 const base::FeatureParam<bool> kLensOverlayUseShimmerCanvas{
     &kLensOverlay, "use-shimmer-canvas", true};
+const base::FeatureParam<bool> kLensOverlayEnableTranslateButton{
+    &kLensOverlay, "enable-overlay-translate-button", false};
 
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
@@ -554,6 +556,10 @@ bool GetLensOverlayEnableInFullscreen() {
 
 int GetLensOverlaySegmentationMaskCornerRadius() {
   return kLensOverlaySegmentationMaskCornerRadius.Get();
+}
+
+bool GetLensOverlayEnableTranslateButton() {
+  return kLensOverlayEnableTranslateButton.Get();
 }
 
 }  // namespace lens::features
