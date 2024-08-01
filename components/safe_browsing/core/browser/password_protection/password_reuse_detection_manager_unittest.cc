@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
 

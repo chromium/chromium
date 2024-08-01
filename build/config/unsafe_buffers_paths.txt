@@ -70,10 +70,12 @@
 +chrome/browser/page_image_service/
 +chrome/browser/performance_manager/
 +chrome/browser/preloading/
++chrome/browser/safe_browsing/
 +chrome/browser/ui/autofill/
 +chrome/browser/ui/views/autofill/
 +chrome/browser/ui/webui/history_clusters/
 +chrome/browser/win/
++chrome/utility/safe_browsing/
 -chromecast/
 -chromeos/
 -clank/
@@ -99,6 +101,7 @@
 +components/performance_manager/
 +components/plus_addresses/
 +components/prefs/
++components/safe_browsing
 +components/sync/
 +components/sync_bookmarks/
 +components/sync_device_info/
