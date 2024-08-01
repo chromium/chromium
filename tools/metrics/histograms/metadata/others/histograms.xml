@@ -154,6 +154,7 @@ chromium-metrics-reviews@google.com.
       summary="post-auction forDebuggingOnly.reportAdAuctionWin() report"/>
   <variant name="DirectFromSellerSignals"
       summary="auction directFromSellerSignals"/>
+  <variant name="RealTimeReport" summary="post-auction real time report"/>
   <variant name="ScoringScriptJS" summary="seller JavaScript scoring script"/>
   <variant name="SendReportToReport"
       summary="post-auction sendReportTo() report (from either the winning
