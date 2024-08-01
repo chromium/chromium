@@ -5362,13 +5362,38 @@ void NavigationRequest::OnStartChecksComplete(
 
   // Try to create the speculative RFH after sending the network request
   // if DeferSpeculativeRFHCreation is enabled.
+  // Only create the speculative RFH if it is a normal loading rather than
+  // a BFCache restore or prerender activation. Otherwise `OnResponseStarted`
+  // will be called instantly and the creation of the speculative RFH is
+  // redundant.
   if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
       GetAssociatedRFHType() == AssociatedRenderFrameHostType::NONE) {
-    auto rfh_creation_result =
-        frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-            this, &browsing_context_group_swap_);
-    if (rfh_creation_result.has_value()) {
-      SetExpectedProcessIfAssociated();
+    if (features::kCreateSpeculativeRFHFilterRestore.Get() &&
+        loader_type != NavigationURLLoader::LoaderType::kRegular) {
+      return;
+    }
+    auto create_speculative_rfh_task = base::BindOnce(
+        [](base::WeakPtr<NavigationRequest> request) {
+          if (!request || request->state_ >= WILL_PROCESS_RESPONSE ||
+              request->HasRenderFrameHost()) {
+            return;
+          }
+          auto rfh_creation_result =
+              request->frame_tree_node_->render_manager()
+                  ->GetFrameHostForNavigation(
+                      request.get(), &request->browsing_context_group_swap_);
+          if (rfh_creation_result.has_value()) {
+            request->SetExpectedProcessIfAssociated();
+          }
+        },
+        weak_factory_.GetWeakPtr());
+    int delay_ms = features::kCreateSpeculativeRFHDelayMs.Get();
+    if (delay_ms > 0) {
+      GetUIThreadTaskRunner()->PostDelayedTask(
+          FROM_HERE, std::move(create_speculative_rfh_task),
+          base::Milliseconds(delay_ms));
+    } else {
+      std::move(create_speculative_rfh_task).Run();
     }
   }
 }

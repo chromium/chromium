@@ -561,6 +561,23 @@ class SitePerProcessAutoplayBrowserTest : public SitePerProcessBrowserTest {
   }
 };
 
+// Certain tests require the speculative RFH to be created before the browser
+// receives any data from the server. The delay of creating the RFH is set to 0
+// in these tests so that the speculative RFH is created when the request is
+// sent.
+class SitePerProcessBrowserTestWithoutSpeculativeRFHDelay
+    : public SitePerProcessBrowserTest {
+ public:
+  SitePerProcessBrowserTestWithoutSpeculativeRFHDelay() {
+    feature_list_for_defer_speculative_rfh_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation,
+        {{"create_speculative_rfh_delay_ms", "0"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_defer_speculative_rfh_;
+};
+
 // Ensure that navigating subframes in --site-per-process mode works and the
 // correct documents are committed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
@@ -6826,7 +6843,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Check that when a pending RFH is canceled and a proxy needs to be created in
 // its place, the proxy is properly initialized on the renderer side.  See
 // https://crbug.com/653746.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+// The test disables the delay of creating the speculative RFH since it requires
+// the created RFH to be cancelld because of the cross-origin redirect.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
                        CommunicateWithProxyAfterCancelPending) {
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -8311,11 +8330,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Similarly, the subframe should also have a b.com proxy (unused in this
   // test), since it is also doing a cross-process navigation.
-  SiteInstanceGroup* b_subframe_group = b_subframe_site_instance->group();
   RenderFrameProxyHost* child_proxy =
       child->current_frame_host()
           ->browsing_context_state()
-          ->GetRenderFrameProxyHost(b_subframe_group);
+          ->GetRenderFrameProxyHost(b_subframe_site_instance->group());
   EXPECT_TRUE(child_proxy);
   EXPECT_TRUE(child_proxy->is_render_frame_proxy_live());
 
@@ -8337,9 +8355,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(0, EvalJs(web_contents(), "frames.length;"));
 
   // The root proxy should be gone.
-  EXPECT_FALSE(root->current_frame_host()
-                   ->browsing_context_state()
-                   ->GetRenderFrameProxyHost(b_subframe_group));
+  if (b_subframe_site_instance->group()) {
+    EXPECT_FALSE(
+        root->current_frame_host()
+            ->browsing_context_state()
+            ->GetRenderFrameProxyHost(b_subframe_site_instance->group()));
+  }
 }
 
 // Similar to TwoCrossSitePendingNavigationsAndMainFrameWins, but checks the
@@ -8707,7 +8728,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test that a cross-site navigation in <object> that fails with an HTTP error
 // directly triggers fallback handling, rather than triggering fallback handling
 // in the renderer after it receives a `CommitNavigation()` IPC.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+// The test disables the delay of creating the speculative RFH since it
+// will check the created speculative RFH for a failing request. The speculative
+// RFH will not be created after receiving the 404 response.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
                        ObjectTagCrossSiteNavigationWithHTTPError) {
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   // TODO(dcheng): In the future, it might be useful to also have a test where
@@ -8842,8 +8866,11 @@ IN_PROC_BROWSER_TEST_P(
 // and also subsequently fails to load the body still directly triggers fallback
 // handling, rather than triggering fallback handling in the renderer after it
 // receives a `CommitNavigation()` IPC.
+// The test disables the delay of creating the speculative RFH since it
+// will check the created speculative RFH for a failing request. The speculative
+// RFH will not be created after receiving the 404 response.
 IN_PROC_BROWSER_TEST_P(
-    SitePerProcessBrowserTest,
+    SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
     ObjectTagCrossSiteNavigationWithHTTPErrorAndFailedBodyLoad) {
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   // TODO(dcheng): In the future, it might be useful to also have a test where
@@ -8923,7 +8950,10 @@ IN_PROC_BROWSER_TEST_P(
 // Test that a same-site navigation in <object> that fails with a network error
 // directly triggers fallback handling, rather than triggering fallback handling
 // in the renderer after it receives a `CommitFailedNavigation()` IPC.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+// The test disables the delay of creating the speculative RFH since it
+// will check the created speculative RFH for a failing request. The speculative
+// RFH will not be created after the network error.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
                        ObjectTagSameSiteNavigationWithNetworkError) {
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
@@ -8967,7 +8997,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test that a cross-site navigation in <object> that fails with a network error
 // directly triggers fallback handling, rather than triggering fallback handling
 // in the renderer after it receives a `CommitFailedNavigation()` IPC.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+// The test disables the delay of creating the speculative RFH since it
+// will check the created speculative RFH for a failing request. The speculative
+// RFH will not be created after the network error.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
                        ObjectTagCrossSiteNavigationWithNetworkError) {
   // Set up a test page with a same-site child frame hosted in an <object> tag.
   GURL url1(embedded_test_server()->GetURL("a.com", "/object-frame.html"));
@@ -13594,6 +13627,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTouchActionTest,

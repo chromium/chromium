@@ -81,6 +81,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSpeculativeRFHCreation);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kWarmupSpareProcessCreationWhenDeferRFH;
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kCreateSpeculativeRFHFilterRestore;
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kCreateSpeculativeRFHDelayMs;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

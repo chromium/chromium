@@ -234,6 +234,13 @@ class CrossOriginOpenerPolicyBrowserTest
       feature_list_for_back_forward_cache_.InitWithFeatures(
           {}, {features::kBackForwardCache});
     }
+
+    // Set the speculative RFH creation delay to 0 so that the speculative RFH
+    // is always created before receiving the response. Otherwise the RFH will
+    // always be created with the correct COOP header.
+    feature_list_for_defer_speculative_rfh_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation,
+        {{"create_speculative_rfh_delay_ms", "0"}});
   }
 
   // Provides meaningful param names instead of /0, /1, ...
@@ -326,6 +333,7 @@ class CrossOriginOpenerPolicyBrowserTest
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
+  base::test::ScopedFeatureList feature_list_for_defer_speculative_rfh_;
   net::EmbeddedTestServer https_server_;
 };
 

@@ -1963,6 +1963,13 @@ class RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest
       scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
       command_line->AppendSwitch(switches::kDisableBackForwardCache);
     }
+    // Disable the delay of creating the speculative RFH for test
+    // TouchEventsForwardedToTheCorrectRenderWidgetHostView.
+    // The test involves receiving a coop header for a non-coop speculative RFH.
+    // The speculatve RFH must be created when the request is sent.
+    feature_list_for_defer_speculative_rfh_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation,
+        {{"create_speculative_rfh_delay_ms", "0"}});
 
     RenderWidgetHostViewBrowserTest::SetUpCommandLine(command_line);
   }
@@ -2015,6 +2022,7 @@ class RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_for_defer_speculative_rfh_;
 };
 
 std::string DescribeBFCacheFeatureStatus(
@@ -2071,6 +2079,7 @@ IN_PROC_BROWSER_TEST_P(
 // to the main frame's `RenderWidgetHostViewAndroid` and its `ui::ViewAndroid`,
 // no matter if there are redundant RWHVAs / VAs under the same WebContents.
 #if BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_P(
     RenderWidgetHostViewOOPIFNavigatesMainFrameLocationReplaceBrowserTest,
     TouchEventsForwardedToTheCorrectRenderWidgetHostView) {

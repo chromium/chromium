@@ -7343,7 +7343,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithPrewarmAndDelay",
+                    "params": {
+                        "create_speculative_rfh_delay_ms": "500",
+                        "warmup_spare_process": "true"
+                    },
                     "enable_features": [
                         "DeferSpeculativeRFHCreation"
                     ]

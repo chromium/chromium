@@ -279,6 +279,20 @@ BASE_FEATURE(kDeferSpeculativeRFHCreation,
 // DeferSpeculativeRFHCreation.
 const base::FeatureParam<bool> kWarmupSpareProcessCreationWhenDeferRFH{
     &kDeferSpeculativeRFHCreation, "warmup_spare_process", false};
+// When enabled, the browser will not try to create a speculative RFH after
+// loading starts for BFCache restore and prerender activation. The
+// `OnResponseStarted` function will be called immediately and the RFH will be
+// created there.
+const base::FeatureParam<bool> kCreateSpeculativeRFHFilterRestore{
+    &kDeferSpeculativeRFHCreation, "create_speculative_rfh_filter_restore",
+    false};
+// When enabled, the creation of the speculative RFH will be delayed for
+// a short time after the loading starts. The loading start functions are
+// critical for performance. We try not to interfere with it.
+// Zero or negative value will disable the delay and create the speculative
+// RFH instantly.
+const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
+    &kDeferSpeculativeRFHCreation, "create_speculative_rfh_delay_ms", 0};
 
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/

@@ -586,7 +586,7 @@ ProxyHostObserver* GetProxyHostObserver() {
 
 bool IsRequestCompatibleWithSpeculativeRFH(NavigationRequest* request) {
   return request->state() <=
-             NavigationRequest::NavigationState::WILL_START_REQUEST &&
+             NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE &&
          request->GetAssociatedRFHType() ==
              NavigationRequest::AssociatedRenderFrameHostType::NONE;
 }
