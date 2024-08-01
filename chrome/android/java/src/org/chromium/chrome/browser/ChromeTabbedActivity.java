@@ -340,6 +340,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private HistoricalTabModelObserver mHistoricalTabModelObserver;
+    private UndoRefocusHelper mUndoRefocusHelper;
 
     private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
 
@@ -670,10 +671,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new HistoricalTabModelObserver(
                             mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
 
-            // Defer initialization of this helper so it triggers after TabModelFilter
-            // observers.
-            UndoRefocusHelper.initialize(
-                    this, mTabModelSelector, getLayoutManagerSupplier(), isTablet());
+            // Defer creation of this helper so it triggers after TabModelFilter observers.
+            mUndoRefocusHelper =
+                    new UndoRefocusHelper(
+                            mTabModelSelector, getLayoutManagerSupplier(), isTablet());
 
             mTabModelObserver =
                     new TabModelSelectorTabModelObserver(mTabModelSelector) {
@@ -3173,6 +3174,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         if (mHistoricalTabModelObserver != null) mHistoricalTabModelObserver.destroy();
+
+        if (mUndoRefocusHelper != null) mUndoRefocusHelper.destroy();
 
         if (mTabModelObserver != null) mTabModelObserver.destroy();
 
