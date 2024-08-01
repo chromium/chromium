@@ -707,26 +707,6 @@ class IntegrationTest : public ::testing::Test {
   ScopedIPCSupportWrapper ipc_support_;
 };
 
-// TODO(crbug.com/40063600): re-enable the tests once they are passing on
-// Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
-#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
-#define MAYBE_OverinstallBrokenSameVersion DISABLED_OverinstallBrokenSameVersion
-#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
-#define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
-#define MAYBE_UninstallIfUnusedSelfAndOldReal \
-  DISABLED_UninstallIfUnusedSelfAndOldReal
-#else
-#define MAYBE_InstallLowerVersion InstallLowerVersion
-#define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
-#define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
-#define MAYBE_OverinstallBrokenSameVersion OverinstallBrokenSameVersion
-#define MAYBE_OverinstallWorking OverinstallWorking
-#define MAYBE_OverinstallBroken OverinstallBroken
-
-#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
 #else
@@ -776,7 +756,7 @@ TEST_F(IntegrationTest, OverinstallRedundant) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
+TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -808,7 +788,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
+TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -831,7 +811,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_OverinstallBrokenSameVersion) {
+TEST_F(IntegrationTest, OverinstallBrokenSameVersion) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2027,7 +2007,7 @@ TEST_F(IntegrationTest, PrivilegedHelperInstall) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
+TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -2054,7 +2034,7 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
+TEST_F(IntegrationTest, UninstallIfUnusedSelfAndOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
@@ -2088,7 +2068,7 @@ TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
+TEST_F(IntegrationTest, InstallLowerVersion) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
