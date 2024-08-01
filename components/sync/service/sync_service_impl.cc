@@ -2484,12 +2484,6 @@ void SyncServiceImpl::GetLocalDataDescriptions(
   // those which are configured and have not encountered any error.
   types.RetainAll(GetActiveDataTypes());
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
-    sync_client_->GetLocalDataDescriptions(types, std::move(callback));
-    return;
-  }
-
   types.RetainAll(GetModelTypesWithLocalDataBatchUploader());
   auto barrier_callback =
       base::BarrierCallback<std::pair<ModelType, LocalDataDescription>>(
@@ -2506,12 +2500,9 @@ void SyncServiceImpl::GetLocalDataDescriptions(
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
-    for (ModelType type : types) {
-      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
-                                    syncer::ModelTypeHistogramValue(type));
-    }
+  for (ModelType type : types) {
+    base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
+                                  syncer::ModelTypeHistogramValue(type));
   }
 
   // Syncing users do not use separate local and account storages. Thus, there's
@@ -2523,12 +2514,6 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
   // Only retain types that are not only preferred but also active, that is,
   // those which are configured and have not encountered any error.
   types.RetainAll(GetActiveDataTypes());
-
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncEnableModelTypeLocalDataBatchUploaders)) {
-    sync_client_->TriggerLocalDataMigration(types);
-    return;
-  }
 
   types.RetainAll(GetModelTypesWithLocalDataBatchUploader());
   for (ModelType type : types) {

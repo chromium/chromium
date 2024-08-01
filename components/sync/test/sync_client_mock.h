@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TEST_SYNC_CLIENT_MOCK_H_
 #define COMPONENTS_SYNC_TEST_SYNC_CLIENT_MOCK_H_
 
-#include <map>
-
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "components/sync/service/local_data_description.h"
@@ -45,17 +43,6 @@ class SyncClientMock : public SyncClient {
   MOCK_METHOD(void,
               SetPasswordSyncAllowedChangeCb,
               (const base::RepeatingClosure&),
-              (override));
-  MOCK_METHOD(
-      void,
-      GetLocalDataDescriptions,
-      (ModelTypeSet types,
-       base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
-           callback),
-      (override));
-  MOCK_METHOD(void,
-              TriggerLocalDataMigration,
-              (ModelTypeSet types),
               (override));
   MOCK_METHOD(void,
               RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial,
