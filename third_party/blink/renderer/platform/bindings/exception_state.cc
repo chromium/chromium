@@ -256,13 +256,13 @@ void ExceptionState::PropagateException() {
 }
 
 NonThrowableExceptionState::NonThrowableExceptionState()
-    : ExceptionState(nullptr, ExceptionContextType::kUnknown, nullptr, nullptr),
+    : ExceptionState(nullptr, v8::ExceptionContext::kUnknown, nullptr, nullptr),
       file_(""),
       line_(0) {}
 
 NonThrowableExceptionState::NonThrowableExceptionState(const char* file,
                                                        int line)
-    : ExceptionState(nullptr, ExceptionContextType::kUnknown, nullptr, nullptr),
+    : ExceptionState(nullptr, v8::ExceptionContext::kUnknown, nullptr, nullptr),
       file_(file),
       line_(line) {}
 

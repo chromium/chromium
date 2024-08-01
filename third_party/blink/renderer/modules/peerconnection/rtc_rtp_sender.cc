@@ -239,7 +239,7 @@ class ReplaceTrackRequest : public RTCVoidRequest {
   void RequestFailed(const webrtc::RTCError& error) override {
     ScriptState::Scope scope(resolver_->GetScriptState());
     ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "RTCRtpSender", "replaceTrack");
     ThrowExceptionFromRTCError(error, exception_state);
     resolver_->Reject(exception_state);
@@ -273,7 +273,7 @@ class SetParametersRequest : public RTCVoidRequest {
     sender_->ClearLastReturnedParameters();
     ScriptState::Scope scope(resolver_->GetScriptState());
     ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "RTCRtpSender", "setParameters");
     ThrowExceptionFromRTCError(error, exception_state);
     resolver_->Reject(exception_state);
@@ -705,7 +705,7 @@ ScriptPromise<IDLUndefined> RTCRtpSender::replaceTrack(
 
   if (with_track && kind_ != with_track->kind()) {
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "RTCRtpSender", "replaceTrack");
     exception_state.ThrowTypeError("Track kind does not match Sender kind");
     resolver->Reject(exception_state);

@@ -105,7 +105,7 @@ class PLATFORM_EXPORT ExceptionState {
       : main_context_(std::move(context)), isolate_(isolate) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name,
                  const char* property_name)
       : ExceptionState(
@@ -113,7 +113,7 @@ class PLATFORM_EXPORT ExceptionState {
             ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT ExceptionState {
   // which is only needed for named and indexed interceptors.
   enum ForInterceptor { kForInterceptor };
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name,
                  const AtomicString& property_name,
                  ExceptionState::ForInterceptor)
@@ -296,7 +296,7 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
  public:
   DummyExceptionStateForTesting()
       : ExceptionState(nullptr,
-                       ExceptionContextType::kUnknown,
+                       v8::ExceptionContext::kUnknown,
                        nullptr,
                        nullptr) {}
   ~DummyExceptionStateForTesting() {

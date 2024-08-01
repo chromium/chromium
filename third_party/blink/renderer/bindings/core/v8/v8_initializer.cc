@@ -356,7 +356,7 @@ void V8Initializer::FailedAccessCheckCallbackInMainThread(
   // V8 to pass in more contextual information, so that we can build a full
   // ExceptionState.
   ExceptionState exception_state(
-      holder->GetIsolate(), ExceptionContextType::kUnknown, nullptr, nullptr);
+      holder->GetIsolate(), v8::ExceptionContext::kUnknown, nullptr, nullptr);
   BindingSecurity::FailedAccessCheckFor(holder->GetIsolate(),
                                         WrapperTypeInfo::Unwrap(data), holder,
                                         exception_state);
@@ -394,8 +394,8 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
                                 v8::Local<v8::Value> source,
                                 bool is_code_like) {
   v8::Isolate* isolate = context->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kOperationInvoke, "eval", "");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
+                                 "eval", "");
 
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
@@ -668,7 +668,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state,
-      ExceptionContext(ExceptionContextType::kUnknown, "", "import"));
+      ExceptionContext(v8::ExceptionContext::kUnknown, "", "import"));
 
   String invalid_attribute_key;
   if (module_request.HasInvalidImportAttributeKey(&invalid_attribute_key)) {

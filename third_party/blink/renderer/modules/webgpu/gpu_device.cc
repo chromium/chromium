@@ -591,8 +591,7 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
   auto promise = resolver->Promise();
 
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate,
-                                 ExceptionContextType::kOperationInvoke,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
                                  "GPUDevice", "createRenderPipelineAsync");
   OwnedRenderPipelineDescriptor dawn_desc_info;
   ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,

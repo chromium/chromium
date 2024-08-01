@@ -269,7 +269,7 @@ String GetStringFromScriptHelper(
   v8::HandleScope handle_scope(context->GetIsolate());
   ScriptState::Scope script_state_scope(ToScriptStateForMainWorld(context));
   ExceptionState exception_state(
-      context->GetIsolate(), ExceptionContextType::kUnknown,
+      context->GetIsolate(), v8::ExceptionContext::kUnknown,
       element_name_for_exception, attribute_name_for_exception);
 
   TrustedTypePolicy* default_policy = GetDefaultPolicy(context);

@@ -46,7 +46,7 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
     // 17. Let pull1Algorithm be the following steps:
     //   a. If reading is true,
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     if (engine_->reading_) {
       //     i. Set readAgainForBranch1 to true.
       engine_->read_again_for_branch_[branch_] = true;
@@ -156,7 +156,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 1. Set reading to false.
     engine_->reading_ = false;
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     // 2. If canceled1 is false, perform !
     // ReadableByteStreamControllerClose(branch1.[[controller]]).
     // 3. If canceled2 is false, perform !
@@ -336,7 +336,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     // 4. If byobCanceled is false, perform !
     //    ReadableByteStreamControllerClose(byobBranch.[[controller]]).
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     if (!byob_canceled) {
       ReadableStreamController* controller =
           byob_branch_->readable_stream_controller_;

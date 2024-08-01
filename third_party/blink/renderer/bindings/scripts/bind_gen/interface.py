@@ -378,22 +378,22 @@ def bind_callback_local_vars(code_node, cg_context):
     local_vars.append(S("execution_context_of_document_tree", text))
 
     # exception_context_type
-    pattern = ("const ExceptionContextType ${exception_context_type} = "
+    pattern = ("const v8::ExceptionContext ${exception_context_type} = "
                "{_1};")
     if cg_context.attribute_get:
-        _1 = "ExceptionContextType::kAttributeGet"
+        _1 = "v8::ExceptionContext::kAttributeGet"
     elif cg_context.attribute_set:
-        _1 = "ExceptionContextType::kAttributeSet"
+        _1 = "v8::ExceptionContext::kAttributeSet"
     elif cg_context.constructor_group:
-        _1 = "ExceptionContextType::kConstructorOperationInvoke"
+        _1 = "v8::ExceptionContext::kConstructor"
     elif cg_context.indexed_interceptor_kind:
-        _1 = "ExceptionContextType::kIndexedProperty{}".format(
+        _1 = "v8::ExceptionContext::kIndexed{}".format(
             cg_context.indexed_interceptor_kind)
     elif cg_context.named_interceptor_kind:
-        _1 = "ExceptionContextType::kNamedProperty{}".format(
+        _1 = "v8::ExceptionContext::kNamed{}".format(
             cg_context.named_interceptor_kind)
     else:
-        _1 = "ExceptionContextType::kOperationInvoke"
+        _1 = "v8::ExceptionContext::kOperation"
     local_vars.append(S("exception_context_type", _format(pattern, _1=_1)))
 
     # exception_state

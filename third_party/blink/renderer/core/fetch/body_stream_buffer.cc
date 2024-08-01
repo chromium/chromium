@@ -380,7 +380,7 @@ void BodyStreamBuffer::OnStateChange() {
     return;
   }
   ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
 
   switch (consumer_->GetPublicState()) {
     case BytesConsumer::PublicState::kReadableOrWaiting:

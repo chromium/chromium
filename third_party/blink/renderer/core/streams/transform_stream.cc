@@ -45,7 +45,7 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
                                script_state->GetIsolate(), "invalid realm"));
     }
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     ScriptPromiseUntyped promise;
     {
       // This is needed because the realm of the transformer can be different
@@ -97,7 +97,7 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
                                script_state->GetIsolate(), "invalid realm"));
     }
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     ScriptPromiseUntyped promise =
         transformer_->Transform(argv[0], controller_, exception_state);
     if (exception_state.HadException()) {

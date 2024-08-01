@@ -308,7 +308,7 @@ v8::Local<v8::Value> PipeToEngine::HandleNextEvent(v8::Local<v8::Value>) {
   }
 
   ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
 
   is_reading_ = true;
   auto* read_request = MakeGarbageCollected<PipeToReadRequest>(this);
@@ -323,7 +323,7 @@ void PipeToEngine::ReadRequestChunkStepsBody(ScriptState* script_state,
   // isolate needs a current context.
   ScriptState::Scope scope(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
   is_reading_ = false;
   const auto write = WritableStreamDefaultWriter::Write(
                          script_state, writer_,

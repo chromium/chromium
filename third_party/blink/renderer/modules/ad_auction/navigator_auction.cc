@@ -2916,7 +2916,7 @@ ScriptValue NavigatorAuction::AuctionHandle::AuctionHandleFunction::Call(
     return ScriptValue();
   }
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+                                 v8::ExceptionContext::kOperation,
                                  "NavigatorAuction", "runAdAuction");
   CallImpl(script_state, value, exception_state);
   return ScriptValue();

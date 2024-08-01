@@ -316,7 +316,7 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
     ScriptState* script_state,
     GPUDeviceDescriptor* descriptor) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<GPUDevice>>(
-      script_state, ExceptionContext(ExceptionContextType::kOperationInvoke,
+      script_state, ExceptionContext(v8::ExceptionContext::kOperation,
                                      "GPUAdapter", "requestDevice"));
   auto promise = resolver->Promise();
 

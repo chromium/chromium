@@ -51,7 +51,7 @@ scoped_refptr<SerializedScriptValue> BuildSerializedScriptValue(
     Transferables& transferables) {
   SerializedScriptValue::SerializeOptions options;
   options.transferables = &transferables;
-  ExceptionState exceptionState(isolate, ExceptionContextType::kOperationInvoke,
+  ExceptionState exceptionState(isolate, v8::ExceptionContext::kOperation,
                                 "MessageChannel", "postMessage");
   return SerializedScriptValue::Serialize(isolate, value, options,
                                           exceptionState);

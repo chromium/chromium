@@ -70,7 +70,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
     }
 
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
 
     //   b. Set reading to true.
     engine_->reading_ = true;

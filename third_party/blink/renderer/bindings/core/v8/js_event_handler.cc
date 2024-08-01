@@ -157,7 +157,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
           v8::Isolate* isolate = script_state->GetIsolate();
 
           ExceptionState exception_state(isolate,
-                                         ExceptionContextType::kOperationInvoke,
+                                         v8::ExceptionContext::kOperation,
                                          "BeforeUnload", "toString");
           String result =
               NativeValueTraits<IDLNullable<IDLString>>::NativeValue(

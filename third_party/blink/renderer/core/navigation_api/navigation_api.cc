@@ -483,7 +483,7 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
   {
     if (options->hasState()) {
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionContextType::kOperationInvoke,
+                                     v8::ExceptionContext::kOperation,
                                      "Navigation", "navigate");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
@@ -547,7 +547,7 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
   {
     if (options->hasState()) {
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionContextType::kOperationInvoke,
+                                     v8::ExceptionContext::kOperation,
                                      "Navigation", "reload");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {

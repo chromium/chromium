@@ -906,7 +906,7 @@ def make_v8_to_blink_function(cg_context):
         S("exception_context_scope",
           ("ExceptionState::ContextScope ${exception_context_scope}("
            "ExceptionContext("
-           "ExceptionContextType::kDictionaryMemberGet, "
+           "v8::ExceptionContext::kAttributeGet, "
            "${class_like_name}, \"\"), "
            "${exception_state});")),
         S("fallback_presence_var", "bool ${fallback_presence_var};"),

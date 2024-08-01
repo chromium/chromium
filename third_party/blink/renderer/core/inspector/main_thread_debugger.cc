@@ -445,7 +445,7 @@ void MainThreadDebugger::QuerySelectorCallback(
   if (!container_node)
     return;
   ExceptionState exception_state(info.GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+                                 v8::ExceptionContext::kOperation,
                                  "CommandLineAPI", "$");
   Element* element =
       container_node->QuerySelector(AtomicString(selector), exception_state);
@@ -472,7 +472,7 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   if (!container_node)
     return;
   ExceptionState exception_state(info.GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+                                 v8::ExceptionContext::kOperation,
                                  "CommandLineAPI", "$$");
   // ToV8(elementList) doesn't work here, since we need a proper Array instance,
   // not NodeList.
@@ -509,7 +509,7 @@ void MainThreadDebugger::XpathSelectorCallback(
     return;
 
   ExceptionState exception_state(info.GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+                                 v8::ExceptionContext::kOperation,
                                  "CommandLineAPI", "$x");
   XPathResult* result = XPathEvaluator::Create()->evaluate(
       nullptr, selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
