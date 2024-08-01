@@ -33961,6 +33961,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="88" label="AbortsignalAny"/>
   <int value="89" label="Navigation"/>
   <int value="90" label="Mathml"/>
+  <int value="91" label="CanvasCreateconicgradient"/>
+  <int value="92" label="CanvasReset"/>
+  <int value="93" label="CanvasRoundrect"/>
+  <int value="94" label="CanvasTextBaselines"/>
 </enum>
 
 <enum name="WebFontCacheHit">
