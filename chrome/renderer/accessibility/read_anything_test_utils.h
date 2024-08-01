@@ -13,6 +13,10 @@ namespace test {
 void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id);
 std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate();
 
+// Helpers for creating AXNodeData objects to be used in testing.
+ui::AXNodeData TextNode(int id, std::u16string text_content);
+ui::AXNodeData TextNode(int id);
+
 }  // namespace test
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_TEST_UTILS_H_
