@@ -971,6 +971,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="94" label="timelineAnnotations"/>
   <int value="95" label="timeline-rpp-sidebar"/>
   <int value="96" label="timelineObservations"/>
+  <int value="97" label="genAISettingsPanel"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
