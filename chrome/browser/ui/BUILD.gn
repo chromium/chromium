@@ -43,6 +43,10 @@ generate_allowlist_from_histograms_file("webui_name_variants") {
 
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
+# TODO(https://crbug.com/353332589): Once //chrome/browser is properly
+# modularized, this target should be folded in with //chrome/browser:browser.
+# The two are already semantically a part of the same target as they allow
+# circular includes from each other.
 static_library("ui") {
   sources = [
     "accelerator_utils.h",

@@ -24,6 +24,10 @@ code. Some code is used on Android.
         * Circular dependencies onto `//chrome/browser/BUILD.gn:browser` or
           `//chrome/browser/ui/BUILD.gn:ui` are often necessary when
           modularizing existing features without committing to a large refactor.
+        * The recommended approach is to create two targets separating the
+          interface and the implementation. Circular dependencies are disallowed
+          for the interface. See
+          [example](https://chromium-review.googlesource.com/c/chromium/src/+/5753695/3/chrome/browser/ui/omnibox/BUILD.gn).
     * This directory may have its own namespace.
     * The BUILD.gn should use public/sources separation.
         * The main reason for this is to guard against future, unexpected usage
