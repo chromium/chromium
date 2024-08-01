@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PHONE_NUMBER_PHONE_NUMBER_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_PHONE_NUMBER_PHONE_NUMBER_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_PHONE_NUMBER_UI_BUNDLED_PHONE_NUMBER_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_PHONE_NUMBER_UI_BUNDLED_PHONE_NUMBER_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,4 +11,4 @@
 extern NSString* const kCountryCodePickerTableViewIdentifier;
 extern NSString* const kPhoneNumberActionsViewIdentifier;
 
-#endif  // IOS_CHROME_BROWSER_UI_PHONE_NUMBER_PHONE_NUMBER_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_PHONE_NUMBER_UI_BUNDLED_PHONE_NUMBER_CONSTANTS_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/phone_number/country_code_picker_view_controller.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
-#import "ios/chrome/browser/ui/phone_number/phone_number_actions_view_controller.h"
-#import "ios/chrome/browser/ui/phone_number/phone_number_constants.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/phone_number_actions_view_controller.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/phone_number_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/phone_number/country_code_picker_app_interface.h"
-#import "ios/chrome/browser/ui/phone_number/phone_number_constants.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_app_interface.h"
+#import "ios/chrome/browser/phone_number/ui_bundled/phone_number_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
