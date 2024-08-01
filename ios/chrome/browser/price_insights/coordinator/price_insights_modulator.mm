@@ -38,6 +38,11 @@
 
 namespace {
 
+// The histogram used to record the current price bucket of the product when the
+// user clicks on buying options.
+const char kPriceInsightsBuyingOptionsClicked[] =
+    "Commerce.PriceInsights.BuyingOptionsClicked";
+
 NSDate* getNSDateFromString(std::string date) {
   NSDateFormatter* date_format = [[NSDateFormatter alloc] init];
   [date_format setDateFormat:@"yyyy-MM-dd"];
@@ -127,7 +132,9 @@ NSDate* getNSDateFromString(std::string date) {
   [self.priceInsightsCell updateTrackButton:NO];
 }
 
-- (void)didStartNavigationToWebpage {
+- (void)didStartNavigationToWebpageWithPriceBucket:
+    (commerce::PriceBucket)bucket {
+  base::UmaHistogramEnumeration(kPriceInsightsBuyingOptionsClicked, bucket);
 }
 
 - (void)presentPushNotificationPermissionAlert {

@@ -238,6 +238,7 @@ struct HistoryGraph: View {
                   return
                 }
                 selectedDate = nil
+                UserMetricsUtils.recordAction("Commerce.PriceInsights.HistoryGraphInteraction")
               }
           )
       }

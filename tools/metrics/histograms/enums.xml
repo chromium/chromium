@@ -29362,6 +29362,11 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Product is Untracked"/>
 </enum>
 
+<enum name="PriceNotificationTrackingSource">
+  <int value="0" label="Price tracking"/>
+  <int value="1" label="Price insights"/>
+</enum>
+
 <enum name="PrimaryButtonRight">
   <int value="0" label="Right-handed"/>
   <int value="1" label="Left-handed"/>

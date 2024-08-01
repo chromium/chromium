@@ -33,7 +33,12 @@ namespace {
 // The histogram used to record a product's new tracking state when a user
 // initates a state change.
 const char kPriceTrackingStatusHistogram[] =
-    "Commerce.PriceTracking.IOS.ProductStatus";
+    "Commerce.PriceTracking.IOS.PriceTracking.ProductStatus";
+
+// The histogram used to record a product's new tracking state when a user
+// initates a state change.
+const char kPriceInsightsTrackingStatusHistogram[] =
+    "Commerce.PriceTracking.IOS.PriceInsights.ProductStatus";
 
 // This enum is used to represent the different tracking states a product can
 // observe.
@@ -41,6 +46,13 @@ enum class PriceNotificationProductStatus {
   kTrack,
   kUntrack,
   kMaxValue = kUntrack
+};
+
+// This enum is used to represent the different sources of tracking a product.
+enum class PriceNotificationTrackingSource {
+  kPriceTracking,
+  kPriceInsights,
+  kMaxValue = kPriceInsights
 };
 
 }  // namespace
@@ -201,6 +213,11 @@ using PriceNotificationItems =
 
           [weakSelf.priceInsightsConsumer
               didStartPriceTrackingWithNotification:granted];
+
+          [self recordProductStatusFromSource:PriceNotificationTrackingSource::
+                                                  kPriceInsights
+                                       status:PriceNotificationProductStatus::
+                                                  kTrack];
         }];
   }];
 }
@@ -216,6 +233,10 @@ using PriceNotificationItems =
           return;
         }
 
+        [self recordProductStatusFromSource:PriceNotificationTrackingSource::
+                                                kPriceInsights
+                                     status:PriceNotificationProductStatus::
+                                                kUntrack];
         [weakSelf.priceInsightsConsumer didStopPriceTracking];
       }];
 }
@@ -224,7 +245,8 @@ using PriceNotificationItems =
   DCHECK(item.buyingOptionsURL.is_valid());
   [self navigateToWebpageForURL:item.buyingOptionsURL
                     disposition:WindowOpenDisposition::NEW_FOREGROUND_TAB];
-  [self.priceInsightsConsumer didStartNavigationToWebpage];
+  [self.priceInsightsConsumer
+      didStartNavigationToWebpageWithPriceBucket:item.priceBucket];
 }
 
 #pragma mark - Private
@@ -325,7 +347,9 @@ using PriceNotificationItems =
   [self.consumer reconfigureCellsForItems:@[ trackableItem ]];
   [self.consumer didStartPriceTrackingForItem:trackableItem];
 
-  [self recordProductStatus:PriceNotificationProductStatus::kTrack];
+  [self recordProductStatusFromSource:PriceNotificationTrackingSource::
+                                          kPriceTracking
+                               status:PriceNotificationProductStatus::kTrack];
 }
 
 // This function handles the response from the user attempting to unsubscribe to
@@ -348,7 +372,9 @@ using PriceNotificationItems =
                                         onCurrentSite:isProductOnCurrentSite];
       }));
 
-  [self recordProductStatus:PriceNotificationProductStatus::kUntrack];
+  [self recordProductStatusFromSource:PriceNotificationTrackingSource::
+                                          kPriceTracking
+                               status:PriceNotificationProductStatus::kUntrack];
 }
 
 // This function fetches the product data for the items the user has subscribed
@@ -516,8 +542,17 @@ using PriceNotificationItems =
   return false;
 }
 
-- (void)recordProductStatus:(PriceNotificationProductStatus)status {
-  base::UmaHistogramEnumeration(kPriceTrackingStatusHistogram, status);
+- (void)recordProductStatusFromSource:(PriceNotificationTrackingSource)source
+                               status:(PriceNotificationProductStatus)status {
+  switch (source) {
+    case PriceNotificationTrackingSource::kPriceTracking:
+      base::UmaHistogramEnumeration(kPriceTrackingStatusHistogram, status);
+      break;
+    case PriceNotificationTrackingSource::kPriceInsights:
+      base::UmaHistogramEnumeration(kPriceInsightsTrackingStatusHistogram,
+                                    status);
+      break;
+  }
 }
 
 - (void)navigateToWebpageForURL:(const GURL&)URL

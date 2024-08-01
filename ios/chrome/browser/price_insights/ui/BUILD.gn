@@ -54,6 +54,7 @@ swift_source_set("price_history_swift") {
   ]
   deps = [
     "//ios/chrome/browser/price_insights/ui/resources",
+    "//ios/chrome/browser/shared/public/metrics:metrics_bridge",
     "//ios/chrome/common/ui/colors",
   ]
   frameworks = [

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PRICE_INSIGHTS_UI_PRICE_HISTORY_SWIFT_BRIDGE_H_
 #define IOS_CHROME_BROWSER_PRICE_INSIGHTS_UI_PRICE_HISTORY_SWIFT_BRIDGE_H_
 
+#import "ios/chrome/browser/shared/public/metrics/user_metrics_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #endif  // IOS_CHROME_BROWSER_PRICE_INSIGHTS_UI_PRICE_HISTORY_SWIFT_BRIDGE_H_
