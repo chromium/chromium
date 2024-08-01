@@ -74,7 +74,7 @@ void BirchLostMediaProvider::MediaSessionInfoChanged(
       std::move(session_info);
 
   if (!media_session_info) {
-    secondary_icon_type_ = SecondaryIconType::kUnknown;
+    secondary_icon_type_ = SecondaryIconType::kNoIcon;
     return;
   }
 
@@ -93,7 +93,7 @@ void BirchLostMediaProvider::MediaSessionInfoChanged(
         secondary_icon_type_ = SecondaryIconType::kLostMediaVideo;
         return;
       default:
-        secondary_icon_type_ = SecondaryIconType::kUnknown;
+        secondary_icon_type_ = SecondaryIconType::kNoIcon;
     }
   }
 }
@@ -116,6 +116,7 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
   std::vector<BirchLostMediaItem> items;
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  // TODO(b/354043357): Investigate why backup icon is grainy in production.
   const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
       *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
 

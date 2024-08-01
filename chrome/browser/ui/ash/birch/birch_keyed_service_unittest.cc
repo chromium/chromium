@@ -331,22 +331,23 @@ class FaviconServiceMock : public favicon::MockFaviconService {
     // This default implementation is provided to satisfy both actual
     // functionality and the ability to set expectations in tests.
     ON_CALL(*this,
-            GetFaviconImageForPageURL(testing::_, testing::_, testing::_))
+            GetLargestRawFaviconForPageURL(testing::_, testing::_, testing::_,
+                                           testing::_, testing::_))
         .WillByDefault(testing::Invoke(
-            this, &FaviconServiceMock::DefaultGetFaviconImageForPageURL));
+            this, &FaviconServiceMock::DefaultGetLargestRawFaviconForPageURL));
   }
   ~FaviconServiceMock() override = default;
   FaviconServiceMock(const FaviconServiceMock&) = delete;
   FaviconServiceMock& operator=(const FaviconServiceMock&) = delete;
 
  private:
-  base::CancelableTaskTracker::TaskId DefaultGetFaviconImageForPageURL(
+  base::CancelableTaskTracker::TaskId DefaultGetLargestRawFaviconForPageURL(
       const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
+      const std::vector<favicon_base::IconTypeSet>& icon_types,
+      int minimum_size_in_pixels,
+      favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) {
-    favicon_base::FaviconImageResult result;
-    result.image = gfx::Image();
-    result.icon_url = GURL("https://example.com/favicon.ico");
+    favicon_base::FaviconRawBitmapResult result;
 
     std::move(callback).Run(result);
 
@@ -513,7 +514,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
       case SecondaryIconType::kTabFromDesktop:
       case SecondaryIconType::kTabFromTablet:
       case SecondaryIconType::kTabFromPhone:
-      case SecondaryIconType::kUnknown:
+      case SecondaryIconType::kTabFromUnknown:
+      case SecondaryIconType::kNoIcon:
         state = media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown;
         break;
     }
@@ -1167,7 +1169,8 @@ TEST_F(BirchKeyedServiceTest, GetFaviconImageForIconURL) {
 TEST_F(BirchKeyedServiceTest, GetFaviconImageForPageURL) {
   GURL page_url("http://example.com/");
   EXPECT_CALL(*favicon_service(),
-              GetFaviconImageForPageURL(page_url, testing::_, testing::_));
+              GetLargestRawFaviconForPageURL(page_url, testing::_, testing::_,
+                                             testing::_, testing::_));
   birch_keyed_service()->GetFaviconImageForPageURL(page_url, base::DoNothing());
 }
 

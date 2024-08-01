@@ -10,6 +10,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/birch/birch_icon_cache.h"
+#include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/stub_birch_client.h"
 #include "ash/constants/ash_features.h"
@@ -100,10 +101,10 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
 
@@ -155,10 +156,10 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
   birch_model->SetClientAndInit(nullptr);
@@ -357,10 +358,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
   // Ensure the cache isn't used.
@@ -382,10 +383,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   ASSERT_EQ(1u, updated_weather_items.size());
   EXPECT_EQ(u"Sunny", updated_weather_items[0].title());
   EXPECT_FLOAT_EQ(73.f, updated_weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
 
@@ -452,10 +453,10 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
   // Ensure the cache isn't used.

@@ -608,10 +608,11 @@ TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
                          /*event_id=*/"000",
                          /*all_day_event=*/false);
 
-  item.LoadIcon(base::BindOnce([](const ui::ImageModel& icon, bool success) {
-    EXPECT_FALSE(icon.IsEmpty());
-    EXPECT_TRUE(success);
-  }));
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+        EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
+      }));
 }
 
 TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
@@ -622,12 +623,12 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
                            /*end_time=*/base::Time(),
                            /*file_id=*/"");
 
-  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // The icon is not empty.
   EXPECT_FALSE(future.Get<0>().IsEmpty());
-  // Success is true.
-  EXPECT_TRUE(future.Get<1>());
+  // Secondary icon is of type no icon.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 1u);
@@ -642,10 +643,10 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
                            /*end_time=*/base::Time(),
                            /*file_id=*/"");
 
-  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
-  // Success is false.
-  EXPECT_FALSE(future.Get<1>());
+  // Secondary icon is of type no icon.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 0u);
@@ -658,14 +659,14 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon) {
                     /*session_name=*/"",
                     /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
                     /*backup_icon=*/ui::ImageModel());
-  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // The favicon service was queried.
   EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_);
   // The icon is not empty.
   EXPECT_FALSE(future.Get<0>().IsEmpty());
-  // Success is true.
-  EXPECT_TRUE(future.Get<1>());
+  // Secondary icon is of type no icon.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 1u);
@@ -679,10 +680,10 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
                     /*session_name=*/"",
                     /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
                     /*backup_icon=*/ui::ImageModel());
-  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
-  // Success is false.
-  EXPECT_FALSE(future.Get<1>());
+  // Secondary icon is of type no icon.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 0u);
@@ -692,19 +693,21 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon) {
   gfx::ImageSkia image = gfx::test::CreateImageSkia(10);
   BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel::FromImageSkia(image));
 
-  item.LoadIcon(base::BindOnce([](const ui::ImageModel& icon, bool success) {
-    EXPECT_FALSE(icon.IsEmpty());
-    EXPECT_TRUE(success);
-  }));
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+        EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
+      }));
 }
 
 TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
   BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel());
 
-  item.LoadIcon(base::BindOnce([](const ui::ImageModel& icon, bool success) {
-    EXPECT_TRUE(icon.IsEmpty());
-    EXPECT_TRUE(success);
-  }));
+  item.LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+        EXPECT_TRUE(icon.IsEmpty());
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
+      }));
 }
 
 TEST_F(BirchItemIconTest, File_LoadIcon) {
@@ -715,12 +718,12 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), "title",
                      u"suggested", base::Time(), "id_1", icon_url);
 
-  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // The icon is not empty.
   EXPECT_FALSE(future.Get<0>().IsEmpty());
-  // Success is true.
-  EXPECT_TRUE(future.Get<1>());
+  // Secondary icon is of type no icon.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 1u);
@@ -733,14 +736,14 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
                           base::Time(), u"my device", ui::ImageModel(),
                           SecondaryIconType::kTabFromDesktop,
                           base::DoNothing());
-  base::test::TestFuture<const ui::ImageModel&, bool> future;
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // The favicon service was queried.
   EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_for_page_);
   // The icon is not empty.
   EXPECT_FALSE(future.Get<0>().IsEmpty());
-  // Success is true.
-  EXPECT_TRUE(future.Get<1>());
+  // Secondary icon is of type `kTabFromDesktop`.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kTabFromDesktop);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 1u);
@@ -761,6 +764,26 @@ TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
                           SecondaryIconType::kLostMediaVideo,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Playing · Switch to tab");
+}
+
+TEST_F(BirchItemIconTest, LostMedia_LoadIcon) {
+  const GURL page_url = GURL("https://www.example.com/");
+  BirchLostMediaItem item(page_url, u"test_title",
+                          /*is_video_conference_tab=*/true, ui::ImageModel(),
+                          SecondaryIconType::kLostMediaVideoConference,
+                          base::DoNothing());
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
+  item.LoadIcon(future.GetCallback());
+  // The favicon service was queried.
+  EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_for_page_);
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get<0>().IsEmpty());
+  // Secondary icon is of type `kLostMediaVideoConference`.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kLostMediaVideoConference);
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get(page_url.spec()).isNull());
 }
 
 }  // namespace

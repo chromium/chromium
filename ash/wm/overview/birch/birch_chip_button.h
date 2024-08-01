@@ -5,6 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 
+#include "ash/birch/birch_item.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -60,9 +61,12 @@ class BirchChipButton : public BirchChipButtonBase,
   // The callback when the removal button or removal panel is pressed.
   void OnRemoveComponentPressed();
 
+  void StylizeIconForItemType(BirchItemType type,
+                              SecondaryIconType secondary_icon_type);
+
   // Sets the item icon.
-  // TODO(jamescook): Eliminate `success`; it is not used.
-  void SetIconImage(const ui::ImageModel& icon_image, bool success);
+  void SetIconImage(const ui::ImageModel& icon_image,
+                    SecondaryIconType secondary_icon_image);
 
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;
@@ -72,7 +76,9 @@ class BirchChipButton : public BirchChipButtonBase,
 
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
-  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::View> icon_parent_view_ = nullptr;
+  raw_ptr<views::ImageView> primary_icon_view_ = nullptr;
+  raw_ptr<views::ImageView> secondary_icon_view_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> addon_view_ = nullptr;

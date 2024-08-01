@@ -44,11 +44,12 @@ enum class SecondaryIconType {
   kTabFromDesktop,            // Type that links to desktop icon.
   kTabFromPhone,              // Type that links to phone/portrait icon.
   kTabFromTablet,             // Type that links to tablet/landscape icon.
+  kTabFromUnknown,            // Type that links to question-mark icon.
   kLostMediaAudio,            // Type that links to audio icon.
   kLostMediaVideo,            // Type that links to media icon.
   kLostMediaVideoConference,  // Type that links to video conference icon.
-  kUnknown,  // An unknown type where we will not load a secondary icon.
-  kMaxValue = kUnknown,
+  kNoIcon,                    // Type where we will not load a secondary icon.
+  kMaxValue = kNoIcon,
 };
 
 // The base item which is stored by the birch model.
@@ -80,10 +81,10 @@ class ASH_EXPORT BirchItem {
 
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
-  // The bool is true if the icon load was successful.
-  // TODO(jamescook): Eliminate the bool for success; it is not used.
+  // The `SecondaryIconType` passed to `BirchChipButton` allows the view to set
+  // a corresponding secondary icon image.
   using LoadIconCallback =
-      base::OnceCallback<void(const ui::ImageModel&, bool)>;
+      base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
 
   // Records metrics when the user takes an action on the item (e.g. clicks or

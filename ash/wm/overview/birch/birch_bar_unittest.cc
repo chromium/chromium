@@ -101,7 +101,7 @@ class TestBirchItem : public BirchItem {
   void LoadIcon(LoadIconCallback callback) const override {
     std::move(callback).Run(
         ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
-        /*success=*/true);
+        SecondaryIconType::kNoIcon);
   }
 };
 

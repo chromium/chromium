@@ -99,7 +99,7 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
 
       // We set the `secondary_icon_type` of the birch item based on the origin
       // device's form factor.
-      SecondaryIconType secondary_icon_type = SecondaryIconType::kUnknown;
+      SecondaryIconType secondary_icon_type = SecondaryIconType::kNoIcon;
       if (it != device_info_list.end()) {
         send_tab_to_self::TargetDeviceInfo* matched_device_info = &(*it);
         switch (matched_device_info->form_factor) {
@@ -113,7 +113,7 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
             secondary_icon_type = SecondaryIconType::kTabFromTablet;
             break;
           default:
-            secondary_icon_type = SecondaryIconType::kUnknown;
+            secondary_icon_type = SecondaryIconType::kNoIcon;
         }
       }
       items_.emplace_back(

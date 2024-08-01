@@ -19,6 +19,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,7 +32,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace ash {
 namespace {
@@ -74,17 +77,17 @@ constexpr net::NetworkTrafficAnnotationTag kIconDownloaderTrafficTag =
 void OnImageDownloaded(
     const GURL& url,
     const ui::ImageModel& backup_icon,
-    base::OnceCallback<void(const ui::ImageModel&, bool)> callback,
+    SecondaryIconType secondary_icon_type,
+    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)> callback,
     const gfx::ImageSkia& image) {
   if (image.isNull()) {
-    std::move(callback).Run(backup_icon,
-                            /*success=*/false);
+    std::move(callback).Run(backup_icon, secondary_icon_type);
     return;
   }
   // Add the image to the cache.
   Shell::Get()->birch_model()->icon_cache()->Put(url.spec(), image);
   std::move(callback).Run(ui::ImageModel::FromImageSkia(image),
-                          /*success=*/true);
+                          secondary_icon_type);
 }
 
 // Downloads an image from `url` and invokes `callback` with the image. If the
@@ -92,12 +95,13 @@ void OnImageDownloaded(
 void DownloadImageFromUrl(
     const GURL& url,
     const ui::ImageModel& backup_icon,
-    base::OnceCallback<void(const ui::ImageModel&, bool)> callback) {
+    SecondaryIconType secondary_icon_type,
+    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
+        callback) {
   if (!url.is_valid()) {
     // For tab item types, we retrieve the backup chrome icon, or supply an
     // empty icon.
-    std::move(callback).Run(backup_icon,
-                            /*success=*/false);
+    std::move(callback).Run(backup_icon, secondary_icon_type);
     return;
   }
 
@@ -107,7 +111,7 @@ void DownloadImageFromUrl(
   if (!icon.isNull()) {
     // Use the cached icon.
     std::move(callback).Run(ui::ImageModel::FromImageSkia(icon),
-                            /*success=*/true);
+                            secondary_icon_type);
     return;
   }
 
@@ -118,7 +122,7 @@ void DownloadImageFromUrl(
 
   ImageDownloader::Get()->Download(
       url, kIconDownloaderTrafficTag, active_user_session->user_info.account_id,
-      base::BindOnce(&OnImageDownloaded, url, backup_icon,
+      base::BindOnce(&OnImageDownloaded, url, backup_icon, secondary_icon_type,
                      std::move(callback)));
 }
 
@@ -127,16 +131,19 @@ void DownloadImageFromUrl(
 void OnGotFaviconImage(
     const GURL& url,
     const ui::ImageModel& backup_icon,
-    base::OnceCallback<void(const ui::ImageModel&, bool)> load_icon_callback,
+    SecondaryIconType secondary_icon_type,
+    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
+        load_icon_callback,
     const ui::ImageModel& image) {
   // Favicon lookup in the FaviconService failed. Fall back to downloading the
   // asset off the network.
   if (image.IsEmpty()) {
-    DownloadImageFromUrl(url, backup_icon, std::move(load_icon_callback));
+    DownloadImageFromUrl(url, backup_icon, secondary_icon_type,
+                         std::move(load_icon_callback));
     return;
   }
-  // FaviconService lookup succeeded. No need to hit the network.
-  std::move(load_icon_callback).Run(image, /*success=*/true);
+
+  std::move(load_icon_callback).Run(image, secondary_icon_type);
 }
 
 // Loads a favicon image based on the `icon_url`. First tries the browser's
@@ -144,11 +151,14 @@ void OnGotFaviconImage(
 void GetFaviconImageForIconURL(
     const GURL& icon_url,
     const ui::ImageModel& backup_icon,
-    base::OnceCallback<void(const ui::ImageModel&, bool)> load_icon_callback) {
+    SecondaryIconType secondary_icon_type,
+    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
+        load_icon_callback) {
   BirchClient* client = Shell::Get()->birch_model()->birch_client();
   client->GetFaviconImageForIconURL(
-      icon_url, base::BindOnce(&OnGotFaviconImage, icon_url, backup_icon,
-                               std::move(load_icon_callback)));
+      icon_url,
+      base::BindOnce(&OnGotFaviconImage, icon_url, backup_icon,
+                     secondary_icon_type, std::move(load_icon_callback)));
 }
 
 // Loads a favicon image based on the `page_url` with the FaviconService.
@@ -157,11 +167,14 @@ void GetFaviconImageForIconURL(
 void GetFaviconImageForPageURL(
     const GURL& page_url,
     const ui::ImageModel& backup_icon,
-    base::OnceCallback<void(const ui::ImageModel&, bool)> load_icon_callback) {
+    SecondaryIconType secondary_icon_type,
+    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
+        load_icon_callback) {
   BirchClient* client = Shell::Get()->birch_model()->birch_client();
   client->GetFaviconImageForPageURL(
-      page_url, base::BindOnce(&OnGotFaviconImage, page_url, backup_icon,
-                               std::move(load_icon_callback)));
+      page_url,
+      base::BindOnce(&OnGotFaviconImage, page_url, backup_icon,
+                     secondary_icon_type, std::move(load_icon_callback)));
 }
 
 // Returns the pref service to use for Birch item prefs.
@@ -181,14 +194,16 @@ std::string SecondaryIconTypeToString(SecondaryIconType type) {
       return "kTabFromPhone";
     case SecondaryIconType::kTabFromTablet:
       return "kTabFromTablet";
+    case SecondaryIconType::kTabFromUnknown:
+      return "kTabFromUnknown";
     case SecondaryIconType::kLostMediaAudio:
       return "kLostMediaAudio";
     case SecondaryIconType::kLostMediaVideo:
       return "kLostMediaVideo";
     case SecondaryIconType::kLostMediaVideoConference:
       return "kLostMediaVideoConference";
-    case SecondaryIconType::kUnknown:
-      return "kUnknown";
+    case SecondaryIconType::kNoIcon:
+      return "kNoIcon";
   }
 }
 
@@ -313,7 +328,7 @@ void BirchCalendarItem::PerformSecondaryAction() {
 
 void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(ui::ImageModel::FromVectorIcon(kCalendarEventIcon),
-                          /*success=*/true);
+                          SecondaryIconType::kNoIcon);
 }
 
 // static
@@ -429,7 +444,7 @@ void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(icon_url_,
                        ui::ImageModel::FromImageSkia(chromeos::GetIconFromType(
                            chromeos::IconType::kGeneric, true)),
-                       std::move(callback));
+                       SecondaryIconType::kNoIcon, std::move(callback));
 }
 
 // static
@@ -497,7 +512,7 @@ void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(
       GURL(icon_url_),
       ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(file_path_, true)),
-      std::move(callback));
+      SecondaryIconType::kNoIcon, std::move(callback));
 }
 
 // static
@@ -558,7 +573,7 @@ void BirchWeatherItem::PerformSecondaryAction() {
 }
 
 void BirchWeatherItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, /*success=*/true);
+  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
 }
 
 // static
@@ -637,7 +652,10 @@ void BirchTabItem::PerformSecondaryAction() {
 }
 
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImageForIconURL(favicon_url_, backup_icon_, std::move(callback));
+  // TODO(b/354043357): Replace placeholder `secondary_icon_type_` and switch to
+  // new larger icon loading method.
+  GetFaviconImageForIconURL(favicon_url_, backup_icon_,
+                            SecondaryIconType::kNoIcon, std::move(callback));
 }
 
 // static
@@ -711,7 +729,7 @@ void BirchLastActiveItem::PerformSecondaryAction() {
 }
 
 void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, /*success=*/true);
+  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
 }
 
 // static
@@ -787,8 +805,7 @@ void BirchMostVisitedItem::PerformSecondaryAction() {
 }
 
 void BirchMostVisitedItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_,
-                          /*success=*/true);
+  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
 }
 
 // static
@@ -862,7 +879,8 @@ void BirchSelfShareItem::PerformSecondaryAction() {
 }
 
 void BirchSelfShareItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImageForPageURL(url_, backup_icon_, std::move(callback));
+  GetFaviconImageForPageURL(url_, backup_icon_, secondary_icon_type_,
+                            std::move(callback));
 }
 
 // static
@@ -946,7 +964,8 @@ void BirchLostMediaItem::PerformSecondaryAction() {
 }
 
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImageForPageURL(source_url_, backup_icon_, std::move(callback));
+  GetFaviconImageForPageURL(source_url_, backup_icon_, secondary_icon_type_,
+                            std::move(callback));
 }
 
 // static
@@ -1002,7 +1021,7 @@ void BirchReleaseNotesItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_BIRCH_RELEASE_NOTES_ICON),
-      /*success=*/true);
+      SecondaryIconType::kNoIcon);
 }
 
 }  // namespace ash
