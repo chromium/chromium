@@ -23,6 +23,8 @@ component("memory") {
   ]
   sources = [
     "aligned_memory.h",
+    "elf_sections.cc",
+    "elf_sections.h",
     "memory.cc",
     "memory.h",
     "mglru.cc",

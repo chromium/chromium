@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/toolchain.gni")
+
+# Embed elf section information of a binary into the binary's predefined
+# symbols.
+#
+# Args:
+#   binary_input: Path to the chrome binary, e.g.:
+#       "$root_out_dir/chrome"
+#   sections_embedded_binary_output: Desired output file for embedded binary,
+#       e.g.: "$root_out_dir/chrome.sections_embedded"
+template("embed_sections") {
+  forward_variables_from(invoker,
+                         [
+                           "deps",
+                           "testonly",
+                         ])
+  action("${target_name}") {
+    script = "//build/chromeos/embed_sections.py"
+
+    if (defined(invoker.sections_embedded_binary_output)) {
+      sections_embedded_binary_output = invoker.sections_embedded_binary_output
+    } else {
+      sections_embedded_binary_output =
+          invoker.binary_input + ".sections_embedded"
+    }
+
+    inputs = [ invoker.binary_input ]
+    outputs = [ sections_embedded_binary_output ]
+    args = [
+      "--binary-input",
+      rebase_path(invoker.binary_input, root_build_dir),
+      "--binary-output",
+      rebase_path(sections_embedded_binary_output, root_build_dir),
+    ]
+  }
+}
