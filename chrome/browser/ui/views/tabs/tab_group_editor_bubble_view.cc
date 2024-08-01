@@ -330,7 +330,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     menu_items_.push_back(AddChildView(std::move(move_menu_item)));
   }
   // Add a separator for the delete menu item and footer v2 enabled.
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+  if (tab_groups::IsTabGroupsSaveV2Enabled() &&
+      browser_->profile()->IsRegularProfile()) {
     // The amount of vertical padding in dips the separator should have to
     // prevent menu items from being visually too close to each other.
     constexpr int kSeparatorPadding = 8;
