@@ -349,7 +349,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest,
     // Run tests.
     const testCases = [
       // Arguments: [title, filename, useDynamicUrl, isAllowed].
+      ["Load a static resource with a dynamic url", 'static.html', true, false],
       ["Load a static resource with a static url", 'static.html', false, true],
+      ["Load dynamic resource with a dynamic url", 'dynamic.html', true, false],
       ["Load dynamic resource with a static url", 'dynamic.html', false, true],
     ];
     const tests = testCases.map(testCase => test(...testCase));
