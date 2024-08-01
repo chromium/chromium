@@ -6186,9 +6186,6 @@ crbug.com/1379180 fast/events/event-hit-testing-fallback-to-iframe.html [ Failur
 crbug.com/1394041 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-dht.html [ Failure Pass ]
 crbug.com/1394151 virtual/gpu/fast/canvas/OffscreenCanvasImageRenderingPixelatedWorker.html [ Failure Pass ]
 
-# Sheriff 2022-12-2
-crbug.com/1325514 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Failure Pass ]
-
 # Sheriff 2022-12-5
 crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pass ]
 crbug.com/1395551 webaudio/codec-tests/vorbis/vbr-70kbps-44khz.html [ Failure Pass ]

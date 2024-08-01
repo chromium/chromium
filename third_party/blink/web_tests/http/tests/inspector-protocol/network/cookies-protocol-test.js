@@ -97,11 +97,12 @@
     dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
     // This will set a partitioned cookie
     await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
-    logCookies((await dp.Network.getCookies()).result);
 
     dp.Network.offRequestWillBeSentExtraInfo(
-        listenForSiteHasCookieInOtherPartition);
+      listenForSiteHasCookieInOtherPartition);
     dp.Network.offResponseReceivedExtraInfo(listenForResponsePartitionKey);
+
+    await logCookies();
   }
 
   testRunner.log('Test started');
