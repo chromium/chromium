@@ -131,7 +131,7 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   // A little helper func to cache storage access API grants. It will associate
   // them with the top level origin since we currently only grant SAA results
   // based off of top level DALs.
-  // The bool |allowed| is returned against by this function so that we can
+  // The bool |allowed| is returned again by this function so that we can
   // chain it with OnRequestResponse to resolve permission requests.
   static bool CacheAutoSAA(const base::WeakPtr<AwPermissionManager>& manager,
                            const url::Origin& origin,
