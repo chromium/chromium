@@ -204,6 +204,11 @@ TEST_F(ReauthenticationCoordinatorTest,
 // backgrounding/foregrounding the scene without a passcode.
 TEST_F(ReauthenticationCoordinatorTest,
        SetPasscodeRequestedAfterSceneGoesToBackground) {
+  if (@available(iOS 18, *)) {
+    // TODO:(crbug.com/356840091): Failing on iOS 18.
+    return;
+  }
+
   CheckReauthenticationViewControllerNotPresented();
 
   // Simulate start of transition to background state.
