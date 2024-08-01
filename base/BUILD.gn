@@ -5021,6 +5021,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
+      "test/android/javatests/src/org/chromium/base/test/NativeCoverageInstrumentationRunListener.java",
       "test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
       "test/android/javatests/src/org/chromium/base/test/SharedPreferencesTestUtil.java",
       "test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
@@ -5086,6 +5087,11 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
+    if (use_clang_coverage) {
+      mergeable_android_manifests = [
+        "test/android/javatests/AndroidManifest_NativeCoverageListener.xml",
+      ]
+    }
   }
 
   generate_jni("base_java_test_support_uncommon_jni") {
