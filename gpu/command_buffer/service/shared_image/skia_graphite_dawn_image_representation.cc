@@ -119,10 +119,12 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
           /*mipmapped=*/false,
           /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering,
           supports_multiplanar_copy);
-      backend_textures.emplace_back(plane_size, plane_info, texture.Get());
+      backend_textures.emplace_back(skgpu::graphite::BackendTextures::MakeDawn(
+          plane_size, plane_info, texture.Get()));
     }
   } else {
-    backend_textures = {skgpu::graphite::BackendTexture(texture.Get())};
+    backend_textures = {
+        skgpu::graphite::BackendTextures::MakeDawn(texture.Get())};
   }
 
   return backend_textures;

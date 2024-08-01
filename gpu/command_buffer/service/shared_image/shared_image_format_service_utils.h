@@ -24,6 +24,7 @@
 
 namespace skgpu::graphite {
 class TextureInfo;
+struct DawnTextureInfo;
 }
 
 namespace gpu {

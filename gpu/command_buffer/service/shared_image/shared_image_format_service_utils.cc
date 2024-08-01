@@ -624,10 +624,10 @@ skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    return DawnBackendTextureInfo(
+    return skgpu::graphite::TextureInfos::MakeDawn(DawnBackendTextureInfo(
         format, readonly, is_yuv_plane, plane_index,
         /*array_slice=*/0, mipmapped, scanout_dcomp_surface,
-        supports_multiplanar_rendering, supports_multiplanar_copy);
+        supports_multiplanar_rendering, supports_multiplanar_copy));
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -659,7 +659,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
       wgpu_view_format = gpu::ToDawnTextureViewFormat(format, plane_index);
     }
     if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
-      return dawn_texture_info;
+      return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
     }
     dawn_texture_info.fSampleCount = 1;
     // For multiplanar shared image, we don't know the real texture format until
@@ -701,7 +701,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     }
 #endif
 
-    return dawn_texture_info;
+    return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
 #else
   NOTREACHED_NORETURN();
 #endif
@@ -749,13 +749,13 @@ skgpu::graphite::TextureInfo FallbackGraphiteBackendTextureInfo(
     const skgpu::graphite::TextureInfo& texture_info) {
 #if BUILDFLAG(SKIA_USE_DAWN)
   skgpu::graphite::DawnTextureInfo info;
-  if (texture_info.getDawnTextureInfo(&info) &&
+  if (skgpu::graphite::TextureInfos::GetDawnTextureInfo(texture_info, &info) &&
       info.fFormat == wgpu::TextureFormat::Undefined) {
     // For multiplanar textures, the fFormat of promise images is Undefined,
     // so the fViewFormat should be used to create fallback textures.
     info.fFormat = info.fViewFormat;
     info.fAspect = wgpu::TextureAspect::All;
-    return skgpu::graphite::TextureInfo(info);
+    return skgpu::graphite::TextureInfos::MakeDawn(info);
   }
 #endif
   return texture_info;

@@ -39,6 +39,10 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/scoped_restore_texture.h"
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -448,7 +452,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
         /*sampleCount=*/1, skgpu::Mipmapped::kNo, webgpu_format, webgpu_format,
         texture_descriptor.usage, wgpu::TextureAspect::All, /*slice=*/0,
         ahb_properties.yCbCrInfo);
-    return {skgpu::graphite::BackendTexture(
+    return {skgpu::graphite::BackendTextures::MakeDawn(
         SkISize::Make(ahb_desc.width, ahb_desc.height), dawn_texture_info,
         texture_.Get())};
   }
