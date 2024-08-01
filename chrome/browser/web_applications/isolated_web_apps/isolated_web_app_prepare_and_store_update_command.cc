@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -169,12 +168,31 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
       GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
       [&](const std::string& error) { ReportFailure(error); });
   const auto& isolation_data = *iwa.isolation_data();
-
   installed_version_ = isolation_data.version;
   GetMutableDebugValue().Set("installed_version",
                              installed_version_->GetString());
-  if (expected_version_.has_value() &&
-      *expected_version_ <= *installed_version_) {
+
+  switch (LookupRotatedKey(url_info_.web_bundle_id(), GetMutableDebugValue())) {
+    case KeyRotationLookupResult::kNoKeyRotation:
+      break;
+    case KeyRotationLookupResult::kKeyFound: {
+      KeyRotationData data =
+          GetKeyRotationData(url_info_.web_bundle_id(), isolation_data);
+      rotated_key_ = *data.rotated_key;
+      if (!data.current_installation_has_rk) {
+        same_version_update_allowed_by_key_rotation_ = true;
+      }
+    } break;
+    case KeyRotationLookupResult::kKeyBlocked:
+      ReportFailure(
+          "The web bundle id for this app's bundle has been blocked by the key "
+          "distribution component.");
+      return;
+  }
+
+  if (expected_version_ && (*expected_version_ < *installed_version_ ||
+                            (*expected_version_ == *installed_version_ &&
+                             !same_version_update_allowed_by_key_rotation_))) {
     ReportFailure(base::StrCat({"Installed app is already on version ",
                                 installed_version_->GetString(),
                                 ". Cannot update to version ",
@@ -245,6 +263,13 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CreateStoragePartition(
   if (integrity_block) {
     integrity_block_data_ =
         IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(*integrity_block);
+    if (rotated_key_ && !integrity_block_data_->HasPublicKey(*rotated_key_)) {
+      ReportFailure(
+          "The update's integrity block data doesn't contain the required "
+          "public key as instructed by the key distribution component -- the "
+          "update won't succeed.");
+      return;
+    }
   }
 
   // TODO(cmfcmf): Maybe we should log somewhere when the storage partition is
@@ -300,7 +325,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
     CHECK_EQ(*expected_version_, install_info.isolated_web_app_version);
   }
 
-  if (install_info.isolated_web_app_version <= *installed_version_) {
+  if (install_info.isolated_web_app_version < *installed_version_ ||
+      (install_info.isolated_web_app_version == *installed_version_ &&
+       !same_version_update_allowed_by_key_rotation_)) {
     ReportFailure(base::StrCat(
         {"Installed app is already on version ",
          installed_version_->GetString(), ". Cannot update to version ",

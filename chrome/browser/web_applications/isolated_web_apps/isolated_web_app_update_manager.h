@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -78,7 +79,9 @@ enum class IsolatedWebAppUpdateError {
 //
 // TODO(crbug.com/40274187): Consider only executing update discovery tasks when
 // the user is not on a metered/paid internet connection.
-class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
+class IsolatedWebAppUpdateManager
+    : public WebAppInstallManagerObserver,
+      public IwaKeyDistributionInfoProvider::Observer {
  public:
   explicit IsolatedWebAppUpdateManager(
       Profile& profile,
@@ -244,6 +247,10 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     base::Value::List update_apply_results_log_;
   };
 
+  // IwaKeyDistributionInfoProvider::Observer:
+  void OnComponentUpdateSuccess(
+      const base::Version& component_version) override;
+
   bool IsAnyIwaInstalled();
 
   // Queues new update discovery tasks and returns the number of new tasks that
@@ -344,6 +351,10 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  base::ScopedObservation<IwaKeyDistributionInfoProvider,
+                          IwaKeyDistributionInfoProvider::Observer>
+      key_distribution_info_observation_{this};
 
   class LocalDevModeUpdateDiscoverer;
   std::unique_ptr<LocalDevModeUpdateDiscoverer>

@@ -38,6 +38,8 @@ class IsolatedWebAppIntegrityBlockData {
     return signatures_;
   }
 
+  bool HasPublicKey(base::span<const uint8_t> public_key) const;
+
   base::Value AsDebugValue() const;
 
  private:
