@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
@@ -183,7 +184,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetUpForTesting(
         std::make_unique<MockIpProtectionProxyConfigRetriever>(std::nullopt),
-        std::make_unique<IpProtectionConfigHttp>(
+        std::make_unique<ip_protection::IpProtectionConfigHttp>(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
         bsa_.get());
   }
@@ -808,7 +809,7 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
 
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
+      std::make_unique<ip_protection::IpProtectionConfigHttp>(
           base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
       bsa_.get());
   getter_->GetProxyList(proxy_list_future_.GetCallback());
@@ -845,7 +846,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(
           mock_get_proxy_config),
-      std::make_unique<IpProtectionConfigHttp>(
+      std::make_unique<ip_protection::IpProtectionConfigHttp>(
           base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
       bsa_.get());
 
@@ -933,7 +934,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
 
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
+      std::make_unique<ip_protection::IpProtectionConfigHttp>(
           base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
       bsa_.get());
 

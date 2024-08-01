@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_config_http.h"
+#include "components/ip_protection/common/ip_protection_config_http.h"
 
 #include <optional>
 #include <string>
@@ -13,15 +13,14 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
-#include "base/version_info/channel.h"
-#include "build/branding_buildflags.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace ip_protection {
 
 namespace {
 constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
@@ -162,3 +161,5 @@ void IpProtectionConfigHttp::OnDoRequestCompleted(
 
   std::move(callback)(std::move(bsa_response));
 }
+
+}  // namespace ip_protection

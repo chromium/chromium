@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/ip_protection_proxy_config_retriever.h"
@@ -137,7 +137,8 @@ class IpProtectionConfigProvider
   void SetUpForTesting(
       std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
           ip_protection_proxy_config_retriever,
-      std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
+      std::unique_ptr<ip_protection::IpProtectionConfigHttp>
+          ip_protection_config_http,
       quiche::BlindSignAuthInterface* bsa);
 
  private:
@@ -251,7 +252,8 @@ class IpProtectionConfigProvider
   // `ip_protection_config_http_`, so we ensure it stays alive by storing its
   // scoped_refptr here.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_;
+  std::unique_ptr<ip_protection::IpProtectionConfigHttp>
+      ip_protection_config_http_;
   std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
       ip_protection_proxy_config_fetcher_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;

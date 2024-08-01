@@ -13,10 +13,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
 #include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/prefs/pref_service.h"
@@ -62,7 +62,8 @@ void IpProtectionConfigProvider::SetUp() {
                                 ->GetURLLoaderFactoryForBrowserProcess();
     }
     ip_protection_config_http_ =
-        std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
+        std::make_unique<ip_protection::IpProtectionConfigHttp>(
+            url_loader_factory_.get());
   }
   if (!ip_protection_proxy_config_fetcher_) {
     ip_protection_proxy_config_fetcher_ =
@@ -86,7 +87,8 @@ void IpProtectionConfigProvider::SetUp() {
 void IpProtectionConfigProvider::SetUpForTesting(
     std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
-    std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
+    std::unique_ptr<ip_protection::IpProtectionConfigHttp>
+        ip_protection_config_http,
     quiche::BlindSignAuthInterface* bsa) {
   // Carefully destroy any existing values in the correct order.
   ip_protection_proxy_config_fetcher_ = nullptr;

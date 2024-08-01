@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ip_protection/ip_protection_config_http.h"
+#include "components/ip_protection/common/ip_protection_config_http.h"
 
 #include <string_view>
 
@@ -10,9 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "net/base/features.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -22,9 +19,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ip_protection {
 namespace {
+
 const char kProtobufContentType[] = "application/x-protobuf";
-}  // namespace
 
 class IpProtectionConfigHttpTest : public testing::Test {
  protected:
@@ -49,8 +47,6 @@ class IpProtectionConfigHttpTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<IpProtectionConfigHttp> http_fetcher_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
   GURL token_server_get_initial_data_url_;
   GURL token_server_get_tokens_url_;
   GURL token_server_get_proxy_config_url_;
@@ -255,3 +251,6 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestHttpFailureStatus) {
                 net::HTTP_BAD_REQUEST),
             result.value().status_code());
 }
+
+}  // namespace
+}  // namespace ip_protection

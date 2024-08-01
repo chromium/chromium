@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
-#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_HTTP_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_HTTP_H_
 
 #include <optional>
 #include <string>
@@ -19,6 +19,8 @@
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
+
+namespace ip_protection {
 
 // HTTP Fetching for IP Protection. This implements the
 // `BlindSignMessageInterface` for use by the BSA library.
@@ -47,4 +49,7 @@ class IpProtectionConfigHttp : public quiche::BlindSignMessageInterface {
 
   base::WeakPtrFactory<IpProtectionConfigHttp> weak_ptr_factory_{this};
 };
-#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
+
+}  // namespace ip_protection
+
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_HTTP_H_
