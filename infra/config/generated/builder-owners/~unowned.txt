@@ -340,7 +340,6 @@ try/linux-lacros-rel
 try/linux-lacros-rel-compilator
 try/linux-layout-tests-edit-ng
 try/linux-libfuzzer-asan-rel
-try/linux-mbi-mode-per-render-process-host-rel
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
 try/linux-official

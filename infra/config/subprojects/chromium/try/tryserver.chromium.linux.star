@@ -216,24 +216,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-mbi-mode-per-render-process-host-rel",
-    mirrors = builder_config.copy_from("linux-rel"),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_builder",
-            "remoteexec",
-            "no_symbols",
-            "dcheck_always_on",
-            "mbi_mode_per_render_process_host",
-            "linux",
-            "x64",
-        ],
-    ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-multiscreen-fyi-rel",
     mirrors = [
         "ci/linux-multiscreen-fyi-rel",

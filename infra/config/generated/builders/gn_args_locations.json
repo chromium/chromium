@@ -810,7 +810,6 @@
     "linux-lacros-fyi-rel": "try/linux-lacros-fyi-rel/gn-args.json",
     "linux-layout-tests-edit-ng": "try/linux-layout-tests-edit-ng/gn-args.json",
     "linux-libfuzzer-asan-rel": "try/linux-libfuzzer-asan-rel/gn-args.json",
-    "linux-mbi-mode-per-render-process-host-rel": "try/linux-mbi-mode-per-render-process-host-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "try/linux-multiscreen-fyi-rel/gn-args.json",
     "linux-perfetto-rel": "try/linux-perfetto-rel/gn-args.json",
     "linux-rel": "try/linux-rel/gn-args.json",
