@@ -174,12 +174,12 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
     output_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
 
   base::AutoLock auto_lock(lock_);
+  if (!audio_converter_)
+    return;
+
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mediastream"),
               "WebAudioMediaStreamAudioSink::ProvideInput under lock",
               "delay (frames)", fifo_->frames());
-
-  if (!audio_converter_)
-    return;
 
   is_enabled_ = true;
   audio_converter_->Convert(output_wrapper_.get());
