@@ -13,7 +13,6 @@
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_list_item_view.h"
-#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
@@ -27,7 +26,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/test_widget_builder.h"
-#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -504,42 +502,6 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern("Insert primary, secondary");
   sm_.ExpectSpeechPattern("Button");
-  sm_.ExpectSpeechPattern("Press * to activate");
-  sm_.Replay();
-}
-
-IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
-                       ListItemAnnouncesPreviewMetadata) {
-  std::unique_ptr<views::Widget> widget =
-      ash::TestWidgetBuilder()
-          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
-          .BuildClientOwnsWidget();
-  auto* view =
-      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
-          /*section_width=*/100, /*asset_fetcher=*/nullptr,
-          /*submenu_controller=*/nullptr));
-  ash::PickerSectionView* section = view->AddSection();
-  section->AddTitleLabel(u"Section1");
-  ash::PickerListItemView* item = section->AddListItem(
-      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
-  item->SetPrimaryText(u"primary");
-  ash::PickerPreviewBubbleController preview_controller;
-  base::test::TestFuture<void> file_info_future;
-  base::File::Info file_info;
-  EXPECT_TRUE(
-      base::Time::FromString("23 Dec 2021 09:01:00", &file_info.last_modified));
-  item->SetPreview(
-      &preview_controller,
-      file_info_future.GetSequenceBoundCallback().Then(
-          base::ReturnValueOnce<std::optional<base::File::Info>>(file_info)),
-      base::FilePath(), base::DoNothing(),
-      /*update_icon=*/true);
-  ASSERT_TRUE(file_info_future.Wait());
-
-  sm_.Call([item]() { item->RequestFocus(); });
-
-  sm_.ExpectSpeechPattern("Button");
-  sm_.ExpectSpeechPattern("Last action: Edited · Dec 23");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }

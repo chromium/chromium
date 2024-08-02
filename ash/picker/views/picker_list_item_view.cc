@@ -367,33 +367,21 @@ void PickerListItemView::OnFileInfoResolved(
     std::optional<base::File::Info> info) {
   file_info_ = std::move(info);
 
-  std::u16string description = PickerGetFilePreviewDescription(file_info_);
-
   if (preview_bubble_controller_ != nullptr) {
     // Update the bubble main text if it's open.
-    preview_bubble_controller_->SetBubbleMainText(description);
+    preview_bubble_controller_->SetBubbleMainText(
+        PickerGetFilePreviewDescription(file_info_));
   }
-
-  GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
-      IDS_PICKER_RESULTS_PREVIEW_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-      std::move(description)));
 }
 
 void PickerListItemView::ShowPreview() {
-  if (preview_bubble_controller_ == nullptr) {
-    return;
+  if (preview_bubble_controller_ != nullptr) {
+    // Update the bubble main text before it becomes visible.
+    preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
+                                                     file_path_, this);
+    preview_bubble_controller_->SetBubbleMainText(
+        PickerGetFilePreviewDescription(file_info_));
   }
-
-  std::u16string description = PickerGetFilePreviewDescription(file_info_);
-
-  // Update the bubble main text before it becomes visible.
-  preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
-                                                   file_path_, this);
-  preview_bubble_controller_->SetBubbleMainText(description);
-
-  GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
-      IDS_PICKER_RESULTS_PREVIEW_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-      std::move(description)));
 }
 
 void PickerListItemView::HidePreview() {
