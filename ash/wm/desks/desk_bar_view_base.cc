@@ -582,16 +582,19 @@ class DeskBarViewBase::DeskIconButtonScaleAnimation
   // DeskBarViewBase::PostLayoutOperation:
   void InitializePreLayout() override {
     begin_x_ = bar_view_->GetFirstMiniViewXOffset();
-    current_bounds_ = button_->GetBoundsInScreen();
+    old_bounds_ = button_->GetBoundsInScreen();
   }
 
   void Run() override {
-    const gfx::RectF target_bounds = gfx::RectF(button_->GetBoundsInScreen());
+    const gfx::RectF new_bounds = gfx::RectF(button_->GetBoundsInScreen());
     gfx::Transform scale_transform;
     const int shift_x = begin_x_ - bar_view_->GetFirstMiniViewXOffset();
     scale_transform.Translate(shift_x, 0);
-    scale_transform.Scale(current_bounds_.width() / target_bounds.width(),
-                          current_bounds_.height() / target_bounds.height());
+    if (!old_bounds_.IsEmpty()) {
+      CHECK(!new_bounds.IsEmpty());
+      scale_transform.Scale(old_bounds_.width() / new_bounds.width(),
+                            old_bounds_.height() / new_bounds.height());
+    }
 
     PerformDeskIconButtonScaleAnimation(button_, bar_view_, scale_transform,
                                         shift_x);
@@ -602,7 +605,7 @@ class DeskBarViewBase::DeskIconButtonScaleAnimation
  private:
   const raw_ptr<DeskIconButton> button_;
   int begin_x_ = 0;
-  gfx::Rect current_bounds_;
+  gfx::Rect old_bounds_;
 };
 
 // Runs animations when the library button visibility changes.

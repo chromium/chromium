@@ -155,6 +155,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -9255,6 +9256,7 @@ class DeskBarTest
     // should show up.
     auto* overview_controller = OverviewController::Get();
     ASSERT_TRUE(overview_controller->InOverviewSession());
+    RunScheduledLayoutForAllOverviewDeskBars();
     auto* overview_session = overview_controller->overview_session();
     EXPECT_TRUE(overview_session &&
                 overview_session->IsShowingSavedDeskLibrary());
@@ -9728,6 +9730,11 @@ TEST_P(DeskBarTest, LibraryButton) {
       DesksTestApi::WaitForDeskBarUiUpdate(
           GetDeskBarView(root, DeskBarViewBase::Type::kOverview));
     }
+    const views::FocusRing* library_button_focus_ring =
+        views::FocusRing::Get(GetPrimaryRootDesksBarView()->library_button());
+    ASSERT_TRUE(library_button_focus_ring);
+    ASSERT_TRUE(library_button_focus_ring->GetVisible());
+    EXPECT_FALSE(library_button_focus_ring->GetVisibleBounds().IsEmpty());
 
     CloseDeskBar(root, DeskBarViewBase::Type::kOverview);
   };
