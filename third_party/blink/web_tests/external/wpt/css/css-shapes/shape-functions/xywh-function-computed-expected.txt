@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Property shape-outside value 'xywh(0px 1px 2% 3em)'
+  assert_true: 'xywh(0px 1px 2% 3em)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'xywh(0px calc(100% - 20px) 2% 3em)'
+  assert_true: 'xywh(0px calc(100% - 20px) 2% 3em)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'xywh(10px 20px 30px 25px round 100%)'
+  assert_true: 'xywh(10px 20px 30px 25px round 100%)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'xywh(10px 20px 30px 25px round 0 1px)'
+  assert_true: 'xywh(10px 20px 30px 25px round 0 1px)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'xywh(10px 20px 30px 25px round 0px 1px 2%)'
+  assert_true: 'xywh(10px 20px 30px 25px round 0px 1px 2%)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'xywh(10px 20px 30px 25px round 0px 1px 2% 3em)'
+  assert_true: 'xywh(10px 20px 30px 25px round 0px 1px 2% 3em)' is a supported value for shape-outside. expected true got false
+[FAIL] Property shape-outside value 'xywh(10px 20px 30px 25px round 20% / 0px 1px 2% 3em)'
+  assert_true: 'xywh(10px 20px 30px 25px round 20% / 0px 1px 2% 3em)' is a supported value for shape-outside. expected true got false
+Harness: the test ran to completion.
+

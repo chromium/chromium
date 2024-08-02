@@ -82175,7 +82175,7 @@
       ]
      ],
      "color-mix-currentcolor-background-repaint-parent.html": [
-      "af894546942453cb50b30334a6a49ab3383d2418",
+      "ba80a7b063ca560aa6f7ca36dd59f303423a67e0",
       [
        null,
        [
@@ -82188,7 +82188,7 @@
       ]
      ],
      "color-mix-currentcolor-background-repaint.html": [
-      "e584c4f9a838847e4f606c300ee31ef2677ec5a1",
+      "19ed949334b25f1bf76ab9dda2bd186cd7fefb44",
       [
        null,
        [
@@ -82201,7 +82201,7 @@
       ]
      ],
      "color-mix-currentcolor-border-repaint-parent.html": [
-      "a8d55ace8fce3e01e9c15e354342d298b627c07b",
+      "058292efadfea96d15479c253eef3d20c4a71b76",
       [
        null,
        [
@@ -82214,7 +82214,7 @@
       ]
      ],
      "color-mix-currentcolor-border-repaint.html": [
-      "aeacd72d3d27d26a4cfca69c382c3565e2979971",
+      "24407bbcf3086e3034eedfb6dd6a0079dff10945",
       [
        null,
        [
@@ -82227,7 +82227,7 @@
       ]
      ],
      "color-mix-currentcolor-outline-repaint-parent.html": [
-      "e13880560637dd6483b58230d925d76084182505",
+      "bdfa0897e950432aba5a34f700fa7c05116e95c4",
       [
        null,
        [
@@ -82240,7 +82240,7 @@
       ]
      ],
      "color-mix-currentcolor-outline-repaint.html": [
-      "87f87b0edb7fe9aab0e32537cce90ebeb8f97262",
+      "b796adaf0098ed72f93d99bf1ba97a14a8ed11db",
       [
        null,
        [
@@ -125885,7 +125885,7 @@
       ]
      ],
      "font-size-adjust-012.html": [
-      "197a1809a89295fe09d3445198c553096211c4bf",
+      "8052ac6400850d4e9528f5f5b108cd06cc1abdc8",
       [
        null,
        [
@@ -125901,11 +125901,11 @@
           [
            [
             0,
-            120
+            130
            ],
            [
             0,
-            160
+            350
            ]
           ]
          ]
@@ -125914,7 +125914,7 @@
       ]
      ],
      "font-size-adjust-013.html": [
-      "bd59456462724cbdc2111b883936e198760d2631",
+      "5fab02732eb956512e4fa21689f93444fd1a96b7",
       [
        null,
        [
@@ -125930,11 +125930,11 @@
           [
            [
             0,
-            120
+            130
            ],
            [
             0,
-            160
+            350
            ]
           ]
          ]
@@ -128375,6 +128375,19 @@
        [
         [
          "/css/css-fonts/standard-font-family-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "synthetic-bold-space-width.html": [
+      "ecb0dd1c912d5a82d694f163586c0d3cdbf003e2",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/synthetic-bold-space-width-ref.html",
          "=="
         ]
        ],
@@ -136128,6 +136141,19 @@
           [
            [
             "/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-cols-006-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "masonry-intrinsic-sizing-cols-007.html": [
+         "e00273f6ed866859e840424e55b2a57ab446b6a5",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-cols-007-ref.html",
             "=="
            ]
           ],
@@ -237532,7 +237558,7 @@
       ]
      ],
      "block-with-overflowing-text.html": [
-      "15d1653bfc29ad2233873062454bc157a1d82530",
+      "61b3dc1329ce0d94fffe6aa8f26200927a94d282",
       [
        null,
        [
@@ -238196,7 +238222,7 @@
       ]
      ],
      "fractional-translation-from-position.html": [
-      "a09b08cf00c554955ec4c4e041c169fe1575de43",
+      "6187348b9ea792e252cd5c34e00e11b5774481a8",
       [
        null,
        [
@@ -238469,7 +238495,7 @@
       ]
      ],
      "inline-element-size.html": [
-      "4f94c92550ee323822ad4dcd59482cccf46ee649",
+      "a571ace718a32882d727ac965bb2431451d8046c",
       [
        null,
        [
@@ -238640,7 +238666,7 @@
       ]
      ],
      "massive-element-below-viewport-partially-onscreen-new.html": [
-      "42f97555f5c7bbc5ec322b6fa733bac97d41b7e4",
+      "127dc2ef344ebe2d186926db10697980c529375a",
       [
        null,
        [
@@ -238669,7 +238695,7 @@
       ]
      ],
      "massive-element-below-viewport-partially-onscreen-old.html": [
-      "87b9a207956a2eebea49f37011ab31f8ae6b63f8",
+      "275c0d8840b64ce4fec54484dfb06154611f9bea",
       [
        null,
        [
@@ -238756,7 +238782,7 @@
       ]
      ],
      "massive-element-left-of-viewport-partially-onscreen-new.html": [
-      "accd909158e0e5d199097efad16fe6fff07aa067",
+      "a472c0906188c7a2a7422f9e26be53d90ace81ef",
       [
        null,
        [
@@ -238785,7 +238811,7 @@
       ]
      ],
      "massive-element-left-of-viewport-partially-onscreen-old.html": [
-      "e16806e8f37c7327a31e1193df7c86508f4464a9",
+      "6c29737ab358aec4d8b60e80d92a5d9a2e9ef781",
       [
        null,
        [
@@ -238872,7 +238898,7 @@
       ]
      ],
      "massive-element-on-top-of-viewport-partially-onscreen-new.html": [
-      "c301e470996b5804839a4b6c4ce633501df43e45",
+      "f9a3babdf99c143620d954e20d6a4a000d559e21",
       [
        null,
        [
@@ -238901,7 +238927,7 @@
       ]
      ],
      "massive-element-on-top-of-viewport-partially-onscreen-old.html": [
-      "1f810af745b1455001a6c433903f0a435f52d43e",
+      "15786b55fc53017aab795929d8fb0d60dcc654fd",
       [
        null,
        [
@@ -239046,7 +239072,7 @@
       ]
      ],
      "massive-element-right-of-viewport-partially-onscreen-new.html": [
-      "ac3fe48a0a7835a9085a8dfc3daf9d2dee674673",
+      "9daadd97de44265cffed8dbe29977ee36bf80e66",
       [
        null,
        [
@@ -239075,7 +239101,7 @@
       ]
      ],
      "massive-element-right-of-viewport-partially-onscreen-old.html": [
-      "2626910d7836da42c21cd33b24a2b4f04f9e8a65",
+      "b99d752e3fe931a054bad945cc0bda390dd175be",
       [
        null,
        [
@@ -239117,7 +239143,7 @@
       ]
      ],
      "multiline-span-with-overflowing-text-and-box-decorations.html": [
-      "8fff184b2a71112466590a356e516000beeacd40",
+      "423cd255081e52b6feea7aa2b637e1c974dfbb0c",
       [
        null,
        [
@@ -239687,7 +239713,7 @@
       ]
      ],
      "new-content-captures-spans.html": [
-      "5f4807404c7e32a79bc4d6c50cc5cd96332f9af7",
+      "c099ff7ced67eb8b610bfb022ef31c3599bad6e7",
       [
        null,
        [
@@ -239896,7 +239922,7 @@
       ]
      ],
      "new-content-is-inline.html": [
-      "81b261a9bfffaf1ef4be4ac94f90673475450c15",
+      "9be8332c857beee817788a85e3c0b876c8e6b0d0",
       [
        null,
        [
@@ -241421,7 +241447,7 @@
       ]
      ],
      "span-with-overflowing-text-and-box-decorations.html": [
-      "262970ad5fba81e630e31a39d1742d09fb98a9e8",
+      "c22fda0f797c843582212173007f3ef42186fdea",
       [
        null,
        [
@@ -241463,7 +241489,7 @@
       ]
      ],
      "span-with-overflowing-text.html": [
-      "5a6268ddf03c43bcdf1dbbda161c35c19365ef3e",
+      "769b47159f1e965007937dc919b6618cc53ac82b",
       [
        null,
        [
@@ -241906,7 +241932,7 @@
     },
     "css-viewport": {
      "width.html": [
-      "b6d9753ea3cb1c4907fb8e84f3b68bbec3cd194a",
+      "b76328be84913a40a1cc3dfd3de2d2d2d30b8401",
       [
        null,
        [
@@ -241946,7 +241972,7 @@
        ]
       ],
       "border-spacing.html": [
-       "2801a2920066f24655f84b9a2cccdaf361de2ab1",
+       "f4ecb8f77a50eb6c17cfb0bdf5f165b21b2f8808",
        [
         null,
         [
@@ -241958,8 +241984,21 @@
         {}
        ]
       ],
+      "container-queries.html": [
+       "cc8cefdd6c03a2f0da838ef1f35bfda9c1a7af48",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/container-queries-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "font-size.html": [
-       "e4b20c3c9314acf71bcd49bbcc6fd215207b22f8",
+       "e572806be41f21297b6b864f9b74378de35a28c6",
        [
         null,
         [
@@ -242037,7 +242076,7 @@
        ]
       ],
       "letter-spacing.html": [
-       "5c17e10ebed8c1b81b74235060c385835e1d42a3",
+       "03b66cddb358b64fc14401c1ecd6db9456aace21",
        [
         null,
         [
@@ -242050,7 +242089,7 @@
        ]
       ],
       "line-height.html": [
-       "fa333be32f6abf97911ee62a09555ceb1071d9d6",
+       "072d666ed290487fe747acdbb70228227b84eef1",
        [
         null,
         [
@@ -242154,7 +242193,7 @@
        ]
       ],
       "text-indent.html": [
-       "2edf6a62223d8d7ba1709a539731d3f9d62c0f78",
+       "1994d4e489c32b0d952053883aecaa13e77b4694",
        [
         null,
         [
@@ -242167,7 +242206,7 @@
        ]
       ],
       "text-shadow.html": [
-       "1d39a24cd19123f7db5d397dbdd69d884bd7f429",
+       "b1aa9be581abefaa2335a5114d7196c08ac984ed",
        [
         null,
         [
@@ -242180,7 +242219,7 @@
        ]
       ],
       "text-stroke-width.html": [
-       "b11dc67d52c2f46a3a2c384d3e764f964a13ddb1",
+       "1bba3236894181e7ff411dc8fc50b21ab969b196",
        [
         null,
         [
@@ -242193,7 +242232,7 @@
        ]
       ],
       "text-underline-offset.html": [
-       "cdf7b3d7ab26e7c99b5640a617f5e30d30477ea5",
+       "4c7f378ab95c2cabfa8367d01333034567b010a5",
        [
         null,
         [
@@ -262523,6 +262562,35 @@
        }
       ]
      ],
+     "offset-path-shape-circle-008.html": [
+      "7c3dfe81355c6e178476bab34423ac1f790befa6",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-circle-001-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            150
+           ],
+           [
+            0,
+            300
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "offset-path-shape-ellipse-001.html": [
       "ec152e323c52a02f441556ecc12b77b528e1f0b5",
       [
@@ -262674,6 +262742,35 @@
            [
             0,
             530
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "offset-path-shape-ellipse-007.html": [
+      "fda9cd44f9fce408d820ad6a70af1e89d62f3f6e",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-ellipse-001-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            100
+           ],
+           [
+            0,
+            401
            ]
           ]
          ]
@@ -295956,6 +296053,10 @@
      []
     ],
     "BlobURL": {
+     "cross-partition.tentative.https-expected.txt": [
+      "bf23db8adc7682499c37c71c026c2bf7e859a46d",
+      []
+     ],
      "support": {
       "file_test2.txt": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -326114,6 +326215,10 @@
        []
       ]
      },
+     "synthetic-bold-space-width-ref.html": [
+      "6345defe68153186ffbbcf65f16675804c3834ef",
+      []
+     ],
      "system-ui-ar-notref.html": [
       "76a216ca7439a37190a38bc70cd5abc91432df77",
       []
@@ -327489,6 +327594,10 @@
         ],
         "masonry-intrinsic-sizing-cols-006-ref.html": [
          "1a41f071ab431c3c150aa9c06c28dd82b3f6cd71",
+         []
+        ],
+        "masonry-intrinsic-sizing-cols-007-ref.html": [
+         "0c4da43ef50cd20a2c520267a52d0ecb37960f3d",
          []
         ],
         "masonry-intrinsic-sizing-rows-001-ref.html": [
@@ -330602,6 +330711,10 @@
         "7e0d2a54266f3855dbc8e8e87167a06ea0cc323b",
         []
        ],
+       "clip-path-transition-crashtest.html": [
+        "103a0da2a60a7c00bb12eb941ebceec94f318d47",
+        []
+       ],
        "clip-path-transition-ref.html": [
         "af164c30f06808c3394cf3210ca13bc41792d53c",
         []
@@ -332465,7 +332578,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "7d0688929ab0dd06031443a48b4b25844d260506",
+      "6c270951f7932fc9eac70f910996e3a4f5a78150",
       []
      ],
      "clip-001-ref.html": [
@@ -336753,6 +336866,36 @@
       ],
       "shape-outside-valid-position-expected.txt": [
        "2331887325d029f5cd83c446786162ce0c65a100",
+       []
+      ]
+     },
+     "shape-functions": {
+      "circle-function-computed-expected.txt": [
+       "f0dd614c776b5c6d2b9fe13389b6305651e8fba4",
+       []
+      ],
+      "circle-function-valid-expected.txt": [
+       "a293e330302321fa863e38d6fdeec3b5c58c0fc1",
+       []
+      ],
+      "ellipse-function-computed-expected.txt": [
+       "3ea4c3091df9b298a13c1787009c6be0171594ad",
+       []
+      ],
+      "ellipse-function-valid-expected.txt": [
+       "19b359cb0115af0727d99a213cd1a0734089aee3",
+       []
+      ],
+      "path-function-computed-expected.txt": [
+       "be136977b717590263a7824e2941905c16aee595",
+       []
+      ],
+      "xywh-function-computed-expected.txt": [
+       "2f555e3e0df41b60ba699bfb0400edaa87e3f12d",
+       []
+      ],
+      "xywh-function-valid-expected.txt": [
+       "28081bcd151db6255129cb44247106cd1bd14704",
        []
       ]
      },
@@ -348119,7 +348262,7 @@
       []
      ],
      "block-with-overflowing-text-ref.html": [
-      "8d9c430fcc7ff3cc44b62d444cdb2cbb80506f9b",
+      "ec5d871200087e7526ca78df5bf1d51a3e5c9572",
       []
      ],
      "break-inside-avoid-child-ref.html": [
@@ -348259,7 +348402,7 @@
       []
      ],
      "fractional-translation-from-position-ref.html": [
-      "0674b265ac92566737e4c0ab0e86e93c4313579e",
+      "9821593438ed3afe0afdfb0035ee375d790fa087",
       []
      ],
      "fractional-translation-from-transform-ref.html": [
@@ -348323,7 +348466,7 @@
       []
      ],
      "inline-element-size-ref.html": [
-      "14b76fb07e76189306ffd148886617bec1cf0100",
+      "ea791930e9bdf51a25125062b7da7cedafea1b95",
       []
      ],
      "inline-with-offset-from-containing-block-clipped-ref.html": [
@@ -348351,7 +348494,7 @@
       []
      ],
      "massive-element-below-viewport-partially-onscreen-ref.html": [
-      "3c2ae6a6f58b655e53e6a9478fcdc517073f3a27",
+      "72861d37a09d408e16f183aacd2fe01ba5e31238",
       []
      ],
      "massive-element-left-of-viewport-offscreen-ref.html": [
@@ -348359,7 +348502,7 @@
       []
      ],
      "massive-element-left-of-viewport-partially-onscreen-ref.html": [
-      "436783b42e95307007c600ef95ebee753a8a66c3",
+      "aa15c1fb22ac25eb8be67ee3ca2324ba3cad3ddf",
       []
      ],
      "massive-element-on-top-of-viewport-offscreen-ref.html": [
@@ -348367,7 +348510,7 @@
       []
      ],
      "massive-element-on-top-of-viewport-partially-onscreen-ref.html": [
-      "6377c72616a17e431ac283cfd0873b32e99cd403",
+      "31c9c4e1a6e03a62c0a3b72a6b76bc4c44300590",
       []
      ],
      "massive-element-right-and-left-of-viewport-partially-onscreen-ref.html": [
@@ -348379,7 +348522,7 @@
       []
      ],
      "massive-element-right-of-viewport-partially-onscreen-ref.html": [
-      "b134c158589a6cd0e2cf0a892af457a809c8e2fc",
+      "5a50d7fabf8e7d6e1c3e350940838d084508db67",
       []
      ],
      "modify-style-via-cssom-ref.html": [
@@ -348387,7 +348530,7 @@
       []
      ],
      "multiline-span-with-overflowing-text-and-box-decorations-ref.html": [
-      "ca9efc52d6e412d2eb2ee3511b5f3845a36854b8",
+      "47edb8a3b030b44e783808182d2c79d53d994bd7",
       []
      ],
      "named-element-with-fix-pos-child-ref.html": [
@@ -348571,7 +348714,7 @@
       []
      ],
      "new-content-captures-spans-ref.html": [
-      "f7bba2d683c740844cfef1d6ac5f03cbf9f39f05",
+      "941ed432b26414ad5437a799d4deb2ea5e144061",
       []
      ],
      "new-content-changes-overflow-left-ref.html": [
@@ -348607,7 +348750,7 @@
       []
      ],
      "new-content-is-inline-ref.html": [
-      "c75cfcc252ae25e2b5577243c3ed3662a4eba653",
+      "10098bec8efc7c4aeae58d039cb7fa32758081ec",
       []
      ],
      "new-content-object-view-box-clip-path-ref.html": [
@@ -348823,7 +348966,7 @@
       []
      ],
      "span-with-overflowing-text-and-box-decorations-ref.html": [
-      "e0a75e730ffb134a797baa6847a14e59e8639fe7",
+      "b2479b60ad4d6e090bf80812ede8916a3a4ef5de",
       []
      ],
      "span-with-overflowing-text-hidden-ref.html": [
@@ -348831,7 +348974,7 @@
       []
      ],
      "span-with-overflowing-text-ref.html": [
-      "4ec4d4ccf856b2c786825bfe2c60fd35f6d804a6",
+      "ed8586811f842b2bb94ae19ea1439a4cda8a4ede",
       []
      ],
      "support": {
@@ -348911,10 +349054,14 @@
       []
      ],
      "width-ref.html": [
-      "5d2755f3e9ea0e3b9b1134ec40a50ef7588bf0ea",
+      "b1b5e1156720cd0a63186ac25ce25731b046e4e9",
       []
      ],
      "zoom": {
+      "WEB_FEATURES.yml": [
+       "7e5ac576a42213696b37d679d2e3c2c19f944b52",
+       []
+      ],
       "background-image-ref.html": [
        "6fe548f3435a61b3d34ecd1fa9be538224b3d28e",
        []
@@ -348924,7 +349071,7 @@
        []
       ],
       "font-size-ref.html": [
-       "5714a878b301a645e9ca07d0b52e68d67febfc7a",
+       "30eaa4aeb9fcae4e42ca2061358bd976e9144eee",
        []
       ],
       "green-square-100px.html": [
@@ -348932,12 +349079,16 @@
        []
       ],
       "line-height-ref.html": [
-       "c75539243cbb45ab7407d5519748811e0f44eef0",
+       "a34093cce754948504f9bb076926efb679537dcb",
        []
       ],
       "reference": {
        "border-spacing-ref.html": [
-        "df01e965a27404c85784f8a86dda9bba7ceb7ddb",
+        "c5b18cc3c37a9513456d594ba13e0618ebbb9f53",
+        []
+       ],
+       "container-queries-ref.html": [
+        "e9d93d39e72cb1a22206082fb73de6e4fa1f1430",
         []
        ],
        "iframe-zoom-nested-ref.html": [
@@ -348949,7 +349100,7 @@
         []
        ],
        "letter-spacing-ref.html": [
-        "7d050672c4eae54a27f888957173eb62f4a451ec",
+        "59df4318320497bf6a9b32318f2c672e7eafd091",
         []
        ],
        "list-style-image-ref.html": [
@@ -348961,23 +349112,23 @@
         []
        ],
        "text-indent-ref.html": [
-        "6dc0f8527c289c66a90fa7e109fc2aeed60b7959",
+        "7ec1f57c7b46a930b05d26f222b0f2d1246a9ace",
         []
        ],
        "text-shadow-ref.html": [
-        "0538ba2c538ba4daa096a12d8721474836009fea",
+        "8341822f61048dbeb37b09607f8c0e36b9f144b9",
         []
        ],
        "text-stroke-width-ref.html": [
-        "d1c675fc77d14f2238221aa2cb1a86a5a02a1069",
+        "1fb1b9c08861287ce2957869af953c756b6405d2",
         []
        ],
        "text-underline-offset-ref.html": [
-        "11b61e0acaa286cb222031afa0ab6ea8a60f3e34",
+        "a60d46a6e920c553fb78af398b0d2109942c50cd",
         []
        ],
        "word-spacing-ref.html": [
-        "02ace8352adde979c0eb4df39aebc3e342093172",
+        "f2f59c36decb1235144846478ab3d6a3e4dae2da",
         []
        ]
       },
@@ -354568,7 +354719,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "7a9f56f6d6a596a010f2cfc9a427d8f0ff47f50b",
+     "e77a8695bdd8f4782ba02a1a039597d300965601",
      []
     ],
     "cross-realm-callback-report-exception-expected.txt": [
@@ -355175,7 +355326,7 @@
       []
      ],
      "testdriver.md": [
-      "fcf0199badc12e8cca1d017d266db4abe02544ad",
+      "b1428b6af71f0210e554d4de7cc41a393a03451e",
       []
      ],
      "testharness-api.md": [
@@ -358631,7 +358782,7 @@
       []
      ],
      "drm-messagehandler.js": [
-      "5c5577c6d68942a9526cb9bd655942db80877990",
+      "b1565c12cb02e4a99caa9399f2d7714db22501f8",
       []
      ],
      "testmediasource.js": [
@@ -358643,7 +358794,7 @@
       []
      ],
      "utils.js": [
-      "79f8c7ea6d1b5c5c38131205c20499019ba7371c",
+      "78678d5c038d4c25a3c695838c93ac28c6f08746",
       []
      ]
     }
@@ -358751,7 +358902,7 @@
       []
      ],
      "event-timing-test-utils.js": [
-      "a10f1c20c355360dafee0fccd08ceff34334f394",
+      "40bf5aba4f92efbcfdaf9ef1997dc37f98e91fc6",
       []
      ],
      "slow-image.py": [
@@ -359238,6 +359389,10 @@
       "28a6d3453bda1d74b2c0f81f0a9ab23e71545503",
       []
      ],
+     "acao-cors.py": [
+      "57b6f1e32182865fc12eecc4226a0740e3d0535c",
+      []
+     ],
      "accounts.py": [
       "c0117862816ff4668b6dd9416633bee6eb9af227",
       []
@@ -359280,7 +359435,7 @@
      ],
      "fedcm": {
       "disconnect-iframe.html": [
-       "f65763932b8c742debdbabbefc310613fe83f0e5",
+       "ae97011a53535b66ae619132ae91a2d763bc1dad",
        []
       ],
       "intercept_service_worker.js": [
@@ -359313,7 +359468,7 @@
       []
      ],
      "fedcm-iframe.html": [
-      "ba79c4cf9e955672d94450143dff091a6691a0e2",
+      "085d6128976f9852f638fd5b0c17912db13ea011",
       []
      ],
      "fedcm-mock.js": [
@@ -359334,6 +359489,18 @@
      ],
      "keys.py": [
       "6b7d67e21e7eea7927a40ab094847b7224d49985",
+      []
+     ],
+     "lfedcm-helpers.js": [
+      "28a43d9328eaa59835e6c0ec282968237db2460e",
+      []
+     ],
+     "lfedcm-identity.provider-create.sub.html": [
+      "4b60c7866f03cde9bd047264112f48f60995a856",
+      []
+     ],
+     "lfedcm-identity.provider-delete.sub.html": [
+      "47ff664e7223a6bc8632517a96855f37c88f6487",
       []
      ],
      "login.html": [
@@ -359434,6 +359601,10 @@
      ],
      "mark_signedout.sub.headers": [
       "69157b3a371e369df585331a2479144fee444f5c",
+      []
+     ],
+     "no-cors.py": [
+      "a5be59ccb69f5e7e8e5ddca990b4eea34b49e4bd",
       []
      ],
      "no_accounts.py": [
@@ -364254,8 +364425,12 @@
       "218858b24c1ff080016c82dbc0c4c16fb6e95a26",
       []
      ],
+     "change-observer-scope-test.js": [
+      "c11d2ff922463aa5f2ccc9bf2ded450b9015902e",
+      []
+     ],
      "collecting-file-system-observer.js": [
-      "94e93495e10b26750f9de078ae86b72591288305",
+      "64bb671af1430d2ddf365387cfa6fc47042300e0",
       []
      ],
      "message-target-dedicated-worker.js": [
@@ -364303,7 +364478,7 @@
       []
      ],
      "test-helpers.js": [
-      "7bfd928e39c105555f7cb2244d2dc77065cea138",
+      "8f969c987dd523629576c7ca1542c2c6b6e2e676",
       []
      ]
     },
@@ -364397,7 +364572,7 @@
       []
      ],
      "FileSystemObserver.js": [
-      "90ba5bbeec5b95e209151f576c22539562ec4152",
+      "d1e1ce40dbc439a94e6153cca8d87fd84da1fac8",
       []
      ],
      "FileSystemSyncAccessHandle-flush.js": [
@@ -390337,10 +390512,6 @@
      "c3eb0007ce5ded0ce76d8f42709ccc9a1bb9fc4b",
      []
     ],
-    "pointerevent_constructor-expected.txt": [
-     "9742f9d0edd7ad351810e10fc5f95d088abbec5f",
-     []
-    ],
     "pointerevent_lostpointercapture_remove_setcapture_node-expected.txt": [
      "2d3c1af839d52c9176d85201b92de9c970fffe15",
      []
@@ -393308,7 +393479,7 @@
      []
     ],
     "testdriver.js": [
-     "af7b3e06cd93b614b957bfbd3e7358862f38e137",
+     "d079efba8a4a9042ad8de614bb13e318545a27e4",
      []
     ],
     "testdriver.js.headers": [
@@ -404694,10 +404865,6 @@
         "56ea539914328c6d4dafe3d202ad08017e26f717",
         []
        ],
-       "conftest.py": [
-        "0941411fab84f20df84563698821f5cdb7a13ccd",
-        []
-       ],
        "delete_cookies": {
         "__init__.py": [
          "4b73b0bcedf401f9af495d853e943501f81cce7e",
@@ -405196,7 +405363,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "b806144e750b8639e3d102acd5133cae7d3c2ff3",
+       "9f3c31d3d57cfc0189481c48800512b4a780efc1",
        []
       ],
       "fixtures_http.py": [
@@ -405792,14 +405959,6 @@
       "8a8c89dacdbd3ff814009334b8a9b90a8f75987c",
       []
      ],
-     "reduction.https.any.worker_cpu-expected.txt": [
-      "ba6d3dfcc933d3d8148e5a8c816adbb1597f0a13",
-      []
-     ],
-     "reduction.https.any_cpu-expected.txt": [
-      "ba6d3dfcc933d3d8148e5a8c816adbb1597f0a13",
-      []
-     ],
      "resample2d.https.any.worker_cpu-expected.txt": [
       "c11010153b2494b4ec8308a80761f7fc276c1ace",
       []
@@ -405843,11 +406002,11 @@
     },
     "resources": {
      "utils.js": [
-      "e4d042a70fec73951a78846c7033a19ac43ebf77",
+      "4ccdc2ee1801532c6ca8a013a78afa3d510045ae",
       []
      ],
      "utils_validation.js": [
-      "69fe14fa45ba9393dc1a073131b7c3f40acf6ba1",
+      "da5786ca86bb52adb2c3d82c20c935de4d4a32b8",
       []
      ]
     }
@@ -405893,28 +406052,8 @@
      "40e1035a92f83109f94b527182007d72aff51739",
      []
     ],
-    "RTCDataChannel-binaryType.window-expected.txt": [
-     "400401a271ed54ce8742d1cacd93770df51ad810",
-     []
-    ],
-    "RTCDataChannel-bufferedAmount-expected.txt": [
-     "356b2fc7c3bd13bd8945398d68f1f4af6e5de022",
-     []
-    ],
     "RTCDataChannel-close-expected.txt": [
      "2e9c6736fdd4f18c3726bae9596dd68112e53a70",
-     []
-    ],
-    "RTCDataChannel-send-blob-order-expected.txt": [
-     "f2ee89437380c52a9d983551f2b9e524b9c3dac4",
-     []
-    ],
-    "RTCDataChannel-send-close-expected.txt": [
-     "65ea4a43ef40cd220328bfbb823772f186652299",
-     []
-    ],
-    "RTCDataChannel-send-expected.txt": [
-     "cee76c9f2efb0d3a797658a52da1478f5928e596",
      []
     ],
     "RTCDtlsTransport-state-expected.txt": [
@@ -411414,7 +411553,7 @@
     ],
     "BlobURL": {
      "cross-partition.tentative.https.html": [
-      "905d1e729223d1def902630448d50162fa7e2ce8",
+      "11d9787b8873a8b77c81d80826009236336a88a3",
       [
        null,
        {
@@ -414995,32 +415134,83 @@
       {}
      ]
     ],
-    "idbindex_openKeyCursor.htm": [
-     "9436684c3d1050ed06a23837eed5397b3134ebbb",
+    "idbindex_openKeyCursor.any.js": [
+     "9166ff386cb2896170a2af43e7174397972883fe",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex_openKeyCursor2.htm": [
-     "ec97345a873109b1a4273214127765238877d1ec",
+      "IndexedDB/idbindex_openKeyCursor.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openKeyCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex_openKeyCursor3.htm": [
-     "c7416be38d230e9a7d79f49456ef42e04994a8cb",
+      "IndexedDB/idbindex_openKeyCursor.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openKeyCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex_openKeyCursor4.htm": [
-     "bcc1511c90c8a8611bb2023b1e995f774edc1f64",
+      "IndexedDB/idbindex_openKeyCursor.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openKeyCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbindex_openKeyCursor.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openKeyCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex_reverse_cursor.any.js": [
@@ -450224,6 +450414,13 @@
        ]
       ]
      },
+     "popover-anchor-backdrop-transition.html": [
+      "60c222363de2889817f4da74c768c1b0bc0ac0ff",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-anchor-003.html": [
       "6117027e22029cdef83e9c01190af1fbb90c75ac",
       [
@@ -459063,6 +459260,13 @@
         {}
        ]
       ],
+      "font-face-size-adjust.html": [
+       "01a551d350d860588acc7a8b27cd4174f3d96362",
+       [
+        null,
+        {}
+       ]
+      ],
       "font-face-src-format.html": [
        "7a5bb5b97ec3e3d2bb1b4894865bca2086522f2c",
        [
@@ -466802,7 +467006,7 @@
        ]
       ],
       "size-invalid.html": [
-       "6e7c4a222df82e7ebb989831c373d556905a5bc2",
+       "238d10ee4a18e90778dd90135578719538012e93",
        [
         null,
         {}
@@ -470982,22 +471186,157 @@
         {}
        ]
       ],
-      "shape-outside-invalid.html": [
-       "5fe89a605ec2d720b648cff54f8ec812399776d0",
-       [
-        null,
-        {}
-       ]
-      ],
       "shape-outside-valid-position.html": [
        "07b82ddda6472d04d8fc53a9803e83f8214723dd",
        [
         null,
         {}
        ]
+      ]
+     },
+     "shape-functions": {
+      "circle-function-computed.html": [
+       "cdfbbb5aa0357d04b23ae0e493f32638a2e76baf",
+       [
+        null,
+        {}
+       ]
       ],
-      "shape-outside-valid.html": [
-       "e5587c6b233a0c94568447777e95533ecbb50b29",
+      "circle-function-invalid.html": [
+       "56ca23d23a52b98e95f10754a65f60e288d54e93",
+       [
+        null,
+        {}
+       ]
+      ],
+      "circle-function-valid.html": [
+       "417e397de9ec689a67e69524243fd56ce3844606",
+       [
+        null,
+        {}
+       ]
+      ],
+      "ellipse-function-computed.html": [
+       "2f574f5a8b1ccab799626e6b11dbd8c52a8b9143",
+       [
+        null,
+        {}
+       ]
+      ],
+      "ellipse-function-invalid.html": [
+       "d17034439bf2a505b1bef655c49aa20becb9cebe",
+       [
+        null,
+        {}
+       ]
+      ],
+      "ellipse-function-valid.html": [
+       "7d82996068f65fc281a7593d47dddbdbe1415f17",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inset-function-computed.html": [
+       "4712c591cc24e840bfd9d48bbd57fbf57455a459",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inset-function-invalid.html": [
+       "fb1fd998e3c9f5ecde18266e9ffa73044c2b3e74",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inset-function-valid.html": [
+       "25fc426d2c8665e54240b3afbd6a249c51cee10b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "path-function-computed.html": [
+       "e6ed3734ce4f5375af592ef0653c8fe8a380f07b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "path-function-invalid.html": [
+       "8b9bbcfa1270035332a3cc98e4fa1b0eac4858bf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "path-function-valid.html": [
+       "4a576a0de2565e8ca7f1c19994263b8ffff1d4e9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "polygon-function-computed.html": [
+       "beb9714e652e632d1f51953cd041f88ea62ce2dd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "polygon-function-invalid.html": [
+       "c37fd9e748c58501cbb4a791fb0ddb3734a08daf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "polygon-function-valid.html": [
+       "45b0c1eda1c8809c21068608973ff51aff9f62cf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rect-function-computed.html": [
+       "bf43cdce68d5a682565885e6c52a51f4553dfbef",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rect-function-invalid.html": [
+       "528502b904da5102053c0806a61d7b296bd5b70d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rect-function-valid.html": [
+       "6489f4e82adaf452824e54f772eb160bb190353b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "xywh-function-computed.html": [
+       "117e7a40cfeb4405ef508afab1d8e9cc11d9165f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "xywh-function-invalid.html": [
+       "b2b1677fb344cada03582e0588e4f019ea15ece4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "xywh-function-valid.html": [
+       "bfb5a9cae3d8a3034558bc402abc2009d38334d7",
        [
         null,
         {}
@@ -482763,6 +483102,20 @@
         {}
        ]
       ],
+      "view-transition-group-invalid.html": [
+       "a371a94665eb835b750293dca11e85aab7eb4366",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-transition-group-valid.html": [
+       "d1d21a60997070cc0ead0a583e46b5c7a5a27b47",
+       [
+        null,
+        {}
+       ]
+      ],
       "view-transition-name-computed.html": [
        "5b05667f749e0b9c1161aea91f7448eea5cd94e6",
        [
@@ -487945,6 +488298,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "has-with-nesting-parent-containing-complex.html": [
+       "4ed611146b80ed5e5aef720f345b5394fa4d4fbb",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ],
       "has-with-nesting-parent-containing-hover.html": [
@@ -511944,6 +512306,33 @@
       }
      ]
     ],
+    "interactionid-keyboard-event-simulated-click-button-space.html": [
+     "d3ab5437f8e533a32fad8d327e5e1dd58d210574",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interactionid-keyboard-event-simulated-click-checkbox-space.html": [
+     "3dd8e21e784d7d8970e2fdfba4d4e146ce32f968",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interactionid-keyboard-event-simulated-click-link-enter.html": [
+     "6945d2ff771976ea1a17ba66f427e51d840268d5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "interactionid-keypress.html": [
      "a6f200996714f473056a69e849837fffb1792dca",
      [
@@ -513965,7 +514354,7 @@
      ]
     ],
     "fedcm-disconnect-iframe.sub.https.html": [
-     "275a4a55c5efe5c17bc1dfe417c098a9ac19b166",
+     "1587ef5f8be1d4ba75074b82cd758824669fd93a",
      [
       null,
       {
@@ -514010,7 +514399,7 @@
      ]
     ],
     "fedcm-identity-assertion-nocors.https.html": [
-     "ae89f51ab4ef22ee1a9c9340a26270dff6d396ec",
+     "79da95d50061d5274811b067a5e1be116edb680b",
      [
       null,
       {
@@ -514019,7 +514408,7 @@
      ]
     ],
     "fedcm-iframe.https.html": [
-     "6a9bec677cc67e07fd25de0d3f3c9d7ea9d7580f",
+     "2c63a9973b2908a35508ffafaa576bd74cb781a0",
      [
       null,
       {
@@ -514260,6 +514649,24 @@
     ],
     "fedcm-userinfo.https.html": [
      "d256f685f7c8f90402a7505b4d9343ad1b1c9fa3",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "lfedcm-identity.create-store-collect.tentative.sub.https.html": [
+     "9cc7278d375e38d6c176192174d9becfbce459c6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "lfedcm-identity.discovery.tentative.sub.https.html": [
+     "2d5e8e8db476e226722da1f5b041165e9b560e3e",
      [
       null,
       {
@@ -542455,7 +542862,7 @@
      ]
     ],
     "FileSystemObserver.https.tentative.any.js": [
-     "01c8dc025ef19ddcf7c6d58d3140b2ca940af96a",
+     "992e73246ccc630a8c55586f4e0d27e82eed1bce",
      [
       "fs/FileSystemObserver.https.tentative.any.html",
       {
@@ -542471,6 +542878,14 @@
         [
          "script",
          "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/collecting-file-system-observer.js"
+        ],
+        [
+         "script",
+         "resources/change-observer-scope-test.js"
         ],
         [
          "script",
@@ -542497,6 +542912,14 @@
         ],
         [
          "script",
+         "resources/collecting-file-system-observer.js"
+        ],
+        [
+         "script",
+         "resources/change-observer-scope-test.js"
+        ],
+        [
+         "script",
          "script-tests/FileSystemObserver.js"
         ]
        ]
@@ -542517,6 +542940,14 @@
         [
          "script",
          "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/collecting-file-system-observer.js"
+        ],
+        [
+         "script",
+         "resources/change-observer-scope-test.js"
         ],
         [
          "script",
@@ -664556,7 +664987,7 @@
      ]
     ],
     "block-string-assignment-to-Document-parseHTMLUnsafe.html": [
-     "83dfcda5d9215fa275e7946e9c771584c7300634",
+     "405da5f1643eccc0a22b31ff91a044ac6237843d",
      [
       null,
       {}
@@ -687633,7 +688064,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "211db4fccd7f5d200fd0ec897da12f4eeaf6586f",
+      "2242ccdc7a02d7b738be47ece400615d62dd4cb4",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -697043,10 +697474,10 @@
        }
       ]
      ],
-     "reduction.https.any.js": [
-      "895ffea92a55f80c10ad05b8f51001602a18ce07",
+     "reduce_l1.https.any.js": [
+      "f15de087cf0ae164569e93c26afd6525fe3e8c8a",
       [
-       "webnn/conformance_tests/reduction.https.any.html?cpu",
+       "webnn/conformance_tests/reduce_l1.https.any.html?cpu",
        {
         "script_metadata": [
          [
@@ -697082,7 +697513,7 @@
        }
       ],
       [
-       "webnn/conformance_tests/reduction.https.any.html?gpu",
+       "webnn/conformance_tests/reduce_l1.https.any.html?gpu",
        {
         "script_metadata": [
          [
@@ -697118,7 +697549,7 @@
        }
       ],
       [
-       "webnn/conformance_tests/reduction.https.any.html?npu",
+       "webnn/conformance_tests/reduce_l1.https.any.html?npu",
        {
         "script_metadata": [
          [
@@ -697154,7 +697585,7 @@
        }
       ],
       [
-       "webnn/conformance_tests/reduction.https.any.worker.html?cpu",
+       "webnn/conformance_tests/reduce_l1.https.any.worker.html?cpu",
        {
         "script_metadata": [
          [
@@ -697190,7 +697621,7 @@
        }
       ],
       [
-       "webnn/conformance_tests/reduction.https.any.worker.html?gpu",
+       "webnn/conformance_tests/reduce_l1.https.any.worker.html?gpu",
        {
         "script_metadata": [
          [
@@ -697226,7 +697657,1978 @@
        }
       ],
       [
-       "webnn/conformance_tests/reduction.https.any.worker.html?npu",
+       "webnn/conformance_tests/reduce_l1.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_l2.https.any.js": [
+      "7c1d45434620306203c05b2c9365e2caff4b1f70",
+      [
+       "webnn/conformance_tests/reduce_l2.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_l2.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_l2.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_l2.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_l2.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_l2.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_log_sum.https.any.js": [
+      "47a88732dedc937b32d58d548e8fea35676bf3d8",
+      [
+       "webnn/conformance_tests/reduce_log_sum.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_log_sum_exp.https.any.js": [
+      "5ba2e39307784618975c2cb1bbeba3a048d11fe0",
+      [
+       "webnn/conformance_tests/reduce_log_sum_exp.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum_exp.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum_exp.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum_exp.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_log_sum_exp.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_max.https.any.js": [
+      "709b25b0ad311e4717cc1b857c1412d98617f9fe",
+      [
+       "webnn/conformance_tests/reduce_max.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_max.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_max.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_max.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_max.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_max.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_mean.https.any.js": [
+      "21fa1a5102c703c4aaded366df4f30b19f83075f",
+      [
+       "webnn/conformance_tests/reduce_mean.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_mean.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_mean.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_mean.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_mean.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_mean.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_min.https.any.js": [
+      "6cc38d6a0782ab8f5a7191b591776483a4fe73fc",
+      [
+       "webnn/conformance_tests/reduce_min.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_min.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_min.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_min.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_min.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_min.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_product.https.any.js": [
+      "745f83b3ceabc47193762c0fdeca2df2a519e7ef",
+      [
+       "webnn/conformance_tests/reduce_product.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_product.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_product.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_product.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_product.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_product.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_sum.https.any.js": [
+      "9aec31d3f6826bd5113cfa430bf8c276d6351983",
+      [
+       "webnn/conformance_tests/reduce_sum.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "reduce_sum_square.https.any.js": [
+      "10930c44c6e7bd47703973d19966fef393a1b566",
+      [
+       "webnn/conformance_tests/reduce_sum_square.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum_square.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum_square.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum_square.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum_square.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API reduction operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/reduce_sum_square.https.any.worker.html?npu",
        {
         "script_metadata": [
          [
@@ -701621,7 +704023,7 @@
       ]
      ],
      "elementwise-unary.https.any.js": [
-      "c735183aab1d1410668b85a2d390800aa82b1525",
+      "9380c766960bb75904821422e09623b474d5c194",
       [
        "webnn/validation_tests/elementwise-unary.https.any.html",
        {
@@ -703260,7 +705662,7 @@
      ]
     ],
     "RTCDataChannel-send-close.html": [
-     "1bcc96790d9e5e162db1acda02f4c07bb7780f6e",
+     "4ffe4a2019739cd640e53360083c8fd324193dc3",
      [
       null,
       {
@@ -743511,7 +745913,7 @@
       },
       "integration": {
        "cookies_with_network_events.py": [
-        "30ba8e3bd7b8009070c4a6c1739b43efc8235f50",
+        "625628f0360a3e72ee692cf3768073db263cd015",
         [
          null,
          {}
@@ -743625,7 +746027,7 @@
        },
        "auth_required": {
         "auth_required.py": [
-         "4f5c836280dc69a03f7f3284382b44d5019c636b",
+         "8ae539056429b4651cee0fcab4d6dce639a9a8c5",
          [
           null,
           {}

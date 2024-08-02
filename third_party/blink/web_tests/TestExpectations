@@ -2594,6 +2594,10 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/motion/offset-path-shape-circle-008.html [ Failure ]
+external/wpt/css/motion/offset-path-shape-ellipse-007.html [ Failure ]
+external/wpt/fedcm/lfedcm-identity.create-store-collect.tentative.sub.https.html [ Timeout ]
+external/wpt/fedcm/lfedcm-identity.discovery.tentative.sub.https.html [ Timeout ]
 crbug.com/356428750 external/wpt/css/css-backgrounds/background-clip/clip-text-animated-text.html [ Failure ]
 crbug.com/356441927 [ Mac11 ] external/wpt/css/css-masking/animations/mask-border-outset-interpolation.html [ Failure Timeout ]
 crbug.com/356428750 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-animated-text.html [ Failure ]

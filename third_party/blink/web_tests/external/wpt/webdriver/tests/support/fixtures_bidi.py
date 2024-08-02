@@ -3,6 +3,7 @@ import base64
 import copy
 import json
 from typing import Any, Coroutine, Mapping
+from urllib.parse import urlunsplit
 
 import pytest
 import pytest_asyncio
@@ -678,3 +679,11 @@ async def setup_network_test(
     # cleanup
     for remove_listener in listeners:
         remove_listener()
+
+
+@pytest.fixture
+def origin(server_config, domain_value):
+    def origin(protocol="https", domain="", subdomain=""):
+        return urlunsplit((protocol, domain_value(domain, subdomain), "", "", ""))
+
+    return origin
