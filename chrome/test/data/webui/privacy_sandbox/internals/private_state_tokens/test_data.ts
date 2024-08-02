@@ -24,3 +24,9 @@ export const dummyListItemData: ListItem[] = [
     redemptions: [],  // No redemptions for this issuer
   },
 ];
+
+export const testListItemData: ListItem = {
+  issuerOrigin: 'issuer6.com',
+  numTokens: 1,
+  redemptions: [],  // No redemptions for this issuer
+};

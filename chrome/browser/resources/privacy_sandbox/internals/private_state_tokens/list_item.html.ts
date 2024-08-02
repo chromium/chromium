@@ -6,12 +6,13 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {PrivateStateTokensListItemElement} from './list_item.js';
 
-function getHtmlWithoutTokens(this: PrivateStateTokensListItemElement) {
+function getHtmlWithoutRedemptions(this: PrivateStateTokensListItemElement) {
   // clang-format off
   return html`
   <div class="cr-row ${this.index === 0 ? 'first' : ''}" id="row-content">
     <div class="cr-padded-text">
       <span>${this.issuerOrigin}</span>
+      <span id='tokenText'>${this.getNumTokensString_()}</span>
       <span></span>
     </div>
     <cr-icon icon="cr:info-outline" class="spacing"></cr-icon>
@@ -19,7 +20,7 @@ function getHtmlWithoutTokens(this: PrivateStateTokensListItemElement) {
   // clang-format on
 }
 
-function getHtmlWithTokens(this: PrivateStateTokensListItemElement) {
+function getHtmlWithRedemptions(this: PrivateStateTokensListItemElement) {
   // clang-format off
   return html`
     <cr-expand-button id="expandButton"
@@ -27,7 +28,7 @@ function getHtmlWithTokens(this: PrivateStateTokensListItemElement) {
         ?expanded="${this.expanded}"
         @expanded-changed="${this.onExpandedChanged_}">
       <span>${this.issuerOrigin}</span>
-      <span>${this.getNumTokensString_()}</span>
+      <span id='tokenText'>${this.getNumTokensString_()}</span>
       <span>${this.getRedemptionsString_()}</span>
       <cr-icon icon="cr:info-outline" class="spacing"></cr-icon>
     </cr-expand-button>
@@ -43,7 +44,7 @@ function getHtmlWithTokens(this: PrivateStateTokensListItemElement) {
 
 export function getHtml(this: PrivateStateTokensListItemElement) {
   if (this.redemptions.length === 0) {
-    return getHtmlWithoutTokens.call(this);
+    return getHtmlWithoutRedemptions.call(this);
   }
-  return getHtmlWithTokens.call(this);
+  return getHtmlWithRedemptions.call(this);
 }

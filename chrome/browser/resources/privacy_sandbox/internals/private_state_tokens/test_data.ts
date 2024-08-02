@@ -33,6 +33,11 @@ export const dummyListItemData: ListItem[] = [
     numTokens: 0,
     redemptions: [],  // No redemptions for this issuer
   },
+  {
+    issuerOrigin: 'issuer4.com',
+    numTokens: 1,
+    redemptions: [],  // No redemptions for this issuer
+  },
 ];
 
 export type {ListItem, Redemption};
