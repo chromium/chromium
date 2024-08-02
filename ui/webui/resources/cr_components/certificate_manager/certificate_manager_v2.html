@@ -40,18 +40,24 @@
     width: 250px;
   }
 
-  #container {
-    display: flex;
-    align-items: flex-start;
-    overflow: auto;
-    z-index: 1;
-  }
-
-  .toolbar-shadow {
-    box-shadow: 0 5px 6px -3px rgba(0, 0, 0, .4);
+  #cr-container-shadow-top {
     /* Needs to be higher than #container's z-index to appear above
      * scrollbars. */
     z-index: 2;
+  }
+
+  #container {
+   /* CrContainerShadowMixin creates a div inside of #container to
+    * calculate when the div is off-screen, indicating that the user has
+    * scrolled #container. Since this div needs to be at the top of
+    * #container, set align-items to flex-start. Otherwise, the flex layout
+    * will stretch the div across the entire height of #container and never
+    * appear off-screen. */
+    display: flex;
+    align-items: flex-start;
+    overflow: auto;
+    flex: 1;
+    z-index: 1;
   }
 
   #adminCertsSection,

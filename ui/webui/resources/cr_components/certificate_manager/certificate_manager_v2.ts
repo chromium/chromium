@@ -28,6 +28,7 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
+import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -51,7 +52,8 @@ interface PasswordResult {
   password: string|null;
 }
 
-const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
+const CertificateManagerV2ElementBase =
+    CrContainerShadowMixin(I18nMixin(PolymerElement));
 
 export interface CertificateManagerV2Element {
   $: {
@@ -298,10 +300,15 @@ export class CertificateManagerV2Element extends
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
       case Page.PLATFORM_CLIENT_CERTS:
-        this.$.toolbar.classList.add('toolbar-shadow');
+        // Sub-pages always show the top shadow, regardless of scroll position.
+        this.enableScrollObservation(false);
+        this.setForceDropShadows(true);
         break;
       default:
-        this.$.toolbar.classList.remove('toolbar-shadow');
+        // Main page uses scroll position to determine whether a shadow should
+        // be shown.
+        this.enableScrollObservation(true);
+        this.setForceDropShadows(false);
     }
   }
 
