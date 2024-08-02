@@ -133,7 +133,7 @@ class BundledIsolatedWebApp {
                         const base::FilePath path,
                         ManifestBuilder manifest_builder);
 
-  ~BundledIsolatedWebApp();
+  virtual ~BundledIsolatedWebApp();
 
   const base::FilePath& path() const { return path_; }
 
@@ -168,7 +168,7 @@ class ScopedBundledIsolatedWebApp : public BundledIsolatedWebApp {
       const std::vector<uint8_t> serialized_bundle,
       ManifestBuilder manifest_builder);
 
-  ~ScopedBundledIsolatedWebApp();
+  ~ScopedBundledIsolatedWebApp() override;
 
  private:
   ScopedBundledIsolatedWebApp(

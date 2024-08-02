@@ -134,7 +134,7 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           // Similar to extensions, we don't do any automatic updates in guest
           // sessions.
           !profile.IsGuestSession() &&
-          // Web Apps are not a thing in off the record profiles, but have this
+          // Web Apps are not a thing in off the record profiles, but have
           // here just in case - we also wouldn't want to automatically update
           // IWAs in incognito windows.
           !profile.IsOffTheRecord() &&
@@ -163,6 +163,8 @@ void IsolatedWebAppUpdateManager::Start() {
 
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
 
   if (!IsAnyIwaInstalled()) {
     // If no IWA is installed, then we do not need to regularly check for
@@ -351,6 +353,45 @@ void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       base::BindOnce(&IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered,
                      weak_factory_.GetWeakPtr(), url_info,
                      std::move(callback)));
+}
+
+void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
+    const base::Version& component_version) {
+  // The corresponding observer is added during `Start()`.
+  CHECK(has_started_);
+
+  if (!automatic_updates_enabled_) {
+    return;
+  }
+
+  // Queue updates for all apps affected by key rotation.
+  for (const WebApp& app : provider_->registrar_unsafe().GetApps()) {
+    if (!app.isolation_data()) {
+      continue;
+    }
+    const auto& isolation_data = *app.isolation_data();
+
+    auto url_info = IsolatedWebAppUrlInfo::Create(app.manifest_id());
+    if (!url_info.has_value()) {
+      continue;
+    }
+
+    auto result = LookupRotatedKey(url_info->web_bundle_id());
+    // If the rotated key is null, there's no point in updating the
+    // app (as the update won't succeed anyway).
+    if (result != KeyRotationLookupResult::kKeyFound) {
+      continue;
+    }
+    KeyRotationData data =
+        GetKeyRotationData(url_info->web_bundle_id(), isolation_data);
+    // If either the bundle or the pending update already includes the rotated
+    // key, there's no need to rush with updates.
+    if (data.current_installation_has_rk || data.pending_update_has_rk) {
+      continue;
+    }
+
+    MaybeDiscoverUpdatesForApp(app.app_id());
+  }
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {

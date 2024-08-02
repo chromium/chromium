@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "net/http/http_status_code.h"
 
@@ -43,6 +44,15 @@ GURL IsolatedWebAppUpdateServerMixin::GetUpdateManifestUrl(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   return iwa_server_.GetURL(
       base::StrCat({"/", web_bundle_id.id(), "/", kUpdateManifestFileName}));
+}
+
+base::Value::Dict
+IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
+    const web_package::SignedWebBundleId& web_bundle_id) const {
+  return base::Value::Dict()
+      .Set(kPolicyWebBundleIdKey, web_bundle_id.id())
+      .Set(kPolicyUpdateManifestUrlKey,
+           GetUpdateManifestUrl(web_bundle_id).spec());
 }
 
 void IsolatedWebAppUpdateServerMixin::AddBundle(
