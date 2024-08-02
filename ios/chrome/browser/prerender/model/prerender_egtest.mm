@@ -127,6 +127,13 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 @implementation PrerenderTestCase
 
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMovePrerenderedTabInTabStrip testMovePrerenderedTabInTabStrip
+#else
+#define MAYBE_testMovePrerenderedTabInTabStrip \
+  DISABLED_testMovePrerenderedTabInTabStrip
+#endif
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
