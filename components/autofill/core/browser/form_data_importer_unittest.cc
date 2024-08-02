@@ -4068,9 +4068,6 @@ TEST_F(FormDataImporterTest,
           .has_value());
 }
 
-// This test is disabled for Android because the implementation for IBAN on
-// Clank, will remove the flag once the IBAN on Clank is ready.
-#if !BUILDFLAG(IS_ANDROID)
 // Test that in the case where the MandatoryReauthManager denotes we should
 // offer re-auth opt-in, we start the opt-in in IBAN processing flow.
 TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
@@ -4122,7 +4119,6 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // Test that ProceedWithSavingIfApplicable gets called for server cards with the
