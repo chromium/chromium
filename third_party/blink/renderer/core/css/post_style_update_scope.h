@@ -92,6 +92,10 @@ class CORE_EXPORT PostStyleUpdateScope {
   static AnimationData* CurrentAnimationData();
   static PseudoData* CurrentPseudoData();
 
+  static bool InPendingPseudoUpdate() {
+    return current_ && !current_->GetPseudoData();
+  }
+
   // If there is a CurrentAnimationData() and old-style was previously stored
   // using StoreOldStyleIfNeeded, this function returns that ComputedStyle.
   // Otherwise returns the current ComputedStyle on the Element.
