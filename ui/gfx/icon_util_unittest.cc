@@ -144,10 +144,9 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
     // Convert the PNG entry data back to a SkBitmap to ensure it's valid.
     ASSERT_GE(icon_data.length(),
               png_entry->dwImageOffset + png_entry->dwBytesInRes);
-    const unsigned char* png_bytes = reinterpret_cast<const unsigned char*>(
-        icon_data.data() + png_entry->dwImageOffset);
-    gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-        png_bytes, png_entry->dwBytesInRes);
+    gfx::Image image =
+        gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(icon_data).subspan(
+            png_entry->dwImageOffset, png_entry->dwBytesInRes));
     SkBitmap bitmap = image.AsBitmap();
     EXPECT_EQ(256, bitmap.width());
     EXPECT_EQ(256, bitmap.height());

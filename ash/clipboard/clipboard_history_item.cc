@@ -68,8 +68,7 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng: {
       gfx::Image image;
       if (const auto& maybe_png = item.data().maybe_png()) {
-        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
-                                                 maybe_png.value().size());
+        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value());
       } else {
         // If we have not yet encoded the bitmap to a PNG, just create the
         // image using the available bitmap. No information is lost here.

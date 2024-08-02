@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/image/image.h"
 
 #include <algorithm>
@@ -218,15 +213,12 @@ Image Image::CreateFrom1xBitmap(const SkBitmap& bitmap) {
 }
 
 // static
-Image Image::CreateFrom1xPNGBytes(const unsigned char* input,
-                                  size_t input_size) {
-  if (input_size == 0u)
+Image Image::CreateFrom1xPNGBytes(base::span<const uint8_t> input) {
+  if (input.empty()) {
     return Image();
-
-  scoped_refptr<base::RefCountedBytes> raw_data(new base::RefCountedBytes());
-  raw_data->as_vector().assign(input, input + input_size);
-
-  return CreateFrom1xPNGBytes(raw_data);
+  }
+  return CreateFrom1xPNGBytes(
+      base::MakeRefCounted<base::RefCountedBytes>(input));
 }
 
 Image Image::CreateFrom1xPNGBytes(

@@ -35,8 +35,7 @@ void OnGetRecentImageFromClipboard(
     return;
   }
 
-  std::move(callback).Run(
-      gfx::Image::CreateFrom1xPNGBytes(png_data.data(), png_data.size()));
+  std::move(callback).Run(gfx::Image::CreateFrom1xPNGBytes(png_data));
 }
 
 bool HasRecentURLFromClipboard() {

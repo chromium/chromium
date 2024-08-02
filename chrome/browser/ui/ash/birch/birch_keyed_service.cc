@@ -38,8 +38,7 @@ constexpr char kRemovedBirchItemsFile[] = "birch/removed_items.pb";
 gfx::Image ResizeLargeIcon(
     const favicon_base::FaviconRawBitmapResult& db_result,
     int desired_size) {
-  gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-      db_result.bitmap_data->data(), db_result.bitmap_data->size());
+  gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(db_result.bitmap_data);
 
   SkBitmap resized = skia::ImageOperations::Resize(
       image.AsBitmap(), skia::ImageOperations::RESIZE_BEST, desired_size,

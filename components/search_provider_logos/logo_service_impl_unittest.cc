@@ -112,14 +112,11 @@ EncodedLogo EncodeLogo(const Logo& logo) {
 Logo DecodeLogo(const EncodedLogo& encoded_logo) {
   Logo logo;
   logo.image =
-      gfx::Image::CreateFrom1xPNGBytes(encoded_logo.encoded_image->front(),
-                                       encoded_logo.encoded_image->size())
-          .AsBitmap();
+      gfx::Image::CreateFrom1xPNGBytes(encoded_logo.encoded_image).AsBitmap();
   if (encoded_logo.dark_encoded_image) {
-    logo.dark_image = gfx::Image::CreateFrom1xPNGBytes(
-                          encoded_logo.dark_encoded_image->front(),
-                          encoded_logo.dark_encoded_image->size())
-                          .AsBitmap();
+    logo.dark_image =
+        gfx::Image::CreateFrom1xPNGBytes(encoded_logo.dark_encoded_image)
+            .AsBitmap();
   }
   logo.metadata = encoded_logo.metadata;
   return logo;
@@ -312,8 +309,8 @@ class FakeImageDecoder : public image_fetcher::ImageDecoder {
                    const gfx::Size& desired_image_frame_size,
                    data_decoder::DataDecoder* data_decoder,
                    image_fetcher::ImageDecodedCallback callback) override {
-    gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-        reinterpret_cast<const uint8_t*>(image_data.data()), image_data.size());
+    gfx::Image image =
+        gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(image_data));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), image));
   }

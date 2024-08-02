@@ -145,8 +145,7 @@ void PermissionDialogJavaDelegate::OnRequestingOriginFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& favicon_result) {
   if (favicon_result.is_valid()) {
     gfx::Image image =
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
-                                         favicon_result.bitmap_data->size());
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data);
     const SkBitmap* bitmap = image.ToSkBitmap();
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_PermissionDialogDelegate_updateIcon(env, j_delegate_,
