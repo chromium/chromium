@@ -137,6 +137,9 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
     extension_info->set_name(kFakeExtensionName);
     extension_info->set_version(kFakeExtensionVersion);
     extension_info->set_install_location(install_location);
+    if (install_location == ExtensionInfo::UNPACKED) {
+      extension_info->add_file_infos();
+    }
 
     // Cookies get all signal
     safe_browsing::ExtensionTelemetryReportRequest_SignalInfo*
@@ -220,7 +223,7 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
     "extension_telemetry_report": {
       "creation_timestamp_msec": "1718811019088",
       "reports": [{
-        "extension": {
+        "extension": {%s
           "id": "fake-extension-id",
           "name": "Foo extension",
           "install_location": "%s",
@@ -268,6 +271,13 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
       }]
     }
   })",
+      install_location_ == ExtensionInfo::UNPACKED ? R"(
+        "file_info": [ {
+          "hash": "",
+          "name": ""
+        } ],
+      )"
+                                                   : "",
       ExtensionInfo::InstallLocation_Name(install_location_).c_str());
   base::Value::Dict expected_event = base::test::ParseJsonDict(event_json);
 

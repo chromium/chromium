@@ -51,6 +51,8 @@ class ExtensionTelemetryEventRouter : public KeyedService {
   static const char kKeyMethod[];
   static const char kKeyNewUrl[];
   static const char kKeyCurrentUrl[];
+  static const char kKeyFileInfo[];
+  static const char kKeyHash[];
 
   // Convenience method to get the service for a profile.
   static ExtensionTelemetryEventRouter* Get(Profile* profile);

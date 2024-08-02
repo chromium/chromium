@@ -41,6 +41,19 @@ base::Value::Dict CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
       ExtensionInfo::InstallLocation_Name(extension_info.install_location()));
   dict.Set(ExtensionTelemetryEventRouter::kKeyIsFromStore,
            extension_info.is_from_store());
+  if (extension_info.file_infos_size() > 0) {
+    base::Value::List file_infos_list;
+    for (const auto& file_info : extension_info.file_infos()) {
+      base::Value::Dict file_info_dict;
+      file_info_dict.Set(ExtensionTelemetryEventRouter::kKeyName,
+                         file_info.name());
+      file_info_dict.Set(ExtensionTelemetryEventRouter::kKeyHash,
+                         file_info.hash());
+      file_infos_list.Append(std::move(file_info_dict));
+    }
+    dict.Set(ExtensionTelemetryEventRouter::kKeyFileInfo,
+             std::move(file_infos_list));
+  }
 
   return dict;
 }
@@ -240,6 +253,8 @@ const char ExtensionTelemetryEventRouter::kKeyCount[] = "count";
 const char ExtensionTelemetryEventRouter::kKeyMethod[] = "method";
 const char ExtensionTelemetryEventRouter::kKeyNewUrl[] = "new_url";
 const char ExtensionTelemetryEventRouter::kKeyCurrentUrl[] = "current_url";
+const char ExtensionTelemetryEventRouter::kKeyFileInfo[] = "file_info";
+const char ExtensionTelemetryEventRouter::kKeyHash[] = "hash";
 
 // static
 ExtensionTelemetryEventRouter* ExtensionTelemetryEventRouter::Get(
