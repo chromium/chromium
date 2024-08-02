@@ -185,7 +185,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-  // TODO(crbug.com/351775835): Flesh out for various link click use-cases.
   std::optional<std::pair<Browser*, int>> navigation_result =
       web_app::MaybeHandleAppNavigation(profile, params);
   if (navigation_result.has_value()) {
@@ -644,17 +643,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  // Trying to open a background tab when in a non-tabbed app browser results in
-  // focusing a regular browser window and opening a tab in the background
-  // of that window. Change the disposition to NEW_FOREGROUND_TAB so that
-  // the new tab is focused.
-  if (source_browser && source_browser->is_type_app() &&
-      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      !(source_browser->app_controller() &&
-        source_browser->app_controller()->has_tab_strip())) {
-    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  }
-
   // Middle clicking a link to the home tab in a tabbed web app should open the
   // link in the home tab.
   if (web_app::IsHomeTabUrl(source_browser, params->url)) {
@@ -737,6 +725,18 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (!params->browser) {
     return nullptr;
   }
+
+  // Trying to open a background tab when in a non-tabbed app browser results in
+  // focusing a regular browser window and opening a tab in the background
+  // of that window. Change the disposition to NEW_FOREGROUND_TAB so that
+  // the new tab is focused.
+  if (source_browser && source_browser->is_type_app() &&
+      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+      !(source_browser->app_controller() &&
+        source_browser->app_controller()->has_tab_strip())) {
+    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
   if (singleton_index != -1) {
     contents_to_navigate_or_insert =
         params->browser->tab_strip_model()->GetWebContentsAt(singleton_index);

@@ -29,6 +29,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/app_session_service.h"
@@ -56,13 +57,14 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_launch_params.h"
+#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -504,6 +506,28 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
   return browser;
 }
 
+Browser* CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
+    const webapps::AppId& app_id,
+    const NavigateParams& navigate_params,
+    bool should_enqueue_launch_params) {
+  Browser::CreateParams app_browser_params = CreateParamsForApp(
+      app_id, /*is_popup=*/false, /*trusted_source=*/true,
+      navigate_params.window_features.bounds,
+      navigate_params.initiating_profile, navigate_params.user_gesture);
+  Browser* created_browser =
+      CreateWebAppWindowMaybeWithHomeTab(app_id, app_browser_params);
+  if (should_enqueue_launch_params && navigate_params.contents_to_insert) {
+    WebAppLaunchParams launch_params;
+    launch_params.started_new_navigation = false;
+    launch_params.app_id = app_id;
+    launch_params.target_url = navigate_params.url;
+    WebAppTabHelper::FromWebContents(navigate_params.contents_to_insert.get())
+        ->EnsureLaunchQueue()
+        .Enqueue(std::move(launch_params));
+  }
+  return created_browser;
+}
+
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,
     const std::string& app_id,
@@ -853,6 +877,41 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
         return std::optional<std::pair<Browser*, int>>({browser, -1});
       }
     }
+  }
+
+  // Conveniently filters out right clicks from being handled by link capturing.
+  if (!apps::features::IsLinkCapturingReimplementationEnabled() ||
+      params.started_from_context_menu) {
+    return std::nullopt;
+  }
+
+  // Handle web app link capturing reimplementation and correct app window
+  // context maintenance use-cases.
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+
+  std::optional<webapps::AppId> controlling_app_id =
+      registrar.FindAppThatCapturesLinksInScope(params.url);
+
+  bool comes_from_app_browser =
+      params.browser && web_app::AppBrowserController::IsWebApp(params.browser);
+
+  // Shift-clicks that come from an app browser always open in a new app
+  // container.
+  // TODO(crbug.com/351775835): Support DisplayMode of kBrowser as well.
+  if (comes_from_app_browser && controlling_app_id.has_value() &&
+      params.disposition == WindowOpenDisposition::NEW_WINDOW &&
+      registrar.GetAppEffectiveDisplayMode(*controlling_app_id) !=
+          DisplayMode::kBrowser) {
+    // `should_enqueue_launch_params` is true because the existence of a
+    // `controlling_app_id` ensures that there is an app that controls
+    // params.url.
+    Browser* app_window =
+        CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
+            *controlling_app_id, params,
+            /*should_enqueue_launch_params=*/true);
+    return std::optional<std::pair<Browser*, int>>({app_window, -1});
   }
 
   return std::nullopt;
