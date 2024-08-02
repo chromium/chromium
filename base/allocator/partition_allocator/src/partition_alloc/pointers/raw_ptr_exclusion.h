@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// IWYU pragma: private, include "base/memory/raw_ptr_exclusion.h"
+
 #ifndef PARTITION_ALLOC_POINTERS_RAW_PTR_EXCLUSION_H_
 #define PARTITION_ALLOC_POINTERS_RAW_PTR_EXCLUSION_H_
 
