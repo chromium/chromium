@@ -19,6 +19,8 @@
 
 namespace blink {
 
+MODULES_EXPORT BASE_DECLARE_FEATURE(kBreakoutBoxInsertVideoCaptureTimestamp);
+
 template <typename NativeFrameType>
 class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
  public:
