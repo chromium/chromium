@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -22,8 +23,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
@@ -37,6 +40,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
@@ -382,6 +386,13 @@ void SidePanel::ChildVisibilityChanged(View* child) {
   UpdateVisibility();
 }
 
+void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  if (previous_bounds.width() != width() && keyboard_resized_) {
+    keyboard_resized_ = false;
+    AnnounceResize();
+  }
+}
+
 double SidePanel::GetAnimationValue() const {
   if (ShouldShowAnimation()) {
     return animation_.GetCurrentValue();
@@ -582,6 +593,32 @@ void SidePanel::UpdateVisibility() {
 bool SidePanel::ShouldShowAnimation() const {
   return lens::features::IsLensOverlayEnabled() &&
          gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
+}
+
+void SidePanel::AnnounceResize() {
+  float side_panel_width = width();
+  float web_contents_width =
+      browser_view_->contents_container()->bounds().width();
+  float total_width = browser_view_->bounds().width();
+  int side_panel_percentage = (side_panel_width / total_width) * 100;
+  int web_contents_percentage = (web_contents_width / total_width) * 100;
+  if (side_panel_percentage + web_contents_percentage > 100) {
+    side_panel_percentage--;
+  }
+  bool side_panel_right_aligned = IsRightAligned();
+  std::u16string web_contents_side_text = l10n_util::GetStringUTF16(
+      side_panel_right_aligned
+          ? IDS_SIDE_PANEL_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT
+          : IDS_SIDE_PANEL_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT);
+  std::u16string side_panel_side_text = l10n_util::GetStringUTF16(
+      side_panel_right_aligned
+          ? IDS_SIDE_PANEL_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT
+          : IDS_SIDE_PANEL_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT);
+
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+      IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT, web_contents_side_text,
+      base::FormatPercent(web_contents_percentage), side_panel_side_text,
+      base::FormatPercent(side_panel_percentage)));
 }
 
 BEGIN_METADATA(SidePanel)

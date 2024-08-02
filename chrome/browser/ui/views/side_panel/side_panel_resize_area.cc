@@ -75,6 +75,12 @@ void SidePanelResizeHandle::OnDidChangeFocus(views::View* before,
                                              views::View* now) {
   if (before == this && now != this) {
     side_panel_->RecordMetricsIfResized();
+    // Set keyboard resized to false to catch any cases when the previous
+    // attempt to resize via keyboard didn't change the bounds to be captured.
+    // This could happen if attempting to change the side panel size to be
+    // smaller than the minimum size or large enough where the page content
+    // would be below minimum size.
+    side_panel_->SetKeyboardResized(false);
   }
 }
 
@@ -104,9 +110,11 @@ bool SidePanelResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
   const int resize_increment = 50;
   if (event.key_code() == ui::VKEY_LEFT) {
     side_panel_->OnResize(-resize_increment, true);
+    side_panel_->SetKeyboardResized(true);
     return true;
   } else if (event.key_code() == ui::VKEY_RIGHT) {
     side_panel_->OnResize(resize_increment, true);
+    side_panel_->SetKeyboardResized(true);
     return true;
   }
   return false;
