@@ -3812,22 +3812,41 @@ TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
 #if BUILDFLAG(IS_MAC)
 
 TEST_F(IntegrationTest, KSAdminNoAppNoTag) {
+#if defined(ADDRESS_SANITIZER)
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "User->System launcher can't load macOS ASAN dylib.";
+    // Actually, since this test expects ksadmin to fail, it passes under these
+    // conditions, but for the wrong reason.
+  }
+#else
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ExpectKSAdminFetchTag(false, "no.such.app", {}, {}, {});
   ASSERT_NO_FATAL_FAILURE(Uninstall());
+#endif  // defined(ADDRESS_SANITIZER)
 }
 
 TEST_F(IntegrationTest, KSAdminUntaggedApp) {
+#if defined(ADDRESS_SANITIZER)
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "User->System launcher can't load macOS ASAN dylib.";
+  }
+#else
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(InstallApp("org.chromium.testapp"));
   ExpectKSAdminFetchTag(false, "org.chromium.testapp", {}, {}, "");
   ASSERT_NO_FATAL_FAILURE(UninstallApp("org.chromium.testapp"));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
+#endif  // defined(ADDRESS_SANITIZER)
 }
 
 TEST_F(IntegrationTest, KSAdminTaggedApp) {
+#if defined(ADDRESS_SANITIZER)
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "User->System launcher can't load macOS ASAN dylib.";
+  }
+#else
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(InstallApp("org.chromium.testapp"));
@@ -3835,6 +3854,7 @@ TEST_F(IntegrationTest, KSAdminTaggedApp) {
   ExpectKSAdminFetchTag(false, "org.chromium.testapp", {}, {}, "some-tag");
   ASSERT_NO_FATAL_FAILURE(UninstallApp("org.chromium.testapp"));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
+#endif  // defined(ADDRESS_SANITIZER)
 }
 
 #endif  // BUILDFLAG(IS_MAC)
@@ -3952,7 +3972,7 @@ TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
   UninstallUserUpdater();
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && !defined(ADDRESS_SANITIZER)
 
 class IntegrationTestKSAdminUserInSystem : public IntegrationTestUserInSystem {
  protected:
@@ -4241,7 +4261,7 @@ TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
                             {});
 }
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) && !defined(ADDRESS_SANITIZER)
 
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
