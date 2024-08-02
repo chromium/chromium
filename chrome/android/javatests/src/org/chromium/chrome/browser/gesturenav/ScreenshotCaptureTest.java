@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.graphics.Bitmap;
 import android.os.Build.VERSION_CODES;
 
@@ -30,10 +34,12 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
+import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -69,6 +75,8 @@ public class ScreenshotCaptureTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -121,6 +129,7 @@ public class ScreenshotCaptureTest {
         mMostVisitedSites.setTileSuggestions(mSiteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
         mScreenshotCaptureTestHelper = new ScreenshotCaptureTestHelper();
+        mHomepageTestRule.useChromeNtpForTest();
     }
 
     @After
@@ -328,5 +337,46 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));
         callbackHelper.waitForOnly();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testNavigateToNTPByHomeButton()
+            throws InterruptedException, IOException, TimeoutException {
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        int currentNavIndex =
+                mActivityTestRule
+                        .getActivity()
+                        .getCurrentWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getCurrentEntryIndex();
+
+        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(
+                new ScreenshotCaptureTestHelper.NavScreenshotCallback() {
+                    @Override
+                    public Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested) {
+                        Assert.assertEquals(
+                                "Should capture the screenshot of the previous page.",
+                                currentNavIndex,
+                                navIndex);
+                        Assert.assertTrue(requested);
+                        mCapturedBitmap = bitmap;
+                        callbackHelper.notifyCalled();
+                        return null;
+                    }
+                });
+
+        onView(withId(R.id.home_button)).perform(click());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+
+        // Expect to capture a screenshot of TEST_PAGE
+        callbackHelper.waitForOnly();
+        mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_to_ntp_by_home_button");
     }
 }
