@@ -422,17 +422,10 @@ void ShelfWidget::DelegateView::OnThemeChanged() {
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->ComputeShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
-  if (chromeos::features::IsJellyEnabled()) {
-    animating_background_.SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase));
-    animating_drag_handle_.SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
-  } else {
-    animating_background_.SetColor(
-        ShelfConfig::Get()->GetMaximizedShelfColor(GetWidget()));
-    animating_drag_handle_.SetColor(
-        GetColorProvider()->GetColor(kColorAshShelfHandleColor));
-  }
+  animating_background_.SetColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase));
+  animating_drag_handle_.SetColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {
@@ -1012,9 +1005,6 @@ void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
   }
   shelf_layout_manager_->SetDimmed(false);
   delegate_view_->UpdateDragHandle();
-  // Update drag handle's color on session state changes since the color mode
-  // might change on session state changes.
-  delegate_view_->drag_handle()->UpdateColor();
 }
 
 void ShelfWidget::OnUserSessionAdded(const AccountId& account_id) {

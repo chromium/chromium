@@ -72,8 +72,6 @@ class ASH_EXPORT DragHandle : public views::Button,
   // contextual nudge will remain visible while the gesture is in progress.
   void SetWindowDragFromShelfInProgress(bool gesture_in_progress);
 
-  void UpdateColor();
-
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;
   gfx::Rect GetAnchorBoundsInScreen() const override;

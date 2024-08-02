@@ -230,8 +230,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // bounds of the home button.
   gfx::Rect GetExpandableContainerClipRectToHomeButton();
 
-  const bool jelly_enabled_;
-
   base::ScopedObservation<QuickAppAccessModel, QuickAppAccessModel::Observer>
       quick_app_model_observation_{this};
 

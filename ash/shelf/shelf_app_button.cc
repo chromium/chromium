@@ -66,8 +66,6 @@ namespace {
 
 constexpr int kStatusIndicatorRadiusDip = 2;
 constexpr int kStatusIndicatorMaxSize = 10;
-constexpr int kStatusIndicatorActiveSize = 8;
-constexpr int kStatusIndicatorRunningSize = 4;
 constexpr int kStatusIndicatorActiveSizeJellyEnabled = 12;
 constexpr int kStatusIndicatorRunningSizeJellyEnabled = 6;
 constexpr int kStatusIndicatorThickness = 2;
@@ -233,8 +231,7 @@ class ShelfAppButton::AppStatusIndicatorView
   METADATA_HEADER(AppStatusIndicatorView, views::View)
 
  public:
-  AppStatusIndicatorView()
-      : jelly_enabled_(chromeos::features::IsJellyEnabled()) {
+  AppStatusIndicatorView() {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
     status_change_animation_ = std::make_unique<gfx::SlideAnimation>(this);
@@ -261,19 +258,12 @@ class ShelfAppButton::AppStatusIndicatorView
     }
 
     gfx::ScopedCanvas scoped(canvas);
-    if (!jelly_enabled_) {
-      canvas->SaveLayerAlpha(GetAlpha());
-    }
 
     const float dsf = canvas->UndoDeviceScaleFactor();
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
-    if (jelly_enabled_) {
-      flags.setColor(GetJellyColor());
-    } else {
-      flags.setColor(
-          GetColorProvider()->GetColor(kColorAshAppStateIndicatorColor));
-    }
+    flags.setColor(GetJellyColor());
+
     // Active and running indicators look a little different in the new UI.
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
@@ -299,21 +289,14 @@ class ShelfAppButton::AppStatusIndicatorView
   }
 
   float GetStrokeLength() {
-    bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-    int status_indicator_active_size =
-        is_jelly_enabled ? kStatusIndicatorActiveSizeJellyEnabled
-                         : kStatusIndicatorActiveSize;
-    int status_indicator_running_size =
-        is_jelly_enabled ? kStatusIndicatorRunningSizeJellyEnabled
-                         : kStatusIndicatorRunningSize;
-
     if (status_change_animation_->is_animating()) {
       return status_change_animation_->CurrentValueBetween(
-          status_indicator_running_size, status_indicator_active_size);
+          kStatusIndicatorRunningSizeJellyEnabled,
+          kStatusIndicatorActiveSizeJellyEnabled);
     }
 
-    return active_ ? status_indicator_active_size
-                   : status_indicator_running_size;
+    return active_ ? kStatusIndicatorActiveSizeJellyEnabled
+                   : kStatusIndicatorRunningSizeJellyEnabled;
   }
 
   SkColor GetJellyColor() {
@@ -405,7 +388,6 @@ class ShelfAppButton::AppStatusIndicatorView
       ShelfAppButtonAnimation::GetInstance()->RemoveObserver(this);
   }
 
-  const bool jelly_enabled_;
   bool show_attention_ = false;
   bool active_ = false;
   bool horizontal_shelf_ = true;
@@ -496,11 +478,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-  if (chromeos::features::IsJellyEnabled()) {
-    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
-  } else {
-    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-  }
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(

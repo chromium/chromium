@@ -441,33 +441,14 @@ SkColor ShelfConfig::GetShelfControlButtonColor(
     return is_in_app_ ? SK_ColorTRANSPARENT : GetDefaultShelfColor(widget);
   }
   return widget->GetColorProvider()->GetColor(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-          : kColorAshControlBackgroundColorInactive);
+      cros_tokens::kCrosSysSystemOnBase);
 }
 
 SkColor ShelfConfig::GetMaximizedShelfColor(const views::Widget* widget) const {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return SkColorSetA(GetDefaultShelfColor(widget), 0xFF);  // 100% opacity
-  }
   return widget->GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase);
 }
 
 ui::ColorId ShelfConfig::GetShelfBaseLayerColorId() const {
-  if (!chromeos::features::IsJellyEnabled()) {
-    if (!in_tablet_mode_) {
-      return kColorAshShieldAndBase80;
-    }
-
-    if (!is_in_app_) {
-      return kColorAshShieldAndBase60;
-    }
-
-    return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-               ? kColorAshShieldAndBase90
-               : kColorAshShieldAndBaseOpaque;
-  }
-
   if (in_tablet_mode_ && is_in_app_) {
     // In tablet mode with an app, we use the same opaque color as maximized.
     return cros_tokens::kCrosSysSystemBase;
