@@ -99,4 +99,17 @@ export abstract class PlatformHandler {
    * Returns MediaStream capturing the system audio.
    */
   abstract getSystemAudioMediaStream(): Promise<MediaStream>;
+
+  /**
+   * Returns the locale used to format various date/time string.
+   *
+   * The locale returned should be in the format that is compatible with the
+   * locales argument for `Intl`.
+   * (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locales_argument).
+   *
+   * Returns undefined to use the system locale from Chrome.
+   */
+  getLocale(): Intl.LocalesArgument {
+    return undefined;
+  }
 }

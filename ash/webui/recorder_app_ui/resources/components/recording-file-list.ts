@@ -27,6 +27,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {
@@ -142,6 +143,8 @@ export class RecordingFileList extends ReactiveLitElement {
 
   private readonly sortMenuOpened = signal(false);
 
+  private readonly platformHandler = usePlatformHandler();
+
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {
       d.recordingSortType = newSortType;
@@ -228,7 +231,10 @@ export class RecordingFileList extends ReactiveLitElement {
 
     for (const entry of entries) {
       const recordedAt = entry.recording.recordedAt;
-      let dateGroup = getMonthLabel(recordedAt);
+      let dateGroup = getMonthLabel(
+        this.platformHandler.getLocale(),
+        recordedAt,
+      );
       if (recordedAt >= today) {
         dateGroup = todayLabel;
       } else if (recordedAt >= yesterday) {

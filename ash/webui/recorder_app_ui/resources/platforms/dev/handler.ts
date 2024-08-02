@@ -442,4 +442,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     }
     return stream;
   }
+
+  override getLocale(): string|undefined {
+    // Always use en-US in dev mode, since mock for the main i18n also use en-US
+    // translations.
+    return 'en-US';
+  }
 }

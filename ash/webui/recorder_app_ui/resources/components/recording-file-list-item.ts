@@ -14,6 +14,7 @@ import {
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
@@ -154,7 +155,9 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
   searchHighlight: [number, number]|null = null;
 
-  menuShown = signal(false);
+  private readonly menuShown = signal(false);
+
+  private readonly platformHandler = usePlatformHandler();
 
   private onRecordingClick() {
     if (this.recording === null) {
@@ -249,8 +252,9 @@ export class RecordingFileListItem extends ReactiveLitElement {
       html`<div id="timeline"></div>`,
       html`<div id="timestamps">
         <span>
-          ${formatDate(recording.recordedAt)} •
-          ${formatTime(recording.recordedAt)}
+          ${formatDate(this.platformHandler.getLocale(), recording.recordedAt)}
+          •
+          ${formatTime(this.platformHandler.getLocale(), recording.recordedAt)}
         </span>
         <span>${recordingDurationDisplay}</span>
       </div>`,
