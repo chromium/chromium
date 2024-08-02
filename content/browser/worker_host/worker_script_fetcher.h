@@ -106,15 +106,13 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   //
   // Must be called on the UI thread.
   //
-  // - `ancestor_render_frame_host` points to the ancestor frame, if any. If
+  // - `ancestor_render_frame_host` points to the ancestor frame. If
   //   the worker being created is nested, then this is the ancestor of the
-  //   creator worker. Otherwise, this is the creator frame. May be nullptr.
-  //   For dedicated workers, `ancestor_render_frame_host` *should* always exist
-  //   though due to the fact that `DedicatedWorkerHost` lifetimes do not align
-  //   exactly with their parents (they are destroyed asynchronously via mojo),
-  //   the ancestor frame might have been destroyed when the fetch starts.
-  //   TODO(crbug.com/40054797): Amend the above comment once
-  //   `DedicatedWorkerHost` lifetimes align with their creators'.
+  //   creator worker. Otherwise, this is the creator frame. Cannot be nullptr.
+  //   For dedicated workers, when the lifetime of the `DedicatedWorkerHost`
+  //   does not exactly align with the parents, and they are destroyed
+  //   asynchronously via mojo by the time the fetch is about to start,
+  //   this method must not be called.
   // - `creator_render_frame_host` points to the creator frame, if any. May
   //   be nullptr if the worker being created is a nested dedicated worker.
   //   Since nested shared workers are not supported, for shared workers
@@ -128,7 +126,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const GURL& initial_request_url,
-      RenderFrameHostImpl* ancestor_render_frame_host,
+      RenderFrameHostImpl& ancestor_render_frame_host,
       RenderFrameHostImpl* creator_render_frame_host,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& request_initiator,
@@ -201,7 +199,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const GURL& initial_request_url,
-      RenderFrameHostImpl* ancestor_render_frame_host,
+      RenderFrameHostImpl& ancestor_render_frame_host,
       RenderFrameHostImpl* creator_render_frame_host,
       const net::IsolationInfo& trusted_isolation_info,
       network::mojom::ClientSecurityStatePtr client_security_state,

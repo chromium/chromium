@@ -325,7 +325,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       "loading", "WorkerScriptFetcher CreateAndStart", TRACE_ID_LOCAL(this));
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host_->GetID(), token_, script_url,
-      nearest_ancestor_render_frame_host, creator_render_frame_host,
+      *nearest_ancestor_render_frame_host, creator_render_frame_host,
       nearest_ancestor_render_frame_host->ComputeSiteForCookies(),
       creator_origin_, storage_key_,
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),

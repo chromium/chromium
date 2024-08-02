@@ -223,7 +223,7 @@ void WorkerScriptFetcher::CreateAndStart(
     int worker_process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     const GURL& initial_request_url,
-    RenderFrameHostImpl* ancestor_render_frame_host,
+    RenderFrameHostImpl& ancestor_render_frame_host,
     RenderFrameHostImpl* creator_render_frame_host,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& request_initiator,
@@ -306,7 +306,7 @@ void WorkerScriptFetcher::CreateAndStart(
   // To be used for the first party context check.
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      ancestor_render_frame_host->GetStorageKey().ToPartialNetIsolationInfo();
+      ancestor_render_frame_host.GetStorageKey().ToPartialNetIsolationInfo();
   resource_request->storage_access_api_status = storage_access_api_status;
 
   // For a classic worker script request:
@@ -349,7 +349,7 @@ void WorkerScriptFetcher::CreateAndStart(
   // shared workers, `ancestor_render_frame_host` and
   // `creator_render_frame_host` are always same.
   devtools_instrumentation::OnWorkerMainScriptRequestWillBeSent(
-      FrameTreeNode::From(ancestor_render_frame_host), devtools_worker_token,
+      ancestor_render_frame_host.frame_tree_node(), devtools_worker_token,
       *resource_request);
 
   WorkerScriptFetcher::CreateScriptLoader(
@@ -369,7 +369,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     int worker_process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     const GURL& initial_request_url,
-    RenderFrameHostImpl* ancestor_render_frame_host,
+    RenderFrameHostImpl& ancestor_render_frame_host,
     RenderFrameHostImpl* creator_render_frame_host,
     const net::IsolationInfo& trusted_isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
@@ -464,7 +464,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
             factory_process->GetID(), request_initiator, net::IsolationInfo(),
             source_id, &bypass_redirect_checks),
         devtools_instrumentation::WillCreateURLLoaderFactoryParams::
-            ForWorkerMainScript(devtools_agent_host, devtools_worker_token));
+            ForWorkerMainScript(devtools_agent_host, devtools_worker_token,
+                                ancestor_render_frame_host));
 
     factory_bundle_for_browser_info->set_bypass_redirect_checks(
         bypass_redirect_checks);
@@ -493,11 +494,6 @@ void WorkerScriptFetcher::CreateScriptLoader(
       base::BindRepeating(&ServiceWorkerContextWrapper::browser_context,
                           std::move(service_worker_context));
 
-  std::optional<GlobalRenderFrameHostId> ancestor_render_frame_host_id;
-  if (ancestor_render_frame_host) {
-    ancestor_render_frame_host_id = ancestor_render_frame_host->GetGlobalId();
-  }
-
   // This fetcher will delete itself. See the class level comment.
   auto* script_fetcher = new WorkerScriptFetcher(
       std::make_unique<WorkerScriptLoaderFactory>(
@@ -508,7 +504,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
       base::BindOnce(DidCreateScriptLoader, std::move(callback),
                      std::move(subresource_loader_factories),
                      std::move(client_security_state),
-                     std::move(ancestor_render_frame_host_id),
+                     ancestor_render_frame_host.GetGlobalId(),
                      initial_request_url));
   script_fetcher->Start(std::move(throttles));
 }
