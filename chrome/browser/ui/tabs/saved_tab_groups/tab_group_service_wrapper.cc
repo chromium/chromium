@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -32,6 +33,10 @@ namespace tab_groups {
 std::unique_ptr<TabGroupServiceWrapper> TabGroupServiceWrapper::GetForProfile(
     Profile* profile) {
   DCHECK(profile);
+
+  if (profile->IsOffTheRecord()) {
+    return nullptr;
+  }
 
   if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
     return std::make_unique<TabGroupServiceWrapper>(
