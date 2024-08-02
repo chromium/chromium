@@ -664,11 +664,13 @@ bool ServiceWorkerVersion::OnRequestTermination() {
     }
   }
 
-  will_warm_up_on_stopped_ =
-      will_be_terminated &&
+  static const bool kSpeculativeServiceWorkerWarmUpOnIdleTimeoutEnabled =
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
-      blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.Get() &&
+      blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.Get();
+  will_warm_up_on_stopped_ =
+      will_be_terminated &&
+      kSpeculativeServiceWorkerWarmUpOnIdleTimeoutEnabled &&
       scope_.SchemeIsHTTPOrHTTPS();
 
   if (will_be_terminated) {
@@ -2486,8 +2488,9 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
                                     : kStartNewWorkerTimeout;
 
   if (IsWarmedUp()) {
-    start_limit =
+    static const base::TimeDelta kStartLimit =
         blink::features::kSpeculativeServiceWorkerWarmUpDuration.Get();
+    start_limit = kStartLimit;
   }
 
   if (GetTickDuration(start_time_) > start_limit) {

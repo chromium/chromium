@@ -69,7 +69,7 @@ void AnchorElementObserverForServiceWorker::MaybeSendNavigationTargetLinks(
                "AnchorElementObserverForServiceWorker::"
                "MaybeSendNavigationTargetLinks");
 
-  const int kWarmUpRequestLimit =
+  static const int kWarmUpRequestLimit =
       features::kSpeculativeServiceWorkerWarmUpRequestLimit.Get();
 
   for (const auto& link : candidate_links) {
@@ -93,16 +93,22 @@ void AnchorElementObserverForServiceWorker::MaybeSendPendingWarmUpRequests() {
       "ServiceWorker",
       "AnchorElementObserverForServiceWorker::MaybeSendPendingWarmUpRequests");
 
-  if (features::kSpeculativeServiceWorkerWarmUpWaitForLoad.Get() &&
+  static const bool kSpeculativeServiceWorkerWarmUpWaitForLoad =
+      features::kSpeculativeServiceWorkerWarmUpWaitForLoad.Get();
+  if (kSpeculativeServiceWorkerWarmUpWaitForLoad &&
       !GetDocument().LoadEventFinished()) {
     return;
   }
 
   if (!pending_warm_up_links_.empty() && !batch_timer_.IsActive()) {
+    static const base::TimeDelta
+        kSpeculativeServiceWorkerWarmUpFirstBatchTimer =
+            features::kSpeculativeServiceWorkerWarmUpFirstBatchTimer.Get();
+    static const base::TimeDelta kSpeculativeServiceWorkerWarmUpBatchTimer =
+        features::kSpeculativeServiceWorkerWarmUpBatchTimer.Get();
     batch_timer_.StartOneShot(
-        is_first_batch_
-            ? features::kSpeculativeServiceWorkerWarmUpFirstBatchTimer.Get()
-            : features::kSpeculativeServiceWorkerWarmUpBatchTimer.Get(),
+        is_first_batch_ ? kSpeculativeServiceWorkerWarmUpFirstBatchTimer
+                        : kSpeculativeServiceWorkerWarmUpBatchTimer,
         FROM_HERE);
     is_first_batch_ = false;
   }
@@ -121,7 +127,7 @@ void AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests(
       "AnchorElementObserverForServiceWorker::SendPendingWarmUpRequests",
       "pending_link_count", pending_warm_up_links_.size());
 
-  const uint32_t kMaxBatchSize =
+  static const uint32_t kMaxBatchSize =
       features::kSpeculativeServiceWorkerWarmUpBatchSize.Get();
 
   const KURL& document_url = GetDocument().Url();

@@ -240,17 +240,21 @@ void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
     EmitDidAnchorElementReceiveMouseEvent(*this, event);
 
-    if (isConnected() && base::FeatureList::IsEnabled(
-                             features::kSpeculativeServiceWorkerWarmUp)) {
+    static const bool kSpeculativeServiceWorkerWarmUpIsEnabled =
+        base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp);
+    static const bool kSpeculativeServiceWorkerWarmUpOnPointerover =
+        features::kSpeculativeServiceWorkerWarmUpOnPointerover.Get();
+    static const bool kSpeculativeServiceWorkerWarmUpOnPointerdown =
+        features::kSpeculativeServiceWorkerWarmUpOnPointerdown.Get();
+    if (isConnected() && kSpeculativeServiceWorkerWarmUpIsEnabled) {
       Document& top_document = GetDocument().TopDocument();
       if (auto* observer =
               AnchorElementObserverForServiceWorker::From(top_document)) {
-        if (features::kSpeculativeServiceWorkerWarmUpOnPointerover.Get() &&
+        if (kSpeculativeServiceWorkerWarmUpOnPointerover &&
             (event.type() == event_type_names::kMouseover ||
              event.type() == event_type_names::kPointerover)) {
           observer->MaybeSendNavigationTargetLinks({this});
-        } else if (features::kSpeculativeServiceWorkerWarmUpOnPointerdown
-                       .Get() &&
+        } else if (kSpeculativeServiceWorkerWarmUpOnPointerdown &&
                    (event.type() == event_type_names::kMousedown ||
                     event.type() == event_type_names::kPointerdown ||
                     event.type() == event_type_names::kTouchstart)) {

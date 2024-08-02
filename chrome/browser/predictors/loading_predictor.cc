@@ -110,10 +110,12 @@ bool IsPreconnectExpensive() {
 }
 
 void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSpeculativeServiceWorkerWarmUp) ||
-      !blink::features::kSpeculativeServiceWorkerWarmUpFromLoadingPredictor
-           .Get()) {
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp) &&
+      blink::features::kSpeculativeServiceWorkerWarmUpFromLoadingPredictor
+          .Get();
+  if (!kEnabled) {
     return;
   }
 
@@ -286,11 +288,14 @@ bool LoadingPredictor::PrepareForPageLoad(
   // LCPP: set fonts to be prefetched to prefetch_requests.
   // TODO(crbug.com/40285959): make prefetch work for platforms without the
   // optimization guide.
-  if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
-      blink::features::kLCPPFontURLPredictorEnablePrefetch.Get() &&
+  static const bool kLCPPFontURLPredictorEnabled =
+      base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
+      blink::features::kLCPPFontURLPredictorEnablePrefetch.Get();
+  static const bool kLoadingPredictorPrefetchEnabled =
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
-          features::PrefetchSubresourceType::kAll) {
+          features::PrefetchSubresourceType::kAll;
+  if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
     std::optional<LcppStat> lcpp_stat =
         resource_prefetch_predictor()->GetLcppStat(initiator_origin, url);
     if (lcpp_stat) {
