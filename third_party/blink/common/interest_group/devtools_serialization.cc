@@ -297,6 +297,8 @@ base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
   SerializeIntoDict("buyerReportingId", ad.buyer_reporting_id, result);
   SerializeIntoDict("buyerAndSellerReportingId",
                     ad.buyer_and_seller_reporting_id, result);
+  SerializeIntoDict("selectableBuyerAndSellerReportingIds",
+                    ad.selectable_buyer_and_seller_reporting_ids, result);
   SerializeIntoDict("adRenderId", ad.ad_render_id, result);
   SerializeIntoDict("allowedReportingOrigins", ad.allowed_reporting_origins,
                     result);

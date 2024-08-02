@@ -899,6 +899,12 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
     if (ad->hasBuyerAndSellerReportingId()) {
       mojo_ad->buyer_and_seller_reporting_id = ad->buyerAndSellerReportingId();
     }
+    if (ad->hasSelectableBuyerAndSellerReportingIds() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kFledgeAuctionDealSupport)) {
+      mojo_ad->selectable_buyer_and_seller_reporting_ids =
+          ad->selectableBuyerAndSellerReportingIds();
+    }
     if (ad->hasMetadata()) {
       if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(

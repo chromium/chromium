@@ -311,31 +311,59 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithReportingIds) {
                                    /*size_group=*/std::nullopt);
   (*interest_group.ads)[0].buyer_reporting_id = "buyer_id_1";
   (*interest_group.ads)[0].buyer_and_seller_reporting_id = "both_id_1";
+  (*interest_group.ads)[0].selectable_buyer_and_seller_reporting_ids = {
+      "selectable_id1", "selectable_id2"};
   interest_group.ads->emplace_back(GURL(kUrl2),
                                    /*metadata=*/"[]",
                                    /*size_group=*/std::nullopt);
   (*interest_group.ads)[1].buyer_reporting_id = "buyer_id_2";
   (*interest_group.ads)[1].buyer_and_seller_reporting_id = "both_id_2";
+  (*interest_group.ads)[1].selectable_buyer_and_seller_reporting_ids = {
+      "selectable_id3", "selectable_id4"};
 
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
-TEST(InterestGroupMojomTraitsTest, AdComponentsWithReportingIdsInvalid) {
+TEST(InterestGroupMojomTraitsTest, AdComponentsWithBuyerReportingIdInvalid) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();
   interest_group.ad_components->emplace_back(GURL(kUrl1),
                                              /*metadata=*/std::nullopt,
                                              /*size_group=*/std::nullopt);
   (*interest_group.ad_components)[0].buyer_reporting_id = "buyer_id_1";
+  EXPECT_FALSE(interest_group.IsValid());
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     AdComponentsWithBuyerAndSellerReportingIdInvalid) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/std::nullopt,
+                                             /*size_group=*/std::nullopt);
   (*interest_group.ad_components)[0].buyer_and_seller_reporting_id =
       "both_id_1";
   EXPECT_FALSE(interest_group.IsValid());
+}
 
-  (*interest_group.ad_components)[0].buyer_reporting_id = std::nullopt;
+TEST(InterestGroupMojomTraitsTest,
+     AdComponentsWithSelectableReportingIdInvalid) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/std::nullopt,
+                                             /*size_group=*/std::nullopt);
+  (*interest_group.ad_components)[0].selectable_buyer_and_seller_reporting_ids =
+      {"selectable_id1", "selectable_id2"};
   EXPECT_FALSE(interest_group.IsValid());
+}
 
-  (*interest_group.ad_components)[0].buyer_and_seller_reporting_id =
-      std::nullopt;
+TEST(InterestGroupMojomTraitsTest, AdComponentsWithNoReportingIdsIsValid) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/std::nullopt,
+                                             /*size_group=*/std::nullopt);
   EXPECT_TRUE(interest_group.IsValid());
 }
 
@@ -376,6 +404,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithAdRenderId) {
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"foo");
   interest_group.ads->emplace_back(
       GURL(kUrl2),
@@ -383,6 +412,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithAdRenderId) {
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"bar");
   SerializeAndDeserializeAndCompare(interest_group);
 }
@@ -401,6 +431,7 @@ TEST(InterestGroupMojomTraitsTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt, allowed_reporting_origins_1);
   interest_group.ads->emplace_back(
       GURL(kUrl2),
@@ -408,6 +439,7 @@ TEST(InterestGroupMojomTraitsTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt, allowed_reporting_origins_2);
   SerializeAndDeserializeAndCompare(interest_group);
 }
@@ -461,12 +493,14 @@ TEST(InterestGroupMojomTraitsTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"foo");
   interest_group.ad_components->emplace_back(
       GURL(kUrl2), /*metadata=*/"[]",
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"bar");
   SerializeAndDeserializeAndCompare(interest_group);
 }

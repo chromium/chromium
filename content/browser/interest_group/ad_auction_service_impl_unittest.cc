@@ -805,7 +805,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFledgeNegativeTargeting,
-         blink::features::kFledgeRealTimeReporting},
+         blink::features::kFledgeRealTimeReporting,
+         blink::features::kFledgeAuctionDealSupport},
         /*disabled_features=*/{});
     fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
@@ -1302,6 +1303,7 @@ TEST_F(AdAuctionServiceImplTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt,
       /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
@@ -1336,6 +1338,7 @@ TEST_F(AdAuctionServiceImplTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt,
       /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
@@ -1541,6 +1544,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/"old_brid",
       /*buyer_and_seller_reporting_id=*/"old_shrid",
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"123abc",
       /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
@@ -1551,6 +1555,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"123def");
   interest_group.ad_components->emplace_back(std::move(ad_component));
   interest_group.ad_sizes.emplace();
@@ -2349,6 +2354,56 @@ TEST_F(AdAuctionServiceImplTest,
                 ->interest_group.trusted_bidding_signals_slot_size_mode,
             blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
                 kAllSlotsRequestedSizes);
+}
+
+class AdAuctionServiceImplTestDisabledDealSupport
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplTestDisabledDealSupport() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeAuctionDealSupport);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+// TODO (b/356654297) Test updating selectableBuyerAndSellerReportingIds, when
+// it is implemented.
+TEST_F(AdAuctionServiceImplTestDisabledDealSupport,
+       UpdateselectableBuyerAndSellerReportingIds) {
+  std::string kResponse = base::StringPrintf(
+      R"({
+            "ads": [{"renderURL": "https://example.com/render",
+            "buyerAndSellerReportingId": "updated_bsid",
+            "selectableBuyerAndSellerReportingIds": ["updated_id1", "updated_id2"] }]
+            })");
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt,
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/"bsid",
+      /*selectable_buyer_and_seller_reporting_ids*/ std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, kResponse);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+  const auto& group = groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(group.ads.value()[0].buyer_and_seller_reporting_id.has_value());
+  EXPECT_EQ(group.ads.value()[0].buyer_and_seller_reporting_id.value(),
+            "updated_bsid");
+  ASSERT_FALSE(group.ads.value()[0]
+                   .selectable_buyer_and_seller_reporting_ids.has_value());
 }
 
 TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
@@ -11301,17 +11356,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
               {{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
                 {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -11414,17 +11475,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
               {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
                 {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "789"}}})
           .Build(),
       test_origin_a.GetURL().Resolve("/example.html"));
   manager_->RecordInterestGroupWin(
@@ -11441,17 +11508,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
               {{{GURL("https://c.test/ad6.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat1"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat1"},
                 {GURL("https://c.test/ad7.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad8.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat2"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat2"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad9.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat3"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat3"}}})
           .SetPriority(1.0)
           .Build(),
       test_origin_a.GetURL().Resolve("/example.html"));
@@ -11463,17 +11536,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
               {{{GURL("https://b.test/ad6.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train1"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Train1"},
                 {GURL("https://b.test/ad7.html"), /*metadata=*/std::nullopt},
                 {GURL("https://b.test/ad8.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train2"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Train2"}}})
           .SetAdComponents(
               {{{GURL("https://b.test/ad9.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train3"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Train3"}}})
           .Build(),
       test_origin_b.GetURL().Resolve("/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -11523,7 +11602,9 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -11567,12 +11648,16 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
               {{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
                 {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -11620,7 +11705,9 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetAuctionServerRequestFlags(
               {blink::AuctionServerRequestFlagsEnum::kOmitAds})
           .Build(),
@@ -11671,7 +11758,9 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"please send",
                      /*size_group=*/"foo",
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetSizeGroups({{{"foo", {"bar"}}}})
           .SetAdSizes(
               {{{"bar",
@@ -11734,17 +11823,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
               {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
                 {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "789"}}})
           .Build(),
       test_origin_a.GetURL().Resolve("/example.html"));
   manager_->RecordInterestGroupWin(
@@ -11761,17 +11856,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
               {{{GURL("https://c.test/ad6.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat1"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat1"},
                 {GURL("https://c.test/ad7.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad8.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat2"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat2"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad9.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat3"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat3"}}})
           .SetPriority(1.0)
           .Build(),
       test_origin_a.GetURL().Resolve("/example.html"));
@@ -11783,17 +11884,23 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
               {{{GURL("https://b.test/ad6.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train1"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Train1"},
                 {GURL("https://b.test/ad7.html"), /*metadata=*/std::nullopt},
                 {GURL("https://b.test/ad8.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train2"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Train2"}}})
           .SetAdComponents(
               {{{GURL("https://b.test/ad9.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train3"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Train3"}}})
           .Build(),
       test_origin_b.GetURL().Resolve("/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -12184,17 +12291,23 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
               {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
                 {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -12212,17 +12325,23 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
               {{{GURL("https://c.test/ad6.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat1"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat1"},
                 {GURL("https://c.test/ad7.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad8.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat2"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat2"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad9.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat3"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat3"}}})
           .SetPriority(1.0)  // Set a higher priority so this one is first in
                              // the request.
           .Build(),
@@ -12304,17 +12423,23 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
               {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
                 {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
                 {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
           .SetAdComponents(
               {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
                  /*size_group=*/std::nullopt,
                  /*buyer_reporting_id=*/std::nullopt,
-                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   std::optional<AdAuctionDataAndId> result =
@@ -12336,7 +12461,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -12460,7 +12587,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -12549,7 +12678,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -12640,7 +12771,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -12778,7 +12911,9 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -12861,7 +12996,9 @@ TEST_F(AdAuctionServiceImplBAndATest,
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -12955,7 +13092,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -13045,7 +13184,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -13152,7 +13293,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -13281,7 +13424,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -13452,7 +13597,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -13624,7 +13771,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -13772,7 +13921,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14167,7 +14318,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14293,7 +14446,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14393,7 +14548,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14493,7 +14650,9 @@ function reportResult(auctionConfig, browserSignals) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14575,7 +14734,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunServerMultiSellerBAndAAuction) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14715,7 +14876,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithBid) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
@@ -14856,7 +15019,9 @@ TEST_F(AdAuctionServiceImplBAndAKAnonTest, RunBAndAAuctionWithKAnon) {
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));

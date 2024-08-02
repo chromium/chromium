@@ -467,6 +467,19 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       if (maybe_buyer_and_seller_reporting_id) {
         ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
       }
+      const base::Value::List* maybe_selectable_buyer_and_seller_reporting_ids =
+          ads_dict->FindList("selectableBuyerAndSellerReportingIds");
+      if (maybe_selectable_buyer_and_seller_reporting_ids &&
+          base::FeatureList::IsEnabled(
+              blink::features::kFledgeAuctionDealSupport)) {
+        std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
+        for (const auto& id :
+             *maybe_selectable_buyer_and_seller_reporting_ids) {
+          selectable_buyer_and_seller_reporting_ids.push_back(id.GetString());
+        }
+        ad.selectable_buyer_and_seller_reporting_ids =
+            std::move(selectable_buyer_and_seller_reporting_ids);
+      }
       const base::Value::List* maybe_allowed_reporting_origins =
           ads_dict->FindList("allowedReportingOrigins");
       if (maybe_allowed_reporting_origins) {

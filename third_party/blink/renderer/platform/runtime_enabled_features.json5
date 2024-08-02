@@ -1900,6 +1900,10 @@
       public: true,
     },
     {
+      // Enables deal support within auctions.
+      name: "FledgeAuctionDealSupport",
+    },
+    {
       name: "FledgeBiddingAndAuctionServerAPI",
       origin_trial_feature_name: "FledgeBiddingAndAuctionServer",
       origin_trial_allows_third_party: true,

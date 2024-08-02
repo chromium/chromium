@@ -58,6 +58,7 @@ scoped_refptr<StorageInterestGroups> CreateInterestGroups(url::Origin owner) {
                      /*size_group=*/std::nullopt,
                      /*buyer_reporting_id=*/std::nullopt,
                      /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
                      /*ad_render_id=*/base::NumberToString(i));
   }
   std::vector<StorageInterestGroup> groups;

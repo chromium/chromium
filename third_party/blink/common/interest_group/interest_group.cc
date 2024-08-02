@@ -97,12 +97,16 @@ InterestGroup::Ad::Ad(
     std::optional<std::string> size_group,
     std::optional<std::string> buyer_reporting_id,
     std::optional<std::string> buyer_and_seller_reporting_id,
+    std::optional<std::vector<std::string>>
+        selectable_buyer_and_seller_reporting_ids,
     std::optional<std::string> ad_render_id,
     std::optional<std::vector<url::Origin>> allowed_reporting_origins)
     : size_group(std::move(size_group)),
       metadata(std::move(metadata)),
       buyer_reporting_id(std::move(buyer_reporting_id)),
       buyer_and_seller_reporting_id(std::move(buyer_and_seller_reporting_id)),
+      selectable_buyer_and_seller_reporting_ids(
+          std::move(selectable_buyer_and_seller_reporting_ids)),
       ad_render_id(std::move(ad_render_id)),
       allowed_reporting_origins(std::move(allowed_reporting_origins)) {
   if (render_gurl.is_valid()) {
@@ -127,6 +131,11 @@ size_t InterestGroup::Ad::EstimateSize() const {
   if (buyer_and_seller_reporting_id) {
     size += buyer_and_seller_reporting_id->size();
   }
+  if (selectable_buyer_and_seller_reporting_ids) {
+    for (auto& id : *selectable_buyer_and_seller_reporting_ids) {
+      size += id.size();
+    }
+  }
   if (ad_render_id) {
     size += ad_render_id->size();
   }
@@ -140,10 +149,12 @@ size_t InterestGroup::Ad::EstimateSize() const {
 
 bool InterestGroup::Ad::operator==(const Ad& other) const {
   return std::tie(render_url_, size_group, metadata, buyer_reporting_id,
-                  buyer_and_seller_reporting_id, ad_render_id,
+                  buyer_and_seller_reporting_id,
+                  selectable_buyer_and_seller_reporting_ids, ad_render_id,
                   allowed_reporting_origins) ==
          std::tie(other.render_url_, other.size_group, other.metadata,
                   other.buyer_reporting_id, other.buyer_and_seller_reporting_id,
+                  other.selectable_buyer_and_seller_reporting_ids,
                   other.ad_render_id, other.allowed_reporting_origins);
 }
 
@@ -291,6 +302,7 @@ bool InterestGroup::IsValid() const {
       }
       // These shouldn't be in components array.
       if (ad.buyer_reporting_id || ad.buyer_and_seller_reporting_id ||
+          ad.selectable_buyer_and_seller_reporting_ids ||
           ad.allowed_reporting_origins) {
         return false;
       }
@@ -542,6 +554,7 @@ std::string DEPRECATED_KAnonKeyForAdNameReporting(
   std::string middle = base::StrCat({group.owner.GetURL().spec(), "\n",
                                      group.bidding_url.value_or(GURL()).spec(),
                                      "\n", ad.render_url(), "\n"});
+  //  TODO (b/356654297) configure to work with Deal support.
   if (ad.buyer_and_seller_reporting_id.has_value()) {
     return base::StrCat({kKAnonKeyForAdNameReportingBuyerAndSellerIdPrefix,
                          middle, *ad.buyer_and_seller_reporting_id});

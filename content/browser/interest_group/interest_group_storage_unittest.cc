@@ -162,7 +162,10 @@ class InterestGroupStorageTest : public testing::Test {
             .SetAds(std::vector<InterestGroup::Ad>{
                 blink::InterestGroup::Ad(
                     GURL("https://full.example.com/ad1"), "metadata1",
-                    "group_1", "buyer_id", "shared_id", "adRenderId",
+                    "group_1", "buyer_id", "shared_id",
+                    std::vector<std::string>{"selectable_id1",
+                                             "selectable_id2"},
+                    "adRenderId",
                     std::vector<url::Origin>{
                         url::Origin::Create(GURL("https://reporting.com"))}),
                 blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
@@ -172,6 +175,7 @@ class InterestGroupStorageTest : public testing::Test {
                     GURL("https://full.example.com/adcomponent1"), "metadata1c",
                     "group_1", /*buyer_reporting_id=*/std::nullopt,
                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                    /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
                     "adRenderId2"),
                 blink::InterestGroup::Ad(
                     GURL("https://full.example.com/adcomponent2"), "metadata2c",
@@ -234,7 +238,9 @@ class InterestGroupStorageTest : public testing::Test {
     update.ads = full.ads;
     update.ads->emplace_back(
         GURL("https://full.example.com/ad3"), "metadata3", "group_3",
-        "new_buyer_id", "another_share_id", "adRenderId3",
+        "new_buyer_id", "another_share_id",
+        std::vector<std::string>{"new_selectable_id1", "new_selectable_id2"},
+        "adRenderId3",
         std::vector<url::Origin>{
             url::Origin::Create(GURL("https://reporting.updated.com"))});
     update.ad_components = full.ad_components;
@@ -415,10 +421,13 @@ TEST_F(InterestGroupStorageTest, GetGroupDoesNotReturnOutdatedKanonKeys) {
   blink::InterestGroupKey group_key(g.owner, g.name);
   std::vector<InterestGroup::Ad> ads;
   std::vector<InterestGroup::Ad> ad_components;
-  ads.emplace_back(ad1_url, "metadata1",
-                   /*size_group=*/std::nullopt,
-                   /*buyer_reporting_id=*/"brid1",
-                   /*buyer_and_seller_reporting_id=*/"shrid1");
+  ads.emplace_back(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
   ads.emplace_back(ad2_url, "metadata2",
                    /*size_group=*/std::nullopt,
                    /*buyer_reporting_id=*/"brid2",
@@ -485,10 +494,13 @@ TEST_F(InterestGroupStorageTest,
   blink::InterestGroupKey group_key(g.owner, g.name);
   std::vector<InterestGroup::Ad> ads;
   std::vector<InterestGroup::Ad> ad_components;
-  ads.emplace_back(ad1_url, "metadata1",
-                   /*size_group=*/std::nullopt,
-                   /*buyer_reporting_id=*/"brid1",
-                   /*buyer_and_seller_reporting_id=*/"shrid1");
+  ads.emplace_back(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
   ads.emplace_back(ad2_url, "metadata2",
                    /*size_group=*/std::nullopt,
                    /*buyer_reporting_id=*/"brid2",
@@ -1191,6 +1203,8 @@ TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
 }
 
+//  TODO (b/356654297) Add tests for selectableBuyerAndSellerReportingIds,
+//    when k-anon is implemented.
 TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
   url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
@@ -1200,10 +1214,13 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 
   InterestGroup g = NewInterestGroup(test_origin, "name");
   g.ads.emplace();
-  g.ads->emplace_back(ad1_url, "metadata1",
-                      /*size_group=*/std::nullopt,
-                      /*buyer_reporting_id=*/"brid1",
-                      /*buyer_and_seller_reporting_id=*/"shrid1");
+  g.ads->emplace_back(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
   g.ads->emplace_back(ad2_url, "metadata2",
                       /*size_group=*/std::nullopt,
                       /*buyer_reporting_id=*/"brid2",
