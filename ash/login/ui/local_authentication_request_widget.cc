@@ -74,7 +74,7 @@ void LocalAuthenticationRequestWidget::Show(
     LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,
     const std::u16string& description,
-    LocalAuthenticationRequestView::Delegate* delegate,
+    base::WeakPtr<LocalAuthenticationRequestView::Delegate> delegate,
     std::unique_ptr<UserContext> user_context) {
   CHECK(!g_instance);
 
@@ -126,7 +126,7 @@ LocalAuthenticationRequestWidget::LocalAuthenticationRequestWidget(
     LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,
     const std::u16string& description,
-    LocalAuthenticationRequestView::Delegate* delegate,
+    base::WeakPtr<LocalAuthenticationRequestView::Delegate> delegate,
     std::unique_ptr<UserContext> user_context)
     : local_authentication_callback_(std::move(local_authentication_callback)) {
   // Using window frameless to be able to get focus on the view input fields,

@@ -133,7 +133,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,
     const std::u16string& description,
-    Delegate* delegate,
+    base::WeakPtr<Delegate> delegate,
     std::unique_ptr<UserContext> user_context)
     : local_authentication_callback_(std::move(local_authentication_callback)),
       delegate_(delegate),

@@ -62,7 +62,7 @@ bool LocalAuthenticationRequestControllerImpl::ShowWidget(
       std::move(local_authentication_callback),
       l10n_util::GetStringUTF16(
           IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_TITLE),
-      desc, this, std::move(user_context));
+      desc, weak_factory_.GetWeakPtr(), std::move(user_context));
   return true;
 }
 
