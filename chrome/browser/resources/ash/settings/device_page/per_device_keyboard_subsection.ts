@@ -245,7 +245,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
               ?.hasAmbientLightSensor;
 
-      if (this.hasKeyboardBacklight && this.hasAmbientLightSensor) {
+      if (this.hasKeyboardBacklight) {
         const crSlider = this.shadowRoot!
                              .querySelector<SettingsSliderElement>(
                                  '#keyboardBrightnessSlider')!.shadowRoot!
