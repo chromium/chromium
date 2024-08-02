@@ -623,7 +623,8 @@ class ComputedStyle final : public ComputedStyleBase {
       return true;
     }
     return OutlineWidthInternal() == other.OutlineWidthInternal() &&
-           OutlineColor() == other.OutlineColor() &&
+           ResolvedColor(OutlineColor()) ==
+               other.ResolvedColor(other.OutlineColor()) &&
            OutlineStyle() == other.OutlineStyle() &&
            OutlineOffset() == other.OutlineOffset() &&
            OutlineStyleIsAuto() == other.OutlineStyleIsAuto();

@@ -1175,7 +1175,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["accent-color", "background-current-color", "border-visual", "color"],
+      invalidate: ["accent-color", "background-current-color", "border-visual", "color", "outline"],
     },
     {
       name: "direction",
