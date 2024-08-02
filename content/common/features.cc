@@ -24,6 +24,11 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Adds OOPIF support for android drag and drop.
+BASE_FEATURE(kAndroidDragDropOopif,
+             "AndroidDragDropOopif",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.

@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -167,17 +169,28 @@ class WebContentsViewAndroid : public WebContentsView,
   WebContentsImpl* web_contents() { return web_contents_; }
 
  private:
-  void OnDragEntered(const std::vector<DropData::Metadata>& metadata,
-                     const gfx::PointF& location,
+  void OnDragEntered(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
+  void DragEnteredCallback(const gfx::PointF& location,
+                           const gfx::PointF& screen_location,
+                           base::WeakPtr<RenderWidgetHostViewBase> target);
   void OnDragUpdated(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
+  void DragUpdatedCallback(const gfx::PointF& location,
+                           const gfx::PointF& screen_location,
+                           base::WeakPtr<RenderWidgetHostViewBase> target,
+                           std::optional<gfx::PointF> transformed_pt);
   void OnDragExited();
-  void OnPerformDrop(DropData* drop_data,
+  void OnPerformDrop(std::unique_ptr<DropData> drop_data,
                      const gfx::PointF& location,
                      const gfx::PointF& screen_location);
+  void PerformDropCallback(std::unique_ptr<DropData> drop_data,
+                           const gfx::PointF& location,
+                           const gfx::PointF& screen_location,
+                           base::WeakPtr<RenderWidgetHostViewBase> target,
+                           std::optional<gfx::PointF> transformed_pt);
   void OnDragEnded();
-  void OnSystemDragEnded();
+  void OnSystemDragEnded(RenderWidgetHost* source_rwh);
 
   SelectPopup* GetSelectPopup();
 
@@ -227,6 +240,15 @@ class WebContentsViewAndroid : public WebContentsView,
   // Show/hide popup UI for <select> tag.
   std::unique_ptr<SelectPopup> select_popup_;
 
+  // base::FeatureList::IsEnabled(features::kAndroidDragDropOopif).
+  bool drag_drop_oopif_enabled_ = false;
+  // Metadata for the current drag.
+  std::vector<DropData::Metadata> drag_metadata_;
+  // We keep track of the RenderWidgetHost we're dragging over. If it changes
+  // during a drag, we need to re-send the DragEnter message.
+  base::WeakPtr<RenderWidgetHostImpl> current_rwh_for_drag_;
+  // Holds the security info for the current drag.
+  WebContentsViewDragSecurityInfo drag_security_info_;
   // Whether drag went beyond the movement threshold to be considered as an
   // intentional drag. If true, ::ShowContextMenu will be ignored.
   bool drag_exceeded_movement_threshold_ = false;
@@ -246,6 +268,8 @@ class WebContentsViewAndroid : public WebContentsView,
   // Manages the animation during a session history navigation.
   std::unique_ptr<BackForwardTransitionAnimationManagerAndroid>
       back_forward_animation_manager_;
+
+  base::WeakPtrFactory<WebContentsViewAndroid> weak_ptr_factory_{this};
 };
 
 } // namespace content
