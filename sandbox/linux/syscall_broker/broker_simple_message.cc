@@ -24,6 +24,16 @@
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 
+// Macro for suppressing clang's warning about variable-length arrays.
+// For some reason the formatter gives very silly results here.
+// clang-format off
+#define ALLOW_VLA(line)                                 \
+  _Pragma("GCC diagnostic push")                        \
+  _Pragma("GCC diagnostic ignored \"-Wvla-extension\"") \
+  line                                                  \
+  _Pragma("GCC diagnostic pop")
+// clang-format on
+
 namespace sandbox {
 
 namespace syscall_broker {
@@ -52,7 +62,10 @@ ssize_t BrokerSimpleMessage::SendRecvMsgWithFlagsMultipleFds(
   if (!base::CreateSocketPair(&recv_sock, &send_sock))
     return -1;
 
-  int send_fds_with_reply_socket[base::UnixDomainSocket::kMaxFileDescriptors];
+  // The length of this array is actually hardcoded, but the compiler isn't
+  // smart enough to figure that out.
+  ALLOW_VLA(int send_fds_with_reply_socket
+                [base::UnixDomainSocket::kMaxFileDescriptors];)
   send_fds_with_reply_socket[0] = send_sock.get();
   for (size_t i = 0; i < send_fds.size(); i++) {
     send_fds_with_reply_socket[i + 1] = send_fds[i];
@@ -95,7 +108,9 @@ bool BrokerSimpleMessage::SendMsgMultipleFds(int fd,
   msg.msg_iovlen = 1;
 
   const unsigned control_len = CMSG_SPACE(send_fds.size() * sizeof(int));
-  char control_buffer[control_len];
+  // The RAW_CHECK above ensures that send_fds.size() is bounded by a constant,
+  // so the length of this array is bounded as well.
+  ALLOW_VLA(char control_buffer[control_len];)
   if (send_fds.size() >= 1) {
     struct cmsghdr* cmsg;
     msg.msg_control = control_buffer;
@@ -151,7 +166,9 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlagsMultipleFds(
       CMSG_SPACE(sizeof(fd) * base::UnixDomainSocket::kMaxFileDescriptors) +
       CMSG_SPACE(sizeof(struct ucred));
 
-  char control_buffer[kControlBufferSize];
+  // The length of this array is actually a constant, but the compiler isn't
+  // smart enough to figure that out.
+  ALLOW_VLA(char control_buffer[kControlBufferSize];)
   msg.msg_control = control_buffer;
   msg.msg_controllen = sizeof(control_buffer);
 

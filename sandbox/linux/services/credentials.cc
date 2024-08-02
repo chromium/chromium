@@ -83,7 +83,13 @@ bool ChrootToSafeEmptyDir() {
   // /proc/tid directory for the thread (since /proc may not be aware of the
   // PID namespace). With a process, we can just use /proc/self.
   pid_t pid = -1;
+
+  // We can't allocate on the heap here, but PTHREAD_STACK_MIN might be
+  // dynamically defined, so we need to use a variable-length array here
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvla-extension"
   alignas(16) char stack_buf[PTHREAD_STACK_MIN];
+
 #if defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY) || \
     defined(ARCH_CPU_MIPS_FAMILY)
   // The stack grows downward.
@@ -110,6 +116,7 @@ bool ChrootToSafeEmptyDir() {
   memset(tls_buf, 0, PTHREAD_STACK_MIN);
   tls = tls_buf;
 #endif
+#pragma clang diagnostic pop  // "-Wvla-extension"
 
   pid = clone(ChrootToSelfFdinfo, stack, clone_flags, nullptr, nullptr, tls,
               nullptr);

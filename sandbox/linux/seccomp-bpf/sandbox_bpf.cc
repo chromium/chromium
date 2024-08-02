@@ -240,7 +240,12 @@ void SandboxBPF::InstallFilter(bool must_sync_threads, bool enable_ibpb) {
   // in system calls to things like munmap() or brk().
   CodeGen::Program program = AssembleFilter();
 
+// Silence clang's warning about allocating on the stack because we have no
+// other choice.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvla-extension"
   struct sock_filter bpf[program.size()];
+#pragma clang diagnostic pop
   const struct sock_fprog prog = {static_cast<unsigned short>(program.size()),
                                   bpf};
   memcpy(bpf, &program[0], sizeof(bpf));
