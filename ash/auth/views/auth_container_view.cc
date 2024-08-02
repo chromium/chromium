@@ -269,6 +269,13 @@ bool AuthContainerView::HasPin() const {
   return available_auth_factors_.Has(AuthInputType::kPin);
 }
 
+void AuthContainerView::SetInputEnabled(bool enabled) {
+  SetEnabled(enabled);
+  pin_container_->SetInputEnabled(enabled);
+  password_view_->SetInputEnabled(enabled);
+  switch_button_->SetEnabled(enabled);
+}
+
 void AuthContainerView::UpdateAuthInput() {
   // If necessary change to the available factor
   if (current_input_type_ == AuthInputType::kPassword && !HasPassword()) {

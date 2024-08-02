@@ -95,6 +95,15 @@ class ASH_EXPORT AuthContainerView : public views::View {
   void SetHasPin(bool has_pin);
   bool HasPin() const;
 
+  // Enables or disables the following UI elements:
+  // - View
+  // - Password input
+  // - PIN container
+  // - Switch button
+  // No "Get" function is needed since the state is the same as
+  // the GetEnabled return value.
+  void SetInputEnabled(bool enabled);
+
   // Actions:
   void ToggleCurrentAuthType();
   void PinSubmit(const std::u16string& pin) const;
