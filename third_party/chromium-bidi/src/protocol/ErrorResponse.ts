@@ -17,12 +17,14 @@
 import type {ErrorResponse} from './generated/webdriver-bidi.js';
 import {ErrorCode} from './generated/webdriver-bidi.js';
 
-export class Exception {
+export class Exception extends Error {
   constructor(
     public error: ErrorCode,
-    public message: string,
+    public override message: string,
     public stacktrace?: string
-  ) {}
+  ) {
+    super();
+  }
 
   toErrorResponse(commandId: number): ErrorResponse {
     return {

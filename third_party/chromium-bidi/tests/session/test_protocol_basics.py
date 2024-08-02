@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import pytest
+from anys import ANY_STR
 from test_helpers import (execute_command, json, read_JSON_message,
                           send_JSON_command)
 
@@ -52,8 +53,9 @@ async def test_invalid_json(websocket):
     assert resp == {
         "type": "error",
         "error": "invalid argument",
-        "message": "Cannot parse data as JSON"
+        "message": ANY_STR
     }
+    assert "Cannot parse data as JSON" in resp['message']
 
 
 @pytest.mark.asyncio

@@ -150,7 +150,7 @@ export class SubscriptionManager {
             ? Math.min(priority, cdpPriority)
             : // At this point we know that we have subscribed
               // to only one of the two
-              priority ?? cdpPriority;
+              (priority ?? cdpPriority);
         }
         return priority;
       })

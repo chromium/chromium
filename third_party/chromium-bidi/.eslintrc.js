@@ -126,6 +126,7 @@ module.exports = {
         '@typescript-eslint/no-misused-promises': 'off',
         '@typescript-eslint/no-namespace': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unnecessary-template-expression': 'error',
         '@typescript-eslint/no-unsafe-argument': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',
@@ -136,19 +137,27 @@ module.exports = {
           'error',
           {argsIgnorePattern: '^_'},
         ],
-        '@typescript-eslint/no-useless-template-literals': 'error',
         '@typescript-eslint/prefer-return-this-type': 'warn',
         '@typescript-eslint/require-await': 'warn',
         '@typescript-eslint/restrict-template-expressions': 'off',
         // This is more performant; see https://v8.dev/blog/fast-async.
         '@typescript-eslint/return-await': ['error', 'always'],
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
+
         // keep-sorted end
       },
     },
     {
       // Disable rules for non production code
-      files: ['*.spec.ts', './src/bidiServer/*'],
+      files: ['*.spec.ts'],
+      rules: {
+        'import/no-extraneous-dependencies': 'off',
+        '@typescript-eslint/no-unused-expressions': 'off',
+      },
+    },
+    {
+      // Disable rules for non production code
+      files: ['./src/bidiServer/*'],
       rules: {
         'import/no-extraneous-dependencies': 'off',
       },

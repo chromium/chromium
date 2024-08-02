@@ -284,6 +284,7 @@ export class CdpTarget {
         this.toggleFetchIfNeeded(),
       ]);
     } catch (err) {
+      this.#logger?.(LogType.debugError, err);
       this.#networkDomainEnabled = !enabled;
     }
   }

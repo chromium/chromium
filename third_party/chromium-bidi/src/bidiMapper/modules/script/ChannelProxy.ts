@@ -188,7 +188,9 @@ export class ChannelProxy {
         );
 
         if (message.exceptionDetails) {
-          throw message.exceptionDetails;
+          throw new Error('Runtime.callFunctionOn in ChannelProxy', {
+            cause: message.exceptionDetails,
+          });
         }
 
         for (const browsingContext of realm.associatedBrowsingContexts) {

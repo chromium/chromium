@@ -15,6 +15,13 @@
  * limitations under the License.
  */
 
+function bytesToHex(bytes: Uint8Array) {
+  return bytes.reduce(
+    (str, byte) => str + byte.toString(16).padStart(2, '0'),
+    ''
+  );
+}
+
 /**
  * Generates a random v4 UUID, as specified in RFC4122.
  *
@@ -36,23 +43,20 @@ export function uuidv4(): `${string}-${string}-${string}-${string}-${string}` {
   const randomValues = new Uint8Array(16);
 
   if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
-    // Node with
+    // Node (>=18) with
     // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
     // browser.
     globalThis.crypto.getRandomValues(randomValues);
   } else {
-    // Node without
+    // Node (<=16) without
     // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
     require('crypto').webcrypto.getRandomValues(randomValues);
   }
 
   // Set version (4) and variant (RFC4122) bits.
   randomValues[6] = (randomValues[6]! & 0x0f) | 0x40;
   randomValues[8] = (randomValues[8]! & 0x3f) | 0x80;
-
-  const bytesToHex = (bytes: Uint8Array) =>
-    bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
 
   return [
     bytesToHex(randomValues.subarray(0, 4)),

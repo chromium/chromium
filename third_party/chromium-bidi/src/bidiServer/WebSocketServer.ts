@@ -270,12 +270,12 @@ export class WebSocketServer {
       let parsedCommandData: {id: number; method: string; params?: any};
       try {
         parsedCommandData = JSON.parse(plainCommandData);
-      } catch (e) {
+      } catch (error) {
         this.#respondWithError(
           connection,
           {},
           ErrorCode.InvalidArgument,
-          `Cannot parse data as JSON`
+          `Cannot parse data as JSON, ${error}`
         );
         return;
       }
