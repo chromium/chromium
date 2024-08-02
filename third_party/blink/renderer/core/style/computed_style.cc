@@ -1144,11 +1144,14 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
   }
 
   if (field_diff & kBackgroundCurrentColor) {
-    // If the background image depends on currentColor
-    // (e.g., background-image: linear-gradient(currentColor, #fff)), and the
-    // color has changed, we need to recompute it even though VisuallyEqual()
+    // If the background-image or background-color depends on currentColor
+    // (e.g., background-image: linear-gradient(currentColor, #fff) or
+    // background-color: color-mix(in srgb, currentcolor ...)), and the color
+    // has changed, we need to recompute it even though VisuallyEqual()
     // thinks the old and new background styles are identical.
-    if (BackgroundInternal().AnyLayerUsesCurrentColor() &&
+    if ((BackgroundInternal().AnyLayerUsesCurrentColor() ||
+         BackgroundColor().IsUnresolvedColorMixFunction() ||
+         InternalVisitedBackgroundColor().IsUnresolvedColorMixFunction()) &&
         (GetCurrentColor() != other.GetCurrentColor() ||
          GetInternalVisitedCurrentColor() !=
              other.GetInternalVisitedCurrentColor())) {
