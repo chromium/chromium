@@ -512,8 +512,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   // Check if the supervised user is allowed to install extensions in the legacy
   // flow. NOTE: we do not block themes.
   if (!dummy_extension_->is_theme()) {
-    if (supervised_user::AreExtensionsPermissionsEnabled(
-            *profile_->GetPrefs()) &&
+    if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
         !supervised_user::
             IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
       SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
@@ -671,8 +670,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 bool WebstorePrivateBeginInstallWithManifest3Function::
     PromptForParentApproval() {
-  DCHECK(
-      supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs()));
+  DCHECK(supervised_user::AreExtensionsPermissionsEnabled(profile_));
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     // The browser window has gone away.
@@ -734,8 +732,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
       if (!dummy_extension_->is_theme()  // Parent permission not required for
                                          // theme installation
           && g_browser_process->profile_manager()->IsValidProfile(profile_) &&
-          supervised_user::AreExtensionsPermissionsEnabled(
-              *profile_->GetPrefs()) &&
+          supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
           !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
               *profile_->GetPrefs())) {
         if (PromptForParentApproval()) {
@@ -896,8 +893,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
 
   if (!dummy_extension_->is_theme()) {
     const bool requires_parent_permission =
-        supervised_user::AreExtensionsPermissionsEnabled(
-            *profile_->GetPrefs()) &&
+        supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
         !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
             *profile_->GetPrefs());
 
@@ -908,8 +904,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     // Record metrics for supervised users that are in "Skip parent approval"-mode
     // and use the Extension install dialog (that is used by non-supervised
     // users).
-    if (supervised_user::AreExtensionsPermissionsEnabled(
-            *profile_->GetPrefs())) {
+    if (supervised_user::AreExtensionsPermissionsEnabled(profile_)) {
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
     }
     if (requires_parent_permission) {
@@ -1193,7 +1188,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* profile = Profile::FromBrowserContext(browser_context());
-  if (!supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())) {
+  if (!supervised_user::AreExtensionsPermissionsEnabled(profile)) {
     return RespondNow(BuildResponse(false));
   }
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());

@@ -33,11 +33,6 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service);
 // `IsPrimaryAccountSubjectToParentalControls`.
 bool IsSubjectToParentalControls(const PrefService& pref_service);
 
-// Returns true if the extensions permissions parental control is enabled
-// for supervised users.
-// Returns false if the user is not supervised.
-bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
-
 // Returns true if the extension handling mode for skipping parent approval is
 // enabled and the parent has authorized installing extensions without their
 // approval.

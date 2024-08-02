@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
@@ -111,7 +112,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
           supervised_user::
               kExposedParentalControlNeededForExtensionInstallation) &&
       !registry->GetInstalledExtension(extension_id) &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) &&
+      supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
           *profile->GetPrefs()) &&
       !base::Contains(profile->GetPrefs()->GetDict(

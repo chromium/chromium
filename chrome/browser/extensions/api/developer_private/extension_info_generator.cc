@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/chrome_features.h"
@@ -624,7 +625,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   bool permissions_increase =
       (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE) != 0;
   info->disable_reasons.parent_disabled_permissions =
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) &&
+      supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::
           IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
       !profile->GetPrefs()->GetBoolean(

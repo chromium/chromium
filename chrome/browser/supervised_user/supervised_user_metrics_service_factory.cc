@@ -64,7 +64,7 @@ KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   extensions_metrics_delegate =
       std::make_unique<SupervisedUserExtensionsMetricsDelegateImpl>(
-          extensions::ExtensionRegistry::Get(profile), *profile->GetPrefs());
+          extensions::ExtensionRegistry::Get(profile), profile);
   CHECK(extensions_metrics_delegate);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

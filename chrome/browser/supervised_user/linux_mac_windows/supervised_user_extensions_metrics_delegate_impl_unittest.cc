@@ -64,8 +64,7 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
             profile()->GetPrefs(), GetURLFilter(),
             std::make_unique<SupervisedUserExtensionsMetricsDelegateImpl>(
-                extensions::ExtensionRegistry::Get(profile()),
-                *profile()->GetPrefs()));
+                extensions::ExtensionRegistry::Get(profile()), profile()));
     CHECK(supervised_user_metrics_service_);
   }
 

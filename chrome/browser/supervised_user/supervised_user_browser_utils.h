@@ -20,6 +20,11 @@ namespace supervised_user {
 // Webstore or Download url.
 bool IsSupportedChromeExtensionURL(const GURL& effective_url);
 
+// Returns true if the extensions permissions parental control is enabled
+// for supervised users.
+// Returns false if the user is not supervised.
+bool AreExtensionsPermissionsEnabled(Profile* profile);
+
 // Returns true if the parent allowlist should be skipped.
 bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents);
 

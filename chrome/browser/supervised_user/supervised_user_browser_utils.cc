@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+
 #include <string>
 
 #include "base/check.h"
@@ -67,6 +68,20 @@ bool IsSupportedChromeExtensionURL(const GURL& effective_url) {
     }
   }
   return false;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+bool AreExtensionsPermissionsEnabled(Profile* profile) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
+  return profile->IsChild();
+#else
+  return profile->IsChild() &&
+         base::FeatureList::IsEnabled(
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
