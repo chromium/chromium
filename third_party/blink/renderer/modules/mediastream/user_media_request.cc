@@ -431,6 +431,15 @@ UserMediaRequest* UserMediaRequest::Create(
         }
       }
       BaseConstraint* compatibility_constraints[] = {
+          &video_basic.exposure_compensation,
+          &video_basic.exposure_time,
+          &video_basic.color_temperature,
+          &video_basic.iso,
+          &video_basic.brightness,
+          &video_basic.contrast,
+          &video_basic.saturation,
+          &video_basic.sharpness,
+          &video_basic.focus_distance,
           &video_basic.torch,
       };
       for (BaseConstraint* constraint : compatibility_constraints) {

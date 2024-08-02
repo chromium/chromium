@@ -1905,6 +1905,33 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
 
   if (device_settings) {
     ExecutionContext* context = GetExecutionContext();
+    if (device_settings->exposure_compensation.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureCompensation);
+    }
+    if (device_settings->exposure_time.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureTime);
+    }
+    if (device_settings->color_temperature.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureColorTemperature);
+    }
+    if (device_settings->iso.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureIso);
+    }
+    if (device_settings->brightness.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureBrightness);
+    }
+    if (device_settings->contrast.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureContrast);
+    }
+    if (device_settings->saturation.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureSaturation);
+    }
+    if (device_settings->sharpness.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureSharpness);
+    }
+    if (device_settings->focus_distance.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureFocusDistance);
+    }
     if (device_settings->pan.has_value()) {
       UseCounter::Count(context, WebFeature::kImageCapturePan);
     }
@@ -1923,6 +1950,59 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
 
     auto settings = media::mojom::blink::PhotoSettings::New();
 
+    if (device_settings->exposure_compensation.has_value() &&
+        capabilities_->hasExposureCompensation()) {
+      MaybeSetDoubleSetting(*device_settings->exposure_compensation,
+                            *capabilities_->exposureCompensation(),
+                            settings->has_exposure_compensation,
+                            settings->exposure_compensation);
+    }
+    if (device_settings->exposure_time.has_value() &&
+        capabilities_->hasExposureTime()) {
+      MaybeSetDoubleSetting(
+          *device_settings->exposure_time, *capabilities_->exposureTime(),
+          settings->has_exposure_time, settings->exposure_time);
+    }
+    if (device_settings->color_temperature.has_value() &&
+        capabilities_->hasColorTemperature()) {
+      MaybeSetDoubleSetting(*device_settings->color_temperature,
+                            *capabilities_->colorTemperature(),
+                            settings->has_color_temperature,
+                            settings->color_temperature);
+    }
+    if (device_settings->iso.has_value() && capabilities_->hasIso()) {
+      MaybeSetDoubleSetting(*device_settings->iso, *capabilities_->iso(),
+                            settings->has_iso, settings->iso);
+    }
+    if (device_settings->brightness.has_value() &&
+        capabilities_->hasBrightness()) {
+      MaybeSetDoubleSetting(*device_settings->brightness,
+                            *capabilities_->brightness(),
+                            settings->has_brightness, settings->brightness);
+    }
+    if (device_settings->contrast.has_value() && capabilities_->hasContrast()) {
+      MaybeSetDoubleSetting(*device_settings->contrast,
+                            *capabilities_->contrast(), settings->has_contrast,
+                            settings->contrast);
+    }
+    if (device_settings->saturation.has_value() &&
+        capabilities_->hasSaturation()) {
+      MaybeSetDoubleSetting(*device_settings->saturation,
+                            *capabilities_->saturation(),
+                            settings->has_saturation, settings->saturation);
+    }
+    if (device_settings->sharpness.has_value() &&
+        capabilities_->hasSharpness()) {
+      MaybeSetDoubleSetting(*device_settings->sharpness,
+                            *capabilities_->sharpness(),
+                            settings->has_sharpness, settings->sharpness);
+    }
+    if (device_settings->focus_distance.has_value() &&
+        capabilities_->hasFocusDistance()) {
+      MaybeSetDoubleSetting(
+          *device_settings->focus_distance, *capabilities_->focusDistance(),
+          settings->has_focus_distance, settings->focus_distance);
+    }
     if (HasPanTiltZoomPermissionGranted()) {
       if (device_settings->pan.has_value() && capabilities_->hasPan()) {
         MaybeSetDoubleSetting(*device_settings->pan, *capabilities_->pan(),
@@ -1963,8 +2043,13 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
     }
 
     if (service_.is_bound() &&
-        (settings->has_pan || settings->has_tilt || settings->has_zoom ||
-         settings->has_torch || settings->has_background_blur_mode ||
+        (settings->has_exposure_compensation || settings->has_exposure_time ||
+         settings->has_color_temperature || settings->has_iso ||
+         settings->has_brightness || settings->has_contrast ||
+         settings->has_saturation || settings->has_sharpness ||
+         settings->has_focus_distance || settings->has_pan ||
+         settings->has_tilt || settings->has_zoom || settings->has_torch ||
+         settings->has_background_blur_mode ||
          settings->has_face_framing_mode ||
          settings->eye_gaze_correction_mode.has_value())) {
       service_->SetPhotoOptions(

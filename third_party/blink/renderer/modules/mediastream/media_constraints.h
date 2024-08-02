@@ -250,6 +250,15 @@ struct MediaTrackConstraintSetPlatform {
   StringConstraint display_surface;
 
   // W3C Image Capture
+  DoubleConstraint exposure_compensation;
+  DoubleConstraint exposure_time;
+  DoubleConstraint color_temperature;
+  DoubleConstraint iso;
+  DoubleConstraint brightness;
+  DoubleConstraint contrast;
+  DoubleConstraint saturation;
+  DoubleConstraint sharpness;
+  DoubleConstraint focus_distance;
   DoubleConstraint pan;
   DoubleConstraint tilt;
   DoubleConstraint zoom;
