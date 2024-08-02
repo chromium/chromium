@@ -175,8 +175,9 @@ FocusModeSoundsView::FocusModeSoundsView(
     }
 
     if (youtube_music_container_) {
-      // Set failure callback and start downloading playlists for YouTube Music.
-      sounds_controller->SetYouTubeMusicFailureCallback(base::BindRepeating(
+      // Set the no premium callback and start downloading playlists for YouTube
+      // Music.
+      sounds_controller->SetYouTubeMusicNoPremiumCallback(base::BindRepeating(
           &FocusModeSoundsView::ToggleYouTubeMusicAlternateView,
           weak_factory_.GetWeakPtr(), /*show=*/true));
       sounds_controller->DownloadPlaylistsForType(

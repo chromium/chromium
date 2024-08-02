@@ -32,10 +32,6 @@ class Widget;
 
 namespace ash {
 
-namespace youtube_music {
-class YouTubeMusicController;
-}  //  namespace youtube_music
-
 class AshWebView;
 class FocusModeMetricsRecorder;
 class FocusModeSoundsController;
@@ -109,9 +105,6 @@ class ASH_EXPORT FocusModeController
   FocusModeTasksModel& tasks_model() { return tasks_model_; }
   FocusModeSoundsController* focus_mode_sounds_controller() const {
     return focus_mode_sounds_controller_.get();
-  }
-  youtube_music::YouTubeMusicController* youtube_music_controller() const {
-    return youtube_music_controller_.get();
   }
   FocusModeDelegate* delegate() { return delegate_.get(); }
 
@@ -296,10 +289,6 @@ class ASH_EXPORT FocusModeController
   // This is used to display focus mode playlists. Playback controls will be
   // added later.
   std::unique_ptr<FocusModeSoundsController> focus_mode_sounds_controller_;
-
-  // Controller for YouTube Music API integration.
-  std::unique_ptr<youtube_music::YouTubeMusicController>
-      youtube_music_controller_;
 
   // The media widget and its contents view.
   std::unique_ptr<views::Widget> media_widget_;

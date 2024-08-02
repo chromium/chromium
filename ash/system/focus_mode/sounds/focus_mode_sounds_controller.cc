@@ -448,7 +448,7 @@ void FocusModeSoundsController::MediaSessionInfoChanged(
       // triggered by the ending moment in the future.
       paused_event_count_++;
       break;
-  };
+  }
 
   for (auto& observer : observers_) {
     observer.OnPlaylistStateChanged();
@@ -527,10 +527,10 @@ void FocusModeSoundsController::UpdateFromUserPrefs() {
   }
 }
 
-void FocusModeSoundsController::SetYouTubeMusicFailureCallback(
+void FocusModeSoundsController::SetYouTubeMusicNoPremiumCallback(
     base::RepeatingClosure callback) {
   CHECK(callback);
-  youtube_music_delegate_->SetFailureCallback(std::move(callback));
+  youtube_music_delegate_->SetNoPremiumCallback(std::move(callback));
 }
 
 void FocusModeSoundsController::ReportYouTubeMusicPlayback(

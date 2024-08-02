@@ -144,10 +144,10 @@ class ASH_EXPORT FocusModeSoundsController
 
   void UpdateFromUserPrefs();
 
-  // Sets the failure callback for all YouTube Music API requests. This callback
-  // is used to update the specific UIs that are dependent on the account
-  // premium status.
-  void SetYouTubeMusicFailureCallback(base::RepeatingClosure callback);
+  // Sets the no premium callback for all YouTube Music API requests. This
+  // callback is used to update the specific UIs that are dependent on the
+  // account premium status.
+  void SetYouTubeMusicNoPremiumCallback(base::RepeatingClosure callback);
 
   // Reports playback to the media server. It's only used for YouTube Music at
   // the moment.
