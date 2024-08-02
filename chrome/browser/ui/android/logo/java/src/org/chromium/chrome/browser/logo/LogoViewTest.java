@@ -202,19 +202,21 @@ public class LogoViewTest {
 
         fadeAnimation.setCurrentFraction(0.65F);
         Assert.assertEquals(
-                (int) (normalLogoHeight + (logoHeightForLogoPolish - normalLogoHeight) * 0.3),
+                Math.round((normalLogoHeight + (logoHeightForLogoPolish - normalLogoHeight) * 0.3)),
                 logoLayoutParams.height);
         Assert.assertEquals(
-                (int)
+                Math.round(
                         (normalLogoTopMargin
-                                + (logoTopMarginForLogoPolish - normalLogoTopMargin) * 0.3),
+                                + (logoTopMarginForLogoPolish - normalLogoTopMargin) * 0.3)),
                 logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(0.75F);
         Assert.assertEquals(
-                (normalLogoHeight + logoHeightForLogoPolish) / 2, logoLayoutParams.height);
+                Math.round((normalLogoHeight + logoHeightForLogoPolish) * 0.5),
+                logoLayoutParams.height);
         Assert.assertEquals(
-                (normalLogoTopMargin + logoTopMarginForLogoPolish) / 2, logoLayoutParams.topMargin);
+                Math.round((normalLogoTopMargin + logoTopMarginForLogoPolish) * 0.5),
+                logoLayoutParams.topMargin);
 
         fadeAnimation.setCurrentFraction(1);
         Assert.assertEquals(logoHeightForLogoPolish, logoLayoutParams.height);

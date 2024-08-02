@@ -345,6 +345,7 @@ public abstract class ChromeFeatureList {
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOGO_POLISH = "LogoPolish";
+    public static final String LOGO_POLISH_ANIMATION_KILL_SWITCH = "LogoPolishAnimationKillSwitch";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
@@ -629,6 +630,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
+    public static final CachedFlag sLogoPolishAnimationKillSwitch =
+            newCachedFlag(LOGO_POLISH_ANIMATION_KILL_SWITCH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMostVisitedTilesSelectExistingTab =
             newCachedFlag(MOST_VISITED_TILES_SELECT_EXISTING_TAB, false);
@@ -757,6 +760,7 @@ public abstract class ChromeFeatureList {
                     sGcmNativeBackgroundTask,
                     sIncognitoReauthenticationForAndroid,
                     sLogoPolish,
+                    sLogoPolishAnimationKillSwitch,
                     sMagicStackAndroid,
                     sMostVisitedTilesSelectExistingTab,
                     sMultiInstanceApplicationStatusCleanup,

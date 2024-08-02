@@ -112,6 +112,7 @@ BASE_DECLARE_FEATURE(kLanguagesPreference);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kLogoPolish);
+BASE_DECLARE_FEATURE(kLogoPolishAnimationKillSwitch);
 BASE_DECLARE_FEATURE(kMagicStackAndroid);
 BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
 BASE_DECLARE_FEATURE(kMostVisitedTilesSelectExistingTab);
