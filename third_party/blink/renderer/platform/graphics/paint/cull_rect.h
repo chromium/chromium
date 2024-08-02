@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,7 +21,6 @@ class RectF;
 namespace blink {
 
 class AffineTransform;
-class LayoutUnit;
 class PropertyTreeState;
 class TransformPaintPropertyNode;
 
