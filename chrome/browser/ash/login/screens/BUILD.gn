@@ -425,6 +425,7 @@ source_set("browser_tests") {
     "os_trial_screen_browsertest.cc",
     "packaged_license_screen_browsertest.cc",
     "parental_handoff_screen_browsertest.cc",
+    "perks_discovery_screen_browsertest.cc",
     "personalized_recommend_apps_screen_browsertest.cc",
     "pin_setup_screen_browsertest.cc",
     "quick_start_screen_browsertest.cc",

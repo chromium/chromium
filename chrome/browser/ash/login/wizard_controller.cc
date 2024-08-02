@@ -3164,6 +3164,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowCategoriesSelectionScreen();
   } else if (screen_id == PersonalizedRecommendAppsScreenView::kScreenId) {
     ShowPersonalizedRecomendAppsScreen();
+  } else if (screen_id == PerksDiscoveryScreenView::kScreenId) {
+    ShowPerksDiscoveryScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == InstallAttributesErrorView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
