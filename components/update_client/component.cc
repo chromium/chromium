@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,11 +29,12 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
 #include "components/update_client/configurator.h"
-#include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
+#include "components/update_client/op_download.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
@@ -113,11 +115,6 @@
 
 namespace update_client {
 namespace {
-
-#if BUILDFLAG(IS_MAC)
-// The minimum size of a download to attempt it at background priority.
-constexpr int64_t kBackgroundDownloadSizeThreshold = 10000000; /*10 MB*/
-#endif
 
 using InstallOnBlockingTaskRunnerCompleteCallback = base::OnceCallback<void(
     ErrorCategory error_category,
@@ -443,20 +440,6 @@ void StartGetPreviousCrxOnBlockingTaskRunner(
                              std::move(callback)))));
 }
 
-// Returns a string literal corresponding to the value of the downloader |d|.
-const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
-  switch (d) {
-    case CrxDownloader::DownloadMetrics::kUrlFetcher:
-      return "direct";
-    case CrxDownloader::DownloadMetrics::kBits:
-      return "bits";
-    case CrxDownloader::DownloadMetrics::kBackgroundMac:
-      return "nsurlsession_background";
-    default:
-      return "unknown";
-  }
-}
-
 base::Value::Dict MakeEvent(
     UpdateClient::PingParams ping_params,
     const std::optional<base::Version>& previous_version,
@@ -642,16 +625,6 @@ void Component::NotifyWait() {
   NotifyObservers(Events::COMPONENT_WAIT);
 }
 
-bool Component::CanDoBackgroundDownload(int64_t size) const {
-  // Foreground component updates are always downloaded in foreground.
-  bool enabled = !is_foreground() &&
-                 update_context_->config->EnabledBackgroundDownloader();
-#if BUILDFLAG(IS_MAC)
-  enabled &= size > kBackgroundDownloadSizeThreshold;
-#endif
-  return enabled;
-}
-
 void Component::AppendEvent(base::Value::Dict event) {
   events_.push_back(std::move(event));
 }
@@ -717,41 +690,6 @@ base::Value::Dict Component::MakeEventUpdateComplete() const {
   }
   if (!next_fp().empty()) {
     event.Set("nextfp", next_fp());
-  }
-  CHECK(previous_version().IsValid());
-  event.Set("previousversion", previous_version().GetString());
-  if (next_version().IsValid()) {
-    event.Set("nextversion", next_version().GetString());
-  }
-  return event;
-}
-
-base::Value::Dict Component::MakeEventDownloadMetrics(
-    const CrxDownloader::DownloadMetrics& dm) const {
-  base::Value::Dict event;
-  event.Set("eventtype", protocol_request::kEventDownload);
-  event.Set("eventresult", static_cast<int>(dm.error == 0));
-  event.Set("downloader", DownloaderToString(dm.downloader));
-  if (dm.error) {
-    event.Set("errorcode", dm.error);
-  }
-  if (dm.extra_code1) {
-    event.Set("extracode1", dm.extra_code1);
-  }
-  event.Set("url", dm.url.spec());
-
-  // -1 means that the  byte counts are not known.
-  if (dm.total_bytes != -1 &&
-      dm.total_bytes < protocol_request::kProtocolMaxInt) {
-    event.Set("total", static_cast<double>(dm.total_bytes));
-  }
-  if (dm.downloaded_bytes != -1 &&
-      dm.total_bytes < protocol_request::kProtocolMaxInt) {
-    event.Set("downloaded", static_cast<double>(dm.downloaded_bytes));
-  }
-  if (dm.download_time_ms &&
-      dm.total_bytes < protocol_request::kProtocolMaxInt) {
-    event.Set("download_time_ms", static_cast<double>(dm.download_time_ms));
   }
   CHECK(previous_version().IsValid());
   event.Set("previousversion", previous_version().GetString());
@@ -1023,7 +961,7 @@ void Component::StateCanUpdate::GetNextCrxFromCacheComplete(
             base::Unretained(this)));
     return;
   }
-  TransitionState(std::make_unique<StateDownloading>(&component));
+  TransitionState(std::make_unique<StateDownloading>(&component, false));
 }
 
 void Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete(
@@ -1031,14 +969,14 @@ void Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = State::component();
   if (crx_is_in_cache) {
-    TransitionState(std::make_unique<StateDownloadingDiff>(&component));
+    TransitionState(std::make_unique<StateDownloading>(&component, true));
   } else {
     // If the configuration allows diff update, but the previous crx
     // is not cached, report the kPuffinMissingPreviousCrx error.
     component.diff_error_category_ = ErrorCategory::kUnpack;
     component.diff_error_code_ =
         static_cast<int>(UnpackerError::kPuffinMissingPreviousCrx);
-    TransitionState(std::make_unique<StateDownloading>(&component));
+    TransitionState(std::make_unique<StateDownloading>(&component, false));
   }
 }
 
@@ -1059,185 +997,84 @@ void Component::StateUpToDate::DoHandle() {
   EndState();
 }
 
-Component::StateDownloadingBase::StateDownloadingBase(Component* component,
-                                                      ComponentState state)
-    : State(component, state) {}
+Component::StateDownloading::StateDownloading(Component* component, bool diff)
+    : State(component,
+            diff ? ComponentState::kDownloadingDiff
+                 : ComponentState::kDownloading),
+      diff_(diff) {}
 
-Component::StateDownloadingBase::~StateDownloadingBase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void Component::StateDownloadingBase::DoHandle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto& component = Component::State::component();
-  CHECK(component.crx_component());
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kTaskTraits,
-      base::BindOnce(
-          [](base::RepeatingCallback<int64_t(const base::FilePath&)>
-                 get_available_space) -> int64_t {
-            base::ScopedTempDir temp_dir;
-            return temp_dir.CreateUniqueTempDir()
-                       ? get_available_space.Run(temp_dir.GetPath())
-                       : 0;
-          },
-          component.update_context_->get_available_space),
-      base::BindOnce(&Component::StateDownloadingBase::HandleAvailableSpace,
-                     base::Unretained(this)));
-}
-
-void Component::StateDownloadingBase::HandleAvailableSpace(
-    const int64_t available_bytes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto& component = Component::State::component();
-  CHECK(component.crx_component());
-
-  if (available_bytes <= component_size() * 2) {
-    VLOG(1) << "available_bytes: " << available_bytes
-            << ", download size: " << component_size();
-    component.error_category_ = ErrorCategory::kDownload;
-    component.error_code_ = static_cast<int>(CrxDownloaderError::DISK_FULL);
-
-    TransitionState(std::make_unique<StateUpdateError>(&component));
-    return;
-  }
-
-  component.downloaded_bytes_ = -1;
-  component.total_bytes_ = -1;
-
-  crx_downloader_ =
-      component.config()->GetCrxDownloaderFactory()->MakeCrxDownloader(
-          component.CanDoBackgroundDownload(component_size()));
-  crx_downloader_->set_progress_callback(
-      base::BindRepeating(&Component::StateDownloadingBase::DownloadProgress,
-                          base::Unretained(this)));
-  cancel_callback_ = crx_downloader_->StartDownload(
-      component_crx_urls(), component_hash_sha256(),
-      base::BindOnce(&Component::StateDownloadingBase::DownloadComplete,
-                     base::Unretained(this)));
-
-  component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
-}
-
-// Called when progress is being made downloading a CRX. Can be called multiple
-// times due to how the CRX downloader switches between different downloaders
-// and fallback urls.
-void Component::StateDownloadingBase::DownloadProgress(int64_t downloaded_bytes,
-                                                       int64_t total_bytes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto& component = Component::State::component();
-  component.downloaded_bytes_ = downloaded_bytes;
-  component.total_bytes_ = total_bytes;
-  component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
-}
-
-void Component::StateDownloadingBase::DownloadComplete(
-    const CrxDownloader::Result& download_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto& component = Component::State::component();
-
-  for (const auto& download_metrics : crx_downloader_->download_metrics()) {
-    component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
-  }
-
-  crx_downloader_ = nullptr;
-
-  if (component.update_context_->is_cancelled) {
-    TransitionState(std::make_unique<StateUpdateError>(&component));
-    component.error_category_ = ErrorCategory::kService;
-    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
-    return;
-  }
-
-  if (download_result.error) {
-    CHECK(download_result.response.empty());
-    set_component_error_category(ErrorCategory::kDownload);
-    set_component_error_code(download_result.error);
-    set_component_extra_code1(download_result.extra_code1);
-
-    TransitionState(next_state_on_error());
-    return;
-  }
-
-  component.payload_path_ = download_result.response;
-
-  TransitionState(next_state());
-}
-
-Component::StateDownloading::StateDownloading(Component* component)
-    : StateDownloadingBase(component, ComponentState::kDownloading) {}
 Component::StateDownloading::~StateDownloading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-int64_t Component::StateDownloading::component_size() const {
-  return Component::State::component().size_;
-}
-std::vector<GURL> Component::StateDownloading::component_crx_urls() const {
-  return Component::State::component().crx_urls_;
-}
-std::string Component::StateDownloading::component_hash_sha256() const {
-  return Component::State::component().hash_sha256_;
-}
-void Component::StateDownloading::set_component_error_category(
-    ErrorCategory error_category) {
-  Component::State::component().error_category_ = error_category;
-}
-void Component::StateDownloading::set_component_error_code(int error_code) {
-  Component::State::component().error_code_ = error_code;
-}
-void Component::StateDownloading::set_component_extra_code1(int error_code) {
-  Component::State::component().extra_code1_ = error_code;
-}
-std::unique_ptr<Component::State>
-Component::StateDownloading::next_state_on_error() {
-  auto& component = Component::State::component();
-  return std::make_unique<Component::StateUpdateError>(&component);
-}
-std::unique_ptr<Component::State> Component::StateDownloading::next_state() {
-  auto& component = Component::State::component();
-  return std::make_unique<Component::StateUpdating>(&component);
-}
-
-Component::StateDownloadingDiff::StateDownloadingDiff(Component* component)
-    : StateDownloadingBase(component, ComponentState::kDownloadingDiff) {}
-Component::StateDownloadingDiff::~StateDownloadingDiff() {
+void Component::StateDownloading::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Component& component = Component::State::component();
+
+  component.downloaded_bytes_ = -1;
+  component.total_bytes_ = -1;
+
+  cancel_callback_ = DownloadOperation(
+      base::WrapRefCounted(&*(component.update_context_)),
+      diff_ ? component.crx_diffurls_ : component.crx_urls_,
+      diff_ ? component.sizediff_ : component.size_,
+      diff_ ? component.hashdiff_sha256_ : component.hash_sha256_,
+      base::BindRepeating(
+          [](base::raw_ref<Component> component, base::Value::Dict event) {
+            CHECK(component->previous_version().IsValid());
+            event.Set("previousversion",
+                      component->previous_version().GetString());
+            if (component->next_version().IsValid()) {
+              event.Set("nextversion", component->next_version().GetString());
+            }
+            component->AppendEvent(std::move(event));
+          },
+          base::raw_ref(component)),
+      base::BindRepeating(
+          [](base::raw_ref<Component> component, int64_t downloaded_bytes,
+             int64_t total_bytes) {
+            component->downloaded_bytes_ = downloaded_bytes;
+            component->total_bytes_ = total_bytes;
+            component->NotifyObservers(
+                UpdateClient::Observer::Events::COMPONENT_UPDATE_DOWNLOADING);
+          },
+          base::raw_ref(component)),
+      base::BindOnce(&Component::StateDownloading::DownloadComplete,
+                     base::Unretained(this)));
+  component.NotifyObservers(
+      UpdateClient::Observer::Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
-int64_t Component::StateDownloadingDiff::component_size() const {
-  return Component::State::component().sizediff_;
-}
-std::vector<GURL> Component::StateDownloadingDiff::component_crx_urls() const {
-  return Component::State::component().crx_diffurls_;
-}
-std::string Component::StateDownloadingDiff::component_hash_sha256() const {
-  return Component::State::component().hashdiff_sha256_;
-}
-void Component::StateDownloadingDiff::set_component_error_category(
-    ErrorCategory error_category) {
-  Component::State::component().diff_error_category_ = error_category;
-}
-void Component::StateDownloadingDiff::set_component_error_code(int error_code) {
-  Component::State::component().diff_error_code_ = error_code;
-}
-void Component::StateDownloadingDiff::set_component_extra_code1(
-    int error_code) {
-  Component::State::component().diff_extra_code1_ = error_code;
-}
-std::unique_ptr<Component::State>
-Component::StateDownloadingDiff::next_state_on_error() {
-  auto& component = Component::State::component();
-  return std::make_unique<Component::StateDownloading>(&component);
-}
-std::unique_ptr<Component::State>
-Component::StateDownloadingDiff::next_state() {
-  auto& component = Component::State::component();
-  return std::make_unique<Component::StateUpdatingDiff>(&component);
+void Component::StateDownloading::DownloadComplete(
+    const base::expected<base::FilePath, CategorizedError>& file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Component& component = Component::State::component();
+
+  if (!file.has_value()) {
+    if (diff_) {
+      component.diff_error_category_ = file.error().category_;
+      component.diff_error_code_ = file.error().code_;
+      component.diff_extra_code1_ = file.error().extra_;
+      TransitionState(
+          std::make_unique<Component::StateDownloading>(&component, false));
+    } else {
+      component.error_category_ = file.error().category_;
+      component.error_code_ = file.error().code_;
+      component.extra_code1_ = file.error().extra_;
+      TransitionState(
+          std::make_unique<Component::StateUpdateError>(&component));
+    }
+    return;
+  }
+
+  component.payload_path_ = *file;
+  if (diff_) {
+    TransitionState(std::make_unique<Component::StateUpdatingDiff>(&component));
+  } else {
+    TransitionState(std::make_unique<Component::StateUpdating>(&component));
+  }
 }
 
 Component::StateUpdatingDiff::StateUpdatingDiff(Component* component)
@@ -1319,7 +1156,7 @@ void Component::StateUpdatingDiff::InstallComplete(
   component.diff_extra_code1_ = extra_code1;
 
   if (component.diff_error_code_ != 0) {
-    TransitionState(std::make_unique<StateDownloading>(&component));
+    TransitionState(std::make_unique<StateDownloading>(&component, false));
     return;
   }
 

@@ -141,6 +141,12 @@ enum class ProtocolError : int {
   INTERNAL = -10013,
 };
 
+struct CategorizedError {
+  ErrorCategory category_ = ErrorCategory::kNone;
+  int code_ = 0;
+  int extra_ = 0;
+};
+
 }  // namespace update_client
 
 #endif  // COMPONENTS_UPDATE_CLIENT_UPDATE_CLIENT_ERRORS_H_
