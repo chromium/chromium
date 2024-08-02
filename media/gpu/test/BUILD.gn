@@ -2,13 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+if (is_chromeos) {
+  import("//build/config/chromeos/ui_mode.gni")
+}
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
 # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
+if (enable_av1_decoder &&
+    ((is_chromeos && (use_v4l2_codec || use_vaapi)) || is_win)) {
   test("video_decode_accelerator_tests") {
     testonly = true
     sources = [
@@ -27,10 +30,16 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:buildflags",
-      "//media/gpu/chromeos:common",
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (is_chromeos) {
+      deps += [
+        "//media/gpu/chromeos:common",
+        "//media/gpu/chromeos:video_frame_utils",
+      ]
+    }
 
     if (use_vaapi) {
       data_deps = [ "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video" ]
@@ -47,9 +56,12 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       ":video_player_test_environment",
       "//media:test_support",
       "//media/gpu:buildflags",
-      "//sandbox/linux:sandbox_services",
       "//testing/gtest",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//sandbox/linux:sandbox_services" ]
+    }
   }
 
   test("video_encode_accelerator_tests") {
@@ -65,7 +77,6 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       ":video_encoder_test_environment",
       "//media:test_support",
       "//media/gpu:buildflags",
-      "//media/gpu:common",
       "//testing/gtest",
     ]
   }
@@ -80,10 +91,8 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       ":test_helpers",
       ":video_encoder",
       ":video_encoder_test_environment",
-      ":video_encoder_test_environment",
       "//media:test_support",
       "//media/gpu:buildflags",
-      "//media/gpu:common",
       "//testing/gtest",
     ]
   }
@@ -116,7 +125,10 @@ source_set("helpers") {
   public_deps = [ "//testing/gtest" ]
 
   if (use_v4l2_codec || use_vaapi) {
-    deps += [ "//media/gpu/chromeos:common" ]
+    deps += [
+      "//media/gpu/chromeos:common",
+      "//media/gpu/chromeos:video_frame_utils",
+    ]
   }
 }
 
@@ -129,12 +141,18 @@ source_set("frame_validator") {
   deps = [
     ":helpers",
     ":test_helpers",
-    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//build:chromeos_buildflags" ]
+  }
+
   if (use_v4l2_codec || use_vaapi) {
-    deps += [ "//media/gpu/chromeos:common" ]
+    deps += [
+      "//media/gpu/chromeos:common",
+      "//media/gpu/chromeos:video_frame_utils",
+    ]
   }
 }
 
@@ -146,13 +164,19 @@ source_set("frame_file_writer") {
   ]
   deps = [
     ":helpers",
-    "//build:chromeos_buildflags",
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//build:chromeos_buildflags" ]
+  }
+
   if (use_v4l2_codec || use_vaapi) {
-    deps += [ "//media/gpu/chromeos:common" ]
+    deps += [
+      "//media/gpu/chromeos:common",
+      "//media/gpu/chromeos:video_frame_utils",
+    ]
   }
 }
 
@@ -227,9 +251,12 @@ static_library("video_player_test_environment") {
     ":helpers",
     ":video_player",
     ":video_test_environment",
-    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//build:chromeos_buildflags" ]
+  }
 }
 
 static_library("video_encoder") {
@@ -248,11 +275,11 @@ static_library("video_encoder") {
     "video_encoder/video_encoder_client.cc",
     "video_encoder/video_encoder_client.h",
   ]
+  public_deps = [ "//third_party/libgav1:libgav1_parser" ]
   deps = [
     ":test_helpers",
     "//media/gpu",
     "//testing/gtest:gtest",
-    "//third_party/libgav1:libgav1_parser",
   ]
 }
 
@@ -266,12 +293,13 @@ static_library("video_encoder_test_environment") {
   public_deps = [
     ":helpers",
     ":video_test_environment",
-  ]
-  deps = [
-    "//base:base",
-    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
+  deps = [ "//base:base" ]
+
+  if (is_chromeos) {
+    deps += [ "//build:chromeos_buildflags" ]
+  }
 }
 
 if (use_vaapi || use_v4l2_codec) {
@@ -283,13 +311,17 @@ if (use_vaapi || use_v4l2_codec) {
     ]
     deps = [
       ":helpers",
-      "//build:chromeos_buildflags",
       "//media:test_support",
       "//media/gpu",
       "//media/gpu/chromeos",
       "//testing/gtest",
       "//third_party/libyuv",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//build:chromeos_buildflags" ]
+    }
+
     data = [ "//media/test/data/" ]
   }
 }
