@@ -705,14 +705,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // If the user switched tabs to sign-into the IdP, Show() may be called while
   // the associated FedCM tab is inactive. Show() should not show the
   // views::Widget in this case.
-  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller->OnTabBackgrounded();
   content::IdentityProviderData new_idp_data = CreateIdentityProviderData(
       CreateAccount(LoginState::kSignUp, LoginState::kSignUp));
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kWidget, new_idp_data);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
-  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  controller->OnTabForegrounded();
   EXPECT_TRUE(dialog_widget_->IsVisible());
 
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
@@ -1284,7 +1284,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate IdP closing the pop-up window.
   controller->CloseModalDialog();
 
-  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller->OnTabBackgrounded();
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
@@ -1297,7 +1297,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        blink::mojom::RpMode::kWidget, new_idp_data);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
-  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  controller->OnTabForegrounded();
   EXPECT_TRUE(dialog_widget_->IsVisible());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             account_selection_view_->sheet_type_);
@@ -1327,9 +1327,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Switch to a different tab and then switch back to the same tab. The widget
   // should remain hidden because the mismatch dialog has not been updated into
   // an accounts dialog yet.
-  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller->OnTabBackgrounded();
   EXPECT_FALSE(dialog_widget_->IsVisible());
-  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  controller->OnTabForegrounded();
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate IdP sending the IdP sign-in status header which updates the
@@ -2581,7 +2581,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShow(accounts, SignInMode::kExplicit);
 
   // Emulate user changing tabs, hiding the dialog.
-  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller->OnTabBackgrounded();
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents too small to fit
@@ -2593,7 +2593,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user changing back to the tab containing the dialog. The dialog
   // should remain hidden because the web contents is still too small to fit the
   // dialog.
-  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  controller->OnTabForegrounded();
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents is big enough to
@@ -2609,7 +2609,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user changing tabs, the dialog should remain hidden.
-  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller->OnTabBackgrounded();
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents big enough to fit
@@ -2621,7 +2621,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user changing back to the tab containing the dialog. The dialog
   // should now be visible.
-  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  controller->OnTabForegrounded();
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }
 
@@ -2637,13 +2637,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShow(accounts, SignInMode::kExplicit);
 
   // Emulate user changing tabs, hiding the dialog.
-  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller->OnTabBackgrounded();
   EXPECT_FALSE(account_selection_view_->dialog_position_updated_);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user changing back to the tab containing the dialog, updating the
   // dialog position.
-  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  controller->OnTabForegrounded();
   EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }

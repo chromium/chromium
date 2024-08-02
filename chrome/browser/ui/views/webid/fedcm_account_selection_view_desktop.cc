@@ -69,7 +69,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 
   // We use this boolean to record metrics in Close(), reset it after Close().
   is_mismatch_continue_clicked_ = false;
-  TabStripModelObserver::StopObservingAll(this);
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
@@ -563,16 +562,19 @@ std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
   return std::nullopt;
 }
 
-void FedCmAccountSelectionView::OnVisibilityChanged(
-    content::Visibility visibility) {
-  is_web_contents_visible_ = visibility == content::Visibility::VISIBLE;
+void FedCmAccountSelectionView::OnTabForegrounded() {
+  is_web_contents_visible_ = true;
   if (!IsDialogWidgetReady()) {
     return;
   }
-
   if (ShouldShowDialogWidget()) {
     UpdateAndShowDialogWidget();
-  } else {
+  }
+}
+
+void FedCmAccountSelectionView::OnTabBackgrounded() {
+  is_web_contents_visible_ = false;
+  if (GetDialogWidget()) {
     HideDialogWidget();
   }
 }
@@ -580,30 +582,6 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
 void FedCmAccountSelectionView::PrimaryPageChanged(content::Page& page) {
   // Close the dialog when the user navigates within the same tab.
   Close();
-}
-
-void FedCmAccountSelectionView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!GetDialogWidget()) {
-    return;
-  }
-  int index =
-      tab_strip_model->GetIndexOfWebContents(delegate_->GetWebContents());
-  // If the WebContents has been moved out of this `tab_strip_model`, close the
-  // dialog.
-  // TODO(npm): we should change the management logic so that it is
-  // possible to move the dialog with the tab, even to a different browser
-  // window.
-  if (index == TabStripModel::kNoTab) {
-    Close();
-    return;
-  }
-  if (index != tab_strip_model->active_index() &&
-      GetDialogWidget()->IsVisible()) {
-    HideDialogWidget();
-  }
 }
 
 void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
@@ -625,15 +603,12 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   content::WebContents* web_contents = delegate_->GetWebContents();
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
-  // Reject the API if the browser is not found or its tab strip model does not
-  // exist, as we require those to show UI.
+  // Reject the API if the browser is not found.
   // TODO(crbug.com/342216390): It is unclear why there are callers attempting
   // FedCM when some of these checks fail.
-  if (!browser || !browser->tab_strip_model()) {
+  if (!browser) {
     return nullptr;
   }
-
-  browser->tab_strip_model()->AddObserver(this);
 
   if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
     dialog_type_ = DialogType::MODAL;
@@ -1042,7 +1017,6 @@ void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
   }
   account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;
-  TabStripModelObserver::StopObservingAll(this);
 }
 
 bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
