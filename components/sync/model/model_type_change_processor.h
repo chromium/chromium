@@ -15,6 +15,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 
@@ -139,6 +140,33 @@ class ModelTypeChangeProcessor {
   // unknown, or the storage key is known but trimmed specifics is not
   // available.
   virtual const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
+      const std::string& storage_key) const = 0;
+
+  // Helper methods to generate unique positions in the bridges for datatypes
+  // that need a notion of ordering across entities and use
+  // sync_pb.UniquePosition (recommended) to achieve so. The following methods
+  // are used to generate UniquePosition relatively to the given entities
+  // (`storage_key_before` and / or `storage_key_after`) for the entity
+  // `target_client_tag_hash`. Note that `storage_key_before` and
+  // `storage_key_after` must be already tracked by the processor and be in the
+  // correct order.
+  virtual sync_pb::UniquePosition UniquePositionAfter(
+      const std::string& storage_key_before,
+      const ClientTagHash& target_client_tag_hash) const = 0;
+  virtual sync_pb::UniquePosition UniquePositionBefore(
+      const std::string& storage_key_after,
+      const ClientTagHash& target_client_tag_hash) const = 0;
+  virtual sync_pb::UniquePosition UniquePositionBetween(
+      const std::string& storage_key_before,
+      const std::string& storage_key_after,
+      const ClientTagHash& target_client_tag_hash) const = 0;
+  virtual sync_pb::UniquePosition UniquePositionForInitialEntity(
+      const ClientTagHash& target_client_tag_hash) const = 0;
+
+  // Returns the current unique position for the tracked entity. Note that
+  // default proto could be returned (for example if the entity did not have
+  // unique position before).
+  virtual sync_pb::UniquePosition GetUniquePositionForStorageKey(
       const std::string& storage_key) const = 0;
 
   virtual base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() = 0;

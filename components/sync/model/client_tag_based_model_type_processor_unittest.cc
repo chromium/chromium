@@ -30,6 +30,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_model_type_sync_bridge.h"
 #include "components/sync/test/mock_model_type_worker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3173,12 +3174,18 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
 }
 
+TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldGenerateUniquePositions) {
+  InitializeToReadyState();
+
+  // TODO(crbug.com/351357559): verify the other methods once Put() supports
+  // unique positions.
+  sync_pb::UniquePosition only_element_position =
+      type_processor()->UniquePositionForInitialEntity(GetPrefHash(kKey1));
+  EXPECT_TRUE(UniquePosition::FromProto(only_element_position).IsValid());
+}
+
 class PasswordsClientTagBasedModelTypeProcessorTest
     : public ClientTagBasedModelTypeProcessorTest {
- public:
-  PasswordsClientTagBasedModelTypeProcessorTest() {
-  }
-
  protected:
   ModelType GetModelType() override { return PASSWORDS; }
 };

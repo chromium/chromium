@@ -93,6 +93,20 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override;
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override;
+  sync_pb::UniquePosition UniquePositionAfter(
+      const std::string& storage_key_before,
+      const ClientTagHash& target_client_tag_hash) const override;
+  sync_pb::UniquePosition UniquePositionBefore(
+      const std::string& storage_key_after,
+      const ClientTagHash& target_client_tag_hash) const override;
+  sync_pb::UniquePosition UniquePositionBetween(
+      const std::string& storage_key_before,
+      const std::string& storage_key_after,
+      const ClientTagHash& target_client_tag_hash) const override;
+  sync_pb::UniquePosition UniquePositionForInitialEntity(
+      const ClientTagHash& target_client_tag_hash) const override;
+  sync_pb::UniquePosition GetUniquePositionForStorageKey(
+      const std::string& storage_key) const override;
   base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
 
   // ModelTypeProcessor implementation.

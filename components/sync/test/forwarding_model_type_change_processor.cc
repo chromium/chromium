@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 
@@ -108,6 +109,42 @@ const sync_pb::EntitySpecifics&
 ForwardingModelTypeChangeProcessor::GetPossiblyTrimmedRemoteSpecifics(
     const std::string& storage_key) const {
   return other_->GetPossiblyTrimmedRemoteSpecifics(storage_key);
+}
+
+sync_pb::UniquePosition ForwardingModelTypeChangeProcessor::UniquePositionAfter(
+    const std::string& storage_key_before,
+    const ClientTagHash& target_client_tag_hash) const {
+  return other_->UniquePositionAfter(storage_key_before,
+                                     target_client_tag_hash);
+}
+
+sync_pb::UniquePosition
+ForwardingModelTypeChangeProcessor::UniquePositionBefore(
+    const std::string& storage_key_after,
+    const ClientTagHash& target_client_tag_hash) const {
+  return other_->UniquePositionBefore(storage_key_after,
+                                      target_client_tag_hash);
+}
+
+sync_pb::UniquePosition
+ForwardingModelTypeChangeProcessor::UniquePositionBetween(
+    const std::string& storage_key_before,
+    const std::string& storage_key_after,
+    const ClientTagHash& target_client_tag_hash) const {
+  return other_->UniquePositionBetween(storage_key_before, storage_key_after,
+                                       target_client_tag_hash);
+}
+
+sync_pb::UniquePosition
+ForwardingModelTypeChangeProcessor::UniquePositionForInitialEntity(
+    const ClientTagHash& target_client_tag_hash) const {
+  return other_->UniquePositionForInitialEntity(target_client_tag_hash);
+}
+
+sync_pb::UniquePosition
+ForwardingModelTypeChangeProcessor::GetUniquePositionForStorageKey(
+    const std::string& storage_key) const {
+  return other_->GetUniquePositionForStorageKey(storage_key);
 }
 
 base::WeakPtr<ModelTypeChangeProcessor>

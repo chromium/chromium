@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -242,6 +243,31 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
       const std::string& storage_key) const override {
     NOTREACHED_IN_MIGRATION();
     return sync_pb::EntitySpecifics::default_instance();
+  }
+
+  sync_pb::UniquePosition UniquePositionAfter(
+      const std::string& storage_key_before,
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED_NORETURN();
+  }
+  sync_pb::UniquePosition UniquePositionBefore(
+      const std::string& storage_key_after,
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED_NORETURN();
+  }
+  sync_pb::UniquePosition UniquePositionBetween(
+      const std::string& storage_key_before,
+      const std::string& storage_key_after,
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED_NORETURN();
+  }
+  sync_pb::UniquePosition UniquePositionForInitialEntity(
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED_NORETURN();
+  }
+  sync_pb::UniquePosition GetUniquePositionForStorageKey(
+      const std::string& storage_key) const override {
+    NOTREACHED_NORETURN();
   }
 
   base::WeakPtr<syncer::ModelTypeChangeProcessor> GetWeakPtr() override {

@@ -18,9 +18,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
@@ -34,6 +37,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 namespace {
@@ -65,6 +69,40 @@ void RecordModelTypeNumUnsyncedEntitiesOnModelReady(
   }
   SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(model_type,
                                                      num_unsynced_entities);
+}
+
+// Returns true if the unique position for the `target_entity` should be reused.
+// The entity's position is compared with `position_before` and `position_after`
+// (any of them can be invalid) to verify its order.
+bool ShouldReuseTrackedUniquePositionFor(const ProcessorEntity* target_entity,
+                                         const UniquePosition& position_before,
+                                         const UniquePosition& position_after) {
+  if (!target_entity || target_entity->metadata().is_deleted()) {
+    return false;
+  }
+
+  UniquePosition target_entity_position =
+      UniquePosition::FromProto(target_entity->metadata().unique_position());
+  if (!target_entity_position.IsValid()) {
+    // Do not CHECK if the unique position is valid, and generate a new position
+    // instead. This could be the case when some data type did not use unique
+    // positions before and hence they don't have it for already-existing
+    // entities.
+    return false;
+  }
+
+  // Check that the existing unique position is in correct order to neighbours.
+  if (position_after.IsValid() &&
+      position_after.LessThan(target_entity_position)) {
+    return false;
+  }
+
+  if (position_before.IsValid() &&
+      target_entity_position.LessThan(position_before)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -424,6 +462,8 @@ void ClientTagBasedModelTypeProcessor::Put(
   DUMP_WILL_BE_CHECK(!data->specifics.has_encrypted());
   DUMP_WILL_BE_CHECK(!storage_key.empty());
   DUMP_WILL_BE_CHECK_EQ(type_, GetModelTypeFromSpecifics(data->specifics));
+
+  // TODO(crbug.com/351357559): support types with unique positions.
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -1434,6 +1474,149 @@ ClientTagBasedModelTypeProcessor::GetPossiblyTrimmedRemoteSpecifics(
     return sync_pb::EntitySpecifics::default_instance();
   }
   return entity->metadata().possibly_trimmed_base_specifics();
+}
+
+sync_pb::UniquePosition ClientTagBasedModelTypeProcessor::UniquePositionAfter(
+    const std::string& storage_key_before,
+    const ClientTagHash& target_client_tag_hash) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity_tracker_);
+
+  UniquePosition position_before = UniquePosition::FromProto(
+      GetUniquePositionForStorageKey(storage_key_before));
+  if (!position_before.IsValid()) {
+    DLOG(ERROR) << "Invalid unique position";
+    // TODO(crbug.com/351357559): add a metric or report a model error.
+    // Do not CHECK because the metadata is loaded from the disk and might
+    // contain corrupted data. Generate some consistent unique position on best
+    // effort.
+    return UniquePositionForInitialEntity(target_client_tag_hash);
+  }
+
+  const ProcessorEntity* target_entity =
+      entity_tracker_->GetEntityForTagHash(target_client_tag_hash);
+  if (ShouldReuseTrackedUniquePositionFor(target_entity, position_before,
+                                          UniquePosition())) {
+    CHECK(target_entity);
+    return target_entity->metadata().unique_position();
+  }
+
+  return UniquePosition::After(position_before, GenerateUniquePositionSuffix(
+                                                    target_client_tag_hash))
+      .ToProto();
+}
+
+sync_pb::UniquePosition ClientTagBasedModelTypeProcessor::UniquePositionBefore(
+    const std::string& storage_key_after,
+    const ClientTagHash& target_client_tag_hash) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity_tracker_);
+
+  UniquePosition position_after = UniquePosition::FromProto(
+      GetUniquePositionForStorageKey(storage_key_after));
+  if (!position_after.IsValid()) {
+    DLOG(ERROR) << "Invalid unique position";
+    // TODO(crbug.com/351357559): add a metric or report a model error.
+    // Do not CHECK because the metadata is loaded from the disk and might
+    // contain corrupted data. Generate some consistent unique position on best
+    // effort.
+    return UniquePositionForInitialEntity(target_client_tag_hash);
+  }
+
+  const ProcessorEntity* target_entity =
+      entity_tracker_->GetEntityForTagHash(target_client_tag_hash);
+  if (ShouldReuseTrackedUniquePositionFor(target_entity, UniquePosition(),
+                                          position_after)) {
+    CHECK(target_entity);
+    return target_entity->metadata().unique_position();
+  }
+
+  return UniquePosition::Before(position_after, GenerateUniquePositionSuffix(
+                                                    target_client_tag_hash))
+      .ToProto();
+}
+
+sync_pb::UniquePosition ClientTagBasedModelTypeProcessor::UniquePositionBetween(
+    const std::string& storage_key_before,
+    const std::string& storage_key_after,
+    const ClientTagHash& target_client_tag_hash) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity_tracker_);
+
+  UniquePosition position_before = UniquePosition::FromProto(
+      GetUniquePositionForStorageKey(storage_key_before));
+  UniquePosition position_after = UniquePosition::FromProto(
+      GetUniquePositionForStorageKey(storage_key_after));
+  if (!position_after.IsValid() || !position_before.IsValid()) {
+    DLOG(ERROR) << "Invalid unique position";
+    // TODO(crbug.com/351357559): add a metric or report a model error.
+    // Do not CHECK because the metadata is loaded from the disk and might
+    // contain corrupted data. Generate some consistent unique position on best
+    // effort.
+    return UniquePositionForInitialEntity(target_client_tag_hash);
+  }
+
+  if (!position_before.LessThan(position_after)) {
+    DLOG(ERROR) << "Error while generating unique position between positions"
+                << " which are in an unxepected order";
+    // TODO(crbug.com/351357559): add a metric or report a model error.
+    // The order in sync metadata is incorrect due to inconsistency with the
+    // model. This normally should not happen but generate some meaningful
+    // unique position to prevent data loss (in case the bridge verifies unique
+    // position validness).
+    return UniquePosition::After(position_before, GenerateUniquePositionSuffix(
+                                                      target_client_tag_hash))
+        .ToProto();
+  }
+
+  const ProcessorEntity* target_entity =
+      entity_tracker_->GetEntityForTagHash(target_client_tag_hash);
+  if (ShouldReuseTrackedUniquePositionFor(target_entity, position_before,
+                                          position_after)) {
+    CHECK(target_entity);
+    return target_entity->metadata().unique_position();
+  }
+
+  return UniquePosition::Between(
+             position_before, position_after,
+             GenerateUniquePositionSuffix(target_client_tag_hash))
+      .ToProto();
+}
+
+sync_pb::UniquePosition
+ClientTagBasedModelTypeProcessor::UniquePositionForInitialEntity(
+    const ClientTagHash& target_client_tag_hash) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity_tracker_);
+
+  const ProcessorEntity* target_entity =
+      entity_tracker_->GetEntityForTagHash(target_client_tag_hash);
+  if (ShouldReuseTrackedUniquePositionFor(target_entity, UniquePosition(),
+                                          UniquePosition())) {
+    CHECK(target_entity);
+    return target_entity->metadata().unique_position();
+  }
+
+  return UniquePosition::InitialPosition(
+             GenerateUniquePositionSuffix(target_client_tag_hash))
+      .ToProto();
+}
+
+sync_pb::UniquePosition
+ClientTagBasedModelTypeProcessor::GetUniquePositionForStorageKey(
+    const std::string& storage_key) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity_tracker_);
+
+  ProcessorEntity* entity =
+      entity_tracker_->GetEntityForStorageKey(storage_key);
+  if (!entity) {
+    DLOG(ERROR)
+        << "GetUniquePositionForStorageKey is called for non-existing entity";
+    return sync_pb::UniquePosition();
+  }
+
+  return entity->metadata().unique_position();
 }
 
 base::WeakPtr<ModelTypeChangeProcessor>

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -89,6 +90,26 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               GetPossiblyTrimmedRemoteSpecifics,
               (const std::string& storage_key),
               (const override));
+  MOCK_METHOD(sync_pb::UniquePosition,
+              UniquePositionAfter,
+              (const std::string&, const ClientTagHash&),
+              (const));
+  MOCK_METHOD(sync_pb::UniquePosition,
+              UniquePositionBefore,
+              (const std::string&, const ClientTagHash&),
+              (const));
+  MOCK_METHOD(sync_pb::UniquePosition,
+              UniquePositionBetween,
+              (const std::string&, const std::string&, const ClientTagHash&),
+              (const));
+  MOCK_METHOD(sync_pb::UniquePosition,
+              UniquePositionForInitialEntity,
+              (const ClientTagHash&),
+              (const));
+  MOCK_METHOD(sync_pb::UniquePosition,
+              GetUniquePositionForStorageKey,
+              (const std::string&),
+              (const));
 
   base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
 
