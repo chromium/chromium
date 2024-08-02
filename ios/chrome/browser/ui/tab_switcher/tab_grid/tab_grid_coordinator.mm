@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -157,6 +158,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   SceneStateObserver,
                                   SnackbarCoordinatorDelegate,
                                   TabContextMenuDelegate,
+                                  TabGridCommands,
                                   TabGridViewControllerDelegate,
                                   TabGroupPositioner,
                                   TabPresentationDelegate> {
@@ -344,6 +346,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:[self bookmarksCoordinator]
                      forProtocol:@protocol(BookmarksCommands)];
+    [incognitoBrowser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(TabGridCommands)];
   }
 }
 
@@ -1003,6 +1008,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       startDispatchingToTarget:[self bookmarksCoordinator]
                    forProtocol:@protocol(BookmarksCommands)];
 
+  [_regularBrowser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabGridCommands)];
+  [_incognitoBrowser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabGridCommands)];
+
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState addObserver:self];
 
@@ -1593,6 +1605,25 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
   [_bringAndroidTabsPromptCoordinator stop];
   _bringAndroidTabsPromptCoordinator = nil;
+}
+
+#pragma mark - TabGridCommands
+
+- (void)bringGroupIntoView:(const TabGroup*)group animated:(BOOL)animated {
+  TabGridPage pageToOpen;
+  if ([_regularGridCoordinator bringTabGroupIntoViewIfPresent:group
+                                                     animated:animated]) {
+    pageToOpen = TabGridPageRegularTabs;
+  } else if ([_incognitoGridCoordinator
+                 bringTabGroupIntoViewIfPresent:group
+                                       animated:animated]) {
+    pageToOpen = TabGridPageIncognitoTabs;
+  } else {
+    // Tab group is not opened, return;
+    return;
+  }
+  [self.baseViewController setCurrentPageAndPageControl:pageToOpen
+                                               animated:YES];
 }
 
 #pragma mark - SnackbarCoordinatorDelegate

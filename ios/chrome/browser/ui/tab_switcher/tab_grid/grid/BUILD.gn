@@ -10,6 +10,7 @@ source_set("grid") {
     "grid_coordinator_audience.h",
   ]
   deps = [
+    ":grid_item_identifier",
     ":grid_mediator",
     ":grid_ui",
     ":tab_group_grid_ui",

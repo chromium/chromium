@@ -93,6 +93,10 @@
   }
 }
 
+- (void)bringItemIntoView:(GridItemIdentifier*)item animated:(BOOL)animated {
+  // No-op.
+}
+
 - (void)dismissModals {
   // No-op.
 }

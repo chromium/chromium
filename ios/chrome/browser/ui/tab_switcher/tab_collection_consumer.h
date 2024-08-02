@@ -61,6 +61,9 @@ class WebStateID;
 - (void)moveItem:(GridItemIdentifier*)item
       beforeItem:(GridItemIdentifier*)nextItemIdentifier;
 
+// Brings `item` into view (in the visible elements of the grid).
+- (void)bringItemIntoView:(GridItemIdentifier*)item animated:(BOOL)animated;
+
 // Dismisses any presented modal UI.
 - (void)dismissModals;
 

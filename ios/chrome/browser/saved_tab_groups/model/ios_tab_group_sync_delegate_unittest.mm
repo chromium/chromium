@@ -9,6 +9,7 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/ios/wait_util.h"
 #import "base/uuid.h"
 #import "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #import "components/saved_tab_groups/saved_tab_group.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -121,6 +123,19 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
 
     delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(
         browser_list_, mock_service_, std::move(local_observer));
+
+    mock_application_handler_ =
+        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_tab_groups_handler_ =
+        OCMStrictProtocolMock(@protocol(TabGroupsCommands));
+    mock_tab_grid_handler_ = OCMStrictProtocolMock(@protocol(TabGridCommands));
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mock_application_handler_
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mock_tab_groups_handler_
+                             forProtocol:@protocol(TabGroupsCommands)];
+    [dispatcher startDispatchingToTarget:mock_tab_grid_handler_
+                             forProtocol:@protocol(TabGridCommands)];
   }
 
   // Returns a vector containing the 3 distant tabs.
@@ -221,6 +236,10 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
   const std::u16string kThirdTabTitle = u"third tab";
   const std::u16string kGroupTitle = u"my group title";
   const TabGroupColorId kGroupColor = TabGroupColorId::kPurple;
+
+  id mock_application_handler_;
+  id mock_tab_groups_handler_;
+  id mock_tab_grid_handler_;
 };
 
 // Tests adding a tab group when the currently foregrounded active scene is with
@@ -590,6 +609,25 @@ TEST_F(IOSTabGroupSyncDelegateTest,
                             CreateSavedTabs(saved_tab_group_id),
                             std::make_optional(0), saved_tab_group_id);
 
+  __block const TabGroup* tab_group_shown;
+  __block const TabGroup* tab_group_for_grid;
+  __block BOOL grid_updated = NO;
+  OCMStub([mock_application_handler_
+      displayTabGridInMode:TabGridOpeningMode::kRegular]);
+
+  OCMStub([mock_tab_groups_handler_
+              showTabGroup:(const TabGroup*)[OCMArg anyPointer]])
+      .andDo(^(NSInvocation* invocation) {
+        [invocation getArgument:&tab_group_shown atIndex:2];
+      });
+
+  OCMStub([mock_tab_grid_handler_
+              bringGroupIntoView:(const TabGroup*)[OCMArg anyPointer]
+                        animated:NO])
+      .andDo(^(NSInvocation* invocation) {
+        grid_updated = YES;
+        [invocation getArgument:&tab_group_for_grid atIndex:2];
+      });
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
       .WillOnce(Return(saved_group));
   delegate_->HandleOpenTabGroupRequest(
@@ -602,7 +640,19 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   const auto local_tab_group_info =
       tab_groups::utils::GetLocalTabGroupInfo(browser_list_, local_group_id);
   EXPECT_EQ(browser_->GetWebStateList(), local_tab_group_info.web_state_list);
-  EXPECT_EQ(1u, local_tab_group_info.web_state_list->GetGroups().size());
+  const auto groups = local_tab_group_info.web_state_list->GetGroups();
+  EXPECT_EQ(1u, groups.size());
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_tab_groups_handler_);
+  // The grid operation is happening with a delay.
+  EXPECT_TRUE(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Milliseconds(300), ^{
+        return grid_updated;
+      }));
+  EXPECT_OCMOCK_VERIFY(mock_tab_grid_handler_);
+  EXPECT_EQ(tab_group_shown, tab_group_for_grid);
+  EXPECT_TRUE(groups.contains(tab_group_shown));
+  EXPECT_TRUE(groups.contains(tab_group_for_grid));
 }
 
 // Tests opening a tab group from sync that is already open locally in this
@@ -614,8 +664,8 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "| a [0 b* c ] d", browser_->GetBrowserState()));
-  LocalTabGroupID local_id_group_0 =
-      builder.GetTabGroupForIdentifier('0')->tab_group_id();
+  const TabGroup* local_group = builder.GetTabGroupForIdentifier('0');
+  LocalTabGroupID local_id_group_0 = local_group->tab_group_id();
   ASSERT_EQ(1u, delegate_->GetLocalTabGroupIds().size());
   ASSERT_EQ(1u, web_state_list->GetGroups().size());
   // Create the associated distant group.
@@ -625,6 +675,16 @@ TEST_F(IOSTabGroupSyncDelegateTest,
                             std::make_optional(0), saved_tab_group_id);
   saved_group.SetLocalGroupId(local_id_group_0);
 
+  OCMStub([mock_application_handler_
+      displayTabGridInMode:TabGridOpeningMode::kRegular]);
+
+  OCMStub([mock_tab_groups_handler_ showTabGroup:local_group]);
+
+  __block BOOL grid_updated = NO;
+  OCMStub([mock_tab_grid_handler_ bringGroupIntoView:local_group animated:NO])
+      .andDo(^(NSInvocation* invocation) {
+        grid_updated = YES;
+      });
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
       .WillOnce(Return(saved_group));
   delegate_->HandleOpenTabGroupRequest(
@@ -634,6 +694,14 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   auto local_group_ids = delegate_->GetLocalTabGroupIds();
   EXPECT_EQ(1u, local_group_ids.size());
   EXPECT_EQ(1u, web_state_list->GetGroups().size());
+  EXPECT_OCMOCK_VERIFY(mock_application_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_tab_groups_handler_);
+  // The grid operation is happening with a delay.
+  EXPECT_TRUE(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Milliseconds(300), ^{
+        return grid_updated;
+      }));
+  EXPECT_OCMOCK_VERIFY(mock_tab_grid_handler_);
 }
 
 // Tests opening a tab group from sync that is already open locally on another
@@ -681,16 +749,6 @@ TEST_F(IOSTabGroupSyncDelegateTest,
           scene_state.UIEnabled = YES;
         });
   }
-
-  id mock_application_handler_ =
-      OCMStrictProtocolMock(@protocol(ApplicationCommands));
-  id mock_tab_groups_handler_ =
-      OCMStrictProtocolMock(@protocol(TabGroupsCommands));
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  [dispatcher startDispatchingToTarget:mock_application_handler_
-                           forProtocol:@protocol(ApplicationCommands)];
-  [dispatcher startDispatchingToTarget:mock_tab_groups_handler_
-                           forProtocol:@protocol(TabGroupsCommands)];
 
   OCMStub([mock_application_handler_
       displayTabGridInMode:TabGridOpeningMode::kRegular]);

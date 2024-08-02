@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_coordinator.h"
@@ -68,6 +69,19 @@
 
 - (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup {
   [self showTabGroup:tabGroup forTabGridOpening:YES];
+}
+
+- (BOOL)bringTabGroupIntoViewIfPresent:(const TabGroup*)tabGroup
+                              animated:(BOOL)animated {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  if (!webStateList->ContainsGroup(tabGroup)) {
+    return NO;
+  }
+  GridItemIdentifier* groupIdentifier =
+      [GridItemIdentifier groupIdentifier:tabGroup
+                         withWebStateList:webStateList];
+  [self.gridViewController bringItemIntoView:groupIdentifier animated:animated];
+  return YES;
 }
 
 - (LegacyGridTransitionLayout*)transitionLayout {

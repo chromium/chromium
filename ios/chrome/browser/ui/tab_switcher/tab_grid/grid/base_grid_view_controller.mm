@@ -1220,6 +1220,15 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       }];
 }
 
+- (void)bringItemIntoView:(GridItemIdentifier*)item animated:(BOOL)animated {
+  NSIndexPath* indexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
+  [self.collectionView
+      scrollToItemAtIndexPath:indexPath
+             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                     animated:animated];
+}
+
 - (void)dismissModals {
   ios::provider::DismissModalsForCollectionView(self.collectionView);
 }

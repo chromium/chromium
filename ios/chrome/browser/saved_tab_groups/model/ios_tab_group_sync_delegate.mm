@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -98,7 +99,8 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
 
   LocalTabGroupInfo tab_group_info =
       GetLocalTabGroupInfo(browser_list_, *saved_tab_group);
-  if (tab_group_info.tab_group) {
+  const TabGroup* group = tab_group_info.tab_group;
+  if (group) {
     if (!tab_group_info.browser) {
       return;
     }
@@ -146,14 +148,38 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
       [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
       id<TabGroupsCommands> tabGroupsHandler =
           HandlerForProtocol(dispatcher, TabGroupsCommands);
-      [tabGroupsHandler showTabGroup:tab_group_info.tab_group];
+      [tabGroupsHandler showTabGroup:group];
 
       return;
     }
   } else {
-    CreateLocalTabGroupImpl(*saved_tab_group, origin_browser);
+    std::optional<LocalTabGroupID> tab_group_id =
+        CreateLocalTabGroupImpl(*saved_tab_group, origin_browser);
+    if (!tab_group_id) {
+      return;
+    }
+    LocalTabGroupInfo new_tab_group_info =
+        GetLocalTabGroupInfo(browser_list_, tab_group_id.value());
+    group = new_tab_group_info.tab_group;
   }
-  // TODO(crbug.com/329626315): Open the group in the UI of `target_browser`.
+
+  CommandDispatcher* dispatcher = target_browser->GetCommandDispatcher();
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+
+  id<TabGroupsCommands> tabGroupsHandler =
+      HandlerForProtocol(dispatcher, TabGroupsCommands);
+  [tabGroupsHandler showTabGroup:group];
+
+  // Moves back to the grid containing the group after it has been opened.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.15 * NSEC_PER_SEC)),
+      dispatch_get_main_queue(), ^{
+        id<TabGridCommands> tabGridHandler =
+            HandlerForProtocol(dispatcher, TabGridCommands);
+        [tabGridHandler bringGroupIntoView:group animated:NO];
+      });
 }
 
 std::unique_ptr<ScopedLocalObservationPauser>
@@ -455,25 +481,25 @@ void IOSTabGroupSyncDelegate::UpdateLocalGroupVisualData(
                                                        visual_data);
 }
 
-void IOSTabGroupSyncDelegate::CreateLocalTabGroupImpl(
+std::optional<LocalTabGroupID> IOSTabGroupSyncDelegate::CreateLocalTabGroupImpl(
     const SavedTabGroup& saved_tab_group,
     Browser* browser) {
   if (saved_tab_group.saved_tabs().size() == 0) {
-    return;
+    return std::nullopt;
   }
 
   LocalTabGroupInfo tab_group_info =
       GetLocalTabGroupInfo(browser_list_, saved_tab_group);
   if (tab_group_info.tab_group) {
     // This group already exists locally.
-    return;
+    return std::nullopt;
   }
 
   // If no browser was passed, get the most active one.
   browser = browser ? browser : GetMostActiveSceneBrowser();
 
   if (!browser) {
-    return;
+    return std::nullopt;
   }
 
   auto lock = CreateScopedLocalObserverPauser();
@@ -510,5 +536,7 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroupImpl(
   }
 
   web_state_list->CreateGroup(inserted_indexes, visual_data, local_group_id);
+
+  return std::make_optional(local_group_id);
 }
 }  // namespace tab_groups

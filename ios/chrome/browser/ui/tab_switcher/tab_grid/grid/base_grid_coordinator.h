@@ -51,6 +51,11 @@ class Browser;
 // Shows the TabGroup view while the TabGrid is being opened at the same time.
 - (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup;
 
+// Brings the `tabGroup` into view by making it part of the visible element of
+// its grid, if present. Returns whether the group was present.
+- (BOOL)bringTabGroupIntoViewIfPresent:(const TabGroup*)tabGroup
+                              animated:(BOOL)animated;
+
 // Returns the transition layout for this grid.
 - (LegacyGridTransitionLayout*)transitionLayout;
 
