@@ -24,6 +24,10 @@
 namespace commerce {
 
 namespace {
+
+const char kEndpointUrl[] =
+    "https://memex-pa.googleapis.com/v1/shopping/products:specifications";
+
 const char kAltTextKey[] = "alternativeText";
 const char kDescriptionKey[] = "description";
 const char kFaviconUrlKey[] = "faviconUrl";
@@ -220,10 +224,16 @@ void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     return;
   }
 
-  auto fetcher = CreateEndpointFetcher(
-      GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kProductSpecificationsUrlKey)),
-      kPostHttpMethod, GetJsonStringForProductClusterIds(cluster_ids));
+  std::string specs_url =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kProductSpecificationsUrlKey);
+  if (specs_url.empty()) {
+    specs_url = kEndpointUrl;
+  }
+
+  auto fetcher =
+      CreateEndpointFetcher(GURL(specs_url), kPostHttpMethod,
+                            GetJsonStringForProductClusterIds(cluster_ids));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
