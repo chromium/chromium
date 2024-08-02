@@ -28,7 +28,18 @@
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 
+// Exposes methods to allow calling the from helper free functions.
+@interface SharingCoordinator (ForHelperFunction)
+
+// Starts the download if `directoryCreated`. If not, show the share menu
+// without file options.
+- (void)startDownloadForWebState:(web::WebState*)webState
+                directoryCreated:(BOOL)directoryCreated;
+
+@end
+
 namespace {
+
 // The path in the temp directory containing documents that are to be opened in
 // other applications.
 static NSString* const kDocumentsTemporaryPath = @"OpenIn";
@@ -63,6 +74,21 @@ void RemoveAllStoredDocumentsAtPath(NSString* path) {
   }
 }
 
+// Remove a file stored at `path` if it exists.
+void RemoveFileAtPath(NSString* path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  NSFileManager* file_manager = [NSFileManager defaultManager];
+
+  if ([file_manager fileExistsAtPath:path]) {
+    NSError* error = nil;
+    if (![file_manager removeItemAtPath:path error:&error]) {
+      DLOG(ERROR) << "Failed to remove file: "
+                  << base::SysNSStringToUTF8([error description]);
+    }
+  }
+}
+
 // Ensures the destination directory is created and any contained obsolete files
 // are deleted. Returns YES if the directory is created successfully.
 BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
@@ -76,6 +102,17 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   // Remove all documents that might be still on temporary storage.
   RemoveAllStoredDocumentsAtPath(temporary_directory_path);
   return YES;
+}
+
+// Starts download for `weak_web_state` if `directory_created` using
+// `coordinator`.
+void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
+                              base::WeakPtr<web::WebState> weak_web_state,
+                              BOOL directory_created) {
+  if (web::WebState* web_state = weak_web_state.get()) {
+    [coordinator startDownloadForWebState:web_state
+                         directoryCreated:directory_created];
+  }
 }
 
 }  // namespace
@@ -125,7 +162,9 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 @end
 
-@implementation SharingCoordinator
+@implementation SharingCoordinator {
+  scoped_refptr<base::SequencedTaskRunner> _taskRunner;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -168,6 +207,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
     _originView = originView;
     _originRect = originRect;
     _anchor = anchor;
+    _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
   }
   return self;
 }
@@ -197,20 +238,18 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  web::WebState* currentWebState =
+  web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  if (currentWebState &&
-      ShareFileDownloadTabHelper::ShouldDownload(currentWebState)) {
+  if (activeWebState &&
+      ShareFileDownloadTabHelper::ShouldDownload(activeWebState)) {
     // Creating the directory can block the main thread, so perform it on a
     // background sequence, then on current sequence complete the workflow.
     __weak SharingCoordinator* weakSelf = self;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+    _taskRunner->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&CreateDestinationDirectoryAndRemoveObsoleteFiles),
-        base::BindOnce(^(BOOL directoryCreated) {
-          [weakSelf startDownloadWithExistingDirectory:directoryCreated
-                                              webState:currentWebState];
-        }));
+        base::BindOnce(&StartDownloadForWebState, weakSelf,
+                       activeWebState->GetWeakPtr()));
   } else {
     [self startActivityService];
   }
@@ -244,7 +283,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
   // If a new download with a file with the same name exist it will throw an
   // error in downloadDidFailWithError method.
-  [self removeFile];
+  _taskRunner->PostTask(FROM_HERE,
+                        base::BindOnce(&RemoveFileAtPath, self.filePath));
 }
 
 #pragma mark - QRGenerationCommands
@@ -266,10 +306,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 #pragma mark - Private Methods
 
-// Starts download only if the final directory is created, if not created, shows
-// the share menu without file options.
-- (void)startDownloadWithExistingDirectory:(BOOL)directoryCreated
-                                  webState:(web::WebState*)webState {
+- (void)startDownloadForWebState:(web::WebState*)webState
+                directoryCreated:(BOOL)directoryCreated {
   if (directoryCreated) {
     [self startDisplayDownloadOverlayOnWebView:webState];
     [self startDownloadFromWebState:webState];
@@ -303,19 +341,18 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 // Starts downloading the file currently displayed at path `self.filePath`.
 - (void)startDownloadFromWebState:(web::WebState*)webState {
   self.isDownloadCanceled = NO;
-  NSString* tempDirPath = GetTemporaryDocumentDirectory();
   ShareFileDownloadTabHelper* helper =
       ShareFileDownloadTabHelper::FromWebState(webState);
-  self.filePath = [tempDirPath
+  self.filePath = [GetTemporaryDocumentDirectory()
       stringByAppendingPathComponent:base::SysUTF16ToNSString(
                                          helper->GetFileNameSuggestion())];
   self.fileNSURL = [NSURL fileURLWithPath:self.filePath];
 
-      __weak SharingCoordinator* weakSelf = self;
-      webState->DownloadCurrentPage(self.filePath, self,
-                                    ^(id<CRWWebViewDownload> download) {
-                                      weakSelf.download = download;
-                                    });
+  __weak SharingCoordinator* weakSelf = self;
+  webState->DownloadCurrentPage(self.filePath, self,
+                                ^(id<CRWWebViewDownload> download) {
+                                  weakSelf.download = download;
+                                });
 }
 
 // Shows an overlayed spinner on the top view to indicate that a file download
@@ -328,7 +365,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   self.overlay = [[ShareDownloadOverlayCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                        webState:currentWebState];
+                         webView:currentWebState->GetView()];
   [self.overlay start];
 }
 
@@ -337,23 +374,6 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   [self.overlay stop];
   self.overlay = nil;
   [self.dispatcher stopDispatchingToTarget:self];
-}
-
-// Removes downloaded file at `self.filePath`.
-- (void)removeFile {
-  if ([[NSFileManager defaultManager] fileExistsAtPath:self.filePath]) {
-    NSString* tempFilePath = self.filePath;
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(^{
-          NSError* error = nil;
-          if (![[NSFileManager defaultManager] removeItemAtPath:tempFilePath
-                                                          error:&error]) {
-            DLOG(ERROR) << "Failed to remove file: "
-                        << base::SysNSStringToUTF8([error description]);
-          }
-        }));
-  }
 }
 
 #pragma mark - CRWWebViewDownloadDelegate
@@ -385,17 +405,21 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   [self stopDisplayDownloadOverlay];
   self.isCancelling = YES;
   __weak SharingCoordinator* weakSelf = self;
-  [self.download cancelDownload:^() {
-    weakSelf.isDownloadCanceled = YES;
-    weakSelf.isCancelling = NO;
-    if (weakSelf.shouldRestartCoordinator) {
-      // Self will be destroyed after this call so it should not be used
-      // anymore.
-      [weakSelf stopAndStartNewCoordinator];
-    }
+  [self.download cancelDownload:^{
+    [weakSelf downloadWasCancelled];
   }];
   UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                             OpenInDownloadResult::kCanceled);
+}
+
+- (void)downloadWasCancelled {
+  self.isDownloadCanceled = YES;
+  self.isCancelling = NO;
+  if (self.shouldRestartCoordinator) {
+    // Self will be destroyed after this call so it should not be used
+    // anymore.
+    [self stopAndStartNewCoordinator];
+  }
 }
 
 @end
