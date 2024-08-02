@@ -12,31 +12,34 @@
 namespace ash {
 
 // The time duration for transformation animations.
-constexpr base::TimeDelta kTransition = base::Milliseconds(300);
+inline constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 
 // In the conceptual overview table, the horizontal space between two adjacent
 // items.
-constexpr int kHorizontalSpaceBetweenItemsDp = 10;
+inline constexpr int kHorizontalSpaceBetweenItemsDp = 10;
 
 // The vertical space between two adjacent items.
-constexpr int kVerticalSpaceBetweenItemsDp = 15;
+inline constexpr int kVerticalSpaceBetweenItemsDp = 15;
 
 // The amount we want to enlarge the dragged overview window.
-constexpr int kDraggingEnlargeDp = 10;
+inline constexpr int kDraggingEnlargeDp = 10;
 
 // Windows whose aspect ratio surpass this (width twice as large as height
 // or vice versa) will be classified as too wide or too tall and will be
 // handled slightly differently in overview mode.
-constexpr float kExtremeWindowRatioThreshold = 2.f;
+inline constexpr float kExtremeWindowRatioThreshold = 2.f;
 
 // The shadow types corresponding to the default and dragged states.
-constexpr SystemShadow::Type kDefaultShadowType =
+inline constexpr SystemShadow::Type kDefaultShadowType =
     SystemShadow::Type::kElevation12;
-constexpr SystemShadow::Type kDraggedShadowType =
+inline constexpr SystemShadow::Type kDraggedShadowType =
     SystemShadow::Type::kElevation24;
 
+// Threshold for clamping overview grid bounds.
+inline constexpr float kOverviewGridClampThresholdRatio = 1.0 / 3.0;
+
 // Rounded corner radii applied on the wallpaper clip rect.
-constexpr gfx::RoundedCornersF kWallpaperClipRoundedCornerRadii(20.f);
+inline constexpr gfx::RoundedCornersF kWallpaperClipRoundedCornerRadii(20.f);
 
 // The padding applied to the side of the effective bounds without neighboring
 // widget.

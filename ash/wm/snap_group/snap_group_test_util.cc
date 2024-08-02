@@ -11,10 +11,13 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_test_util.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -109,6 +112,50 @@ void SnapTwoTestWindows(aura::Window* window1,
     EXPECT_EQ(primary_bounds.height() + secondary_bounds.height() +
                   divider_bounds.height(),
               work_area.height());
+  }
+}
+
+void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
+                                      aura::Window* w2,
+                                      SplitViewDivider* divider) {
+  gfx::Rect w1_bounds(w1->GetTargetBounds());
+  wm::ConvertRectToScreen(w1->GetRootWindow(), &w1_bounds);
+  gfx::Rect w2_bounds(w2->GetTargetBounds());
+  wm::ConvertRectToScreen(w2->GetRootWindow(), &w2_bounds);
+
+  const auto divider_bounds =
+      divider->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  EXPECT_FALSE(w1_bounds.IsEmpty());
+  EXPECT_FALSE(w2_bounds.IsEmpty());
+  EXPECT_FALSE(divider_bounds.IsEmpty());
+
+  gfx::Rect union_bounds;
+  union_bounds.Union(w1_bounds);
+  union_bounds.Union(w2_bounds);
+  EXPECT_FALSE(w1_bounds.Contains(divider_bounds));
+  EXPECT_FALSE(w2_bounds.Contains(divider_bounds));
+  if (IsLayoutHorizontal(w1)) {
+    EXPECT_EQ(w1_bounds.right(), divider_bounds.x());
+    EXPECT_EQ(w2_bounds.x(), divider_bounds.right());
+  } else {
+    EXPECT_EQ(w1_bounds.bottom(), divider_bounds.y());
+    EXPECT_EQ(w2_bounds.y(), divider_bounds.bottom());
+  }
+
+  union_bounds.Union(divider_bounds);
+  EXPECT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area(),
+      union_bounds);
+}
+
+void UnionBoundsEqualToWorkAreaBounds(SnapGroup* snap_group) {
+  aura::Window* w1 = snap_group->window1();
+  aura::Window* w2 = snap_group->window2();
+  auto* divider = snap_group->snap_group_divider();
+  if (IsPhysicallyLeftOrTop(w1)) {
+    UnionBoundsEqualToWorkAreaBounds(w1, w2, divider);
+  } else {
+    UnionBoundsEqualToWorkAreaBounds(w2, w1, divider);
   }
 }
 
