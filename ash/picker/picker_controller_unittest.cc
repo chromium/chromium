@@ -790,6 +790,42 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
           PickerSearchResult::Emoji(u"😢"), PickerSearchResult::Emoji(u"👏")));
 }
 
+TEST_F(PickerControllerTest, AddRecentEmojiWithFocus) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(
+      input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = true});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  controller.ToggleWidget();
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoji(u"abc"));
+
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              Contains(PickerSearchResult::Emoji(u"abc")));
+}
+
+TEST_F(PickerControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(
+      input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = false});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  controller.ToggleWidget();
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoji(u"abc"));
+
+  EXPECT_THAT(controller.GetSuggestedEmoji(),
+              Not(Contains(PickerSearchResult::Emoji(u"abc"))));
+}
+
 TEST_F(PickerControllerTest,
        SuggestedEmojiReturnsRecentEmojiEmoticonAndSymbol) {
   PickerController controller;

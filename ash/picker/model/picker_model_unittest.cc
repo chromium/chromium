@@ -216,5 +216,36 @@ TEST(PickerModel, GetModeForBlankStringsSelectionState) {
   EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
 }
 
+TEST(PickerModel, UnfocusedShouldLearn) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+
+  PickerModel model(nullptr, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_TRUE(model.should_do_learning());
+}
+
+TEST(PickerModel, FocusedShouldLearnIfLearningEnabled) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client(
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = true});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_TRUE(model.should_do_learning());
+}
+
+TEST(PickerModel, FocusedShouldLearnIfLearningDisabled) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client(
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .should_do_learning = false});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_FALSE(model.should_do_learning());
+}
+
 }  // namespace
 }  // namespace ash

@@ -27,6 +27,7 @@ class FakeTextInputClient : public TextInputClient {
     TextInputMode mode = TEXT_INPUT_MODE_NONE;
     TextInputFlags flags = TEXT_INPUT_FLAG_NONE;
     bool can_insert_image = false;
+    bool should_do_learning = false;
     gfx::Rect caret_bounds;
   };
 
@@ -138,6 +139,7 @@ class FakeTextInputClient : public TextInputClient {
   bool can_insert_image_ = false;
   std::optional<GURL> last_inserted_image_url_;
   gfx::Rect caret_bounds_;
+  bool should_do_learning_ = false;
 };
 
 }  // namespace ui

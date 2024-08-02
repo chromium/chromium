@@ -691,13 +691,12 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // Update emoji history in prefs the result is an emoji/symbol/emoticon.
-  std::visit(base::Overloaded{[&](const PickerSearchResult::EmojiData& data) {
-                                emoji_history_model_->UpdateRecentEmoji(
-                                    EmojiResultTypeToCategory(data.type),
-                                    base::UTF16ToUTF8(data.text));
-                              },
-                              [](const auto& data) {}},
-             result.data());
+  CHECK(model_);
+  if (auto* data = std::get_if<PickerSearchResult::EmojiData>(&result.data());
+      data != nullptr && model_->should_do_learning()) {
+    emoji_history_model_->UpdateRecentEmoji(
+        EmojiResultTypeToCategory(data->type), base::UTF16ToUTF8(data->text));
+  }
 
   std::visit(
       base::Overloaded{

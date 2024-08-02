@@ -50,6 +50,8 @@ PickerModel::PickerModel(ui::TextInputClient* focused_client,
                  focused_client->GetTextInputType() !=
                      ui::TextInputType::TEXT_INPUT_TYPE_NONE),
       selected_text_(GetSelectedText(focused_client)),
+      should_do_learning_(focused_client == nullptr ||
+                          focused_client->ShouldDoLearning()),
       selection_range_(GetSelectionRange(focused_client)),
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
       editor_status_(editor_status),
@@ -109,6 +111,10 @@ std::vector<PickerCategory> PickerModel::GetRecentResultsCategories() const {
 
 std::u16string_view PickerModel::selected_text() const {
   return selected_text_;
+}
+
+bool PickerModel::should_do_learning() const {
+  return should_do_learning_;
 }
 
 bool PickerModel::is_caps_lock_enabled() const {

@@ -42,6 +42,7 @@ class ASH_EXPORT PickerModel {
   std::vector<PickerCategory> GetRecentResultsCategories() const;
 
   std::u16string_view selected_text() const;
+  bool should_do_learning() const;
 
   bool is_caps_lock_enabled() const;
 
@@ -52,6 +53,7 @@ class ASH_EXPORT PickerModel {
  private:
   bool has_focus_;
   std::u16string selected_text_;
+  bool should_do_learning_;
   gfx::Range selection_range_;
   bool is_caps_lock_enabled_;
   EditorStatus editor_status_;
