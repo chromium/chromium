@@ -167,7 +167,7 @@ bool IbanSaveManager::MatchesExistingServerIban(
   return std::ranges::any_of(
       payments_data_manager().GetServerIbans(),
       [&import_candidate](const auto& iban) {
-        return iban->MatchesPrefixSuffixAndLength(import_candidate);
+        return iban->MatchesPrefixAndSuffix(import_candidate);
       });
 }
 

@@ -337,7 +337,6 @@ TEST_F(PaymentsDataManagerTest,
   Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"FR76");
   server_iban.set_suffix(u"0189");
-  server_iban.set_length(27);
   server_iban.set_use_date(AutofillClock::Now() - base::Days(2));
 
   AddLocalIban(local_iban);
