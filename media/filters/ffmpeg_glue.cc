@@ -18,9 +18,10 @@
 namespace media {
 
 // Kill switches in case things explode. Remove after M132.
+// TODO(crbug.com/355485812): Re-enable this flag.
 BASE_FEATURE(kAllowOnlyAudioCodecsDuringDemuxing,
              "AllowOnlyAudioCodecsDuringDemuxing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kForbidH264ParsingDuringDemuxing,
              "ForbidH264ParsingDuringDemuxing",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -120,7 +121,8 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   // We don't allow H.264 parsing during demuxing since we have our own parser
   // and the ffmpeg one increases memory usage unnecessarily.
   if (base::FeatureList::IsEnabled(kForbidH264ParsingDuringDemuxing)) {
-    format_context_->flags |= AVFMT_FLAG_NOH264PARSE;
+    // TODO(crbug.com/355485812): Re-enable this flag.
+    // format_context_->flags |= AVFMT_FLAG_NOH264PARSE;
   }
 
   // Ensures format parsing errors will bail out. From an audit on 11/2017, all
