@@ -45,6 +45,14 @@ using ChromeMLModel = uintptr_t;
 using ChromeMLSession = uintptr_t;
 // Opaque handle to an object that allows canceling operations.
 using ChromeMLCancel = uintptr_t;
+// Opaque handle to an instance of a ChromeMLTS model.
+using ChromeMLTSModel = uintptr_t;
+
+// A contiguous byte span.
+struct ChromeMLByteSpan {
+  uint8_t* data;
+  size_t size;
+};
 
 // Describes a ChromeML model's underlying tensors.
 struct ChromeMLModelData {
@@ -105,6 +113,12 @@ struct ChromeMLExecutionOutput {
   // Null-terminated text content for this output chunk, or null if there is no
   // new text output.
   const char* text;
+};
+
+struct ChromeMLTSModelDescriptor {
+  ChromeMLByteSpan model;
+  ChromeMLByteSpan sp_model;
+  size_t dimensions;
 };
 
 // Status value indicating the result of ad hoc safety classification.
@@ -199,6 +213,35 @@ struct ChromeMLMetricsFns {
                                       int min,
                                       int exclusive_max,
                                       size_t buckets);
+};
+
+struct ChromeMLTSAPI {
+  // Construct a text safety model.
+  // Destroy the returned object by passing it to DestroyModel.
+  ChromeMLTSModel (*CreateModel)(const ChromeMLTSModelDescriptor* descriptor);
+
+  // Destroy a text safety model.
+  void (*DestroyModel)(ChromeMLTSModel model);
+
+  // Performs ad hoc safety classification on a chunk of text using the
+  // classifier defined by `model`.
+  //
+  // On input, `scores` must point to an output buffer to receive the safety
+  // class scores, and `num_scores` must point to the capacity of that buffer in
+  // number of elements.
+  //
+  // On success this returns kOk on and `*num_scores` is set to the actual
+  // number of score values written into the output buffer. This number is
+  // guaranteed to be no larger than the input value of `*num_scores`.
+  //
+  // If this fails with kInsufficientStorage, no `scores` are populated and
+  // `*num_scores` is set to the correct number scores the caller should expect.
+  //
+  // If `model` does not define a safety classifier, this returns kNoClassifier.
+  ChromeMLSafetyResult (*ClassifyTextSafety)(ChromeMLTSModel model,
+                                             const char* text,
+                                             float* scores,
+                                             size_t* num_scores);
 };
 
 // IMPORTANT: All functions that call ChromeMLAPI should be annotated with
@@ -322,6 +365,8 @@ struct ChromeMLAPI {
   ChromeMLCancel (*CreateCancel)();
   void (*DestroyCancel)(ChromeMLCancel cancel);
   void (*CancelExecuteModel)(ChromeMLCancel cancel);
+
+  ChromeMLTSAPI ts_api;
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.
