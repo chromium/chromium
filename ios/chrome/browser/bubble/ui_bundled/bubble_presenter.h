@@ -64,8 +64,8 @@ class DeviceSwitcherResultDispatcher;
 // Stops this presenter.
 - (void)stop;
 
-// Presents a bubble associated with the Discover feed header's menu button.
-- (void)presentDiscoverFeedHeaderTipBubble;
+// Presents a bubble associated with the Discover feed's menu button.
+- (void)presentDiscoverFeedMenuTipBubble;
 
 // Shows a relevant Follow help bubble while browsing a site, if applicable.
 - (void)presentFollowWhileBrowsingTipBubble;

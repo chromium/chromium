@@ -508,13 +508,16 @@
   [self.NTPViewController omniboxDidResignFirstResponder];
 }
 
-- (void)constrainFeedHeaderManagementButtonNamedGuide {
+- (void)constrainNamedGuideForFeedIPH {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
-  [LayoutGuideCenterForBrowser(self.browser)
-      referenceView:self.feedHeaderViewController.managementButton
-          underName:kFeedHeaderManagementButtonGuide];
+  UIView* viewToConstrain =
+      IsHomeCustomizationEnabled()
+          ? [self.headerViewController customizationMenuButton]
+          : self.feedHeaderViewController.managementButton;
+  [LayoutGuideCenterForBrowser(self.browser) referenceView:viewToConstrain
+                                                 underName:kFeedIPHNamedGuide];
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {

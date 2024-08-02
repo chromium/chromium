@@ -46,9 +46,8 @@ extern GuideName* const kToolsMenuGuide;
 // A guide that is constrained to match the frame of the last-tapped voice
 // search button.
 extern GuideName* const kVoiceSearchButtonGuide;
-// A guide that is constrained to match the frame of the feed header's top-level
-// management button.
-extern GuideName* const kFeedHeaderManagementButtonGuide;
+// A guide that is constrained to present the feed IPH on a view.
+extern GuideName* const kFeedIPHNamedGuide;
 // A guide that is constrained to match the frame of the bottom toolbar in the
 // tab grid.
 extern GuideName* const kTabGridBottomToolbarGuide;

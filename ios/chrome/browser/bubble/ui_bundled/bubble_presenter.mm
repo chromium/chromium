@@ -258,25 +258,31 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   self.sharePageIPHBubblePresenter = presenter;
 }
 
-- (void)presentDiscoverFeedHeaderTipBubble {
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+- (void)presentDiscoverFeedMenuTipBubble {
+  BubbleArrowDirection arrowDirection = IsHomeCustomizationEnabled()
+                                            ? BubbleArrowDirectionLeading
+                                            : BubbleArrowDirectionDown;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
 
-  UIView* menuButton = [self.layoutGuideCenter
-      referencedViewUnderName:kFeedHeaderManagementButtonGuide];
+  UIView* menuButton =
+      [self.layoutGuideCenter referencedViewUnderName:kFeedIPHNamedGuide];
   // Checks "canPresentBubble" after checking that the NTP with feed is visible.
   // This ensures that the feature tracker doesn't trigger the IPH event if the
   // bubble isn't shown, which would prevent it from ever being shown again.
   if (!menuButton || ![self canPresentBubble]) {
     return;
   }
-  CGPoint discoverFeedHeaderAnchor =
+  CGPoint discoverFeedMenuAnchor =
       [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
-  // Anchor the IPH 1/3 of the way through the button. Anchoring it midway
-  // doesn't work since the button is too close to the edge, which would cause
-  // the bubble to bleed out the screen.
-  discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 3;
+
+  // Slightly move IPH to ensure that the bubble doesn't bleed out the screen.
+  if (IsHomeCustomizationEnabled()) {
+    discoverFeedMenuAnchor.x += menuButton.frame.size.width / 2;
+    discoverFeedMenuAnchor.y += menuButton.frame.size.height / 2;
+  } else {
+    discoverFeedMenuAnchor.x += menuButton.frame.size.width / 3;
+  }
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
@@ -286,7 +292,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                     direction:arrowDirection
                          text:text
         voiceOverAnnouncement:nil
-                  anchorPoint:discoverFeedHeaderAnchor];
+                  anchorPoint:discoverFeedMenuAnchor];
   if (!presenter)
     return;
 

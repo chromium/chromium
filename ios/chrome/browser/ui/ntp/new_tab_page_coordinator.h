@@ -77,8 +77,8 @@ class WebState;
 // Tell location bar has taken focus.
 - (void)locationBarDidBecomeFirstResponder;
 
-// Constrains the named layout guide for the feed header management button.
-- (void)constrainFeedHeaderManagementButtonNamedGuide;
+// Constrains the named layout guide for the feed IPH.
+- (void)constrainNamedGuideForFeedIPH;
 
 // Updates the new tab page based on if there is unseen content in the Following
 // feed.

@@ -288,7 +288,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setMinimumHeight];
   }
 
-  [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
+  [self.bubblePresenter presentDiscoverFeedMenuTipBubble];
 
   // Scrolls NTP into feed initially if `shouldScrollIntoFeed`.
   if (self.shouldScrollIntoFeed) {
