@@ -264,6 +264,12 @@ const base::FeatureParam<bool> kAutofillEnableEmailHeuristicAutocompleteEmail{
     &kAutofillEnableEmailHeuristicOnlyAddressForms, "autocomplete_email",
     false};
 
+// Control if Autofill supports German transliteration.
+// TODO(crbug.com/328968064): Remove when/if launched.
+BASE_FEATURE(kAutofillEnableGermanTransliteration,
+             "AutofillEnableGermanTransliteration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/40734406): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,

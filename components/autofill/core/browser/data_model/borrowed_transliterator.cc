@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -79,7 +81,9 @@ std::unique_ptr<icu::Transliterator>& BorrowedTransliterator::GetTransliterator(
     return transliterator;
   };
 
-  if (kCountriesWithGermanTransliteration.contains(country_code.value())) {
+  if (kCountriesWithGermanTransliteration.contains(country_code.value()) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableGermanTransliteration)) {
     static base::NoDestructor<std::unique_ptr<icu::Transliterator>> instance(
         create_transliteration(/*apply_german_transliteration=*/true));
     return *instance;
