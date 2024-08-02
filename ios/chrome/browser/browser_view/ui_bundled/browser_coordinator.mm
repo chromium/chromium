@@ -2130,7 +2130,8 @@ enum class ToolbarKind {
 }
 
 - (void)showOmniboxPositionChoice {
-  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
+  CHECK(IsIOSTipsNotificationsEnabled() ||
+        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
 
   if (!_omniboxPositionChoiceCoordinator) {
     _omniboxPositionChoiceCoordinator =
