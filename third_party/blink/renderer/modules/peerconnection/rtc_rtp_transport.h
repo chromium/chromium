@@ -27,7 +27,6 @@ class MODULES_EXPORT RTCRtpTransport : public ScriptWrappable,
   HeapVector<Member<RTCRtpAcks>> readReceivedAcks(uint32_t maxCount);
   HeapVector<Member<RTCRtpSent>> readSentRtp(uint32_t maxCount);
 
-  void Register(webrtc::NetworkControllerInterface* controller);
   webrtc::NetworkControlUpdate OnFeedback(
       webrtc::TransportPacketsFeedback feedback);
   void OnSentPacket(webrtc::SentPacket sp);

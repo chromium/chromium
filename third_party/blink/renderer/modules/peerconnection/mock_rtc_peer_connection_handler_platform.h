@@ -61,7 +61,8 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
   bool Initialize(ExecutionContext* context,
                   const webrtc::PeerConnectionInterface::RTCConfiguration&,
                   WebLocalFrame*,
-                  ExceptionState&) override;
+                  ExceptionState&,
+                  RTCRtpTransport*) override;
   void Close() override;
   void CloseAndUnregister() override;
 

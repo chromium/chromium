@@ -55,7 +55,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
     DummyExceptionStateForTesting exception_state;
     peer_connection_ = dependency_factory_->CreatePeerConnection(
         webrtc::PeerConnectionInterface::RTCConfiguration(), nullptr, nullptr,
-        exception_state);
+        exception_state, /*rtp_transport=*/nullptr);
     EXPECT_CALL(
         *(static_cast<blink::MockPeerConnectionImpl*>(peer_connection_.get())),
         GetSctpTransport())

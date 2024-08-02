@@ -455,20 +455,35 @@ base::Thread& GetChromeNetworkThread() {
 class InterceptingNetworkControllerFactory
     : public webrtc::NetworkControllerFactoryInterface {
  public:
-  InterceptingNetworkControllerFactory() = default;
+  InterceptingNetworkControllerFactory(
+      scoped_refptr<base::SequencedTaskRunner> context_task_runner,
+      RTCRtpTransport* rtp_transport)
+      : context_task_runner_(context_task_runner),
+        rtp_transport_(rtp_transport) {
+    CHECK(rtp_transport);
+  }
 
+  // Note: Called on a webrtc thread.
   std::unique_ptr<webrtc::NetworkControllerInterface> Create(
       webrtc::NetworkControllerConfig config) override {
     return std::make_unique<InterceptingNetworkController>(
-        goog_cc_factory_->Create(config));
+        goog_cc_factory_->Create(config), rtp_transport_, context_task_runner_);
   }
+
+  // Note: Called on a webrtc thread.
   webrtc::TimeDelta GetProcessInterval() const override {
     return goog_cc_factory_->GetProcessInterval();
   }
 
  private:
-  std::unique_ptr<webrtc::GoogCcNetworkControllerFactory> goog_cc_factory_ =
-      std::make_unique<webrtc::GoogCcNetworkControllerFactory>();
+  const std::unique_ptr<webrtc::GoogCcNetworkControllerFactory>
+      goog_cc_factory_ =
+          std::make_unique<webrtc::GoogCcNetworkControllerFactory>();
+  const scoped_refptr<base::SequencedTaskRunner> context_task_runner_;
+  // Store just a CrossThreadWeakHandle pointing at an RTCRtpTransport, to be
+  // used on a webrtc thread when creating InterceptingNetworkController
+  // instances.
+  const CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_;
 };
 
 }  // namespace
@@ -632,9 +647,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           CrossThreadUnretained(Platform::Current()->GetGpuFactories()),
           Platform::Current()->GetMediaDecoderFactory(),
           CreateMojoVideoEncoderMetricsProviderFactory(DomWindow()->GetFrame()),
-          CrossThreadUnretained(&start_signaling_event),
-          RuntimeEnabledFeatures::RTCRtpTransportEnabled(
-              GetExecutionContext())));
+          CrossThreadUnretained(&start_signaling_event)));
 
   start_signaling_event.Wait();
 
@@ -650,8 +663,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     base::WeakPtr<media::DecoderFactory> media_decoder_factory,
     scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
         video_encoder_metrics_provider_factory,
-    base::WaitableEvent* event,
-    bool rtp_transport_feature_enabled) {
+    base::WaitableEvent* event) {
   DCHECK(GetChromeSignalingThread().task_runner()->BelongsToCurrentThread());
   DCHECK(GetNetworkThread());
   // The task to initialize `signaling_thread_` was posted to the same thread,
@@ -749,11 +761,6 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   pcf_deps.video_encoder_factory = std::move(webrtc_encoder_factory);
   pcf_deps.video_decoder_factory = std::move(webrtc_decoder_factory);
 
-  if (rtp_transport_feature_enabled) {
-    pcf_deps.network_controller_factory =
-        std::make_unique<InterceptingNetworkControllerFactory>();
-  }
-
   // Audio Processing Module (APM) instances are owned and handled by the Blink
   // media stream module.
   DCHECK_EQ(pcf_deps.audio_processing.get(), nullptr);
@@ -805,7 +812,8 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
     webrtc::PeerConnectionObserver* observer,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    RTCRtpTransport* rtp_transport) {
   CHECK(observer);
   if (!GetPcFactory().get())
     return nullptr;
@@ -817,6 +825,11 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     dependencies.allocator = CreatePortAllocator(web_frame);
   }
   dependencies.async_dns_resolver_factory = CreateAsyncDnsResolverFactory();
+  if (rtp_transport) {
+    dependencies.network_controller_factory =
+        std::make_unique<InterceptingNetworkControllerFactory>(
+            context_task_runner_, rtp_transport);
+  }
   auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {

@@ -21,8 +21,13 @@ class InterceptingNetworkController
     : public webrtc::NetworkControllerInterface {
  public:
   explicit InterceptingNetworkController(
-      std::unique_ptr<webrtc::NetworkControllerInterface> fallback_controller)
-      : fallback_controller_(std::move(fallback_controller)) {}
+      std::unique_ptr<webrtc::NetworkControllerInterface> fallback_controller,
+      CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_handle,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : fallback_controller_(std::move(fallback_controller)),
+        feedback_receiver_(
+            base::MakeRefCounted<FeedbackReceiver>(rtp_transport_handle,
+                                                   std::move(task_runner))) {}
 
   // Called when network availability changes.
   webrtc::NetworkControlUpdate OnNetworkAvailability(
@@ -52,9 +57,7 @@ class InterceptingNetworkController
   }
   // Called when a packet is sent on the network.
   webrtc::NetworkControlUpdate OnSentPacket(webrtc::SentPacket sp) override {
-    if (feedback_receiver_) {
-      feedback_receiver_->OnSentPacket(sp);
-    }
+    feedback_receiver_->OnSentPacket(sp);
     return fallback_controller_->OnSentPacket(sp);
   }
   // Called when a packet is received from the remote client.
@@ -80,22 +83,13 @@ class InterceptingNetworkController
   // Called with per packet feedback regarding receive time.
   webrtc::NetworkControlUpdate OnTransportPacketsFeedback(
       webrtc::TransportPacketsFeedback tpf) override {
-    if (feedback_receiver_) {
-      feedback_receiver_->OnFeedback(tpf);
-    }
+    feedback_receiver_->OnFeedback(tpf);
     return fallback_controller_->OnTransportPacketsFeedback(tpf);
   }
   // Called with network state estimate updates.
   webrtc::NetworkControlUpdate OnNetworkStateEstimate(
       webrtc::NetworkStateEstimate nse) override {
     return fallback_controller_->OnNetworkStateEstimate(nse);
-  }
-
-  void SetFeedbackReceiver(
-      CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    feedback_receiver_ = base::MakeRefCounted<FeedbackReceiver>(
-        rtp_transport_, std::move(task_runner));
   }
 
  private:
@@ -123,8 +117,9 @@ class InterceptingNetworkController
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   };
 
-  std::unique_ptr<webrtc::NetworkControllerInterface> fallback_controller_;
-  scoped_refptr<FeedbackReceiver> feedback_receiver_ = nullptr;
+  const std::unique_ptr<webrtc::NetworkControllerInterface>
+      fallback_controller_;
+  const scoped_refptr<FeedbackReceiver> feedback_receiver_;
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_INTERCEPTING_NETWORK_CONTROLLER_H_

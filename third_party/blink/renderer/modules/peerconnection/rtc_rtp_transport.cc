@@ -21,15 +21,6 @@
 
 namespace blink {
 
-void RTCRtpTransport::Register(webrtc::NetworkControllerInterface* controller) {
-  InterceptingNetworkController* intercepting_controller =
-      static_cast<InterceptingNetworkController*>(controller);
-  intercepting_controller->SetFeedbackReceiver(
-      MakeCrossThreadWeakHandle(this),
-      To<LocalDOMWindow>(GetExecutionContext())
-          ->GetTaskRunner(TaskType::kInternalMedia));
-}
-
 webrtc::NetworkControlUpdate RTCRtpTransport::OnFeedback(
     webrtc::TransportPacketsFeedback feedback) {
   HeapVector<Member<RTCRtpAck>> acks;
