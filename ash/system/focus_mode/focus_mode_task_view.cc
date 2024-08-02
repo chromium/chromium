@@ -514,6 +514,14 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
 
   radio_button_->SetEnabled(is_network_connected);
   radio_button_->SetVisible(show_selected_state);
+  if (show_selected_state) {
+    radio_button_->GetViewAccessibility().SetDescription(textfield_->GetText());
+  } else {
+    radio_button_->GetViewAccessibility().SetDescription(
+        std::u16string(),
+        ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  }
+
   deselect_button_->SetVisible(show_selected_state);
   add_task_button_->SetVisible(!show_selected_state);
 

@@ -787,9 +787,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER" desc="The text used for the placeholder for the textfield in the task section of the focus mode detailed view.">
         What would you like to focus on?
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON" desc="The accessible name for the radio button of a selected task view in contextual panel.">
-        Mark task as completed: <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON" desc="The accessible name for the radio button of a selected task view in focus panel.">
         Mark task as completed
       </message>
