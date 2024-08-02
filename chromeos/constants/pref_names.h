@@ -19,6 +19,33 @@ inline constexpr char kCaptivePortalAuthenticationIgnoresProxy[] =
 // profile when signing into a captive portal.
 inline constexpr char kCaptivePortalSignin[] = "captive_portal_signin";
 
+// A list of weekly time intervals when login to the device is blocked.
+// Example content:
+// [
+//   {
+//     "start": {
+//         "day_of_week": "WEDNESDAY",
+//         "milliseconds_since_midnight": 43200000
+//     },
+//     "end": {
+//         "day_of_week": "WEDNESDAY",
+//         "milliseconds_since_midnight": 75600000
+//     }
+//   },
+//   {
+//     "start": {
+//         "day_of_week": "FRIDAY",
+//         "milliseconds_since_midnight": 64800000
+//     },
+//     "end": {
+//         "day_of_week": "MONDAY",
+//         "milliseconds_since_midnight": 21600000
+//     }
+//   }
+// ]
+inline constexpr char kDeviceRestrictionSchedule[] =
+    "device_restriction_schedule";
+
 }  // namespace chromeos::prefs
 
 #endif  // CHROMEOS_CONSTANTS_PREF_NAMES_H_

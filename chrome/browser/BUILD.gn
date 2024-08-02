@@ -5335,6 +5335,7 @@ static_library("browser") {
       "//chromeos/ash/components/memory",
       "//chromeos/ash/components/nearby/common/client",
       "//chromeos/ash/components/network",
+      "//chromeos/ash/components/policy",
       "//chromeos/ash/components/report",
       "//chromeos/ash/components/scalable_iph",
       "//chromeos/ash/components/scalable_iph:logger",

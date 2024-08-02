@@ -3156,33 +3156,6 @@ inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
 // up the device.
 inline constexpr char kDeviceWeeklyScheduledSuspend[] =
     "device_weekly_scheduled_suspend";
-
-// A list of weekly time intervals when login to the device is blocked.
-// Example content:
-// [
-//   {
-//     "start": {
-//         "day_of_week": "WEDNESDAY",
-//         "milliseconds_since_midnight": 43200000
-//     },
-//     "end": {
-//         "day_of_week": "WEDNESDAY",
-//         "milliseconds_since_midnight": 75600000
-//     }
-//   },
-//   {
-//     "start": {
-//         "day_of_week": "FRIDAY",
-//         "milliseconds_since_midnight": 64800000
-//     },
-//     "end": {
-//         "day_of_week": "MONDAY",
-//         "milliseconds_since_midnight": 21600000
-//     }
-//   }
-// ]
-inline constexpr char kDeviceRestrictionSchedule[] =
-    "device_restriction_schedule";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
