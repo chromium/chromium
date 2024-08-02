@@ -415,9 +415,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     root_params->disable_frame_rate_limit = true;
 
 #if BUILDFLAG(IS_WIN)
-  root_params->set_present_duration_allowed =
-      features::ShouldUseSetPresentDuration();
-
   const bool using_direct_composition = GpuDataManagerImpl::GetInstance()
                                             ->GetGPUInfo()
                                             .overlay_info.direct_composition;
