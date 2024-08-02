@@ -7,7 +7,8 @@
 
 #include <array>
 #include <cstddef>
-#include <optional>
+#include <string>
+#include <variant>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -80,9 +81,11 @@ class ASH_EXPORT PickerSearchAggregator {
   // empty.
   std::array<UnpublishedResults, kNumSections> accumulated_results_;
 
-  // Set iff burn-in has completed, link results have been received, and Drive
-  // results have not been received yet.
-  std::optional<std::vector<GURL>> links_for_drive_dedupe_;
+  using LinkDriveDedupeState =
+      std::variant<std::monostate,
+                   /*post_burnin_and_links_only=*/std::vector<GURL>,
+                   /*post_burnin_and_drive_only=*/std::vector<std::string>>;
+  LinkDriveDedupeState link_drive_dedupe_state_;
 
   base::WeakPtrFactory<PickerSearchAggregator> weak_ptr_factory_{this};
 };

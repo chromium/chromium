@@ -6,8 +6,8 @@
 
 #include <cstddef>
 #include <iterator>
-#include <optional>
 #include <set>
+#include <string>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -87,12 +87,10 @@ std::vector<GURL> LinksFromSearchResults(
   return links;
 }
 
-void DeduplicateDriveLinksFromFiles(
-    std::vector<PickerSearchResult>& links,
-    base::span<const PickerSearchResult> files) {
-  std::vector<base::MatcherStringPattern> patterns;
-  base::MatcherStringPattern::ID next_id = 0;
-  for (const PickerSearchResult& file : files) {
+std::vector<std::string> DriveIdsFromSearchResults(
+    base::span<const PickerSearchResult> results) {
+  std::vector<std::string> drive_ids;
+  for (const PickerSearchResult& file : results) {
     auto* drive_data =
         std::get_if<PickerSearchResult::DriveFileData>(&file.data());
     if (drive_data == nullptr) {
@@ -101,7 +99,17 @@ void DeduplicateDriveLinksFromFiles(
     if (!drive_data->id.has_value()) {
       continue;
     }
-    patterns.emplace_back(*drive_data->id, next_id);
+    drive_ids.push_back(*drive_data->id);
+  }
+  return drive_ids;
+}
+
+void DeduplicateDriveLinksFromIds(std::vector<PickerSearchResult>& links,
+                                  std::vector<std::string> drive_ids) {
+  std::vector<base::MatcherStringPattern> patterns;
+  base::MatcherStringPattern::ID next_id = 0;
+  for (std::string& drive_id : drive_ids) {
+    patterns.emplace_back(std::move(drive_id), next_id);
     ++next_id;
   }
 
@@ -200,14 +208,26 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   if (IsPostBurnIn()) {
     // Publish post-burn-in results and skip assignment.
     if (!results.empty()) {
-      if (section_type == PickerSectionType::kDriveFiles &&
-          links_for_drive_dedupe_.has_value()) {
-        DeduplicateDriveFilesFromLinks(results,
-                                       std::move(*links_for_drive_dedupe_));
-        links_for_drive_dedupe_ = std::nullopt;
+      if (section_type == PickerSectionType::kDriveFiles) {
+        if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
+          link_drive_dedupe_state_ = DriveIdsFromSearchResults(results);
+        } else if (auto* links = std::get_if<std::vector<GURL>>(
+                       &link_drive_dedupe_state_)) {
+          DeduplicateDriveFilesFromLinks(results, std::move(*links));
+          link_drive_dedupe_state_ = std::monostate();
+        } else {
+          NOTREACHED_NORETURN();
+        }
       } else if (section_type == PickerSectionType::kLinks) {
-        CHECK(!links_for_drive_dedupe_.has_value());
-        links_for_drive_dedupe_ = LinksFromSearchResults(results);
+        if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
+          link_drive_dedupe_state_ = LinksFromSearchResults(results);
+        } else if (auto* drive_ids = std::get_if<std::vector<std::string>>(
+                       &link_drive_dedupe_state_)) {
+          DeduplicateDriveLinksFromIds(results, std::move(*drive_ids));
+          link_drive_dedupe_state_ = std::monostate();
+        } else {
+          NOTREACHED_NORETURN();
+        }
       }
 
       std::vector<PickerSearchResultsSection> sections;
@@ -257,18 +277,23 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 
 void PickerSearchAggregator::PublishBurnInResults() {
   // This variable should only be set after burn-in.
-  CHECK(!links_for_drive_dedupe_.has_value());
+  CHECK(std::holds_alternative<std::monostate>(link_drive_dedupe_state_));
 
-  if (UnpublishedResults* link_results =
-          AccumulatedResultsForSection(PickerSectionType::kLinks)) {
-    if (UnpublishedResults* drive_results =
-            AccumulatedResultsForSection(PickerSectionType::kDriveFiles)) {
-      DeduplicateDriveLinksFromFiles(link_results->results,
-                                     drive_results->results);
-    } else {
-      // Link results came in before burn-in, and Drive results didn't.
-      links_for_drive_dedupe_ = LinksFromSearchResults(link_results->results);
-    }
+  UnpublishedResults* link_results =
+      AccumulatedResultsForSection(PickerSectionType::kLinks);
+  UnpublishedResults* drive_results =
+      AccumulatedResultsForSection(PickerSectionType::kDriveFiles);
+  if (link_results != nullptr && drive_results != nullptr) {
+    DeduplicateDriveLinksFromIds(
+        link_results->results,
+        DriveIdsFromSearchResults(drive_results->results));
+  } else if (link_results != nullptr) {
+    // Link results came in before burn-in, and Drive results didn't.
+    link_drive_dedupe_state_ = LinksFromSearchResults(link_results->results);
+  } else if (drive_results != nullptr) {
+    // Drive results came in before burn-in, and link results didn't.
+    link_drive_dedupe_state_ =
+        DriveIdsFromSearchResults(drive_results->results);
   }
 
   std::vector<PickerSearchResultsSection> sections;
