@@ -107,17 +107,31 @@ Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 Matcher<Suggestion> EqualsIbanSuggestion(
-    const std::u16string& text,
+    const std::u16string& identifier_string,
     const Suggestion::Payload& payload,
-    const std::u16string& first_label_value) {
+    const std::u16string& nickname) {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    if (nickname.empty()) {
+      return AllOf(
+          Field(&Suggestion::type, SuggestionType::kIbanEntry),
+          Field(&Suggestion::main_text, Suggestion::Text(identifier_string)),
+          Field(&Suggestion::payload, payload));
+    }
+    return AllOf(
+        Field(&Suggestion::type, SuggestionType::kIbanEntry),
+        Field(&Suggestion::main_text, Suggestion::Text(nickname)),
+        Field(&Suggestion::minor_text, Suggestion::Text(identifier_string)),
+        Field(&Suggestion::payload, payload));
+  }
   return AllOf(Field(&Suggestion::type, SuggestionType::kIbanEntry),
                Field(&Suggestion::main_text,
-                     Suggestion::Text(text, Suggestion::Text::IsPrimary(true))),
+                     Suggestion::Text(identifier_string,
+                                      Suggestion::Text::IsPrimary(true))),
                Field(&Suggestion::payload, payload),
-               EqualLabels(first_label_value.empty()
+               EqualLabels(nickname.empty()
                                ? std::vector<std::vector<Suggestion::Text>>{}
                                : std::vector<std::vector<Suggestion::Text>>{
-                                     {Suggestion::Text(first_label_value)}}));
+                                     {Suggestion::Text(nickname)}}));
 }
 
 #if !BUILDFLAG(IS_IOS)

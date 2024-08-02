@@ -103,7 +103,24 @@ class IbanManagerTest : public testing::Test {
 
   // Get an IBAN suggestion with the given `iban`.
   Suggestion GetSuggestionForIban(const Iban& iban) {
-    Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
+    Suggestion iban_suggestion;
+    const std::u16string iban_identifier =
+        iban.GetIdentifierStringForAutofillDisplay();
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      if (!iban.nickname().empty()) {
+        iban_suggestion.main_text.value = iban.nickname();
+        iban_suggestion.minor_text.value = iban_identifier;
+      } else {
+        iban_suggestion.main_text.value = iban_identifier;
+      }
+    } else {
+      iban_suggestion.main_text =
+          Suggestion::Text(iban_identifier, Suggestion::Text::IsPrimary(true));
+      if (!iban.nickname().empty()) {
+        iban_suggestion.labels = {{Suggestion::Text(iban.nickname())}};
+      }
+    }
+
     iban_suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kServerIban) {
       iban_suggestion.payload =

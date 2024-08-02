@@ -1109,8 +1109,7 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(ibans.size() + 2);
   for (const Iban& iban : ibans) {
-    Suggestion& suggestion =
-        suggestions.emplace_back(iban.GetIdentifierStringForAutofillDisplay());
+    Suggestion suggestion;
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             IDR_AUTOFILL_IBAN);
@@ -1123,9 +1122,27 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
       suggestion.payload =
           Suggestion::BackendId(Suggestion::InstrumentId(iban.instrument_id()));
     }
-    if (!iban.nickname().empty()) {
-      suggestion.labels = {{Suggestion::Text(iban.nickname())}};
+
+    std::u16string iban_identifier =
+        iban.GetIdentifierStringForAutofillDisplay();
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      // For Android keyboard accessory, the displayed value will be nickname +
+      // identifier string, if the nickname is too long to fit due to bubble
+      // width limitation, it will be truncated.
+      if (!iban.nickname().empty()) {
+        suggestion.main_text.value = iban.nickname();
+        suggestion.minor_text.value = std::move(iban_identifier);
+      } else {
+        suggestion.main_text.value = std::move(iban_identifier);
+      }
+    } else {
+      suggestion.main_text =
+          Suggestion::Text(iban_identifier, Suggestion::Text::IsPrimary(true));
+      if (!iban.nickname().empty()) {
+        suggestion.labels = {{Suggestion::Text(iban.nickname())}};
+      }
     }
+    suggestions.push_back(suggestion);
   }
 
   suggestions.push_back(CreateSeparator());
