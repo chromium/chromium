@@ -232,6 +232,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> એ કોઈપણ ડેટા મોકલ્યો ન હતો.</translation>
 <translation id="1405567553485452995">આછો લીલો</translation>
 <translation id="1406812885827747674">આ વખત માટે મંજૂરી આપો</translation>
+<translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> પર ઉપલબ્ધ <ph name="FOLDER_NAME" />માં ફાઇલો સફળતાપૂર્વક અપલોડ કરવામાં આવી હતી</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1408787208417187241">ઉપરની બાજુએ ત્રણ સ્ટેપલ લગાવો</translation>
 <translation id="1410365862999780287">આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારી પ્રવૃત્તિ જોઈ શકશે નહીં, જેથી તમે વધુ ખાનગી રીતે બ્રાઉઝ કરી શકશો. આનાથી Google સહિત તમે મુલાકાત લેતા હો એ વેબસાઇટ દ્વારા ડેટા એકત્રિત કરવાની રીત તેમજ તે સાઇટ જે સેવાઓનો ઉપયોગ કરતી હોય, તેમાં કોઈ બદલાવ થશે નહીં. જોકે, ડાઉનલોડ, બુકમાર્ક અને વાંચન સૂચિની આઇટમ સાચવવામાં આવશે.</translation>
@@ -267,6 +268,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">તમારા કમ્પ્યુટર પર ફૉન્ટનો ઉપયોગ કરો, જેથી તમે હાઇ ફિડેલિટી કન્ટેન્ટ બનાવી શકો</translation>
 <translation id="1463793142714244641">શેર કરેલી માલિકીની અને વેકેશન પ્રોપર્ટી</translation>
+<translation id="1465457928007067810">IBAN તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="1467432559032391204">ડાબું</translation>
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> પર ચાલુ રાખવા, <ph name="EMBEDDED_ORIGIN" /> માટેનો તમારો કોડ <ph name="ONE_TIME_CODE" /> છે</translation>
 <translation id="1472675084647422956">વધુ બતાવો</translation>
@@ -1192,6 +1194,7 @@
 <translation id="3240791268468473923">ચુકવણીની સુરક્ષિત લૉગ ઇન વિગત, મેળ ખાતી લૉગ ઇન વિગતની કોઈપણ શીટ ખોલવામાં આવી નથી</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”ની લિંક બ્લૉક કરેલી છે</translation>
 <translation id="3248329428895535435">આ સાઇટ પર બતાવશો નહીં</translation>
+<translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" /> પર ફાઇલ અપલોડ કરવાની પ્રક્રિયા ભૂલો સાથે પૂર્ણ થઈ</translation>
 <translation id="3252772880526154546">સ્થાપત્ય</translation>
 <translation id="3254301855501243548">18 x 22 ઇંચ</translation>
 <translation id="3255926992597692024">ચુકવણી પદ્ધતિઓ ભરવા માટે, Chromium સેટિંગમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
@@ -1361,6 +1364,7 @@
 <translation id="3552155506104542239">ચેતવણી: આ પૉલિસી <ph name="POLICY_NAME" /> સાથે વિરોધાભાસ ધરાવે છે અને Android ઍપ પર તેની કોઈ અસર થશે નહીં. નહિંતર, આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે.</translation>
 <translation id="3552297013052089404">Sans-Serif ફૉન્ટ</translation>
 <translation id="3558573058928565255">દિવસનો સમય</translation>
+<translation id="3559897352860026926">તમારા ઍડમિનિસ્ટ્રેટરને તેમની <ph name="CLOUD_PROVIDER" />ના કન્ફિગ્યુરેશન સેટિંગ ચકાસવા માટે કહો.</translation>
 <translation id="355995771319966853">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="3560408312959371419">સુરક્ષિત ટ્રૅકિંગ અને ડિવાઇસ પર સાઇટના ડેટા માટે વિકલ્પો</translation>
 <translation id="3560824484345057728">સંબંધિત સાઇટ જુઓ</translation>
@@ -2026,6 +2030,7 @@
 <translation id="4816492930507672669">પેજ જેટલું ફિટ કરો</translation>
 <translation id="4819347708020428563">ટીકાટિપ્પણીમાં ફેરફાર કરીને ડિફૉલ્ટ વ્યૂ પસંદ કરીએ?</translation>
 <translation id="4822493756793346865">સામાન્ય કિંમતો છેલ્લા 90 દિવસમાં સમગ્ર વેબ પરના સ્ટોરમાં ઉપલબ્ધ માહિતી પર આધારિત છે.</translation>
+<translation id="4822922322149719535">ભૂલના લૉગનો રિવ્યૂ કરો</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheetsમાં ઝડપથી કોઈ નવી શીટ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
 <translation id="4827283332383516812">કાર્ડ ડિલીટ કરો</translation>
@@ -2684,6 +2689,7 @@
 <translation id="6061154937977953833">કુસ્તી</translation>
 <translation id="6062937464449575061">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="6063415549109819824">ઘર ખરીદવા માટે લોન આપતી સેવાઓ</translation>
+<translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> પર ઉપલબ્ધ <ph name="FOLDER_NAME" />માં એક કે તેથી વધુ ફાઇલો અપલોડ કરવામાં આવી નથી</translation>
 <translation id="6080696365213338172">તમે વ્યવસ્થાપક-પ્રદત્ત પ્રમાણપત્રનો ઉપયોગ કરીને કન્ટેન્ટ ઍક્સેસ કરી છે. તમે <ph name="DOMAIN" /> ને પ્રદાન કરેલ ડેટા તમારા વ્યવસ્થાપક દ્વારા ઇન્ટરસેપ્ટ થઈ શકે છે.</translation>
 <translation id="6085149458302186532">લેબલ (રંગીન)</translation>
 <translation id="6087312102907839798">સંબંધિત શોધ</translation>
@@ -2806,6 +2812,7 @@
 <translation id="6307968763353904914">આ ચુકવણી પદ્ધતિ માટે અત્યારે તમારી બેંક વર્ચ્યુઅલ કાર્ડ આપી શકતી નથી, પરંતુ તમે હજી પણ ઑનલાઇન ચુકવણી માટે તમારા <ph name="CARD_LABEL" />નો ઉપયોગ કરી શકો છો.</translation>
 <translation id="6311410654831092784">કાર્ડ સ્ટોક</translation>
 <translation id="6312113039770857350">વેબપેજ ઉપલબ્ધ નથી</translation>
+<translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> પર ફાઇલ અપલોડ કરવાની પ્રક્રિયા થોભાવવામાં આવી છે</translation>
 <translation id="6316723751983724988">નવું: Chrome માટે Family Linkની પસંદગીઓ અહીં લાગુ પડે છે</translation>
 <translation id="63172326633386613">ઍક્સેસિબિલિટી સેટિંગ મેનેજ કરો</translation>
 <translation id="6321917430147971392">તમારા DNS સેટિંગ તપાસો</translation>
@@ -3004,6 +3011,7 @@
 <translation id="6687335167692595844">ફોન્ટના કદ માટે વિનંતી કરી</translation>
 <translation id="6688743156324860098">અપડેટ કરો…</translation>
 <translation id="6688775486821967877">હમણાં વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી, કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
+<translation id="6688851075017682769">દેશ પ્રમાણે પરીક્ષણ માટેનું સરનામું</translation>
 <translation id="6689249931105087298">કાળા પૉઇન્ટને નાનો કરવા સંબંધિત</translation>
 <translation id="6689271823431384964">તમે સાઇન ઇન કરેલું છે તેથી Chrome તમને તમારા કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવાની ઑફર કરે છે. તમે સેટિંગમાં આ વર્તણૂકને બદલી શકો છો. કાર્ડધારકનું નામ તમારા એકાઉન્ટમાંથી આવે છે.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" />થી વધુ સ્પેસ ખાલી કરો</translation>
@@ -3160,6 +3168,7 @@
 <translation id="6979440798594660689">મ્યૂટ કરો (ડિફૉલ્ટ)</translation>
 <translation id="6984270784814146224">લેબલ વિનાની છબી. ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ, જે Google AI દ્વારા સંચાલિત છે</translation>
 <translation id="6987806006823772670">એન્વેલોપ (કોટેડ)</translation>
+<translation id="6989256887001961296">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે.</translation>
 <translation id="6989763994942163495">વિગતવાર સેટિંગ બતાવો...</translation>
 <translation id="6996312675313362352">હંમેશાં <ph name="ORIGINAL_LANGUAGE" />નો અનુવાદ કરો</translation>
 <translation id="6997288673234694149">બૅઝબૉલ અને સૉફ્ટબૉલનું સાધન</translation>
@@ -3191,6 +3200,7 @@
 <translation id="7050187094878475250">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કરેલો, પરંતુ સર્વરે એવું પ્રમાણપત્ર પ્રસ્તુત કર્યું જેની માન્યતા અવધિ, વિશ્વસનીય હોવા માટે ખૂબ લાંબી છે.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{આ કાર્ડ અત્યારે સાચવી શકાતું નથી}one{આ કાર્ડ અત્યારે સાચવી શકાતાં નથી}other{આ કાર્ડ અત્યારે સાચવી શકાતાં નથી}}</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
+<translation id="7054717457611655239">હવેથી, તમારી ફાઇલોને <ph name="CLOUD_PROVIDER" /> પર સાચવો.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> દ્વારા ચકાસણી કરાઈ છે કે <ph name="ISSUER" /> દ્વારા આ વેબસાઇટનું પ્રમાણપત્ર જારી કરાયું છે.</translation>
 <translation id="7058774143982824355">CSV પાસવર્ડ સંબંધિત વિશ્લેષક સેવા</translation>
 <translation id="7062635574500127092">મોરપીંછ</translation>
@@ -3921,6 +3931,7 @@
 <translation id="8371841335382565017">કાસ્ટ કરવા માટે, ડિવાઇસની સૂચિ બતાવો</translation>
 <translation id="8371889962595521444">કસ્ટમ રૂટ પ્રમાણપત્રો</translation>
 <translation id="8374636051559112948">બદલાતી રહે છે</translation>
+<translation id="837840316697671463">જો તમે તમારા ડિવાઇસ પર કોઈ ફાઇલ શોધી શકતા ન હો, તો તેને <ph name="CLOUD_PROVIDER" /> પર શોધો.</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8380941800586852976">જોખમી</translation>
 <translation id="8381674639488873545">આ શુલ્ક એક વખત લાગે અથવા પુનરાવર્તિત હોઈ શકે અને તેનો સ્પષ્ટ ખ્યાલ ન આવે તેમ પણ બને. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
@@ -3968,6 +3979,7 @@
 <translation id="84561192812921051">તમારા ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલ અને બ્રાઉઝરમાં રિમોટલી ફેરફાર કરી શકે, રિપોર્ટિંગ મારફતે બ્રાઉઝર વિશેની માહિતીનું વિશ્લેષણ કરી શકે અને અન્ય જરૂરી કાર્યો કરી શકે. આ ડિવાઇસ પરની ઍક્ટિવિટી Chromeની બહારથી પણ મેનેજ કરી શકાય છે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">અનિશ્ચિત</translation>
 <translation id="8458202188076138974">લેટર એક્સ્ટ્રા</translation>
+<translation id="8458605637341729751">ચાલુ રાખીને, તમે કપટ અટકાવવાના હેતુઓથી તમારા ડિવાઇસનું ચોક્કસ લોકેશન એકત્રિત કરવા અને તમારા એકાઉન્ટ ધારક સાથે શેર કરવા માટે સંમત થાઓ છો. Chromeમાં Pix બંધ કરવા માટે, તમારા <ph name="BEGIN_LINK1" />ચુકવણી માટેના સેટિંગ<ph name="END_LINK1" />માં જાઓ</translation>
 <translation id="8460854335417802511">તેને ચાલુ કરો</translation>
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ક્રેડિટ કાર્ડ}one{# ક્રેડિટ કાર્ડ}other{# ક્રેડિટ કાર્ડ}}</translation>
@@ -4069,6 +4081,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય કદની આવશ્યકતાઓ પૂરી કરતું નથી.</translation>
 <translation id="867224526087042813">સહી</translation>
 <translation id="8672535691554698269">કમ્પ્યૂટર નેટવર્ક</translation>
+<translation id="8675446170353411473">તમારી ફાઇલો <ph name="CLOUD_PROVIDER" /> પર અપલોડ કરવામાં આવી રહી છે</translation>
 <translation id="8676424191133491403">કોઈ વિલંબ વિના</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, જવાબ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> પરનું વેબપેજ લોડ કરી શકાયું નથી કારણ કે:</translation>
@@ -4150,6 +4163,7 @@
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="882338992931677877">મેન્યુઅલ સ્લૉટ</translation>
 <translation id="8830320733681313421">Hagaki પોસ્ટકાર્ડ</translation>
+<translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" />માં ફાઇલો જુઓ</translation>
 <translation id="8833007469711500369">વૉશર અને ડ્રાયર</translation>
 <translation id="8834962751196791179">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી અને તમે છૂપા મોડમાં છો. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">સાયન્સ ફિક્શન અને કાલ્પનિક ટીવી શો</translation>

@@ -232,6 +232,7 @@
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> не надіслав дані.</translation>
 <translation id="1405567553485452995">Світло-зелений</translation>
 <translation id="1406812885827747674">Дозволити цього разу</translation>
+<translation id="14070772729708640">Файли завантажено в папку "<ph name="FOLDER_NAME" />" у сервісі <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="1407135791313364759">Відкрити все</translation>
 <translation id="1408787208417187241">Тричі скріпити вгорі</translation>
 <translation id="1410365862999780287">Інші користувачі цього пристрою не бачитимуть дані про ваші дії, тож ви зможете переглядати веб-контент конфіденційно. Це не вплине на спосіб збирання даних веб-сайтами, які ви відвідуєте, і сервісами, які вони використовують (зокрема Google). Завантаження, закладки й пункти зі списку читання зберігатимуться.</translation>
@@ -267,6 +268,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Використовувати встановлені на вашому комп'ютері шрифти, щоб ви могли створювати контент високої якості</translation>
 <translation id="1463793142714244641">Нерухомість для відпочинку й тимчасового використання</translation>
+<translation id="1465457928007067810">Номер IBAN збережено в обліковому записі Google</translation>
 <translation id="1467432559032391204">Ліворуч</translation>
 <translation id="1468653229182955856">Щоб продовжити роботу на сайті <ph name="TOP_ORIGIN" />, введіть код <ph name="ONE_TIME_CODE" /> для фрейму <ph name="EMBEDDED_ORIGIN" /></translation>
 <translation id="1472675084647422956">Показати більше</translation>
@@ -1192,6 +1194,7 @@
 <translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
 <translation id="3248329428895535435">Не показувати на цьому сайті</translation>
+<translation id="3249102948665905108">Завантаження файлів у сервіс <ph name="CLOUD_PROVIDER" /> завершено з помилками</translation>
 <translation id="3252772880526154546">Архітектура</translation>
 <translation id="3254301855501243548">18 x 22 дюйм.</translation>
 <translation id="3255926992597692024">Chromium намагається змінити параметри заповнення способів оплати.</translation>
@@ -1361,6 +1364,7 @@
 <translation id="3552155506104542239">Попередження: це правило конфліктує з правилом <ph name="POLICY_NAME" /> і не застосовується до додатків для Android. В інших випадках це правило працює належним чином.</translation>
 <translation id="3552297013052089404">Шрифт Sans Serif</translation>
 <translation id="3558573058928565255">День</translation>
+<translation id="3559897352860026926">Попросіть адміністратора перевірити налаштування конфігурації для сервісу <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="355995771319966853">Скасувати автозаповнення</translation>
 <translation id="3560408312959371419">Параметри для функції захисту від відстеження й даних сайтів на пристрої</translation>
 <translation id="3560824484345057728">Переглянути пов’язані сайти</translation>
@@ -2026,6 +2030,7 @@
 <translation id="4816492930507672669">За розміром сторінки</translation>
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
 <translation id="4822493756793346865">Звичайні ціни на основі даних з онлайн-магазинів за останні 90 днів.</translation>
+<translation id="4822922322149719535">Переглянути журнал помилок</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову таблицю Google</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="4827283332383516812">Видалити картку</translation>
@@ -2684,6 +2689,7 @@
 <translation id="6061154937977953833">Боротьба</translation>
 <translation id="6062937464449575061">Не відстежувати ціну</translation>
 <translation id="6063415549109819824">Іпотечне кредитування</translation>
+<translation id="6070432475334343308">Принаймні один файл не завантажено в папку "<ph name="FOLDER_NAME" />" у сервісі <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6080696365213338172">Ви отримали доступ до вмісту, використовуючи наданий адміністратором сертифікат. Адміністратор може перехоплювати дані, які ви надасте домену <ph name="DOMAIN" />.</translation>
 <translation id="6085149458302186532">Етикетки (кольорові)</translation>
 <translation id="6087312102907839798">Пов’язані пошукові запити</translation>
@@ -2806,6 +2812,7 @@
 <translation id="6307968763353904914">Ваш банк зараз не пропонує віртуальні картки для цього способу оплати, однак ви все одно можете розраховуватися карткою <ph name="CARD_LABEL" /> в Інтернеті.</translation>
 <translation id="6311410654831092784">Картковий папір</translation>
 <translation id="6312113039770857350">Веб-сторінка недоступна</translation>
+<translation id="6316110367871394043">Завантаження файлів у сервіс <ph name="CLOUD_PROVIDER" /> призупинено</translation>
 <translation id="6316723751983724988">Новинка: тут застосовуються налаштування Family Link для Chrome</translation>
 <translation id="63172326633386613">Керувати налаштуваннями доступності</translation>
 <translation id="6321917430147971392">Перевірте налаштування DNS</translation>
@@ -3004,6 +3011,7 @@
 <translation id="6687335167692595844">Запит на розмір шрифту</translation>
 <translation id="6688743156324860098">Оновити…</translation>
 <translation id="6688775486821967877">Віртуальна картка недоступна. Повторіть спробу пізніше.</translation>
+<translation id="6688851075017682769">Тестові адреси за країною</translation>
 <translation id="6689249931105087298">Відносно стиснення чорної точки</translation>
 <translation id="6689271823431384964">Chrome пропонує вам зберегти картки в обліковому записі Google, оскільки ви ввійшли в нього. Це можна змінити в налаштуваннях. Ім'я власника картки взято з вашого облікового запису.</translation>
 <translation id="6691397311652656001">На диску має бути більше <ph name="REQUIRED_FREE_DISK_SPACE" /> пам’яті</translation>
@@ -3160,6 +3168,7 @@
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6984270784814146224">Зображення без мітки. Текст видобувається за допомогою ШІ від Google.</translation>
 <translation id="6987806006823772670">Конверт (з покриттям)</translation>
+<translation id="6989256887001961296">Контент заблоковано.</translation>
 <translation id="6989763994942163495">Показати розширені налаштування...</translation>
 <translation id="6996312675313362352">Завжди перекладати з такої мови: <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6997288673234694149">Обладнання для бейсболу й софтболу</translation>
@@ -3191,6 +3200,7 @@
 <translation id="7050187094878475250">Ви намагалися зв’язатися з доменом <ph name="DOMAIN" />, але сервер надав сертифікат із задовгим терміном дії.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Зараз не вдається зберегти цю картку}one{Зараз не вдається зберегти ці картки}few{Зараз не вдається зберегти ці картки}many{Зараз не вдається зберегти ці картки}other{Зараз не вдається зберегти ці картки}}</translation>
 <translation id="7053983685419859001">Блокувати</translation>
+<translation id="7054717457611655239">Відтепер зберігайте файли в сервісі <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998">Веб-переглядач <ph name="BROWSER" /> підтвердив, що сертифікат цьому сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Сервіс для синтаксичного аналізу файлу CSV з паролями</translation>
 <translation id="7062635574500127092">Бірюзовий</translation>
@@ -3921,6 +3931,7 @@
 <translation id="8371841335382565017">Показати список пристроїв для трансляції</translation>
 <translation id="8371889962595521444">Власні кореневі сертифікати</translation>
 <translation id="8374636051559112948">Різні</translation>
+<translation id="837840316697671463">Якщо вам не вдається знайти файл на пристрої, пошукайте його в сервісі <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8380941800586852976">Небезпечна</translation>
 <translation id="8381674639488873545">Такі стягнення можуть бути одноразовими чи регулярними й неочевидними. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
@@ -3968,6 +3979,7 @@
 <translation id="84561192812921051">Адміністратор може віддалено вносити зміни у ваш профіль і вебпереглядач, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. Діями на цьому пристрої можна керувати за межами Chrome.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Необмежено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">Продовжуючи, ви дозволяєте збирати дані про точне місцезнаходження вашого пристрою і повідомляти їх власнику облікового запису з метою запобігання шахрайству. Щоб вимкнути Pix у Chrome, перейдіть у <ph name="BEGIN_LINK1" />налаштування платежів<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Увімкнути</translation>
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картка}one{# кредитна картка}few{# кредитні картки}many{# кредитних карток}other{# кредитної картки}}</translation>
@@ -4070,6 +4082,7 @@
 <translation id="8671519637524426245">Значення <ph name="SECURE_DNS_SALT" /> не відповідає вимогам щодо розміру.</translation>
 <translation id="867224526087042813">Підпис</translation>
 <translation id="8672535691554698269">Комп’ютерні мережі</translation>
+<translation id="8675446170353411473">У сервіс <ph name="CLOUD_PROVIDER" /> завантажуються файли</translation>
 <translation id="8676424191133491403">Без затримки</translation>
 <translation id="8680536109547170164">"<ph name="QUERY" />", відповідь: "<ph name="ANSWER" />"</translation>
 <translation id="8681531050781943054">Не вдалося завантажити веб-сторінку <ph name="PAGE" />.</translation>
@@ -4151,6 +4164,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Лоток для ручного введення</translation>
 <translation id="8830320733681313421">Уфуку Хагакі (листівка)</translation>
+<translation id="8830565333350631528">Переглянути файли в сервісі <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8833007469711500369">Пральні й сушильні машини</translation>
 <translation id="8834962751196791179">Ви бачите це попередження, оскільки сайт не підтримує HTTPS і ви ввійшли в режимі анонімного перегляду. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Науково-фантастичні й фентезі-шоу</translation>

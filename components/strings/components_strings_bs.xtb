@@ -3969,7 +3969,7 @@ Dodatni detalji:
 <translation id="84561192812921051">Administrator može daljinski unositi izmjene profila i preglednika, analizirati informacije o pregledniku putem izvještavanja i obavljati druge potrebne zadatke. Aktivnostima na ovom uređaju se može upravljati i izvan Chromea.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Neodređeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Ako nastavite, pristajete na prikupljanje točne lokacije svojeg uređaja i dijeljenje s vlasnikom računa u svrhu sprječavanja prijevara. Pix u Chromeu možete isključiti u <ph name="BEGIN_LINK1" />postavkama plaćanja<ph name="END_LINK1" /></translation>
+<translation id="8458605637341729751">Ako nastavite, prihvatate da se tačna lokacija vašeg uređaja prikuplja i dijeli s vlasnikom računa u svrhe sprečavanja prevare. Da isključite Pix u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Uključi</translation>
 <translation id="8461694314515752532">Šifrirajte sinhronizirane podatke svojim pristupnim izrazom</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>

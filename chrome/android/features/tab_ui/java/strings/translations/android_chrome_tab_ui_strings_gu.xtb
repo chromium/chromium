@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">નારંગી</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપના વિકલ્પો</translation>
+<translation id="1340839264183302272">ગ્રૂપ છોડો</translation>
 <translation id="1419023007528516122">આમ કરવાથી ગ્રૂપ તમારા ડિવાઇસમાંથી કાયમ માટે ડિલીટ થઈ જશે</translation>
 <translation id="1486715732399361704">તમે તમારા બધા ટૅબ ગ્રૂપ અહીં મેળવી શકો છો</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં બનાવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં બનાવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં બનાવ્યું}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">સ્ટોરની માહિતી જોઈએ?</translation>
 <translation id="2928243913527329289">Google | આ સ્ટોર વિશે</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
+<translation id="29919168204617356">નિષ્ક્રિય ટૅબ ઑટોમૅટિક રીતે બંધ થઈ જશે. તમે ગમે ત્યારે તેને ઇતિહાસમાં શોધી શકો છો.</translation>
 <translation id="3008554597174452548">પ્રોડક્ટને ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="3026391124054406831">તમારા ટૅબ ગોઠવવાનું શરૂ કરવા માટે ગ્રૂપ બનાવો.</translation>
 <translation id="3051031624272448591">તમે ઇતિહાસમાં જઈને હંમેશાં તેમને ફરી મેળવી શકો છો</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટે ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3547352561153509682">આનાથી <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ થઈ જશે</translation>
+<translation id="3613492231657284463">નિષ્ક્રિય ટૅબ સંવાદ છુપાવો</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">શેર શીટ પ્રીવ્યૂનો થંબનેલ.</translation>
 <translation id="381219490185664296">શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
+<translation id="6694634756612002311">શેરિંગ સુવિધા મેનેજ કરો</translation>
 <translation id="6744956528665271406">ગ્રૂપના રંગમાં ફેરફાર કરો</translation>
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google તરફથી <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7559245342362162951">ગ્રુપના ટૅબને પૂર્ણસ્ક્રીન ગ્રિડમાં બતાવો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7688386659311034820">નિષ્ક્રિય ટૅબ સંવાદ</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ શેર કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}}</translation>
 <translation id="7773714564112603605">ટૅબ કાઢી નાખો અને ગ્રૂપ ડિલીટ કરો</translation>
 <translation id="7792771145871471484">સૂચનોનો રિવ્યૂ કરો.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">ફરિથી પુછશો નહીં</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>
+<translation id="9111228330448174435">ટૅબનું નવું ગ્રૂપ બનાવવા વિશેનો સંવાદ બતાવો</translation>
 <translation id="9150694013019234766">સ્ક્રીનના નીચેના ભાગમાં, તમારા ટૅબ ગ્રૂપમાં એકથી વધુ ટૅબની વચ્ચે સ્વિચ કરો</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>
 <translation id="9216898458513705996">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ કરવામાં આવશે</translation>

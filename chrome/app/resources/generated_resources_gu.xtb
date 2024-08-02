@@ -5416,6 +5416,7 @@
 <translation id="4893336867552636863">આ તમારો બ્રાઉઝીંગ ડેટા આ ડિવાઇસમાંથી સ્થાયી રૂપે ડિલીટ કરશે.</translation>
 <translation id="4893454800196085005">સારી - DVD</translation>
 <translation id="4893522937062257019">લૉક સ્ક્રીન પર</translation>
+<translation id="4894055916816649664">માત્ર 10 મિનિટ માટે</translation>
 <translation id="4895799941222633551">&amp;શૉર્ટકટ બનાવો...</translation>
 <translation id="4898011734382862273">પ્રમાણપત્ર "<ph name="CERTIFICATE_NAME" />", પ્રમાણન અધિકારીનું પ્રતિનિધિત્વ કરે છે</translation>
 <translation id="4898913189644355814">કોઈ સાઇટ તમારી પસંદગીની ભાષા અથવા તમે ખરીદવા માગતા હો તે આઇટમને સાચવી શકે છે. આ માહિતી સાઇટ અને તેના સબડોમેનને ઉપલબ્ધ રહે છે.</translation>
@@ -6053,6 +6054,7 @@
 <translation id="5380526436444479273">થોડીવાર રાહ જુઓ અને ફરી પ્રયાસ કરો</translation>
 <translation id="5382591305415226340">સમર્થિત લિંકને મેનેજ કરો</translation>
 <translation id="5383740867328871413">નામ વિનાનું ગ્રૂપ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">તમારી સાથે કોણ શેર કરી શકે</translation>
 <translation id="5385628342687007304">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />માં ફેરફાર કરો</translation>
 <translation id="5387496897058645038">પ્રોડક્ટની વિશિષ્ટતાઓ</translation>
@@ -6921,6 +6923,7 @@ USB ડિવાઇસ</translation>
 <translation id="6015776718598175635">તારા</translation>
 <translation id="6015796118275082299">વર્ષ</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />માંથી વધારાના <ph name="CURRENT_ELEMENT" /> કન્ટેન્ટ પર નૅવિગેટ કરો</translation>
+<translation id="6016462059150340136">નજીકની કોઈપણ વ્યક્તિ</translation>
 <translation id="6016551720757758985">અગાઉના વર્ઝન પર પાછા ફરવાની સાથે Powerwashની ખાતરી કરો</translation>
 <translation id="6016972670657536680">ભાષા અને કીબોર્ડ બટન પસંદ કરો. હાલમાં પસંદ કરેલ ભાષા <ph name="LANGUAGE" /> છે.</translation>
 <translation id="6017514345406065928">લીલો</translation>
@@ -7370,6 +7373,7 @@ USB ડિવાઇસ</translation>
 <translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
 <translation id="6346952829206698721">ક્લિપબોર્ડ પરથી પેસ્ટ કરો</translation>
 <translation id="6347010704471250799">નોટિફિકેશન બતાવો</translation>
+<translation id="634792071306410644">તમે પોતાને દૃશ્યમાન ન કરો, ત્યાં સુધી કોઈ પણ તમારી સાથે શેર કરી શકશે નહીં</translation>
 <translation id="6348252528297699679">તમે સેટિંગ &gt; પ્રાઇવસી અને સુરક્ષા &gt; પ્રાઇવસીને લગતા નિયંત્રણો &gt; લોકેશન ઍક્સેસમાં જઈને લોકેશન બંધ કરી શકો છો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">ઑફલાઇન સ્ટોરેજ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
@@ -7975,6 +7979,7 @@ USB ડિવાઇસ</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> પર RLZ ટ્રેકિંગને ચાલુ કરો.</translation>
 <translation id="6806089545527108739">મંજૂરી આપશો નહીં પરંતુ પછીથી પૂછશો</translation>
 <translation id="680644983456221885">જોખમકારક સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રિઅલ-ટાઇમ સક્રિય સંરક્ષણ, જે Googleને મોકલવામાં આવતા તમારા બ્રાઉઝિંગ ડેટા પર આધારિત છે</translation>
+<translation id="6806781719264274042">માત્ર Google એકાઉન્ટમાંના તમારા સંપર્કો. <ph name="LINK_BEGIN" />સંપર્કો જુઓ<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">આગળ વધવા માટે સિક્યુરિટી કી દાખલ કરીને તેને સ્પર્શ કરો</translation>
 <translation id="6808166974213191158">ChromeOS Flex સિસ્ટમની છબીના લેખક</translation>
 <translation id="6808193438228982088">શિયાળ</translation>
@@ -8041,6 +8046,7 @@ USB ડિવાઇસ</translation>
 <translation id="6840214587087739194">ઍડ્રેસ ડિલીટ કર્યું</translation>
 <translation id="6841143363521180029">એન્ક્રિપ્ટેડ</translation>
 <translation id="6841186874966388268">ભૂલો</translation>
+<translation id="6842135459748401207">માત્ર <ph name="USER_EMAIL" />માં સાઇન ઇન થયેલા ડિવાઇસ</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6842749380892715807">XML સાઇટની સૂચિઓ કે જે છેલ્લે <ph name="LAST_DATE_DOWNLOAD" />માં ડાઉનલોડ કરવામાં આવી હતી.</translation>
 <translation id="6842868554183332230">સામાન્ય રીતે સાઇટ, ચૅટ ઍપમાં તમારી ઉપલબ્ધતા સેટ કરવા માટે એ ભાળ મેળવે છે કે તમે સક્રિય રીતે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો</translation>
@@ -10689,6 +10695,7 @@ USB ડિવાઇસ</translation>
 <translation id="8766796754185931010">કોતોએરી</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />ની બધી શોધ બતાવો</translation>
 <translation id="8767621466733104912">Chrome ને તમામ વપરાશકર્તાઓ માટે ઑટોમૅટિક રીતે અપડેટ કરો</translation>
+<translation id="8768049274922835860">પ્રત્યેક</translation>
 <translation id="876956356450740926">ડેવલપર ટૂલ, IDEs અને એડિટર ચલાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">એક્સ્ટેન્શન રૂટ ડિરેક્ટરી</translation>
 <translation id="8771300903067484968">પ્રારંભ પેજના બૅકગ્રાઉન્ડને ડિફૉલ્ટ બૅકગ્રાઉન્ડ તરીકે સેટ કરવામાં આવ્યું છે.</translation>
@@ -10990,6 +10997,7 @@ USB ડિવાઇસ</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> મિનિટ માટે દરેક વ્યક્તિ તમારું ડિવાઇસ જોઈ શકશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook માટેની Steam પર આપનું સ્વાગત છે</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> દિવસ પહેલાં સક્રિય</translation>
+<translation id="8985561265504464578">ભાળ મેળવવાની મર્યાદા</translation>
 <translation id="8985661493893822002">તમારી <ph name="DEVICE_TYPE" />માં સાઇન ઇન કરવા માટે, કૃપા કરીને ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="8985661571449404298">અસુરક્ષિત ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="8986362086234534611">ભૂલી જાઓ</translation>

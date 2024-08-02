@@ -390,13 +390,13 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2871733351037274014">Predučitavanje stranica</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> želi da odobrite ovu web lokaciju:</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
-<translation id="2883644600102358131">Zaporke će uskoro prestati funkcionirati na ovom uređaju. Da biste nastavili upotrebljavati svoje zaporke, ažurirajte usluge za Google Play.</translation>
+<translation id="2883644600102358131">Lozinke će uskoro prestati funkcionirati na ovom uređaju. Da i dalje koristite svoje lozinke, ažurirajte Google Play usluge.</translation>
 <translation id="2888126860611144412">O Chromeu</translation>
 <translation id="2891154217021530873">Zaustavljanje učitavanja stranice</translation>
 <translation id="2893180576842394309">Google može koristiti vašu historiju za personalizaciju Pretraživanja i drugih Googleovih usluga</translation>
 <translation id="2894821468041866720">Ne usporava primjetno preglednik ni uređaj.</translation>
 <translation id="2895521649038438824">Možete slušati sadržaj stranice</translation>
-<translation id="2899252057552912621">Zaporke će uskoro prestati funkcionirati jer usluge za Google Play nisu dostupne. Možete kopirati spremljene zaporke prije nego što prestanu funkcionirati.</translation>
+<translation id="2899252057552912621">Lozinke će uskoro prestati funkcionirati jer Google Play usluge nisu dostupne. Možete napraviti kopiju sačuvanih lozinki prije nego što prestanu funkcionirati.</translation>
 <translation id="2900528713135656174">Kreiraj događaj</translation>
 <translation id="2901411048554510387">Prikazuju se prijedlozi za web lokaciju <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">Preuzeti PDF-ovi se automatski otvaraju putem jednog od PDF preglednika na uređaju</translation>
@@ -449,7 +449,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3070005020161560471">Automatski prevodi</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> će se otvoriti u Chromeu. Ako nastavite, pristajete na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge za Google Chrome i ChromeOS<ph name="END_LINK2" />. Također se primjenjuju <ph name="BEGIN_LINK3" />Pravila privatnosti<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Možete sačuvati stranice da ih čitate kasnije ili van mreže</translation>
-<translation id="3087218211037573995">Neke zaporke spremljene samo na ovom uređaju uskoro će prestati funkcionirati. Te zaporke možete premjestiti u Google upravitelj zaporki.</translation>
+<translation id="3087218211037573995">Neke lozinke sačuvane samo na ovom uređaju će uskoro prestati funkcionirati. Možete prenijeti te lozinke na Google upravitelj lozinki.</translation>
 <translation id="3091010850649238832">Prikažite sadržaj međumemorije</translation>
 <translation id="3093004810561729002">Neko</translation>
 <translation id="3098745985164956033">Neke slike se šalju Googleu radi poboljšanja opisa</translation>
@@ -578,7 +578,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3771694256347217732">Googleovi Uslovi korištenja usluge</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3777796259512476958">Odjavljuje vas s većine web lokacija</translation>
-<translation id="379035798868314833">Google upravitelj zaporki prestat će funkcionirati na ovom uređaju</translation>
+<translation id="379035798868314833">Google upravitelj lozinki će prestati funkcionirati na ovom uređaju</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="3795154175078851242">Kopiraj sliku s linkom</translation>
 <translation id="3810838688059735925">Videozapis</translation>
@@ -1709,7 +1709,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8998729206196772491">Prijavljujete se pomoću računa kojim upravlja domena <ph name="MANAGED_DOMAIN" /> te njenom administratoru dajete kontrolu nad svojim Chrome podacima. Vaši podaci će se trajno povezati s ovim računom. Odjavljivanjem iz Chromea ćete izbrisati podatke s ovog uređaja, ali će oni ostati pohranjeni na vašem Google računu.</translation>
 <translation id="8998837250940831980">Minimiziranje kartice nije uspjelo. Pokušajte ponovo kasnije.</translation>
 <translation id="9001604755921395912">Otvori na anon. kartici Chromea</translation>
-<translation id="9007002441981613214">Rješavanje problema sa spremljenim zaporkama</translation>
+<translation id="9007002441981613214">Riješite problem sa sačuvanim lozinkama</translation>
 <translation id="9012585441087414258">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Ako stranica uradi nešto sumnjivo, URL-ovi i dijelovi sadržaja stranice se šalju na Sigurno pregledanje na Googleu.</translation>
 <translation id="9019199799064251516">Nastaviti bez zaključavanja profila u automobilu?</translation>
 <translation id="9022774213089566801">Često posjećivano</translation>
