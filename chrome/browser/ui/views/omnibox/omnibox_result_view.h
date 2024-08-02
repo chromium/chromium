@@ -111,6 +111,10 @@ class OmniboxResultView : public views::View {
   // state.
   void UpdateRemoveSuggestionVisibility();
 
+  // Updates the 'selected' state of the view as applicable based on whether or
+  // not the view is selected.
+  void UpdateAccessibilitySelectedState();
+
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

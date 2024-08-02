@@ -350,6 +350,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            OpenActionSelectionLogsOmniboxEvent);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleActivedescendantId);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
+                           AccessibleSelectionOnResultSelection);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.

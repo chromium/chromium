@@ -236,6 +236,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                                views::MaximumFlexSizeRule::kPreferred));
 
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
+
+  UpdateAccessibilitySelectedState();
 }
 
 OmniboxResultView::~OmniboxResultView() {}
@@ -413,6 +415,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
   }
   ApplyThemeAndRefreshIcons();
   button_row_->SelectionStateChanged();
+  UpdateAccessibilitySelectedState();
 }
 
 bool OmniboxResultView::GetMatchSelected() const {
@@ -580,8 +583,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              model_index_ + 1);
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
                              autocomplete_controller->result().size());
-
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
 }
 
 void OmniboxResultView::OnThemeChanged() {
@@ -653,6 +654,10 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   if (old_visibility != new_visibility) {
     InvalidateLayout();
   }
+}
+
+void OmniboxResultView::UpdateAccessibilitySelectedState() {
+  GetViewAccessibility().SetIsSelected(GetMatchSelected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
