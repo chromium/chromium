@@ -56,7 +56,12 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
   private updateHelper: UiUpdateHelper;
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
+    const isInitilized: boolean = this.healthdData !== undefined;
     this.healthdData = data;
+    if (!isInitilized) {
+      // Display data as soon as we first receive it.
+      this.refreshTelemetryPage();
+    }
   }
 
   updateVisibility(isVisible: boolean) {
