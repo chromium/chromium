@@ -76,8 +76,6 @@ static_library("shelf") {
     "standalone_browser_extension_app_context_menu.h",
     "standalone_browser_extension_app_shelf_item_controller.cc",
     "standalone_browser_extension_app_shelf_item_controller.h",
-    "standalone_window_migration_nudge_util.cc",
-    "standalone_window_migration_nudge_util.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -274,7 +272,6 @@ source_set("browser_tests") {
     "browser_shortcut_shelf_item_controller_browsertest.cc",
     "chrome_shelf_controller_browsertest.cc",
     "extension_shelf_context_menu_browsertest.cc",
-    "standalone_window_migration_nudge_browsertest.cc",
   ]
 
   deps = [

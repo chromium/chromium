@@ -669,9 +669,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorGroupCache);
   registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorHueCache);
 
-  registry->RegisterBooleanPref(::prefs::kStandaloneWindowMigrationNudgeShown,
-                                false);
-
   registry->RegisterStringPref(::prefs::kFilesAppDefaultLocation,
                                std::string());
 }

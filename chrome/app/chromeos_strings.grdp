@@ -7468,17 +7468,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Continue to use the device
   </message>
 
-  <!-- Standalone Window Migration UX -->
-  <message name="IDS_STANDALONE_WINDOW_MIGRATION_UX_BUBBLE_HEADING" desc="Text to notify users of apps previously opening in browser by default now opening in a standalone window">
-    <ph name="APP">$1<ex>Google Docs</ex></ph> now opens as an app
-  </message>
-  <message name="IDS_STANDALONE_WINDOW_MIGRATION_UX_BUBBLE_TEXT" desc="Further explanation to notify users of apps previously opening in browser by default now opening in a standalone window">
-    All apps on ChromeOS now open in their own app windows instead of in Chrome.
-  </message>
-  <message name="IDS_STANDALONE_WINDOW_MIGRATION_UX_GOT_IT" desc="Used for Got it text on button for users to click to acknowledge the standalone window nudge">
-    Got it
-  </message>
-
   <!-- App install dialog -->
   <message name="IDS_APP_INSTALL_DIALOG_OPEN_APP_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
     Open app
