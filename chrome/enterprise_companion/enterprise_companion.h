@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 
 namespace enterprise_companion {
 
@@ -17,6 +18,11 @@ extern const char kLoggingModuleSwitch[];
 extern const char kCrashHandlerSwitch[];
 // Crash the program for testing purposes.
 extern const char kCrashMeSwitch[];
+
+#if BUILDFLAG(IS_MAC)
+// Runs the network worker.
+extern const char kNetWorkerSwitch[];
+#endif
 
 int EnterpriseCompanionMain(int argc, const char* const* argv);
 

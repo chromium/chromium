@@ -83,8 +83,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "Failed to persist policies to storage.";
     case ApplicationError::kCannotAcquireLock:
       return "Failed to acquire global singleton lock.";
-    case ApplicationError::kEnterpriseCompanionServiceConnectionFailed:
-      return "The EnterpriseCompanion IPC interface could not be reached.";
+    case ApplicationError::kMojoConnectionFailed:
+      return "A Mojo IPC connection could not be established.";
     case ApplicationError::kInstallationFailed:
       return "The application could not be installed.";
     case ApplicationError::kIpcCallerNotAllowed:

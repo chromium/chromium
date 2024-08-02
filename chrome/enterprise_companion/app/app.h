@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/installer.h"
@@ -50,6 +51,11 @@ std::unique_ptr<App> CreateAppInstall(
     base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
         lock_provider = base::BindOnce(&CreateScopedLock),
     base::OnceCallback<bool()> install_task = base::BindOnce(&Install));
+
+#if BUILDFLAG(IS_MAC)
+// Creates an App which handles network requests for another process.
+std::unique_ptr<App> CreateAppNetWorker();
+#endif
 
 }  // namespace enterprise_companion
 

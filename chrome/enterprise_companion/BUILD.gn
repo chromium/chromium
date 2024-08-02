@@ -99,7 +99,10 @@ source_set("base") {
   if (is_linux) {
     sources += [ "installer_linux.cc" ]
   } else if (is_mac) {
-    sources += [ "installer_mac.mm" ]
+    sources += [
+      "app/app_net_worker.cc",
+      "installer_mac.mm",
+    ]
   } else if (is_win) {
     sources += [ "installer_win.cc" ]
   }
@@ -133,6 +136,9 @@ test("enterprise_companion_tests") {
     "enterprise_companion_status_unittest.cc",
     "event_logger_unittest.cc",
     "test/run_all_unittests.cc",
+    "test/test_utils.cc",
+    "test/test_utils.h",
+    "url_loader_factory_provider_unittest.cc",
   ]
   deps = [
     ":base",
@@ -147,10 +153,15 @@ test("enterprise_companion_tests") {
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
+    "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
   ]
   data_deps = [ ":test_crashpad_embedder" ]
+
+  if (is_mac) {
+    sources += [ "app/app_net_worker_unittest.cc" ]
+  }
 }
 
 static_library("client") {

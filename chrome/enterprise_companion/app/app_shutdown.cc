@@ -44,8 +44,8 @@ class AppShutdown : public App {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!connection || !remote) {
-      Shutdown(EnterpriseCompanionStatus(
-          ApplicationError::kEnterpriseCompanionServiceConnectionFailed));
+      Shutdown(
+          EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
       return;
     }
 
@@ -68,8 +68,8 @@ class AppShutdown : public App {
   void OnRPCDropped() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    Shutdown(EnterpriseCompanionStatus(
-        ApplicationError::kEnterpriseCompanionServiceConnectionFailed));
+    Shutdown(
+        EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

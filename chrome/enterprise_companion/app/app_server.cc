@@ -9,10 +9,8 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_pump_type.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/thread.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
@@ -24,6 +22,10 @@
 #include "chrome/enterprise_companion/url_loader_factory_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if !BUILDFLAG(IS_MAC)
+#include "base/threading/thread.h"
+#endif
+
 namespace enterprise_companion {
 
 namespace {
@@ -32,10 +34,9 @@ namespace {
 class AppServer : public App {
  public:
   AppServer() {
+#if !BUILDFLAG(IS_MAC)
     net_thread_.StartWithOptions({base::MessagePumpType::IO, 0});
-    url_loader_factory_provider_ =
-        base::SequenceBound<URLLoaderFactoryProvider>(
-            net_thread_.task_runner());
+#endif
   }
 
   ~AppServer() override { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
@@ -50,6 +51,20 @@ class AppServer : public App {
       return;
     }
 
+#if BUILDFLAG(IS_MAC)
+    url_loader_factory_provider_ = CreateOutOfProcessNetWorker(base::BindOnce(
+        &AppServer::Shutdown, weak_ptr_factory_.GetWeakPtr(),
+        EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed)));
+    if (!url_loader_factory_provider_) {
+      Shutdown(
+          EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
+      return;
+    }
+#else
+    url_loader_factory_provider_ =
+        CreateInProcessUrlLoaderFactoryProvider(net_thread_.task_runner());
+#endif
+
     url_loader_factory_provider_
         .AsyncCall(&URLLoaderFactoryProvider::GetPendingURLLoaderFactory)
         .Then(base::BindOnce(&AppServer::OnUrlLoaderFactoryReceived,
@@ -58,7 +73,11 @@ class AppServer : public App {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+#if !BUILDFLAG(IS_MAC)
   base::Thread net_thread_{"Network"};
+#endif
+
   base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
   std::unique_ptr<ScopedLock> lock_;
   std::unique_ptr<mojom::EnterpriseCompanion> stub_;
