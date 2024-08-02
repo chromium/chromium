@@ -1,4 +1,17 @@
 [INTERFACES]
+interface AI
+    attribute @@toStringTag
+    method canCreateTextSession
+    method constructor
+    method createTextSession
+    method textModelInfo
+interface AITextSession
+    attribute @@toStringTag
+    method clone
+    method constructor
+    method destroy
+    method prompt
+    method promptStreaming
 interface AbortController
     attribute @@toStringTag
     getter signal

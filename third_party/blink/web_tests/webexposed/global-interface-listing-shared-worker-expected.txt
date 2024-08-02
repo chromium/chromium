@@ -4,6 +4,19 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
+[Worker] interface AI
+[Worker]     attribute @@toStringTag
+[Worker]     method canCreateTextSession
+[Worker]     method constructor
+[Worker]     method createTextSession
+[Worker]     method textModelInfo
+[Worker] interface AITextSession
+[Worker]     attribute @@toStringTag
+[Worker]     method clone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method prompt
+[Worker]     method promptStreaming
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal

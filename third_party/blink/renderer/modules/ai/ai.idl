@@ -11,7 +11,7 @@ enum AIModelAvailability {
 };
 
 [
-  Exposed=Window,
+  Exposed=(Window,Worker),
   RuntimeEnabled=BuiltInAIAPI
 ]
 interface AI {
