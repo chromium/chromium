@@ -3401,8 +3401,8 @@
       'expected_color_pixel_validating_test': {
         'telemetry_test_name': 'expected_color',
         'mixins': [
-          'has_native_resultdb_integration',
           'skia_gold_test',
+          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'remove_mixins': [
@@ -3441,8 +3441,8 @@
       'pixel_skia_gold_validating_test': {
         'telemetry_test_name': 'pixel',
         'mixins': [
-          'has_native_resultdb_integration',
           'skia_gold_test',
+          'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
         'remove_mixins': [

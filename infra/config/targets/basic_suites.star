@@ -3247,7 +3247,6 @@ targets.legacy_basic_suite(
         ),
         "expected_color_pixel_validating_test": targets.legacy_test_config(
             mixins = [
-                "skia_gold_test",
                 "gpu_integration_test_common_args",
             ],
             remove_mixins = [
@@ -3288,7 +3287,6 @@ targets.legacy_basic_suite(
         ),
         "pixel_skia_gold_validating_test": targets.legacy_test_config(
             mixins = [
-                "skia_gold_test",
                 "gpu_integration_test_common_args",
             ],
             remove_mixins = [
