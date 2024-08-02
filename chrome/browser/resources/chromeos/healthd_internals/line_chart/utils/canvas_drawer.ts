@@ -59,7 +59,7 @@ export class CanvasDrawer {
 
   // The fixed maximum value in line chart. If this value is null, the maximum
   // value of unit label will be set from the real maximum value of data series.
-  private maxValue: number|null = null;
+  private fixedMaxValue: number|null = null;
 
   // The width and height of the graph for drawing line chart, excluding the
   // bottom labels.
@@ -72,8 +72,8 @@ export class CanvasDrawer {
   }
 
   // Overwrite the maximum value of this chart.
-  setMaxValue(maxValue: number|null) {
-    this.maxValue = maxValue;
+  setFixedMaxValue(maxValue: number|null) {
+    this.fixedMaxValue = maxValue;
   }
 
   // Return true if there is any data series in this chart.
@@ -236,8 +236,8 @@ export class CanvasDrawer {
   // Calculate the max value for the current layout of unit label.
   private updateMaxValue(startTime: number, endTime: number, stepSize: number) {
     const dataSeriesList: DataSeries[] = this.dataSeriesList;
-    if (this.maxValue != null) {
-      this.unitLabel.setMaxValue(this.maxValue);
+    if (this.fixedMaxValue != null) {
+      this.unitLabel.setMaxValue(this.fixedMaxValue);
       return;
     }
     const valueList: number[] = dataSeriesList.map((dataSeries: DataSeries) => {

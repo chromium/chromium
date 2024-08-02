@@ -145,7 +145,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
           '`initCanvasDrawer()` before calling this function.');
       return;
     }
-    this.canvasDrawer.setMaxValue(maxValue);
+    this.canvasDrawer.setFixedMaxValue(maxValue);
   }
 
   // Handle the wheeling, mouse dragging and touching events.
