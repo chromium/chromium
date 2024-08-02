@@ -89,22 +89,44 @@ targets.mixin(
     ),
 )
 
+# TODO(crbug.com/347759127): Re-enable after 12L FYI evaluation is done.
+# targets.mixin(
+#     name = "12l-google-atd-x64-emulator",
+#     args = [
+#         "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
+#     ],
+#     swarming = targets.swarming(
+#         # soft affinity so that bots with caches will be picked first
+#         optional_dimensions = {
+#             60: {
+#                 "caches": "android_32_google_atd_x64_foldable",
+#             },
+#         },
+#         named_caches = [
+#             swarming.cache(
+#                 name = "android_32_google_atd_x64_foldable",
+#                 path = ".android_emulator/android_32_google_atd_x64_foldable",
+#             ),
+#         ],
+#     ),
+# )
+
 targets.mixin(
-    name = "12l-google-atd-x64-emulator",
+    name = "12l-fyi-x64-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_fyi.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "android_32_google_atd_x64_foldable",
+                "caches": "android_32_google_apis_x64_foldable_fyi",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "android_32_google_atd_x64_foldable",
-                path = ".android_emulator/android_32_google_atd_x64_foldable",
+                name = "android_32_google_apis_x64_foldable_fyi",
+                path = ".android_emulator/android_32_google_apis_x64_foldable_fyi",
             ),
         ],
     ),

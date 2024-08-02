@@ -78,20 +78,20 @@
       ],
     },
   },
-  '12l-google-atd-x64-emulator': {
+  '12l-fyi-x64-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_fyi.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'android_32_google_atd_x64_foldable',
+          'caches': 'android_32_google_apis_x64_foldable_fyi',
         },
       },
       'named_caches': [
         {
-          'name': 'android_32_google_atd_x64_foldable',
-          'path': '.android_emulator/android_32_google_atd_x64_foldable',
+          'name': 'android_32_google_apis_x64_foldable_fyi',
+          'path': '.android_emulator/android_32_google_apis_x64_foldable_fyi',
         },
       ],
     },
