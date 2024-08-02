@@ -282,7 +282,9 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
     return;
   }
 
-  EmojiSearch::LanguageData new_data;
+  language_data_.emplace(*lang, EmojiSearch::LanguageData());
+  EmojiSearch::LanguageData& new_data = language_data_.at(*lang);
+
   if (std::optional<LanguageResourceIds> resource_ids =
           GetLanguageResourceIds(*lang);
       resource_ids.has_value()) {
@@ -307,7 +309,6 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
     }
   }
 
-  language_data_.emplace(*lang, new_data);
   return;
 }
 
