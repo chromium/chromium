@@ -106,8 +106,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
       this.onListItemSizeChanged_();
     }
     if (changedProperties.has('renamingId') ||
-        changedProperties.has('hasCheckbox')) {
-      this.onInputDisplayChange_();
+        changedProperties.has('bookmark')) {
+      if(this.renamingId === this.bookmark?.id){
+        this.onInputDisplayChange_();
+      }
     }
   }
 
