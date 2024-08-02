@@ -362,12 +362,11 @@ WITH
     SELECT
       CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
     FROM
-      `commit-queue.raw.attempts`,
+      `commit-queue.chrome.attempts`,
       UNNEST(builds) as unnested_builds,
       UNNEST(gerrit_changes) as unnested_changes
     WHERE
-      luci_project = "chrome"
-      AND unnested_builds.host = "cr-buildbucket.appspot.com"
+      unnested_builds.host = "cr-buildbucket.appspot.com"
       AND unnested_changes.submit_status = "SUCCESS"
       AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                      INTERVAL 30 DAY)
