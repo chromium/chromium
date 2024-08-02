@@ -21,6 +21,10 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+namespace base {
+class ElapsedTimer;
+}
+
 namespace content {
 class WebContents;
 }
@@ -88,6 +92,8 @@ class ChromeWebAuthnCredentialsDelegate final :
   const raw_ptr<content::WebContents> web_contents_;
 
  private:
+  void RecordPasskeyRetrievalDelay();
+
   // List of passkeys populated from an authenticator from a call to
   // RetrievePasskeys, and returned to the client via GetPasskeys.
   // |passkeys_| is nullopt until populated by a WebAuthn request, and reset
@@ -96,6 +102,7 @@ class ChromeWebAuthnCredentialsDelegate final :
   bool offer_passkey_from_another_device_ = true;
 
   base::OnceClosure retrieve_passkeys_callback_;
+  std::unique_ptr<base::ElapsedTimer> passkey_retrieval_timer_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Callback to be run to dismiss the autofill popup. The popup will be shown

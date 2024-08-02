@@ -36,6 +36,10 @@
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace base {
+class ElapsedTimer;
+}
+
 namespace password_manager {
 
 class PasswordFormMetricsRecorder;
@@ -483,6 +487,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // A password field that is used for generation.
   autofill::FieldRendererId generation_element_;
+
+  // For generating timing metrics on retrieving server-side predictions.
+  std::unique_ptr<base::ElapsedTimer> server_side_predictions_timer_;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`
