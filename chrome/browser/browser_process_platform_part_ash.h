@@ -29,6 +29,7 @@ class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
 class ProfileHelper;
 class SchedulerConfigurationManager;
+class SecureDnsManager;
 class UserImageManagerRegistry;
 
 namespace system {
@@ -128,6 +129,10 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   ash::AshProxyMonitor* ash_proxy_monitor() { return ash_proxy_monitor_.get(); }
 
+  ash::SecureDnsManager* secure_dns_manager() {
+    return secure_dns_manager_.get();
+  }
+
   app_list::EssentialSearchManager* essential_search_manager() {
     return essential_search_manager_.get();
   }
@@ -206,6 +211,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
       scheduler_configuration_manager_;
 
   std::unique_ptr<ash::AshProxyMonitor> ash_proxy_monitor_;
+
+  std::unique_ptr<ash::SecureDnsManager> secure_dns_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
