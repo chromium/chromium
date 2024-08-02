@@ -71,6 +71,7 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   UIStackView* _priceHistoryStackView;
   UIButton* _trackButton;
   NSLayoutConstraint* _trackButtonWidthConstraint;
+  UILabel* _priceTrackingSubtitle;
 }
 
 #pragma mark - Public
@@ -142,8 +143,9 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   }
 }
 
-- (void)updateTrackButton:(BOOL)isTracking {
+- (void)updateTrackStatus:(BOOL)isTracking {
   self.item.isPriceTracked = isTracking;
+  [self setOrUpdateTrackingSubtitleText];
   [self setOrUpdateTrackButton];
 }
 
@@ -181,18 +183,17 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   priceTrackingTitle.text = self.item.title;
   priceTrackingTitle.accessibilityTraits = UIAccessibilityTraitHeader;
 
-  UILabel* priceTrackingSubtitle = [self createLabel];
-  [priceTrackingSubtitle
+  _priceTrackingSubtitle = [self createLabel];
+  [_priceTrackingSubtitle
       setAccessibilityIdentifier:kPriceTrackingSubtitleIdentifier];
-  priceTrackingSubtitle.font =
+  _priceTrackingSubtitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
-  priceTrackingSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  priceTrackingSubtitle.numberOfLines = 2;
-  priceTrackingSubtitle.text =
-      l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION);
+  _priceTrackingSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  _priceTrackingSubtitle.numberOfLines = 2;
+  [self setOrUpdateTrackingSubtitleText];
 
   UIStackView* verticalStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ priceTrackingTitle, priceTrackingSubtitle ]];
+      initWithArrangedSubviews:@[ priceTrackingTitle, _priceTrackingSubtitle ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
@@ -375,6 +376,13 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.numberOfLines = 1;
   return label;
+}
+
+- (void)setOrUpdateTrackingSubtitleText {
+  _priceTrackingSubtitle.text =
+      self.item.isPriceTracked
+          ? l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION_TRACKED)
+          : l10n_util::GetNSString(IDS_PRICE_TRACKING_DESCRIPTION);
 }
 
 - (void)setOrUpdateTrackButton {

@@ -124,12 +124,12 @@ NSDate* getNSDateFromString(std::string date) {
 #pragma mark - PriceInsightsConsumer
 
 - (void)didStartPriceTrackingWithNotification:(BOOL)granted {
-  [self.priceInsightsCell updateTrackButton:YES];
+  [self.priceInsightsCell updateTrackStatus:YES];
   [self displaySnackbar:granted];
 }
 
 - (void)didStopPriceTracking {
-  [self.priceInsightsCell updateTrackButton:NO];
+  [self.priceInsightsCell updateTrackStatus:NO];
 }
 
 - (void)didStartNavigationToWebpageWithPriceBucket:

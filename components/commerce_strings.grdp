@@ -482,6 +482,9 @@
   <message name="IDS_PRICE_TRACKING_NOT_TRACKING_ACCESSIBILITY_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string for the price tracking button when the current product is not being tracked.">
     Not tracking
   </message>
+  <message name="IDS_PRICE_TRACKING_DESCRIPTION_TRACKED" desc="The description text for the price tracking section of price insights when the product is already being tracked.">
+    You're already tracking this product
+  </message>
   <if expr="use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
       Price History Across the Web
