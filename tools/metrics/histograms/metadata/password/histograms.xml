@@ -2176,6 +2176,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.OsCryptAsync.GetInstanceTime" units="ms"
+    expires_after="2024-12-08">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it takes to obtain os_crypt_async::Encryptor. Recorded when
+    os_crypt_async::Encryptor is received.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.OutdatedGMSDialogDismissalReason"
     enum="OutdatedGMSDialogDismissalReason" expires_after="2024-12-24">
   <owner>ioanap@chromium.org</owner>
