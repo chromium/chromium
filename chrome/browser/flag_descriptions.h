@@ -3727,9 +3727,6 @@ extern const char kDeskProfilesDescription[];
 extern const char kDisableCameraFrameRotationAtSourceName[];
 extern const char kDisableCameraFrameRotationAtSourceDescription[];
 
-extern const char kForceSpectreVariant2MitigationName[];
-extern const char kForceSpectreVariant2MitigationDescription[];
-
 extern const char kDisableCancelAllTouchesName[];
 extern const char kDisableCancelAllTouchesDescription[];
 

@@ -65,9 +65,7 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
   // This is the API to enable a seccomp-bpf sandbox by using an
   // external policy.
   // If `force_disable_spectre_variant2_mitigation` is true, the Spectre variant
-  // 2 mitigation will be disabled--except on ChromeOS ash if the user always
-  // wants the mitigation enabled, see the feature
-  // sandbox::policy::features::kForceSpectreVariant2Mitigation.
+  // 2 mitigation will be disabled.
   static bool StartSandboxWithExternalPolicy(
       std::unique_ptr<bpf_dsl::Policy> policy,
       base::ScopedFD proc_fd,

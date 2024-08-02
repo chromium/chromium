@@ -332,10 +332,7 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     sandbox.SetProcFd(std::move(proc_fd));
     bool enable_ibpb = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(
-            features::kForceSpectreVariant2Mitigation)) {
-      enable_ibpb = true;
-    } else if (force_disable_spectre_variant2_mitigation) {
+    if (force_disable_spectre_variant2_mitigation) {
       enable_ibpb = false;
     } else {
       enable_ibpb =

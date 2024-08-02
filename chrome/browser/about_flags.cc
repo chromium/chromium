@@ -6253,11 +6253,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"force-resync-drive", flag_descriptions::kForceReSyncDriveName,
      flag_descriptions::kForceReSyncDriveDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForceReSyncDrive)},
-    {"force-spectre-v2-mitigation",
-     flag_descriptions::kForceSpectreVariant2MitigationName,
-     flag_descriptions::kForceSpectreVariant2MitigationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         sandbox::policy::features::kForceSpectreVariant2Mitigation)},
     {"fsps-in-recents", flag_descriptions::kFSPsInRecentsName,
      flag_descriptions::kFSPsInRecentsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFSPsInRecents)},

@@ -6947,13 +6947,6 @@ const char kFirmwareUpdateUIV2Name[] =
 const char kFirmwareUpdateUIV2Description[] =
     "Enable the v2 version of the Firmware Updates App.";
 
-const char kForceSpectreVariant2MitigationName[] =
-    "Force Spectre variant 2 mitigagtion";
-const char kForceSpectreVariant2MitigationDescription[] =
-    "Forces Spectre variant 2 mitigation. Setting this to enabled will "
-    "override #spectre-variant2-mitigation and any system-level setting that "
-    "disables Spectre variant 2 mitigation.";
-
 const char kFirstPartyVietnameseInputName[] =
     "First party Vietnamese Input Method";
 const char kFirstPartyVietnameseInputDescription[] =

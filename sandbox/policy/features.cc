@@ -138,13 +138,6 @@ BASE_FEATURE(kWinSboxACProfileWithoutFirewall,
 BASE_FEATURE(kSpectreVariant2Mitigation,
              "SpectreVariant2Mitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// An override for the Spectre variant 2 default behavior. Security sensitive
-// users can enable this feature to ensure that the mitigation is always
-// enabled.
-BASE_FEATURE(kForceSpectreVariant2Mitigation,
-             "ForceSpectreVariant2Mitigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -154,8 +147,7 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
 // mitigations.
 //
 // On ChromeOS Ash, this overrides the system-wide kSpectreVariant2Mitigation
-// feature above, but not the user-controlled kForceSpectreVariant2Mitigation
-// feature.
+// feature above.
 BASE_FEATURE(kForceDisableSpectreVariant2MitigationInNetworkService,
              "kForceDisableSpectreVariant2MitigationInNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
