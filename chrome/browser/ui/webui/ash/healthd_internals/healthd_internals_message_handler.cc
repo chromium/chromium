@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_message_handler.h"
 
+#include <cstdint>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -148,6 +151,15 @@ base::Value::List ConvertFanValue(const std::vector<mojom::FanInfoPtr>& info) {
   return out_fans;
 }
 
+// Set the value to `output` for optional uint64 value.
+void SetValue(std::string_view field_name,
+              std::optional<uint64_t> value,
+              base::Value::Dict& output) {
+  if (value.has_value()) {
+    output.Set(field_name, base::NumberToString(value.value()));
+  }
+}
+
 base::Value::Dict ConvertMemoryValue(const mojom::MemoryInfoPtr& info) {
   base::Value::Dict out_memory;
   if (info) {
@@ -157,6 +169,22 @@ base::Value::Dict ConvertMemoryValue(const mojom::MemoryInfoPtr& info) {
                    base::NumberToString(info->free_memory_kib));
     out_memory.Set("totalMemoryKib",
                    base::NumberToString(info->total_memory_kib));
+    SetValue("buffersKib", info->buffers_kib, out_memory);
+    SetValue("pageCacheKib", info->page_cache_kib, out_memory);
+    SetValue("sharedMemoryKib", info->shared_memory_kib, out_memory);
+
+    SetValue("activeMemoryKib", info->active_memory_kib, out_memory);
+    SetValue("inactiveMemoryKib", info->inactive_memory_kib, out_memory);
+
+    SetValue("totalSwapMemoryKib", info->total_swap_memory_kib, out_memory);
+    SetValue("freeSwapMemoryKib", info->free_swap_memory_kib, out_memory);
+    SetValue("cachedSwapMemoryKib", info->cached_swap_memory_kib, out_memory);
+
+    SetValue("totalSlabMemoryKib", info->total_slab_memory_kib, out_memory);
+    SetValue("reclaimableSlabMemoryKib", info->reclaimable_slab_memory_kib,
+             out_memory);
+    SetValue("unreclaimableSlabMemoryKib", info->unreclaimable_slab_memory_kib,
+             out_memory);
   }
   return out_memory;
 }
