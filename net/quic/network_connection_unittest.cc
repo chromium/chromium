@@ -34,7 +34,7 @@ TEST_F(NetworkConnectionTest, Connection2G) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_2G, network_connection.connection_type());
-  const char* description = network_connection.connection_description();
+  std::string_view description = network_connection.connection_description();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_2G),
             description);
 }
@@ -44,7 +44,7 @@ TEST_F(NetworkConnectionTest, Connection3G) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_3G, network_connection.connection_type());
-  const char* description = network_connection.connection_description();
+  std::string_view description = network_connection.connection_description();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_3G),
             description);
 }
@@ -54,7 +54,7 @@ TEST_F(NetworkConnectionTest, ConnectionEthnernet) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_ETHERNET, network_connection.connection_type());
-  const char* description = network_connection.connection_description();
+  std::string_view description = network_connection.connection_description();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_ETHERNET),
             description);
 }
@@ -74,21 +74,21 @@ TEST_F(NetworkConnectionTest, ConnectionChange) {
   notifier_->SetConnectionType(CONNECTION_2G);
 
   NetworkConnection network_connection;
-  const char* description_2g = network_connection.connection_description();
+  std::string_view description_2g = network_connection.connection_description();
 
   notifier_->SetConnectionType(CONNECTION_3G);
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
   // Spin the message loop so the notification is delivered.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONNECTION_3G, network_connection.connection_type());
-  const char* description_3g = network_connection.connection_description();
+  std::string_view description_3g = network_connection.connection_description();
 
   NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
       CONNECTION_ETHERNET);
   // Spin the message loop so the notification is delivered.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONNECTION_ETHERNET, network_connection.connection_type());
-  const char* description_ethernet =
+  std::string_view description_ethernet =
       network_connection.connection_description();
 
   NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(

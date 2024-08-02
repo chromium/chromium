@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -566,7 +567,7 @@ class NET_EXPORT NetworkChangeNotifier {
   static bool IsTestNotificationsOnly() { return test_notifications_only_; }
 
   // Returns a string equivalent to |type|.
-  static const char* ConnectionTypeToString(ConnectionType type);
+  static base::cstring_view ConnectionTypeToString(ConnectionType type);
 
   // Allows a second NetworkChangeNotifier to be created for unit testing, so
   // the test suite can create a MockNetworkChangeNotifier, but platform

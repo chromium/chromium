@@ -29,7 +29,8 @@ void NetworkConnection::OnConnectionTypeChanged(
   DVLOG(1) << "Updating NetworkConnection's Cached Data";
 
   connection_type_ = type;
-  connection_description_ = NetworkChangeNotifier::ConnectionTypeToString(type);
+  connection_description_ =
+      NetworkChangeNotifier::ConnectionTypeToString(type).c_str();
 }
 
 }  // namespace net
