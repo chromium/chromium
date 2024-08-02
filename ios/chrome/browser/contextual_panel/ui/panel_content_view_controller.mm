@@ -232,6 +232,12 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                                   _headerView);
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
@@ -364,6 +370,13 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   metricsData.timeVisible += cell.timeSinceAppearance;
 }
 
+- (void)setCollectionViewScrollIndicatorInsets {
+  // The bottom inset should not include the safe area height.
+  _collectionView.verticalScrollIndicatorInsets = UIEdgeInsetsMake(
+      kHeaderHeight, 0, _bottomToolbarHeight - self.view.safeAreaInsets.bottom,
+      0);
+}
+
 #pragma mark - View Initialization
 
 // Creates the layout for the collection view.
@@ -399,6 +412,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _collectionView.backgroundColor = UIColor.clearColor;
   _collectionView.contentInset = UIEdgeInsetsMake(
       kHeaderHeight, 0, _bottomToolbarHeight + kContentBottomMargin, 0);
+  [self setCollectionViewScrollIndicatorInsets];
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
   _collectionView.delegate = self;
@@ -486,6 +500,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     UIEdgeInsets insets = _collectionView.contentInset;
     insets.bottom = height;
     _collectionView.contentInset = insets;
+    [self setCollectionViewScrollIndicatorInsets];
     [self.sheetDisplayController
         setContentHeight:[self preferredHeightForContent]];
   }
