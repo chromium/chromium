@@ -42,6 +42,7 @@ build_webui("build") {
     "line_chart/utils/canvas_drawer.ts",
     "line_chart/utils/data_series.ts",
     "line_chart/utils/unit_label.ts",
+    "pages/utils/page_interface.ts",
     "pages/utils/ui_update_helper.ts",
   ]
 

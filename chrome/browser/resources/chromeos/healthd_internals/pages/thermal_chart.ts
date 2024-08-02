@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './thermal_chart.html.js';
+import {HealthdInternalsPage} from './utils/page_interface.js';
 import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsThermalChartElement {
@@ -18,7 +19,8 @@ export interface HealthdInternalsThermalChartElement {
   };
 }
 
-export class HealthdInternalsThermalChartElement extends PolymerElement {
+export class HealthdInternalsThermalChartElement extends PolymerElement
+    implements HealthdInternalsPage {
   static get is() {
     return 'healthd-internals-thermal-chart';
   }

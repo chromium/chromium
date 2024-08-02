@@ -10,6 +10,7 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './cpu_usage_chart.html.js';
+import {HealthdInternalsPage} from './utils/page_interface.js';
 import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsCpuUsageChartElement {
@@ -18,7 +19,8 @@ export interface HealthdInternalsCpuUsageChartElement {
   };
 }
 
-export class HealthdInternalsCpuUsageChartElement extends PolymerElement {
+export class HealthdInternalsCpuUsageChartElement extends PolymerElement
+    implements HealthdInternalsPage {
   static get is() {
     return 'healthd-internals-cpu-usage-chart';
   }
