@@ -791,7 +791,24 @@ class ComputedStyle final : public ComputedStyleBase {
     return HasGlyphRelativeUnits() || HasFontSizeAdjust() ||
            CustomStyleCallbackDependsOnFont();
   }
-  bool CachedPseudoElementStylesDependOnFontMetrics() const;
+
+  template <typename Functor>
+  bool HasCachedPseudoElementStyle(Functor& func) const {
+    if (!func || !HasCachedPseudoElementStyles()) {
+      return false;
+    }
+
+    DCHECK_EQ(StyleType(), kPseudoIdNone);
+
+    for (const auto& pseudo_style : *GetPseudoElementStyleCache()) {
+      if (func(*pseudo_style)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   bool HighlightPseudoElementStylesDependOnRelativeUnits() const;
   bool HighlightPseudoElementStylesDependOnContainerUnits() const;
   bool HighlightPseudoElementStylesDependOnViewportUnits() const;

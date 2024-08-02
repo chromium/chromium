@@ -729,22 +729,6 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
   return nullptr;
 }
 
-bool ComputedStyle::CachedPseudoElementStylesDependOnFontMetrics() const {
-  if (!HasCachedPseudoElementStyles()) {
-    return false;
-  }
-
-  DCHECK_EQ(StyleType(), kPseudoIdNone);
-
-  for (const auto& pseudo_style : *GetPseudoElementStyleCache()) {
-    if (pseudo_style->DependsOnFontMetrics()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
     const ComputedStyle* pseudo,
     PseudoId pseudo_id,

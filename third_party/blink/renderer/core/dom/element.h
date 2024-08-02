@@ -1069,6 +1069,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool PseudoElementStylesAffectCounters() const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;
+  bool PseudoElementStylesDependOnAttr() const;
 
   // Retrieve the ComputedStyle (if any) corresponding to the provided
   // PseudoId from cache, calculating the ComputedStyle on-demand if it's
@@ -1544,6 +1545,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
  private:
   friend class AXObject;
   struct AffectedByPseudoStateChange;
+
+  template <typename Functor>
+  bool PseudoElementStylesDependOnFunc(Functor& func) const;
 
   void ScrollLayoutBoxBy(const ScrollToOptions*);
   void ScrollLayoutBoxTo(const ScrollToOptions*);

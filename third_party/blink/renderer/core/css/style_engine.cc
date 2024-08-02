@@ -1710,8 +1710,7 @@ bool HasAttributeDependentStyle(const Element& element) {
   if (style && style->HasAttrFunction()) {
     return true;
   }
-  // TODO(crbug.com/40320391): Handle pseudo elements invalidation.
-  return false;
+  return element.PseudoElementStylesDependOnAttr();
 }
 
 }  // namespace

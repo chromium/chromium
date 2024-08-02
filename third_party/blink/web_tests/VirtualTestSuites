@@ -3231,6 +3231,7 @@
       "external/wpt/css/css-values/attr-length-valid.html",
       "external/wpt/css/css-values/attr-length-valid-zero.html",
       "external/wpt/css/css-values/attr-length-valid-zero-nofallback.html",
+      "external/wpt/css/css-values/attr-pseudo-elem-invalidation.html",
       "external/wpt/css/css-values/attr-px-invalid-cast.html",
       "external/wpt/css/css-values/attr-px-valid.html",
       "external/wpt/css/css-values/attr-all-types.html"

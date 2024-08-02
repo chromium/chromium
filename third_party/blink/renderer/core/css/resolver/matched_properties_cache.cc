@@ -331,6 +331,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   }
 
   if (state.HasAttrFunction()) {
+    DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
     return false;
   }
 
