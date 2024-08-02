@@ -3,47 +3,39 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
-import './signin_shared.css.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './signin_error_app.html.js';
+import {getCss} from './signin_error_app.css.js';
+import {getHtml} from './signin_error_app.html.js';
 
 
-const SigninErrorAppElementBase = WebUiListenerMixin(PolymerElement);
+const SigninErrorAppElementBase = WebUiListenerMixinLit(CrLitElement);
 
-class SigninErrorAppElement extends SigninErrorAppElementBase {
+export class SigninErrorAppElement extends SigninErrorAppElementBase {
   static get is() {
     return 'signin-error-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      fromProfilePicker_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('fromProfilePicker'),
-      },
-
-      switchButtonUnavailable_: {
-        type: Boolean,
-        value: false,
-      },
-
-      hideNormalError_: {
-        type: Boolean,
-        value: () => loadTimeData.getString('signinErrorMessage').length === 0,
-      },
+      fromProfilePicker_: {type: Boolean},
+      switchButtonUnavailable_: {type: Boolean},
+      hideNormalError_: {type: Boolean},
 
       /**
        * An array of booleans indicating whether profile blocking messages
@@ -51,34 +43,40 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
        * #profile-blocking-error-message container, and subsequent positions
        * correspond to each of the 3 related messages respectively.
        */
-      hideProfileBlockingErrors_: {
-        type: Array,
-        value: function() {
-          const hide = [
-            'profileBlockedMessage',
-            'profileBlockedAddPersonSuggestion',
-            'profileBlockedRemoveProfileSuggestion',
-          ].map(id => loadTimeData.getString(id).length === 0);
-
-          // Hide the container itself if all of each children are also hidden.
-          hide.unshift(hide.every(hideEntry => hideEntry));
-
-          return hide;
-        },
-      },
+      hideProfileBlockingErrors_: {type: Array},
     };
   }
 
-  private fromProfilePicker_: boolean;
-  private switchButtonUnavailable_: boolean;
-  private hideNormalError_: boolean;
-  private hideProfileBlockingErrors_: boolean[];
+  protected fromProfilePicker_: boolean =
+      loadTimeData.getBoolean('fromProfilePicker');
+  protected switchButtonUnavailable_: boolean = false;
+  protected hideNormalError_: boolean =
+      loadTimeData.getString('signinErrorMessage').length === 0;
+  protected hideProfileBlockingErrors_: boolean[];
+
+  constructor() {
+    super();
+
+    this.hideProfileBlockingErrors_ = (function() {
+      const hide = [
+        'profileBlockedMessage',
+        'profileBlockedAddPersonSuggestion',
+        'profileBlockedRemoveProfileSuggestion',
+      ].map(id => loadTimeData.getString(id).length === 0);
+
+      // Hide the container itself if all of each children are also hidden.
+      hide.unshift(hide.every(hideEntry => hideEntry));
+
+      return hide;
+    })();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUiListener('switch-button-unavailable', () => {
+    this.addWebUiListener('switch-button-unavailable', async () => {
       this.switchButtonUnavailable_ = true;
+      await this.updateComplete;
       // Move focus to the only displayed button in this case.
       const button =
           this.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
@@ -87,15 +85,15 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
     });
   }
 
-  private onConfirm_() {
+  protected onConfirm_() {
     chrome.send('confirm');
   }
 
-  private onSwitchToExistingProfile_() {
+  protected onSwitchToExistingProfile_() {
     chrome.send('switchToExistingProfile');
   }
 
-  private onLearnMore_() {
+  protected onLearnMore_() {
     chrome.send('learnMore');
   }
 }
