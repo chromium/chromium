@@ -67,14 +67,12 @@ TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(
-      preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin, &header));
-  EXPECT_EQ("null", header);
+  EXPECT_EQ("null",
+            preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin));
 
-  EXPECT_TRUE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
-  EXPECT_EQ("apple,content-type,kiwifruit,orange,strawberry", header);
+  EXPECT_EQ(
+      "apple,content-type,kiwifruit,orange,strawberry",
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, ExcludeSimpleHeaders) {
@@ -94,9 +92,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, ExcludeSimpleHeaders) {
   // Do not emit empty-valued headers; an empty list of non-"CORS safelisted"
   // request headers should cause "Access-Control-Request-Headers:" to be
   // left out in the preflight request.
-  std::string header;
-  EXPECT_FALSE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
+  EXPECT_FALSE(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, Credentials) {
@@ -125,9 +122,8 @@ TEST(PreflightControllerCreatePreflightRequestTest,
       PreflightController::CreatePreflightRequestForTesting(request);
 
   // Empty list also; see comment in test above.
-  std::string header;
-  EXPECT_FALSE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
+  EXPECT_FALSE(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, IncludeSecFetchModeHeader) {
@@ -140,9 +136,7 @@ TEST(PreflightControllerCreatePreflightRequestTest, IncludeSecFetchModeHeader) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(preflight->headers.GetHeader("Sec-Fetch-Mode", &header));
-  EXPECT_EQ("cors", header);
+  EXPECT_EQ("cors", preflight->headers.GetHeader("Sec-Fetch-Mode"));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, IncludeNonSimpleHeader) {
@@ -155,10 +149,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, IncludeNonSimpleHeader) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
-  EXPECT_EQ("x-custom-header", header);
+  EXPECT_EQ("x-custom-header", preflight->headers.GetHeader(
+                                   header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest,
@@ -173,10 +165,8 @@ TEST(PreflightControllerCreatePreflightRequestTest,
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
-  EXPECT_EQ("content-type", header);
+  EXPECT_EQ("content-type", preflight->headers.GetHeader(
+                                header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, ExcludeForbiddenHeaders) {
@@ -189,9 +179,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, ExcludeForbiddenHeaders) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_FALSE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
+  EXPECT_FALSE(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, Tainted) {
@@ -203,10 +192,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, Tainted) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request, true);
 
-  std::string header;
-  EXPECT_TRUE(
-      preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin, &header));
-  EXPECT_EQ(header, "null");
+  EXPECT_EQ(preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+            "null");
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, FetchWindowId) {

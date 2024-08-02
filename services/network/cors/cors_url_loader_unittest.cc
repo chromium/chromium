@@ -376,10 +376,8 @@ TEST_F(CorsURLLoaderTest, CrossOriginRequestWithNoCorsModeAndPatchMethod) {
   EXPECT_TRUE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);
-  std::string origin_header;
-  EXPECT_TRUE(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin,
-                                             &origin_header));
-  EXPECT_EQ(origin_header, "https://example.com");
+  EXPECT_EQ(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+            "https://example.com");
 }
 
 TEST_F(CorsURLLoaderTest, CrossOriginRequestFetchRequestModeSameOrigin) {
@@ -412,10 +410,8 @@ TEST_F(CorsURLLoaderTest, CrossOriginRequestWithCorsModeButMissingCorsHeader) {
   RunUntilComplete();
 
   EXPECT_TRUE(IsNetworkLoaderStarted());
-  std::string origin_header;
-  EXPECT_TRUE(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin,
-                                             &origin_header));
-  EXPECT_EQ(origin_header, "https://example.com");
+  EXPECT_EQ(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+            "https://example.com");
   EXPECT_FALSE(client().has_received_redirect());
   EXPECT_FALSE(client().has_received_response());
   EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
@@ -1438,9 +1434,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_POST) {
   ASSERT_EQ(1, num_created_loaders());
   EXPECT_EQ(GetRequest().url, url);
   EXPECT_EQ(GetRequest().method, "POST");
-  std::string attached_origin;
-  EXPECT_TRUE(GetRequest().headers.GetHeader("origin", &attached_origin));
-  EXPECT_EQ(attached_origin, url::Origin::Create(origin).Serialize());
+  EXPECT_EQ(GetRequest().headers.GetHeader("origin"),
+            url::Origin::Create(origin).Serialize());
 }
 
 TEST_F(CorsURLLoaderTest, 304ForSimpleRevalidation) {
@@ -1552,10 +1547,8 @@ TEST_F(CorsURLLoaderTest, RevalidationAndPreflight) {
   EXPECT_EQ(1, num_created_loaders());
   EXPECT_EQ(GetRequest().url, url);
   EXPECT_EQ(GetRequest().method, "OPTIONS");
-  std::string preflight_request_headers;
-  EXPECT_TRUE(GetRequest().headers.GetHeader("access-control-request-headers",
-                                             &preflight_request_headers));
-  EXPECT_EQ(preflight_request_headers, "foo");
+  EXPECT_EQ(GetRequest().headers.GetHeader("access-control-request-headers"),
+            "foo");
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"},

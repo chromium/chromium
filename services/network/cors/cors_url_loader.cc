@@ -1423,16 +1423,16 @@ bool CorsURLLoader::
   // "Sec-Shared-Storage-Data-Origin" request header before the request was sent
   // to the server, but the `CorsURLLoader` still sees the original header, if
   // any, set by `SharedStorageURLLoaderFactoryProxy`.
-  std::string request_header;
-  if (!request_.headers.GetHeader("Sec-Shared-Storage-Data-Origin",
-                                  &request_header)) {
+  std::optional<std::string> request_header =
+      request_.headers.GetHeader("Sec-Shared-Storage-Data-Origin");
+  if (!request_header) {
     // The data partition origin used is the invoking context's origin, so we
     // don't require the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
     // header.
     return true;
   }
 
-  GURL data_origin_url(request_header);
+  GURL data_origin_url(*request_header);
   CHECK(data_origin_url.is_valid());
   CHECK(url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url));
 

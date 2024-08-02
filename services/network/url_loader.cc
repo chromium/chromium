@@ -379,12 +379,12 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
 std::string GetCookiesFromHeaders(
     const net::HttpRequestHeaders& headers,
     const net::HttpRequestHeaders& cors_exempt_headers) {
-  std::string cookies;
-  if (!cors_exempt_headers.GetHeader(net::HttpRequestHeaders::kCookie,
-                                     &cookies)) {
-    headers.GetHeader(net::HttpRequestHeaders::kCookie, &cookies);
+  std::optional<std::string> cookies =
+      cors_exempt_headers.GetHeader(net::HttpRequestHeaders::kCookie);
+  if (!cookies) {
+    cookies = headers.GetHeader(net::HttpRequestHeaders::kCookie);
   }
-  return cookies;
+  return std::move(cookies).value_or(std::string());
 }
 
 net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
@@ -392,8 +392,8 @@ net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
   DCHECK(!cookies_from_browser.empty());
 
   // Parse the existing cookie line.
-  std::string old_cookies;
-  headers.GetHeader(net::HttpRequestHeaders::kCookie, &old_cookies);
+  std::string old_cookies = headers.GetHeader(net::HttpRequestHeaders::kCookie)
+                                .value_or(std::string());
   net::cookie_util::ParsedRequestCookies parsed_cookies;
 
   net::cookie_util::ParseRequestCookieLine(old_cookies, &parsed_cookies);
@@ -2143,8 +2143,9 @@ int URLLoader::OnBeforeStartTransaction(
 
   if (include_request_cookies_with_response_) {
     request_cookies_.clear();
-    std::string cookie_header;
-    used_headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+    std::string cookie_header =
+        used_headers->GetHeader(net::HttpRequestHeaders::kCookie)
+            .value_or(std::string());
     net::cookie_util::ParseRequestCookieLine(cookie_header, &request_cookies_);
   }
 
@@ -2659,8 +2660,9 @@ void URLLoader::OnBeforeSendHeadersComplete(
     const std::optional<net::HttpRequestHeaders>& headers) {
   if (include_request_cookies_with_response_ && headers) {
     request_cookies_.clear();
-    std::string cookie_header;
-    headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+    std::string cookie_header =
+        headers->GetHeader(net::HttpRequestHeaders::kCookie)
+            .value_or(std::string());
     net::cookie_util::ParseRequestCookieLine(cookie_header, &request_cookies_);
   }
   std::move(callback).Run(result, headers);

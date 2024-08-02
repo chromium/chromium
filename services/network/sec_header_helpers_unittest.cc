@@ -86,15 +86,14 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemovedOnDowngrade) {
                                     .GetHeaderVector()
                                     .size()));
 
-  std::string header_value;
   ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader, &header_value));
+      kKnownSecChHeader));
   ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader, &header_value));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kOtherSecHeader, &header_value));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kOtherHeader, &header_value));
+      kKnownSecFetchSiteHeader));
+  ASSERT_TRUE(
+      current_url_request->extra_request_headers().GetHeader(kOtherSecHeader));
+  ASSERT_TRUE(
+      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
 }
 
 // Validate that if no downgrade occurs any Sec- prefixed headers remain on the
@@ -121,15 +120,14 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemainOnSecureRedirect) {
                                     .GetHeaderVector()
                                     .size()));
 
-  std::string header_value;
   ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader, &header_value));
+      kKnownSecChHeader));
   ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader, &header_value));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kOtherSecHeader, &header_value));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kOtherHeader, &header_value));
+      kKnownSecFetchSiteHeader));
+  ASSERT_TRUE(
+      current_url_request->extra_request_headers().GetHeader(kOtherSecHeader));
+  ASSERT_TRUE(
+      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
 }
 
 // Validate that if Sec- headers exist as the first or last entries we properly
@@ -154,13 +152,12 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemoveFirstLast) {
                                     .GetHeaderVector()
                                     .size()));
 
-  std::string header_value;
   ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader, &header_value));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kOtherHeader, &header_value));
+      kKnownSecFetchSiteHeader));
+  ASSERT_TRUE(
+      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
   ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader, &header_value));
+      kKnownSecChHeader));
 }
 
 // Validate Sec-Fetch-Site and Sec-Fetch-Mode are set correctly with
@@ -182,18 +179,17 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
                                     .GetHeaderVector()
                                     .size()));
 
-  std::string header_value;
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader, &header_value));
-  ASSERT_EQ(header_value, "cross-site");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchSiteHeader),
+            "cross-site");
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchModeHeader, &header_value));
-  ASSERT_EQ(header_value, "cors");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchModeHeader),
+            "cors");
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchDestHeader, &header_value));
-  ASSERT_EQ(header_value, "iframe");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchDestHeader),
+            "iframe");
 }
 
 // Validate Sec-Fetch-Site and Sec-Fetch-Mode are set correctly with privileged
@@ -224,22 +220,21 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
                                     .GetHeaderVector()
                                     .size()));
 
-  std::string header_value;
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader, &header_value));
-  ASSERT_EQ(header_value, "none");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchSiteHeader),
+            "none");
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchModeHeader, &header_value));
-  ASSERT_EQ(header_value, "cors");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchModeHeader),
+            "cors");
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchUserHeader, &header_value));
-  ASSERT_EQ(header_value, "?1");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchUserHeader),
+            "?1");
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchDestHeader, &header_value));
-  ASSERT_EQ(header_value, "embed");
+  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchDestHeader),
+            "embed");
 }
 
 }  // namespace network
