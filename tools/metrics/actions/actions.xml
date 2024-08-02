@@ -7538,6 +7538,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Compose.StartedSession.ContextMenu">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session is started from the context menu. This is
+    emitted once when a session is created.
+  </description>
+</action>
+
+<action name="Compose.StartedSession.ProactiveNudge">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session is started from the proactive nudge. This is
+    emitted once when a session is created.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

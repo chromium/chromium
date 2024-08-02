@@ -2555,6 +2555,8 @@ TEST_F(ChromeComposeClientTest,
   histograms().ExpectUniqueSample(compose::kComposeStartSessionEntryPoint,
                                   compose::ComposeEntryPoint::kProactiveNudge,
                                   1);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.StartedSession.ProactiveNudge"));
 
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
@@ -2604,6 +2606,8 @@ TEST_F(ChromeComposeClientTest, TestSelectedTextWithSavedStateNudge) {
   histograms().ExpectUniqueSample(compose::kComposeResumeSessionEntryPoint,
                                   compose::ComposeEntryPoint::kSavedStateNudge,
                                   1);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.StartedSession.ContextMenu"));
 }
 
 TEST_F(ChromeComposeClientTest,
