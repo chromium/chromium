@@ -235,6 +235,7 @@ class TestView : public TestRenderWidgetHostView {
   }
   void GestureEventAck(
       const WebGestureEvent& event,
+      blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     gesture_event_type_ = event.GetType();
     ack_result_ = ack_result;

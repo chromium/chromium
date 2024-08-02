@@ -1432,6 +1432,7 @@ RenderWidgetHostViewMac::GetKeyboardLayoutMap() {
 
 void RenderWidgetHostViewMac::GestureEventAck(
     const WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   ForwardTouchpadZoomEventIfNecessary(event, ack_result);
 

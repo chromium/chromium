@@ -3394,7 +3394,7 @@ void RenderWidgetHostImpl::OnGestureEventAck(
   }
 
   if (view_) {
-    view_->GestureEventAck(event.event, ack_result);
+    view_->GestureEventAck(event.event, ack_source, ack_result);
   }
 }
 

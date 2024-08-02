@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/input/cursor_manager.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
+#include "content/common/features.h"
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
@@ -555,6 +556,7 @@ void RenderWidgetHostViewChildFrame::StopFlingingIfNecessary(
 
 void RenderWidgetHostViewChildFrame::GestureEventAck(
     const blink::WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
@@ -566,27 +568,37 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     return;
 
   if (event.IsTouchpadZoomEvent())
-    ProcessTouchpadZoomEventAckInRoot(event, ack_result);
+    ProcessTouchpadZoomEventAckInRoot(event, ack_source, ack_result);
 
   // GestureScrollBegin is a blocking event; It is forwarded for bubbling if
   // its ack is not consumed. For the rest of the scroll events
   // (GestureScrollUpdate, GestureScrollEnd) are bubbled if the
-  // GestureScrollBegin was bubbled.
-  if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
-    DCHECK(!is_scroll_sequence_bubbling_);
-    is_scroll_sequence_bubbling_ =
-        ack_result == blink::mojom::InputEventResultState::kNotConsumed ||
-        ack_result == blink::mojom::InputEventResultState::kNoConsumerExists;
-  }
+  // GestureScrollBegin was bubbled. If the browser consumed the event, the
+  // event was filtered and shouldn't affect the state of scroll bubbling.
+  bool event_filtered =
+      ack_source == blink::mojom::InputEventResultSource::kBrowser &&
+      ack_result == blink::mojom::InputEventResultState::kConsumed;
 
-  if (is_scroll_sequence_bubbling_ &&
-      (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin ||
-       event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate ||
-       event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd)) {
-    const bool can_continue = frame_connector_->BubbleScrollEvent(event);
-    if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd ||
-        !can_continue) {
-      is_scroll_sequence_bubbling_ = false;
+  // TODO(crbug.com/346629231): Remove flag guard once this lands. Prior to the
+  // fix this section was always entered.
+  if (!event_filtered ||
+      !base::FeatureList::IsEnabled(features::kScrollBubblingFix)) {
+    if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
+      DCHECK(!is_scroll_sequence_bubbling_);
+      is_scroll_sequence_bubbling_ =
+          ack_result == blink::mojom::InputEventResultState::kNotConsumed ||
+          ack_result == blink::mojom::InputEventResultState::kNoConsumerExists;
+    }
+
+    if (is_scroll_sequence_bubbling_ &&
+        (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin ||
+         event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate ||
+         event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd)) {
+      const bool can_continue = frame_connector_->BubbleScrollEvent(event);
+      if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd ||
+          !can_continue) {
+        is_scroll_sequence_bubbling_ = false;
+      }
     }
   }
 
@@ -595,10 +607,12 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
 
 void RenderWidgetHostViewChildFrame::ProcessTouchpadZoomEventAckInRoot(
     const blink::WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   DCHECK(event.IsTouchpadZoomEvent());
 
-  frame_connector_->ForwardAckedTouchpadZoomEvent(event, ack_result);
+  frame_connector_->ForwardAckedTouchpadZoomEvent(event, ack_source,
+                                                  ack_result);
 }
 
 void RenderWidgetHostViewChildFrame::ForwardTouchpadZoomEventIfNecessary(
