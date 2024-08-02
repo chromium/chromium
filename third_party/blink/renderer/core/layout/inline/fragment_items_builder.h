@@ -146,7 +146,7 @@ class CORE_EXPORT FragmentItemsBuilder {
  private:
   void MoveCurrentLogicalLineItemsToMap();
 
-  void AddItems(LogicalLineItem* child_begin, LogicalLineItem* child_end);
+  void AddItems(base::span<LogicalLineItem> child_span);
 
   void ConvertToPhysical(const PhysicalSize& outer_size);
 
