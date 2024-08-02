@@ -29,7 +29,11 @@ const testPromptAPI = async () => {
       };
     }
 
-    const session = await ai.createTextSession();
+    const session = await ai.createTextSession({
+      topK: 3,
+      temperature: 0.8,
+      systemPrompt: "Let's talk about Mauritius."
+    });
     return testSession(session);
   } catch (e) {
     return {

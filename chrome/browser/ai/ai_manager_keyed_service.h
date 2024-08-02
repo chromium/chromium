@@ -31,11 +31,12 @@ class AIManagerKeyedService : public KeyedService,
   ~AIManagerKeyedService() override;
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
-  bool CreateTextSessionForCloning(
+  void CreateTextSessionForCloning(
       base::PassKey<AITextSession> pass_key,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
-      const AITextSession::Context& context);
+      const AITextSession::Context& context,
+      base::OnceCallback<void(bool)> callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
@@ -46,6 +47,7 @@ class AIManagerKeyedService : public KeyedService,
   void CreateTextSession(
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+      const std::optional<std::string>& system_prompt,
       CreateTextSessionCallback callback) override;
   void GetTextModelInfo(GetTextModelInfoCallback callback) override;
 
@@ -57,7 +59,7 @@ class AIManagerKeyedService : public KeyedService,
 
   // Creates an `AITextSession`, either as a new session, or as a clone of an
   // existing session with its context copied.
-  bool CreateTextSessionInternal(
+  std::unique_ptr<AITextSession> CreateTextSessionInternal(
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
       const std::optional<const AITextSession::Context>& context =

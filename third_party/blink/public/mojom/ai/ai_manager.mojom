@@ -82,9 +82,12 @@ interface AIManager {
   // Note that this could return false even if the previous
   // `CanCreateTextSession()` returns true, because some errors can only
   // occur when we actually create the text session.
+  // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
+  // for more information about the meaning of each parameter.
   CreateTextSession(
     pending_receiver<blink.mojom.AITextSession> session,
-    AITextSessionSamplingParams? sampling_params
+    AITextSessionSamplingParams? sampling_params,
+    string? system_prompt
   ) => (bool success);
   // Returns the default configuration for the text model information.
   GetTextModelInfo() => (

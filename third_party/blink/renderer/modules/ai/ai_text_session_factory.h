@@ -40,6 +40,7 @@ class AITextSessionFactory : public ExecutionContextClient {
   // The sampling_params can be nullptr and the default value will be used.
   void CreateTextSession(
       mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
+      const WTF::String& system_prompt,
       CreateTextSessionCallback callback);
 
  private:

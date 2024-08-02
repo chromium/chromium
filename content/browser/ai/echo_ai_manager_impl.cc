@@ -33,6 +33,7 @@ void EchoAIManagerImpl::CanCreateTextSession(
 void EchoAIManagerImpl::CreateTextSession(
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+    const std::optional<std::string>& system_prompt,
     CreateTextSessionCallback callback) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAITextSession>(),
                               std::move(receiver));

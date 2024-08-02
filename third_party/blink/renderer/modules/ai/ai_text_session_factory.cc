@@ -83,6 +83,7 @@ void AITextSessionFactory::CanCreateTextSession(
 
 void AITextSessionFactory::CreateTextSession(
     mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
+    const WTF::String& system_prompt,
     CreateTextSessionCallback callback) {
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
@@ -96,6 +97,7 @@ void AITextSessionFactory::CreateTextSession(
       MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
   GetAIRemote()->CreateTextSession(
       text_session->GetModelSessionReceiver(), std::move(sampling_params),
+      system_prompt,
       WTF::BindOnce(
           [](CreateTextSessionCallback callback, AITextSession* text_session,
              bool success) {

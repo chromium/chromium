@@ -86,6 +86,7 @@ ScriptPromise<AITextSession> AI::createTextSession(
       MakeGarbageCollected<ScriptPromiseResolver<AITextSession>>(script_state);
   auto promise = resolver->Promise();
   mojom::blink::AITextSessionSamplingParamsPtr sampling_params;
+  WTF::String system_prompt;
   if (options) {
     if (!options->hasTopK() && !options->hasTemperature()) {
       sampling_params = nullptr;
@@ -98,10 +99,13 @@ ScriptPromise<AITextSession> AI::createTextSession(
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
       return promise;
     }
+    if (options->hasSystemPrompt()) {
+      system_prompt = options->systemPrompt();
+    }
   }
 
   text_session_factory_.CreateTextSession(
-      std::move(sampling_params),
+      std::move(sampling_params), system_prompt,
       WTF::BindOnce(
           [](ScriptPromiseResolver<AITextSession>* resolver,
              base::expected<AITextSession*, DOMException*> result) {

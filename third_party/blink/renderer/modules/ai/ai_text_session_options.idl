@@ -7,4 +7,5 @@
 dictionary AITextSessionOptions {
   [EnforceRange] unsigned long topK;
   float temperature;
+  DOMString systemPrompt;
 };
