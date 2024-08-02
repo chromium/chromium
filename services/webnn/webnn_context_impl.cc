@@ -8,10 +8,11 @@
 #include <utility>
 
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
@@ -127,7 +128,7 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
 }
 
 void WebNNContextImpl::OnLost(std::string_view message) {
-  receiver_.ResetWithReason(/*custom_reason=*/0, message);
+  receiver_.ResetWithReason(/*custom_reason_code=*/0, message);
   context_provider_->OnConnectionError(this);
 }
 
