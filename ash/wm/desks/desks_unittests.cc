@@ -9083,6 +9083,25 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
   EXPECT_FALSE(window.is_valid());
 }
 
+// Regression test for http://b/356460723.
+TEST_P(DesksCloseAllTest, UndoToastWorksWithChromevox) {
+  NewDesk();
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+
+  // Enter overview and close the desk.
+  EnterOverview();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+  ClickOnCloseAllButtonForDesk(/*index=*/0);
+  ASSERT_EQ(1, DesksController::Get()->GetNumberOfDesks());
+
+  views::LabelButton* button =
+      DesksTestApi::GetCloseAllUndoToastDismissButton();
+  ASSERT_TRUE(button);
+  LeftClickOn(button);
+  EXPECT_EQ(2, DesksController::Get()->GetNumberOfDesks());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+}
+
 class DeskBarTest
     : public AshTestBase,
       public ::testing::WithParamInterface<
