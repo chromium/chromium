@@ -571,7 +571,7 @@ public class ReadAloudController
                             if (tab != null && !GURL.isEmptyOrInvalid(tab.getUrl())) {
                                 PostTask.postDelayedTask(
                                         TaskTraits.UI_DEFAULT,
-                                        () -> maybeCheckReadability(tab.getUrl()),
+                                        () -> maybeCheckReadability(tab),
                                         READABILITY_DELAY);
                             }
                         }
@@ -686,7 +686,7 @@ public class ReadAloudController
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void maybeCheckReadability(GURL url) {
+    public void maybeCheckReadability(Tab tab) {
         if (!isAvailable()) {
             return;
         }
@@ -696,6 +696,10 @@ public class ReadAloudController
         if (mProfileSupplier.get() == null || !mProfileSupplier.get().isNativeInitialized()) {
             return;
         }
+        if (tab.isShowingErrorPage()) {
+            return;
+        }
+        GURL url = tab.getUrl();
         if (!isURLReadAloudSupported(url)) {
             ReadAloudMetrics.recordIsPageReadable(false);
             return;
