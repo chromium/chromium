@@ -322,17 +322,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   switch (action.type) {
     case omnibox::ActionInfo_ActionType_CALL: {
       NSURL* URL = net::NSURLWithGURL(action.actionURI);
-      __weak __typeof__(self) weakSelf = self;
       [[UIApplication sharedApplication] openURL:URL
                                          options:@{}
-                               completionHandler:^(BOOL success) {
-                                 if (success) {
-                                   [weakSelf
-                                       autocompleteResultConsumer:sender
-                                              didSelectSuggestion:suggestion
-                                                            inRow:row];
-                                 }
-                               }];
+                               completionHandler:nil];
       break;
     }
     case omnibox::ActionInfo_ActionType_DIRECTIONS: {
