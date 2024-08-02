@@ -30,7 +30,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -360,11 +360,12 @@ class ProductSpecificationsServiceTest : public testing::Test {
   std::unique_ptr<ProductSpecificationsService> service_;
   raw_ptr<ProductSpecificationsSyncBridge> bridge_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   testing::NiceMock<MockProductSpecificationsSetObserver> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>& change_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  change_processor() {
     return processor_;
   }
 };

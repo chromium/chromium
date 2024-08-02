@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 
-#include "base/memory/raw_ptr.h"
-
 #include <stddef.h>
 
 #include <algorithm>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,7 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -188,7 +187,7 @@ std::u16string RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
 }
 
 void RecentTabsBuilderTestHelper::ExportToSessionSync(
-    syncer::ModelTypeProcessor* processor) {
+    syncer::DataTypeProcessor* processor) {
   syncer::UpdateResponseDataList updates;
 
   for (int s = 0; s < GetSessionCount(); ++s) {
@@ -210,7 +209,7 @@ void RecentTabsBuilderTestHelper::ExportToSessionSync(
       sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   processor->OnUpdateReceived(model_type_state, std::move(updates),
                               /*gc_directive=*/std::nullopt);
-  // ClientTagBasedModelTypeProcessor uses ModelTypeProcessorProxy during
+  // ClientTagBasedDataTypeProcessor uses DataTypeProcessorProxy during
   // activation, which involves task posting for receiving updates.
   base::RunLoop().RunUntilIdle();
 }

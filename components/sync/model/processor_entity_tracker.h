@@ -25,7 +25,7 @@ namespace syncer {
 
 class ProcessorEntity;
 
-// This component tracks entities for ClientTagBasedModelTypeProcessor.
+// This component tracks entities for ClientTagBasedDataTypeProcessor.
 class ProcessorEntityTracker {
  public:
   // Creates tracker and fills entities data from batch metadata map. This

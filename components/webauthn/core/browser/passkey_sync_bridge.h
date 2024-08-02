@@ -11,8 +11,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -26,7 +26,7 @@ class ModelError;
 namespace webauthn {
 
 // Sync bridge implementation for WEBAUTHN_CREDENTIAL model type.
-class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
+class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
                           public PasskeyModel {
  public:
   explicit PasskeySyncBridge(syncer::OnceModelTypeStoreFactory store_factory);
@@ -34,7 +34,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   PasskeySyncBridge& operator=(const PasskeySyncBridge&) = delete;
   ~PasskeySyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

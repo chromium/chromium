@@ -20,8 +20,8 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace base {
@@ -29,12 +29,12 @@ class Time;
 }
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
+struct EntityData;
 class MetadataBatch;
 class MetadataChangeList;
 class ModelError;
-class ModelTypeChangeProcessor;
 class StringOrdinal;
-struct EntityData;
 }  // namespace syncer
 
 namespace sync_pb {
@@ -98,14 +98,14 @@ enum class ManifestIdParseResult {
 //
 // WebAppSyncBridge is the key class to support integration with Unified Sync
 // and Storage (USS) system. The sync bridge exclusively owns
-// ModelTypeChangeProcessor and WebAppDatabase (the storage).
-class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
+// DataTypeLocalChangeProcessor and WebAppDatabase (the storage).
+class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   explicit WebAppSyncBridge(WebAppRegistrarMutable* registrar);
   // Tests may inject mocks using this ctor.
   WebAppSyncBridge(
       WebAppRegistrarMutable* registrar,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
   WebAppSyncBridge(const WebAppSyncBridge&) = delete;
   WebAppSyncBridge& operator=(const WebAppSyncBridge&) = delete;
   ~WebAppSyncBridge() override;
@@ -198,7 +198,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   // An access to read-only registry. Does an upcast to read-only type.
   const WebAppRegistrar& registrar() const { return *registrar_; }
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

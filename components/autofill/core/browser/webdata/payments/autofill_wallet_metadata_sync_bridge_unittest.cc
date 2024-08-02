@@ -32,7 +32,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -40,7 +40,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +53,7 @@ using sync_pb::WalletMetadataSpecifics;
 using syncer::DataBatch;
 using syncer::EntityData;
 using syncer::KeyAndData;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using syncer::ModelType;
 using testing::_;
 using testing::ElementsAre;
@@ -295,9 +295,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   }
 
   void ResetProcessor() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL_WALLET_METADATA, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::AUTOFILL_WALLET_METADATA, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
 
@@ -335,7 +334,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
             }));
     loop.Run();
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
@@ -448,11 +447,11 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
   AutofillWalletMetadataSyncBridge* bridge() { return bridge_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
-  syncer::ClientTagBasedModelTypeProcessor* real_processor() {
+  syncer::ClientTagBasedDataTypeProcessor* real_processor() {
     return real_processor_.get();
   }
 
@@ -469,8 +468,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
   WebDatabase db_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletMetadataSyncBridge> bridge_;
 };
 

@@ -19,10 +19,10 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
@@ -282,10 +282,10 @@ void StoreSpecifics(syncer::ModelTypeStore::WriteBatch* write_batch,
 SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
     SavedTabGroupModel* model,
     syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     PrefService* pref_service,
     SharedTabGroupLoadCallback on_load_callback)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)), model_(model) {
+    : syncer::DataTypeSyncBridge(std::move(change_processor)), model_(model) {
   CHECK(model_);
 
   std::move(create_store_callback)
@@ -499,7 +499,7 @@ SharedTabGroupDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
-  return ModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+  return DataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
       entity_specifics);
 }
 

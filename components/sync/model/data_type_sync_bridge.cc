@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 #include <utility>
 
@@ -14,31 +14,31 @@
 
 namespace syncer {
 
-ModelTypeSyncBridge::ModelTypeSyncBridge(
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor)
+DataTypeSyncBridge::DataTypeSyncBridge(
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
     : change_processor_(std::move(change_processor)) {
   DCHECK(change_processor_);
   change_processor_->OnModelStarting(this);
 }
 
-ModelTypeSyncBridge::~ModelTypeSyncBridge() = default;
+DataTypeSyncBridge::~DataTypeSyncBridge() = default;
 
-void ModelTypeSyncBridge::OnSyncStarting(
+void DataTypeSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {}
 
-bool ModelTypeSyncBridge::SupportsGetClientTag() const {
+bool DataTypeSyncBridge::SupportsGetClientTag() const {
   return true;
 }
 
-bool ModelTypeSyncBridge::SupportsGetStorageKey() const {
+bool DataTypeSyncBridge::SupportsGetStorageKey() const {
   return true;
 }
 
-bool ModelTypeSyncBridge::SupportsIncrementalUpdates() const {
+bool DataTypeSyncBridge::SupportsIncrementalUpdates() const {
   return true;
 }
 
-ConflictResolution ModelTypeSyncBridge::ResolveConflict(
+ConflictResolution DataTypeSyncBridge::ResolveConflict(
     const std::string& storage_key,
     const EntityData& remote_data) const {
   if (remote_data.is_deleted()) {
@@ -47,47 +47,47 @@ ConflictResolution ModelTypeSyncBridge::ResolveConflict(
   return ConflictResolution::kUseRemote;
 }
 
-void ModelTypeSyncBridge::ApplyDisableSyncChanges(
+void DataTypeSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   // Nothing to do if this fails, so just ignore the error it might return.
   ApplyIncrementalSyncChanges(std::move(delete_metadata_change_list),
                               EntityChangeList());
 }
 
-void ModelTypeSyncBridge::OnCommitAttemptErrors(
+void DataTypeSyncBridge::OnCommitAttemptErrors(
     const syncer::FailedCommitResponseDataList& error_response_list) {
   // By default the bridge just ignores failed commit items.
 }
 
-void ModelTypeSyncBridge::OnSyncPaused() {}
+void DataTypeSyncBridge::OnSyncPaused() {}
 
-ModelTypeSyncBridge::CommitAttemptFailedBehavior
-ModelTypeSyncBridge::OnCommitAttemptFailed(SyncCommitError commit_error) {
+DataTypeSyncBridge::CommitAttemptFailedBehavior
+DataTypeSyncBridge::OnCommitAttemptFailed(SyncCommitError commit_error) {
   return CommitAttemptFailedBehavior::kDontRetryOnNextCycle;
 }
 
-size_t ModelTypeSyncBridge::EstimateSyncOverheadMemoryUsage() const {
+size_t DataTypeSyncBridge::EstimateSyncOverheadMemoryUsage() const {
   return 0U;
 }
 
 sync_pb::EntitySpecifics
-ModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+DataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   // Clears all fields by default to avoid the memory and I/O overhead of an
   // additional copy of the data.
   return sync_pb::EntitySpecifics();
 }
 
-bool ModelTypeSyncBridge::IsEntityDataValid(
+bool DataTypeSyncBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   return true;
 }
 
-ModelTypeChangeProcessor* ModelTypeSyncBridge::change_processor() {
+DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }
 
-const ModelTypeChangeProcessor* ModelTypeSyncBridge::change_processor() const {
+const DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() const {
   return change_processor_.get();
 }
 

@@ -20,9 +20,9 @@
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
@@ -94,7 +94,7 @@ DataSharingServiceImpl::DataSharingServiceImpl(
       sdk_delegate_(std::move(sdk_delegate)),
       ui_delegate_(std::move(ui_delegate)) {
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COLLABORATION_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
   collaboration_group_sync_bridge_ =

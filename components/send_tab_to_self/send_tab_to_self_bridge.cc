@@ -25,10 +25,10 @@
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
@@ -89,12 +89,12 @@ std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
 }  // namespace
 
 SendTabToSelfBridge::SendTabToSelfBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     base::Clock* clock,
     syncer::OnceModelTypeStoreFactory create_store_callback,
     history::HistoryService* history_service,
     syncer::DeviceInfoTracker* device_info_tracker)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       clock_(clock),
       history_service_(history_service),
       device_info_tracker_(device_info_tracker),

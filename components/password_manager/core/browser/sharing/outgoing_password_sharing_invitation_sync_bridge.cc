@@ -9,10 +9,10 @@
 #include "base/uuid.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/empty_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 
@@ -70,8 +70,8 @@ CreateOutgoingPasswordSharingInvitationSpecifics(
 
 OutgoingPasswordSharingInvitationSyncBridge::
     OutgoingPasswordSharingInvitationSyncBridge(
-        std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+        std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   // Current data type doesn't have persistent storage so it's ready to sync
   // immediately.
   this->change_processor()->ModelReadyToSync(
@@ -239,7 +239,7 @@ void OutgoingPasswordSharingInvitationSyncBridge::OnCommitAttemptErrors(
   }
 }
 
-syncer::ModelTypeSyncBridge::CommitAttemptFailedBehavior
+syncer::DataTypeSyncBridge::CommitAttemptFailedBehavior
 OutgoingPasswordSharingInvitationSyncBridge::OnCommitAttemptFailed(
     syncer::SyncCommitError commit_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

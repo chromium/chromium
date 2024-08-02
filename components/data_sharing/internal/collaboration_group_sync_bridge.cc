@@ -14,8 +14,8 @@
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -36,9 +36,9 @@ std::unique_ptr<syncer::EntityData> SpecificsToEntityData(
 }  // namespace
 
 CollaborationGroupSyncBridge::CollaborationGroupSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory store_factory)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   std::move(store_factory)
       .Run(
           syncer::COLLABORATION_GROUP,
@@ -88,7 +88,7 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         const sync_pb::EntitySpecifics& entity_specifics =
             change->data().specifics;
-        // Guaranteed by ClientTagBasedModelTypeProcessor, based on
+        // Guaranteed by ClientTagBasedDataTypeProcessor, based on
         // IsEntityDataValid().
         CHECK(entity_specifics.has_collaboration_group());
         const sync_pb::CollaborationGroupSpecifics collaboration_specifics =

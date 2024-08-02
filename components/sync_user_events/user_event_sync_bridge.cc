@@ -56,9 +56,9 @@ std::unique_ptr<EntityData> MoveToEntityData(
 
 UserEventSyncBridge::UserEventSyncBridge(
     OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     GlobalIdMapper* global_id_mapper)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       global_id_mapper_(global_id_mapper) {
   DCHECK(global_id_mapper_);
   StoreWithCache::CreateAndLoad(

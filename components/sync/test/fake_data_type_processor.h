@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_PROCESSOR_H_
 
 #include <memory>
 #include <vector>
 
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 
 namespace syncer {
 
-class FakeModelTypeProcessor : public ModelTypeProcessor {
+class FakeDataTypeProcessor : public DataTypeProcessor {
  public:
-  FakeModelTypeProcessor();
-  ~FakeModelTypeProcessor() override;
+  FakeDataTypeProcessor();
+  ~FakeDataTypeProcessor() override;
 
-  // ModelTypeProcessor implementation.
+  // DataTypeProcessor implementation.
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
@@ -37,4 +37,4 @@ class FakeModelTypeProcessor : public ModelTypeProcessor {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_PROCESSOR_H_

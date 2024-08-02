@@ -42,7 +42,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -246,7 +246,7 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   SavedTabGroupModel saved_tab_group_model_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SavedTabGroupSyncBridge> bridge_;

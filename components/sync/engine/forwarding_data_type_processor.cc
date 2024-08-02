@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/forwarding_model_type_processor.h"
+#include "components/sync/engine/forwarding_data_type_processor.h"
 
 #include <utility>
 #include "base/functional/callback.h"
@@ -10,30 +10,30 @@
 
 namespace syncer {
 
-ForwardingModelTypeProcessor::ForwardingModelTypeProcessor(
-    ModelTypeProcessor* processor)
+ForwardingDataTypeProcessor::ForwardingDataTypeProcessor(
+    DataTypeProcessor* processor)
     : processor_(processor) {
   DCHECK(processor_);
 }
 
-ForwardingModelTypeProcessor::~ForwardingModelTypeProcessor() = default;
+ForwardingDataTypeProcessor::~ForwardingDataTypeProcessor() = default;
 
-void ForwardingModelTypeProcessor::ConnectSync(
+void ForwardingDataTypeProcessor::ConnectSync(
     std::unique_ptr<CommitQueue> worker) {
   processor_->ConnectSync(std::move(worker));
 }
 
-void ForwardingModelTypeProcessor::DisconnectSync() {
+void ForwardingDataTypeProcessor::DisconnectSync() {
   processor_->DisconnectSync();
 }
 
-void ForwardingModelTypeProcessor::GetLocalChanges(
+void ForwardingDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
     GetLocalChangesCallback callback) {
   processor_->GetLocalChanges(max_entries, std::move(callback));
 }
 
-void ForwardingModelTypeProcessor::OnCommitCompleted(
+void ForwardingDataTypeProcessor::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
@@ -41,12 +41,12 @@ void ForwardingModelTypeProcessor::OnCommitCompleted(
                                 error_response_list);
 }
 
-void ForwardingModelTypeProcessor::OnCommitFailed(
+void ForwardingDataTypeProcessor::OnCommitFailed(
     SyncCommitError commit_error) {
   processor_->OnCommitFailed(commit_error);
 }
 
-void ForwardingModelTypeProcessor::OnUpdateReceived(
+void ForwardingDataTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
@@ -54,7 +54,7 @@ void ForwardingModelTypeProcessor::OnUpdateReceived(
                                std::move(gc_directive));
 }
 
-void ForwardingModelTypeProcessor::StorePendingInvalidations(
+void ForwardingDataTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   processor_->StorePendingInvalidations(std::move(invalidations_to_store));
 }

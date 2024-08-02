@@ -15,10 +15,10 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -29,8 +29,8 @@ ReadingListSyncBridge::ReadingListSyncBridge(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     base::Clock* clock,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)),
       storage_type_for_uma_(storage_type),
       clock_(clock),
       wipe_model_upon_sync_disabled_behavior_(
@@ -333,7 +333,7 @@ void ReadingListSyncBridge::ApplyDisableSyncChanges(
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       CHECK_EQ(storage_type_for_uma_, syncer::StorageType::kUnspecified);
       // Fall back to the default behavior (delete metadata only).
-      ModelTypeSyncBridge::ApplyDisableSyncChanges(
+      DataTypeSyncBridge::ApplyDisableSyncChanges(
           std::move(delete_metadata_change_list));
       break;
     case syncer::WipeModelUponSyncDisabledBehavior::kAlways:

@@ -37,7 +37,7 @@
 #include "components/sync/base/storage_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync/test/test_sync_user_settings.h"

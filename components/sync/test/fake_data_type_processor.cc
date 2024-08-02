@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/fake_model_type_processor.h"
+#include "components/sync/test/fake_data_type_processor.h"
 
 #include <utility>
 #include <vector>
@@ -12,27 +12,27 @@
 
 namespace syncer {
 
-FakeModelTypeProcessor::FakeModelTypeProcessor() = default;
-FakeModelTypeProcessor::~FakeModelTypeProcessor() = default;
+FakeDataTypeProcessor::FakeDataTypeProcessor() = default;
+FakeDataTypeProcessor::~FakeDataTypeProcessor() = default;
 
-void FakeModelTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {}
+void FakeDataTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {}
 
-void FakeModelTypeProcessor::DisconnectSync() {}
+void FakeDataTypeProcessor::DisconnectSync() {}
 
-void FakeModelTypeProcessor::GetLocalChanges(size_t max_entries,
+void FakeDataTypeProcessor::GetLocalChanges(size_t max_entries,
                                              GetLocalChangesCallback callback) {
   std::move(callback).Run(CommitRequestDataList());
 }
-void FakeModelTypeProcessor::OnCommitCompleted(
+void FakeDataTypeProcessor::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {}
 
-void FakeModelTypeProcessor::OnUpdateReceived(
+void FakeDataTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {}
-void FakeModelTypeProcessor::StorePendingInvalidations(
+void FakeDataTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
 }
 

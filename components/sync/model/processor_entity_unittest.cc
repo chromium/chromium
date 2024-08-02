@@ -138,12 +138,12 @@ CommitResponseData GenerateAckData(const CommitRequestData& request,
 // Some simple sanity tests for the ProcessorEntity.
 //
 // A lot of the more complicated sync logic is implemented in the
-// ClientTagBasedModelTypeProcessor that owns the ProcessorEntity.  We
+// ClientTagBasedDataTypeProcessor that owns the ProcessorEntity.  We
 // can't unit test it here.
 //
 // Instead, we focus on simple tests to make sure that variables are getting
 // properly intialized and flags properly set.  Anything more complicated would
-// be a redundant and incomplete version of the ClientTagBasedModelTypeProcessor
+// be a redundant and incomplete version of the ClientTagBasedDataTypeProcessor
 // tests.
 class ProcessorEntityTest : public ::testing::Test {
  public:

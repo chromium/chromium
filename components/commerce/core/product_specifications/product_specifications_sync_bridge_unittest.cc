@@ -22,7 +22,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -321,7 +321,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
 
   syncer::ModelTypeStore* store() { return store_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& processor() { return processor_; }
+  syncer::MockDataTypeLocalChangeProcessor& processor() { return processor_; }
 
   void UpdateSpecifics(const sync_pb::ProductComparisonSpecifics& specifics) {
     bridge().UpdateSpecifics(specifics);
@@ -342,7 +342,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   }
 
  protected:
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   testing::NiceMock<ProductSpecificationsSyncBridgeObserver> observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;

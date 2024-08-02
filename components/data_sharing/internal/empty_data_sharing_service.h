@@ -6,7 +6,7 @@
 #define COMPONENTS_DATA_SHARING_INTERNAL_EMPTY_DATA_SHARING_SERVICE_H_
 
 #include "components/data_sharing/public/data_sharing_service.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 namespace data_sharing {
 

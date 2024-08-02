@@ -10,18 +10,18 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
 namespace plus_addresses {
 
 // Bridge for PLUS_ADDRESS_SETTING. Lives on the UI thread and is owned by
 // `PlusAddressSettingService`.
-class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
+class PlusAddressSettingSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   explicit PlusAddressSettingSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory);
   ~PlusAddressSettingSyncBridge() override;
 
@@ -43,7 +43,7 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   virtual void WriteSetting(
       const sync_pb::PlusAddressSettingSpecifics& specifics);
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

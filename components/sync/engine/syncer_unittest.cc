@@ -34,7 +34,7 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/forwarding_model_type_processor.h"
+#include "components/sync/engine/forwarding_data_type_processor.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
@@ -47,8 +47,8 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "components/sync/test/mock_connection_manager.h"
+#include "components/sync/test/mock_data_type_processor.h"
 #include "components/sync/test/mock_debug_info_getter.h"
-#include "components/sync/test/mock_model_type_processor.h"
 #include "components/sync/test/mock_nudge_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,7 +199,7 @@ class SyncerTest : public testing::Test,
 
   const std::string foreign_cache_guid() { return "kqyg7097kro6GSUod+GSg=="; }
 
-  MockModelTypeProcessor* GetProcessor(ModelType model_type) {
+  MockDataTypeProcessor* GetProcessor(ModelType model_type) {
     return &mock_model_type_processors_[model_type];
   }
 
@@ -210,8 +210,8 @@ class SyncerTest : public testing::Test,
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     response->model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(model_type));
-    response->type_processor = std::make_unique<ForwardingModelTypeProcessor>(
-        GetProcessor(model_type));
+    response->type_processor =
+        std::make_unique<ForwardingDataTypeProcessor>(GetProcessor(model_type));
     return response;
   }
 
@@ -246,7 +246,7 @@ class SyncerTest : public testing::Test,
       new ExtensionsActivity;
   std::unique_ptr<MockConnectionManager> mock_server_;
   CancelationSignal cancelation_signal_;
-  std::map<ModelType, MockModelTypeProcessor> mock_model_type_processors_;
+  std::map<ModelType, MockDataTypeProcessor> mock_model_type_processors_;
 
   raw_ptr<Syncer, DanglingUntriaged> syncer_ = nullptr;
 
@@ -665,7 +665,7 @@ TEST_F(SyncerTest, SendDebugInfoEventsOnCommit_PostFailsDontDrop) {
   ASSERT_TRUE(mock_server_->last_request().has_commit());
   EXPECT_EQ(1, mock_server_->last_request().debug_info().events_size());
 
-  // Try again. Because of how MockModelTypeProcessor works, commit data needs
+  // Try again. Because of how MockDataTypeProcessor works, commit data needs
   // to be provided again.
   GetProcessor(PREFERENCES)
       ->AppendCommitRequest(ClientTagHash::FromHashed("tag1"),

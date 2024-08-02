@@ -18,7 +18,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,7 +143,8 @@ class OutgoingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
     return std::move(data);
   }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_processor() {
     return &mock_processor_;
   }
   OutgoingPasswordSharingInvitationSyncBridge* bridge() {
@@ -152,7 +153,7 @@ class OutgoingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<OutgoingPasswordSharingInvitationSyncBridge> bridge_;
 };
 

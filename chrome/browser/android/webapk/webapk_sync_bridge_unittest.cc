@@ -20,7 +20,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -128,7 +128,9 @@ class WebApkSyncBridgeTest : public ::testing::Test {
   }
 
  protected:
-  syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
+  syncer::MockDataTypeLocalChangeProcessor& processor() {
+    return mock_processor_;
+  }
   FakeWebApkDatabaseFactory& database_factory() { return *database_factory_; }
 
   WebApkSyncBridge& sync_bridge() { return *sync_bridge_; }
@@ -144,7 +146,7 @@ class WebApkSyncBridgeTest : public ::testing::Test {
                            // before InitSyncBridge() or after sync_bridge_ is
                            // destroyed
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

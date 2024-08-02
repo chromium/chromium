@@ -17,10 +17,10 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
 struct EntityData;
@@ -36,7 +36,7 @@ class PaymentsAutofillTable;
 // applying remote changes to the local database.
 class AutofillWalletMetadataSyncBridge
     : public base::SupportsUserData::Data,
-      public syncer::ModelTypeSyncBridge,
+      public syncer::DataTypeSyncBridge,
       public AutofillWebDataServiceObserverOnDBSequence {
  public:
   // Factory method that hides dealing with change_processor and also stores the
@@ -51,7 +51,7 @@ class AutofillWalletMetadataSyncBridge
       AutofillWebDataService* web_data_service);
 
   AutofillWalletMetadataSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
 
   AutofillWalletMetadataSyncBridge(const AutofillWalletMetadataSyncBridge&) =
@@ -65,7 +65,7 @@ class AutofillWalletMetadataSyncBridge
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

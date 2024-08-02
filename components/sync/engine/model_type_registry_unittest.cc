@@ -14,7 +14,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_worker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/fake_model_type_processor.h"
+#include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "components/sync/test/mock_nudge_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +46,7 @@ class ModelTypeRegistryTest : public ::testing::Test {
       const sync_pb::ModelTypeState& model_type_state) {
     auto context = std::make_unique<DataTypeActivationResponse>();
     context->model_type_state = model_type_state;
-    context->type_processor = std::make_unique<FakeModelTypeProcessor>();
+    context->type_processor = std::make_unique<FakeDataTypeProcessor>();
     return context;
   }
 
@@ -104,7 +104,7 @@ TEST_F(ModelTypeRegistryTest, GetTypesWithUnsyncedData) {
       BOOKMARKS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(BOOKMARKS)));
 
-  // Simulate a local BOOKMARKS change. In production, the ModelTypeProcessor
+  // Simulate a local BOOKMARKS change. In production, the DataTypeProcessor
   // would call NudgeForCommit() on the worker.
   for (const std::unique_ptr<ModelTypeWorker>& worker :
        registry()->GetConnectedModelTypeWorkersForTest()) {

@@ -376,9 +376,9 @@ DeviceInfoSyncBridge::ImmutableDeviceInfoAndSpecifics::
 DeviceInfoSyncBridge::DeviceInfoSyncBridge(
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
     OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     std::unique_ptr<DeviceInfoPrefs> device_info_prefs)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       local_device_info_provider_(std::move(local_device_info_provider)),
       device_info_prefs_(std::move(device_info_prefs)) {
   DCHECK(local_device_info_provider_);
@@ -581,7 +581,7 @@ void DeviceInfoSyncBridge::ApplyDisableSyncChanges(
   }
 }
 
-ModelTypeSyncBridge::CommitAttemptFailedBehavior
+DataTypeSyncBridge::CommitAttemptFailedBehavior
 DeviceInfoSyncBridge::OnCommitAttemptFailed(
     syncer::SyncCommitError commit_error) {
   // DeviceInfo is normally committed once a day and hence it's important to

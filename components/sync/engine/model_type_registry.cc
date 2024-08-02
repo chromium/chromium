@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/engine/model_type_worker.h"
 #include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"

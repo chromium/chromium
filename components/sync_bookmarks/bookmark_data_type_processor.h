@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_DATA_TYPE_PROCESSOR_H_
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
@@ -32,21 +32,21 @@ namespace sync_bookmarks {
 class BookmarkModelObserverImpl;
 class BookmarkModelView;
 
-class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
+class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
                                    public syncer::DataTypeControllerDelegate {
  public:
   // `bookmark_undo_service` must not be nullptr and must outlive this object.
-  BookmarkModelTypeProcessor(BookmarkUndoService* bookmark_undo_service,
+  BookmarkDataTypeProcessor(BookmarkUndoService* bookmark_undo_service,
                              syncer::WipeModelUponSyncDisabledBehavior
                                  wipe_model_upon_sync_disabled_behavior);
 
-  BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
-  BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
+  BookmarkDataTypeProcessor(const BookmarkDataTypeProcessor&) = delete;
+  BookmarkDataTypeProcessor& operator=(const BookmarkDataTypeProcessor&) =
       delete;
 
-  ~BookmarkModelTypeProcessor() override;
+  ~BookmarkDataTypeProcessor() override;
 
-  // ModelTypeProcessor implementation.
+  // DataTypeProcessor implementation.
   void ConnectSync(std::unique_ptr<syncer::CommitQueue> worker) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
@@ -221,14 +221,14 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   bool pending_clear_metadata_ = false;
 
   // WeakPtrFactory for this processor for DataTypeController.
-  base::WeakPtrFactory<BookmarkModelTypeProcessor>
+  base::WeakPtrFactory<BookmarkDataTypeProcessor>
       weak_ptr_factory_for_controller_{this};
 
   // WeakPtrFactory for this processor which will be sent to sync thread.
-  base::WeakPtrFactory<BookmarkModelTypeProcessor> weak_ptr_factory_for_worker_{
+  base::WeakPtrFactory<BookmarkDataTypeProcessor> weak_ptr_factory_for_worker_{
       this};
 };
 
 }  // namespace sync_bookmarks
 
-#endif  // COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_DATA_TYPE_PROCESSOR_H_

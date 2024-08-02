@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_NIGORI_NIGORI_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_NIGORI_NIGORI_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_NIGORI_NIGORI_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_NIGORI_NIGORI_DATA_TYPE_PROCESSOR_H_
 
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
@@ -21,18 +21,18 @@ namespace syncer {
 class NigoriSyncBridge;
 class ProcessorEntity;
 
-class NigoriModelTypeProcessor : public ModelTypeProcessor,
+class NigoriDataTypeProcessor : public DataTypeProcessor,
                                  public DataTypeControllerDelegate,
                                  public NigoriLocalChangeProcessor {
  public:
-  NigoriModelTypeProcessor();
+  NigoriDataTypeProcessor();
 
-  NigoriModelTypeProcessor(const NigoriModelTypeProcessor&) = delete;
-  NigoriModelTypeProcessor& operator=(const NigoriModelTypeProcessor&) = delete;
+  NigoriDataTypeProcessor(const NigoriDataTypeProcessor&) = delete;
+  NigoriDataTypeProcessor& operator=(const NigoriDataTypeProcessor&) = delete;
 
-  ~NigoriModelTypeProcessor() override;
+  ~NigoriDataTypeProcessor() override;
 
-  // ModelTypeProcessor implementation.
+  // DataTypeProcessor implementation.
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
@@ -129,4 +129,4 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_NIGORI_NIGORI_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_NIGORI_NIGORI_DATA_TYPE_PROCESSOR_H_

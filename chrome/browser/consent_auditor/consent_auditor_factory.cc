@@ -19,7 +19,7 @@
 #include "components/consent_auditor/consent_sync_bridge.h"
 #include "components/consent_auditor/consent_sync_bridge_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 
 // static
@@ -67,7 +67,7 @@ ConsentAuditorFactory::BuildServiceInstanceForBrowserContext(
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::USER_CONSENTS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));

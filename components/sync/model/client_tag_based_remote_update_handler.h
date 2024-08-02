@@ -23,7 +23,7 @@ class ModelTypeState;
 
 namespace syncer {
 
-class ModelTypeSyncBridge;
+class DataTypeSyncBridge;
 class ProcessorEntityTracker;
 class ProcessorEntity;
 
@@ -32,7 +32,7 @@ class ClientTagBasedRemoteUpdateHandler {
  public:
   // All parameters must not be nullptr and they must outlive this object.
   ClientTagBasedRemoteUpdateHandler(ModelType type,
-                                    ModelTypeSyncBridge* bridge,
+                                    DataTypeSyncBridge* bridge,
                                     ProcessorEntityTracker* entities);
 
   // Processes incremental updates from the sync server.
@@ -74,8 +74,8 @@ class ClientTagBasedRemoteUpdateHandler {
   // The model type this object syncs.
   const ModelType type_;
 
-  // ModelTypeSyncBridge linked to associated processor.
-  const raw_ptr<ModelTypeSyncBridge> bridge_;
+  // DataTypeSyncBridge linked to associated processor.
+  const raw_ptr<DataTypeSyncBridge> bridge_;
 
   // A map of client tag hash to sync entities known to the processor.
   // Should be replaced with new interface.

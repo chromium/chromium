@@ -18,7 +18,7 @@ class Uri;
 }  // namespace chromeos
 
 namespace syncer {
-class ModelTypeSyncBridge;
+class DataTypeSyncBridge;
 }  // namespace syncer
 
 namespace ash::printing::oauth2 {
@@ -27,8 +27,8 @@ class MockAuthorizationZoneManager : public AuthorizationZonesManager {
  public:
   MockAuthorizationZoneManager();
   ~MockAuthorizationZoneManager() override;
-  MOCK_METHOD(syncer::ModelTypeSyncBridge*,
-              GetModelTypeSyncBridge,
+  MOCK_METHOD(syncer::DataTypeSyncBridge*,
+              GetDataTypeSyncBridge,
               (),
               (override));
   MOCK_METHOD(StatusCode,

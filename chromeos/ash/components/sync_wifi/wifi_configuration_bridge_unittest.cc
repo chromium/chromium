@@ -40,7 +40,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -239,7 +239,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
     run_loop.Run();
   }
 
-  syncer::MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  syncer::MockDataTypeLocalChangeProcessor* processor() {
+    return &mock_processor_;
+  }
 
   WifiConfigurationBridge* bridge() { return bridge_.get(); }
 
@@ -269,7 +271,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   syncer::ModelTypeStore::InitCallback init_callback_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<WifiConfigurationBridge> bridge_;
   std::unique_ptr<TestSyncedNetworkUpdater> synced_network_updater_;
   std::unique_ptr<FakeLocalNetworkCollector> local_network_collector_;

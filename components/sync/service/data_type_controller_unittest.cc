@@ -18,7 +18,7 @@
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/configure_context.h"
-#include "components/sync/test/fake_model_type_processor.h"
+#include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/mock_data_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,7 +95,7 @@ class DataTypeControllerTest : public testing::Test {
             : sync_pb::
                   ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     activation_response->type_processor =
-        std::make_unique<FakeModelTypeProcessor>();
+        std::make_unique<FakeDataTypeProcessor>();
 
     // Mimic completion for OnSyncStarting().
     EXPECT_CALL(load_models_done, Run);
@@ -109,7 +109,7 @@ class DataTypeControllerTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockDataTypeControllerDelegate> mock_delegate_;
-  FakeModelTypeProcessor processor_;
+  FakeDataTypeProcessor processor_;
   TestDataTypeController controller_;
 };
 
@@ -589,7 +589,7 @@ TEST_F(DataTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   // registering with the backend.
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   activation_response->type_processor =
-      std::make_unique<FakeModelTypeProcessor>();
+      std::make_unique<FakeDataTypeProcessor>();
 
   // Mimic completion for OnSyncStarting().
   std::move(start_callback).Run(std::move(activation_response));

@@ -10,10 +10,10 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 
@@ -21,9 +21,9 @@ namespace password_manager {
 
 IncomingPasswordSharingInvitationSyncBridge::
     IncomingPasswordSharingInvitationSyncBridge(
-        std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+        std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
         syncer::OnceModelTypeStoreFactory create_sync_metadata_store_callback)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   std::move(create_sync_metadata_store_callback)
       .Run(syncer::INCOMING_PASSWORD_SHARING_INVITATION,
            base::BindOnce(&IncomingPasswordSharingInvitationSyncBridge::

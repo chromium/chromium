@@ -18,7 +18,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -73,7 +73,7 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
   syncer::ModelTypeStore& store() { return *store_; }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -97,7 +97,7 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PlusAddressSettingSyncBridge> bridge_;
 };
 

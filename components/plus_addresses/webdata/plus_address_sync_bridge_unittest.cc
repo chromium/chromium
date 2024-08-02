@@ -24,7 +24,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_backend.h"
@@ -80,7 +80,7 @@ class PlusAddressSyncBridgeTest : public testing::Test {
     return *PlusAddressTable::FromWebDatabase(db_backend_->database());
   }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -92,7 +92,7 @@ class PlusAddressSyncBridgeTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<WebDatabaseBackend> db_backend_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<DataChangedBySyncCallbackMock> on_data_changed_callback_;
   std::unique_ptr<PlusAddressSyncBridge> bridge_;
 };

@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync_sessions/session_sync_bridge.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
@@ -24,7 +24,7 @@ SessionSyncServiceImpl::SessionSyncServiceImpl(
       base::BindRepeating(&SessionSyncServiceImpl::NotifyForeignSessionUpdated,
                           base::Unretained(this)),
       sessions_client_.get(),
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SESSIONS,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)));
 }

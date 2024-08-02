@@ -15,7 +15,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -144,7 +144,8 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
   mock_password_receiver_service() {
     return &mock_password_receiver_service_;
   }
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_processor() {
     return &mock_processor_;
   }
   IncomingPasswordSharingInvitationSyncBridge* bridge() {
@@ -163,7 +164,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
 
   testing::NiceMock<MockPasswordReceiverService>
       mock_password_receiver_service_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ModelTypeStore> sync_metadata_store_;
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> bridge_;
 

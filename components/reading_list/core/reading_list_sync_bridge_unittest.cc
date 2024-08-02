@@ -23,7 +23,7 @@
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -178,7 +178,7 @@ class ReadingListSyncBridgeTest : public testing::Test {
   // In memory model type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<ReadingListModelImpl> model_;
 
   // ModelTypeStore is owned by |model_|.

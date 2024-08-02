@@ -16,9 +16,9 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
 class PrefService;
@@ -36,7 +36,7 @@ class SavedTabGroupModel;
 // conflicts between the data stored in the sync server and what is currently
 // stored in the SavedTabGroupModel. Once synchronized, this data is stored in
 // the ModelTypeStore for local persistence across sessions.
-class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge {
+class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   using SavedTabGroupLoadCallback =
       base::OnceCallback<void(std::vector<SavedTabGroup>,
@@ -45,7 +45,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge {
   explicit SavedTabGroupSyncBridge(
       SavedTabGroupModel* model,
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       PrefService* pref_service,
       SavedTabGroupLoadCallback on_load_callback);
 
@@ -54,7 +54,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~SavedTabGroupSyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   void OnSyncStarting(
       const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

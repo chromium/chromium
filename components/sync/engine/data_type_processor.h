@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_H_
 
 #include <memory>
 #include <optional>
@@ -20,10 +20,10 @@ class CommitQueue;
 // Interface used by sync backend to issue requests to a synced data type.
 // Actual implementations live on the model sequence, but there's typically a
 // proxy object on the sync sequence for use by the ModelTypeWorker.
-class ModelTypeProcessor {
+class DataTypeProcessor {
  public:
-  ModelTypeProcessor() = default;
-  virtual ~ModelTypeProcessor() = default;
+  DataTypeProcessor() = default;
+  virtual ~DataTypeProcessor() = default;
 
   // Connect this processor to the sync engine via |commit_queue|. Once called,
   // the processor will send any pending and future commits via this channel.
@@ -70,4 +70,4 @@ class ModelTypeProcessor {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_H_

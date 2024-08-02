@@ -8,10 +8,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
@@ -29,7 +29,7 @@ class ProductSpecificationsSyncBridgeMultiSpecsTest;
 class ProductSpecificationsSyncBridgeTest;
 
 // Integration point between sync and ProductSpecificationService.
-class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
+class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   class Delegate {
    public:
@@ -60,12 +60,12 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ProductSpecificationsSyncBridge(
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       base::OnceCallback<void(void)> init_callback,
       Delegate* delegate);
   ~ProductSpecificationsSyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

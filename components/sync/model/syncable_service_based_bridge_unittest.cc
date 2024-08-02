@@ -17,13 +17,13 @@
 #include "base/test/task_environment.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/mock_model_type_worker.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -117,9 +117,8 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   ~SyncableServiceBasedBridgeTest() override = default;
 
   void InitializeBridge(ModelType model_type = kModelType) {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            model_type, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        model_type, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
     bridge_ = std::make_unique<SyncableServiceBasedBridge>(
         model_type,
@@ -178,10 +177,10 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockSyncableService> syncable_service_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   base::MockCallback<ModelErrorHandler> mock_error_handler_;
   const std::unique_ptr<ModelTypeStore> store_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<SyncableServiceBasedBridge> bridge_;
   std::unique_ptr<MockModelTypeWorker> worker_;
   // SyncChangeProcessor received via MergeDataAndStartSyncing(), or null if it
@@ -539,7 +538,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   std::unique_ptr<ModelTypeStore> store =
       ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor;
 
   in_memory_store[kClientTagHash] = sync_pb::PersistedEntityData();
 
@@ -574,7 +573,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   std::unique_ptr<ModelTypeStore> store =
       ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor;
 
   in_memory_store[kClientTagHash] = sync_pb::PersistedEntityData();
 

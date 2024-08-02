@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/stub_model_type_sync_bridge.h"
+#include "components/sync/test/stub_data_type_sync_bridge.h"
 
 #include <utility>
 
@@ -11,44 +11,44 @@
 
 namespace syncer {
 
-StubModelTypeSyncBridge::StubModelTypeSyncBridge(
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)) {}
+StubDataTypeSyncBridge::StubDataTypeSyncBridge(
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)) {}
 
-StubModelTypeSyncBridge::~StubModelTypeSyncBridge() = default;
+StubDataTypeSyncBridge::~StubDataTypeSyncBridge() = default;
 
 std::unique_ptr<MetadataChangeList>
-StubModelTypeSyncBridge::CreateMetadataChangeList() {
+StubDataTypeSyncBridge::CreateMetadataChangeList() {
   return nullptr;
 }
 
-std::optional<ModelError> StubModelTypeSyncBridge::MergeFullSyncData(
+std::optional<ModelError> StubDataTypeSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   return {};
 }
 
-std::optional<ModelError> StubModelTypeSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError> StubDataTypeSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   return {};
 }
 
-std::unique_ptr<DataBatch> StubModelTypeSyncBridge::GetDataForCommit(
+std::unique_ptr<DataBatch> StubDataTypeSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   return nullptr;
 }
 
-std::unique_ptr<DataBatch> StubModelTypeSyncBridge::GetAllDataForDebugging() {
+std::unique_ptr<DataBatch> StubDataTypeSyncBridge::GetAllDataForDebugging() {
   return nullptr;
 }
 
-std::string StubModelTypeSyncBridge::GetClientTag(
+std::string StubDataTypeSyncBridge::GetClientTag(
     const EntityData& entity_data) {
   return std::string();
 }
 
-std::string StubModelTypeSyncBridge::GetStorageKey(
+std::string StubDataTypeSyncBridge::GetStorageKey(
     const EntityData& entity_data) {
   return std::string();
 }

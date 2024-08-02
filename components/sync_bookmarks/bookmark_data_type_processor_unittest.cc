@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync_bookmarks/bookmark_model_type_processor.h"
+#include "components/sync_bookmarks/bookmark_data_type_processor.h"
 
 #include <map>
 #include <string>
@@ -210,7 +210,7 @@ syncer::UpdateResponseDataList CreateUpdateResponseDataListForPermanentNodes() {
   return updates;
 }
 
-void AssertState(const BookmarkModelTypeProcessor* processor,
+void AssertState(const BookmarkDataTypeProcessor* processor,
                  const std::vector<BookmarkInfo>& bookmarks) {
   const SyncedBookmarkTracker* tracker = processor->GetTrackerForTest();
   ASSERT_THAT(tracker, NotNull());
@@ -245,11 +245,11 @@ class ProxyCommitQueue : public syncer::CommitQueue {
   raw_ptr<CommitQueue> commit_queue_ = nullptr;
 };
 
-class BookmarkModelTypeProcessorTest : public testing::Test {
+class BookmarkDataTypeProcessorTest : public testing::Test {
  public:
-  BookmarkModelTypeProcessorTest()
+  BookmarkDataTypeProcessorTest()
       : bookmark_model_(std::make_unique<TestBookmarkModelView>()),
-        processor_(std::make_unique<BookmarkModelTypeProcessor>(
+        processor_(std::make_unique<BookmarkDataTypeProcessor>(
             &bookmark_undo_service_,
             syncer::WipeModelUponSyncDisabledBehavior::kNever)) {
     processor_->SetFaviconService(&favicon_service_);
@@ -312,11 +312,11 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   }
 
   // Simulate browser restart.
-  void ResetModelTypeProcessor(
+  void ResetDataTypeProcessor(
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior =
               syncer::WipeModelUponSyncDisabledBehavior::kNever) {
-    processor_ = std::make_unique<BookmarkModelTypeProcessor>(
+    processor_ = std::make_unique<BookmarkDataTypeProcessor>(
         &bookmark_undo_service_, wipe_model_upon_sync_disabled_behavior);
     processor_->SetFaviconService(&favicon_service_);
   }
@@ -332,7 +332,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   }
   favicon::FaviconService* favicon_service() { return &favicon_service_; }
   syncer::MockCommitQueue* mock_commit_queue() { return &mock_commit_queue_; }
-  BookmarkModelTypeProcessor* processor() { return processor_.get(); }
+  BookmarkDataTypeProcessor* processor() { return processor_.get(); }
   base::MockCallback<base::RepeatingClosure>* schedule_save_closure() {
     return &schedule_save_closure_;
   }
@@ -373,10 +373,10 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   std::unique_ptr<TestBookmarkModelView> bookmark_model_;
   // `processor_` might hold a raw_ptr to `bookmark_model_`. It should be
   // destroyed first to avoid holding a briefly dangling pointer.
-  std::unique_ptr<BookmarkModelTypeProcessor> processor_;
+  std::unique_ptr<BookmarkDataTypeProcessor> processor_;
 };
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
   SimulateConnectSync();
@@ -397,7 +397,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
       /*count=*/1);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
   SimulateConnectSync();
@@ -426,7 +426,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
       /*count=*/1);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldFailInitialMergeIfServerPermanentNodeMissing) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
@@ -467,9 +467,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
       /*count=*/0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldFailInitialMergeAndAvoidPartialDataIfServerPermanentNodeMissing) {
-  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
   SimulateConnectSync();
@@ -511,7 +511,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       /*count=*/0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
 
@@ -548,7 +548,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
       /*count=*/0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   const std::string kTitle = "title";
   const GURL kUrl("http://www.url.com");
   const syncer::UniquePosition kRandomPosition =
@@ -586,7 +586,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
 }
 
 TEST_F(
-    BookmarkModelTypeProcessorTest,
+    BookmarkDataTypeProcessorTest,
     ShouldScheduleSaveAfterRemoteUpdateWithOnlyMetadataChangeAndReflections) {
   const std::string kTitle = "title";
   const GURL kUrl("http://www.url.com");
@@ -618,7 +618,7 @@ TEST_F(
                                 /*gc_directive=*/std::nullopt);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeSyncMetadata) {
   const std::string kNodeId = "node_id1";
   const std::string kTitle = "title1";
   const std::string kUrl = "http://www.url1.com";
@@ -643,7 +643,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
       CreateNodeMetadata(bookmarknode, kNodeId);
 
   // Create a new processor and init it with the metadata str.
-  BookmarkModelTypeProcessor new_processor(
+  BookmarkDataTypeProcessor new_processor(
       bookmark_undo_service(),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 
@@ -655,7 +655,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
   AssertState(&new_processor, bookmarks);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   const std::string kNodeId1 = "node_id1";
   const std::string kTitle1 = "title1";
   const GURL kUrl1("http://www.url1.com");
@@ -674,7 +674,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   SimulateModelReadyToSyncWithInitialSyncDone();
 
   // Create a new processor and init it with the same metadata str.
-  BookmarkModelTypeProcessor new_processor(
+  BookmarkDataTypeProcessor new_processor(
       bookmark_undo_service(),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
   new_processor.ModelReadyToSync(processor()->EncodeSyncMetadata(),
@@ -690,14 +690,14 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   EXPECT_TRUE(new_processor.IsTrackingMetadata());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEmptyMetadata) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEmptyMetadata) {
   // No save should be scheduled.
   EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
   SimulateModelReadyToSyncWithoutLocalMetadata();
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldIgnoreNonEmptyMetadataWhileSyncNotDone) {
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.mutable_model_type_state()->set_initial_sync_state(
@@ -709,7 +709,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   bookmark_metadata->mutable_metadata()->set_server_id(kBookmarkBarId);
 
   // Create a new processor and init it with the metadata str.
-  BookmarkModelTypeProcessor new_processor(
+  BookmarkDataTypeProcessor new_processor(
       bookmark_undo_service(),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 
@@ -726,7 +726,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_FALSE(new_processor.IsTrackingMetadata());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldIgnoreMetadataNotMatchingTheModel) {
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.mutable_model_type_state()->set_initial_sync_state(
@@ -738,7 +738,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                          /*server_id=*/kBookmarkBarId);
 
   // Create a new processor and init it with the metadata str.
-  BookmarkModelTypeProcessor new_processor(
+  BookmarkDataTypeProcessor new_processor(
       bookmark_undo_service(),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 
@@ -756,7 +756,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_FALSE(new_processor.IsTrackingMetadata());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldIgnoreMetadataIfCacheGuidMismatch) {
   SimulateModelReadyToSyncWithInitialSyncDone();
   ASSERT_TRUE(processor()->IsTrackingMetadata());
@@ -767,7 +767,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 // Verifies that the model type state stored in the tracker gets
 // updated upon handling remote updates by assigning a new encryption
 // key name.
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldUpdateModelTypeStateUponHandlingRemoteUpdates) {
   // Initialize the process to make sure the tracker has been created.
   SimulateModelReadyToSyncWithInitialSyncDone();
@@ -795,7 +795,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 // Verifies that the model type state stored in the tracker gets
 // updated upon handling remote updates by replacing new pending invalidations.
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldUpdateModelTypeStateUponHandlingInvalidations) {
   // Initialize the process to make sure the tracker has been created.
   SimulateModelReadyToSyncWithInitialSyncDone();
@@ -827,7 +827,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 // This tests that when the encryption key changes, but the received entities
 // are already encrypted with the up-to-date encryption key, no recommit is
 // needed.
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotRecommitEntitiesWhenEncryptionIsUpToDate) {
   // Initialize the process to make sure the tracker has been created.
   SimulateOnSyncStarting();
@@ -865,7 +865,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 // Verifies that the processor doesn't crash if sync is stopped before receiving
 // remote updates or tracking metadata.
-TEST_F(BookmarkModelTypeProcessorTest, ShouldStopBeforeReceivingRemoteUpdates) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldStopBeforeReceivingRemoteUpdates) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
   ASSERT_FALSE(processor()->IsTrackingMetadata());
@@ -873,7 +873,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldStopBeforeReceivingRemoteUpdates) {
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
   // Initialize the process to make sure the tracker has been created.
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
@@ -882,7 +882,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportNoCountersWhenModelIsNotLoaded) {
   SimulateOnSyncStarting();
   ASSERT_FALSE(processor()->IsTrackingMetadata());
@@ -897,7 +897,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_EQ(0, count.non_tombstone_entities);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotCommitEntitiesWithoutLoadedFavicons) {
   const std::string kNodeId = "node_id1";
   const std::string kTitle = "title1";
@@ -932,7 +932,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
               ElementsAre(CommitRequestDataMatchesGuid(node->uuid())));
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldCommitEntitiesWhileOtherFaviconsLoading) {
   const std::string kNodeId1 = "node_id1";
   const std::string kNodeId2 = "node_id2";
@@ -996,7 +996,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_TRUE(unsynced_entities[0]->bookmark_node()->is_favicon_loading());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   const std::string kTitle = "title";
   const GURL kUrl("http://www.url.com");
 
@@ -1023,7 +1023,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 
   // Simulate browser restart, enable sync reupload and initialize the processor
   // again.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
@@ -1062,7 +1062,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
                   .bookmarks_hierarchy_fields_reuploaded());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfIncrementalLocalCreationCrossesMaxCountLimit) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1093,7 +1093,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 }
 
 TEST_F(
-    BookmarkModelTypeProcessorTest,
+    BookmarkDataTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataMatchesModel) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1129,7 +1129,7 @@ TEST_F(
   model_metadata.SerializeToString(&metadata_str);
 
   // Simulate browser restart.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
                                 bookmark_model());
@@ -1143,7 +1143,7 @@ TEST_F(
 }
 
 TEST_F(
-    BookmarkModelTypeProcessorTest,
+    BookmarkDataTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataDoesNotMatchModel) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1168,7 +1168,7 @@ TEST_F(
       GURL(kUrl));
 
   // Simulate browser restart.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   SimulateModelReadyToSyncWithoutLocalMetadata();
   // Metadata does not match model, so tracker should be null.
@@ -1178,7 +1178,7 @@ TEST_F(
 }
 
 TEST_F(
-    BookmarkModelTypeProcessorTest,
+    BookmarkDataTypeProcessorTest,
     BookmarkModelShouldWorkNormallyEvenAfterSyncReportedErrorDueToMaxLimitCrossed) {
   // Ensure that bookmarks model works normally even after sync reports error
   // when max count limit is crossed.
@@ -1226,7 +1226,7 @@ TEST_F(
   model_metadata.SerializeToString(&metadata_str);
 
   // Simulate browser restart.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   processor()->ModelReadyToSync(metadata_str, base::DoNothing(),
                                 bookmark_model());
@@ -1237,7 +1237,7 @@ TEST_F(
   EXPECT_EQ(bookmark_model()->bookmark_bar_node()->children().size(), 2u);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterInitialUpdate) {
   // Set a limit of 4 bookmarks: 3 permanent nodes and 1 additional node which
   // is different from the remote.
@@ -1297,7 +1297,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_FALSE(bookmark_bar->children().empty());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterIncrementalUpdate) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1346,7 +1346,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_FALSE(bookmark_bar->children().empty());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfInitialUpdatesCrossMaxCountLimit) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1404,7 +1404,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_TRUE(bookmark_bar->children().empty());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldSaveRemoteUpdatesCountExceedingLimitResultDuringInitialMerge) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1456,7 +1456,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldReportErrorIfRemoteBookmarksCountExceededLimitOnLastTry) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1512,7 +1512,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   ASSERT_TRUE(
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
   // Expect failure.
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
@@ -1531,7 +1531,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldPersistRemoteBookmarksCountExceedingLimitAcrossBrowserRestarts) {
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
@@ -1587,7 +1587,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 
   // Simulate browser restart.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
   // Expect failure.
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
@@ -1605,7 +1605,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 
   // Simulate browser restart again.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
   // Expect failure.
   error_reported = false;
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
@@ -1623,7 +1623,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       model_metadata.last_initial_merge_remote_updates_exceeded_limit());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataIfStopped) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldClearMetadataIfStopped) {
   SimulateModelReadyToSyncWithInitialSyncDone();
   processor()->OnSyncStopping(syncer::KEEP_METADATA);
   ASSERT_TRUE(processor()->IsTrackingMetadata());
@@ -1642,7 +1642,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataIfStopped) {
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldClearMetadataIfStoppedUponModelReadyToSync) {
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
@@ -1680,7 +1680,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldNotClearMetadataIfNotStopped) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldNotClearMetadataIfNotStopped) {
   // Initialize and start the processor with some metadata.
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
@@ -1695,7 +1695,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldNotClearMetadataIfNotStopped) {
   histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotClearMetadataIfStoppedIfPreviouslyStoppedWithClearMetadata) {
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
@@ -1714,9 +1714,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldWipeBookmarksRepeatedlyIfStoppedWithClearMetadata) {
-  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 
   const GURL kUrl("http://www.example.com");
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -1755,9 +1755,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldWipeBookmarksOnceIfStoppedWithClearMetadata) {
-  ResetModelTypeProcessor(
+  ResetDataTypeProcessor(
       syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata);
 
   const GURL kUrl("http://www.example.com");
@@ -1791,9 +1791,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
                    ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotWipeBookmarksIfStoppedWithClearMetadataWithoutInitialSyncDone) {
-  ResetModelTypeProcessor(
+  ResetDataTypeProcessor(
       syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata);
 
   const GURL kUrl("http://www.example.com");
@@ -1814,9 +1814,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
                    ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotWipeBookmarksIfStoppedWithClearMetadataIfInitialSyncDoneLater) {
-  ResetModelTypeProcessor(
+  ResetDataTypeProcessor(
       syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata);
 
   const GURL kUrl("http://www.example.com");
@@ -1832,7 +1832,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                    ->HasNoUserCreatedBookmarksOrFolders());
 
   // In most cases, because of how SyncServiceImpl behaves, OnSyncStopping()
-  // would be called upon startup. To be extra safe, BookmarkModelTypeProcessor
+  // would be called upon startup. To be extra safe, BookmarkDataTypeProcessor
   // does not rely on this assumption, so this test verifies that bookmarks
   // shouldn't be cleared if sync was initially off (upon startup), then turned
   // on, then turned off again.
@@ -1848,9 +1848,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
                    ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotWipeBookmarksIfStoppedWithKeepMetadata) {
-  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 
   const GURL kUrl("http://www.example.com");
   const bookmarks::BookmarkNode* node = bookmark_model()->AddURL(
@@ -1864,7 +1864,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
               ElementsAre(Pointer(Eq(node))));
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotClearMetadataIfStoppedWithoutMetadataInitially) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   ASSERT_FALSE(processor()->IsTrackingMetadata());
@@ -1882,7 +1882,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldNotClearMetadataIfStoppedUponModelReadyToSyncWithoutMetadata) {
   base::HistogramTester histogram_tester;
 
@@ -1903,9 +1903,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldWipeBookmarksIfMetadataClearedWhileStopped) {
-  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
   SimulateModelReadyToSyncWithInitialSyncDone();
   processor()->OnSyncStopping(syncer::KEEP_METADATA);
 
@@ -1936,9 +1936,9 @@ TEST_F(BookmarkModelTypeProcessorTest,
                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldWipeBookmarksIfMetadataClearedWhileStoppedUponModelReadyToSync) {
-  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 
   base::HistogramTester histogram_tester;
 
@@ -1992,8 +1992,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
-  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+TEST_F(BookmarkDataTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
+  ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
   SimulateModelReadyToSyncWithInitialSyncDone();
   ASSERT_TRUE(processor()->IsTrackingMetadata());
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -2013,7 +2013,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
                   ->HasNoUserCreatedBookmarksOrFolders());
 }
 
-TEST_F(BookmarkModelTypeProcessorTest,
+TEST_F(BookmarkDataTypeProcessorTest,
        ShouldRecordNumUnsyncedEntitiesOnModelReady) {
   {
     base::HistogramTester histogram_tester;
@@ -2031,7 +2031,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
 
   // Simulate the browser restart.
-  ResetModelTypeProcessor();
+  ResetDataTypeProcessor();
 
   {
     base::HistogramTester histogram_tester;

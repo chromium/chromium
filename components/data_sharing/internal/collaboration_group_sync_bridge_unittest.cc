@@ -16,7 +16,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,7 +129,8 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 
   CollaborationGroupSyncBridge& bridge() { return *bridge_; }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() {
     return mock_processor_;
   }
 
@@ -145,7 +146,7 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<syncer::ModelTypeStore> model_type_store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<MockObserver> observer_;
   std::unique_ptr<CollaborationGroupSyncBridge> bridge_;
 };

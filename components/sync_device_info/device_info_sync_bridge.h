@@ -17,9 +17,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_mode.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
@@ -36,14 +36,14 @@ class DeviceInfoPrefs;
 // Sync bridge implementation for DEVICE_INFO model type. Handles storage of
 // device info and associated sync metadata, applying/merging foreign changes,
 // and allows public read access.
-class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
+class DeviceInfoSyncBridge : public DataTypeSyncBridge,
                              public DeviceInfoTracker {
  public:
   DeviceInfoSyncBridge(
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
       OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs);
 
   DeviceInfoSyncBridge(const DeviceInfoSyncBridge&) = delete;
@@ -68,7 +68,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void SetCommittedAdditionalInterestedDataTypesCallback(
       base::RepeatingCallback<void(const ModelTypeSet&)> callback);
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
@@ -84,7 +84,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::string GetStorageKey(const EntityData& entity_data) override;
   void ApplyDisableSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
-  ModelTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
+  DataTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
       syncer::SyncCommitError commit_error) override;
 
   // DeviceInfoTracker implementation.

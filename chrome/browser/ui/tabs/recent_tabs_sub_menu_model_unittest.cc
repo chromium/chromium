@@ -143,7 +143,7 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
   }
 
   void EnableSync() {
-    // ClientTagBasedModelTypeProcessor requires connecting before
+    // ClientTagBasedDataTypeProcessor requires connecting before
     // other interactions with the worker happen.
     sync_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
@@ -167,7 +167,7 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
  private:
   raw_ptr<sync_sessions::SessionSyncService, DanglingUntriaged>
       session_sync_service_;
-  std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor_;
 };
 
 class TestLogMetricsAppMenuModel : public AppMenuModel {

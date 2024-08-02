@@ -19,7 +19,7 @@ namespace syncer {
 
 class SyncChangeProcessor;
 
-// DEPRECATED: new code should use ModelTypeSyncBridge instead.
+// DEPRECATED: new code should use DataTypeSyncBridge instead.
 // See https://www.chromium.org/developers/design-documents/sync/model-api/ for
 // background.
 class SyncableService {

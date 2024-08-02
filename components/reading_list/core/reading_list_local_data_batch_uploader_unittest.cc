@@ -15,7 +15,7 @@
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/service/local_data_description.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,7 +59,7 @@ class ReadingListLocalDataBatchUploaderTest : public ::testing::Test {
 
  private:
   base::SimpleTestClock clock_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<DualReadingListModel> dual_reading_list_model_;
   // The raw pointers must be destroyed before `dual_reading_list_model_`.
   raw_ptr<FakeReadingListModelStorage> local_reading_list_storage_;

@@ -18,12 +18,12 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace base {
@@ -36,7 +36,7 @@ struct TargetDeviceInfo;
 
 // Interface for a persistence layer for send tab to self.
 // All interface methods have to be called on main thread.
-class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
+class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
                             public SendTabToSelfModel,
                             public syncer::DeviceInfoTracker::Observer,
                             public history::HistoryServiceObserver {
@@ -44,7 +44,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // The caller should ensure that all raw pointers are not null and will
   // outlive this object. This is not guaranteed by this class.
   SendTabToSelfBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       base::Clock* clock,
       syncer::OnceModelTypeStoreFactory create_store_callback,
       history::HistoryService* history_service,
@@ -55,7 +55,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
 
   ~SendTabToSelfBridge() override;
 
-  // syncer::ModelTypeSyncBridge overrides.
+  // syncer::DataTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

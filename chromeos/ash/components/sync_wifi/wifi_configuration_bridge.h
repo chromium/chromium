@@ -18,14 +18,14 @@
 #include "chromeos/ash/components/network/network_metadata_observer.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace ash::timer_factory {
@@ -48,7 +48,7 @@ class SyncedNetworkUpdater;
 
 // Receives updates to network configurations from the Chrome sync back end and
 // from the system network stack and keeps both lists in sync.
-class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
+class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
                                 public NetworkConfigurationObserver,
                                 public NetworkMetadataObserver {
  public:
@@ -59,7 +59,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
       SyncedNetworkMetricsLogger* metrics_recorder,
       ash::timer_factory::TimerFactory* timer_factory,
       PrefService* pref_service,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory create_store_callback);
 
   WifiConfigurationBridge(const WifiConfigurationBridge&) = delete;
@@ -69,7 +69,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

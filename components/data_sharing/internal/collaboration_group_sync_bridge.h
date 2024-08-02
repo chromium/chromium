@@ -14,19 +14,19 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 
 namespace data_sharing {
 
 // Sync bridge implementation for COLLABORATION_GROUP model type.
-class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
+class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -41,7 +41,7 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
   };
 
   CollaborationGroupSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory);
 
   CollaborationGroupSyncBridge(const CollaborationGroupSyncBridge&) = delete;
@@ -53,7 +53,7 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~CollaborationGroupSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

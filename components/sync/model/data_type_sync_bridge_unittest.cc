@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 #include <utility>
 
@@ -11,8 +11,8 @@
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/stub_model_type_sync_bridge.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/sync/test/stub_data_type_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,22 +22,22 @@ namespace {
 using testing::_;
 using testing::Return;
 
-class ModelTypeSyncBridgeTest : public ::testing::Test {
+class DataTypeSyncBridgeTest : public ::testing::Test {
  public:
-  ModelTypeSyncBridgeTest()
+  DataTypeSyncBridgeTest()
       : bridge_(mock_processor_.CreateForwardingProcessor()) {}
-  ~ModelTypeSyncBridgeTest() override = default;
+  ~DataTypeSyncBridgeTest() override = default;
 
-  StubModelTypeSyncBridge* bridge() { return &bridge_; }
-  MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  StubDataTypeSyncBridge* bridge() { return &bridge_; }
+  MockDataTypeLocalChangeProcessor* processor() { return &mock_processor_; }
 
  private:
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  StubModelTypeSyncBridge bridge_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  StubDataTypeSyncBridge bridge_;
 };
 
 // ResolveConflicts should return kUseRemote unless the remote data is deleted.
-TEST_F(ModelTypeSyncBridgeTest, DefaultConflictResolution) {
+TEST_F(DataTypeSyncBridgeTest, DefaultConflictResolution) {
   EntityData local_data;
   EntityData remote_data;
 

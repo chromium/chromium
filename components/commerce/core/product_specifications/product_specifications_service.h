@@ -24,7 +24,7 @@ class ProductSpecificationsService
       base::OnceCallback<void(const std::vector<ProductSpecificationsSet>)>;
   ProductSpecificationsService(
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
   ProductSpecificationsService(const ProductSpecificationsService&) = delete;
   ProductSpecificationsService& operator=(const ProductSpecificationsService&) =
       delete;

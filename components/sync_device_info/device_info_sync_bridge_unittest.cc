@@ -35,7 +35,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info_prefs.h"
@@ -69,7 +69,7 @@ using testing::UnorderedElementsAre;
 
 using DeviceCountMap = std::map<DeviceInfo::FormFactor, int>;
 using DeviceInfoList = std::vector<std::unique_ptr<DeviceInfo>>;
-using StorageKeyList = ModelTypeSyncBridge::StorageKeyList;
+using StorageKeyList = DataTypeSyncBridge::StorageKeyList;
 using RecordList = ModelTypeStore::RecordList;
 using StartCallback = DataTypeControllerDelegate::StartCallback;
 using WriteBatch = ModelTypeStore::WriteBatch;
@@ -606,7 +606,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     return bridge_.get();
   }
 
-  MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  MockDataTypeLocalChangeProcessor* processor() { return &mock_processor_; }
   // Should only be called after the bridge has been initialized. Will first
   // recover the bridge's store, so another can be initialized later, and then
   // deletes the bridge.
@@ -712,7 +712,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
-  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
 
   // Holds the store.
   const std::unique_ptr<ModelTypeStore> store_;

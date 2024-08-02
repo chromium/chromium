@@ -15,12 +15,12 @@
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/service/sync_service.h"
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataChangeList;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace history {
@@ -28,7 +28,7 @@ namespace history {
 class HistorySyncMetadataDatabase;
 class VisitIDRemapper;
 
-class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
+class HistorySyncBridge : public syncer::DataTypeSyncBridge,
                           public HistoryBackendObserver {
  public:
   // `history_backend` must not be null.
@@ -36,14 +36,14 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   HistorySyncBridge(
       HistoryBackendForSync* history_backend,
       HistorySyncMetadataDatabase* sync_metadata_store,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   HistorySyncBridge(const HistorySyncBridge&) = delete;
   HistorySyncBridge& operator=(const HistorySyncBridge&) = delete;
 
   ~HistorySyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge implementation.
+  // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

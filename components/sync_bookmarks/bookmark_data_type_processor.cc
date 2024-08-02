@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync_bookmarks/bookmark_model_type_processor.h"
+#include "components/sync_bookmarks/bookmark_data_type_processor.h"
 
 #include <utility>
 #include <vector>
@@ -22,8 +22,8 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/model_type_processor_metrics.h"
-#include "components/sync/engine/model_type_processor_proxy.h"
+#include "components/sync/engine/data_type_processor_metrics.h"
+#include "components/sync/engine/data_type_processor_proxy.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
@@ -132,7 +132,7 @@ void RecordModelTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
 
 }  // namespace
 
-BookmarkModelTypeProcessor::BookmarkModelTypeProcessor(
+BookmarkDataTypeProcessor::BookmarkDataTypeProcessor(
     BookmarkUndoService* bookmark_undo_service,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior)
@@ -141,13 +141,13 @@ BookmarkModelTypeProcessor::BookmarkModelTypeProcessor(
           wipe_model_upon_sync_disabled_behavior),
       max_bookmarks_till_sync_enabled_(kDefaultMaxBookmarksTillSyncEnabled) {}
 
-BookmarkModelTypeProcessor::~BookmarkModelTypeProcessor() {
+BookmarkDataTypeProcessor::~BookmarkDataTypeProcessor() {
   if (bookmark_model_ && bookmark_model_observer_) {
     bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
   }
 }
 
-void BookmarkModelTypeProcessor::ConnectSync(
+void BookmarkDataTypeProcessor::ConnectSync(
     std::unique_ptr<syncer::CommitQueue> worker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!worker_);
@@ -161,7 +161,7 @@ void BookmarkModelTypeProcessor::ConnectSync(
   }
 }
 
-void BookmarkModelTypeProcessor::DisconnectSync() {
+void BookmarkDataTypeProcessor::DisconnectSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
@@ -173,7 +173,7 @@ void BookmarkModelTypeProcessor::DisconnectSync() {
   worker_.reset();
 }
 
-void BookmarkModelTypeProcessor::GetLocalChanges(
+void BookmarkDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -184,7 +184,7 @@ void BookmarkModelTypeProcessor::GetLocalChanges(
   std::move(callback).Run(builder.BuildCommitRequests(max_entries));
 }
 
-void BookmarkModelTypeProcessor::OnCommitCompleted(
+void BookmarkDataTypeProcessor::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
     const syncer::CommitResponseDataList& committed_response_list,
     const syncer::FailedCommitResponseDataList& error_response_list) {
@@ -209,7 +209,7 @@ void BookmarkModelTypeProcessor::OnCommitCompleted(
   schedule_save_closure_.Run();
 }
 
-void BookmarkModelTypeProcessor::OnUpdateReceived(
+void BookmarkDataTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
     syncer::UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
@@ -271,7 +271,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   }
 }
 
-void BookmarkModelTypeProcessor::StorePendingInvalidations(
+void BookmarkDataTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!bookmark_tracker_) {
@@ -287,20 +287,20 @@ void BookmarkModelTypeProcessor::StorePendingInvalidations(
   schedule_save_closure_.Run();
 }
 
-bool BookmarkModelTypeProcessor::IsTrackingMetadata() const {
+bool BookmarkDataTypeProcessor::IsTrackingMetadata() const {
   return bookmark_tracker_.get() != nullptr;
 }
 
-const SyncedBookmarkTracker* BookmarkModelTypeProcessor::GetTrackerForTest()
+const SyncedBookmarkTracker* BookmarkDataTypeProcessor::GetTrackerForTest()
     const {
   return bookmark_tracker_.get();
 }
 
-bool BookmarkModelTypeProcessor::IsConnectedForTest() const {
+bool BookmarkDataTypeProcessor::IsConnectedForTest() const {
   return worker_ != nullptr;
 }
 
-std::string BookmarkModelTypeProcessor::EncodeSyncMetadata() const {
+std::string BookmarkDataTypeProcessor::EncodeSyncMetadata() const {
   std::string metadata_str;
   if (bookmark_tracker_) {
     // `last_initial_merge_remote_updates_exceeded_limit_` is only set in error
@@ -323,7 +323,7 @@ std::string BookmarkModelTypeProcessor::EncodeSyncMetadata() const {
   return metadata_str;
 }
 
-void BookmarkModelTypeProcessor::ModelReadyToSync(
+void BookmarkDataTypeProcessor::ModelReadyToSync(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure,
     BookmarkModelView* model) {
@@ -333,7 +333,7 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
   DCHECK(!bookmark_tracker_);
   DCHECK(!bookmark_model_observer_);
 
-  TRACE_EVENT0("sync", "BookmarkModelTypeProcessor::ModelReadyToSync");
+  TRACE_EVENT0("sync", "BookmarkDataTypeProcessor::ModelReadyToSync");
 
   bookmark_model_ = model;
   schedule_save_closure_ = schedule_save_closure;
@@ -409,13 +409,13 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
   ConnectIfReady();
 }
 
-void BookmarkModelTypeProcessor::SetFaviconService(
+void BookmarkDataTypeProcessor::SetFaviconService(
     favicon::FaviconService* favicon_service) {
   DCHECK(favicon_service);
   favicon_service_ = favicon_service;
 }
 
-size_t BookmarkModelTypeProcessor::EstimateMemoryUsage() const {
+size_t BookmarkDataTypeProcessor::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
   size_t memory_usage = 0;
   if (bookmark_tracker_) {
@@ -426,12 +426,12 @@ size_t BookmarkModelTypeProcessor::EstimateMemoryUsage() const {
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-BookmarkModelTypeProcessor::GetWeakPtr() {
+BookmarkDataTypeProcessor::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_for_controller_.GetWeakPtr();
 }
 
-void BookmarkModelTypeProcessor::OnSyncStarting(
+void BookmarkDataTypeProcessor::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request,
     StartCallback start_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -448,7 +448,7 @@ void BookmarkModelTypeProcessor::OnSyncStarting(
   ConnectIfReady();
 }
 
-void BookmarkModelTypeProcessor::ConnectIfReady() {
+void BookmarkDataTypeProcessor::ConnectIfReady() {
   // Return if the model isn't ready.
   if (!bookmark_model_) {
     return;
@@ -515,13 +515,13 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     activation_context->model_type_state = model_type_state;
   }
   activation_context->type_processor =
-      std::make_unique<syncer::ModelTypeProcessorProxy>(
+      std::make_unique<syncer::DataTypeProcessorProxy>(
           weak_ptr_factory_for_worker_.GetWeakPtr(),
           base::SequencedTaskRunner::GetCurrentDefault());
   std::move(start_callback_).Run(std::move(activation_context));
 }
 
-void BookmarkModelTypeProcessor::OnSyncStopping(
+void BookmarkDataTypeProcessor::OnSyncStopping(
     syncer::SyncStopMetadataFate metadata_fate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Disabling sync for a type shouldn't happen before the model is loaded
@@ -557,7 +557,7 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
   weak_ptr_factory_for_controller_.InvalidateWeakPtrs();
 }
 
-void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
+void BookmarkDataTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
 
   // Issue error and stop sync if the number of local bookmarks exceed limit.
@@ -586,7 +586,7 @@ void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
   }
 }
 
-void BookmarkModelTypeProcessor::OnBookmarkModelBeingDeleted() {
+void BookmarkDataTypeProcessor::OnBookmarkModelBeingDeleted() {
   DCHECK(bookmark_model_);
   DCHECK(bookmark_model_observer_);
 
@@ -597,13 +597,13 @@ void BookmarkModelTypeProcessor::OnBookmarkModelBeingDeleted() {
   DisconnectSync();
 }
 
-void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
+void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
     syncer::UpdateResponseDataList updates) {
   DCHECK(!bookmark_tracker_);
   DCHECK(activation_request_.error_handler);
 
-  TRACE_EVENT0("sync", "BookmarkModelTypeProcessor::OnInitialUpdateReceived");
+  TRACE_EVENT0("sync", "BookmarkDataTypeProcessor::OnInitialUpdateReceived");
 
   // `updates` can contain an additional root folder. The server may or may not
   // deliver a root node - it is not guaranteed, but this works as an
@@ -660,27 +660,27 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
   NudgeForCommitIfNeeded();
 }
 
-void BookmarkModelTypeProcessor::StartTrackingMetadata() {
+void BookmarkDataTypeProcessor::StartTrackingMetadata() {
   DCHECK(bookmark_tracker_);
   DCHECK(!bookmark_model_observer_);
 
   bookmark_model_observer_ = std::make_unique<BookmarkModelObserverImpl>(
       bookmark_model_,
-      base::BindRepeating(&BookmarkModelTypeProcessor::NudgeForCommitIfNeeded,
+      base::BindRepeating(&BookmarkDataTypeProcessor::NudgeForCommitIfNeeded,
                           base::Unretained(this)),
-      base::BindOnce(&BookmarkModelTypeProcessor::OnBookmarkModelBeingDeleted,
+      base::BindOnce(&BookmarkDataTypeProcessor::OnBookmarkModelBeingDeleted,
                      base::Unretained(this)),
       bookmark_tracker_.get());
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
 }
 
-void BookmarkModelTypeProcessor::HasUnsyncedData(
+void BookmarkDataTypeProcessor::HasUnsyncedData(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(bookmark_tracker_ &&
                           bookmark_tracker_->HasLocalChanges());
 }
 
-void BookmarkModelTypeProcessor::GetAllNodesForDebugging(
+void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::List all_nodes;
@@ -711,7 +711,7 @@ void BookmarkModelTypeProcessor::GetAllNodesForDebugging(
   std::move(callback).Run(syncer::BOOKMARKS, std::move(all_nodes));
 }
 
-void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
+void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(
     const bookmarks::BookmarkNode* node,
     int index,
     base::Value::List* all_nodes) const {
@@ -774,7 +774,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   }
 }
 
-void BookmarkModelTypeProcessor::GetTypeEntitiesCountForDebugging(
+void BookmarkDataTypeProcessor::GetTypeEntitiesCountForDebugging(
     base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   syncer::TypeEntitiesCount count(syncer::BOOKMARKS);
@@ -786,7 +786,7 @@ void BookmarkModelTypeProcessor::GetTypeEntitiesCountForDebugging(
   std::move(callback).Run(count);
 }
 
-void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
+void BookmarkDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SyncRecordModelTypeMemoryHistogram(syncer::BOOKMARKS, EstimateMemoryUsage());
   if (bookmark_tracker_) {
@@ -797,12 +797,12 @@ void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   }
 }
 
-void BookmarkModelTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
+void BookmarkDataTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
     size_t limit) {
   max_bookmarks_till_sync_enabled_ = limit;
 }
 
-void BookmarkModelTypeProcessor::ClearMetadataIfStopped() {
+void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If Sync is not actually stopped, ignore this call.
@@ -830,7 +830,7 @@ void BookmarkModelTypeProcessor::ClearMetadataIfStopped() {
   }
 }
 
-void BookmarkModelTypeProcessor::ReportBridgeErrorForTest() {
+void BookmarkDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DisconnectSync();
@@ -838,7 +838,7 @@ void BookmarkModelTypeProcessor::ReportBridgeErrorForTest() {
       syncer::ModelError(FROM_HERE, "Report error for test"));
 }
 
-void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
+void BookmarkDataTypeProcessor::StopTrackingMetadataAndResetTracker() {
   // DisconnectSync() should have been called by the caller.
   DCHECK(!worker_);
   DCHECK(bookmark_tracker_);
@@ -852,7 +852,7 @@ void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
   TriggerWipeModelUponSyncDisabledBehavior();
 }
 
-void BookmarkModelTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
+void BookmarkDataTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
   switch (wipe_model_upon_sync_disabled_behavior_) {
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       // Nothing to do.

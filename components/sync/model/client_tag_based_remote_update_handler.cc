@@ -13,10 +13,10 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/model_type_processor_metrics.h"
+#include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/model_type_state_helper.h"
@@ -25,7 +25,7 @@ namespace syncer {
 
 ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
     ModelType type,
-    ModelTypeSyncBridge* bridge,
+    DataTypeSyncBridge* bridge,
     ProcessorEntityTracker* entity_tracker)
     : type_(type), bridge_(bridge), entity_tracker_(entity_tracker) {
   DCHECK(bridge_);

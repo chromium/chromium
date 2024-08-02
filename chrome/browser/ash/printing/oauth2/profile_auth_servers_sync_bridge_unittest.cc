@@ -19,7 +19,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,7 +120,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
   const GURL uri_4u_ = GURL(uri_4_);
 
   testing::StrictMock<MockProfileAuthServersSyncBridgeObserver> mock_observer_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ProfileAuthServersSyncBridge> bridge_;
 
  private:

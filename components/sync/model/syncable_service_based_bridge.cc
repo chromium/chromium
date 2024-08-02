@@ -113,7 +113,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
           error_callback,
       ModelTypeStore* store,
       SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
-      ModelTypeChangeProcessor* other)
+      DataTypeLocalChangeProcessor* other)
       : type_(type),
         error_callback_(error_callback),
         store_(store),
@@ -211,7 +211,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   const raw_ptr<ModelTypeStore> store_;
   const raw_ptr<SyncableServiceBasedBridge::InMemoryStore, DanglingUntriaged>
       in_memory_store_;
-  const raw_ptr<ModelTypeChangeProcessor> other_;
+  const raw_ptr<DataTypeLocalChangeProcessor> other_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -220,9 +220,9 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 SyncableServiceBasedBridge::SyncableServiceBasedBridge(
     ModelType type,
     OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     SyncableService* syncable_service)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       type_(type),
       syncable_service_(syncable_service) {
   DCHECK(syncable_service_);
@@ -385,7 +385,7 @@ SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
     ModelType type,
     ModelTypeStore* store,
     InMemoryStore* in_memory_store,
-    ModelTypeChangeProcessor* other) {
+    DataTypeLocalChangeProcessor* other) {
   return std::make_unique<LocalChangeProcessor>(
       type, /*error_callback=*/base::DoNothing(), store, in_memory_store,
       other);

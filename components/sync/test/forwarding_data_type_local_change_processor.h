@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_FORWARDING_MODEL_TYPE_CHANGE_PROCESSOR_H_
-#define COMPONENTS_SYNC_TEST_FORWARDING_MODEL_TYPE_CHANGE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_TEST_FORWARDING_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_
+#define COMPONENTS_SYNC_TEST_FORWARDING_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 
 namespace syncer {
 
-// A ModelTypeChangeProcessor implementation that forwards all calls to another
-// ModelTypeChangeProcessor instance, useful when a client wants ownership of
+// A DataTypeLocalChangeProcessor implementation that forwards all calls to another
+// DataTypeLocalChangeProcessor instance, useful when a client wants ownership of
 // the processor.
-class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
+class ForwardingDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
  public:
   // |other| must not be nullptr and must outlive this object.
-  explicit ForwardingModelTypeChangeProcessor(ModelTypeChangeProcessor* other);
-  ~ForwardingModelTypeChangeProcessor() override;
+  explicit ForwardingDataTypeLocalChangeProcessor(DataTypeLocalChangeProcessor* other);
+  ~ForwardingDataTypeLocalChangeProcessor() override;
 
   void Put(const std::string& client_tag,
            std::unique_ptr<EntityData> entity_data,
@@ -41,7 +41,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
       const std::string& storage_key) const override;
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override;
-  void OnModelStarting(ModelTypeSyncBridge* bridge) override;
+  void OnModelStarting(DataTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() const override;
   std::string TrackedAccountId() const override;
@@ -65,12 +65,12 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
       const ClientTagHash& target_client_tag_hash) const override;
   sync_pb::UniquePosition GetUniquePositionForStorageKey(
       const std::string& storage_key) const override;
-  base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
+  base::WeakPtr<DataTypeLocalChangeProcessor> GetWeakPtr() override;
 
  private:
-  const raw_ptr<ModelTypeChangeProcessor> other_;
+  const raw_ptr<DataTypeLocalChangeProcessor> other_;
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_FORWARDING_MODEL_TYPE_CHANGE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_TEST_FORWARDING_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_

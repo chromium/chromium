@@ -13,7 +13,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
@@ -28,7 +28,7 @@ SendTabToSelfSyncService::SendTabToSelfSyncService(
     PrefService* pref_service,
     syncer::DeviceInfoTracker* device_info_tracker)
     : bridge_(std::make_unique<send_tab_to_self::SendTabToSelfBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::SEND_TAB_TO_SELF,
               base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
           base::DefaultClock::GetInstance(),

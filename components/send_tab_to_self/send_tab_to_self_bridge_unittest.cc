@@ -23,7 +23,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info.h"
@@ -221,7 +221,9 @@ class SendTabToSelfBridgeTest : public testing::Test {
     }
   }
 
-  syncer::MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  syncer::MockDataTypeLocalChangeProcessor* processor() {
+    return &mock_processor_;
+  }
 
   SendTabToSelfBridge* bridge() { return bridge_.get(); }
 
@@ -241,7 +243,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 
   syncer::FakeDeviceInfoTracker device_info_tracker_;
 

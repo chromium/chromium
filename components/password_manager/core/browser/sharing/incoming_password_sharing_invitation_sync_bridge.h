@@ -11,14 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataBatch;
 class MetadataChangeList;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace password_manager {
@@ -28,10 +28,10 @@ class PasswordReceiverService;
 // Sync bridge implementation for INCOMING_PASSWORD_SHARING_INVITATION model
 // type.
 class IncomingPasswordSharingInvitationSyncBridge
-    : public syncer::ModelTypeSyncBridge {
+    : public syncer::DataTypeSyncBridge {
  public:
   IncomingPasswordSharingInvitationSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory create_sync_metadata_store_callback);
   IncomingPasswordSharingInvitationSyncBridge(
       const IncomingPasswordSharingInvitationSyncBridge&) = delete;
@@ -45,7 +45,7 @@ class IncomingPasswordSharingInvitationSyncBridge
   void SetPasswordReceiverService(
       PasswordReceiverService* password_receiver_service);
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   void OnSyncStarting(
       const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

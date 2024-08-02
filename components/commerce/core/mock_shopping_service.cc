@@ -8,7 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 
 namespace commerce {
 

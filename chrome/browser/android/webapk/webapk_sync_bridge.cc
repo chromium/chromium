@@ -25,7 +25,7 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
@@ -170,7 +170,7 @@ WebApkSyncBridge::WebApkSyncBridge(
     : WebApkSyncBridge(
           database_factory,
           std::move(on_initialized),
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEB_APKS,
               base::BindRepeating(&syncer::ReportUnrecoverableError,
                                   chrome::GetChannel())),
@@ -180,10 +180,10 @@ WebApkSyncBridge::WebApkSyncBridge(
 WebApkSyncBridge::WebApkSyncBridge(
     AbstractWebApkDatabaseFactory* database_factory,
     base::OnceClosure on_initialized,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     std::unique_ptr<base::Clock> clock,
     std::unique_ptr<AbstractWebApkSpecificsFetcher> specifics_fetcher)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       database_(
           database_factory,
           base::BindRepeating(&WebApkSyncBridge::ReportErrorToChangeProcessor,

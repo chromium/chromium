@@ -9,12 +9,12 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
 
-// The state passed from ModelTypeProcessor to Sync thread during DataType
+// The state passed from DataTypeProcessor to Sync thread during DataType
 // activation.
 struct DataTypeActivationResponse {
   DataTypeActivationResponse();
@@ -23,9 +23,9 @@ struct DataTypeActivationResponse {
   // Initial ModelTypeState at the moment of activation.
   sync_pb::ModelTypeState model_type_state;
 
-  // The ModelTypeProcessor for the worker. Note that this is owned because
+  // The DataTypeProcessor for the worker. Note that this is owned because
   // it is generally a proxy object to the real processor.
-  std::unique_ptr<ModelTypeProcessor> type_processor;
+  std::unique_ptr<DataTypeProcessor> type_processor;
 
   // Special flag used in advanced cases where there is actually no need to
   // activate/connect a datatype.

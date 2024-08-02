@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_FORWARDING_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_ENGINE_FORWARDING_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_ENGINE_FORWARDING_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_ENGINE_FORWARDING_DATA_TYPE_PROCESSOR_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 
 namespace syncer {
 
-// Trivial implementation of ModelTypeProcessor, that simply forwards
+// Trivial implementation of DataTypeProcessor, that simply forwards
 // call to another processor. This is useful when an API requires transferring
 // ownership, but the calling site also wants to keep ownership of the actual
 // implementation, and can guarantee the lifetime constraints.
-class ForwardingModelTypeProcessor : public ModelTypeProcessor {
+class ForwardingDataTypeProcessor : public DataTypeProcessor {
  public:
   // |processor| must not be null and must outlive this object.
-  explicit ForwardingModelTypeProcessor(ModelTypeProcessor* processor);
+  explicit ForwardingDataTypeProcessor(DataTypeProcessor* processor);
 
-  ForwardingModelTypeProcessor(const ForwardingModelTypeProcessor&) = delete;
-  ForwardingModelTypeProcessor& operator=(const ForwardingModelTypeProcessor&) =
+  ForwardingDataTypeProcessor(const ForwardingDataTypeProcessor&) = delete;
+  ForwardingDataTypeProcessor& operator=(const ForwardingDataTypeProcessor&) =
       delete;
 
-  ~ForwardingModelTypeProcessor() override;
+  ~ForwardingDataTypeProcessor() override;
 
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
@@ -46,9 +46,9 @@ class ForwardingModelTypeProcessor : public ModelTypeProcessor {
       override;
 
  private:
-  const raw_ptr<ModelTypeProcessor> processor_;
+  const raw_ptr<DataTypeProcessor> processor_;
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_FORWARDING_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_ENGINE_FORWARDING_DATA_TYPE_PROCESSOR_H_

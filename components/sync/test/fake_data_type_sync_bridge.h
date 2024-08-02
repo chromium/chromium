@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_SYNC_BRIDGE_H_
-#define COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_SYNC_BRIDGE_H_
+#define COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_SYNC_BRIDGE_H_
 
 #include <map>
 #include <memory>
@@ -13,8 +13,8 @@
 #include <unordered_set>
 
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace sync_pb {
@@ -27,9 +27,9 @@ namespace syncer {
 class MetadataBatch;
 struct EntityData;
 
-// A basic, functional implementation of ModelTypeSyncBridge for testing
+// A basic, functional implementation of DataTypeSyncBridge for testing
 // purposes. It uses its own simple in-memory Store class.
-class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
+class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
  public:
   // Generate a client tag with the given key.
   static std::string ClientTagFromKey(const std::string& key);
@@ -81,10 +81,10 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
     sync_pb::ModelTypeState model_type_state_;
   };
 
-  FakeModelTypeSyncBridge(
+  FakeDataTypeSyncBridge(
       ModelType type,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor);
-  ~FakeModelTypeSyncBridge() override;
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor);
+  ~FakeDataTypeSyncBridge() override;
 
   ModelType type() { return type_; }
 
@@ -99,7 +99,7 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // faulty bridges).
   void MimicBugToLooseItemWithoutNotifyingProcessor(const std::string& key);
 
-  // ModelTypeSyncBridge implementation
+  // DataTypeSyncBridge implementation
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
@@ -228,4 +228,4 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_SYNC_BRIDGE_H_

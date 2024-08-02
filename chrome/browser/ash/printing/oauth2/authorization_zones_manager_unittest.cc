@@ -22,7 +22,7 @@
 #include "chromeos/printing/uri.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -216,7 +216,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
   std::map<GURL, AuthZoneMock*> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_ =
       syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
   base::RunLoop bridge_initialization_;
@@ -327,8 +327,8 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
   data_change_list.push_back(syncer::EntityChange::CreateAdd(
       url_2.spec(), ToEntityData(url_2.spec())));
   data_change_list.push_back(syncer::EntityChange::CreateDelete(url_1.spec()));
-  syncer::ModelTypeSyncBridge* bridge =
-      auth_zones_manager_->GetModelTypeSyncBridge();
+  syncer::DataTypeSyncBridge* bridge =
+      auth_zones_manager_->GetDataTypeSyncBridge();
 
   std::optional<syncer::ModelError> error = bridge->ApplyIncrementalSyncChanges(
       bridge->CreateMetadataChangeList(), std::move(data_change_list));

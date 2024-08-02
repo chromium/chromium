@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/nigori/nigori_model_type_processor.h"
+#include "components/sync/nigori/nigori_data_type_processor.h"
 
 #include <vector>
 
@@ -13,8 +13,8 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/forwarding_model_type_processor.h"
-#include "components/sync/engine/model_type_processor_metrics.h"
+#include "components/sync/engine/forwarding_data_type_processor.h"
+#include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
@@ -35,13 +35,13 @@ const char kRawNigoriClientTagHash[] = "NigoriClientTagHash";
 
 }  // namespace
 
-NigoriModelTypeProcessor::NigoriModelTypeProcessor() = default;
+NigoriDataTypeProcessor::NigoriDataTypeProcessor() = default;
 
-NigoriModelTypeProcessor::~NigoriModelTypeProcessor() {
+NigoriDataTypeProcessor::~NigoriDataTypeProcessor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NigoriModelTypeProcessor::ConnectSync(
+void NigoriDataTypeProcessor::ConnectSync(
     std::unique_ptr<CommitQueue> worker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Successfully connected Encryption Keys";
@@ -50,7 +50,7 @@ void NigoriModelTypeProcessor::ConnectSync(
   NudgeForCommitIfNeeded();
 }
 
-void NigoriModelTypeProcessor::DisconnectSync() {
+void NigoriDataTypeProcessor::DisconnectSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsConnected());
 
@@ -61,7 +61,7 @@ void NigoriModelTypeProcessor::DisconnectSync() {
   }
 }
 
-void NigoriModelTypeProcessor::GetLocalChanges(
+void NigoriDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -97,7 +97,7 @@ void NigoriModelTypeProcessor::GetLocalChanges(
   std::move(callback).Run(std::move(commit_request_data_list));
 }
 
-void NigoriModelTypeProcessor::OnCommitCompleted(
+void NigoriDataTypeProcessor::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
@@ -118,7 +118,7 @@ void NigoriModelTypeProcessor::OnCommitCompleted(
   bridge_->ApplyIncrementalSyncChanges(/*data=*/std::nullopt);
 }
 
-void NigoriModelTypeProcessor::OnUpdateReceived(
+void NigoriDataTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
@@ -195,7 +195,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   NudgeForCommitIfNeeded();
 }
 
-void NigoriModelTypeProcessor::StorePendingInvalidations(
+void NigoriDataTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -209,7 +209,7 @@ void NigoriModelTypeProcessor::StorePendingInvalidations(
   bridge_->ApplyIncrementalSyncChanges(/*data=*/std::nullopt);
 }
 
-void NigoriModelTypeProcessor::OnSyncStarting(
+void NigoriDataTypeProcessor::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -225,7 +225,7 @@ void NigoriModelTypeProcessor::OnSyncStarting(
   ConnectIfReady();
 }
 
-void NigoriModelTypeProcessor::OnSyncStopping(
+void NigoriDataTypeProcessor::OnSyncStopping(
     SyncStopMetadataFate metadata_fate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Disabling sync for a type shouldn't happen before the model is loaded
@@ -253,12 +253,12 @@ void NigoriModelTypeProcessor::OnSyncStopping(
   }
 }
 
-void NigoriModelTypeProcessor::HasUnsyncedData(
+void NigoriDataTypeProcessor::HasUnsyncedData(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(entity_ && entity_->RequiresCommitRequest());
 }
 
-void NigoriModelTypeProcessor::GetAllNodesForDebugging(
+void NigoriDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -294,7 +294,7 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   std::move(callback).Run(syncer::NIGORI, std::move(all_nodes));
 }
 
-void NigoriModelTypeProcessor::GetTypeEntitiesCountForDebugging(
+void NigoriDataTypeProcessor::GetTypeEntitiesCountForDebugging(
     base::OnceCallback<void(const TypeEntitiesCount&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TypeEntitiesCount count(syncer::NIGORI);
@@ -303,7 +303,7 @@ void NigoriModelTypeProcessor::GetTypeEntitiesCountForDebugging(
   std::move(callback).Run(count);
 }
 
-void NigoriModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
+void NigoriDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t memory_usage = 0;
   memory_usage += EstimateMemoryUsage(model_type_state_);
@@ -312,10 +312,10 @@ void NigoriModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   SyncRecordModelTypeCountHistogram(ModelType::NIGORI, entity_ ? 1 : 0);
 }
 
-void NigoriModelTypeProcessor::ModelReadyToSync(
+void NigoriDataTypeProcessor::ModelReadyToSync(
     NigoriSyncBridge* bridge,
     NigoriMetadataBatch nigori_metadata) {
-  TRACE_EVENT0("sync", "NigoriModelTypeProcessor::ModelReadyToSync");
+  TRACE_EVENT0("sync", "NigoriDataTypeProcessor::ModelReadyToSync");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(bridge);
   DCHECK(!model_ready_to_sync_);
@@ -344,7 +344,7 @@ void NigoriModelTypeProcessor::ModelReadyToSync(
   ConnectIfReady();
 }
 
-void NigoriModelTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
+void NigoriDataTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data);
   DCHECK(!entity_data->is_deleted());
@@ -367,7 +367,7 @@ void NigoriModelTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
   NudgeForCommitIfNeeded();
 }
 
-bool NigoriModelTypeProcessor::IsEntityUnsynced() {
+bool NigoriDataTypeProcessor::IsEntityUnsynced() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (entity_ == nullptr) {
     return false;
@@ -376,7 +376,7 @@ bool NigoriModelTypeProcessor::IsEntityUnsynced() {
   return entity_->IsUnsynced();
 }
 
-NigoriMetadataBatch NigoriModelTypeProcessor::GetMetadata() {
+NigoriMetadataBatch NigoriDataTypeProcessor::GetMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsTrackingMetadata());
   DCHECK(entity_);
@@ -388,7 +388,7 @@ NigoriMetadataBatch NigoriModelTypeProcessor::GetMetadata() {
   return nigori_metadata_batch;
 }
 
-void NigoriModelTypeProcessor::ReportError(const ModelError& error) {
+void NigoriDataTypeProcessor::ReportError(const ModelError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore all errors after the first.
@@ -410,30 +410,30 @@ void NigoriModelTypeProcessor::ReportError(const ModelError& error) {
 }
 
 base::WeakPtr<DataTypeControllerDelegate>
-NigoriModelTypeProcessor::GetControllerDelegate() {
+NigoriDataTypeProcessor::GetControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_for_controller_.GetWeakPtr();
 }
 
-bool NigoriModelTypeProcessor::IsConnectedForTest() const {
+bool NigoriDataTypeProcessor::IsConnectedForTest() const {
   return IsConnected();
 }
 
 const sync_pb::ModelTypeState&
-NigoriModelTypeProcessor::GetModelTypeStateForTest() {
+NigoriDataTypeProcessor::GetModelTypeStateForTest() {
   return model_type_state_;
 }
 
-bool NigoriModelTypeProcessor::IsTrackingMetadata() {
+bool NigoriDataTypeProcessor::IsTrackingMetadata() {
   return IsInitialSyncDone(model_type_state_.initial_sync_state());
 }
 
-bool NigoriModelTypeProcessor::IsConnected() const {
+bool NigoriDataTypeProcessor::IsConnected() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return worker_ != nullptr;
 }
 
-void NigoriModelTypeProcessor::ConnectIfReady() {
+void NigoriDataTypeProcessor::ConnectIfReady() {
   if (!start_callback_) {
     return;
   }
@@ -460,11 +460,11 @@ void NigoriModelTypeProcessor::ConnectIfReady() {
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   activation_response->model_type_state = model_type_state_;
   activation_response->type_processor =
-      std::make_unique<ForwardingModelTypeProcessor>(this);
+      std::make_unique<ForwardingDataTypeProcessor>(this);
   std::move(start_callback_).Run(std::move(activation_response));
 }
 
-void NigoriModelTypeProcessor::NudgeForCommitIfNeeded() const {
+void NigoriDataTypeProcessor::NudgeForCommitIfNeeded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't bother sending anything if there's no one to send to.
   if (!IsConnected()) {
@@ -482,7 +482,7 @@ void NigoriModelTypeProcessor::NudgeForCommitIfNeeded() const {
   }
 }
 
-void NigoriModelTypeProcessor::ClearMetadataAndReset() {
+void NigoriDataTypeProcessor::ClearMetadataAndReset() {
   // The bridge is responsible for deleting all data and metadata upon
   // disabling sync.
   bridge_->ApplyDisableSyncChanges();
@@ -492,12 +492,12 @@ void NigoriModelTypeProcessor::ClearMetadataAndReset() {
       sync_pb::EntitySpecifics::kNigoriFieldNumber);
 }
 
-void NigoriModelTypeProcessor::ClearMetadataIfStopped() {
+void NigoriDataTypeProcessor::ClearMetadataIfStopped() {
   // Nigori has a separate load callback and way to clear data. In particular,
   // Nigori is never considered to be stopped.
 }
 
-void NigoriModelTypeProcessor::ReportBridgeErrorForTest() {
+void NigoriDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!model_error_.has_value());
   ReportError(ModelError(FROM_HERE, "Reported error for test"));

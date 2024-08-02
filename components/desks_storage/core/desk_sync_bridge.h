@@ -21,11 +21,11 @@
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace ash {
@@ -36,17 +36,17 @@ enum class DeskTemplateType;
 namespace desks_storage {
 
 // A Sync-backed persistence layer for Workspace Desk.
-class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
+class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
  public:
   DeskSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory create_store_callback,
       const AccountId& account_id);
   DeskSyncBridge(const DeskSyncBridge&) = delete;
   DeskSyncBridge& operator=(const DeskSyncBridge&) = delete;
   ~DeskSyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge overrides.
+  // syncer::DataTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

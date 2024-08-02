@@ -15,7 +15,7 @@
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
@@ -93,7 +93,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
           :
 #endif
           std::make_unique<PasswordSyncBridge>(
-              std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+              std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
                   syncer::PASSWORDS, base::DoNothing()),
               static_cast<PasswordStoreSync*>(this),
               wipe_model_upon_sync_disabled_behavior_,

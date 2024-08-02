@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -43,9 +43,9 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
 }  // namespace
 
 PlusAddressSettingSyncBridge::PlusAddressSettingSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory store_factory)
-    : ModelTypeSyncBridge(std::move(change_processor)) {
+    : DataTypeSyncBridge(std::move(change_processor)) {
   std::move(store_factory)
       .Run(syncer::PLUS_ADDRESS_SETTING,
            base::BindOnce(&PlusAddressSettingSyncBridge::OnStoreCreated,
@@ -62,7 +62,7 @@ PlusAddressSettingSyncBridge::CreateBridge(
     return nullptr;
   }
   return std::make_unique<plus_addresses::PlusAddressSettingSyncBridge>(
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PLUS_ADDRESS_SETTING,
           /*dump_stack=*/base::DoNothing()),
       std::move(store_factory));

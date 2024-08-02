@@ -1579,7 +1579,7 @@ void HistoryService::ScheduleTask(SchedulePriority priority,
   // TODO(brettw): Do prioritization.
   // NOTE(mastiz): If this implementation changes, be cautious with implications
   // for sync, because a) the sync engine (sync thread) post tasks directly to
-  // the task runner via ModelTypeProcessorProxy (which is subtle); and b)
+  // the task runner via DataTypeProcessorProxy (which is subtle); and b)
   // SyncServiceImpl (UI thread) does the same via
   // ProxyDataTypeControllerDelegate.
   backend_task_runner_->PostTask(FROM_HERE, std::move(task));

@@ -16,8 +16,8 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
 class DataTypeControllerDelegate;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 class PrefService;
@@ -29,7 +29,7 @@ class FloatingSsoService : public KeyedService,
  public:
   FloatingSsoService(
       PrefService* prefs,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       network::mojom::CookieManager* cookie_manager,
       syncer::OnceModelTypeStoreFactory create_store_callback);
   FloatingSsoService(const FloatingSsoService&) = delete;

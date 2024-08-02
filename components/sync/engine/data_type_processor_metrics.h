@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_METRICS_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_METRICS_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_METRICS_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_METRICS_H_
 
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
@@ -19,13 +19,13 @@ void LogModelTypeConfigurationTime(ModelType model_type,
                                    base::Time configuration_start_time);
 
 // Logs histograms representing the number of updates that an implementations of
-// ModelTypeProcessor receive via OnUpdateReceived().
+// DataTypeProcessor receive via OnUpdateReceived().
 void LogUpdatesReceivedByProcessorHistogram(ModelType model_type,
                                             bool is_initial_sync,
                                             size_t num_updates);
 
 // Logs histogram representing the staleness of an incoming incremental
-// (non-initial) update, when received by a ModelTypeProcessor via
+// (non-initial) update, when received by a DataTypeProcessor via
 // OnUpdateReceived().
 void LogNonReflectionUpdateFreshnessToUma(ModelType type,
                                           base::Time remote_modification_time);
@@ -38,4 +38,4 @@ void LogClearMetadataWhileStoppedHistogram(ModelType model_type,
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_METRICS_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_METRICS_H_

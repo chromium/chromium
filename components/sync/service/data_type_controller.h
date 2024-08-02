@@ -211,14 +211,14 @@ class DataTypeController {
   // Callbacks for use when stopping the datatype (STOPPING), which also
   // includes aborting a start. This is important because STOPPING is a state
   // used to make sure we don't request two starts in parallel to the delegate,
-  // which is hard to support, most notably in ClientTagBasedModelTypeProcessor.
+  // which is hard to support, most notably in ClientTagBasedDataTypeProcessor.
   // We use a vector because it's allowed to call Stop() multiple times (i.e.
   // while STOPPING).
   std::vector<StopCallback> model_stop_callbacks_;
   SyncStopMetadataFate model_stop_metadata_fate_ = KEEP_METADATA;
 
   // Controller receives |activation_response_| from
-  // ClientTagBasedModelTypeProcessor callback and must temporarily own it until
+  // ClientTagBasedDataTypeProcessor callback and must temporarily own it until
   // Connect is called.
   std::unique_ptr<DataTypeActivationResponse> activation_response_;
 

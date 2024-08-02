@@ -21,13 +21,13 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/test/forwarding_model_type_change_processor.h"
+#include "components/sync/test/forwarding_data_type_local_change_processor.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -107,10 +107,11 @@ syncer::EntityData SpecificsToEntityData(
   return data;
 }
 
-class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
+class FakeDataTypeLocalChangeProcessor
+    : public syncer::DataTypeLocalChangeProcessor {
  public:
-  FakeModelTypeChangeProcessor() = default;
-  ~FakeModelTypeChangeProcessor() override = default;
+  FakeDataTypeLocalChangeProcessor() = default;
+  ~FakeDataTypeLocalChangeProcessor() override = default;
 
   void SetIsTrackingMetadata(bool is_tracking_metadata) {
     is_tracking_metadata_ = is_tracking_metadata;
@@ -204,7 +205,7 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     return base::Time();
   }
 
-  void OnModelStarting(syncer::ModelTypeSyncBridge* bridge) override {}
+  void OnModelStarting(syncer::DataTypeSyncBridge* bridge) override {}
 
   void ModelReadyToSync(std::unique_ptr<syncer::MetadataBatch> batch) override {
   }
@@ -270,13 +271,13 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     NOTREACHED_NORETURN();
   }
 
-  base::WeakPtr<syncer::ModelTypeChangeProcessor> GetWeakPtr() override {
+  base::WeakPtr<syncer::DataTypeLocalChangeProcessor> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  std::unique_ptr<ModelTypeChangeProcessor> CreateForwardingProcessor() {
-    return base::WrapUnique<ModelTypeChangeProcessor>(
-        new syncer::ForwardingModelTypeChangeProcessor(this));
+  std::unique_ptr<DataTypeLocalChangeProcessor> CreateForwardingProcessor() {
+    return base::WrapUnique<DataTypeLocalChangeProcessor>(
+        new syncer::ForwardingDataTypeLocalChangeProcessor(this));
   }
 
  private:
@@ -293,7 +294,8 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
   // are pending commit).
   std::set<std::string> unsynced_entities_;
 
-  base::WeakPtrFactory<FakeModelTypeChangeProcessor> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FakeDataTypeLocalChangeProcessor> weak_ptr_factory_{
+      this};
 };
 
 class HistorySyncBridgeTest : public testing::Test {
@@ -320,7 +322,7 @@ class HistorySyncBridgeTest : public testing::Test {
   }
 
   TestHistoryBackendForSync* backend() { return &backend_; }
-  FakeModelTypeChangeProcessor* processor() { return &fake_processor_; }
+  FakeDataTypeLocalChangeProcessor* processor() { return &fake_processor_; }
   HistorySyncBridge* bridge() { return bridge_.get(); }
 
   void AdvanceClock() { task_environment_.FastForwardBy(base::Seconds(1)); }
@@ -491,7 +493,7 @@ class HistorySyncBridgeTest : public testing::Test {
 
   TestHistoryBackendForSync backend_;
 
-  FakeModelTypeChangeProcessor fake_processor_;
+  FakeDataTypeLocalChangeProcessor fake_processor_;
 
   std::unique_ptr<HistorySyncBridge> bridge_;
 };

@@ -6,7 +6,7 @@
 #define COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_SYNC_BRIDGE_H_
 
 #include "base/uuid.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 namespace syncer {
 class ModelError;
@@ -29,7 +29,7 @@ class Transaction {
 // PowerBookmarkSyncBridge is responsible for syncing all powers to different
 // devices. It runs on the same thread as the power bookmark database
 // implementation.
-class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
+class PowerBookmarkSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   // Delegate interface PowerBookmarkSyncBridge needs from the backend.
   class Delegate {
@@ -64,7 +64,7 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
   PowerBookmarkSyncBridge(
       PowerBookmarkSyncMetadataDatabase* meta_db,
       Delegate* delegate,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   PowerBookmarkSyncBridge(const PowerBookmarkSyncBridge&) = delete;
   PowerBookmarkSyncBridge& operator=(const PowerBookmarkSyncBridge&) = delete;
@@ -73,7 +73,7 @@ class PowerBookmarkSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void Init();
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

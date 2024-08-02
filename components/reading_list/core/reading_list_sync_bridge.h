@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/storage_type.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace base {
@@ -21,8 +21,8 @@ class Location;
 }  // namespace base
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataChangeList;
-class ModelTypeChangeProcessor;
 class MutableDataBatch;
 }  // namespace syncer
 
@@ -31,14 +31,14 @@ class ReadingListModelImpl;
 
 // Sync bridge implementation for READING_LIST model type. Takes care of
 // propagating local passwords to other clients and vice versa.
-class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
+class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   ReadingListSyncBridge(
       syncer::StorageType storage_type,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   ReadingListSyncBridge(const ReadingListSyncBridge&) = delete;
   ReadingListSyncBridge& operator=(const ReadingListSyncBridge&) = delete;
@@ -57,7 +57,7 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
                       const base::Location& location,
                       syncer::MetadataChangeList* metadata_change_list);
 
-  // Exposes whether the underlying ModelTypeChangeProcessor is tracking
+  // Exposes whether the underlying DataTypeLocalChangeProcessor is tracking
   // metadata. This means sync is enabled and the initial download of data is
   // completed, which implies that the relevant ReadingListModel already
   // reflects remote data. Note however that this doesn't mean reading list

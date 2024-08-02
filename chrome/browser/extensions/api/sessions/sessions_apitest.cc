@@ -261,7 +261,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
   }
 
   // Let the processor receive and honor all updates, which requires running
-  // the runloop because there is a ModelTypeProcessorProxy in between, posting
+  // the runloop because there is a DataTypeProcessorProxy in between, posting
   // tasks.
   base::RunLoop().RunUntilIdle();
 }

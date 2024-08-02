@@ -635,7 +635,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         printers_authorization_servers_delegate =
             ash::printing::oauth2::AuthorizationZonesManagerFactory::
                 GetForBrowserContext(profile_)
-                    ->GetModelTypeSyncBridge()
+                    ->GetDataTypeSyncBridge()
                     ->change_processor()
                     ->GetControllerDelegate()
                     .get();

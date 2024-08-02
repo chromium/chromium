@@ -12,15 +12,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "url/gurl.h"
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 struct EntityData;
-class ModelTypeChangeProcessor;
 class MetadataChangeList;
 }  // namespace syncer
 
@@ -28,7 +28,7 @@ namespace ash::printing::oauth2 {
 
 // This class is the bridge responsible for the synchronization of the list of
 // trusted Authorization Servers between the user's profile and this client.
-class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
+class ProfileAuthServersSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   class Observer {
    public:
@@ -60,7 +60,7 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // nullptr.
   static std::unique_ptr<ProfileAuthServersSyncBridge> CreateForTesting(
       Observer* observer,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory);
 
   ProfileAuthServersSyncBridge(const ProfileAuthServersSyncBridge&) = delete;
@@ -84,7 +84,7 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // OnProfileAuthorizationServersInitialized().
   void AddAuthorizationServer(const GURL& server);
 
-  // Implementation of ModelTypeSyncBridge interface. For internal use only.
+  // Implementation of DataTypeSyncBridge interface. For internal use only.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -101,7 +101,7 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
 
  private:
   ProfileAuthServersSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory,
       Observer* observer);
 

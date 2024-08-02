@@ -13,7 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -61,7 +61,7 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetCookieManagerForBrowserProcess();
   return std::make_unique<FloatingSsoService>(
       prefs,
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COOKIES,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),

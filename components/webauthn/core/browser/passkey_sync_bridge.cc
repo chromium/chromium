@@ -23,7 +23,7 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -101,8 +101,8 @@ PasskeyModelChange::ChangeType ToPasskeyModelChangeType(
 
 PasskeySyncBridge::PasskeySyncBridge(
     syncer::OnceModelTypeStoreFactory store_factory)
-    : syncer::ModelTypeSyncBridge(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+    : syncer::DataTypeSyncBridge(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEBAUTHN_CREDENTIAL,
               /*dump_stack=*/base::DoNothing())) {
   DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));

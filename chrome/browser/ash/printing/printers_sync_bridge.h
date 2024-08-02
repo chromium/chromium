@@ -15,8 +15,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace sync_pb {
 class PrinterSpecifics;
@@ -26,7 +26,7 @@ namespace ash {
 
 // Moderates interaction with the backing database and integrates with the User
 // Sync Service for printers.
-class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
+class PrintersSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   PrintersSyncBridge(syncer::OnceModelTypeStoreFactory callback,
                      base::RepeatingClosure error_callback);
@@ -36,7 +36,7 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~PrintersSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

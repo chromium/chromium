@@ -16,8 +16,8 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
@@ -26,13 +26,13 @@ namespace ash {
 
 namespace {
 
-using syncer::ClientTagBasedModelTypeProcessor;
+using syncer::ClientTagBasedDataTypeProcessor;
 using syncer::ConflictResolution;
+using syncer::DataTypeLocalChangeProcessor;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::MetadataChangeList;
-using syncer::ModelTypeChangeProcessor;
 using syncer::ModelTypeStore;
 
 std::unique_ptr<EntityData> CopyToEntityData(
@@ -184,7 +184,7 @@ class PrintersSyncBridge::StoreProxy {
 PrintersSyncBridge::PrintersSyncBridge(
     syncer::OnceModelTypeStoreFactory callback,
     base::RepeatingClosure error_callback)
-    : ModelTypeSyncBridge(std::make_unique<ClientTagBasedModelTypeProcessor>(
+    : DataTypeSyncBridge(std::make_unique<ClientTagBasedDataTypeProcessor>(
           syncer::PRINTERS,
           std::move(error_callback))),
       store_delegate_(std::make_unique<StoreProxy>(this, std::move(callback))),

@@ -11,16 +11,16 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/security_events/security_event_sync_bridge.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store_with_in_memory_cache.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
-                                    public syncer::ModelTypeSyncBridge {
+                                    public syncer::DataTypeSyncBridge {
  public:
   SecurityEventSyncBridgeImpl(
       syncer::OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   SecurityEventSyncBridgeImpl(const SecurityEventSyncBridgeImpl&) = delete;
   SecurityEventSyncBridgeImpl& operator=(const SecurityEventSyncBridgeImpl&) =
@@ -33,7 +33,7 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

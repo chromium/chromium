@@ -37,7 +37,7 @@ class SyncEntity;
 namespace syncer {
 
 class CancelationSignal;
-class ModelTypeProcessor;
+class DataTypeProcessor;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -146,13 +146,13 @@ class ModelTypeWorker : public UpdateHandler,
   static void LogPendingInvalidationStatus(PendingInvalidationStatus status);
 
   // Initializes the two relevant communication channels: ModelTypeWorker ->
-  // ModelTypeProcessor (GetUpdates) and ModelTypeProcessor -> ModelTypeWorker
+  // DataTypeProcessor (GetUpdates) and DataTypeProcessor -> ModelTypeWorker
   // (Commit). Both channels are closed when the worker is destroyed. This is
   // done outside of the constructor to avoid the object being used while it's
   // still being built.
   // Must be called immediately after the constructor, prior to using other
   // methods.
-  void ConnectSync(std::unique_ptr<ModelTypeProcessor> model_type_processor);
+  void ConnectSync(std::unique_ptr<DataTypeProcessor> model_type_processor);
 
   ModelType GetModelType() const;
 
@@ -343,11 +343,11 @@ class ModelTypeWorker : public UpdateHandler,
   // shutdown.
   const raw_ptr<CancelationSignal> cancelation_signal_;
 
-  // Pointer to the ModelTypeProcessor associated with this worker. Initialized
+  // Pointer to the DataTypeProcessor associated with this worker. Initialized
   // with ConnectSync().
   // Note that in practice, this is typically a proxy object to the actual
   // processor (which lives on the model sequence).
-  std::unique_ptr<ModelTypeProcessor> model_type_processor_;
+  std::unique_ptr<DataTypeProcessor> model_type_processor_;
 
   // State that applies to the entire model type.
   sync_pb::ModelTypeState model_type_state_;

@@ -10,10 +10,10 @@
 
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 
 namespace autofill {
@@ -26,7 +26,7 @@ class PaymentsAutofillTable;
 // Sync bridge responsible for applying remote changes of usage data to the
 // local database.
 class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
-                                          public syncer::ModelTypeSyncBridge {
+                                          public syncer::DataTypeSyncBridge {
  public:
   // Factory method that hides dealing with change_processor and also stores the
   // created bridge within `web_data_service`. This method should only be
@@ -39,7 +39,7 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
       AutofillWebDataService* web_data_service);
 
   explicit AutofillWalletUsageDataSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
 
   AutofillWalletUsageDataSyncBridge(const AutofillWalletUsageDataSyncBridge&) =
@@ -49,7 +49,7 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
 
   ~AutofillWalletUsageDataSyncBridge() override;
 
-  // ModelTypeSyncBridge
+  // DataTypeSyncBridge
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

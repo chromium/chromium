@@ -40,7 +40,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,7 +79,7 @@ using syncer::HasEncryptionKeyName;
 using syncer::InMemoryMetadataChangeList;
 using syncer::MetadataBatchContains;
 using syncer::MetadataChangeList;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using syncer::ModelError;
 using syncer::ModelTypeStore;
 using syncer::ModelTypeStoreTestUtil;
@@ -768,7 +768,7 @@ class DeskSyncBridgeTest : public testing::Test {
     desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
   }
 
-  MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  MockDataTypeLocalChangeProcessor* processor() { return &mock_processor_; }
 
   DeskSyncBridge* bridge() { return bridge_.get(); }
 
@@ -786,7 +786,7 @@ class DeskSyncBridgeTest : public testing::Test {
 
   std::unique_ptr<ModelTypeStore> store_;
 
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
 
   testing::NiceMock<MockDeskModelObserver> mock_observer_;
 

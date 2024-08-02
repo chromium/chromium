@@ -22,15 +22,15 @@
 namespace consent_auditor {
 
 using sync_pb::UserConsentSpecifics;
+using syncer::DataTypeLocalChangeProcessor;
+using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::MetadataBatch;
 using syncer::MetadataChangeList;
 using syncer::ModelError;
-using syncer::ModelTypeChangeProcessor;
 using syncer::ModelTypeStore;
-using syncer::ModelTypeSyncBridge;
 using syncer::MutableDataBatch;
 using syncer::OnceModelTypeStoreFactory;
 
@@ -60,8 +60,8 @@ std::unique_ptr<EntityData> MoveToEntityData(
 
 ConsentSyncBridgeImpl::ConsentSyncBridgeImpl(
     OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)) {
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)) {
   StoreWithCache::CreateAndLoad(
       std::move(store_factory), syncer::USER_CONSENTS,
       base::BindOnce(&ConsentSyncBridgeImpl::OnStoreLoaded,

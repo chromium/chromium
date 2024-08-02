@@ -18,19 +18,19 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
@@ -51,7 +51,7 @@ using syncer::EntityData;
 using syncer::FailedCommitResponseDataList;
 using syncer::IsEmptyMetadataBatch;
 using syncer::MetadataBatch;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::_;
 using testing::AtLeast;
 using testing::ElementsAre;
@@ -192,9 +192,8 @@ class SessionSyncBridgeTest : public ::testing::Test {
   ~SessionSyncBridgeTest() override = default;
 
   void InitializeBridge() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::SESSIONS, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::SESSIONS, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
     // Instantiate the bridge.
     bridge_ = std::make_unique<SessionSyncBridge>(
@@ -224,7 +223,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
             }));
     loop.Run();
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
@@ -299,11 +298,11 @@ class SessionSyncBridgeTest : public ::testing::Test {
 
   SessionSyncBridge* bridge() { return bridge_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
-  syncer::ClientTagBasedModelTypeProcessor* real_processor() {
+  syncer::ClientTagBasedDataTypeProcessor* real_processor() {
     return real_processor_.get();
   }
 
@@ -319,11 +318,11 @@ class SessionSyncBridgeTest : public ::testing::Test {
   testing::NiceMock<base::MockCallback<base::RepeatingClosure>>
       mock_foreign_session_updated_cb_;
   testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   TestSyncedWindowDelegatesGetter window_getter_;
 
   std::unique_ptr<SessionSyncBridge> bridge_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
 };
 
 TEST_F(SessionSyncBridgeTest, ShouldCallModelReadyToSyncWhenSyncEnabled) {

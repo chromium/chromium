@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/model/syncable_service_based_bridge.h"
 
@@ -31,8 +31,7 @@ class ControllerDelegate : public DataTypeControllerDelegate {
     if (syncable_service) {
       bridge_ = std::make_unique<SyncableServiceBasedBridge>(
           type_, std::move(store_factory),
-          std::make_unique<ClientTagBasedModelTypeProcessor>(type_,
-                                                             dump_stack_),
+          std::make_unique<ClientTagBasedDataTypeProcessor>(type_, dump_stack_),
           syncable_service.get());
     }
   }
@@ -114,7 +113,7 @@ class ControllerDelegate : public DataTypeControllerDelegate {
 
   const ModelType type_;
   const base::RepeatingClosure dump_stack_;
-  std::unique_ptr<ModelTypeSyncBridge> bridge_;
+  std::unique_ptr<DataTypeSyncBridge> bridge_;
 };
 
 }  // namespace

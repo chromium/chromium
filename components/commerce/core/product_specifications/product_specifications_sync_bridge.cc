@@ -16,9 +16,9 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -48,10 +48,10 @@ namespace commerce {
 
 ProductSpecificationsSyncBridge::ProductSpecificationsSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     base::OnceCallback<void(void)> init_callback,
     Delegate* delegate)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       init_callback_(std::move(init_callback)),
       delegate_(delegate) {
   std::move(create_store_callback)

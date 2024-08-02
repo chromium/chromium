@@ -37,10 +37,10 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
@@ -140,10 +140,10 @@ std::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
 }  // namespace
 
 DeskSyncBridge::DeskSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory create_store_callback,
     const AccountId& account_id)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       is_ready_(false),
       account_id_(account_id) {
   std::move(create_store_callback)

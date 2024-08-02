@@ -19,7 +19,7 @@
 #include "base/time/clock.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
@@ -74,7 +74,7 @@ ReadingListModelImpl::ReadingListModelImpl(
           sync_storage_type_for_uma,
           wipe_model_upon_sync_disabled_behavior,
           clock,
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::READING_LIST,
               /*dump_stack=*/base::DoNothing())) {}
 
@@ -84,7 +84,7 @@ ReadingListModelImpl::ReadingListModelImpl(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     base::Clock* clock,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : storage_layer_(std::move(storage_layer)),
       clock_(clock),
       sync_bridge_(sync_storage_type_for_uma,
@@ -652,7 +652,7 @@ std::unique_ptr<ReadingListModelImpl> ReadingListModelImpl::BuildNewForTest(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     base::Clock* clock,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor) {
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor) {
   CHECK_IS_TEST();
   return base::WrapUnique(
       new ReadingListModelImpl(std::move(storage_layer), sync_storage_type,

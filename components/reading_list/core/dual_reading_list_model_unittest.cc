@@ -14,7 +14,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -305,7 +305,7 @@ TEST_F(DualReadingListModelTest, ModelLoadFailure) {
 
 TEST_F(DualReadingListModelTest, MetaDataClearedBeforeModelLoaded) {
   ResetStorage();
-  static_cast<syncer::ClientTagBasedModelTypeProcessor*>(
+  static_cast<syncer::ClientTagBasedDataTypeProcessor*>(
       account_model_ptr_->GetSyncBridgeForTest()->change_processor())
       ->ClearMetadataIfStopped();
 

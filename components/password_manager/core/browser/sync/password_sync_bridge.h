@@ -9,8 +9,8 @@
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace base {
@@ -18,8 +18,8 @@ class Location;
 }  // namespace base
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataChangeList;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace password_manager {
@@ -29,16 +29,16 @@ class PasswordStoreSync;
 // Sync bridge implementation for PASSWORDS model type. Takes care of
 // propagating local passwords to other clients and vice versa.
 //
-// This is achieved by implementing the interface ModelTypeSyncBridge, which
-// ClientTagBasedModelTypeProcessor will use to interact, ultimately, with the
+// This is achieved by implementing the interface DataTypeSyncBridge, which
+// ClientTagBasedDataTypeProcessor will use to interact, ultimately, with the
 // sync server. See
 // https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-modeltypesyncbridge
 // for details.
-class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
+class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   // |password_store_sync| must not be null and must outlive this object.
   PasswordSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       PasswordStoreSync* password_store_sync,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
@@ -56,7 +56,7 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   void ActOnPasswordStoreChanges(const base::Location& location,
                                  const PasswordStoreChangeList& changes);
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

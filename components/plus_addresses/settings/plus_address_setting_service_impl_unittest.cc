@@ -13,7 +13,7 @@
 #include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/features.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +53,7 @@ class PlusAddressSettingServiceImplTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList feature_{syncer::kSyncPlusAddressSetting};
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PlusAddressSettingService> service_;
   raw_ptr<TestPlusAddressSettingSyncBridge> bridge_;  // Owned by the `service_`
 };

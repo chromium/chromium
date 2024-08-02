@@ -21,7 +21,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/model_type_processor_metrics.h"
+#include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -305,7 +305,7 @@ void BookmarkRemoteUpdatesHandler::Process(
     }
 
     // Record freshness of the update to UMA. To mimic the behavior in
-    // ClientTagBasedModelTypeProcessor, one scenario is special-cased: an
+    // ClientTagBasedDataTypeProcessor, one scenario is special-cased: an
     // incoming tombstone for an entity that is not tracked.
     if (tracked_entity || !update_entity.is_deleted()) {
       syncer::LogNonReflectionUpdateFreshnessToUma(
@@ -676,7 +676,7 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
 // This method doesn't explicitly handle conflicts as a result of re-encryption:
 // remote update wins even if there wasn't a real change in specifics. However,
 // this scenario is very unlikely and hence the implementation is less
-// sophisticated than in ClientTagBasedModelTypeProcessor (it would require
+// sophisticated than in ClientTagBasedDataTypeProcessor (it would require
 // introducing base hash specifics to track remote changes).
 const SyncedBookmarkTrackerEntity*
 BookmarkRemoteUpdatesHandler::ProcessConflict(

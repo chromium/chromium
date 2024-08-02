@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_CHANGE_PROCESSOR_H_
-#define COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_CHANGE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_
+#define COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_
 
 #include <memory>
 #include <string>
@@ -11,21 +11,21 @@
 
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
 
-class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
+class MockDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
  public:
-  MockModelTypeChangeProcessor();
+  MockDataTypeLocalChangeProcessor();
 
-  MockModelTypeChangeProcessor(const MockModelTypeChangeProcessor&) = delete;
-  MockModelTypeChangeProcessor& operator=(const MockModelTypeChangeProcessor&) =
+  MockDataTypeLocalChangeProcessor(const MockDataTypeLocalChangeProcessor&) = delete;
+  MockDataTypeLocalChangeProcessor& operator=(const MockDataTypeLocalChangeProcessor&) =
       delete;
 
-  ~MockModelTypeChangeProcessor() override;
+  ~MockDataTypeLocalChangeProcessor() override;
 
   MOCK_METHOD(void,
               Put,
@@ -71,7 +71,7 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               (const override));
   MOCK_METHOD(void,
               OnModelStarting,
-              (ModelTypeSyncBridge * bridge),
+              (DataTypeSyncBridge * bridge),
               (override));
   MOCK_METHOD(void,
               ModelReadyToSync,
@@ -111,20 +111,20 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               (const std::string&),
               (const));
 
-  base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
+  base::WeakPtr<DataTypeLocalChangeProcessor> GetWeakPtr() override;
 
   // Returns a processor that forwards all calls to
   // |this|. |*this| must outlive the returned processor.
-  std::unique_ptr<ModelTypeChangeProcessor> CreateForwardingProcessor();
+  std::unique_ptr<DataTypeLocalChangeProcessor> CreateForwardingProcessor();
 
   // Delegates all calls to another instance. |delegate| must not be null and
   // must outlive this object.
-  void DelegateCallsByDefaultTo(ModelTypeChangeProcessor* delegate);
+  void DelegateCallsByDefaultTo(DataTypeLocalChangeProcessor* delegate);
 
  private:
-  base::WeakPtrFactory<MockModelTypeChangeProcessor> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MockDataTypeLocalChangeProcessor> weak_ptr_factory_{this};
 };
 
 }  //  namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_CHANGE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_

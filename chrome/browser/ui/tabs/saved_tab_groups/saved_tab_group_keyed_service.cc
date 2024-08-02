@@ -45,8 +45,8 @@
 #include "components/saved_tab_groups/types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -87,17 +87,17 @@ ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
 
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Hours(1);
 
-std::unique_ptr<syncer::ModelTypeChangeProcessor>
+std::unique_ptr<syncer::DataTypeLocalChangeProcessor>
 CreateSavedTabGroupChangeProcessor() {
-  return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::SAVED_TAB_GROUP,
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));
 }
 
-std::unique_ptr<syncer::ModelTypeChangeProcessor>
+std::unique_ptr<syncer::DataTypeLocalChangeProcessor>
 CreateSharedTabGroupDataChangeProcessor() {
-  return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::SHARED_TAB_GROUP_DATA,
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));

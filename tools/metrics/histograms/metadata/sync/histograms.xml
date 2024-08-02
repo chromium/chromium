@@ -1039,7 +1039,7 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    Records whenever ClientTagBasedModelTypeProcessor finds entity metadata
+    Records whenever ClientTagBasedDataTypeProcessor finds entity metadata
     during ModelReadyToSync() but initial_sync_done is false.
   </summary>
 </histogram>
@@ -1049,7 +1049,7 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
-    Recorded whenever ClientTagBasedModelTypeProcessor triggers a data type
+    Recorded whenever ClientTagBasedDataTypeProcessor triggers a data type
     failure (recorded for both Start and Run failures). It distinguishes call
     sites for triggering such failures.
   </summary>
@@ -1086,7 +1086,7 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <summary>
     Records whenever an orphan metadata is encountered by the
-    ClientTagBasedModelTypeProcessor.
+    ClientTagBasedDataTypeProcessor.
   </summary>
   <token key="Operation">
     <variant name="GetData"

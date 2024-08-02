@@ -14,7 +14,7 @@
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +70,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
  private:
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
   std::unique_ptr<DeskSyncBridge> bridge_;

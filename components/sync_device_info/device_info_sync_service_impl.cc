@@ -9,7 +9,7 @@
 #include "base/functional/callback.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_bridge.h"
@@ -39,7 +39,7 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
   bridge_ = std::make_unique<DeviceInfoSyncBridge>(
       std::move(local_device_info_provider),
       std::move(model_type_store_factory),
-      std::make_unique<ClientTagBasedModelTypeProcessor>(
+      std::make_unique<ClientTagBasedDataTypeProcessor>(
           DEVICE_INFO,
           /*dump_stack=*/base::BindRepeating(&ReportUnrecoverableError,
                                              channel)),

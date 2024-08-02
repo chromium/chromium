@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/fake_model_type_sync_bridge.h"
+#include "components/sync/test/fake_data_type_sync_bridge.h"
 
 #include <set>
 #include <utility>
@@ -35,7 +35,7 @@ namespace {
 // MetadataChangeList implementaton that forwards writes metadata to a store.
 class TestMetadataChangeList : public MetadataChangeList {
  public:
-  explicit TestMetadataChangeList(FakeModelTypeSyncBridge::Store* db)
+  explicit TestMetadataChangeList(FakeDataTypeSyncBridge::Store* db)
       : db_(db) {}
   ~TestMetadataChangeList() override = default;
 
@@ -61,68 +61,68 @@ class TestMetadataChangeList : public MetadataChangeList {
   }
 
  private:
-  const raw_ptr<FakeModelTypeSyncBridge::Store> db_;
+  const raw_ptr<FakeDataTypeSyncBridge::Store> db_;
 };
 
 }  // namespace
 
 // static
-std::string FakeModelTypeSyncBridge::ClientTagFromKey(const std::string& key) {
+std::string FakeDataTypeSyncBridge::ClientTagFromKey(const std::string& key) {
   return "ClientTag_" + key;
 }
 
-FakeModelTypeSyncBridge::Store::Store() = default;
-FakeModelTypeSyncBridge::Store::~Store() = default;
+FakeDataTypeSyncBridge::Store::Store() = default;
+FakeDataTypeSyncBridge::Store::~Store() = default;
 
-void FakeModelTypeSyncBridge::Store::PutData(const std::string& key,
+void FakeDataTypeSyncBridge::Store::PutData(const std::string& key,
                                              const EntityData& data) {
   data_change_count_++;
   data_store_[key] = CopyEntityData(data);
 }
 
-void FakeModelTypeSyncBridge::Store::PutMetadata(
+void FakeDataTypeSyncBridge::Store::PutMetadata(
     const std::string& key,
     const EntityMetadata& metadata) {
   metadata_change_count_++;
   metadata_store_[key] = metadata;
 }
 
-void FakeModelTypeSyncBridge::Store::RemoveData(const std::string& key) {
+void FakeDataTypeSyncBridge::Store::RemoveData(const std::string& key) {
   data_change_count_++;
   data_store_.erase(key);
 }
 
-void FakeModelTypeSyncBridge::Store::ClearAllData() {
+void FakeDataTypeSyncBridge::Store::ClearAllData() {
   data_change_count_++;
   data_store_.clear();
 }
 
-void FakeModelTypeSyncBridge::Store::RemoveMetadata(const std::string& key) {
+void FakeDataTypeSyncBridge::Store::RemoveMetadata(const std::string& key) {
   metadata_change_count_++;
   metadata_store_.erase(key);
 }
 
-bool FakeModelTypeSyncBridge::Store::HasData(const std::string& key) const {
+bool FakeDataTypeSyncBridge::Store::HasData(const std::string& key) const {
   return data_store_.find(key) != data_store_.end();
 }
 
-bool FakeModelTypeSyncBridge::Store::HasMetadata(const std::string& key) const {
+bool FakeDataTypeSyncBridge::Store::HasMetadata(const std::string& key) const {
   return metadata_store_.find(key) != metadata_store_.end();
 }
 
-const EntityData& FakeModelTypeSyncBridge::Store::GetData(
+const EntityData& FakeDataTypeSyncBridge::Store::GetData(
     const std::string& key) const {
   DCHECK(data_store_.count(key) != 0) << " for key " << key;
   return *data_store_.find(key)->second;
 }
 
-const sync_pb::EntityMetadata& FakeModelTypeSyncBridge::Store::GetMetadata(
+const sync_pb::EntityMetadata& FakeDataTypeSyncBridge::Store::GetMetadata(
     const std::string& key) const {
   return metadata_store_.find(key)->second;
 }
 
 std::unique_ptr<MetadataBatch>
-FakeModelTypeSyncBridge::Store::CreateMetadataBatch() const {
+FakeDataTypeSyncBridge::Store::CreateMetadataBatch() const {
   auto metadata_batch = std::make_unique<MetadataBatch>();
   metadata_batch->SetModelTypeState(model_type_state_);
   for (const auto& [storage_key, metadata] : metadata_store_) {
@@ -132,7 +132,7 @@ FakeModelTypeSyncBridge::Store::CreateMetadataBatch() const {
   return metadata_batch;
 }
 
-void FakeModelTypeSyncBridge::Store::Reset() {
+void FakeDataTypeSyncBridge::Store::Reset() {
   data_change_count_ = 0;
   metadata_change_count_ = 0;
   data_store_.clear();
@@ -140,19 +140,19 @@ void FakeModelTypeSyncBridge::Store::Reset() {
   model_type_state_.Clear();
 }
 
-FakeModelTypeSyncBridge::FakeModelTypeSyncBridge(
+FakeDataTypeSyncBridge::FakeDataTypeSyncBridge(
     ModelType type,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)),
       db_(std::make_unique<Store>()),
       type_(type) {}
 
-FakeModelTypeSyncBridge::~FakeModelTypeSyncBridge() {
+FakeDataTypeSyncBridge::~FakeDataTypeSyncBridge() {
   EXPECT_FALSE(error_next_);
 }
 
 // Overloaded form to allow passing of custom entity data.
-void FakeModelTypeSyncBridge::WriteItem(
+void FakeDataTypeSyncBridge::WriteItem(
     const std::string& key,
     std::unique_ptr<EntityData> entity_data) {
   DCHECK(EntityHasClientTag(*entity_data));
@@ -165,7 +165,7 @@ void FakeModelTypeSyncBridge::WriteItem(
   }
 }
 
-void FakeModelTypeSyncBridge::DeleteItem(const std::string& key) {
+void FakeDataTypeSyncBridge::DeleteItem(const std::string& key) {
   db_->RemoveData(key);
   if (change_processor()->IsTrackingMetadata()) {
     std::unique_ptr<MetadataChangeList> change_list =
@@ -176,17 +176,17 @@ void FakeModelTypeSyncBridge::DeleteItem(const std::string& key) {
   }
 }
 
-void FakeModelTypeSyncBridge::MimicBugToLooseItemWithoutNotifyingProcessor(
+void FakeDataTypeSyncBridge::MimicBugToLooseItemWithoutNotifyingProcessor(
     const std::string& key) {
   db_->RemoveData(key);
 }
 
 std::unique_ptr<MetadataChangeList>
-FakeModelTypeSyncBridge::CreateMetadataChangeList() {
+FakeDataTypeSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<InMemoryMetadataChangeList>();
 }
 
-std::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
+std::optional<ModelError> FakeDataTypeSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
   if (error_next_) {
@@ -231,7 +231,7 @@ std::optional<ModelError> FakeModelTypeSyncBridge::MergeFullSyncData(
   return {};
 }
 
-std::optional<ModelError> FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<ModelError> FakeDataTypeSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_changes,
     EntityChangeList entity_changes) {
   if (error_next_) {
@@ -273,7 +273,7 @@ std::optional<ModelError> FakeModelTypeSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
-void FakeModelTypeSyncBridge::ApplyMetadataChangeList(
+void FakeDataTypeSyncBridge::ApplyMetadataChangeList(
     std::unique_ptr<MetadataChangeList> mcl) {
   InMemoryMetadataChangeList* in_memory_mcl =
       static_cast<InMemoryMetadataChangeList*>(mcl.get());
@@ -282,7 +282,7 @@ void FakeModelTypeSyncBridge::ApplyMetadataChangeList(
   in_memory_mcl->TransferChangesTo(&db_mcl);
 }
 
-std::unique_ptr<DataBatch> FakeModelTypeSyncBridge::GetDataForCommit(
+std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetDataForCommit(
     StorageKeyList keys) {
   if (error_next_) {
     error_next_ = false;
@@ -301,7 +301,7 @@ std::unique_ptr<DataBatch> FakeModelTypeSyncBridge::GetDataForCommit(
   return batch;
 }
 
-std::unique_ptr<DataBatch> FakeModelTypeSyncBridge::GetAllDataForDebugging() {
+std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetAllDataForDebugging() {
   if (error_next_) {
     error_next_ = false;
     change_processor()->ReportError({FROM_HERE, "boom"});
@@ -315,19 +315,19 @@ std::unique_ptr<DataBatch> FakeModelTypeSyncBridge::GetAllDataForDebugging() {
   return batch;
 }
 
-std::string FakeModelTypeSyncBridge::GetClientTag(
+std::string FakeDataTypeSyncBridge::GetClientTag(
     const EntityData& entity_data) {
   DCHECK(supports_get_client_tag_);
   return ClientTagFromKey(GetStorageKeyInternal(entity_data));
 }
 
-std::string FakeModelTypeSyncBridge::GetStorageKey(
+std::string FakeDataTypeSyncBridge::GetStorageKey(
     const EntityData& entity_data) {
   DCHECK(supports_get_storage_key_);
   return GetStorageKeyInternal(entity_data);
 }
 
-std::string FakeModelTypeSyncBridge::GetStorageKeyInternal(
+std::string FakeDataTypeSyncBridge::GetStorageKeyInternal(
     const EntityData& entity_data) {
   switch (type_) {
     case PREFERENCES:
@@ -344,7 +344,7 @@ std::string FakeModelTypeSyncBridge::GetStorageKeyInternal(
   return std::string();
 }
 
-std::string FakeModelTypeSyncBridge::GenerateStorageKey(
+std::string FakeDataTypeSyncBridge::GenerateStorageKey(
     const EntityData& entity_data) {
   if (supports_get_storage_key_) {
     return GetStorageKey(entity_data);
@@ -353,22 +353,22 @@ std::string FakeModelTypeSyncBridge::GenerateStorageKey(
   }
 }
 
-bool FakeModelTypeSyncBridge::SupportsGetClientTag() const {
+bool FakeDataTypeSyncBridge::SupportsGetClientTag() const {
   return supports_get_client_tag_;
 }
 
-bool FakeModelTypeSyncBridge::SupportsGetStorageKey() const {
+bool FakeDataTypeSyncBridge::SupportsGetStorageKey() const {
   return supports_get_storage_key_;
 }
 
-ConflictResolution FakeModelTypeSyncBridge::ResolveConflict(
+ConflictResolution FakeDataTypeSyncBridge::ResolveConflict(
     const std::string& storage_key,
     const EntityData& remote_data) const {
   return conflict_resolution_;
 }
 
 sync_pb::EntitySpecifics
-FakeModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+FakeDataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   if (entity_specifics.unknown_fields().empty()) {
     return sync_pb::EntitySpecifics();
@@ -383,23 +383,23 @@ FakeModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_specifics;
 }
 
-bool FakeModelTypeSyncBridge::IsEntityDataValid(
+bool FakeDataTypeSyncBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   return invalid_remote_updates_.find(entity_data.client_tag_hash) ==
          invalid_remote_updates_.end();
 }
 
-void FakeModelTypeSyncBridge::SetConflictResolution(
+void FakeDataTypeSyncBridge::SetConflictResolution(
     ConflictResolution resolution) {
   conflict_resolution_ = resolution;
 }
 
-void FakeModelTypeSyncBridge::ErrorOnNextCall() {
+void FakeDataTypeSyncBridge::ErrorOnNextCall() {
   EXPECT_FALSE(error_next_);
   error_next_ = true;
 }
 
-std::unique_ptr<EntityData> FakeModelTypeSyncBridge::CopyEntityData(
+std::unique_ptr<EntityData> FakeDataTypeSyncBridge::CopyEntityData(
     const EntityData& old_data) {
   auto new_data = std::make_unique<EntityData>();
   new_data->id = old_data.id;
@@ -411,32 +411,32 @@ std::unique_ptr<EntityData> FakeModelTypeSyncBridge::CopyEntityData(
   return new_data;
 }
 
-void FakeModelTypeSyncBridge::SetSupportsGetClientTag(
+void FakeDataTypeSyncBridge::SetSupportsGetClientTag(
     bool supports_get_client_tag) {
   supports_get_client_tag_ = supports_get_client_tag;
 }
 
-bool FakeModelTypeSyncBridge::EntityHasClientTag(const EntityData& entity) {
+bool FakeDataTypeSyncBridge::EntityHasClientTag(const EntityData& entity) {
   return supports_get_client_tag_ || !entity.client_tag_hash.value().empty();
 }
 
-void FakeModelTypeSyncBridge::SetSupportsGetStorageKey(
+void FakeDataTypeSyncBridge::SetSupportsGetStorageKey(
     bool supports_get_storage_key) {
   supports_get_storage_key_ = supports_get_storage_key;
 }
 
-std::string FakeModelTypeSyncBridge::GetLastGeneratedStorageKey() const {
+std::string FakeDataTypeSyncBridge::GetLastGeneratedStorageKey() const {
   // Verify that GenerateStorageKey() was called at least once.
   EXPECT_NE(0, last_generated_storage_key_);
   return base::NumberToString(last_generated_storage_key_);
 }
 
-void FakeModelTypeSyncBridge::AddPrefValueToIgnore(const std::string& value) {
+void FakeDataTypeSyncBridge::AddPrefValueToIgnore(const std::string& value) {
   DCHECK_EQ(type_, PREFERENCES);
   values_to_ignore_.insert(value);
 }
 
-void FakeModelTypeSyncBridge::TreatRemoteUpdateAsInvalid(
+void FakeDataTypeSyncBridge::TreatRemoteUpdateAsInvalid(
     const ClientTagHash& client_tag_hash) {
   invalid_remote_updates_.insert(client_tag_hash);
 }

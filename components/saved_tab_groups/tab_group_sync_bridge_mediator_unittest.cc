@@ -20,7 +20,7 @@
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,12 +91,12 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
   SavedTabGroupModel& model() { return *model_; }
   TabGroupSyncBridgeMediator& bridge_mediator() { return *bridge_mediator_; }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>&
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
   mock_saved_processor() {
     return mock_saved_processor_;
   }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>&
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
   mock_shared_processor() {
     return mock_shared_processor_;
   }
@@ -112,9 +112,10 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   TestingPrefServiceSimple pref_service_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_saved_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>
+      mock_saved_processor_;
   std::unique_ptr<syncer::ModelTypeStore> saved_tab_group_store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>
       mock_shared_processor_;
   std::unique_ptr<syncer::ModelTypeStore> shared_tab_group_store_;
 

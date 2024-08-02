@@ -18,7 +18,7 @@
 #import "components/consent_auditor/consent_sync_bridge_impl.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/base/report_unrecoverable_error.h"
-#import "components/sync/model/client_tag_based_model_type_processor.h"
+#import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -67,7 +67,7 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
       ModelTypeStoreServiceFactory::GetForBrowserState(ios_browser_state)
           ->GetStoreFactory();
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::USER_CONSENTS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel()));

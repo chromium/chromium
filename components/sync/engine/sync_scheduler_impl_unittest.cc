@@ -24,7 +24,7 @@
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/test/fake_model_type_processor.h"
+#include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "components/sync/test/mock_connection_manager.h"
 #include "components/sync/test/mock_invalidation.h"
@@ -178,7 +178,7 @@ class MockSyncer : public Syncer {
 std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
     ModelType model_type) {
   auto response = std::make_unique<DataTypeActivationResponse>();
-  response->type_processor = std::make_unique<FakeModelTypeProcessor>();
+  response->type_processor = std::make_unique<FakeDataTypeProcessor>();
   response->model_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(model_type));
   return response;

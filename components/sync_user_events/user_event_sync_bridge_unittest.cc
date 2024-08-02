@@ -15,7 +15,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,7 +132,7 @@ class UserEventSyncBridgeTest : public testing::Test {
   }
 
   UserEventSyncBridge* bridge() { return bridge_.get(); }
-  MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  MockDataTypeLocalChangeProcessor* processor() { return &mock_processor_; }
   TestGlobalIdMapper* mapper() { return &test_global_id_mapper_; }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllDataForDebugging() {
@@ -165,7 +165,7 @@ class UserEventSyncBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   TestGlobalIdMapper test_global_id_mapper_;
   std::unique_ptr<UserEventSyncBridge> bridge_;
 };

@@ -13,9 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_change_processor.h"
 
 namespace sync_pb {
@@ -24,16 +24,16 @@ class PersistedEntityData;
 
 namespace syncer {
 
+class DataTypeLocalChangeProcessor;
 class MetadataBatch;
-class ModelTypeChangeProcessor;
 class SyncableService;
 
-// Implementation of ModelTypeSyncBridge that allows integrating legacy
+// Implementation of DataTypeSyncBridge that allows integrating legacy
 // datatypes that implement SyncableService. Internally, it uses a database to
 // persist and mimic the legacy Directory's behavior, but as opposed to the
 // legacy Directory, it's not exposed anywhere outside this bridge, and is
 // considered an implementation detail.
-class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
+class SyncableServiceBasedBridge : public DataTypeSyncBridge {
  public:
   using InMemoryStore = std::map<std::string, sync_pb::PersistedEntityData>;
 
@@ -41,7 +41,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   SyncableServiceBasedBridge(
       ModelType type,
       OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       SyncableService* syncable_service);
 
   SyncableServiceBasedBridge(const SyncableServiceBasedBridge&) = delete;
@@ -50,7 +50,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
 
   ~SyncableServiceBasedBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
@@ -77,7 +77,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   CreateLocalChangeProcessorForTesting(ModelType type,
                                        ModelTypeStore* store,
                                        InMemoryStore* in_memory_store,
-                                       ModelTypeChangeProcessor* other);
+                                       DataTypeLocalChangeProcessor* other);
 
  private:
   void OnStoreCreated(const std::optional<ModelError>& error,

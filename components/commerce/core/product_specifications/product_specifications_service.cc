@@ -140,7 +140,7 @@ namespace commerce {
 
 ProductSpecificationsService::ProductSpecificationsService(
     syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : bridge_(std::make_unique<ProductSpecificationsSyncBridge>(
           std::move(create_store_callback),
           std::move(change_processor),

@@ -12,7 +12,7 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/forwarding_model_type_processor.h"
+#include "components/sync/engine/forwarding_data_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/processor_entity.h"
@@ -20,9 +20,9 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/fake_model_type_sync_bridge.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/mock_model_type_processor.h"
+#include "components/sync/test/fake_data_type_sync_bridge.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/sync/test/mock_data_type_processor.h"
 #include "components/sync/test/mock_model_type_worker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,22 +46,22 @@ sync_pb::ModelTypeState GenerateModelTypeState() {
 }
 
 std::unique_ptr<DataTypeActivationResponse> GenerateDataTypeActivationResponse(
-    ModelTypeProcessor* processor) {
+    DataTypeProcessor* processor) {
   auto response = std::make_unique<DataTypeActivationResponse>();
   response->model_type_state = GenerateModelTypeState();
   response->type_processor =
-      std::make_unique<ForwardingModelTypeProcessor>(processor);
+      std::make_unique<ForwardingDataTypeProcessor>(processor);
   return response;
 }
 
 ClientTagHash GetPrefHash(const std::string& key) {
   return ClientTagHash::FromUnhashed(
-      PREFERENCES, FakeModelTypeSyncBridge::ClientTagFromKey(key));
+      PREFERENCES, FakeDataTypeSyncBridge::ClientTagFromKey(key));
 }
 
 ClientTagHash GetSharedTabGroupDataHash(const std::string& key) {
   return ClientTagHash::FromUnhashed(
-      SHARED_TAB_GROUP_DATA, FakeModelTypeSyncBridge::ClientTagFromKey(key));
+      SHARED_TAB_GROUP_DATA, FakeDataTypeSyncBridge::ClientTagFromKey(key));
 }
 
 sync_pb::EntitySpecifics GeneratePrefSpecifics(const std::string& key,
@@ -87,10 +87,10 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
   explicit ClientTagBasedRemoteUpdateHandlerTest(ModelType type)
       : processor_entity_tracker_(GenerateModelTypeState(),
                                   EntityMetadataMap()),
-        model_type_sync_bridge_(type,
-                                change_processor_.CreateForwardingProcessor()),
+        data_type_sync_bridge_(type,
+                               change_processor_.CreateForwardingProcessor()),
         remote_update_handler_(type,
-                               &model_type_sync_bridge_,
+                               &data_type_sync_bridge_,
                                &processor_entity_tracker_),
         worker_(MockModelTypeWorker::CreateWorkerAndConnectSync(
             GenerateDataTypeActivationResponse(&model_type_processor_))) {}
@@ -147,25 +147,25 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
     return processor_entity_tracker_.GetAllEntitiesIncludingTombstones().size();
   }
 
-  FakeModelTypeSyncBridge* bridge() { return &model_type_sync_bridge_; }
+  FakeDataTypeSyncBridge* bridge() { return &data_type_sync_bridge_; }
   ClientTagBasedRemoteUpdateHandler* remote_update_handler() {
     return &remote_update_handler_;
   }
-  FakeModelTypeSyncBridge::Store* db() { return bridge()->mutable_db(); }
+  FakeDataTypeSyncBridge::Store* db() { return bridge()->mutable_db(); }
   ProcessorEntityTracker* entity_tracker() {
     return &processor_entity_tracker_;
   }
-  testing::NiceMock<MockModelTypeChangeProcessor>* change_processor() {
+  testing::NiceMock<MockDataTypeLocalChangeProcessor>* change_processor() {
     return &change_processor_;
   }
   MockModelTypeWorker* worker() { return worker_.get(); }
 
  private:
-  testing::NiceMock<MockModelTypeChangeProcessor> change_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> change_processor_;
   ProcessorEntityTracker processor_entity_tracker_;
-  FakeModelTypeSyncBridge model_type_sync_bridge_;
+  FakeDataTypeSyncBridge data_type_sync_bridge_;
   ClientTagBasedRemoteUpdateHandler remote_update_handler_;
-  testing::NiceMock<MockModelTypeProcessor> model_type_processor_;
+  testing::NiceMock<MockDataTypeProcessor> model_type_processor_;
   std::unique_ptr<MockModelTypeWorker> worker_;
 };
 

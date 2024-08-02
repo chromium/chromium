@@ -34,8 +34,8 @@ struct NigoriMetadataBatch {
   std::optional<sync_pb::EntityMetadata> entity_metadata;
 };
 
-// Interface analogous to ModelTypeChangeProcessor for Nigori, used to propagate
-// local changes from the bridge to the processor.
+// Interface analogous to DataTypeLocalChangeProcessor for Nigori, used to
+// propagate local changes from the bridge to the processor.
 class NigoriLocalChangeProcessor {
  public:
   NigoriLocalChangeProcessor() = default;

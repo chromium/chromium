@@ -2,36 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/test/forwarding_model_type_change_processor.h"
+#include "components/sync/test/forwarding_data_type_local_change_processor.h"
 
 namespace syncer {
 
 using testing::_;
 using testing::Invoke;
 
-MockModelTypeChangeProcessor::MockModelTypeChangeProcessor() = default;
+MockDataTypeLocalChangeProcessor::MockDataTypeLocalChangeProcessor() = default;
 
-MockModelTypeChangeProcessor::~MockModelTypeChangeProcessor() = default;
+MockDataTypeLocalChangeProcessor::~MockDataTypeLocalChangeProcessor() = default;
 
-base::WeakPtr<ModelTypeChangeProcessor>
-MockModelTypeChangeProcessor::GetWeakPtr() {
+base::WeakPtr<DataTypeLocalChangeProcessor>
+MockDataTypeLocalChangeProcessor::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-std::unique_ptr<ModelTypeChangeProcessor>
-MockModelTypeChangeProcessor::CreateForwardingProcessor() {
-  return base::WrapUnique<ModelTypeChangeProcessor>(
-      new ForwardingModelTypeChangeProcessor(this));
+std::unique_ptr<DataTypeLocalChangeProcessor>
+MockDataTypeLocalChangeProcessor::CreateForwardingProcessor() {
+  return base::WrapUnique<DataTypeLocalChangeProcessor>(
+      new ForwardingDataTypeLocalChangeProcessor(this));
 }
 
-void MockModelTypeChangeProcessor::DelegateCallsByDefaultTo(
-    ModelTypeChangeProcessor* delegate) {
+void MockDataTypeLocalChangeProcessor::DelegateCallsByDefaultTo(
+    DataTypeLocalChangeProcessor* delegate) {
   DCHECK(delegate);
 
   ON_CALL(*this, Put)
@@ -50,39 +50,39 @@ void MockModelTypeChangeProcessor::DelegateCallsByDefaultTo(
       });
   ON_CALL(*this, UpdateStorageKey)
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::UpdateStorageKey));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::UpdateStorageKey));
   ON_CALL(*this, UntrackEntityForStorageKey)
       .WillByDefault(Invoke(
-          delegate, &ModelTypeChangeProcessor::UntrackEntityForStorageKey));
+          delegate, &DataTypeLocalChangeProcessor::UntrackEntityForStorageKey));
   ON_CALL(*this, UntrackEntityForClientTagHash)
       .WillByDefault(Invoke(
-          delegate, &ModelTypeChangeProcessor::UntrackEntityForClientTagHash));
+          delegate, &DataTypeLocalChangeProcessor::UntrackEntityForClientTagHash));
   ON_CALL(*this, IsEntityUnsynced)
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::IsEntityUnsynced));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::IsEntityUnsynced));
   ON_CALL(*this, OnModelStarting)
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::OnModelStarting));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::OnModelStarting));
   ON_CALL(*this, ModelReadyToSync)
       .WillByDefault([delegate](std::unique_ptr<MetadataBatch> batch) {
         delegate->ModelReadyToSync(std::move(batch));
       });
   ON_CALL(*this, IsTrackingMetadata())
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::IsTrackingMetadata));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::IsTrackingMetadata));
   ON_CALL(*this, TrackedAccountId())
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::TrackedAccountId));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::TrackedAccountId));
   ON_CALL(*this, TrackedCacheGuid())
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::TrackedCacheGuid));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::TrackedCacheGuid));
   ON_CALL(*this, ReportError)
-      .WillByDefault(Invoke(delegate, &ModelTypeChangeProcessor::ReportError));
+      .WillByDefault(Invoke(delegate, &DataTypeLocalChangeProcessor::ReportError));
   ON_CALL(*this, GetError())
-      .WillByDefault(Invoke(delegate, &ModelTypeChangeProcessor::GetError));
+      .WillByDefault(Invoke(delegate, &DataTypeLocalChangeProcessor::GetError));
   ON_CALL(*this, GetControllerDelegate())
       .WillByDefault(
-          Invoke(delegate, &ModelTypeChangeProcessor::GetControllerDelegate));
+          Invoke(delegate, &DataTypeLocalChangeProcessor::GetControllerDelegate));
 }
 
 }  //  namespace syncer

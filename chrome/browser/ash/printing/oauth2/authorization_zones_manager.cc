@@ -26,7 +26,7 @@
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chromeos/printing/uri.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -83,7 +83,7 @@ class AuthorizationZonesManagerImpl
       Profile* profile,
       CreateAuthZoneCallback auth_zone_creator,
       std::unique_ptr<ClientIdsDatabase> client_ids_database,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory)
       : client_ids_database_(std::move(client_ids_database)),
         sync_bridge_(ProfileAuthServersSyncBridge::CreateForTesting(
@@ -212,7 +212,7 @@ class AuthorizationZonesManagerImpl
     return it_server->second.get();
   }
 
-  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override {
+  syncer::DataTypeSyncBridge* GetDataTypeSyncBridge() override {
     return sync_bridge_.get();
   }
 
@@ -275,7 +275,7 @@ AuthorizationZonesManager::CreateForTesting(
     Profile* profile,
     CreateAuthZoneCallback auth_zone_creator,
     std::unique_ptr<ClientIdsDatabase> client_ids_database,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory store_factory) {
   DCHECK(profile);
   return std::make_unique<AuthorizationZonesManagerImpl>(

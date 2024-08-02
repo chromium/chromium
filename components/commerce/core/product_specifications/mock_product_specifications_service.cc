@@ -5,7 +5,7 @@
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 
 #include "base/functional/callback_helpers.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 
 namespace commerce {
 
@@ -13,7 +13,7 @@ MockProductSpecificationsService::MockProductSpecificationsService()
     : ProductSpecificationsService(
           base::DoNothing(),
           std::make_unique<
-              testing::NiceMock<syncer::MockModelTypeChangeProcessor>>()) {}
+              testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>>()) {}
 
 MockProductSpecificationsService::~MockProductSpecificationsService() = default;
 

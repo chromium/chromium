@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/nigori/nigori_model_type_processor.h"
+#include "components/sync/nigori/nigori_data_type_processor.h"
 
 #include <memory>
 #include <string>
@@ -110,9 +110,9 @@ class MockNigoriSyncBridge : public NigoriSyncBridge {
   MOCK_METHOD(void, ApplyDisableSyncChanges, (), (override));
 };
 
-class NigoriModelTypeProcessorTest : public testing::Test {
+class NigoriDataTypeProcessorTest : public testing::Test {
  public:
-  NigoriModelTypeProcessorTest() = default;
+  NigoriDataTypeProcessorTest() = default;
 
   void SimulateModelReadyToSync(bool initial_sync_done, int server_version) {
     NigoriMetadataBatch nigori_metadata_batch;
@@ -152,7 +152,7 @@ class NigoriModelTypeProcessorTest : public testing::Test {
 
   MockCommitQueue* mock_commit_queue() { return mock_commit_queue_ptr_; }
 
-  NigoriModelTypeProcessor* processor() { return &processor_; }
+  NigoriDataTypeProcessor* processor() { return &processor_; }
 
   bool ProcessorHasEntity() {
     TypeEntitiesCount count(NIGORI);
@@ -180,10 +180,10 @@ class NigoriModelTypeProcessorTest : public testing::Test {
       std::make_unique<testing::NiceMock<MockCommitQueue>>();
   raw_ptr<MockCommitQueue, DanglingUntriaged> mock_commit_queue_ptr_ =
       mock_commit_queue_.get();
-  NigoriModelTypeProcessor processor_;
+  NigoriDataTypeProcessor processor_;
 };
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldTrackTheMetadataWhenInitialSyncDone) {
   // Build a model type state with a specific cache guid.
   const std::string kOtherCacheGuid = "cache_guid";
@@ -215,7 +215,7 @@ TEST_F(NigoriModelTypeProcessorTest,
               Eq(kSequenceNumber));
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldIncrementSequenceNumberWhenPut) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldIncrementSequenceNumberWhenPut) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   std::optional<sync_pb::EntityMetadata> entity_metadata1 =
       processor()->GetMetadata().entity_metadata;
@@ -235,7 +235,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldIncrementSequenceNumberWhenPut) {
               Eq(entity_metadata1->sequence_number() + 1));
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldGetEmptyLocalChanges) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldGetEmptyLocalChanges) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   {
     base::MockOnceCallback<void(bool)> has_unsynced_data_cb;
@@ -249,7 +249,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldGetEmptyLocalChanges) {
   EXPECT_EQ(0U, commit_request.size());
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
   {
@@ -278,7 +278,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldGetLocalChangesWhenPut) {
   EXPECT_EQ(kNigoriNonUniqueName, commit_request[0]->entity->name);
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldSquashCommitRequestUponCommitCompleted) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
@@ -334,7 +334,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   EXPECT_TRUE(commit_request_list.empty());
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldNotSquashCommitRequestUponEmptyCommitResponse) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
@@ -375,7 +375,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   EXPECT_EQ(1U, commit_request_list.size());
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldKeepAnotherCommitRequestUponCommitCompleted) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
@@ -425,7 +425,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   EXPECT_EQ(1U, commit_request_list.size());
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldNudgeForCommitUponConnectSyncIfReadyToSyncAndLocalChanges) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
@@ -439,7 +439,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   SimulateConnectSync();
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldNudgeForCommitUponPutIfReadyToSync) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldNudgeForCommitUponPutIfReadyToSync) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   SimulateConnectSync();
 
@@ -451,7 +451,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldNudgeForCommitUponPutIfReadyToSync) {
   processor()->Put(std::move(entity_data));
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldInvokeSyncStartCallback) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
 
   syncer::DataTypeActivationRequest request;
@@ -477,7 +477,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   EXPECT_TRUE(processor()->IsConnectedForTest());
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldMergeFullSyncData) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldMergeFullSyncData) {
   base::HistogramTester histogram_tester;
 
   SimulateModelReadyToSync(/*initial_sync_done=*/false);
@@ -498,7 +498,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldMergeFullSyncData) {
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2", 0);
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldApplyIncrementalSyncChanges) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldApplyIncrementalSyncChanges) {
   base::HistogramTester histogram_tester;
 
   SimulateModelReadyToSync(/*initial_sync_done=*/true, /*server_version=*/1);
@@ -521,7 +521,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldApplyIncrementalSyncChanges) {
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2", base::Hours(1), 1);
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldApplyIncrementalSyncChangesWhenEmptyUpdates) {
   const int kServerVersion = 1;
   SimulateModelReadyToSync(/*initial_sync_done=*/true, kServerVersion);
@@ -536,7 +536,7 @@ TEST_F(NigoriModelTypeProcessorTest,
                                 /*gc_directive=*/std::nullopt);
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldApplyIncrementalSyncChangesWhenReflection) {
   base::HistogramTester histogram_tester;
 
@@ -559,7 +559,7 @@ TEST_F(NigoriModelTypeProcessorTest,
       "Sync.NonReflectionUpdateFreshnessPossiblySkewed2", 0);
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndKeepMetadata) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldStopSyncingAndKeepMetadata) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
@@ -573,7 +573,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndKeepMetadata) {
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndClearMetadata) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldStopSyncingAndClearMetadata) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
@@ -587,7 +587,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndClearMetadata) {
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
-TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
+TEST_F(NigoriDataTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   ASSERT_TRUE(ProcessorHasEntity());
 
@@ -622,7 +622,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
                                 /*gc_directive=*/std::nullopt);
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldDisconnectWhenMergeFullSyncDataFails) {
   SimulateModelReadyToSync(/*initial_sync_done=*/false);
 
@@ -651,7 +651,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldDisconnectWhenApplyIncrementalSyncChangesFails) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true, /*server_version=*/1);
 
@@ -680,7 +680,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldCallErrorHandlerIfModelErrorBeforeSyncStarts) {
   processor()->ReportError(ModelError(FROM_HERE, "some error"));
 
@@ -693,7 +693,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   processor()->OnSyncStarting(request, base::DoNothing());
 }
 
-TEST_F(NigoriModelTypeProcessorTest,
+TEST_F(NigoriDataTypeProcessorTest,
        ShouldUpdateModelTypeStateUponHandlingInvalidations) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
   // Build invalidations.

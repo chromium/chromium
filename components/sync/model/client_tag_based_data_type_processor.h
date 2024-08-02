@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_DATA_TYPE_PROCESSOR_H_
 
 #include <map>
 #include <memory>
@@ -19,14 +19,14 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
@@ -47,24 +47,24 @@ class CommitQueue;
 // See
 // //docs/website/site/developers/design-documents/sync/client-tag-based-model-type-processor/index.md
 // for a more thorough description.
-class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
-                                         public ModelTypeChangeProcessor,
+class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
+                                         public DataTypeLocalChangeProcessor,
                                          public DataTypeControllerDelegate {
  public:
-  ClientTagBasedModelTypeProcessor(ModelType type,
+  ClientTagBasedDataTypeProcessor(ModelType type,
                                    const base::RepeatingClosure& dump_stack);
 
-  ClientTagBasedModelTypeProcessor(const ClientTagBasedModelTypeProcessor&) =
+  ClientTagBasedDataTypeProcessor(const ClientTagBasedDataTypeProcessor&) =
       delete;
-  ClientTagBasedModelTypeProcessor& operator=(
-      const ClientTagBasedModelTypeProcessor&) = delete;
+  ClientTagBasedDataTypeProcessor& operator=(
+      const ClientTagBasedDataTypeProcessor&) = delete;
 
-  ~ClientTagBasedModelTypeProcessor() override;
+  ~ClientTagBasedDataTypeProcessor() override;
 
   // Returns true if the handshake with sync sequence is complete.
   bool IsConnected() const;
 
-  // ModelTypeChangeProcessor implementation.
+  // DataTypeLocalChangeProcessor implementation.
   void Put(const std::string& storage_key,
            std::unique_ptr<EntityData> entity_data,
            MetadataChangeList* metadata_change_list) override;
@@ -83,7 +83,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       const std::string& storage_key) const override;
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override;
-  void OnModelStarting(ModelTypeSyncBridge* bridge) override;
+  void OnModelStarting(DataTypeSyncBridge* bridge) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() const override;
   std::string TrackedAccountId() const override;
@@ -107,9 +107,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       const ClientTagHash& target_client_tag_hash) const override;
   sync_pb::UniquePosition GetUniquePositionForStorageKey(
       const std::string& storage_key) const override;
-  base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
+  base::WeakPtr<DataTypeLocalChangeProcessor> GetWeakPtr() override;
 
-  // ModelTypeProcessor implementation.
+  // DataTypeProcessor implementation.
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
@@ -165,7 +165,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
  private:
   friend class ModelTypeDebugInfo;
-  friend class ClientTagBasedModelTypeProcessorTest;
+  friend class ClientTagBasedDataTypeProcessorTest;
 
   // Directs the bridge to clear the persisted metadata as known to the entity
   // tracker / `metadata_map`. In addition, it resets the state of the processor
@@ -269,9 +269,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // The model type this object syncs.
   const ModelType type_;
 
-  // ModelTypeSyncBridge linked to this processor. The bridge owns this
+  // DataTypeSyncBridge linked to this processor. The bridge owns this
   // processor instance so the pointer should never become invalid.
-  raw_ptr<ModelTypeSyncBridge, DanglingUntriaged> bridge_ = nullptr;
+  raw_ptr<DataTypeSyncBridge, DanglingUntriaged> bridge_ = nullptr;
 
   // Function to capture and upload a stack trace when an error occurs.
   const base::RepeatingClosure dump_stack_;
@@ -322,14 +322,14 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   // WeakPtrFactory for this processor for DataTypeController (only gets
   // invalidated during destruction).
-  base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
+  base::WeakPtrFactory<ClientTagBasedDataTypeProcessor>
       weak_ptr_factory_for_controller_{this};
 
   // WeakPtrFactory for this processor which will be sent to sync sequence.
-  base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
+  base::WeakPtrFactory<ClientTagBasedDataTypeProcessor>
       weak_ptr_factory_for_worker_{this};
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_DATA_TYPE_PROCESSOR_H_

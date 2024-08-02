@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/forwarding_model_type_change_processor.h"
+#include "components/sync/test/forwarding_data_type_local_change_processor.h"
 
 #include <utility>
 
@@ -13,105 +13,105 @@
 
 namespace syncer {
 
-ForwardingModelTypeChangeProcessor::ForwardingModelTypeChangeProcessor(
-    ModelTypeChangeProcessor* other)
+ForwardingDataTypeLocalChangeProcessor::ForwardingDataTypeLocalChangeProcessor(
+    DataTypeLocalChangeProcessor* other)
     : other_(other) {}
-ForwardingModelTypeChangeProcessor::~ForwardingModelTypeChangeProcessor() =
+ForwardingDataTypeLocalChangeProcessor::~ForwardingDataTypeLocalChangeProcessor() =
     default;
 
-void ForwardingModelTypeChangeProcessor::Put(
+void ForwardingDataTypeLocalChangeProcessor::Put(
     const std::string& client_tag,
     std::unique_ptr<EntityData> entity_data,
     MetadataChangeList* metadata_change_list) {
   other_->Put(client_tag, std::move(entity_data), metadata_change_list);
 }
 
-void ForwardingModelTypeChangeProcessor::Delete(
+void ForwardingDataTypeLocalChangeProcessor::Delete(
     const std::string& client_tag,
     const DeletionOrigin& origin,
     MetadataChangeList* metadata_change_list) {
   other_->Delete(client_tag, origin, metadata_change_list);
 }
 
-void ForwardingModelTypeChangeProcessor::UpdateStorageKey(
+void ForwardingDataTypeLocalChangeProcessor::UpdateStorageKey(
     const EntityData& entity_data,
     const std::string& storage_key,
     MetadataChangeList* metadata_change_list) {
   other_->UpdateStorageKey(entity_data, storage_key, metadata_change_list);
 }
 
-void ForwardingModelTypeChangeProcessor::UntrackEntityForStorageKey(
+void ForwardingDataTypeLocalChangeProcessor::UntrackEntityForStorageKey(
     const std::string& storage_key) {
   other_->UntrackEntityForStorageKey(storage_key);
 }
 
-void ForwardingModelTypeChangeProcessor::UntrackEntityForClientTagHash(
+void ForwardingDataTypeLocalChangeProcessor::UntrackEntityForClientTagHash(
     const ClientTagHash& client_tag_hash) {
   other_->UntrackEntityForClientTagHash(client_tag_hash);
 }
 
 std::vector<std::string>
-ForwardingModelTypeChangeProcessor::GetAllTrackedStorageKeys() const {
+ForwardingDataTypeLocalChangeProcessor::GetAllTrackedStorageKeys() const {
   return other_->GetAllTrackedStorageKeys();
 }
 
-bool ForwardingModelTypeChangeProcessor::IsEntityUnsynced(
+bool ForwardingDataTypeLocalChangeProcessor::IsEntityUnsynced(
     const std::string& storage_key) const {
   return other_->IsEntityUnsynced(storage_key);
 }
 
-base::Time ForwardingModelTypeChangeProcessor::GetEntityCreationTime(
+base::Time ForwardingDataTypeLocalChangeProcessor::GetEntityCreationTime(
     const std::string& storage_key) const {
   return other_->GetEntityCreationTime(storage_key);
 }
 
-base::Time ForwardingModelTypeChangeProcessor::GetEntityModificationTime(
+base::Time ForwardingDataTypeLocalChangeProcessor::GetEntityModificationTime(
     const std::string& storage_key) const {
   return other_->GetEntityModificationTime(storage_key);
 }
 
-void ForwardingModelTypeChangeProcessor::OnModelStarting(
-    ModelTypeSyncBridge* bridge) {
+void ForwardingDataTypeLocalChangeProcessor::OnModelStarting(
+    DataTypeSyncBridge* bridge) {
   other_->OnModelStarting(bridge);
 }
 
-void ForwardingModelTypeChangeProcessor::ModelReadyToSync(
+void ForwardingDataTypeLocalChangeProcessor::ModelReadyToSync(
     std::unique_ptr<MetadataBatch> batch) {
   other_->ModelReadyToSync(std::move(batch));
 }
 
-bool ForwardingModelTypeChangeProcessor::IsTrackingMetadata() const {
+bool ForwardingDataTypeLocalChangeProcessor::IsTrackingMetadata() const {
   return other_->IsTrackingMetadata();
 }
 
-std::string ForwardingModelTypeChangeProcessor::TrackedAccountId() const {
+std::string ForwardingDataTypeLocalChangeProcessor::TrackedAccountId() const {
   return other_->TrackedAccountId();
 }
 
-std::string ForwardingModelTypeChangeProcessor::TrackedCacheGuid() const {
+std::string ForwardingDataTypeLocalChangeProcessor::TrackedCacheGuid() const {
   return other_->TrackedCacheGuid();
 }
 
-void ForwardingModelTypeChangeProcessor::ReportError(const ModelError& error) {
+void ForwardingDataTypeLocalChangeProcessor::ReportError(const ModelError& error) {
   other_->ReportError(error);
 }
 
-std::optional<ModelError> ForwardingModelTypeChangeProcessor::GetError() const {
+std::optional<ModelError> ForwardingDataTypeLocalChangeProcessor::GetError() const {
   return other_->GetError();
 }
 
 base::WeakPtr<DataTypeControllerDelegate>
-ForwardingModelTypeChangeProcessor::GetControllerDelegate() {
+ForwardingDataTypeLocalChangeProcessor::GetControllerDelegate() {
   return other_->GetControllerDelegate();
 }
 
 const sync_pb::EntitySpecifics&
-ForwardingModelTypeChangeProcessor::GetPossiblyTrimmedRemoteSpecifics(
+ForwardingDataTypeLocalChangeProcessor::GetPossiblyTrimmedRemoteSpecifics(
     const std::string& storage_key) const {
   return other_->GetPossiblyTrimmedRemoteSpecifics(storage_key);
 }
 
-sync_pb::UniquePosition ForwardingModelTypeChangeProcessor::UniquePositionAfter(
+sync_pb::UniquePosition ForwardingDataTypeLocalChangeProcessor::UniquePositionAfter(
     const std::string& storage_key_before,
     const ClientTagHash& target_client_tag_hash) const {
   return other_->UniquePositionAfter(storage_key_before,
@@ -119,7 +119,7 @@ sync_pb::UniquePosition ForwardingModelTypeChangeProcessor::UniquePositionAfter(
 }
 
 sync_pb::UniquePosition
-ForwardingModelTypeChangeProcessor::UniquePositionBefore(
+ForwardingDataTypeLocalChangeProcessor::UniquePositionBefore(
     const std::string& storage_key_after,
     const ClientTagHash& target_client_tag_hash) const {
   return other_->UniquePositionBefore(storage_key_after,
@@ -127,7 +127,7 @@ ForwardingModelTypeChangeProcessor::UniquePositionBefore(
 }
 
 sync_pb::UniquePosition
-ForwardingModelTypeChangeProcessor::UniquePositionBetween(
+ForwardingDataTypeLocalChangeProcessor::UniquePositionBetween(
     const std::string& storage_key_before,
     const std::string& storage_key_after,
     const ClientTagHash& target_client_tag_hash) const {
@@ -136,19 +136,19 @@ ForwardingModelTypeChangeProcessor::UniquePositionBetween(
 }
 
 sync_pb::UniquePosition
-ForwardingModelTypeChangeProcessor::UniquePositionForInitialEntity(
+ForwardingDataTypeLocalChangeProcessor::UniquePositionForInitialEntity(
     const ClientTagHash& target_client_tag_hash) const {
   return other_->UniquePositionForInitialEntity(target_client_tag_hash);
 }
 
 sync_pb::UniquePosition
-ForwardingModelTypeChangeProcessor::GetUniquePositionForStorageKey(
+ForwardingDataTypeLocalChangeProcessor::GetUniquePositionForStorageKey(
     const std::string& storage_key) const {
   return other_->GetUniquePositionForStorageKey(storage_key);
 }
 
-base::WeakPtr<ModelTypeChangeProcessor>
-ForwardingModelTypeChangeProcessor::GetWeakPtr() {
+base::WeakPtr<DataTypeLocalChangeProcessor>
+ForwardingDataTypeLocalChangeProcessor::GetWeakPtr() {
   // Note: Don't bother with a separate WeakPtrFactory for the forwarding
   // processor; just hand out a WeakPtr directly to the real processor.
   return other_->GetWeakPtr();

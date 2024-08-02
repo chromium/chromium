@@ -21,7 +21,7 @@ namespace syncer {
 // state. It allows model types to use a common implementation of
 // MetadataChangeList (SyncMetadataStoreChangeList) instead of implementing
 // their own. In their implementation of
-// ModelTypeSyncBridge::CreateMetadataChangeList, model types should create an
+// DataTypeSyncBridge::CreateMetadataChangeList, model types should create an
 // instance of SyncMetadataStoreChangeList, passing a pointer to their
 // SyncMetadataStore to its constructor. Implementations of SyncMetadataStore
 // methods should support add/update/delete operations in the

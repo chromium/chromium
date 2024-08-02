@@ -13,14 +13,14 @@
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 
 namespace {
 
-std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor>
+std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor>
 CreateChangeProcessor() {
-  return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::PRODUCT_COMPARISON,
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));

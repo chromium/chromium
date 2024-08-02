@@ -17,7 +17,7 @@ struct DataTypeActivationResponse;
 // types through methods of this interface, consumers control which types will
 // be syncing (receiving updates and committing local changes).
 // In addition it handles creating the connection between the ModelTypeWorker
-// (CommitQueue) on the sync side and the ModelTypeProcessor on the model type
+// (CommitQueue) on the sync side and the DataTypeProcessor on the model type
 // side.
 // The real implementation (ModelTypeRegistry) lives on the sync sequence, but
 // there's a proxy object on the UI thread for use by the SyncEngine.

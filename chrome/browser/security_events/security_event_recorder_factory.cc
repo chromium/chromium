@@ -17,7 +17,7 @@
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 
 // static
@@ -58,7 +58,7 @@ SecurityEventRecorderFactory::BuildServiceInstanceForBrowserContext(
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SECURITY_EVENTS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));

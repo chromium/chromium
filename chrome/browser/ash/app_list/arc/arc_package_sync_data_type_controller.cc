@@ -13,15 +13,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/model/syncable_service_based_bridge.h"
 #include "components/sync/service/sync_service.h"
 
-using syncer::ClientTagBasedModelTypeProcessor;
-using syncer::ForwardingDataTypeControllerDelegate;
+using syncer::ClientTagBasedDataTypeProcessor;
 using syncer::DataTypeController;
 using syncer::DataTypeControllerDelegate;
+using syncer::ForwardingDataTypeControllerDelegate;
 using syncer::SyncableServiceBasedBridge;
 
 ArcPackageSyncDataTypeController::ArcPackageSyncDataTypeController(
@@ -34,9 +34,8 @@ ArcPackageSyncDataTypeController::ArcPackageSyncDataTypeController(
       bridge_(std::make_unique<SyncableServiceBasedBridge>(
           syncer::ARC_PACKAGE,
           std::move(store_factory),
-          std::make_unique<ClientTagBasedModelTypeProcessor>(
-              syncer::ARC_PACKAGE,
-              dump_stack),
+          std::make_unique<ClientTagBasedDataTypeProcessor>(syncer::ARC_PACKAGE,
+                                                            dump_stack),
           syncable_service.get())),
       sync_service_(sync_service),
       profile_(profile),

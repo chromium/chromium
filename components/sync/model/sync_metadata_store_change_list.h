@@ -29,7 +29,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
 
   // If an error happened during any Update*/Clear* operation, then
   // `error_callback` will be called during destruction and passed the error.
-  // Should typically be bound to ModelTypeChangeProcessor::ReportError().
+  // Should typically be bound to DataTypeLocalChangeProcessor::ReportError().
   SyncMetadataStoreChangeList(SyncMetadataStore* store,
                               ModelType type,
                               ErrorCallback error_callback);

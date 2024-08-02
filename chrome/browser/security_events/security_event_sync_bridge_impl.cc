@@ -51,8 +51,8 @@ std::unique_ptr<syncer::EntityData> ToEntityData(
 
 SecurityEventSyncBridgeImpl::SecurityEventSyncBridgeImpl(
     syncer::OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   StoreWithCache::CreateAndLoad(
       std::move(store_factory), syncer::SECURITY_EVENTS,
       base::BindOnce(&SecurityEventSyncBridgeImpl::OnStoreLoaded,

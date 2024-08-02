@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_SYNC_BRIDGE_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_SYNC_BRIDGE_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <optional>
@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 
 namespace syncer {
 
@@ -25,7 +25,7 @@ class MetadataChangeList;
 class ModelError;
 
 // Interface implemented by model types to receive updates from sync via a
-// ModelTypeChangeProcessor. Provides a way for sync to update the data and
+// DataTypeLocalChangeProcessor. Provides a way for sync to update the data and
 // metadata for entities, as well as the model type state. Sync bridge
 // implementations must provide their change_processor() with metadata through
 // ModelReadyToSync() as soon as possible. Once this is called, sync will
@@ -33,7 +33,7 @@ class ModelError;
 // server soon afterward. If an error occurs during startup, the processor's
 // ReportError() method should be called instead of ModelReadyToSync().
 // Lives on the model sequence.
-class ModelTypeSyncBridge {
+class DataTypeSyncBridge {
  public:
   using DataCallback = base::OnceCallback<void(std::unique_ptr<DataBatch>)>;
   using StorageKeyList = std::vector<std::string>;
@@ -52,10 +52,10 @@ class ModelTypeSyncBridge {
     kShouldRetryOnNextCycle,
   };
 
-  explicit ModelTypeSyncBridge(
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor);
+  explicit DataTypeSyncBridge(
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor);
 
-  virtual ~ModelTypeSyncBridge();
+  virtual ~DataTypeSyncBridge();
 
   // Called by the processor as a notification that sync has been started by the
   // DataTypeController.
@@ -233,13 +233,13 @@ class ModelTypeSyncBridge {
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage
   // before or atomically with the model changes.
-  ModelTypeChangeProcessor* change_processor();
-  const ModelTypeChangeProcessor* change_processor() const;
+  DataTypeLocalChangeProcessor* change_processor();
+  const DataTypeLocalChangeProcessor* change_processor() const;
 
  private:
-  std::unique_ptr<ModelTypeChangeProcessor> change_processor_;
+  std::unique_ptr<DataTypeLocalChangeProcessor> change_processor_;
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_SYNC_BRIDGE_H_

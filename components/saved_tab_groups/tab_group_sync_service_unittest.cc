@@ -22,7 +22,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/fake_data_type_controller.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -130,7 +130,8 @@ class TabGroupSyncServiceTest : public testing::Test {
     InitializeTestGroups();
   }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_processor() {
     return &processor_;
   }
 
@@ -207,7 +208,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;

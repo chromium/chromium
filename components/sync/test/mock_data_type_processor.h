@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_PROCESSOR_H_
-#define COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_PROCESSOR_H_
+#define COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_PROCESSOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -16,13 +16,13 @@
 
 #include "base/functional/callback.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
 
-// Mocks the ModelTypeProcessor.
+// Mocks the DataTypeProcessor.
 //
 // This mock is made simpler by not using any threads.  It does still have the
 // ability to defer execution if we need to test race conditions, though.
@@ -33,18 +33,18 @@ namespace syncer {
 //
 // It keeps a log of all received messages so tests can make assertions based
 // on their value.
-class MockModelTypeProcessor : public ModelTypeProcessor {
+class MockDataTypeProcessor : public DataTypeProcessor {
  public:
   using DisconnectCallback = base::OnceCallback<void()>;
 
-  MockModelTypeProcessor();
+  MockDataTypeProcessor();
 
-  MockModelTypeProcessor(const MockModelTypeProcessor&) = delete;
-  MockModelTypeProcessor& operator=(const MockModelTypeProcessor&) = delete;
+  MockDataTypeProcessor(const MockDataTypeProcessor&) = delete;
+  MockDataTypeProcessor& operator=(const MockDataTypeProcessor&) = delete;
 
-  ~MockModelTypeProcessor() override;
+  ~MockDataTypeProcessor() override;
 
-  // Implementation of ModelTypeProcessor.
+  // Implementation of DataTypeProcessor.
   void ConnectSync(std::unique_ptr<CommitQueue> commit_queue) override;
   void DisconnectSync() override;
   void GetLocalChanges(size_t max_entries,
@@ -76,7 +76,7 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   // Generate commit or deletion requests to be sent to the server.
   // These functions update local state to keep sequence numbers consistent.
   //
-  // A real ModelTypeProcessor would forward these kinds of messages
+  // A real DataTypeProcessor would forward these kinds of messages
   // directly to its attached CommitQueue.  These methods
   // return the value to the caller so the test framework can handle them as it
   // sees fit.
@@ -203,4 +203,4 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_PROCESSOR_H_

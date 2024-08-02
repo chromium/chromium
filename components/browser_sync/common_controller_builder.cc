@@ -84,7 +84,7 @@ using syncer::SyncableServiceBasedDataTypeController;
 
 // These helper functions only wrap the factory functions of the bridges. This
 // way, it simplifies life for the compiler which cannot directly cast
-// "WeakPtr<ModelTypeSyncBridge> (AutofillWebDataService*)" to
+// "WeakPtr<DataTypeSyncBridge> (AutofillWebDataService*)" to
 // "WeakPtr<DataTypeControllerDelegate> (AutofillWebDataService*)".
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 AutocompleteDelegateFromDataService(autofill::AutofillWebDataService* service) {

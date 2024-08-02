@@ -13,8 +13,8 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace network {

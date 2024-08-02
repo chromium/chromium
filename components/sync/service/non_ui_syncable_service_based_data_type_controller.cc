@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/model/syncable_service_based_bridge.h"
@@ -22,19 +22,19 @@ namespace syncer {
 
 namespace {
 
-// ModelTypeSyncBridge implementation for test-only code-path :(
+// DataTypeSyncBridge implementation for test-only code-path :(
 // This is required to allow calling
 // DataTypeController::ClearMetadataWhileStopped() in browser tests.
 // TODO(crbug.com/40894683): Remove test-only code-path.
-class FakeSyncableServiceBasedBridge : public ModelTypeSyncBridge {
+class FakeSyncableServiceBasedBridge : public DataTypeSyncBridge {
  public:
   explicit FakeSyncableServiceBasedBridge(
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor)
-      : ModelTypeSyncBridge(std::move(change_processor)) {
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
+      : DataTypeSyncBridge(std::move(change_processor)) {
     CHECK_IS_TEST();
   }
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
@@ -121,7 +121,7 @@ class BridgeBuilder {
     base::WeakPtr<SyncableService> syncable_service =
         std::move(syncable_service_provider).Run();
     auto processor =
-        std::make_unique<ClientTagBasedModelTypeProcessor>(type, dump_stack);
+        std::make_unique<ClientTagBasedDataTypeProcessor>(type, dump_stack);
 
     // |syncable_service| can be null in tests.
     // TODO(crbug.com/40894683): Remove test-only code-path.
@@ -136,7 +136,7 @@ class BridgeBuilder {
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::unique_ptr<ModelTypeSyncBridge> bridge_;
+  std::unique_ptr<DataTypeSyncBridge> bridge_;
 };
 
 // This is a slightly adapted version of base::OnTaskRunnerDeleter: The one
@@ -206,7 +206,7 @@ NonUiSyncableServiceBasedDataTypeController::
                                 dump_stack, task_runner));
   // In transport mode we want the same behavior as full sync mode, so we use
   // the same thread-proxying delegate, which shares the BridgeBuilder, which
-  // shares the underlying ModelTypeSyncBridge.
+  // shares the underlying DataTypeSyncBridge.
   auto transport_mode_delegate =
       delegate_mode == DelegateMode::kTransportModeWithSingleModel
           ? std::make_unique<ForwardingDataTypeControllerDelegate>(

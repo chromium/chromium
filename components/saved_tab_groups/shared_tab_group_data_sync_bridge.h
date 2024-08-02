@@ -15,15 +15,15 @@
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 class PrefService;
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataChangeList;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace sync_pb {
@@ -35,7 +35,7 @@ class SavedTabGroup;
 class SavedTabGroupModel;
 
 // Sync bridge implementation for SHARED_TAB_GROUP_DATA model type.
-class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
+class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   using SharedTabGroupLoadCallback =
       base::OnceCallback<void(std::vector<SavedTabGroup>,
@@ -44,7 +44,7 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
   SharedTabGroupDataSyncBridge(
       SavedTabGroupModel* model,
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       PrefService* pref_service,
       SharedTabGroupLoadCallback on_load_callback);
 
@@ -53,7 +53,7 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
       delete;
   ~SharedTabGroupDataSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

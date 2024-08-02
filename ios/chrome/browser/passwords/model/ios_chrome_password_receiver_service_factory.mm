@@ -15,7 +15,7 @@
 #import "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/base/report_unrecoverable_error.h"
-#import "components/sync/model/client_tag_based_model_type_processor.h"
+#import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -61,7 +61,7 @@ IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
   CHECK(!context->IsOffTheRecord());
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::INCOMING_PASSWORD_SHARING_INVITATION,
           base::BindRepeating(&syncer::ReportUnrecoverableError, GetChannel()));
   auto sync_bridge = std::make_unique<

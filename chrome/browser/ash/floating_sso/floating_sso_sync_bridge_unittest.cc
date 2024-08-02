@@ -19,7 +19,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,10 +76,10 @@ class FloatingSsoSyncBridgeTest : public testing::Test {
   }
 
   FloatingSsoSyncBridge& bridge() { return *bridge_; }
-  syncer::MockModelTypeChangeProcessor& processor() { return processor_; }
+  syncer::MockDataTypeLocalChangeProcessor& processor() { return processor_; }
 
  private:
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<FloatingSsoSyncBridge> bridge_;
@@ -335,7 +335,7 @@ TEST_F(FloatingSsoSyncBridgeTest, DeleteCookie) {
 
 TEST(FloatingSsoSyncBridgeInitialization, EventsWhileStoreIsLoading) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor;
   auto store = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
 
   // Add a cookie to the store so that we can delete it later.

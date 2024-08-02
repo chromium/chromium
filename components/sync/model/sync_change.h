@@ -17,7 +17,7 @@ namespace syncer {
 // A SyncChange object reflects a change to a sync entity (unit of sync data),
 // which can be either a delete, add, or an update. Specifically, it is used
 // in the SyncableService API, as opposed to the analogous class EntityChange
-// used in the more modern equivalent ModelTypeSyncBridge API.
+// used in the more modern equivalent DataTypeSyncBridge API.
 //
 // Note: it is safe and cheap to pass these by value or make copies, as they do
 // not create deep copies of their internal data.

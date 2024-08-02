@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"

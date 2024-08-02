@@ -15,7 +15,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,14 +25,14 @@ namespace {
 
 using sync_pb::UserConsentSpecifics;
 using syncer::DataBatch;
+using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::MetadataChangeList;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using syncer::ModelTypeStore;
 using syncer::ModelTypeStoreTestUtil;
-using syncer::ModelTypeSyncBridge;
 using syncer::OnceModelTypeStoreFactory;
 using testing::_;
 using testing::ElementsAre;
@@ -113,7 +113,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
   }
 
   ConsentSyncBridgeImpl* bridge() { return bridge_.get(); }
-  MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  MockDataTypeLocalChangeProcessor* processor() { return &mock_processor_; }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllDataForDebugging() {
     std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
@@ -146,7 +146,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ConsentSyncBridgeImpl> bridge_;
 };
 

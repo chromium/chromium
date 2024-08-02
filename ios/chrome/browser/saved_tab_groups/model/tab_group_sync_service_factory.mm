@@ -14,7 +14,7 @@
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"
-#import "components/sync/model/client_tag_based_model_type_processor.h"
+#import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
@@ -35,7 +35,7 @@ namespace {
 std::unique_ptr<SyncDataTypeConfiguration>
 CreateSavedTabGroupDataTypeConfiguration(ChromeBrowserState* browser_state) {
   return std::make_unique<SyncDataTypeConfiguration>(
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SAVED_TAB_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel())),

@@ -21,7 +21,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace sync_pb {
@@ -182,7 +182,7 @@ class MockModelTypeWorker : public CommitQueue {
   sync_pb::ModelTypeState model_type_state_;
 
   // A pointer to the processor for this mock worker.
-  const std::unique_ptr<ModelTypeProcessor> processor_;
+  const std::unique_ptr<DataTypeProcessor> processor_;
 
   // A record of past commits requests.
   base::circular_deque<CommitRequestDataList> pending_commits_;

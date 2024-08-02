@@ -18,14 +18,14 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_base.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -72,7 +72,7 @@ ProfileAuthServersSyncBridge::Create(
     syncer::OnceModelTypeStoreFactory store_factory) {
   DCHECK(observer);
   return base::WrapUnique(new ProfileAuthServersSyncBridge(
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PRINTERS_AUTHORIZATION_SERVERS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),
@@ -82,7 +82,7 @@ ProfileAuthServersSyncBridge::Create(
 std::unique_ptr<ProfileAuthServersSyncBridge>
 ProfileAuthServersSyncBridge::CreateForTesting(
     Observer* observer,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory store_factory) {
   DCHECK(observer);
   DCHECK(change_processor);
@@ -110,10 +110,10 @@ void ProfileAuthServersSyncBridge::AddAuthorizationServer(
 }
 
 ProfileAuthServersSyncBridge::ProfileAuthServersSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory store_factory,
     Observer* observer)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       observer_(observer) {
   std::move(store_factory)
       .Run(syncer::PRINTERS_AUTHORIZATION_SERVERS,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_CHANGE_PROCESSOR_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_CHANGE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_
 
 #include <memory>
 #include <optional>
@@ -23,15 +23,15 @@ class ClientTagHash;
 class DeletionOrigin;
 class MetadataBatch;
 class MetadataChangeList;
-class ModelTypeSyncBridge;
+class DataTypeSyncBridge;
 struct EntityData;
 
-// Interface used by the ModelTypeSyncBridge to inform sync of local changes.
+// Interface used by the DataTypeSyncBridge to inform sync of local changes.
 // Lives on the model sequence.
-class ModelTypeChangeProcessor {
+class DataTypeLocalChangeProcessor {
  public:
-  ModelTypeChangeProcessor() = default;
-  virtual ~ModelTypeChangeProcessor() = default;
+  DataTypeLocalChangeProcessor() = default;
+  virtual ~DataTypeLocalChangeProcessor() = default;
 
   // Inform the processor of a new or updated entity. The `entity_data` param
   // does not need to be fully set, but it should at least have specifics and
@@ -93,7 +93,7 @@ class ModelTypeChangeProcessor {
   // Pass the pointer to the processor so that the processor can notify the
   // bridge of various events; `bridge` must not be nullptr and must outlive
   // this object.
-  virtual void OnModelStarting(ModelTypeSyncBridge* bridge) = 0;
+  virtual void OnModelStarting(DataTypeSyncBridge* bridge) = 0;
 
   // The `bridge` is expected to call this exactly once unless it encounters an
   // error. Ideally ModelReadyToSync() is called as soon as possible during
@@ -169,9 +169,9 @@ class ModelTypeChangeProcessor {
   virtual sync_pb::UniquePosition GetUniquePositionForStorageKey(
       const std::string& storage_key) const = 0;
 
-  virtual base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() = 0;
+  virtual base::WeakPtr<DataTypeLocalChangeProcessor> GetWeakPtr() = 0;
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_CHANGE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_LOCAL_CHANGE_PROCESSOR_H_

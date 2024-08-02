@@ -19,7 +19,7 @@
 class Profile;
 
 namespace syncer {
-class ModelTypeSyncBridge;
+class DataTypeSyncBridge;
 class SyncableService;
 class SyncService;
 }  // namespace syncer
@@ -60,7 +60,7 @@ class ArcPackageSyncDataTypeController
  private:
   void OnOsSyncFeaturePrefChanged();
 
-  std::unique_ptr<syncer::ModelTypeSyncBridge> bridge_;
+  std::unique_ptr<syncer::DataTypeSyncBridge> bridge_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<ArcAppListPrefs> arc_prefs_;

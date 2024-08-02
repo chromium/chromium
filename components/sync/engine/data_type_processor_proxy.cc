@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/model_type_processor_proxy.h"
+#include "components/sync/engine/data_type_processor_proxy.h"
 
 #include <utility>
 
@@ -13,29 +13,29 @@
 
 namespace syncer {
 
-ModelTypeProcessorProxy::ModelTypeProcessorProxy(
-    const base::WeakPtr<ModelTypeProcessor>& processor,
+DataTypeProcessorProxy::DataTypeProcessorProxy(
+    const base::WeakPtr<DataTypeProcessor>& processor,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : processor_(processor), task_runner_(task_runner) {}
 
-ModelTypeProcessorProxy::~ModelTypeProcessorProxy() = default;
+DataTypeProcessorProxy::~DataTypeProcessorProxy() = default;
 
-void ModelTypeProcessorProxy::ConnectSync(std::unique_ptr<CommitQueue> worker) {
+void DataTypeProcessorProxy::ConnectSync(std::unique_ptr<CommitQueue> worker) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ModelTypeProcessor::ConnectSync, processor_,
+      FROM_HERE, base::BindOnce(&DataTypeProcessor::ConnectSync, processor_,
                                 std::move(worker)));
 }
 
-void ModelTypeProcessorProxy::DisconnectSync() {
+void DataTypeProcessorProxy::DisconnectSync() {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&ModelTypeProcessor::DisconnectSync, processor_));
+      base::BindOnce(&DataTypeProcessor::DisconnectSync, processor_));
 }
 
 void ForwardGetLocalChangesCall(
-    base::WeakPtr<ModelTypeProcessor> processor,
+    base::WeakPtr<DataTypeProcessor> processor,
     size_t max_entries,
-    ModelTypeProcessor::GetLocalChangesCallback callback) {
+    DataTypeProcessor::GetLocalChangesCallback callback) {
   if (processor) {
     processor->GetLocalChanges(max_entries, std::move(callback));
   } else {
@@ -45,7 +45,7 @@ void ForwardGetLocalChangesCall(
   }
 }
 
-void ModelTypeProcessorProxy::GetLocalChanges(
+void DataTypeProcessorProxy::GetLocalChanges(
     size_t max_entries,
     GetLocalChangesCallback callback) {
   task_runner_->PostTask(FROM_HERE,
@@ -53,36 +53,36 @@ void ModelTypeProcessorProxy::GetLocalChanges(
                                         max_entries, std::move(callback)));
 }
 
-void ModelTypeProcessorProxy::OnCommitCompleted(
+void DataTypeProcessorProxy::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&ModelTypeProcessor::OnCommitCompleted, processor_,
+      base::BindOnce(&DataTypeProcessor::OnCommitCompleted, processor_,
                      type_state, committed_response_list, error_response_list));
 }
 
-void ModelTypeProcessorProxy::OnCommitFailed(SyncCommitError commit_error) {
+void DataTypeProcessorProxy::OnCommitFailed(SyncCommitError commit_error) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ModelTypeProcessor::OnCommitFailed, processor_,
+      FROM_HERE, base::BindOnce(&DataTypeProcessor::OnCommitFailed, processor_,
                                 commit_error));
 }
 
-void ModelTypeProcessorProxy::OnUpdateReceived(
+void DataTypeProcessorProxy::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&ModelTypeProcessor::OnUpdateReceived, processor_,
+      base::BindOnce(&DataTypeProcessor::OnUpdateReceived, processor_,
                      type_state, std::move(updates), std::move(gc_directive)));
 }
 
-void ModelTypeProcessorProxy::StorePendingInvalidations(
+void DataTypeProcessorProxy::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ModelTypeProcessor::StorePendingInvalidations,
+      FROM_HERE, base::BindOnce(&DataTypeProcessor::StorePendingInvalidations,
                                 processor_, std::move(invalidations_to_store)));
 }
 

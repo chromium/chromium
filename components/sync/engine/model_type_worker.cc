@@ -38,7 +38,7 @@
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/commit_contribution_impl.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state_helper.h"
@@ -122,7 +122,7 @@ void AdaptClientTagForFullUpdateData(ModelType model_type,
                                      syncer::EntityData* data) {
   // Server does not send any client tags for wallet data entities or offer data
   // entities. This code manually asks the bridge to create the client tags for
-  // each entity, so that we can use ClientTagBasedModelTypeProcessor for
+  // each entity, so that we can use ClientTagBasedDataTypeProcessor for
   // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
   if (data->legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
@@ -394,13 +394,13 @@ void ModelTypeWorker::LogPendingInvalidationStatus(
 }
 
 void ModelTypeWorker::ConnectSync(
-    std::unique_ptr<ModelTypeProcessor> model_type_processor) {
+    std::unique_ptr<DataTypeProcessor> model_type_processor) {
   DCHECK(!model_type_processor_);
   DCHECK(model_type_processor);
 
   model_type_processor_ = std::move(model_type_processor);
   // TODO(crbug.com/346777544): CommitQueueProxy is only needed by the
-  // ModelTypeProcessorProxy implementation, so it could possibly be moved
+  // DataTypeProcessorProxy implementation, so it could possibly be moved
   // there % changing ConnectSync() to take a raw pointer. This then allows
   // removing base::test::SingleThreadTaskEnvironment from the unit test.
   model_type_processor_->ConnectSync(
@@ -707,7 +707,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     AdaptGuidForBookmark(update_entity, &data.specifics);
     // Note that the parent GUID in specifics cannot be adapted/populated here,
     // because the logic requires access to tracked entities. Hence, it is
-    // done by BookmarkModelTypeProcessor, with logic implemented in
+    // done by BookmarkDataTypeProcessor, with logic implemented in
     // components/sync_bookmarks/parent_guid_preprocessing.cc.
   } else if (model_type == AUTOFILL_WALLET_DATA ||
              model_type == AUTOFILL_WALLET_OFFER) {

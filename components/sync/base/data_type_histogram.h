@@ -51,7 +51,7 @@ void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
 void SyncRecordModelClearedOnceHistogram(ModelType model_type);
 
 // Records the amount of unsynced entities for the given |model_type| upon
-// ModelTypeChangeProcessor::ModelReadyToSync() call.
+// DataTypeLocalChangeProcessor::ModelReadyToSync() call.
 void SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(
     ModelType model_type,
     size_t num_unsynced_entities);

@@ -13,10 +13,10 @@
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
@@ -41,8 +41,8 @@ std::unique_ptr<syncer::DataBatch> ConvertPowersToSyncData(
 PowerBookmarkSyncBridge::PowerBookmarkSyncBridge(
     PowerBookmarkSyncMetadataDatabase* meta_db,
     Delegate* delegate,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       meta_db_(meta_db),
       delegate_(delegate) {}
 
@@ -125,7 +125,7 @@ PowerBookmarkSyncBridge::CreateMetadataChangeListInTransaction() {
   // transaction.
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       meta_db_, syncer::POWER_BOOKMARK,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 

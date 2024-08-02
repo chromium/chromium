@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_PROXY_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_PROXY_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_PROXY_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_PROXY_H_
 
 #include <memory>
 #include <vector>
@@ -11,16 +11,16 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine/data_type_processor.h"
 
 namespace syncer {
 
-class ModelTypeProcessorProxy : public ModelTypeProcessor {
+class DataTypeProcessorProxy : public DataTypeProcessor {
  public:
-  ModelTypeProcessorProxy(
-      const base::WeakPtr<ModelTypeProcessor>& processor,
+  DataTypeProcessorProxy(
+      const base::WeakPtr<DataTypeProcessor>& processor,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
-  ~ModelTypeProcessorProxy() override;
+  ~DataTypeProcessorProxy() override;
 
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
   void DisconnectSync() override;
@@ -40,10 +40,10 @@ class ModelTypeProcessorProxy : public ModelTypeProcessor {
       override;
 
  private:
-  base::WeakPtr<ModelTypeProcessor> processor_;
+  base::WeakPtr<DataTypeProcessor> processor_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_PROXY_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_PROCESSOR_PROXY_H_

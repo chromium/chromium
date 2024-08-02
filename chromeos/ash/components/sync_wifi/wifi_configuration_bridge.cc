@@ -31,10 +31,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
@@ -66,9 +66,9 @@ WifiConfigurationBridge::WifiConfigurationBridge(
     SyncedNetworkMetricsLogger* metrics_recorder,
     ash::timer_factory::TimerFactory* timer_factory,
     PrefService* pref_service,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory create_store_callback)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       synced_network_updater_(synced_network_updater),
       local_network_collector_(local_network_collector),
       network_configuration_handler_(network_configuration_handler),

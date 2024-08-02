@@ -26,7 +26,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -241,7 +241,8 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   SharedTabGroupDataSyncBridge* bridge() { return bridge_.get(); }
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() {
     return processor_;
   }
   SavedTabGroupModel* model() { return saved_tab_group_model_.get(); }
@@ -256,7 +257,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   testing::NiceMock<MockTabGroupModelObserver> mock_model_observer_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SharedTabGroupDataSyncBridge> bridge_;

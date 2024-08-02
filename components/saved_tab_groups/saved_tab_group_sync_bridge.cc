@@ -35,11 +35,11 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
@@ -111,11 +111,11 @@ std::vector<proto::SavedTabGroupData> LoadStoredEntries(
 SavedTabGroupSyncBridge::SavedTabGroupSyncBridge(
     SavedTabGroupModel* model,
     syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     PrefService* pref_service,
     base::OnceCallback<void(std::vector<SavedTabGroup>,
                             std::vector<SavedTabGroupTab>)> on_load_callback)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       model_(model),
       pref_service_(pref_service) {
   CHECK(model_);

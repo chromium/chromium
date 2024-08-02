@@ -35,9 +35,9 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/test/fake_cryptographer.h"
+#include "components/sync/test/mock_data_type_processor.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "components/sync/test/mock_invalidation_tracker.h"
-#include "components/sync/test/mock_model_type_processor.h"
 #include "components/sync/test/mock_nudge_handler.h"
 #include "components/sync/test/single_type_mock_server.h"
 #include "components/sync/test/trackable_mock_invalidation.h"
@@ -183,7 +183,7 @@ MATCHER_P(HasPreferenceClientTag,
 // - Update responses to the model thread.
 // - Nudges to the sync scheduler.
 //
-// We use the MockModelTypeProcessor to stub out all communication
+// We use the MockDataTypeProcessor to stub out all communication
 // with the model thread. That interface is synchronous, which makes it
 // much easier to test races.
 //
@@ -278,7 +278,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
         &cancelation_signal_);
 
     // We don't get to own this object. The |worker_| keeps a unique_ptr to it.
-    auto processor = std::make_unique<MockModelTypeProcessor>();
+    auto processor = std::make_unique<MockDataTypeProcessor>();
     mock_type_processor_ = processor.get();
     processor->SetDisconnectCallback(base::BindOnce(
         &ModelTypeWorkerTest::DisconnectProcessor, base::Unretained(this)));
@@ -534,7 +534,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   }
 
   FakeCryptographer* cryptographer() { return &cryptographer_; }
-  MockModelTypeProcessor* processor() { return mock_type_processor_; }
+  MockDataTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
   SingleTypeMockServer* server() { return mock_server_.get(); }
   MockNudgeHandler* nudge_handler() { return &mock_nudge_handler_; }
@@ -569,7 +569,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   // Non-owned, possibly null pointer. This object belongs to the
   // ModelTypeWorker under test.
-  raw_ptr<MockModelTypeProcessor, DanglingUntriaged> mock_type_processor_ =
+  raw_ptr<MockDataTypeProcessor, DanglingUntriaged> mock_type_processor_ =
       nullptr;
 
   // A mock that emulates enough of the sync server that it can be used
@@ -2893,7 +2893,7 @@ TEST_F(ModelTypeWorkerPasswordsTest,
       entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
-// Verifies persisting invalidations load from the ModelTypeProcessor.
+// Verifies persisting invalidations load from the DataTypeProcessor.
 TEST_F(ModelTypeWorkerTest, LoadInvalidations) {
   InitializeWithInvalidations();
 
