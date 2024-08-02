@@ -383,6 +383,7 @@ include_rules = [
   "+components/upload_list",
   "+components/url_matcher",
   "+components/url_pattern_index/proto",
+  "+components/user_annotations",
   "+components/user_education",
   "+components/user_manager",
   "+components/user_notes",
