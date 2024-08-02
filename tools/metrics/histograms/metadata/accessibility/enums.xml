@@ -1021,6 +1021,43 @@ Unknown properties are collapsed to zero. -->
   <int value="15" label="Invalid selection bounds"/>
 </enum>
 
+<!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning)-->
+
+<enum name="KeyboardShortcutsSemanticMeaning">
+  <summary>Track keyboard shortcuts used on Android.</summary>
+<!-- This must be kept in sync with
+KeyboardShortcuts.KeyboardShortcutsSemanticMeaning in
+chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open recently closed tab"/>
+  <int value="2" label="Open new tab"/>
+  <int value="3" label="Open new tab incognito"/>
+  <int value="4" label="Open new window"/>
+  <int value="5" label="Reload tab"/>
+  <int value="6" label="Close tab"/>
+  <int value="7" label="Move to tab left"/>
+  <int value="8" label="Move to tab right"/>
+  <int value="9" label="Move to specific tab"/>
+  <int value="10" label="Move to last tab"/>
+  <int value="11" label="Jump to omnibox"/>
+  <int value="12" label="Go back"/>
+  <int value="13" label="Go forward"/>
+  <int value="14" label="Open menu"/>
+  <int value="15" label="Open help"/>
+  <int value="16" label="Find in page"/>
+  <int value="17" label="Open bookmarks"/>
+  <int value="18" label="Bookmark page"/>
+  <int value="19" label="Open history"/>
+  <int value="20" label="Save page"/>
+  <int value="21" label="Print"/>
+  <int value="22" label="Zoom in"/>
+  <int value="23" label="Zoom out"/>
+  <int value="24" label="Zoom reset"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
+
 <enum name="KeyCode">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="KEYCODE_1"/>
