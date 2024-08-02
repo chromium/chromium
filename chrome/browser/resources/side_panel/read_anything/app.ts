@@ -19,6 +19,7 @@ import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {AppStyleUpdater} from './app_style_updater.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
@@ -34,9 +35,6 @@ interface UtteranceSettings {
   rate: number;
 }
 
-const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
-const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
-
 export const previousReadHighlightClass = 'previous-read-highlight';
 export const currentReadHighlightClass = 'current-read-highlight';
 const parentOfHighlightClass = 'parent-of-highlight';
@@ -46,12 +44,6 @@ const linkDataAttribute = 'link';
 // Characters that should be ignored for word highlighting when not accompanied
 // by other characters.
 const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
-
-// Constants for styling the app when page zoom changes.
-const overflowXTypical = 'hidden';
-const overflowXScroll = 'scroll';
-const minWidthTypical = 'auto';
-const minWidthOverflow = 'fit-content';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -203,8 +195,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateSubheading_: string;
 
   private previousHighlights_: HTMLElement[] = [];
-  private currentColorSuffix_: string;
-  private isHighlightOn_: boolean = true;
   private previousRootId_: number;
 
   private isReadAloudEnabled_: boolean;
@@ -261,6 +251,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private playSessionStartTime: number = -1;
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+  private styleUpdater_: AppStyleUpdater;
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -296,6 +287,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         TimeFrom.APP, TimeTo.CONSTRUCTOR, this.startTime, this.constructorTime);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
+    this.styleUpdater_ = new AppStyleUpdater(this);
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -2159,12 +2151,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private getEmptyStateBodyColor_(colorSuffix: string): string {
-    const isDark = colorSuffix.includes('dark');
-    return isDark ? darkThemeEmptyStateBodyColor :
-                    defaultThemeEmptyStateBodyColor;
-  }
-
   // This must be called BEFORE calling
   // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
   // determine what's currently being highlighted.
@@ -2200,34 +2186,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.restoreEnabledLanguagesFromPref();
       this.selectPreferredVoice();
     }
-    this.updateLineSpacing_(chrome.readingMode.lineSpacing);
-    this.updateLetterSpacing_(chrome.readingMode.letterSpacing);
-    this.updateFont_(chrome.readingMode.fontName);
-    this.updateFontSize_();
-    let colorSuffix: string|undefined;
-    switch (chrome.readingMode.colorTheme) {
-      case chrome.readingMode.defaultTheme:
-        colorSuffix = '';
-        break;
-      case chrome.readingMode.lightTheme:
-        colorSuffix = '-light';
-        break;
-      case chrome.readingMode.darkTheme:
-        colorSuffix = '-dark';
-        break;
-      case chrome.readingMode.yellowTheme:
-        colorSuffix = '-yellow';
-        break;
-      case chrome.readingMode.blueTheme:
-        colorSuffix = '-blue';
-        break;
-      default:
-        // Do nothing
-    }
-    if (colorSuffix !== undefined) {
-      this.updateTheme_(colorSuffix);
-    }
-    this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
+    this.styleUpdater_.setAllTextStyles();
+    this.$.toolbar.restoreSettingsFromPrefs();
   }
 
   restoreEnabledLanguagesFromPref() {
@@ -2307,150 +2267,38 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private onLineSpacingChange_(event: CustomEvent<{data: number}>) {
-    this.updateLineSpacing_(event.detail.data);
+  private onLineSpacingChange_() {
+    this.styleUpdater_.setLineSpacing();
   }
 
-  private updateLineSpacing_(newLineHeight: number) {
-    this.updateStyles({
-      '--line-height': newLineHeight,
-    });
+  private onLetterSpacingChange_() {
+    this.styleUpdater_.setLetterSpacing();
   }
 
-  private onLetterSpacingChange_(event: CustomEvent<{data: number}>) {
-    this.updateLetterSpacing_(event.detail.data);
+  private onFontChange_() {
+    this.styleUpdater_.setFont();
   }
 
-  private updateLetterSpacing_(newLetterSpacing: number) {
-    this.updateStyles({
-      '--letter-spacing': newLetterSpacing + 'em',
-    });
+  private onFontSizeChange_() {
+    this.styleUpdater_.setFontSize();
   }
 
-  private onFontChange_(event: CustomEvent<{fontName: string}>) {
-    this.updateFont_(event.detail.fontName);
+  private onHighlightToggle_() {
+    this.styleUpdater_.setHighlight();
   }
 
-  private updateFont_(fontName: string) {
-    const validFontName = chrome.readingMode.getValidatedFontName(fontName);
-    this.updateStyles({
-      '--font-family': validFontName,
-    });
-  }
-
-  private updateFontSize_() {
-    this.updateStyles({
-      '--font-size': chrome.readingMode.fontSize + 'em',
-    });
-  }
-
-  private onHighlightToggle_(event: CustomEvent<{highlightOn: boolean}>) {
-    this.isHighlightOn_ = event.detail.highlightOn;
-    this.updateStyles({
-      '--current-highlight-bg-color':
-          this.getCurrentHighlightColorVar(this.currentColorSuffix_),
-    });
-  }
-
-  private onThemeChange_(event: CustomEvent<{data: string}>) {
-    this.updateTheme_(event.detail.data);
+  private onThemeChange_() {
+    this.styleUpdater_.setTheme();
   }
 
   private onResetToolbar_() {
-    this.updateStyles({
-      '--app-overflow-x': overflowXTypical,
-      '--container-min-width': minWidthTypical,
-    });
+    this.styleUpdater_.resetToolbar();
   }
 
   private onToolbarOverflow_(event: CustomEvent<{overflowLength: number}>) {
     const shouldScroll =
         (event.detail.overflowLength >= minOverflowLengthToScroll);
-    this.updateStyles({
-      '--app-overflow-x': shouldScroll ? overflowXScroll : overflowXTypical,
-      // When we scroll, we should allow the container to expand and scroll
-      // horizontally.
-      '--container-min-width': shouldScroll ? minWidthOverflow :
-                                              minWidthTypical,
-    });
-  }
-
-  private updateTheme_(colorSuffix: string) {
-    this.currentColorSuffix_ = colorSuffix;
-    const emptyStateBodyColor = colorSuffix ?
-        this.getEmptyStateBodyColor_(colorSuffix) :
-        'var(--color-side-panel-card-secondary-foreground)';
-    this.updateStyles({
-      '--background-color': this.getBackgroundColorVar(colorSuffix),
-      '--foreground-color': this.getForegroundColorVar(colorSuffix),
-      '--selection-color': this.getSelectionColorVar(colorSuffix),
-      '--current-highlight-bg-color':
-          this.getCurrentHighlightColorVar(colorSuffix),
-      '--previous-highlight-color':
-          this.getPreviousHighlightColorVar(colorSuffix),
-      '--sp-empty-state-heading-color':
-          `var(--color-read-anything-foreground${colorSuffix})`,
-      '--sp-empty-state-body-color': emptyStateBodyColor,
-      '--link-color': `var(--color-read-anything-link-default${colorSuffix})`,
-      '--visited-link-color':
-          `var(--color-read-anything-link-visited${colorSuffix})`,
-    });
-    document.documentElement.style.setProperty(
-        '--selection-color', this.getSelectionColorVar(colorSuffix));
-    document.documentElement.style.setProperty(
-        '--selection-text-color', this.getSelectionTextColorVar(colorSuffix));
-  }
-
-  getCurrentHighlightColorVar(colorSuffix: string) {
-    if (!this.isHighlightOn_) {
-      return 'transparent';
-    }
-    if (colorSuffix === '') {
-      return 'var(--color-text-selection-background)';
-    }
-    return `var(--color-read-anything-current-read-aloud-highlight${
-        colorSuffix})`;
-  }
-
-  getPreviousHighlightColorVar(colorSuffix: string) {
-    if (colorSuffix === '') {
-      return 'var(--color-sys-on-surface-subtle)';
-    }
-    return `var(--color-read-anything-previous-read-aloud-highlight${
-        colorSuffix})`;
-  }
-
-  getBackgroundColorVar(colorSuffix: string) {
-    if (colorSuffix === '') {
-      return 'var(--color-sys-base-container-elevated)';
-    }
-    return `var(--color-read-anything-background${colorSuffix})`;
-  }
-
-  getForegroundColorVar(colorSuffix: string) {
-    if (colorSuffix === '') {
-      return 'var(--color-sys-on-surface)';
-    }
-    return `var(--color-read-anything-foreground${colorSuffix})`;
-  }
-
-  getSelectionColorVar(colorSuffix: string) {
-    if (colorSuffix === '') {
-      return 'var(--color-text-selection-background)';
-    }
-    return `var(--color-read-anything-text-selection${colorSuffix})`;
-  }
-
-  getSelectionTextColorVar(colorSuffix: string) {
-    if (colorSuffix === '') {
-      return 'var(--color-text-selection-foreground)';
-    }
-
-    if (window.matchMedia('(prefers-color-schme: dark)').matches) {
-      return `var(--google-grey-900)`;
-    }
-
-    return `var(--google-grey-800)`;
+    this.styleUpdater_.overflowToolbar(shouldScroll);
   }
 
   // If the screen is locked during speech, we should stop speaking.

@@ -123,9 +123,9 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool ImagesEnabled() { return model_->images_enabled(); }
 
-  float LineSpacing() { return model_->line_spacing(); }
+  int LineSpacing() { return model_->line_spacing(); }
 
-  float LetterSpacing() { return model_->letter_spacing(); }
+  int LetterSpacing() { return model_->letter_spacing(); }
 
   int ColorTheme() { return model_->color_theme(); }
 
@@ -240,9 +240,7 @@ TEST_F(ReadAnythingAppModelTest, FontName) {
 
 TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
-  float line_spacing_value = 1.5;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
-  float letter_spacing_value = 0.0;
   std::string font_name = "Roboto";
   double font_size = 18.0;
   bool links_enabled = false;
@@ -253,8 +251,8 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
                               font_size, links_enabled, images_enabled, color);
 
-  EXPECT_EQ(line_spacing_value, LineSpacing());
-  EXPECT_EQ(letter_spacing_value, LetterSpacing());
+  EXPECT_EQ(static_cast<int>(line_spacing), LineSpacing());
+  EXPECT_EQ(static_cast<int>(letter_spacing), LetterSpacing());
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
   EXPECT_EQ(links_enabled, LinksEnabled());

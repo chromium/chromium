@@ -18,7 +18,7 @@ suite('HighlightToggle', () => {
   let toolbar: ReadAnythingToolbarElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let highlightButton: CrIconButtonElement;
-  let highlightOn: boolean|undefined;
+  let highlightEmitted: boolean;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -35,10 +35,9 @@ suite('HighlightToggle', () => {
     highlightButton =
         toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#highlight')!;
 
-    highlightOn = undefined;
-    document.addEventListener(ToolbarEvent.HIGHLIGHT_TOGGLE, event => {
-      highlightOn = (event as CustomEvent).detail.highlightOn;
-    });
+    highlightEmitted = false;
+    document.addEventListener(
+        ToolbarEvent.HIGHLIGHT_TOGGLE, () => highlightEmitted = true);
   });
 
   suite('by default', () => {
@@ -47,7 +46,7 @@ suite('HighlightToggle', () => {
       assertStringContains(highlightButton.title, 'off');
       assertEquals(0, chrome.readingMode.highlightGranularity);
       assertTrue(chrome.readingMode.isHighlightOn());
-      assertFalse(!!highlightOn);
+      assertFalse(highlightEmitted);
     });
   });
 
@@ -61,7 +60,7 @@ suite('HighlightToggle', () => {
       assertStringContains(highlightButton.title, 'on');
       assertEquals(1, chrome.readingMode.highlightGranularity);
       assertFalse(chrome.readingMode.isHighlightOn());
-      assertFalse(highlightOn!);
+      assertTrue(highlightEmitted);
     });
 
     suite('on next click', () => {
@@ -74,7 +73,7 @@ suite('HighlightToggle', () => {
         assertStringContains(highlightButton.title, 'off');
         assertEquals(0, chrome.readingMode.highlightGranularity);
         assertTrue(chrome.readingMode.isHighlightOn());
-        assertTrue(highlightOn!);
+        assertTrue(highlightEmitted);
       });
     });
   });

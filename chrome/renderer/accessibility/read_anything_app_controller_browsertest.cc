@@ -181,6 +181,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
         std::move(languages_enabled_in_pref), granularity);
   }
 
+  void OnLetterSpacingChange(int value) {
+    controller_->OnLetterSpacingChange(value);
+  }
+  void OnLineSpacingChange(int value) {
+    controller_->OnLineSpacingChange(value);
+  }
+  void OnThemeChange(int value) { controller_->OnThemeChange(value); }
+
   void AccessibilityEventReceived(
       const std::vector<ui::AXTreeUpdate>& updates,
       const std::vector<ui::AXEvent>& events = std::vector<ui::AXEvent>()) {
@@ -284,9 +292,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool ImagesEnabled() { return controller_->ImagesEnabled(); }
 
-  float LineSpacing() { return controller_->LineSpacing(); }
+  int LineSpacing() { return controller_->LineSpacing(); }
 
-  float LetterSpacing() { return controller_->LetterSpacing(); }
+  int LetterSpacing() { return controller_->LetterSpacing(); }
 
   int ColorTheme() { return controller_->ColorTheme(); }
 
@@ -545,6 +553,45 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
   EXPECT_TRUE(IsReadAloudEnabled());
 }
 
+TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
+  OnLetterSpacingChange(2);
+  EXPECT_CALL(page_handler_,
+              OnLetterSpaceChange(read_anything::mojom::LetterSpacing::kWide))
+      .Times(1);
+  ASSERT_EQ(LetterSpacing(), 2);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_InvalidChange) {
+  OnLetterSpacingChange(10);
+  EXPECT_CALL(page_handler_, OnLetterSpaceChange).Times(0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnLineSpacingChange_ValidChange) {
+  OnLineSpacingChange(3);
+  EXPECT_CALL(page_handler_,
+              OnLineSpaceChange(read_anything::mojom::LineSpacing::kVeryLoose))
+      .Times(1);
+  ASSERT_EQ(LineSpacing(), 3);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnLineSpacingChange_InvalidChange) {
+  OnLineSpacingChange(10);
+  EXPECT_CALL(page_handler_, OnLineSpaceChange).Times(0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnThemeChange_ValidChange) {
+  OnThemeChange(3);
+  EXPECT_CALL(page_handler_,
+              OnColorChange(read_anything::mojom::Colors::kYellow))
+      .Times(1);
+  ASSERT_EQ(ColorTheme(), 3);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnThemeChange_InvalidChange) {
+  OnThemeChange(10);
+  EXPECT_CALL(page_handler_, OnColorChange).Times(0);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnFontChange_UpdatesFont) {
   std::string expected_font = "Roboto";
 
@@ -704,10 +751,8 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
-  auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
-  float line_spacing_value = 1.5;
-  auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
-  float letter_spacing_value = 0.0;
+  auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
   std::string font_name = "Roboto";
   double font_size = 18.0;
   bool links_enabled = false;
@@ -730,8 +775,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
       images_enabled, color, speech_rate, std::move(voices),
       std::move(languages_enabled_in_pref), highlight_granularity);
 
-  EXPECT_EQ(line_spacing_value, LineSpacing());
-  EXPECT_EQ(letter_spacing_value, LetterSpacing());
+  EXPECT_EQ(static_cast<int>(line_spacing), LineSpacing());
+  EXPECT_EQ(static_cast<int>(letter_spacing), LetterSpacing());
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
   EXPECT_EQ(links_enabled, LinksEnabled());

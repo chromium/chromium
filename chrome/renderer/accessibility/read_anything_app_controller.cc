@@ -856,23 +856,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnImagesEnabledToggled)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
-      .SetMethod("onStandardLineSpacing",
-                 &ReadAnythingAppController::OnStandardLineSpacing)
-      .SetMethod("onLooseLineSpacing",
-                 &ReadAnythingAppController::OnLooseLineSpacing)
-      .SetMethod("onVeryLooseLineSpacing",
-                 &ReadAnythingAppController::OnVeryLooseLineSpacing)
-      .SetMethod("onStandardLetterSpacing",
-                 &ReadAnythingAppController::OnStandardLetterSpacing)
-      .SetMethod("onWideLetterSpacing",
-                 &ReadAnythingAppController::OnWideLetterSpacing)
-      .SetMethod("onVeryWideLetterSpacing",
-                 &ReadAnythingAppController::OnVeryWideLetterSpacing)
-      .SetMethod("onLightTheme", &ReadAnythingAppController::OnLightTheme)
-      .SetMethod("onDefaultTheme", &ReadAnythingAppController::OnDefaultTheme)
-      .SetMethod("onDarkTheme", &ReadAnythingAppController::OnDarkTheme)
-      .SetMethod("onYellowTheme", &ReadAnythingAppController::OnYellowTheme)
-      .SetMethod("onBlueTheme", &ReadAnythingAppController::OnBlueTheme)
+      .SetMethod("onLetterSpacingChange",
+                 &ReadAnythingAppController::OnLetterSpacingChange)
+      .SetMethod("onLineSpacingChange",
+                 &ReadAnythingAppController::OnLineSpacingChange)
+      .SetMethod("onThemeChange", &ReadAnythingAppController::OnThemeChange)
       .SetMethod("onFontChange", &ReadAnythingAppController::OnFontChange)
       .SetMethod("onSpeechRateChange",
                  &ReadAnythingAppController::OnSpeechRateChange)
@@ -986,11 +974,11 @@ bool ReadAnythingAppController::ImagesFeatureEnabled() const {
   return features::IsReadAnythingImagesViaAlgorithmEnabled();
 }
 
-float ReadAnythingAppController::LetterSpacing() const {
+int ReadAnythingAppController::LetterSpacing() const {
   return model_.letter_spacing();
 }
 
-float ReadAnythingAppController::LineSpacing() const {
+int ReadAnythingAppController::LineSpacing() const {
   return model_.line_spacing();
 }
 
@@ -1517,54 +1505,32 @@ void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
   }
   page_handler_->OnLinkClicked(model_.active_tree_id(), ax_node_id);
 }
+void ReadAnythingAppController::OnLetterSpacingChange(int value) {
+  if (value >
+      static_cast<int>(read_anything::mojom::LetterSpacing::kMaxValue)) {
+    return;
+  }
+  page_handler_->OnLetterSpaceChange(
+      static_cast<read_anything::mojom::LetterSpacing>(value));
+  model_.set_letter_spacing(value);
+}
 
-void ReadAnythingAppController::OnStandardLineSpacing() {
+void ReadAnythingAppController::OnLineSpacingChange(int value) {
+  if (value > static_cast<int>(read_anything::mojom::LineSpacing::kMaxValue)) {
+    return;
+  }
   page_handler_->OnLineSpaceChange(
-      read_anything::mojom::LineSpacing::kStandard);
+      static_cast<read_anything::mojom::LineSpacing>(value));
+  model_.set_line_spacing(value);
 }
 
-void ReadAnythingAppController::OnLooseLineSpacing() {
-  page_handler_->OnLineSpaceChange(read_anything::mojom::LineSpacing::kLoose);
-}
-
-void ReadAnythingAppController::OnVeryLooseLineSpacing() {
-  page_handler_->OnLineSpaceChange(
-      read_anything::mojom::LineSpacing::kVeryLoose);
-}
-
-void ReadAnythingAppController::OnStandardLetterSpacing() {
-  page_handler_->OnLetterSpaceChange(
-      read_anything::mojom::LetterSpacing::kStandard);
-}
-
-void ReadAnythingAppController::OnWideLetterSpacing() {
-  page_handler_->OnLetterSpaceChange(
-      read_anything::mojom::LetterSpacing::kWide);
-}
-
-void ReadAnythingAppController::OnVeryWideLetterSpacing() {
-  page_handler_->OnLetterSpaceChange(
-      read_anything::mojom::LetterSpacing::kVeryWide);
-}
-
-void ReadAnythingAppController::OnLightTheme() {
-  page_handler_->OnColorChange(read_anything::mojom::Colors::kLight);
-}
-
-void ReadAnythingAppController::OnDefaultTheme() {
-  page_handler_->OnColorChange(read_anything::mojom::Colors::kDefault);
-}
-
-void ReadAnythingAppController::OnDarkTheme() {
-  page_handler_->OnColorChange(read_anything::mojom::Colors::kDark);
-}
-
-void ReadAnythingAppController::OnYellowTheme() {
-  page_handler_->OnColorChange(read_anything::mojom::Colors::kYellow);
-}
-
-void ReadAnythingAppController::OnBlueTheme() {
-  page_handler_->OnColorChange(read_anything::mojom::Colors::kBlue);
+void ReadAnythingAppController::OnThemeChange(int value) {
+  if (value > static_cast<int>(read_anything::mojom::Colors::kMaxValue)) {
+    return;
+  }
+  page_handler_->OnColorChange(
+      static_cast<read_anything::mojom::Colors>(value));
+  model_.set_color_theme(value);
 }
 
 void ReadAnythingAppController::OnFontChange(const std::string& font) {

@@ -107,11 +107,17 @@ class ReadAnythingAppModel {
   const std::string& font_name() const { return font_name_; }
   void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
+  void set_font_size(float font_size) { font_size_ = font_size; }
   bool links_enabled() const { return links_enabled_; }
   bool images_enabled() const { return images_enabled_; }
-  float letter_spacing() const { return letter_spacing_; }
-  float line_spacing() const { return line_spacing_; }
+  int letter_spacing() const { return letter_spacing_; }
+  void set_letter_spacing(int letter_spacing) {
+    letter_spacing_ = letter_spacing;
+  }
+  int line_spacing() const { return line_spacing_; }
+  void set_line_spacing(int line_spacing) { line_spacing_ = line_spacing; }
   int color_theme() const { return color_theme_; }
+  void set_color_theme(int color_theme) { color_theme_ = color_theme; }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -323,9 +329,8 @@ class ReadAnythingAppModel {
   float font_size_ = kReadAnythingDefaultFontScale;
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
   bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
-  float letter_spacing_ =
-      (int)read_anything::mojom::LetterSpacing::kDefaultValue;
-  float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
+  int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
+  int line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
 
   // Selection information.

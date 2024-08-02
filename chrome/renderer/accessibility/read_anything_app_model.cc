@@ -80,8 +80,8 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool links_enabled,
     bool images_enabled,
     read_anything::mojom::Colors color) {
-  line_spacing_ = GetLineSpacingValue(line_spacing);
-  letter_spacing_ = GetLetterSpacingValue(letter_spacing);
+  line_spacing_ = static_cast<size_t>(line_spacing);
+  letter_spacing_ = static_cast<size_t>(letter_spacing);
   font_name_ = font;
   font_size_ = font_size;
   links_enabled_ = links_enabled;
