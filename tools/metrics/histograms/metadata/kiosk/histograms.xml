@@ -127,6 +127,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.DeprecatedArcKioskUsers"
+    enum="DeprecatedArcKioskUserStatus" expires_after="2025-09-01">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    Reports &quot;hidden&quot; when the login screen hides a ARC kiosk user.
+    Reports &quot;deleted&quot; when the login screen attempts to delete an ARC
+    kiosk user. Recorded on startup.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.DiskUsagePercentage" units="%"
     expires_after="2024-08-01">
   <owner>vkovalova@chromium.org</owner>

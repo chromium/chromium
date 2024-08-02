@@ -531,16 +531,13 @@ void UserManagerBase::RemoveUserFromListImpl(
 
   RemoveNonCryptohomeData(account_id);
   KnownUser(local_state_.get()).RemovePrefs(account_id);
-  if (user_loading_stage_ == STAGE_LOADED) {
-    // After the User object is deleted from memory in DeleteUser() here,
-    // the account_id reference will be invalid if the reference points
-    // to the account_id in the User object.
-    DeleteUser(
-        RemoveRegularOrSupervisedUserFromList(account_id, reason.has_value()));
-  } else {
-    NOTREACHED_IN_MIGRATION() << "Users are not loaded yet.";
-    return;
-  }
+
+  // Remove deprecated users also on a loading stage.
+  // After the User object is deleted from memory in DeleteUser() here,
+  // the account_id reference will be invalid if the reference points
+  // to the account_id in the User object.
+  DeleteUser(
+      RemoveRegularOrSupervisedUserFromList(account_id, reason.has_value()));
 
   if (reason.has_value()) {
     NotifyUserRemoved(account_id, reason.value());

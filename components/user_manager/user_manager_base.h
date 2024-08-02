@@ -53,7 +53,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // should stop supporting devices with LSUs by 2024.
   // These values are logged to UMA. Entries should not be renumbered and
   // numeric values should never be reused. Please keep in sync with
-  // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+  // "LegacySupervisedUserStatus" in
+  // src/tools/metrics/histograms/metadata/families/enums.xml.
   enum class LegacySupervisedUserStatus {
     // Non-LSU Gaia user displayed on login screen.
     kGaiaUserDisplayed = 0,
@@ -63,8 +64,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
     // LSU attempted to delete cryptohome. Expect this count to decline to zero
     // over time as we delete LSUs.
     kLSUDeleted = 2,
-    // Add future entires above this comment, in sync with
-    // "LegacySupervisedUserStatus" in src/tools/metrics/histograms/enums.xml.
+    // Add future entries above this comment, in sync with
+    // "LegacySupervisedUserStatus" in
+    // src/tools/metrics/histograms/metadata/families/enums.xml.
     // Update kMaxValue to the last value.
     kMaxValue = kLSUDeleted
   };

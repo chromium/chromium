@@ -36,6 +36,12 @@ class CloudExternalDataPolicyHandler;
 
 namespace ash {
 
+// Feature that removes deprecated ARC kiosk users.
+BASE_DECLARE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup);
+
+// Domain that is used for ARC kiosk users.
+extern const char kArcKioskDomain[];
+
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
     : public user_manager::UserManagerBase,
@@ -45,10 +51,34 @@ class ChromeUserManagerImpl
       public ProfileObserver,
       public ProfileManagerObserver {
  public:
+  // These enum values represent a deprecated ARC kiosk user's status on the
+  // sign in screen.
+  // TODO(b/355590943): Remove once all ARC kiosk users are deleted in the wild.
+  // ARC Kiosk has been deprecated and removed in m126. However, the accounts
+  // still exist on the devices if configured prior to m126, but hidden. These
+  // values are logged to UMA. Entries should not be renumbered and numeric
+  // values should never be reused. Please keep in sync with
+  // "DeprecatedArcKioskUserStatus" in src/tools/metrics/histograms/enums.xml.
+  enum class DeprecatedArcKioskUserStatus {
+    // ARC kiosk hidden on login screen. Expect this count to decline to zero
+    // over
+    // time.
+    kHidden = 0,
+    // Attempted to delete cryptohome. Expect this count to decline to zero
+    // over time.
+    kDeleted = 1,
+    kMaxValue = kDeleted
+  };
+
   ChromeUserManagerImpl(const ChromeUserManagerImpl&) = delete;
   ChromeUserManagerImpl& operator=(const ChromeUserManagerImpl&) = delete;
 
   ~ChromeUserManagerImpl() override;
+
+  // Histogram for tracking the number of deprecated ARC kiosk user
+  // cryptohomes remaining in the wild.
+  // TODO(b/355590943): clean up once there is no ARC kiosk records.
+  static const char kDeprecatedArcKioskUsersHistogramName[];
 
   // Creates ChromeUserManagerImpl instance.
   static std::unique_ptr<ChromeUserManagerImpl> CreateChromeUserManager();
@@ -135,6 +165,11 @@ class ChromeUserManagerImpl
   // external data depends on prefs.
   void RemoveNonCryptohomeDataPostExternalDataRemoval(
       const AccountId& account_id);
+
+  // Returns true if |account_id| is a deprecated ARC kiosk account.
+  // TODO(b/355590943): Check if it is not used anymore and remove it.
+  bool IsDeprecatedArcKioskAccountId(const AccountId& account_id) const;
+  void RemoveDeprecatedArcKioskUser(const AccountId& account_id);
 
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>

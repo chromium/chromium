@@ -32,6 +32,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -166,6 +167,16 @@ user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
 }
 
 }  // namespace
+
+BASE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup,
+             "RemoveDeprecatedArcKioskUsersOnStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const char kArcKioskDomain[] = "arc-kiosk-apps.device-local.localhost";
+
+// static
+const char ChromeUserManagerImpl::kDeprecatedArcKioskUsersHistogramName[] =
+    "Kiosk.DeprecatedArcKioskUsers";
 
 // static
 std::unique_ptr<ChromeUserManagerImpl>
@@ -344,6 +355,12 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
   for (const AccountId& account_id : device_local_accounts) {
+    if (IsDeprecatedArcKioskAccountId(account_id)) {
+      RemoveDeprecatedArcKioskUser(account_id);
+      // Remove or hide deprecated ARC kiosk users from the login screen.
+      continue;
+    }
+
     auto type = policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
     if (!type.has_value()) {
       NOTREACHED_IN_MIGRATION();
@@ -511,6 +528,17 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     }
   }
 
+  // Persist the new list of device local accounts in a pref. These accounts
+  // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
+  // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
+  // us to clean up associated data if they disappear from policy.
+  ScopedListPrefUpdate prefs_device_local_accounts_update(
+      GetLocalState(), prefs::kDeviceLocalAccountsWithSavedData);
+  prefs_device_local_accounts_update->clear();
+  for (const auto& account : device_local_accounts) {
+    prefs_device_local_accounts_update->Append(account.user_id);
+  }
+
   // If the list of device local accounts has not changed, return.
   if (device_local_accounts.size() == old_accounts.size()) {
     bool changed = false;
@@ -523,17 +551,6 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     if (!changed) {
       return false;
     }
-  }
-
-  // Persist the new list of device local accounts in a pref. These accounts
-  // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
-  // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
-  // us to clean up associated data if they disappear from policy.
-  ScopedListPrefUpdate prefs_device_local_accounts_update(
-      GetLocalState(), prefs::kDeviceLocalAccountsWithSavedData);
-  prefs_device_local_accounts_update->clear();
-  for (const auto& account : device_local_accounts) {
-    prefs_device_local_accounts_update->Append(account.user_id);
   }
 
   // Remove the old device local accounts from the user list.
@@ -682,6 +699,26 @@ ChromeUserManagerImpl::CreateUserFromDeviceLocalAccount(
   }
 
   return user;
+}
+
+bool ChromeUserManagerImpl::IsDeprecatedArcKioskAccountId(
+    const AccountId& account_id) const {
+  return gaia::ExtractDomainName(account_id.GetUserEmail()) == kArcKioskDomain;
+}
+
+// TODO(b/355590943): Remove dormant deprecated ARC kiosk user cryptohomes.
+// Remove this once confident that all ARC kiosk cryptohomes are cleaned up.
+void ChromeUserManagerImpl::RemoveDeprecatedArcKioskUser(
+    const AccountId& account_id) {
+  CHECK(IsDeprecatedArcKioskAccountId(account_id));
+  if (base::FeatureList::IsEnabled(kRemoveDeprecatedArcKioskUsersOnStartup)) {
+    RemoveUserInternal(account_id, user_manager::UserRemovalReason::UNKNOWN);
+    base::UmaHistogramEnumeration(kDeprecatedArcKioskUsersHistogramName,
+                                  DeprecatedArcKioskUserStatus::kDeleted);
+  } else {
+    base::UmaHistogramEnumeration(kDeprecatedArcKioskUsersHistogramName,
+                                  DeprecatedArcKioskUserStatus::kHidden);
+  }
 }
 
 }  // namespace ash
