@@ -34,8 +34,6 @@ libudev_functions = [
   "udev_monitor_receive_device",
   "udev_monitor_unref",
   "udev_new",
-  "udev_set_log_fn",
-  "udev_set_log_priority",
   "udev_unref",
 ]
 

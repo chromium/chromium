@@ -72,13 +72,6 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) Udev1Loader : public UdevLoader {
   udev_device* udev_monitor_receive_device(udev_monitor* udev_monitor) override;
   void udev_monitor_unref(udev_monitor* udev_monitor) override;
   udev* udev_new() override;
-  void udev_set_log_fn(
-      struct udev* udev,
-      void (*log_fn)(struct udev* udev, int priority,
-                     const char* file, int line,
-                     const char* fn, const char* format,
-                     va_list args)) override;
-  void udev_set_log_priority(struct udev* udev, int priority) override;
   void udev_unref(udev* udev) override;
 
   std::unique_ptr<LibUdev1Loader> lib_loader_;
