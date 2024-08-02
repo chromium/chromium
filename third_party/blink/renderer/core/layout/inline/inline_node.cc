@@ -246,7 +246,7 @@ class ReusingTextShaper final {
     HeapVector<Member<const ShapeResult>> shape_results;
     if (!reusable_items_)
       return shape_results;
-    for (const InlineItem *item = std::lower_bound(
+    for (auto item = std::lower_bound(
              reusable_items_->begin(), reusable_items_->end(), start_offset,
              [](const InlineItem& item, unsigned offset) {
                return item.EndOffset() <= offset;
@@ -275,10 +275,9 @@ class ReusingTextShaper final {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
     if (data_.segments) {
-      return data_.segments->ShapeText(
-          &shaper_, &font, direction, start_offset, end_offset,
-          base::checked_cast<unsigned>(&start_item - data_.items.begin()),
-          options_);
+      return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
+                                       end_offset,
+                                       data_.ToItemIndex(start_item), options_);
     }
     RunSegmenter::RunSegmenterRange range =
         start_item.CreateRunSegmenterRange();
@@ -705,8 +704,8 @@ class InlineNodeDataEditor final {
     items.ReserveInitialCapacity(data_->items.size() + 3);
 
     // Copy items before replaced range
-    auto const* end = data_->items.end();
-    auto* it = data_->items.begin();
+    auto end = data_->items.end();
+    auto it = data_->items.begin();
     for (; it != end && it->end_offset_ < start_offset; ++it) {
       CHECK(it != data_->items.end(), base::NotFatalUntil::M130);
       items.push_back(*it);
@@ -1708,16 +1707,16 @@ String CreateTextContentForStickyImagesQuirk(
 String InlineNode::TextContentForStickyImagesQuirk(
     const InlineItemsData& items_data) {
   const String& text_content = items_data.text_content;
-  for (const InlineItem& item : items_data.items) {
+  for (unsigned i = 0; i < items_data.items.size(); ++i) {
+    const InlineItem& item = items_data.items[i];
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
+      auto item_span = base::span(items_data.items).subspan(i);
       if (text_content.Is8Bit()) {
         return CreateTextContentForStickyImagesQuirk(
-            text_content.Characters8(), text_content.length(),
-            base::span<const InlineItem>(&item, items_data.items.end()));
+            text_content.Characters8(), text_content.length(), item_span);
       }
       return CreateTextContentForStickyImagesQuirk(
-          text_content.Characters16(), text_content.length(),
-          base::span<const InlineItem>(&item, items_data.items.end()));
+          text_content.Characters16(), text_content.length(), item_span);
     }
   }
   return text_content;
@@ -1812,10 +1811,12 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     STACK_ALLOCATED();
 
    public:
+    using ItemIterator = HeapVector<InlineItem>::const_iterator;
+
     LayoutUnit position;
     LayoutUnit max_size;
     const InlineItemsData& items_data;
-    const InlineItem* next_item;
+    ItemIterator next_item;
     const LineBreaker::MaxSizeCache& max_size_cache;
     FloatsMaxSize* floats;
     bool is_after_break = true;
@@ -1832,7 +1833,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     // Add all text items up to |end|. The line break results for min size
     // may break text into multiple lines, and may remove trailing spaces. For
     // max size, use the original text widths from InlineItem instead.
-    void AddTextUntil(const InlineItem* end) {
+    void AddTextUntil(ItemIterator end) {
       DCHECK(end);
       for (; next_item != end; ++next_item) {
         if (next_item->Type() == InlineItem::kOpenTag &&
@@ -1863,7 +1864,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
     void AddTabulationCharacters(const InlineItem& item, unsigned length) {
       DCHECK_GE(length, 1u);
-      AddTextUntil(&item);
+      AddTextUntil(items_data.ToItemIterator(item));
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
       const Font& font = style.GetFont();
@@ -1876,7 +1877,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       position += LayoutUnit::FromFloatCeil(advance).ClampNegativeToZero();
     }
 
-    LayoutUnit Finish(const InlineItem* end) {
+    LayoutUnit Finish(ItemIterator end) {
       AddTextUntil(end);
       return floats->ComputeMaxSizeForLine(position.ClampNegativeToZero(),
                                            max_size);
@@ -1915,8 +1916,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
         if (item.Type() == InlineItem::kAtomicInline ||
             item.Type() == InlineItem::kBlockInInline) {
           // The max-size for atomic inlines are cached in |max_size_cache|.
-          unsigned item_index =
-              base::checked_cast<unsigned>(&item - items_data.items.begin());
+          unsigned item_index = items_data.ToItemIndex(item);
           position += max_size_cache[item_index];
           continue;
         }
