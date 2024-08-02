@@ -294,55 +294,49 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     const ConstraintSpace& space,
     MinMaxSizesFunctionRef min_max_sizes_func) {
   const auto& style = child.Style();
-
-  const bool is_parallel_with_parent =
-      IsParallelWritingMode(parent_writing_mode, style.GetWritingMode());
-  const bool is_parent_writing_mode_horizontal =
-      IsHorizontalWritingMode(parent_writing_mode);
-
   const auto border_padding =
       ComputeBorders(space, child) + ComputePadding(space, style);
-  const auto& inline_size =
-      is_parent_writing_mode_horizontal ? style.Width() : style.Height();
+
+  // First check if we are an orthogonal writing-mode root, then attempt to
+  // resolve the block-size.
+  if (!IsParallelWritingMode(parent_writing_mode, style.GetWritingMode())) {
+    const LayoutUnit block_size = ComputeBlockSizeForFragment(
+        space, child, border_padding, /* intrinsic_size */ kIndefiniteSize,
+        /* inline_size */ kIndefiniteSize);
+
+    // If we weren't able to resolve the block-size, or we might have intrinsic
+    // constraints, just perform a full layout via the callback.
+    if (block_size == kIndefiniteSize ||
+        style.LogicalMinHeight().HasContentOrIntrinsic() ||
+        style.LogicalMaxHeight().HasContentOrIntrinsic() || child.IsTable()) {
+      return min_max_sizes_func(SizeType::kContent);
+    }
+
+    return {{block_size, block_size}, /* depends_on_block_constraints */ false};
+  }
 
   MinMaxSizesResult result;
+
   // TODO(https://crbug.com/40339056): These parts need to be merged
   // together to handle calc-size() correctly.
+  const auto& inline_size = style.LogicalWidth();
   if (inline_size.HasAuto() || inline_size.HasPercent() ||
       inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
     result = min_max_sizes_func(SizeType::kContent);
   } else {
-    const auto size =
-        is_parallel_with_parent
-            ? ResolveMainInlineLength(space, style, border_padding,
-                                      min_max_sizes_func, inline_size,
-                                      /* auto_length */ nullptr)
-            : ResolveMainBlockLength(
-                  space, style, border_padding, inline_size,
-                  /* auto_length */ nullptr, [&](SizeType type) -> LayoutUnit {
-                    return min_max_sizes_func(type).sizes.max_size;
-                  });
-
+    const LayoutUnit size = ResolveMainInlineLength(
+        space, style, border_padding, min_max_sizes_func, inline_size,
+        /* auto_length */ nullptr);
     // This child's contribution size is not dependent on the available size, so
     // it's considered definite. Return this size for both min and max.
     result = {{size, size}, /* depends_on_block_constraints */ false};
   }
 
-  const MinMaxSizes min_max_sizes =
-      is_parallel_with_parent
-          ? ComputeMinMaxInlineSizes(space, child, border_padding,
-                                     min_max_sizes_func)
-          : ComputeMinMaxBlockSizesDeprecated(space, child, border_padding);
+  const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
+      space, child, border_padding, min_max_sizes_func);
 
   result.sizes.Constrain(min_max_sizes.max_size);
   result.sizes.Encompass(min_max_sizes.min_size);
-
-  // Tables need to apply one final constraint. They are never allowed to go
-  // below their min-intrinsic size (even if they have an inline-size, etc).
-  if (child.IsTable()) {
-    result.sizes.Encompass(
-        min_max_sizes_func(SizeType::kIntrinsic).sizes.min_size);
-  }
   return result;
 }
 
