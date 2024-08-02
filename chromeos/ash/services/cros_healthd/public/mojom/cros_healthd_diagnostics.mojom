@@ -52,7 +52,7 @@ enum DiagnosticRoutineEnum {
   [MinVersion=2] kFingerprint = 32,
   [MinVersion=2] kFingerprintAlive = 33,
   [MinVersion=3] kPrivacyScreen = 34,
-  [MinVersion=4] kLedLitUp = 35,
+  [MinVersion=4] DEPRECATED_kLedLitUp = 35,
   [MinVersion=5] kSmartctlCheckWithPercentageUsed = 36,
   [MinVersion=6] kEmmcLifetime = 37,
   [MinVersion=7] DEPRECATED_kAudioSetVolume = 38,
