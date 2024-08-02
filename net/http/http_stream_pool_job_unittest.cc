@@ -65,220 +65,9 @@ using Job = HttpStreamPool::Job;
 
 namespace {
 
-class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
- public:
-  FakeServiceEndpointRequest() = default;
-
-  void set_start_result(int start_result) { start_result_ = start_result; }
-
-  void set_endpoints(std::vector<ServiceEndpoint> endpoints) {
-    endpoints_ = std::move(endpoints);
-  }
-
-  FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint) {
-    endpoints_.emplace_back(std::move(endpoint));
-    return *this;
-  }
-
-  FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases) {
-    aliases_ = std::move(aliases);
-    return *this;
-  }
-
-  FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready) {
-    endpoints_crypto_ready_ = endpoints_crypto_ready;
-    return *this;
-  }
-
-  FakeServiceEndpointRequest& set_resolve_error_info(
-      ResolveErrorInfo resolve_error_info) {
-    resolve_error_info_ = resolve_error_info;
-    return *this;
-  }
-
-  RequestPriority priority() const { return priority_; }
-  FakeServiceEndpointRequest& set_priority(RequestPriority priority) {
-    priority_ = priority;
-    return *this;
-  }
-
-  FakeServiceEndpointRequest& CallOnServiceEndpointsUpdated();
-
-  FakeServiceEndpointRequest& CallOnServiceEndpointRequestFinished(int rv);
-
-  // HostResolver::ServiceEndpointRequest methods:
-  int Start(Delegate* delegate) override;
-  const std::vector<ServiceEndpoint>& GetEndpointResults() override;
-  const std::set<std::string>& GetDnsAliasResults() override;
-  bool EndpointsCryptoReady() override;
-  ResolveErrorInfo GetResolveErrorInfo() override;
-  void ChangeRequestPriority(RequestPriority priority) override;
-
- private:
-  raw_ptr<Delegate> delegate_;
-
-  int start_result_ = ERR_IO_PENDING;
-  std::vector<ServiceEndpoint> endpoints_;
-  std::set<std::string> aliases_;
-  bool endpoints_crypto_ready_ = false;
-  ResolveErrorInfo resolve_error_info_;
-  RequestPriority priority_ = RequestPriority::IDLE;
-};
-
-FakeServiceEndpointRequest&
-FakeServiceEndpointRequest::CallOnServiceEndpointsUpdated() {
-  CHECK(delegate_);
-  delegate_->OnServiceEndpointsUpdated();
-  return *this;
-}
-
-FakeServiceEndpointRequest&
-FakeServiceEndpointRequest::CallOnServiceEndpointRequestFinished(int rv) {
-  CHECK(delegate_);
-  endpoints_crypto_ready_ = true;
-  delegate_->OnServiceEndpointRequestFinished(rv);
-  return *this;
-}
-
-int FakeServiceEndpointRequest::Start(Delegate* delegate) {
-  CHECK(!delegate_);
-  CHECK(delegate);
-  delegate_ = delegate;
-  return start_result_;
-}
-
-const std::vector<ServiceEndpoint>&
-FakeServiceEndpointRequest::GetEndpointResults() {
-  return endpoints_;
-}
-
-const std::set<std::string>& FakeServiceEndpointRequest::GetDnsAliasResults() {
-  return aliases_;
-}
-
-bool FakeServiceEndpointRequest::EndpointsCryptoReady() {
-  return endpoints_crypto_ready_;
-}
-
-ResolveErrorInfo FakeServiceEndpointRequest::GetResolveErrorInfo() {
-  return resolve_error_info_;
-}
-
-void FakeServiceEndpointRequest::ChangeRequestPriority(
-    RequestPriority priority) {
-  priority_ = priority;
-}
-
-class FakeServiceEndpointResolver : public HostResolver {
- public:
-  FakeServiceEndpointResolver() = default;
-
-  FakeServiceEndpointResolver(const FakeServiceEndpointResolver&) = delete;
-  FakeServiceEndpointResolver& operator=(const FakeServiceEndpointResolver&) =
-      delete;
-
-  ~FakeServiceEndpointResolver() override = default;
-
-  FakeServiceEndpointRequest* AddFakeRequest();
-
-  // HostResolver methods:
-  void OnShutdown() override;
-  std::unique_ptr<ResolveHostRequest> CreateRequest(
-      url::SchemeHostPort host,
-      NetworkAnonymizationKey network_anonymization_key,
-      NetLogWithSource net_log,
-      std::optional<ResolveHostParameters> optional_parameters) override;
-  std::unique_ptr<ResolveHostRequest> CreateRequest(
-      const HostPortPair& host,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      const NetLogWithSource& net_log,
-      const std::optional<ResolveHostParameters>& optional_parameters) override;
-  std::unique_ptr<ServiceEndpointRequest> CreateServiceEndpointRequest(
-      Host host,
-      NetworkAnonymizationKey network_anonymization_key,
-      NetLogWithSource net_log,
-      ResolveHostParameters parameters) override;
-
- private:
-  std::list<std::unique_ptr<FakeServiceEndpointRequest>> requests_;
-};
-
-FakeServiceEndpointRequest* FakeServiceEndpointResolver::AddFakeRequest() {
-  std::unique_ptr<FakeServiceEndpointRequest> request =
-      std::make_unique<FakeServiceEndpointRequest>();
-  FakeServiceEndpointRequest* raw_request = request.get();
-  requests_.emplace_back(std::move(request));
-  return raw_request;
-}
-
-void FakeServiceEndpointResolver::OnShutdown() {}
-
-std::unique_ptr<HostResolver::ResolveHostRequest>
-FakeServiceEndpointResolver::CreateRequest(
-    url::SchemeHostPort host,
-    NetworkAnonymizationKey network_anonymization_key,
-    NetLogWithSource net_log,
-    std::optional<ResolveHostParameters> optional_parameters) {
-  NOTREACHED_NORETURN();
-}
-
-std::unique_ptr<HostResolver::ResolveHostRequest>
-FakeServiceEndpointResolver::CreateRequest(
-    const HostPortPair& host,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    const NetLogWithSource& net_log,
-    const std::optional<ResolveHostParameters>& optional_parameters) {
-  NOTREACHED_NORETURN();
-}
-
-std::unique_ptr<HostResolver::ServiceEndpointRequest>
-FakeServiceEndpointResolver::CreateServiceEndpointRequest(
-    Host host,
-    NetworkAnonymizationKey network_anonymization_key,
-    NetLogWithSource net_log,
-    ResolveHostParameters parameters) {
-  CHECK(!requests_.empty());
-  std::unique_ptr<FakeServiceEndpointRequest> request =
-      std::move(requests_.front());
-  requests_.pop_front();
-  request->set_priority(parameters.initial_priority);
-  return request;
-}
-
 IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
   return IPEndPoint(*IPAddress::FromIPLiteral(addr), port);
 }
-
-// A helper to build a ServiceEndpoint.
-class EndpointHelper {
- public:
-  EndpointHelper() = default;
-
-  EndpointHelper& add_v4(std::string_view addr, uint16_t port = 80) {
-    endpoint_.ipv4_endpoints.emplace_back(MakeIPEndPoint(addr));
-    return *this;
-  }
-
-  EndpointHelper& add_v6(std::string_view addr, uint16_t port = 80) {
-    endpoint_.ipv6_endpoints.emplace_back(MakeIPEndPoint(addr));
-    return *this;
-  }
-
-  EndpointHelper& add_ip_endpoint(IPEndPoint ip_endpoint) {
-    if (ip_endpoint.address().IsIPv4()) {
-      endpoint_.ipv4_endpoints.emplace_back(ip_endpoint);
-    } else {
-      CHECK(ip_endpoint.address().IsIPv6());
-      endpoint_.ipv6_endpoints.emplace_back(ip_endpoint);
-    }
-    return *this;
-  }
-
-  ServiceEndpoint endpoint() const { return endpoint_; }
-
- private:
-  ServiceEndpoint endpoint_;
-};
 
 // A helper to create an HttpStreamKey.
 class StreamKeyBuilder {
@@ -639,7 +428,7 @@ TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
 
   FastForwardBy(kDnsDelay);
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   ASSERT_FALSE(requester.result().has_value());
@@ -690,7 +479,7 @@ TEST_F(HttpStreamPoolJobTest, ConnectTimingDnsResolutionNotFinished) {
 
   FastForwardBy(kDnsUpdateDelay);
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   FastForwardBy(kDnsUpdateDelay);
@@ -738,7 +527,7 @@ TEST_F(HttpStreamPoolJobTest, SetPriority) {
   socket_factory()->AddSocketDataProvider(data2.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointsUpdated();
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
   ASSERT_EQ(request1->GetLoadState(), LOAD_STATE_CONNECTING);
@@ -764,7 +553,7 @@ TEST_F(HttpStreamPoolJobTest, TcpFailSync) {
   socket_factory()->AddSocketDataProvider(data.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
@@ -781,7 +570,7 @@ TEST_F(HttpStreamPoolJobTest, TcpFailAsync) {
   socket_factory()->AddSocketDataProvider(data.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
@@ -799,7 +588,7 @@ TEST_F(HttpStreamPoolJobTest, TlsOk) {
   requester.set_destination("https://a.test").RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsOk());
@@ -818,7 +607,7 @@ TEST_F(HttpStreamPoolJobTest, TlsCryptoReadyDelayed) {
       requester.set_destination("https://a.test").RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   ASSERT_FALSE(requester.result().has_value());
@@ -853,7 +642,7 @@ TEST_F(HttpStreamPoolJobTest, CertificateError) {
   requester2.set_destination(kDestination).RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   EXPECT_FALSE(requester1.result().has_value());
@@ -892,7 +681,7 @@ TEST_F(HttpStreamPoolJobTest, NeedsClientAuth) {
   requester2.set_destination(kDestination).RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   EXPECT_FALSE(requester1.result().has_value());
@@ -932,7 +721,7 @@ TEST_F(HttpStreamPoolJobTest, TcpFailAfterNeedsClientAuth) {
   requester2.set_destination(kDestination).RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .set_crypto_ready(true)
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
@@ -953,7 +742,7 @@ TEST_F(HttpStreamPoolJobTest, RequestCancelledBeforeAttemptSuccess) {
   socket_factory()->AddSocketDataProvider(data.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
 
   requester.CancelRequest();
@@ -976,8 +765,10 @@ TEST_F(HttpStreamPoolJobTest, OneIPEndPointFailed) {
   data2->set_connect_data(MockConnect(ASYNC, OK));
   socket_factory()->AddSocketDataProvider(data2.get());
 
-  endpoint_request->add_endpoint(
-      EndpointHelper().add_v6("2001:db8::1").add_v4("192.0.2.1").endpoint());
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v6("2001:db8::1")
+                                     .add_v4("192.0.2.1")
+                                     .endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsOk());
@@ -994,7 +785,7 @@ TEST_F(HttpStreamPoolJobTest, IPEndPointTimedout) {
   socket_factory()->AddSocketDataProvider(data.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   ASSERT_FALSE(requester.result().has_value());
 
@@ -1024,7 +815,7 @@ TEST_F(HttpStreamPoolJobTest, IPEndPointsSlow) {
   data3->set_connect_data(MockConnect(ASYNC, OK));
   socket_factory()->AddSocketDataProvider(data3.get());
 
-  endpoint_request->add_endpoint(EndpointHelper()
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
                                      .add_v6("2001:db8::1")
                                      .add_v6("2001:db8::2")
                                      .add_v4("192.0.2.1")
@@ -1071,7 +862,7 @@ TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   }
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
 
   Group& group =
@@ -1181,7 +972,7 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
   socket_factory()->AddSocketDataProvider(data1.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
 
@@ -1250,7 +1041,7 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimitHighPriorityGroupFirst) {
   for (const auto& [host, ip_address, priority] : items) {
     FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
     endpoint_request->add_endpoint(
-        EndpointHelper().add_v4(ip_address).endpoint());
+        ServiceEndpointBuilder().add_v4(ip_address).endpoint());
     endpoint_requests.emplace_back(endpoint_request);
 
     auto requester = std::make_unique<StreamRequester>();
@@ -1395,7 +1186,7 @@ TEST_F(HttpStreamPoolJobTest,
   socket_factory()->AddSocketDataProvider(data.get());
 
   endpoint_request->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
 
@@ -1417,7 +1208,7 @@ TEST_F(HttpStreamPoolJobTest, ProcessPendingRequestDnsResolutionOngoing) {
   pool().ProcessPendingRequestsInGroups();
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
@@ -1444,10 +1235,10 @@ TEST_F(HttpStreamPoolJobTest, CancelAttemptAndRequestsOnIPAddressChange) {
   requester2.set_destination("https://b.test").RequestStream(pool());
 
   endpoint_request1->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.1").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request1->CallOnServiceEndpointRequestFinished(OK);
   endpoint_request2->add_endpoint(
-      EndpointHelper().add_v4("192.0.2.2").endpoint());
+      ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint());
   endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
 
   Job* job1 = pool()
@@ -1496,7 +1287,7 @@ TEST_F(HttpStreamPoolJobTest, IPAddressChangeAfterNeedsClientAuth) {
   requester2.set_destination(kDestination).RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .set_crypto_ready(true)
       .CallOnServiceEndpointsUpdated();
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
@@ -1602,7 +1393,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyOk) {
   }
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
 
@@ -1635,7 +1426,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyCreateSessionFail) {
   requester.set_destination("https://a.test").RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
 
@@ -1682,7 +1473,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
   requester_c.set_destination("https://c.test").RequestStream(pool());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   Group& group_c =
@@ -1721,7 +1512,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionOk) {
 
   endpoint_request
       ->add_endpoint(
-          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
@@ -1748,7 +1539,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionAlreadyHaveSession) {
   // CallOnServiceEndpointRequestFinished() to check existing sessions twice.
   endpoint_request
       ->add_endpoint(
-          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointsUpdated()
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
@@ -1771,7 +1562,7 @@ TEST_F(HttpStreamPoolJobTest,
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(
-          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .set_start_result(OK);
 
   StreamRequester requester_b;
@@ -1811,7 +1602,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionDisabled) {
 
   endpoint_request
       ->add_endpoint(
-          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
@@ -1846,7 +1637,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionKeyMismatch) {
 
   endpoint_request
       ->add_endpoint(
-          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
@@ -1881,7 +1672,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionVerifyDomainFailed) {
 
   endpoint_request
       ->add_endpoint(
-          EndpointHelper().add_ip_endpoint(kCommonEndPoint).endpoint())
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
@@ -1914,7 +1705,7 @@ TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyBlockSecondAttempt) {
   socket_factory()->AddSSLSocketDataProvider(ssl.get());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   // There should be only one in-flight attempt because attempts are throttled.
   Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
@@ -1964,7 +1755,7 @@ TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyDelayPassedHttp2) {
   socket_factory()->AddSSLSocketDataProvider(ssl2.get());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   // There should be only one in-flight attempt because attempts are throttled.
   Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
@@ -2015,7 +1806,7 @@ TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyDelayPassedHttp1) {
   socket_factory()->AddSSLSocketDataProvider(ssl2.get());
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   // There should be only one in-flight attempt because attempts are throttled.
   Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
@@ -2065,7 +1856,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectFail) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
@@ -2094,7 +1885,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsHttp1) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), kNumStreams);
@@ -2129,7 +1920,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsHttp2) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
@@ -2170,7 +1961,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectRequireHttp1) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 2u);
@@ -2204,7 +1995,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsOkAndFail) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), kNumStreams);
@@ -2236,7 +2027,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsFailAndOk) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), kNumStreams);
@@ -2272,7 +2063,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectMultipleRequests) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   ASSERT_FALSE(preconnector1.result().has_value());
   ASSERT_FALSE(preconnector2.result().has_value());
@@ -2306,7 +2097,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectReachedGroupLimit) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
@@ -2339,7 +2130,7 @@ TEST_F(HttpStreamPoolJobTest, PreconnectReachedPoolLimit) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
-      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   Group& group_b =
