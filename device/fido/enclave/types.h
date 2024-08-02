@@ -45,6 +45,9 @@ enum class ClientKeyType {
   // signing after the user has performed some explicit action such as providing
   // a local biometric or PIN.
   kUserVerified,
+  // kSoftwareUserVerified keys are not hardware-bound, but user verification is
+  // performed before they sign with anything.
+  kSoftwareUserVerified,
 };
 
 // Describes the result of a PIN claim validation by the enclave service.

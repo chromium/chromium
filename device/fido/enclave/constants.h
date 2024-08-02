@@ -99,6 +99,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterUVKeyPending[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kHardwareKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kSoftwareKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kUserVerificationKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kSoftwareUserVerificationKey[];
 
 // Wrapping request keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingPurpose[];

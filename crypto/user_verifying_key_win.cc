@@ -383,6 +383,8 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
     return key_name_;
   }
 
+  bool IsHardwareBacked() const override { return true; }
+
  private:
   std::string key_name_;
   ComPtr<IKeyCredential> credential_;
