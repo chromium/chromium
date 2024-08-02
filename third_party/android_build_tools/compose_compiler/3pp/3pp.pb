@@ -13,7 +13,6 @@ create {
   build {
     install: ["3pp.py", "install"]
     tool: "chromium/third_party/maven"
-    dep: "chromium/third_party/jdk"
   }
 }
 

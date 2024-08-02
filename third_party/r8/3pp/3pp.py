@@ -1,20 +1,32 @@
 #!/usr/bin/env python3
-# Copyright 2021 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
 import datetime
-import hashlib
 import json
 import os
 import pathlib
 import urllib.request
+import shlex
+import shutil
+import sys
+
+# Outside docker: //path/to/project/3pp/fetch.py
+# Inside docker: //path/to/project/install.py
+_THIS_DIR = pathlib.Path(__file__).resolve().parent
+_SRC_ROOT = _THIS_DIR.parents[2 if _THIS_DIR.name == '3pp' else 1]
+
+sys.path.insert(1, str(_SRC_ROOT / 'build' / '3pp_common'))
+import common
+
 
 # I have arbitrarily chosen 100 as a number much more than the number of commits
 # I expect to see in a day in R8.
 _COMMITS_URL = 'https://r8.googlesource.com/r8/+log/HEAD~100..HEAD?format=JSON'
 _ARCHIVE_URL = 'https://r8.googlesource.com/r8/+archive/{}.tar.gz'
+_DEPOT_TOOLS_URL = ('https://chromium.googlesource.com/chromium/tools/'
+                    'depot_tools/+archive/main.tar.gz')
 
 
 def get_commit_before_today():
@@ -64,49 +76,48 @@ def get_commit_before_today():
     return None
 
 
-def compute_patch_hash():
-    this_dir = pathlib.Path(__file__).parent
-    md5 = hashlib.md5()
-    for p in sorted(this_dir.glob('patches/*.patch')):
-        md5.update(p.read_bytes())
-    # Include install.py so that it triggers changes as well.
-    md5.update((this_dir / 'install.sh').read_bytes())
-    # Shorten to avoid really long version strings. Given the low number of patch
-    # files, 10 digits is more than sufficient.
-    return md5.hexdigest()[:10]
+def _install(version, output_prefix):
+    temp_file_path = 'archive.tar.gz'
+    common.download_file(_ARCHIVE_URL.format(version), temp_file_path)
+    common.extract_tar(temp_file_path, '.')
+    common.download_file(_DEPOT_TOOLS_URL, temp_file_path)
+    common.extract_tar(temp_file_path, 'depot_tools')
 
+    os.environ['PATH'] += os.path.pathsep + os.path.abspath('depot_tools')
 
-def do_latest():
-    commit_hash = get_commit_before_today()
-    assert commit_hash is not None
-    patch_hash = compute_patch_hash()
-    # Include hash of patch files so that 3pp bot will create a new version when
-    # they change.
-    print(f'{commit_hash}-{patch_hash}')
+    common.run_cmd(['tools/gradle.py', 'r8'])
 
-
-def get_download_url(version):
-    sha = version.split('-')[0]
-    partial_manifest = {
-        'url': [_ARCHIVE_URL.format(sha)],
-        'ext': '.tar.gz',
-    }
-    print(json.dumps(partial_manifest))
+    # Shrink (improves r8/d8 launch time):
+    # Needs the -D flag to avoid compilation error, see http://b/311202383.
+    java_home = common.path_within_checkout('third_party/jdk/current')
+    common.run_cmd(
+        shlex.split(f"""
+        {java_home}/bin/java
+            -Dcom.android.tools.r8.enableKeepAnnotations=1
+            -jar build/libs/r8.jar
+            --debug
+            --classfile
+            --no-minification
+            --no-desugaring
+            --pg-conf src/main/keep.txt
+            --pg-conf {_THIS_DIR}/chromium_keeps.txt
+            --lib {java_home}
+            --output r8.jar
+            build/libs/r8.jar
+        """))
+    out_dir = os.path.join(output_prefix, 'lib')
+    os.makedirs(out_dir)
+    shutil.move('r8.jar', out_dir)
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    sub = ap.add_subparsers(required=True)
+    def do_latest():
+        return get_commit_before_today()
 
-    latest = sub.add_parser("latest")
-    latest.set_defaults(func=do_latest)
+    def do_install(args):
+        _install(args.version, args.output_prefix)
 
-    download = sub.add_parser("get_url")
-    download.set_defaults(
-        func=lambda: get_download_url(os.environ['_3PP_VERSION']))
-
-    opts = ap.parse_args()
-    opts.func()
+    common.main(do_latest=do_latest, do_install=do_install, runtime_deps=['//third_party/jdk/current'])
 
 
 if __name__ == '__main__':
