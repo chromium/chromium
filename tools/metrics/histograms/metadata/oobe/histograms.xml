@@ -768,6 +768,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.GaiaScreen.PasswordlessLoginRequests" enum="Boolean"
+    expires_after="2025-04-24">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records whether password or passwordless login is used on the Gaia screen.
+    The histogram is recorded when the user is on an unmanaged device and
+    passwordless login is allowed. Note that it excludes consumer users on
+    managed devices, although passwordless login is allowed.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.GaiaScreen.SuccessLoginRequests" enum="GaiaLoginVariant"
     expires_after="2025-01-26">
   <owner>dkuzmin@google.com</owner>
