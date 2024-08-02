@@ -416,6 +416,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kCanvasReset},
           {WebFeature::kCanvasRenderingContext2DRoundRect,
            WebDXFeature::kCanvasRoundrect},
+          {WebFeature::kCSSColorMixFunction, WebDXFeature::kColorMix},
       });
 
   return *kMap;
