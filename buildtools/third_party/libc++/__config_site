@@ -63,11 +63,6 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
-// TODO(crbug.com/354741410): Re-enable on swangle bots once VK-GL-CTS is fixed.
-#if !defined(ANGLE_DEQP_DATA_DIR)
-#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
-#endif
-
 // Don't add ABI tags to libc++ symbols. ABI tags increase mangled name sizes.
 // This only exists to allow multiple // libc++ versions to be linked into a
 // binary, which Chrome doesn't do.
