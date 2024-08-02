@@ -27,6 +27,7 @@ build_webui("build") {
     "pages/battery_chart.ts",
     "pages/cpu_frequency_chart.ts",
     "pages/cpu_usage_chart.ts",
+    "pages/memory_chart.ts",
     "pages/telemetry.ts",
     "pages/thermal_chart.ts",
     "settings/config_slider.ts",
