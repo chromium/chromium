@@ -44,7 +44,9 @@ import org.robolectric.shadows.ShadowContentResolver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -382,6 +384,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({UiAndroidFeatureList.DRAG_DROP_FILES})
     public void testDragImage_ReceivedDropBeforeDragEnds() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
@@ -404,8 +407,8 @@ public class DragAndDropDelegateImplUnitTest {
         // Drop on the same view does not lead to recording of drag duration.
         assertDragTypeNotRecorded("Drag dropped on the same view.");
         assertDropInWebContentHistogramsRecorded();
-        Assert.assertNull(
-                "Cached Image bytes should be cleaned since drop is not handled.",
+        Assert.assertNotNull(
+                "Cached Image bytes should not be cleaned, drag is handled.",
                 mDropDataProviderImpl.getImageBytesForTesting());
     }
 

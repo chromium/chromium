@@ -37,6 +37,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.ui.base.UiAndroidFeatureList;
+import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.CursorOffset;
 import org.chromium.ui.dragdrop.AnimatedImageDragShadowBuilder.DragShadowSpec;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -458,8 +460,11 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             recordDragDurationAndResult(dragDuration, dragResult);
             recordDragTargetType(mDragTargetType);
         }
-
-        DropDataProviderUtils.clearImageCache(!mIsDropOnView && dragResult);
+        // Allow drop into ContentView when files are supported by clank.
+        boolean imageInUse =
+                !mIsDropOnView
+                        || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_FILES);
+        DropDataProviderUtils.clearImageCache(imageInUse && dragResult);
     }
 
     /**
