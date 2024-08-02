@@ -136,6 +136,14 @@ std::u16string FormatBrowsingHistoryUrl(const GURL& url) {
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 }
 
+std::optional<base::File::Info> ResolveFileInfo(const base::FilePath& path) {
+  base::File::Info info;
+  if (!base::GetFileInfo(path, &info)) {
+    return std::nullopt;
+  }
+  return info;
+}
+
 }  // namespace
 
 PickerSectionView::PickerSectionView(
@@ -231,7 +239,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             // `base::Unretained` is safe because `asset_fetcher` outlives the
             // return value.
             item_view->SetPreview(
-                preview_controller, data.file_path,
+                preview_controller,
+                base::BindOnce(ResolveFileInfo, data.file_path), data.file_path,
                 base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
                                     base::Unretained(asset_fetcher)),
                 /*update_icon=*/true);
@@ -248,7 +257,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             // `base::Unretained` is safe because `asset_fetcher` outlives the
             // return value.
             item_view->SetPreview(
-                preview_controller, data.file_path,
+                preview_controller,
+                base::BindOnce(ResolveFileInfo, data.file_path), data.file_path,
                 base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
                                     base::Unretained(asset_fetcher)),
                 /*update_icon=*/false);

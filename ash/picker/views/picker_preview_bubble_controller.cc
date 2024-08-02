@@ -14,14 +14,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
-#include "base/location.h"
 #include "base/observer_list.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -87,15 +83,6 @@ void PickerPreviewBubbleController::ShowBubbleAfterDelay(
     views::View* anchor_view) {
   CreateBubbleWidget(
       async_preview_image,
-      base::BindOnce(
-          [](base::FilePath path) -> std::optional<base::File::Info> {
-            base::File::Info info;
-            if (!base::GetFileInfo(path, &info)) {
-              return std::nullopt;
-            }
-            return info;
-          },
-          path),
       anchor_view);
   show_bubble_timer_.Start(
       FROM_HERE, kShowBubbleDelay,
@@ -126,35 +113,6 @@ void PickerPreviewBubbleController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {
-  widget_observation_.Reset();
-  bubble_view_ = nullptr;
-
-  async_preview_image_ = nullptr;
-}
-
-void PickerPreviewBubbleController::ShowBubbleImmediatelyForTesting(
-    HoldingSpaceImage* async_preview_image,
-    base::OnceCallback<std::optional<base::File::Info>()> get_file_info,
-    views::View* anchor_view) {
-  CreateBubbleWidget(async_preview_image, std::move(get_file_info),
-                     anchor_view);
-  bubble_view_->GetWidget()->Show();
-}
-
-PickerPreviewBubbleView*
-PickerPreviewBubbleController::bubble_view_for_testing() const {
-  return bubble_view_;
-}
-
-void PickerPreviewBubbleController::UpdateBubbleImage() {
-  if (bubble_view_ != nullptr) {
-    bubble_view_->SetPreviewImage(
-        ui::ImageModel::FromImageSkia(async_preview_image_->GetImageSkia(
-            PickerPreviewBubbleView::kPreviewImageSize)));
-  }
-}
-
 void PickerPreviewBubbleController::UpdateBubbleMetadata(
     std::optional<base::File::Info> info) {
   if (bubble_view_ == nullptr) {
@@ -172,9 +130,35 @@ void PickerPreviewBubbleController::UpdateBubbleMetadata(
       GetJustificationString(info->last_accessed, info->last_modified));
 }
 
+void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+  bubble_view_ = nullptr;
+
+  async_preview_image_ = nullptr;
+}
+
+void PickerPreviewBubbleController::ShowBubbleImmediatelyForTesting(
+    HoldingSpaceImage* async_preview_image,
+    views::View* anchor_view) {
+  CreateBubbleWidget(async_preview_image, anchor_view);
+  bubble_view_->GetWidget()->Show();
+}
+
+PickerPreviewBubbleView*
+PickerPreviewBubbleController::bubble_view_for_testing() const {
+  return bubble_view_;
+}
+
+void PickerPreviewBubbleController::UpdateBubbleImage() {
+  if (bubble_view_ != nullptr) {
+    bubble_view_->SetPreviewImage(
+        ui::ImageModel::FromImageSkia(async_preview_image_->GetImageSkia(
+            PickerPreviewBubbleView::kPreviewImageSize)));
+  }
+}
+
 void PickerPreviewBubbleController::CreateBubbleWidget(
     HoldingSpaceImage* async_preview_image,
-    base::OnceCallback<std::optional<base::File::Info>()> get_file_info,
     views::View* anchor_view) {
   if (bubble_view_ != nullptr) {
     return;
@@ -191,12 +175,6 @@ void PickerPreviewBubbleController::CreateBubbleWidget(
   image_subscription_ = async_preview_image_->AddImageSkiaChangedCallback(
       base::BindRepeating(&PickerPreviewBubbleController::UpdateBubbleImage,
                           base::Unretained(this)));
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      std::move(get_file_info),
-      base::BindOnce(&PickerPreviewBubbleController::UpdateBubbleMetadata,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   widget_observation_.Observe(bubble_view_->GetWidget());
 }

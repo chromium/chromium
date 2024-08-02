@@ -19,8 +19,13 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -253,6 +258,7 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
 
 void PickerListItemView::SetPreview(
     PickerPreviewBubbleController* preview_bubble_controller,
+    FileInfoResolver get_file_info,
     const base::FilePath& file_path,
     AsyncBitmapResolver async_bitmap_resolver,
     bool update_icon) {
@@ -265,6 +271,15 @@ void PickerListItemView::SetPreview(
       async_bitmap_resolver);
   file_path_ = file_path;
   preview_bubble_controller_ = preview_bubble_controller;
+
+  // Can be null in tests.
+  if (!get_file_info.is_null()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        std::move(get_file_info),
+        base::BindOnce(&PickerListItemView::OnFileInfoResolved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   if (update_icon) {
     // base::Unretained is safe here since `async_icon_subscription_` is a
@@ -347,10 +362,22 @@ void PickerListItemView::UpdateAccessibleName() {
   GetViewAccessibility().SetName(GetAccessibilityLabel());
 }
 
+void PickerListItemView::OnFileInfoResolved(
+    std::optional<base::File::Info> info) {
+  file_info_ = std::move(info);
+
+  if (preview_bubble_controller_ != nullptr) {
+    // Update the bubble metadata if it's open.
+    preview_bubble_controller_->UpdateBubbleMetadata(file_info_);
+  }
+}
+
 void PickerListItemView::ShowPreview() {
   if (preview_bubble_controller_ != nullptr) {
+    // Update the bubble metadata before showing it.
     preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
                                                      file_path_, this);
+    preview_bubble_controller_->UpdateBubbleMetadata(file_info_);
   }
 }
 

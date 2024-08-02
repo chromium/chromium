@@ -12,6 +12,10 @@
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -41,6 +45,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
  public:
   using AsyncBitmapResolver = HoldingSpaceImage::AsyncBitmapResolver;
+  using FileInfoResolver =
+      base::OnceCallback<std::optional<base::File::Info>()>;
 
   explicit PickerListItemView(SelectItemCallback select_item_callback);
   PickerListItemView(const PickerListItemView&) = delete;
@@ -67,6 +73,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   // item is hovered on. If `update_icon` is true, then the leading icon of this
   // item will also be updated to match the thumbnail.
   void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
+                  FileInfoResolver get_file_info,
                   const base::FilePath& file_path,
                   AsyncBitmapResolver async_bitmap_resolver,
                   bool update_icon = false);
@@ -92,6 +99,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void UpdateIconWithPreview();
   std::u16string GetAccessibilityLabel() const;
   void UpdateAccessibleName();
+  void OnFileInfoResolved(std::optional<base::File::Info> info);
 
   void ShowPreview();
   void HidePreview();
@@ -116,8 +124,11 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   std::unique_ptr<HoldingSpaceImage> async_preview_image_;
   std::unique_ptr<HoldingSpaceImage> async_preview_icon_;
   base::FilePath file_path_;
+  std::optional<base::File::Info> file_info_;
   raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
   base::CallbackListSubscription async_icon_subscription_;
+
+  base::WeakPtrFactory<PickerListItemView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
