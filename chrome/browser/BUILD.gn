@@ -8028,6 +8028,8 @@ static_library("browser") {
         "local_discovery/service_discovery_client_mac_factory.h",
         "local_discovery/service_discovery_client_mac_factory.mm",
       ]
+
+      frameworks += [ "Network.framework" ]
     }
 
     if (enable_mdns) {

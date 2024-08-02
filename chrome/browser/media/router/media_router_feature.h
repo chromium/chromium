@@ -74,8 +74,9 @@ BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
 BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
 
 #if BUILDFLAG(IS_MAC)
-// If enabled, Chrome uses the Network Framework API for discovery on Mac.
-BASE_DECLARE_FEATURE(kUseNetworkFrameworkForCastDiscovery);
+// If enabled, Chrome uses the Network Framework API for local device discovery
+// on Mac.
+BASE_DECLARE_FEATURE(kUseNetworkFrameworkForLocalDiscovery);
 #endif
 
 extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;

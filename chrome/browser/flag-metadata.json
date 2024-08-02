@@ -8989,7 +8989,7 @@
     "expiry_milestone": 130
   },
   {
-    "name": "use-network-framework-for-cast-discovery",
+    "name": "use-network-framework-for-local-discovery",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 140
   },

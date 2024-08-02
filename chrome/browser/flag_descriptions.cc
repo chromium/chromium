@@ -2056,10 +2056,10 @@ const char kCastStreamingMacHardwareH264Name[] =
 const char kCastStreamingMacHardwareH264Description[] =
     "Offers the H264 video codec when negotiating Cast Streaming, and uses "
     "hardware-accelerated H264 encoding if selected for the session";
-const char kUseNetworkFrameworkForCastDiscoveryName[] =
-    "Use the Network Framework for Cast device discovery on Mac";
-const char kUseNetworkFrameworkForCastDiscoveryDescription[] =
-    "Use the Network Framework to replace the Bonjour API for Cast device "
+const char kUseNetworkFrameworkForLocalDiscoveryName[] =
+    "Use the Network Framework for local device discovery on Mac";
+const char kUseNetworkFrameworkForLocalDiscoveryDescription[] =
+    "Use the Network Framework to replace the Bonjour API for local device "
     "discovery on Mac.";
 #endif
 

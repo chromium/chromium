@@ -87,8 +87,8 @@ BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kUseNetworkFrameworkForCastDiscovery,
-             "UseNetworkFrameworkForCastDiscovery",
+BASE_FEATURE(kUseNetworkFrameworkForLocalDiscovery,
+             "UseNetworkFrameworkForLocalDiscovery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

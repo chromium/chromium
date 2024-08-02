@@ -17832,8 +17832,6 @@ from previous Chrome versions.
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
-  <int value="-1062338822"
-      label="UseNetworkFrameworkForCastDiscovery:disabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
   <int value="-1061203892" label="VideoToolboxVp9Decoding:disabled"/>
   <int value="-1060574877"
@@ -18345,7 +18343,6 @@ from previous Chrome versions.
   <int value="-851924474" label="FastPairDebugMetadata:disabled"/>
   <int value="-851413329" label="AnnotatorMode:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
-  <int value="-850108109" label="UseNetworkFrameworkForCastDiscovery:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-848407281" label="TabReorganizationDivider:enabled"/>
@@ -20854,6 +20851,7 @@ from previous Chrome versions.
   <int value="222055978" label="OsFeedback:disabled"/>
   <int value="222184258"
       label="AutofillEnforceMinRequiredFieldsForHeuristics:disabled"/>
+  <int value="222746839" label="UseNetworkFrameworkForLocalDiscovery:disabled"/>
   <int value="223075555" label="DisallowManagedProfileSignout:enabled"/>
   <int value="223591010" label="CastMediaRouteProvider:enabled"/>
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
@@ -22980,6 +22978,7 @@ from previous Chrome versions.
   <int value="1120074279" label="VCTrayTitleHeader:disabled"/>
   <int value="1120211655" label="(Obsolete) enable-simplified-fullscreen-ui"/>
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
+  <int value="1121848336" label="UseNetworkFrameworkForLocalDiscovery:enabled"/>
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
