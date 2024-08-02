@@ -917,9 +917,12 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   LoadTimingInfo::ConnectTiming connect_timing =
       in_flight_attempt->attempt->connect_timing();
   connect_timing.domain_lookup_start = dns_resolution_start_time_;
-  connect_timing.domain_lookup_end = dns_resolution_end_time_.is_null()
-                                         ? connect_timing.connect_start
-                                         : dns_resolution_end_time_;
+  // If the attempt started before DNS resolution completion, `connect_start`
+  // could be smaller than `dns_resolution_end_time_`. Use the smallest one.
+  connect_timing.domain_lookup_end =
+      dns_resolution_end_time_.is_null()
+          ? connect_timing.connect_start
+          : std::min(connect_timing.connect_start, dns_resolution_end_time_);
 
   std::unique_ptr<StreamSocket> stream_socket =
       in_flight_attempt->attempt->ReleaseStreamSocket();

@@ -408,7 +408,8 @@ TEST_F(HttpStreamPoolJobTest, ResolveErrorInfo) {
 }
 
 TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
-  constexpr base::TimeDelta kDnsDelay = base::Milliseconds(30);
+  constexpr base::TimeDelta kDnsUpdateDelay = base::Milliseconds(20);
+  constexpr base::TimeDelta kDnsFinishDelay = base::Milliseconds(10);
   constexpr base::TimeDelta kTcpDelay = base::Milliseconds(20);
   constexpr base::TimeDelta kTlsDelay = base::Milliseconds(90);
 
@@ -426,11 +427,17 @@ TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
   auto ssl = std::make_unique<SSLSocketDataProvider>(&tls_connect_completer);
   socket_factory()->AddSSLSocketDataProvider(ssl.get());
 
-  FastForwardBy(kDnsDelay);
+  FastForwardBy(kDnsUpdateDelay);
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-      .CallOnServiceEndpointRequestFinished(OK);
+      .set_crypto_ready(false)
+      .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
+  ASSERT_FALSE(requester.result().has_value());
+
+  FastForwardBy(kDnsFinishDelay);
+  endpoint_request->set_crypto_ready(true).CallOnServiceEndpointRequestFinished(
+      OK);
   ASSERT_FALSE(requester.result().has_value());
 
   FastForwardBy(kTcpDelay);
@@ -455,15 +462,22 @@ TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
 
   LoadTimingInfo timing_info;
   ASSERT_TRUE(stream->GetLoadTimingInfo(&timing_info));
-  ASSERT_EQ(timing_info.connect_timing.domain_lookup_end -
-                timing_info.connect_timing.domain_lookup_start,
-            kDnsDelay);
-  ASSERT_EQ(timing_info.connect_timing.connect_end -
-                timing_info.connect_timing.connect_start,
-            kTcpDelay);
+
+  LoadTimingInfo::ConnectTiming& connect_timing = timing_info.connect_timing;
+
+  ASSERT_LE(connect_timing.domain_lookup_start,
+            connect_timing.domain_lookup_end);
+  ASSERT_LE(connect_timing.domain_lookup_end, connect_timing.connect_start);
+  ASSERT_LE(connect_timing.connect_start, connect_timing.connect_end);
+  ASSERT_LE(connect_timing.connect_end, connect_timing.ssl_start);
+  ASSERT_LE(connect_timing.ssl_start, connect_timing.ssl_end);
+
   ASSERT_EQ(
-      timing_info.connect_timing.ssl_end - timing_info.connect_timing.ssl_start,
-      kTlsDelay);
+      connect_timing.domain_lookup_end - connect_timing.domain_lookup_start,
+      kDnsUpdateDelay);
+  ASSERT_EQ(connect_timing.connect_end - connect_timing.connect_start,
+            kTcpDelay + kDnsFinishDelay);
+  ASSERT_EQ(connect_timing.ssl_end - connect_timing.ssl_start, kTlsDelay);
 }
 
 TEST_F(HttpStreamPoolJobTest, ConnectTimingDnsResolutionNotFinished) {
