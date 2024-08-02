@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
+#include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 #include "ui/base/page_transition_types.h"
@@ -81,6 +82,7 @@ class PickerClientImpl
                           FetchFileThumbnailCallback callback) override;
   PrefService* GetPrefs() override;
   std::optional<ash::PickerWebPasteTarget> GetWebPasteTarget() override;
+  void Announce(std::u16string_view message) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -133,6 +135,8 @@ class PickerClientImpl
 
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text);
+
+  ash::input_method::EditorLiveRegionAnnouncer announcer_;
 
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;

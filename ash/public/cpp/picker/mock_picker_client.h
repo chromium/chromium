@@ -60,6 +60,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               GetWebPasteTarget,
               (),
               (override));
+  MOCK_METHOD(void, Announce, (std::u16string_view message), (override));
 };
 
 }  // namespace ash

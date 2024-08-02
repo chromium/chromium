@@ -172,6 +172,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Records metrics related to a session.
   std::unique_ptr<PickerSessionMetrics> session_metrics_;
 
+  // Timer used to delay closing the Widget for accessibility.
+  base::OneShotTimer close_widget_delay_timer_;
+
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 

@@ -70,6 +70,9 @@ enum class AppListSearchResultType;
 
 namespace {
 
+// TODO: b/345303965 - Finalize this string.
+constexpr std::u16string_view kAnnouncementViewName = u"Picker";
+
 bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
   for (std::string_view extension :
        {".jpg", ".jpeg", ".png", ".gif", ".webp"}) {
@@ -234,7 +237,7 @@ app_list::CategoriesList CreateRankerCategories() {
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
                                    user_manager::UserManager* user_manager)
-    : controller_(controller) {
+    : announcer_(kAnnouncementViewName), controller_(controller) {
   controller_->SetClient(this);
 
   // As `PickerClientImpl` is initialised in
@@ -436,6 +439,10 @@ std::optional<ash::PickerWebPasteTarget> PickerClientImpl::GetWebPasteTarget() {
   }
 
   return std::nullopt;
+}
+
+void PickerClientImpl::Announce(std::u16string_view message) {
+  announcer_.Announce(std::u16string(message));
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
