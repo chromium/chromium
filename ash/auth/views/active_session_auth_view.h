@@ -95,6 +95,10 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
   void SetHasPin(bool has_pin);
   bool HasPin() const;
 
+  // Enables or disables the input area of the view. The header area (e.g.,
+  // close button) remains accessible even in the disabled state.
+  void SetInputEnabled(bool enabled);
+
   // Actions:
   void Close();
   void SetErrorTitle(const std::u16string& error_str);

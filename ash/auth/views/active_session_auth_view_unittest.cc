@@ -126,6 +126,14 @@ TEST_F(ActiveSessionAuthViewUnitTest, CloseButtonTest) {
   LeftClickOn(close_button_);
 }
 
+// Verify close observer with disabled input area.
+TEST_F(ActiveSessionAuthViewUnitTest, CloseButtonWithDisabledInputTest) {
+  EXPECT_CALL(*mock_observer_, OnClose()).Times(1);
+  container_view_->SetInputEnabled(false);
+  // Click on close button.
+  LeftClickOn(close_button_);
+}
+
 // Verify password submit observer.
 TEST_F(ActiveSessionAuthViewUnitTest, PasswordSubmitTest) {
   const std::u16string kPassword(u"password");
@@ -140,6 +148,26 @@ TEST_F(ActiveSessionAuthViewUnitTest, PasswordSubmitTest) {
   }
   EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
   EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), kPassword);
+
+  // Click on Submit.
+  LeftClickOn(test_api_password_->GetSubmitButton());
+}
+
+// Verify the password input is no op with disabled input area.
+TEST_F(ActiveSessionAuthViewUnitTest, PasswordSubmitWithDisabledInputTest) {
+  const std::u16string kPassword(u"password");
+  EXPECT_CALL(*mock_observer_, OnPasswordSubmit(kPassword)).Times(0);
+
+  container_view_->GetFocusManager()->SetFocusedView(
+      test_api_password_->GetTextfield());
+
+  container_view_->SetInputEnabled(false);
+  for (const char16_t c : kPassword) {
+    PressAndReleaseKey(ui::DomCodeToUsLayoutNonLocatedKeyboardCode(
+        ui::UsLayoutDomKeyToDomCode(ui::DomKey::FromCharacter(c))));
+  }
+  EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
+  EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
 
   // Click on Submit.
   LeftClickOn(test_api_password_->GetSubmitButton());
