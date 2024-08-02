@@ -14,6 +14,7 @@ import {getCss} from './calendar_event.css.js';
 import {getHtml} from './calendar_event.html.js';
 import {toJsTimestamp} from './common.js';
 
+const kAttachmentScrollFadeBuffer: number = 4;
 const kMillisecondsInMinute: number = 60000;
 const kMinutesInHour: number = 60;
 
@@ -58,6 +59,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
         reflect: true,
       },
 
+      attachmentListClass_: {type: String},
       formattedStartTime_: {type: String},
       timeStatus_: {type: String},
     };
@@ -67,8 +69,27 @@ export class CalendarEventElement extends CalendarEventElementBase {
   event: CalendarEvent;
   expanded: boolean;
 
+  protected attachmentListClass_: string;
   protected formattedStartTime_: string;
+  protected intersectionObserver_: IntersectionObserver;
   protected timeStatus_: string;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    if ((changedProperties.has('event') || changedProperties.has('expanded')) &&
+        (this.expanded && this.showAttachments_())) {
+      const attachmentList = this.renderRoot.querySelector('#attachmentList');
+      if (attachmentList && attachmentList.children.length > 1) {
+        this.intersectionObserver_ =
+            new IntersectionObserver(() => this.updateAttachmentListClass_(), {
+              root: attachmentList,
+              threshold: 1.0,
+            });
+        this.intersectionObserver_.observe(attachmentList.children[0]);
+        this.intersectionObserver_.observe(
+            attachmentList.children[attachmentList.children.length - 1]);
+      }
+    }
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -138,6 +159,29 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   protected showLocation_(): boolean {
     return !!this.event.location;
+  }
+
+  protected updateAttachmentListClass_() {
+    const attachmentList = this.renderRoot.querySelector('#attachmentList');
+    if (!attachmentList) {
+      this.attachmentListClass_ = '';
+      return;
+    }
+    const scrollableRight =
+        (attachmentList!.scrollWidth - attachmentList!.scrollLeft -
+         kAttachmentScrollFadeBuffer) > attachmentList!.clientWidth;
+    const scrollableLeft =
+        attachmentList!.scrollLeft - kAttachmentScrollFadeBuffer > 0;
+
+    if (scrollableRight && scrollableLeft) {
+      this.attachmentListClass_ = 'scrollable';
+    } else if (scrollableRight) {
+      this.attachmentListClass_ = 'scrollable-right';
+    } else if (scrollableLeft) {
+      this.attachmentListClass_ = 'scrollable-left';
+    } else {
+      this.attachmentListClass_ = '';
+    }
   }
 }
 

@@ -221,6 +221,8 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
 
   mixer[kColorNewTabPageModuleCalendarEventTimeStatusBackground] =
       element_background_color;
+  mixer[kColorNewTabPageModuleCalendarAttachmentScrollbarThumb] =
+      element_background_color;
 
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] =
       SelectBasedOnWhiteInput(element_background_color, gfx::kGoogleGrey100,
@@ -499,6 +501,8 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageModuleItemBackground] = {
       kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageModuleCalendarEventTimeStatusBackground] = {
+      {dark_mode ? gfx::kGoogleBlue900 : gfx::kGoogleBlue100}};
+  mixer[kColorNewTabPageModuleCalendarAttachmentScrollbarThumb] = {
       {dark_mode ? gfx::kGoogleBlue900 : gfx::kGoogleBlue100}};
   if (dark_mode) {
     mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {

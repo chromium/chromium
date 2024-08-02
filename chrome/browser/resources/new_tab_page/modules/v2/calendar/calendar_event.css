@@ -94,10 +94,13 @@
   padding: 0 16px;
 }
 
-#attachments, #location {
+#location {
+  padding: 4px 0;
+}
+
+#attachments, #attachmentList, #location {
   column-gap: 8px;
   display: flex;
-  padding: 4px 0;
   width: 100%;
 }
 
@@ -117,13 +120,43 @@
 }
 
 #attachments {
-  overflow: hidden;
   position: relative;
+}
+
+#attachmentList.scrollable-right {
+  mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
+}
+
+#attachmentList.scrollable-left {
+  mask-image: linear-gradient(to right, transparent 0, black 16px);
+}
+
+#attachmentList.scrollable {
+  mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+}
+
+#attachmentList {
+  margin-inline-end: -4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px;
+}
+
+#attachmentList::-webkit-scrollbar {
+  background: transparent;
+  height: 8px;
+}
+
+#attachmentList::-webkit-scrollbar-thumb {
+  background: var(--color-new-tab-page-module-calendar-attachment-scrollbar-thumb);
+  background-clip: content-box;
+  border: solid 1.5px transparent;
+  border-radius: 100px;
 }
 
 #attachment-icon {
   --cr-icon-image: url(modules/v2/calendar/icons/attachment.svg);
-  padding: 2px 0;
+  margin: 6px -4px 6px 0;
 }
 
 #attachments cr-chip {
@@ -138,13 +171,10 @@
   width: 14px;
 }
 
-#fade {
-  background: linear-gradient(to right, transparent,
-      var(--color-new-tab-page-module-item-background));
-  height: 100%;
-  position: absolute;
-  inset-inline-end: -12px;
-  width: 30px;
+.attachment-text {
+  max-width: 13ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #conference {
