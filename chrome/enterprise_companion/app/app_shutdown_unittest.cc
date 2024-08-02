@@ -33,7 +33,7 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kServerNameFlag[] = "server-name";
-constexpr int32_t kIPCConnectionFailedExitCode = 42;
+constexpr int32_t kIpcCallerNotAllowedExitCode = 42;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
@@ -147,7 +147,7 @@ TEST_F(AppShutdownTest, UntrustedCallerRejected) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
-  EXPECT_EQ(WaitForProcess(child_process), kIPCConnectionFailedExitCode);
+  EXPECT_EQ(WaitForProcess(child_process), kIpcCallerNotAllowedExitCode);
 }
 
 TEST_F(AppShutdownTest, Timeout) {
@@ -165,9 +165,8 @@ MULTIPROCESS_TEST_MAIN(ShutdownAppClient) {
   EnterpriseCompanionStatus result =
       CreateAppShutdown(command_line->GetSwitchValueNative(kServerNameFlag))
           ->Run();
-  if (result.EqualsApplicationError(
-          ApplicationError::kEnterpriseCompanionServiceConnectionFailed)) {
-    return kIPCConnectionFailedExitCode;
+  if (result.EqualsApplicationError(ApplicationError::kIpcCallerNotAllowed)) {
+    return kIpcCallerNotAllowedExitCode;
   }
   return !result.ok();
 }

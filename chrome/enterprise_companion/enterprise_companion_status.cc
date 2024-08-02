@@ -87,6 +87,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "The EnterpriseCompanion IPC interface could not be reached.";
     case ApplicationError::kInstallationFailed:
       return "The application could not be installed.";
+    case ApplicationError::kIpcCallerNotAllowed:
+      return "The IPC caller is not allowed.";
   }
 }
 
