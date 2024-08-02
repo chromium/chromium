@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
@@ -191,6 +192,13 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Reset focus to the highest priority control on the new/updated sheet.
   if (GetInitiallyFocusedView()) {
     GetInitiallyFocusedView()->RequestFocus();
+  }
+  if (model_->ui_disabled_ && sheet_->model()->IsActivityIndicatorVisible()) {
+    // Announce the loading state after request focus; otherwise the view that
+    // has the focus will suppress the loading announcement.
+    // TODO(b/356417228): Replace with a WebAuthn string.
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE));
   }
 }
 
