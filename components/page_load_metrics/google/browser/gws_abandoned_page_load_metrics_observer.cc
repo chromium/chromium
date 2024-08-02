@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 
 #include <string>
 
@@ -11,13 +11,9 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace internal {
 
@@ -25,27 +21,14 @@ const char kGWSAbandonedPageLoadMetricsHistogramPrefix[] =
     "PageLoad.Clients.GoogleSearch.Leakage2.";
 const char kSuffixWasNonSRP[] = ".WasNonSRP";
 
-const char kSuffixRTTUnknown[] = ".RTTUnkown";
-const char kSuffixRTTBelow200[] = ".RTTBelow200";
-const char kSuffixRTT200to450[] = ".RTT200To450";
-const char kSuffixRTTAbove450[] = ".RTTAbove450";
+const char kGwsAFTStartMarkName[] = "SearchAFTStart";
+const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
+const char kGwsHeaderChunkStartMarkName[] = "SearchHeadStart";
+const char kGwsHeaderChunkEndMarkName[] = "SearchHeadEnd";
+const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
+const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
 
 }  // namespace internal
-
-const char* GWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
-    std::optional<base::TimeDelta> rtt) {
-  if (!rtt.has_value()) {
-    return internal::kSuffixRTTUnknown;
-  }
-  if (rtt.value().InMilliseconds() < 200) {
-    return internal::kSuffixRTTBelow200;
-  }
-  if (rtt.value().InMilliseconds() <= 450) {
-    return internal::kSuffixRTT200to450;
-  }
-
-  return internal::kSuffixRTTAbove450;
-}
 
 GWSAbandonedPageLoadMetricsObserver::GWSAbandonedPageLoadMetricsObserver() =
     default;
@@ -119,23 +102,10 @@ GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   // URL (instead of immediately targeting a SRP URL) to all histograms, if
   // necessary.
   std::string suffix = did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
-  // Make sure each histogram logged will log a version without connection type,
-  // and a version with the connection type, to allow filtering if needed.
-  // TODO(https://crbug.com/347706997): Consider doing this for the WebView
-  // version as well.
-  return {
-      suffix,
-      suffix + GetSuffixForRTT(
-                   g_browser_process->network_quality_tracker()->GetHttpRTT())};
+  return {suffix};
 }
 
 void GWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(
     ukm::builders::AbandonedSRPNavigation& builder) {
-  std::optional<base::TimeDelta> rtt =
-      g_browser_process->network_quality_tracker()->GetHttpRTT();
-  if (rtt.has_value()) {
-    builder.SetRTT(ukm::GetSemanticBucketMinForDurationTiming(
-        rtt.value().InMilliseconds()));
-  }
   builder.SetDidRequestNonSRP(did_request_non_srp_);
 }

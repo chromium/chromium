@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
@@ -15,6 +14,12 @@ namespace internal {
 extern const char kGWSAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasNonSRP[];
 
+extern const char kGwsAFTStartMarkName[];
+extern const char kGwsAFTEndMarkName[];
+extern const char kGwsHeaderChunkStartMarkName[];
+extern const char kGwsHeaderChunkEndMarkName[];
+extern const char kGwsBodyChunkStartMarkName[];
+extern const char kGwsBodyChunkEndMarkName[];
 }  // namespace internal
 
 // Observes and records UMA for navigations to GWS which might or might get
@@ -24,8 +29,6 @@ extern const char kSuffixWasNonSRP[];
 class GWSAbandonedPageLoadMetricsObserver
     : public AbandonedPageLoadMetricsObserver {
  public:
-  static const char* GetSuffixForRTT(std::optional<base::TimeDelta> rtt);
-
   GWSAbandonedPageLoadMetricsObserver();
   ~GWSAbandonedPageLoadMetricsObserver() override;
 
@@ -37,18 +40,21 @@ class GWSAbandonedPageLoadMetricsObserver
   // page_load_metrics::PageLoadMetricsObserver implementation:
   const char* GetObserverName() const override;
 
+ protected:
+  // AbandonedPageLoadMetricsObserver overrides:
+  std::vector<std::string> GetAdditionalSuffixes() const override;
+  void AddSRPMetricsToUKMIfNeeded(
+      ukm::builders::AbandonedSRPNavigation& ukm) override;
+
  private:
   // AbandonedPageLoadMetricsObserver overrides:
   std::string GetHistogramPrefix() const override;
-  std::vector<std::string> GetAdditionalSuffixes() const override;
   ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle) override;
   bool IsAllowedToLogMetrics() const override;
   const base::flat_map<std::string, NavigationMilestone>&
   GetCustomUserTimingMarkNames() const override;
   bool IsAllowedToLogUKM() const override;
-  void AddSRPMetricsToUKMIfNeeded(
-      ukm::builders::AbandonedSRPNavigation& ukm) override;
 
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.
@@ -58,4 +64,4 @@ class GWSAbandonedPageLoadMetricsObserver
   bool involved_srp_url_ = false;
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

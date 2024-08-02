@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 
 #include <vector>
 
@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/page_load_metrics/observers/chrome_gws_abandoned_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -272,7 +273,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_names_expanded.push_back(std::pair(histogram_name, 1));
       histogram_names_expanded.push_back(std::pair(
           histogram_name +
-              GWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
+              ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
                   g_browser_process->network_quality_tracker()->GetHttpRTT()),
           1));
     }
@@ -1160,15 +1161,16 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
       GetMilestoneToAbandonHistogramName(NavigationMilestone::kAFTEnd);
   auto abandoned_milesone_name = GetMilestoneToAbandonHistogramName(
       NavigationMilestone::kAFTEnd, AbandonReason::kHidden);
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(milesone_name),
-              testing::ElementsAre(
-                  testing::Pair(abandoned_milesone_name, 1),
-                  testing::Pair(
-                      abandoned_milesone_name +
-                          GWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
-                              g_browser_process->network_quality_tracker()
-                                  ->GetHttpRTT()),
-                      1)));
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(milesone_name),
+      testing::ElementsAre(
+          testing::Pair(abandoned_milesone_name, 1),
+          testing::Pair(
+              abandoned_milesone_name +
+                  ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
+                      g_browser_process->network_quality_tracker()
+                          ->GetHttpRTT()),
+              1)));
 
   // There should be a new entry for all the navigation and loading milestones
   // metrics achieved before abandonment.

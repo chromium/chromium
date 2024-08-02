@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = [
+    "gws_abandoned_page_load_metrics_observer.cc",
+    "gws_abandoned_page_load_metrics_observer.h",
+  ]
+  deps = [
+    "//base",
+    "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/common",
+    "//content/public/browser",
+  ]
+}

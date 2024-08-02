@@ -33,6 +33,7 @@ include_rules = [
   "+components/origin_trials",
   "+components/os_crypt/async",
   "+components/page_load_metrics/browser",
+  "+components/page_load_metrics/google/browser",
   "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",

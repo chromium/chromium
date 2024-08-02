@@ -16,6 +16,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -76,13 +77,6 @@ const char kHistogramGWSDomainLookupStart[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupStart";
 const char kHistogramGWSDomainLookupEnd[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd";
-
-const char kGwsAFTStartMarkName[] = "SearchAFTStart";
-const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
-const char kGwsHeaderChunkStartMarkName[] = "SearchHeadStart";
-const char kGwsHeaderChunkEndMarkName[] = "SearchHeadEnd";
-const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
-const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
 
 }  // namespace internal
 
