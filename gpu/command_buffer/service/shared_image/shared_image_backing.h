@@ -69,13 +69,11 @@ class DawnImageRepresentation;
 class LegacyOverlayImageRepresentation;
 class OverlayImageRepresentation;
 class MemoryImageRepresentation;
-class VaapiImageRepresentation;
 class RasterImageRepresentation;
 class MemoryTracker;
 class VideoDecodeImageRepresentation;
 class MemoryTypeTracker;
 class SharedImageFactory;
-class VaapiDependenciesFactory;
 
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanImageRepresentation;
@@ -313,10 +311,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      VaapiDependenciesFactory* dep_factory);
   virtual std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);

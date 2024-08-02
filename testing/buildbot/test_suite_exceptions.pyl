@@ -2393,6 +2393,18 @@
       },
     },
   },
+  # Do not run cronet_sizes on CQ builders (binaries are
+  # instrumented for code coverage)
+  'cronet_sizes': {
+    'modifications': {
+      'android-cronet-x64-dbg': {
+        'ci_only': True,
+      },
+      'android-cronet-x86-dbg': {
+        'ci_only': True,
+      },
+    },
+  },
   'dawn_end2end_implicit_device_sync_tests': {
     'modifications': {
       'Dawn Win10 x64 ASAN Release (Intel)': {

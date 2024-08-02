@@ -75,27 +75,6 @@ bool IsExoTexture(std::string_view label) {
 
 }  // namespace
 
-class OzoneImageBacking::VaapiOzoneImageRepresentation
-    : public VaapiImageRepresentation {
- public:
-  VaapiOzoneImageRepresentation(SharedImageManager* manager,
-                                SharedImageBacking* backing,
-                                MemoryTypeTracker* tracker,
-                                VaapiDependencies* vaapi_dependency)
-      : VaapiImageRepresentation(manager, backing, tracker, vaapi_dependency) {}
-
- private:
-  OzoneImageBacking* ozone_backing() {
-    return static_cast<OzoneImageBacking*>(backing());
-  }
-  void EndAccess() override { ozone_backing()->has_pending_va_writes_ = true; }
-  void BeginAccess() override {
-    // TODO(andrescj): DCHECK that there are no fences to wait on (because the
-    // compositor should be completely done with a VideoFrame before returning
-    // it).
-  }
-};
-
 class OzoneImageBacking::OverlayOzoneImageRepresentation
     : public OverlayImageRepresentation {
  public:
@@ -469,23 +448,6 @@ OzoneImageBacking::~OzoneImageBacking() {
   }
 }
 
-std::unique_ptr<VaapiImageRepresentation> OzoneImageBacking::ProduceVASurface(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker,
-    VaapiDependenciesFactory* dep_factory) {
-  DCHECK(pixmap_);
-  if (!vaapi_deps_)
-    vaapi_deps_ = dep_factory->CreateVaapiDependencies(pixmap_);
-
-  if (!vaapi_deps_) {
-    LOG(ERROR) << "OzoneImageBacking::ProduceVASurface failed to create "
-                  "VaapiDependencies";
-    return nullptr;
-  }
-  return std::make_unique<OzoneImageBacking::VaapiOzoneImageRepresentation>(
-      manager, this, tracker, vaapi_deps_.get());
-}
-
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
     SharedImageManager* manager,
@@ -542,12 +504,6 @@ std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
       vulkan_impl);
 }
 #endif
-
-bool OzoneImageBacking::VaSync() {
-  if (has_pending_va_writes_)
-    has_pending_va_writes_ = !vaapi_deps_->SyncSurface();
-  return !has_pending_va_writes_;
-}
 
 bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   if (context_state_->context_lost()) {

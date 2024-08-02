@@ -158,15 +158,6 @@ SharedMemoryImageBacking::ProduceOverlay(SharedImageManager* manager,
                                                           tracker);
 }
 
-std::unique_ptr<VaapiImageRepresentation>
-SharedMemoryImageBacking::ProduceVASurface(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker,
-    VaapiDependenciesFactory* dep_factory) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 std::unique_ptr<MemoryImageRepresentation>
 SharedMemoryImageBacking::ProduceMemory(SharedImageManager* manager,
                                         MemoryTypeTracker* tracker) {

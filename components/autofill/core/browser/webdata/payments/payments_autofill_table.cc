@@ -1289,7 +1289,7 @@ bool PaymentsAutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& i
     iban->set_nickname(s.ColumnString16(index++));
     iban->set_prefix(s.ColumnString16(index++));
     iban->set_suffix(s.ColumnString16(index++));
-    iban->set_length(s.ColumnInt64(index++));
+    index++;  // Skip unused `length` field.
     ibans.push_back(std::move(iban));
   }
 
@@ -1315,7 +1315,8 @@ bool PaymentsAutofillTable::SetServerIbansData(const std::vector<Iban>& ibans) {
     s.BindString16(index++, iban.nickname());
     s.BindString16(index++, iban.prefix());
     s.BindString16(index++, iban.suffix());
-    s.BindInt64(index++, iban.length());
+    // TODO(b/355074921): Clean up length field from kMaskedIbansTable table.
+    s.BindInt64(index++, 0);
     if (!s.Run()) {
       return false;
     }

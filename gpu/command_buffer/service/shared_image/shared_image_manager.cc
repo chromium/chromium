@@ -318,31 +318,6 @@ std::unique_ptr<OverlayImageRepresentation> SharedImageManager::ProduceOverlay(
   return representation;
 }
 
-std::unique_ptr<VaapiImageRepresentation> SharedImageManager::ProduceVASurface(
-    const Mailbox& mailbox,
-    MemoryTypeTracker* tracker,
-    VaapiDependenciesFactory* dep_factory) {
-  CALLED_ON_VALID_THREAD();
-
-  AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
-    LOG(ERROR) << "SharedImageManager::ProduceVASurface: Trying to produce a "
-                  "VA-API representation from a non-existent mailbox.";
-    return nullptr;
-  }
-
-  auto representation = (*found)->ProduceVASurface(this, tracker, dep_factory);
-
-  if (!representation) {
-    LOG(ERROR) << "SharedImageManager::ProduceVASurface: Trying to produce a "
-                  "VA-API representation from an incompatible backing: "
-               << (*found)->GetName();
-    return nullptr;
-  }
-  return representation;
-}
-
 std::unique_ptr<MemoryImageRepresentation> SharedImageManager::ProduceMemory(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker) {

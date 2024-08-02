@@ -690,7 +690,7 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
     return iban->record_type() == Iban::kLocalIban &&
            base::ranges::any_of(
                server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
-                 return server_iban->MatchesPrefixSuffixAndLength(*iban);
+                 return server_iban->MatchesPrefixAndSuffix(*iban);
                });
   });
 

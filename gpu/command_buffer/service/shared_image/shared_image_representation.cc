@@ -904,39 +904,6 @@ SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// VaapiImageRepresentation
-
-VaapiImageRepresentation::VaapiImageRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker,
-    VaapiDependencies* vaapi_deps)
-    : SharedImageRepresentation(manager, backing, tracker),
-      vaapi_deps_(vaapi_deps) {}
-
-VaapiImageRepresentation::~VaapiImageRepresentation() = default;
-
-VaapiImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
-    base::PassKey<VaapiImageRepresentation> /* pass_key */,
-    VaapiImageRepresentation* representation)
-    : ScopedAccessBase(representation, AccessMode::kWrite) {}
-
-VaapiImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
-  representation()->EndAccess();
-}
-
-const media::VASurface*
-VaapiImageRepresentation::ScopedWriteAccess::va_surface() {
-  return representation()->vaapi_deps_->GetVaSurface();
-}
-
-std::unique_ptr<VaapiImageRepresentation::ScopedWriteAccess>
-VaapiImageRepresentation::BeginScopedWriteAccess() {
-  return std::make_unique<ScopedWriteAccess>(
-      base::PassKey<VaapiImageRepresentation>(), this);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // MemoryImageRepresentation
 
 MemoryImageRepresentation::ScopedReadAccess::ScopedReadAccess(

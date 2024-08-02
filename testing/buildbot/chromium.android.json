@@ -20797,6 +20797,7 @@
     ],
     "isolated_scripts": [
       {
+        "ci_only": true,
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -22025,6 +22026,7 @@
     ],
     "isolated_scripts": [
       {
+        "ci_only": true,
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
