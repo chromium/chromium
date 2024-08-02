@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 
 #import "base/check.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -21,6 +23,11 @@ const CGFloat kViewTopPadding = 19;
 const CGFloat kBackButtonWidth = 44;
 /// Size of the back button.
 const CGFloat kBackButtonSize = 24;
+
+/// Horizontal inset of the cancel button.
+const CGFloat kCancelButtonHorizontalInset = 8;
+/// Font size for the cancel button.
+const CGFloat kCancelButtonFontSize = 15;
 
 /// Minimum leading and trailing padding for the omnibox container.
 const CGFloat kOmniboxContainerHorizontalPadding = 12;
@@ -44,7 +51,9 @@ const CGFloat kWebContainerTopPadding = 8;
   UIButton* _backButton;
   /// Container for the omnibox.
   UIButton* _omniboxContainer;
-  /// StackView for the `_backButton` and `_omniboxContainer`.
+  /// Cancel button.
+  UIButton* _cancelButton;
+  /// StackView for the `_backButton`, `_omniboxContainer` and `_cancelButton`.
   UIStackView* _horizontalStackView;
 }
 
@@ -97,9 +106,36 @@ const CGFloat kWebContainerTopPadding = 8;
                         action:@selector(didTapOmniboxContainer:)
               forControlEvents:UIControlEventTouchUpInside];
 
+  // Cancel button.
+  _cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
+  [_cancelButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [_cancelButton setContentHuggingPriority:UILayoutPriorityRequired
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+  UIFont* font = [UIFont systemFontOfSize:kCancelButtonFontSize];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(IDS_CANCEL)
+              attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedString;
+  _cancelButton.configuration = buttonConfiguration;
+  _cancelButton.hidden = YES;
+  [_cancelButton addTarget:self
+                    action:@selector(didTapCancelButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+
   // Horizontal stack view.
-  _horizontalStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _backButton, _omniboxContainer ]];
+  _horizontalStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _backButton, _omniboxContainer, _cancelButton
+  ]];
   _horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
   _horizontalStackView.distribution = UIStackViewDistributionFill;
@@ -172,6 +208,11 @@ const CGFloat kWebContainerTopPadding = 8;
 /// Handles omnibox taps.
 - (void)didTapOmniboxContainer:(UIView*)view {
   // TODO(crbug.com/347237539): Handle omnibox tap.
+}
+
+/// Handles cancel button taps.
+- (void)didTapCancelButton:(UIView*)button {
+  // TODO(crbug.com/355179721): Handle cancel button tap.
 }
 
 @end
