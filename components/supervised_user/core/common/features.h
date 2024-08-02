@@ -78,6 +78,12 @@ BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
 // unauthenticated (e.g. signed out of the content area) account.
 BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Force re-authentication when an unauthenticated supervised user tries to
+// access YouTube, so that content restrictions can be applied.
+BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForYouTube);
+#endif
+
 // Fallback to sending un-credentialed filtering requests for supervised users
 // if they do not have a valid access token.
 BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);

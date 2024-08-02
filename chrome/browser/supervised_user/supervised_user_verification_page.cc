@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/signin/signin_promo.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
@@ -23,6 +24,7 @@ const security_interstitials::SecurityInterstitialPage::TypeID
 
 SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     content::WebContents* web_contents,
+    const std::string& email_to_reauth,
     const GURL& request_url,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
@@ -30,7 +32,9 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     : security_interstitials::SecurityInterstitialPage(
           web_contents,
           request_url,
-          std::move(controller_client)) {}
+          std::move(controller_client)),
+      email_to_reauth_(email_to_reauth),
+      request_url_(request_url) {}
 
 SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 
@@ -77,4 +81,45 @@ void SupervisedUserVerificationPage::PopulateStringsForSharedHTML(
   load_time_data.Set("finalParagraph", "");
 
   load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
+}
+
+void SupervisedUserVerificationPage::CommandReceived(
+    const std::string& command) {
+  if (command == "\"pageLoadComplete\"") {
+    // content::WaitForRenderFrameReady sends this message when the page
+    // load completes. Ignore it.
+    return;
+  }
+  int cmd = 0;
+  bool retval = base::StringToInt(command, &cmd);
+  DCHECK(retval);
+
+  switch (cmd) {
+    case security_interstitials::CMD_OPEN_LOGIN:
+      controller()->OpenUrlInCurrentTab(signin::GetChromeReauthURL(
+          {.email = email_to_reauth_, .continue_url = request_url_}));
+      break;
+    case security_interstitials::CMD_DONT_PROCEED:
+    case security_interstitials::CMD_OPEN_HELP_CENTER:
+    case security_interstitials::CMD_PROCEED:
+    case security_interstitials::CMD_DO_REPORT:
+    case security_interstitials::CMD_DONT_REPORT:
+    case security_interstitials::CMD_SHOW_MORE_SECTION:
+    case security_interstitials::CMD_OPEN_DATE_SETTINGS:
+    case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
+    case security_interstitials::CMD_OPEN_WHITEPAPER:
+    case security_interstitials::CMD_RELOAD:
+    case security_interstitials::CMD_OPEN_DIAGNOSTIC:
+    case security_interstitials::CMD_REPORT_PHISHING_ERROR:
+      // Not supported by the verification page.
+      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
+      break;
+    case security_interstitials::CMD_ERROR:
+    case security_interstitials::CMD_TEXT_FOUND:
+    case security_interstitials::CMD_TEXT_NOT_FOUND:
+      // Commands are for testing.
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
