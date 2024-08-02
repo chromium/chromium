@@ -6,6 +6,10 @@
 
 namespace ui {
 
+std::string_view NoKeyboardLayoutEngine::GetLayoutName() const {
+  return std::string_view();
+}
+
 bool NoKeyboardLayoutEngine::CanSetCurrentLayout() const {
   return false;
 }

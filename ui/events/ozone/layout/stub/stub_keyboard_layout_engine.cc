@@ -17,6 +17,10 @@ StubKeyboardLayoutEngine::StubKeyboardLayoutEngine() = default;
 
 StubKeyboardLayoutEngine::~StubKeyboardLayoutEngine() = default;
 
+std::string_view StubKeyboardLayoutEngine::GetLayoutName() const {
+  return std::string_view();
+}
+
 bool StubKeyboardLayoutEngine::CanSetCurrentLayout() const {
   return false;
 }

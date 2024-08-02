@@ -685,6 +685,10 @@ XkbKeyboardLayoutEngine::~XkbKeyboardLayoutEngine() {
   }
 }
 
+std::string_view XkbKeyboardLayoutEngine::GetLayoutName() const {
+  return current_layout_name_;
+}
+
 bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
