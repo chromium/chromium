@@ -151,6 +151,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // Provides the mailbox backing for this image. The caller must wait on the
   // sync token before accessing this mailbox.
   gpu::MailboxHolder GetMailboxHolder() const final;
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
   bool SupportsDisplayCompositing() const final {
     return supports_display_compositing_;

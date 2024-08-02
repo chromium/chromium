@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -93,6 +94,10 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   virtual gpu::MailboxHolder GetMailboxHolder() const {
     NOTREACHED_IN_MIGRATION();
     return gpu::MailboxHolder();
+  }
+  virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const {
+    NOTREACHED();
+    return nullptr;
   }
   virtual void UpdateSyncToken(const gpu::SyncToken&) {
     NOTREACHED_IN_MIGRATION();

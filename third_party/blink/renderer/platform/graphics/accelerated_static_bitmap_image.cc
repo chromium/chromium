@@ -500,6 +500,15 @@ gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
                             texture_target_);
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+AcceleratedStaticBitmapImage::GetSharedImage() const {
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  return shared_image_;
+}
+
 void AcceleratedStaticBitmapImage::Transfer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
