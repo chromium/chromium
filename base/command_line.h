@@ -49,9 +49,6 @@ class BASE_EXPORT CommandLine {
 #endif
 
   using CharType = StringType::value_type;
-  // Prefer `StringViewType` in new code.
-  // TODO(thestig): Remove `StringPieceType`.
-  using StringPieceType = std::basic_string_view<CharType>;
   using StringVector = std::vector<StringType>;
   using StringViewType = std::basic_string_view<CharType>;
   using SwitchMap = std::map<std::string, StringType, std::less<>>;
