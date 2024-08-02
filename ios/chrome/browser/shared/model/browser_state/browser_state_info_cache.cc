@@ -181,9 +181,17 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
 void BrowserStateInfoCache::SetBrowserStateForSceneID(
     std::string_view scene_id,
     std::string_view browser_state_name) {
+  DCHECK(!browser_state_name.empty());
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
   base::Value::Dict& cache = update.Get();
   cache.Set(scene_id, browser_state_name);
+}
+
+void BrowserStateInfoCache::ClearBrowserStateForSceneID(
+    std::string_view scene_id) {
+  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
+  base::Value::Dict& cache = update.Get();
+  cache.Remove(scene_id);
 }
 
 const std::string& BrowserStateInfoCache::GetBrowserStateNameForSceneID(

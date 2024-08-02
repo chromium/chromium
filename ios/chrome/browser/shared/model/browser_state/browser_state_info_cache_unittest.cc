@@ -195,9 +195,14 @@ TEST_F(BrowserStateInfoCacheTest, MapBrowserStateAndSceneID) {
 
   std::string sceneID = "Test Scene ID";
 
+  ASSERT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), std::string());
+
   for (const TestAccount& account : kTestAccounts) {
     EXPECT_NE(cache.GetBrowserStateNameForSceneID(sceneID), account.name);
     cache.SetBrowserStateForSceneID(sceneID, account.name);
     EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), account.name);
   }
+
+  cache.ClearBrowserStateForSceneID(sceneID);
+  EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), std::string());
 }
