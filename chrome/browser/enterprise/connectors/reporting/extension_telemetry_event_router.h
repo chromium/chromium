@@ -20,9 +20,11 @@ class ExtensionTelemetryEventRouter : public KeyedService {
   // Key names used with when building the dictionary to pass to the real-time
   // reporting API. These matches proto defined in
   // google3/logs/proto/safebrowsing/csd_telemetry.proto
+  static const char kKeyExtensionTelemetryReport[];
   static const char kKeyCreationTimeMsec[];
   static const char kKeyReports[];
   static const char kKeyExtension[];
+  static const char kKeySignals[];
   static const char kKeyCookiesGetAllInfo[];
   static const char kKeyGetAllArgsInfo[];
   static const char kKeyCookiesGetInfo[];

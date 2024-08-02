@@ -217,52 +217,56 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
        CheckTelemetryEventReported) {
   const std::string event_json = base::StringPrintf(
       R"({
-    "creation_timestamp_msec": "1718811019088",
-    "reports": [{
-      "cookies_get_all_info": {
-        "get_all_args_info": [ {
-          "count": 1,
-          "secure": true,
-          "is_session": true,
-          "name": "cookie-1",
-          "path": "/path1",
-          "store_id": "store-1",
-          "domain": "example-domain",
-          "url": "www.example1.com/"
-        }]
-      },
-      "cookies_get_info": {
-        "get_args_info": [{
-          "count": 2,
-          "name": "cookie-1",
-          "store_id": "store-1",
-          "url": "www.example1.com/"
-        }]
-      },
-      "extension": {
-        "id": "fake-extension-id",
-        "name": "Foo extension",
-        "install_location": "%s",
-        "is_from_store": false,
-        "version": "1"
-      },
-      "remote_host_contacted_info": {
-         "remote_host": [ {
-            "connection_protocol": "HTTP_HTTPS",
-            "contact_count": 3,
-            "contacted_by": "CONTENT_SCRIPT",
-            "url": "www.youtube.com/"
-         } ]
-      },
-      "tabs_api_info": {
-         "call_details": [ {
-            "count": 4,
-            "new_url": "www.gogle.com/",
-            "current_url": "www.google.com/",
-            "method": "UPDATE"
-         } ]
-      }
-    }]
+    "extension_telemetry_report": {
+      "creation_timestamp_msec": "1718811019088",
+      "reports": [{
+        "extension": {
+          "id": "fake-extension-id",
+          "name": "Foo extension",
+          "install_location": "%s",
+          "is_from_store": false,
+          "version": "1"
+        },
+        "signals": {
+          "cookies_get_all_info": {
+            "get_all_args_info": [ {
+              "count": 1,
+              "secure": true,
+              "is_session": true,
+              "name": "cookie-1",
+              "path": "/path1",
+              "store_id": "store-1",
+              "domain": "example-domain",
+              "url": "www.example1.com/"
+            }]
+          },
+          "cookies_get_info": {
+            "get_args_info": [{
+              "count": 2,
+              "name": "cookie-1",
+              "store_id": "store-1",
+              "url": "www.example1.com/"
+            }]
+          },
+          "remote_host_contacted_info": {
+            "remote_host": [ {
+                "connection_protocol": "HTTP_HTTPS",
+                "contact_count": 3,
+                "contacted_by": "CONTENT_SCRIPT",
+                "url": "www.youtube.com/"
+            } ]
+          },
+          "tabs_api_info": {
+            "call_details": [ {
+                "count": 4,
+                "new_url": "www.gogle.com/",
+                "current_url": "www.google.com/",
+                "method": "UPDATE"
+            } ]
+          }
+        }
+      }]
+    }
   })",
       ExtensionInfo::InstallLocation_Name(install_location_).c_str());
   base::Value::Dict expected_event = base::test::ParseJsonDict(event_json);
