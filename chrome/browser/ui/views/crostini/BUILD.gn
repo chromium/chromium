@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser_test_support") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "crostini_dialogue_browser_test_util.cc",
+    "crostini_dialogue_browser_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini:browser_test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/component_updater:component_updater_paths",
+    "//components/component_updater/ash:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+  ]
+}
