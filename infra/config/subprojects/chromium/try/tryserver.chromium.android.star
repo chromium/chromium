@@ -571,10 +571,12 @@ try_.builder(
         configs = [
             "ci/android-cronet-x64-dbg",
             "use_clang_coverage",
+            "use_java_coverage",
             "partial_code_coverage_instrumentation",
         ],
     ),
     contact_team_email = "cronet-team@google.com",
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -586,6 +588,7 @@ try_.builder(
         ],
     ),
     use_clang_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.builder(
@@ -674,10 +677,12 @@ try_.builder(
         configs = [
             "ci/android-cronet-x86-dbg",
             "use_clang_coverage",
+            "use_java_coverage",
             "partial_code_coverage_instrumentation",
         ],
     ),
     contact_team_email = "cronet-team@google.com",
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -689,6 +694,7 @@ try_.builder(
         ],
     ),
     use_clang_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.builder(

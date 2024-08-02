@@ -92,7 +92,12 @@
     }
   },
   "$build/code_coverage": {
-    "use_clang_coverage": true
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true,
+    "use_java_coverage": true
   },
   "$build/flakiness": {
     "check_for_flakiness": true,
