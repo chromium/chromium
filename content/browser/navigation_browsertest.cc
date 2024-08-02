@@ -9312,21 +9312,12 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
   GURL url("about:blank");
-  TestNavigationManager nav_manager(web_contents, url);
   // The speculative RFH shall be created when the navigation starts.
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
   VerifyDeferSpeculativeRFHActionUMA(histogram_tester,
                                      DeferSpeculativeRFHAction::kNotDeferred);
-  NavigationRequest* navigation_request =
-      NavigationRequest::From(nav_manager.GetNavigationHandle());
-  ASSERT_EQ(navigation_request->state(),
-            NavigationRequest::NavigationState::READY_TO_COMMIT);
-  ASSERT_FALSE(navigation_request->HasLoader());
-  ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
-  ASSERT_EQ(navigation_request->GetRenderFrameHost(),
-            GetMainFrameSpeculativeRFH(web_contents));
-  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
   ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
 }
 
