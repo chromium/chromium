@@ -71,7 +71,8 @@ class CORE_EXPORT PingLoader {
                                 const KURL& destination_url);
   static void SendViolationReport(ExecutionContext* execution_context,
                                   const KURL& report_url,
-                                  scoped_refptr<EncodedFormData> report);
+                                  scoped_refptr<EncodedFormData> report,
+                                  bool is_frame_ancestors_violation);
 
   // The last argument is guaranteed to be set to the size of payload if
   // these method return true. If these method returns false, the value
