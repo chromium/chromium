@@ -4166,6 +4166,7 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/enterprise/buildflags",
           "//components/enterprise/connectors",
+          "//components/enterprise/connectors/core",
         ]
       }
       if (is_win || is_linux || is_mac || is_chromeos_ash) {
@@ -4179,6 +4180,7 @@ if (!is_android) {
           "//components/device_signals/core/common:features",
           "//components/device_signals/test:test_support",
           "//components/enterprise/connectors",
+          "//components/enterprise/connectors/core",
         ]
       }
 
@@ -9720,6 +9722,7 @@ test("unit_tests") {
       "//components/device_signals/core/common:features",
       "//components/device_signals/core/common:unit_tests",
       "//components/enterprise/connectors",
+      "//components/enterprise/connectors/core",
       "//services/data_decoder/public/cpp:test_support",
     ]
   }

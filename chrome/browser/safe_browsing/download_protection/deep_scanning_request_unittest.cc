@@ -44,7 +44,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"

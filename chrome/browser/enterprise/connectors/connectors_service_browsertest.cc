@@ -22,7 +22,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"

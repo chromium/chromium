@@ -16,8 +16,8 @@
 #include "testing/platform_test.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
 namespace safe_browsing {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/download/public/common/download_item.h"

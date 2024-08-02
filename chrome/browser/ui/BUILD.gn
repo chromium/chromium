@@ -2791,6 +2791,7 @@ static_library("ui") {
       "//components/desks_storage",
       "//components/endpoint_fetcher",
       "//components/enterprise/connectors",
+      "//components/enterprise/connectors/core",
       "//components/exo",
       "//components/login",
       "//components/metrics/structured:structured_events",

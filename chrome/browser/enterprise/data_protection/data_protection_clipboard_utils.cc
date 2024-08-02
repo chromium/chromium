@@ -17,7 +17,7 @@
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"

@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/url_matcher/url_util.h"
 

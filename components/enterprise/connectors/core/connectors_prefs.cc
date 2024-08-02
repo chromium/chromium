@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 
 #include <algorithm>
 #include <string>
@@ -10,7 +10,7 @@
 
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/device_trust/prefs.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_registry_simple.h"

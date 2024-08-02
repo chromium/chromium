@@ -11,7 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"

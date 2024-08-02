@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/policy/core/common/policy_types.h"
 
 class PrefService;
