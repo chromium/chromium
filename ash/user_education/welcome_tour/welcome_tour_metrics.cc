@@ -36,17 +36,60 @@ PrefService* GetLastActiveUserPrefService() {
 
 }  // namespace
 
-void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
+void MaybeActivateExperimentalArm() {
   CHECK(features::IsWelcomeTourEnabled());
 
-  base::UmaHistogramEnumeration(
-      base::StrCat({kWelcomeTourHistogramNamePrefix, "ChromeVoxEnabled.When"}),
-      when);
+  // TODO: crbug.com/345829923 - `prefs` could be nullptr in the tests.
+  auto* const prefs = GetLastActiveUserPrefService();
+  if (!prefs) {
+    // When users who saw the Welcome Tour driven by the Finch, the experimental
+    // arm was recorded in the `prefs`. We only follow this set of users. Return
+    // early here to skip activating arms for users who were not in any Finch
+    // experimental arms in the first run.
+    return;
+  }
+
+  const auto first_experimental_arm =
+      welcome_tour_prefs::GetFirstExperimentalArm(prefs);
+
+  // No pref value is set.
+  if (!first_experimental_arm) {
+    return;
+  }
+
+  // NOTE: Checking feature flag state activates experimental arms.
+  const bool is_holdback_enabled = features::IsWelcomeTourHoldbackEnabled();
+  const bool is_v1_enabled = features::IsWelcomeTourCounterfactuallyEnabled();
+  const bool is_v2_enabled = features::IsWelcomeTourV2Enabled();
+
+  bool changed_experimental_arm = false;
+  const auto experimental_arm = first_experimental_arm.value();
+  switch (experimental_arm) {
+    case welcome_tour_metrics::ExperimentalArm::kHoldback:
+      changed_experimental_arm =
+          !is_holdback_enabled && (is_v1_enabled || is_v2_enabled);
+      break;
+    case welcome_tour_metrics::ExperimentalArm::kV1:
+      changed_experimental_arm =
+          !is_v1_enabled && (is_holdback_enabled || is_v2_enabled);
+      break;
+    case welcome_tour_metrics::ExperimentalArm::kV2:
+      changed_experimental_arm =
+          !is_v2_enabled && (is_holdback_enabled || is_v1_enabled);
+      break;
+  }
+
+  if (changed_experimental_arm) {
+    base::UmaHistogramEnumeration(base::StrCat({kWelcomeTourHistogramNamePrefix,
+                                                "ChangedExperimentalArm"}),
+                                  experimental_arm);
+  }
 }
 
-void RecordExperimentalArm() {
+void MaybeRecordExperimentalArm() {
   CHECK(features::IsWelcomeTourEnabled());
 
+  // NOTE: Checking feature flag state activates experimental arms.
   std::optional<ExperimentalArm> experimental_arm;
   if (features::IsWelcomeTourCounterfactuallyEnabled()) {
     CHECK(!features::IsWelcomeTourHoldbackEnabled());
@@ -62,11 +105,27 @@ void RecordExperimentalArm() {
     experimental_arm = ExperimentalArm::kV2;
   }
 
-  if (experimental_arm) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({kWelcomeTourHistogramNamePrefix, "ExperimentalArm"}),
-        experimental_arm.value());
+  if (!experimental_arm) {
+    return;
   }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "ExperimentalArm"}),
+      experimental_arm.value());
+
+  // TODO: crbug.com/345829923 - `prefs` could be nullptr in the tests.
+  if (auto* prefs = GetLastActiveUserPrefService()) {
+    std::ignore = welcome_tour_prefs::MarkFirstExperimentalArm(
+        prefs, experimental_arm.value());
+  }
+}
+
+void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "ChromeVoxEnabled.When"}),
+      when);
 }
 
 void RecordInteraction(Interaction interaction) {
@@ -163,7 +222,7 @@ void RecordTourDuration(base::TimeDelta duration, bool completed) {
 
 void RecordTourPrevented(PreventedReason reason) {
   CHECK(features::IsWelcomeTourEnabled());
-  // TODO: b/345829923 - `prefs` could be nullptr in the tests.
+  // TODO: crbug.com/345829923 - `prefs` could be nullptr in the tests.
   if (auto* prefs = GetLastActiveUserPrefService()) {
     welcome_tour_prefs::MarkFirstTourPrevention(prefs, reason);
   }

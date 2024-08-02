@@ -472,6 +472,8 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // the tour when the primary user session is activated for the first time.
   session_observation_.Reset();
 
+  welcome_tour_metrics::MaybeActivateExperimentalArm();
+
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
     // Welcome Tour is supported for regular users only.
     const auto* const session_controller = Shell::Get()->session_controller();
@@ -542,7 +544,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     return;
   }
 
-  welcome_tour_metrics::RecordExperimentalArm();
+  welcome_tour_metrics::MaybeRecordExperimentalArm();
 
   // Welcome Tour is not supported for holdback experiment arm.
   if (features::IsWelcomeTourHoldbackEnabled()) {

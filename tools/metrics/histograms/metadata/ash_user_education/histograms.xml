@@ -41,6 +41,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.ChangedExperimentalArm"
+    enum="WelcomeTourExperimentalArm" expires_after="2025-07-01">
+  <owner>wutao@google.com</owner>
+  <owner>llin@google.com</owner>
+  <summary>
+    Records the first run experimental arm when there is an change between the
+    first run experimental arm and the activated experimental arm in subsequent
+    sessions.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.ChromeVoxEnabled.When"
     enum="WelcomeTourChromeVoxEnabled" expires_after="2025-07-01">
   <owner>wutao@chromium.org</owner>

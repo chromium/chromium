@@ -54,6 +54,15 @@ enum class ExperimentalArm {
   kMaxValue = kV2,
 };
 
+static constexpr auto kAllExperimentalArmsSet =
+    base::EnumSet<ExperimentalArm,
+                  ExperimentalArm::kMinValue,
+                  ExperimentalArm::kMaxValue>({
+        ExperimentalArm::kHoldback,
+        ExperimentalArm::kV1,
+        ExperimentalArm::kV2,
+    });
+
 // Enumeration of interactions users may engage in after the Welcome Tour. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused. Be sure to update `kAllInteractionsSet`
@@ -141,12 +150,17 @@ enum class TourResult {
 
 // Utilities -------------------------------------------------------------------
 
+// Attempts to activate an experimental arm if and only if the user was
+// previously active in an experimental arm during the first attempt to show the
+// Welcome Tour.
+ASH_EXPORT void MaybeActivateExperimentalArm();
+
+// Record the experimental arm in which the user was active when the first
+// attempt was made to show the Welcome Tour.
+ASH_EXPORT void MaybeRecordExperimentalArm();
+
 // Record the usage of ChromeVox in the Welcome Tour.
 ASH_EXPORT void RecordChromeVoxEnabled(ChromeVoxEnabled when);
-
-// Record the experimental arm in which the user was active when an attempt was
-// made to show the Welcome Tour.
-ASH_EXPORT void RecordExperimentalArm();
 
 // Record that a given `interaction` has occurred.
 ASH_EXPORT void RecordInteraction(Interaction interaction);
