@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/barrier_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_title.h"
@@ -79,9 +83,9 @@ void GetDriveFileMetadata(
                   if (error != drive::FILE_ERROR_OK) {
                     return std::nullopt;
                   }
-                  return DriveFile{.title = app_list::GetFileTitle(path),
-                                   .local_path = path,
-                                   .url = GURL(metadata->alternate_url)};
+                  return DriveFile(metadata->item_id,
+                                   app_list::GetFileTitle(path), path,
+                                   GURL(metadata->alternate_url));
                 },
                 path)
                 .Then(std::move(callback)));
@@ -101,6 +105,24 @@ std::vector<DriveFile> FilterDriveFiles(
 }
 
 }  // namespace
+
+PickerFileSuggester::DriveFile::DriveFile(std::optional<std::string> id,
+                                          std::u16string title,
+                                          base::FilePath local_path,
+                                          GURL url)
+    : id(std::move(id)),
+      title(std::move(title)),
+      local_path(std::move(local_path)),
+      url(std::move(url)) {}
+
+PickerFileSuggester::DriveFile::~DriveFile() = default;
+
+PickerFileSuggester::DriveFile::DriveFile(const DriveFile&) = default;
+PickerFileSuggester::DriveFile::DriveFile(DriveFile&&) = default;
+PickerFileSuggester::DriveFile& PickerFileSuggester::DriveFile::operator=(
+    const DriveFile&) = default;
+PickerFileSuggester::DriveFile& PickerFileSuggester::DriveFile::operator=(
+    DriveFile&&) = default;
 
 PickerFileSuggester::PickerFileSuggester(Profile* profile)
     : profile_(profile) {}

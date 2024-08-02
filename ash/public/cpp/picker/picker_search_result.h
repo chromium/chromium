@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
 #define ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <variant>
@@ -123,12 +124,14 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct DriveFileData {
+    std::optional<std::string> id;
     std::u16string title;
     GURL url;
     base::FilePath file_path;
     bool best_match;
 
-    DriveFileData(std::u16string title,
+    DriveFileData(std::optional<std::string> id,
+                  std::u16string title,
                   GURL url,
                   base::FilePath file_path,
                   bool best_match);
@@ -244,7 +247,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult LocalFile(std::u16string title,
                                       base::FilePath file_path,
                                       bool best_match = false);
-  static PickerSearchResult DriveFile(std::u16string title,
+  static PickerSearchResult DriveFile(std::optional<std::string> id,
+                                      std::u16string title,
                                       const GURL& url,
                                       base::FilePath file_path,
                                       bool best_match = false);

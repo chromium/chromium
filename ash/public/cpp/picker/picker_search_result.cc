@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/picker/picker_search_result.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -65,11 +66,13 @@ bool PickerSearchResult::ClipboardData::operator==(
 bool PickerSearchResult::LocalFileData::operator==(const LocalFileData&) const =
     default;
 
-PickerSearchResult::DriveFileData::DriveFileData(std::u16string title,
+PickerSearchResult::DriveFileData::DriveFileData(std::optional<std::string> id,
+                                                 std::u16string title,
                                                  GURL url,
                                                  base::FilePath file_path,
                                                  bool best_match)
-    : title(std::move(title)),
+    : id(std::move(id)),
+      title(std::move(title)),
       url(std::move(url)),
       file_path(std::move(file_path)),
       best_match(best_match) {}
@@ -221,12 +224,13 @@ PickerSearchResult PickerSearchResult::LocalFile(std::u16string title,
                                           .best_match = best_match});
 }
 
-PickerSearchResult PickerSearchResult::DriveFile(std::u16string title,
+PickerSearchResult PickerSearchResult::DriveFile(std::optional<std::string> id,
+                                                 std::u16string title,
                                                  const GURL& url,
                                                  base::FilePath file_path,
                                                  bool best_match) {
-  return PickerSearchResult(
-      DriveFileData(std::move(title), url, std::move(file_path), best_match));
+  return PickerSearchResult(DriveFileData(std::move(id), std::move(title), url,
+                                          std::move(file_path), best_match));
 }
 
 PickerSearchResult PickerSearchResult::Category(PickerCategory category) {

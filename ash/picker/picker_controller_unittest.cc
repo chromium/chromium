@@ -4,6 +4,7 @@
 
 #include "ash/picker/picker_controller.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -485,7 +486,7 @@ TEST_F(PickerControllerTest, OpenDriveFileResult) {
       .Times(1);
 
   controller.OpenResult(PickerSearchResult::DriveFile(
-      u"title", GURL("http://foo.com"), base::FilePath()));
+      /*id=*/std::nullopt, u"title", GURL("http://foo.com"), base::FilePath()));
 }
 
 TEST_F(PickerControllerTest, OpenLocalFileResult) {
@@ -1024,7 +1025,7 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result = PickerSearchResult::DriveFile(u"", {}, {}),
+            .result = PickerSearchResult::DriveFile(std::nullopt, u"", {}, {}),
             .unfocused_action = PickerActionType::kOpen,
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,

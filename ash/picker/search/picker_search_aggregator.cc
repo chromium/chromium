@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/picker/model/picker_search_results_section.h"
@@ -14,13 +15,16 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/substring_set_matcher/matcher_string_pattern.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/url_matcher/url_matcher.h"
 
 namespace ash {
 
@@ -64,6 +68,41 @@ bool ShouldPromote(const PickerSearchResult& result) {
                        },
                        [](const auto& data) { return false; }},
       result.data());
+}
+
+void DeduplicateDriveLinksFromFiles(
+    std::vector<PickerSearchResult>& links,
+    base::span<const PickerSearchResult> files) {
+  std::vector<base::MatcherStringPattern> patterns;
+  base::MatcherStringPattern::ID next_id = 0;
+  for (const PickerSearchResult& file : files) {
+    auto* drive_data =
+        std::get_if<PickerSearchResult::DriveFileData>(&file.data());
+    if (drive_data == nullptr) {
+      continue;
+    }
+    if (!drive_data->id.has_value()) {
+      continue;
+    }
+    patterns.emplace_back(*drive_data->id, next_id);
+    ++next_id;
+  }
+
+  base::SubstringSetMatcher matcher;
+  bool success = matcher.Build(patterns);
+  // This may fail if the tree gets too many nodes (`kInvalidNodeId`, which is
+  // around ~8,400,000). Drive IDs are 44 characters long, so this would require
+  // having >190,000 Drive IDs in the worst case. This should never happen.
+  CHECK(success);
+
+  std::erase_if(links, [&matcher](const PickerSearchResult& link) {
+    auto* link_data =
+        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    if (link_data == nullptr) {
+      return false;
+    }
+    return matcher.AnyMatch(link_data->url.spec());
+  });
 }
 
 }  // namespace
@@ -149,6 +188,15 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 }
 
 void PickerSearchAggregator::PublishBurnInResults() {
+  if (UnpublishedResults* link_results =
+          AccumulatedResultsForSection(PickerSectionType::kLinks)) {
+    if (UnpublishedResults* drive_results =
+            AccumulatedResultsForSection(PickerSectionType::kDriveFiles)) {
+      DeduplicateDriveLinksFromFiles(link_results->results,
+                                     drive_results->results);
+    }
+  }
+
   std::vector<PickerSearchResultsSection> sections;
   base::flat_set<PickerSectionType> published_types;
 

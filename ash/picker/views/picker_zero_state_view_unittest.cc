@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_zero_state_view.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -153,6 +154,7 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
             std::move(callback).Run({PickerSearchResult::DriveFile(
+                /*id=*/std::nullopt,
                 /*title=*/u"test drive file",
                 /*url=*/GURL(), base::FilePath())});
           });
@@ -330,6 +332,7 @@ TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingSuggestedItems) {
   EXPECT_CALL(mock_delegate, RequestPseudoFocus(_));
 
   suggested_results_callback.Run({PickerSearchResult::DriveFile(
+      /*id=*/std::nullopt,
       /*title=*/u"test drive file",
       /*url=*/GURL(), base::FilePath())});
 }

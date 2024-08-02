@@ -4,6 +4,7 @@
 
 #include "ash/picker/views/picker_search_results_view.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
@@ -191,7 +192,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles,
-      {{PickerSearchResult::DriveFile(u"drive", GURL(), base::FilePath())}},
+      {{PickerSearchResult::DriveFile(/*id=*/std::nullopt, u"drive", GURL(),
+                                      base::FilePath())}},
       /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
@@ -686,8 +688,10 @@ INSTANTIATE_TEST_SUITE_P(
          PickerSearchResult::Category(PickerCategory::kExpressions)},
         {"LocalFile",
          PickerSearchResult::LocalFile(u"local", base::FilePath())},
-        {"DriveFile",
-         PickerSearchResult::DriveFile(u"drive", GURL(), base::FilePath())},
+        {"DriveFile", PickerSearchResult::DriveFile(std::nullopt,
+                                                    u"drive",
+                                                    GURL(),
+                                                    base::FilePath())},
     }),
     [](const testing::TestParamInfo<
         PickerSearchResultsViewResultSelectionTest::ParamType>& info) {
