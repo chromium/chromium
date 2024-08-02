@@ -47,14 +47,40 @@ export class SessionProcessor {
     return {ready: false, message: 'already connected'};
   }
 
-  #getMapperOptions(capabilities: any): MapperOptions {
-    const acceptInsecureCerts =
-      capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
-    const unhandledPromptBehavior = this.#getUnhandledPromptBehavior(
-      capabilities?.alwaysMatch?.unhandledPromptBehavior
+  #mergeCapabilities(
+    capabilitiesRequest: Session.CapabilitiesRequest
+  ): Session.CapabilityRequest {
+    // Roughly following https://www.w3.org/TR/webdriver2/#dfn-capabilities-processing.
+    // Validations should already be done by the parser.
+
+    const mergedCapabilities = [];
+
+    for (const first of capabilitiesRequest.firstMatch ?? [{}]) {
+      const result = {
+        ...capabilitiesRequest.alwaysMatch,
+      };
+      for (const key of Object.keys(first)) {
+        if (result[key] !== undefined) {
+          throw new InvalidArgumentException(
+            `Capability ${key} in firstMatch is already defined in alwaysMatch`
+          );
+        }
+        result[key] = first[key];
+      }
+
+      mergedCapabilities.push(result);
+    }
+
+    const match =
+      mergedCapabilities.find((c) => c.browserName === 'chrome') ??
+      mergedCapabilities[0] ??
+      {};
+
+    match.unhandledPromptBehavior = this.#getUnhandledPromptBehavior(
+      match.unhandledPromptBehavior
     );
 
-    return {acceptInsecureCerts, unhandledPromptBehavior};
+    return match;
   }
 
   #getUnhandledPromptBehavior(
@@ -93,11 +119,10 @@ export class SessionProcessor {
       throw new Error('Session has been already created.');
     }
     this.#created = true;
-    // Since mapper exists, there is a session already.
-    // Still the mapper can handle capabilities for us.
-    // Currently, only Puppeteer calls here but, eventually, every client
-    // should delegrate capability processing here.
-    await this.#initConnection(this.#getMapperOptions(params.capabilities));
+
+    const matchedCapabitlites = this.#mergeCapabilities(params.capabilities);
+
+    await this.#initConnection(matchedCapabitlites);
 
     const version =
       await this.#browserCdpClient.sendCommand('Browser.getVersion');
@@ -105,9 +130,8 @@ export class SessionProcessor {
     return {
       sessionId: 'unknown',
       capabilities: {
-        acceptInsecureCerts: Boolean(
-          params.capabilities.alwaysMatch?.acceptInsecureCerts
-        ),
+        ...matchedCapabitlites,
+        acceptInsecureCerts: matchedCapabitlites.acceptInsecureCerts ?? false,
         browserName: version.product,
         browserVersion: version.revision,
         platformName: '',

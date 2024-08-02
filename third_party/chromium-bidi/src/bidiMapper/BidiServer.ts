@@ -42,7 +42,7 @@ type BidiServerEvent = {
 };
 
 export type MapperOptions = {
-  acceptInsecureCerts: boolean;
+  acceptInsecureCerts?: boolean;
   unhandledPromptBehavior?: Session.UserPromptHandler;
 };
 
