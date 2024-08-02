@@ -43,6 +43,10 @@ source_set("screen_ai") {
     "//ui/accessibility:accessibility",
   ]
 
+  if (!use_fake_screen_ai) {
+    deps += [ "//components/crash/core/common:crash_key" ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
