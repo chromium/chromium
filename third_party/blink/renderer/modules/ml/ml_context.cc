@@ -8,6 +8,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
@@ -384,16 +385,20 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/343638938): Decide whether it is valid to create an empty
-  // MLBuffer.
   ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
                    webnn::OperandDescriptor::Create(
                        FromBlinkDataType(descriptor->dataType().AsEnum()),
                        descriptor->dimensions()),
                    [&exception_state](std::string error) {
                      exception_state.ThrowTypeError(String(error));
-                     return ScriptPromise<MLBuffer>{};
+                     return ScriptPromise<MLBuffer>();
                    });
+
+  RETURN_IF_ERROR(webnn::ValidateBuffer(properties_, validated_descriptor),
+                  [&exception_state](std::string error) {
+                    exception_state.ThrowTypeError(String(error));
+                    return ScriptPromise<MLBuffer>();
+                  });
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
       script_state, exception_state.GetContext());

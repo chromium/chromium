@@ -83,6 +83,12 @@ void WebNNContextImpl::CreateBuffer(
     mojom::BufferInfoPtr buffer_info,
     mojom::WebNNContext::CreateBufferCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ValidateBuffer(properties_, buffer_info->descriptor).has_value()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
   mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
   CreateBufferImpl(

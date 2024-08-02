@@ -2254,6 +2254,24 @@ base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
   return base::ok();
 }
 
+base::expected<void, std::string> ValidateBuffer(
+    const ContextProperties& context_properties,
+    OperandDescriptor descriptor) {
+  // TODO(crbug.com/343638938): Consider adding more constraints to MLBuffer
+  // creation, such as whether an MLBuffer...
+  // - may be empty
+  // - may have a max size (in addition to `OperandDescriptor` restrictions)
+
+  // TODO(crbug.com/356905054): Consider adding `DataTypeLimits` specific to
+  // `MLBuffer` rather than using `input`.
+  if (!context_properties.data_type_limits.input.Has(descriptor.data_type())) {
+    return base::unexpected(NotSupportedMLBufferTypeError(
+        descriptor.data_type(), context_properties.data_type_limits.input));
+  }
+
+  return base::ok();
+}
+
 std::optional<std::vector<uint32_t>> BroadcastShapes(
     base::span<const uint32_t> dims_lhs,
     base::span<const uint32_t> dims_rhs,

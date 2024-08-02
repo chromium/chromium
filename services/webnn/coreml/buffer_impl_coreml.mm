@@ -17,8 +17,7 @@ namespace webnn::coreml {
 
 namespace {
 
-std::optional<MLMultiArrayDataType> ToMLMultiArrayDataType(
-    OperandDataType data_type) {
+MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
   switch (data_type) {
     case OperandDataType::kFloat32:
       return MLMultiArrayDataTypeFloat32;
@@ -34,8 +33,8 @@ std::optional<MLMultiArrayDataType> ToMLMultiArrayDataType(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
-      // Unsupported data types in coreml.
-      return std::nullopt;
+      // Unsupported data types for MLMultiArrays in CoreML.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -49,16 +48,6 @@ BufferImplCoreml::Create(
     mojom::BufferInfoPtr buffer_info) {
   // TODO(crbug.com/343638938): Check `MLBufferUsageFlags` and use an
   // IOSurface to facilitate zero-copy buffer sharing with WebGPU when possible.
-
-  auto multi_array_data_type =
-      ToMLMultiArrayDataType(buffer_info->descriptor.data_type());
-  if (!multi_array_data_type.has_value()) {
-    // TODO(crbug.com/333392274): Move this check to the renderer and throw a
-    // TypeError.
-    LOG(ERROR) << "[WebNN] Unsupported data type.";
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError, "Unsupported data type."));
-  }
 
   // TODO(crbug.com/329482489): Move this check to the renderer and throw a
   // TypeError.
@@ -88,10 +77,10 @@ BufferImplCoreml::Create(
   }
 
   NSError* error = nil;
-  MLMultiArray* multi_array =
-      [[MLMultiArray alloc] initWithShape:ns_shape
-                                 dataType:*multi_array_data_type
-                                    error:&error];
+  MLMultiArray* multi_array = [[MLMultiArray alloc]
+      initWithShape:ns_shape
+           dataType:ToMLMultiArrayDataType(buffer_info->descriptor.data_type())
+              error:&error];
   if (error) {
     LOG(ERROR) << "[WebNN] Failed to allocate buffer: " << error;
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,

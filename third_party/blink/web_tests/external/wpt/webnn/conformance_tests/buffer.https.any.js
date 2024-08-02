@@ -86,8 +86,8 @@ const testCreateWebNNBuffer = (testName, bufferDescriptor) => {
   promise_test(async t => {
     if (!mlContext.opSupportLimits().input.dataTypes.includes(
             bufferDescriptor.dataType)) {
-      await promise_rejects_dom(
-          t, 'NotSupportedError', mlContext.createBuffer(bufferDescriptor));
+      await promise_rejects_js(
+          t, TypeError, mlContext.createBuffer(bufferDescriptor));
       return;
     }
 
