@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 
 #include <bit>
+#include <optional>
 
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -220,33 +222,54 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
     const String& attribute_value,
     const CSSAttrType& attribute_type,
     const CSSParserContext& context) {
-  if (attribute_value.IsNull()) {
+  // Unknown attr() types should be handled during parse time.
+  DCHECK(attribute_type.category != CSSAttrType::Category::kUnknown);
+
+  if (attribute_value.IsNull() ||
+      attribute_type.category == CSSAttrType::Category::kFrequency) {
+    // TODO(crbug.com/40320391): <frequency> is not yet supported in chrome.
     return std::nullopt;
   }
 
+  // For kString, the substitution value is the literal attribute value
+  // without any parsing or other processing.
+  // https://drafts.csswg.org/css-values-5/#attr-types
   if (attribute_type.category == CSSAttrType::Category::kString) {
     return CSSParserToken(kStringToken, attribute_value);
-  }
-
-  std::optional<CSSSyntaxDefinition> syntax_definition =
-      attribute_type.ConvertToCSSSyntaxDefinition();
-  if (!syntax_definition.has_value()) {
-    return std::nullopt;
   }
 
   CSSTokenizer tokenizer(attribute_value);
   auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
-                                context, false)) {
-    return std::nullopt;
+
+  std::optional<CSSSyntaxDefinition> syntax_definition =
+      attribute_type.ConvertToCSSSyntaxDefinition();
+  if (syntax_definition.has_value()) {
+    if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
+                                  context, false)) {
+      return std::nullopt;
+    }
+  } else {
+    // <flex> has special handling because it's not supported
+    // by CSSSyntaxDefinition.
+    CHECK_EQ(attribute_type.category, CSSAttrType::Category::kFlex);
+    range.ConsumeWhitespace();
+    CSSParserToken token = range.ConsumeIncludingWhitespace();
+    if (!range.AtEnd() || token.GetType() != kDimensionToken ||
+        token.GetUnitType() != CSSPrimitiveValue::UnitType::kFlex) {
+      return std::nullopt;
+    }
+    return token;
   }
 
   range.ConsumeWhitespace();
   CSSParserToken token = range.ConsumeIncludingWhitespace();
   if (!range.AtEnd()) {
+    // Only single token is allowed, see
+    // https://drafts.csswg.org/css-values-5/#attr-notation.
     return std::nullopt;
   }
+
   if (attribute_type.category == CSSAttrType::Category::kDimensionUnit) {
     token.ConvertToDimensionWithUnit(
         CSSPrimitiveValue::UnitTypeToString(attribute_type.dimension_unit));
