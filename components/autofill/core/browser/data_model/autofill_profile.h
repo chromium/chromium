@@ -104,9 +104,6 @@ class AutofillProfile : public AutofillDataModel {
       const std::string& app_locale);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // AutofillDataModel:
-  double GetRankingScore(base::Time current_time) const override;
-
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
@@ -119,6 +116,17 @@ class AutofillProfile : public AutofillDataModel {
                                         VerificationStatus status) override;
 
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
+
+  // Calculates the ranking score used for ranking the profile suggestion. If
+  // `use_frecency` is true we use the new ranking algorithm.
+  double GetRankingScore(base::Time current_time,
+                         bool use_frecency = false) const;
+
+  // Compares two profiles and returns if the current profile has a greater
+  // ranking score than `other`.
+  bool HasGreaterRankingThan(const AutofillProfile* other,
+                             base::Time comparison_time,
+                             bool use_frecency = false) const;
 
   // Every `GetSupportedType()` is either a storable type or has a corresponding
   // storable type. For example, ADDRESS_HOME_LINE1 corresponds to the storable

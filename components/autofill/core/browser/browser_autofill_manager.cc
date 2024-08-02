@@ -783,15 +783,15 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   FieldType field_type = autofill_field
                              ? autofill_field->Type().GetStorableType()
                              : CREDIT_CARD_NUMBER;
-  DCHECK(FieldTypeGroupSet(
-             {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField})
-             .contains(GroupTypeOfFieldType(field_type)));
+  DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
 
+  autofill_metrics::SuggestionRankingContext ranking_context;
   auto cards = GetCreditCardSuggestions(
       form, field_data, field_type,
-      AutofillSuggestionTriggerSource::kShowCardsFromAccount);
+      AutofillSuggestionTriggerSource::kShowCardsFromAccount, ranking_context);
   DCHECK(!cards.empty());
-  external_delegate_->OnSuggestionsReturned(field_data.global_id(), cards);
+  external_delegate_->OnSuggestionsReturned(field_data.global_id(), cards,
+                                            std::move(ranking_context));
 }
 
 bool BrowserAutofillManager::ShouldParseForms() {
@@ -1337,17 +1337,19 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context,
     OnGenerateSuggestionsCallback callback) {
+  autofill_metrics::SuggestionRankingContext ranking_context;
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
-          form, form_structure, field, autofill_field, trigger_source, context);
+          form, form_structure, field, autofill_field, trigger_source, context,
+          ranking_context);
 
   if (context.is_autofill_available &&
       ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
     if (context.suppress_reason == SuppressReason::kAblation) {
       CHECK(suggestions.empty());
       single_field_form_fill_router_->CancelPendingQueries();
-      std::move(callback).Run(/*show_suggestions=*/true,
-                              std::move(suggestions));
+      std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
+                              std::nullopt);
     }
     return;
   }
@@ -1367,7 +1369,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     // `external_delegate_`.
     // In principle, TTF and Fast Checkout triggering surfaces are different
     // and the two screens should never coincide.
-    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
+    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions),
+                            std::nullopt);
     return;
   }
 
@@ -1379,7 +1382,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     // Touch To Fill surface is shown, so abort showing regular Autofill UI.
     // Now the flow is controlled by the `touch_to_fill_delegate_` instead
     // of `external_delegate_`.
-    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
+    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions),
+                            std::nullopt);
     return;
   }
 
@@ -1445,7 +1449,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
             : std::nullopt;
     if (maybe_compose_suggestion) {
       std::move(callback).Run(/*show_suggestions=*/true,
-                              {*std::move(maybe_compose_suggestion)});
+                              {*std::move(maybe_compose_suggestion)},
+                              std::nullopt);
       return;
     }
   }
@@ -1454,7 +1459,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     // Show the list of `suggestions` if not empty. These may include address or
     // credit card suggestions. Additionally, warnings about mixed content might
     // be present.
-    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
+                            ranking_context);
     return;
   }
 
@@ -1481,7 +1487,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
       static_cast<size_t>(should_offer_single_field_form_fill) +
       static_cast<size_t>(should_offer_plus_addresses_with_sfff);
   if (barrier_calls == 0) {
-    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+    std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
+                            std::nullopt);
     return;
   }
 
@@ -1534,7 +1541,7 @@ void BrowserAutofillManager::
         OnGenerateSuggestionsCallback callback,
         std::vector<std::vector<Suggestion>> suggestion_lists) {
   if (suggestion_lists.empty()) {
-    std::move(callback).Run(/*show_suggestions=*/true, {});
+    std::move(callback).Run(/*show_suggestions=*/true, {}, std::nullopt);
     return;
   }
 
@@ -1582,7 +1589,8 @@ void BrowserAutofillManager::
 
   // Show the list of `suggestions`. These may include single field form field
   // and/or plus address suggestions.
-  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
+                          std::nullopt);
 }
 
 void BrowserAutofillManager::MaybeShowIphForManualFallback(
@@ -1629,7 +1637,8 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     AutofillSuggestionTriggerSource trigger_source,
     const SuggestionsContext& context,
     bool show_suggestions,
-    std::vector<Suggestion> suggestions) {
+    std::vector<Suggestion> suggestions,
+    std::optional<autofill_metrics::SuggestionRankingContext> ranking_context) {
   LogSuggestionsCount(context, suggestions);
   // When focusing on a field, log whether there is a suggestion for the user
   // and whether the suggestion is shown.
@@ -1645,7 +1654,8 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   }
   if (show_suggestions) {
     // Send Autofill suggestions (could be an empty list).
-    external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions);
+    external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions,
+                                              std::move(ranking_context));
   }
 }
 
@@ -1659,7 +1669,7 @@ void BrowserAutofillManager::OnGetPlusAddressSuggestions(
     std::vector<Suggestion> suggestions) {
   if (suggestions.empty()) {
     std::move(callback).Run(/*show_suggestions=*/true,
-                            std::move(address_suggestions));
+                            std::move(address_suggestions), std::nullopt);
     return;
   }
 
@@ -1675,7 +1685,8 @@ void BrowserAutofillManager::OnGetPlusAddressSuggestions(
                      std::make_move_iterator(address_suggestions.begin()),
                      std::make_move_iterator(address_suggestions.end()));
 
-  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
+  std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
+                          std::nullopt);
 }
 
 void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
@@ -1885,6 +1896,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   SuggestionsContext context =
       BuildSuggestionsContext(form, form_structure, field, autofill_field,
                               AutofillSuggestionTriggerSource::kUnspecified);
+  autofill_metrics::SuggestionRankingContext ranking_context;
+
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -1896,7 +1909,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
           form, form_structure, field, autofill_field,
-          AutofillSuggestionTriggerSource::kUnspecified, context);
+          AutofillSuggestionTriggerSource::kUnspecified, context,
+          ranking_context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2736,7 +2750,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    autofill_metrics::SuggestionRankingContext& ranking_context) {
   metrics_->credit_card_form_event_logger.OnDidPollSuggestions(
       trigger_field, metrics_->signin_state_for_metrics);
 
@@ -2786,6 +2801,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
           ShouldShowScanCreditCard(form, trigger_field),
           ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
           summary);
+      ranking_context = std::move(summary.ranking_context);
     }
   }
 
@@ -2933,7 +2949,8 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
-    SuggestionsContext& context) {
+    SuggestionsContext& context,
+    autofill_metrics::SuggestionRankingContext& ranking_context) {
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
     return {};
   }
@@ -2958,7 +2975,7 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
         autofill_field ? autofill_field->Type().GetStorableType()
                        : UNKNOWN_TYPE;
     suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
-                                           trigger_source);
+                                           trigger_source, ranking_context);
   } else if (context.filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on

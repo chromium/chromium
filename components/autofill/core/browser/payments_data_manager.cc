@@ -1171,7 +1171,8 @@ PaymentsDataManager::GetVirtualCardUsageData() const {
   return result;
 }
 
-std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest() const {
+std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
+    bool should_use_legacy_algorithm) const {
   if (!IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
@@ -1196,13 +1197,15 @@ std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest() const {
   base::Time comparison_time = AutofillClock::Now();
   if (cards_to_suggest.size() > 1) {
     std::sort(cards_to_suggest.begin(), cards_to_suggest.end(),
-              [comparison_time](const CreditCard* a, const CreditCard* b) {
+              [comparison_time, should_use_legacy_algorithm](
+                  const CreditCard* a, const CreditCard* b) {
                 const bool a_is_expired = a->IsExpired(comparison_time);
                 if (a_is_expired != b->IsExpired(comparison_time)) {
                   return !a_is_expired;
                 }
 
-                return a->HasGreaterRankingThan(b, comparison_time);
+                return a->HasGreaterRankingThan(*b, comparison_time,
+                                                should_use_legacy_algorithm);
               });
   }
 

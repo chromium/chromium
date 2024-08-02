@@ -5728,6 +5728,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.SuggestionAccepted.SuggestionRankingDifference.CreditCard"
+    enum="RelativePosition" expires_after="2025-07-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the ranking difference for a recently-selected Autofill suggestion,
+    recording if the suggestion was ranked higher or lower in the new ranking
+    algorithm compared to the legacy ranking algorithm.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SuggestionAcceptedIndex{SuggestionType}"
     units="position" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

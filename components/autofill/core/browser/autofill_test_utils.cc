@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -869,8 +870,9 @@ void GenerateTestAutofillPopup(
 
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));
-  autofill_external_delegate->OnSuggestionsReturned(field.global_id(),
-                                                    suggestions);
+  autofill_metrics::SuggestionRankingContext context;
+  autofill_external_delegate->OnSuggestionsReturned(
+      field.global_id(), suggestions, std::move(context));
 }
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,

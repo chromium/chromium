@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -789,10 +790,12 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     FieldType trigger_field_type,
     bool suppress_disused_cards,
     bool prefix_match,
-    bool include_virtual_cards) {
-  std::vector<CreditCard*> available_cards = client.GetPersonalDataManager()
-                                                 ->payments_data_manager()
-                                                 .GetCreditCardsToSuggest();
+    bool include_virtual_cards,
+    bool use_legacy_algorithm = false) {
+  std::vector<CreditCard*> available_cards =
+      client.GetPersonalDataManager()
+          ->payments_data_manager()
+          .GetCreditCardsToSuggest(use_legacy_algorithm);
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
   if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
@@ -948,16 +951,18 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);
   summary.with_offer = !card_linked_offers_map.empty();
-
-  std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      client, trigger_field, trigger_field_type,
-      /*suppress_disused_cards=*/
+  bool suppress_disused_cards =
       SanitizeCreditCardFieldValue(trigger_field.value()).empty() &&
-          trigger_source !=
-              AutofillSuggestionTriggerSource::kManualFallbackPayments,
-      /*prefix_match=*/is_trigger_field_a_credit_card_field &&
-          !allow_payment_swapping,
-      /*include_virtual_cards=*/true);
+      trigger_source !=
+          AutofillSuggestionTriggerSource::kManualFallbackPayments;
+  bool should_prefix_match =
+      is_trigger_field_a_credit_card_field && !allow_payment_swapping;
+  std::vector<CreditCard> cards_to_suggest =
+      GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
+                               /*suppress_disused_cards=*/
+                               suppress_disused_cards,
+                               /*prefix_match=*/should_prefix_match,
+                               /*include_virtual_cards=*/true);
 
   // If autofill for cards is triggered from the context menu on a credit card
   // field and no suggestions can be shown (i.e. if a user has only cards
@@ -979,16 +984,44 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
         client, trigger_field, UNKNOWN_TYPE, trigger_source,
         should_show_scan_credit_card, should_show_cards_from_account, summary);
   }
-
+  bool new_ranking_experiment_enabled = base::FeatureList::IsEnabled(
+      features::kAutofillEnableRankingFormulaCreditCards);
+  std::vector<CreditCard> cards_ranked_by_legacy_algorithm;
+  if (new_ranking_experiment_enabled) {
+    // Get credit cards ranked by legacy algorithm to use for comparison with
+    // the new algorithm's rankings inside the loop below.
+    cards_ranked_by_legacy_algorithm = GetOrderedCardsToSuggest(
+        client, trigger_field, trigger_field_type, suppress_disused_cards,
+        /*prefix_match=*/should_prefix_match,
+        /*include_virtual_cards=*/true, /*use_legacy_algorithm=*/true);
+  }
   summary.metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
   std::vector<Suggestion> suggestions;
-  for (const CreditCard& credit_card : cards_to_suggest) {
-    suggestions.push_back(CreateCreditCardSuggestion(
+  for (size_t current_card_index = 0;
+       current_card_index < cards_to_suggest.size(); current_card_index++) {
+    const CreditCard& credit_card = cards_to_suggest[current_card_index];
+    Suggestion suggestion = CreateCreditCardSuggestion(
         credit_card, client, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
         base::Contains(card_linked_offers_map, credit_card.guid()),
-        summary.metadata_logging_context));
+        summary.metadata_logging_context);
+    suggestions.push_back(suggestion);
+
+    if (new_ranking_experiment_enabled) {
+      // Find the ranking of the card in the old and new algorithm and
+      // mark if they are ranked higher, lower, or the same.
+      size_t ranking_legacy_algorithm =
+          base::ranges::find(cards_ranked_by_legacy_algorithm, credit_card) -
+          cards_ranked_by_legacy_algorithm.begin();
+      autofill_metrics::SuggestionRankingContext::RelativePosition
+          ranking_difference = autofill_metrics::SuggestionRankingContext::
+              GetRelativePositionEnum(ranking_legacy_algorithm,
+                                      current_card_index);
+
+      summary.ranking_context.suggestion_rankings_difference_map.insert(
+          {suggestion.GetBackendId<Suggestion::Guid>(), ranking_difference});
+    }
   }
   summary.with_cvc = !base::ranges::all_of(
       cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
@@ -1223,10 +1256,11 @@ std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     FieldType trigger_field_type,
     bool suppress_disused_cards,
     bool prefix_match,
-    bool include_virtual_cards) {
+    bool include_virtual_cards,
+    bool use_legacy_algorithm) {
   return GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
                                   suppress_disused_cards, prefix_match,
-                                  include_virtual_cards);
+                                  include_virtual_cards, use_legacy_algorithm);
 }
 
 Suggestion CreateCreditCardSuggestionForTest(

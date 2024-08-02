@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -2572,6 +2573,127 @@ TEST_P(PaymentsSuggestionGeneratorTestForOffer,
     EXPECT_EQ(real_card_suggestion.labels[1][0].value,
               l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
   }
+}
+
+// Tests suggestions with the new ranking algorithm experiment for Autofill
+// suggestions enabled.
+class PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm
+    : public PaymentsSuggestionGeneratorTest {
+ public:
+  void SetUp() override {
+    PaymentsSuggestionGeneratorTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableRankingFormulaCreditCards);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the ranking differences are appropriately set when suggestions are
+// generated.
+TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
+       GetSuggestionsForCreditCards_SuggestionRankingContext) {
+  // Ranked first stays first.
+  CreditCard server_card1 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  server_card1.set_use_count(100);
+  server_card1.set_use_date(AutofillClock::Now() - base::Days(5));
+  Suggestion suggestion1 = CreateCreditCardSuggestionForTest(
+      server_card1, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option*/ false,
+      /*card_linked_offer_available*/ false);
+
+  // Ranked second then third with new algorithm.
+  CreditCard server_card2 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000002",
+      /*server_id=*/"server_id2", /*instrument_id=*/2);
+  server_card2.set_use_count(200);
+  server_card2.set_use_date(AutofillClock::Now() - base::Days(40));
+  Suggestion suggestion2 = CreateCreditCardSuggestionForTest(
+      server_card2, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option*/ false,
+      /*card_linked_offer_available*/ false);
+
+  // Ranked third then second with new algorithm.
+  CreditCard server_card3 = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000003",
+      /*server_id=*/"server_id3", /*instrument_id=*/3);
+  server_card3.set_use_count(10);
+  server_card3.set_use_date(AutofillClock::Now() - base::Days(10));
+  Suggestion suggestion3 = CreateCreditCardSuggestionForTest(
+      server_card3, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option*/ false,
+      /*card_linked_offer_available*/ false);
+
+  payments_data().AddServerCreditCard(server_card1);
+  payments_data().AddServerCreditCard(server_card2);
+  payments_data().AddServerCreditCard(server_card3);
+
+  CreditCardSuggestionSummary summary;
+  GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
+                               CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                               /*should_show_scan_credit_card=*/false,
+                               /*should_show_cards_from_account=*/false,
+                               summary);
+
+  base::flat_map<Suggestion::Guid,
+                 autofill_metrics::SuggestionRankingContext::RelativePosition>
+      expected_ranking_context = {{suggestion1.GetBackendId<Suggestion::Guid>(),
+                                   autofill_metrics::SuggestionRankingContext::
+                                       RelativePosition::kRankedSame},
+                                  {suggestion2.GetBackendId<Suggestion::Guid>(),
+                                   autofill_metrics::SuggestionRankingContext::
+                                       RelativePosition::kRankedLower},
+                                  {suggestion3.GetBackendId<Suggestion::Guid>(),
+                                   autofill_metrics::SuggestionRankingContext::
+                                       RelativePosition::kRankedHigher}};
+
+  EXPECT_EQ(summary.ranking_context.suggestion_rankings_difference_map,
+            expected_ranking_context);
+  EXPECT_TRUE(summary.ranking_context.RankingsAreDifferent());
+}
+
+// Checks that the suggestion ranking context is empty if the ranking experiment
+// is disabled.
+TEST_F(
+    PaymentsSuggestionGeneratorTest,
+    GetSuggestionsForCreditCards_SuggestionRankingContext_ExperimentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableRankingFormulaCreditCards);
+  CreditCard card = test::GetMaskedServerCard();
+  payments_data().AddServerCreditCard(card);
+  CreditCardSuggestionSummary summary;
+  GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
+                               CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                               /*should_show_scan_credit_card=*/false,
+                               /*should_show_cards_from_account=*/false,
+                               summary);
+  EXPECT_TRUE(
+      summary.ranking_context.suggestion_rankings_difference_map.empty());
+}
+
+TEST_F(
+    PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
+    GetSuggestionsForCreditCards_SuggestionRankingContext_NoRankingDifference) {
+  CreditCard card = CreateServerCard(
+      /*guid=*/"00000000-0000-0000-0000-000000000001",
+      /*server_id=*/"server_id1", /*instrument_id=*/1);
+  Suggestion suggestion1 = CreateCreditCardSuggestionForTest(
+      card, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option*/ false,
+      /*card_linked_offer_available*/ false);
+  payments_data().AddServerCreditCard(card);
+
+  CreditCardSuggestionSummary summary;
+  GetSuggestionsForCreditCards(*autofill_client(), FormFieldData(),
+                               CREDIT_CARD_NUMBER, kDefaultTriggerSource,
+                               /*should_show_scan_credit_card=*/false,
+                               /*should_show_cards_from_account=*/false,
+                               summary);
+  EXPECT_FALSE(summary.ranking_context.RankingsAreDifferent());
 }
 
 }  // namespace autofill

@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -90,9 +91,13 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 
   // Records query results and correctly formats them before sending them off
   // to be displayed. Called when an Autofill query result is available.
+  // `suggestion_ranking_context` contains information regarding the ranking of
+  // suggestions in `input_suggestions` and is used for metrics logging.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      const std::vector<Suggestion>& suggestions);
+      const std::vector<Suggestion>& input_suggestions,
+      std::optional<autofill_metrics::SuggestionRankingContext>
+          suggestion_ranking_context);
 
   // Returns the type of the last accepted address filling suggestion.
   // This is used by group filling to keep users in the same granularity level
@@ -250,6 +255,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // delete address profile dialog is closed.
   AutofillSuggestionTriggerSource GetReopenTriggerSource() const;
 
+  // Checks the user's accepted suggestion and logs metrics on the ranking of
+  // the suggestion in the Autofill dropdown.
+  void LogRankingContextAfterSuggestionAccepted(
+      const Suggestion& accepted_suggestion);
+
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions
   // directly to DidAcceptSuggestion(). See ScopedSuggestionSelectionShortcut
   // for details.
@@ -271,6 +281,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   bool show_cards_from_account_suggestion_was_shown_ = false;
 
   std::vector<SuggestionType> shown_suggestion_types_;
+
+  // Contains information on the ranking of suggestions using the new and old
+  // ranking algorithm. Used for metrics logging. If the new ranking algorithm
+  // is not enabled, this will be nullopt.
+  std::optional<autofill_metrics::SuggestionRankingContext>
+      suggestion_ranking_context_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;

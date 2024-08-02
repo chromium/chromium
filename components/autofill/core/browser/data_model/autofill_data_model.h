@@ -61,12 +61,19 @@ class AutofillDataModel : public FormGroup {
   bool HasGreaterRankingThan(const AutofillDataModel* other,
                              base::Time comparison_time) const;
 
+  // Given two ranking scores for two data model suggestions, returns if `score`
+  // is greater than `other_score`. In the case of a tie-breaker, uses the most
+  // recent use date as the winner.
+  virtual bool CompareRankingScores(double score,
+                                    double other_score,
+                                    base::Time other_use_date) const;
+
  protected:
   explicit AutofillDataModel(size_t usage_history_size = 1);
 
   // Calculate the ranking score of a card or profile depending on their use
   // count and most recent use date.
-  virtual double GetRankingScore(base::Time current_time) const;
+  double GetRankingScore(base::Time current_time) const;
 
   // Merges the use dates of `*this` and `other` into `*this*` by choosing the
   // most recent use dates.

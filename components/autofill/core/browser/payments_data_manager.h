@@ -228,9 +228,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
-  // vector.
-  std::vector<CreditCard*> GetCreditCardsToSuggest() const;
-
+  // vector. `should_use_legacy_algorithm` indicates if we should rank credit
+  // cards using the legacy ranking algorithm.
+  std::vector<CreditCard*> GetCreditCardsToSuggest(
+      bool should_use_legacy_algorithm = false) const;
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
   // Below conditions should be met before adding `iban` to the database:

@@ -76,12 +76,18 @@ bool AutofillDataModel::HasGreaterRankingThan(
     base::Time comparison_time) const {
   double score = GetRankingScore(comparison_time);
   double other_score = other->GetRankingScore(comparison_time);
+  return AutofillDataModel::CompareRankingScores(score, other_score,
+                                                 other->use_date());
+}
 
+bool AutofillDataModel::CompareRankingScores(double score,
+                                             double other_score,
+                                             base::Time other_use_date) const {
   const double kEpsilon = 0.00001;
-  if (std::fabs(score - other_score) > kEpsilon)
+  if (std::fabs(score - other_score) > kEpsilon) {
     return score > other_score;
-
-  return use_date() > other->use_date();
+  }
+  return use_date() > other_use_date;
 }
 
 }  // namespace autofill

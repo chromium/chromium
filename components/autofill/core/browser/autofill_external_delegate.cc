@@ -243,10 +243,13 @@ const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
 
 void AutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
-    const std::vector<Suggestion>& input_suggestions) {
+    const std::vector<Suggestion>& input_suggestions,
+    std::optional<autofill_metrics::SuggestionRankingContext>
+        suggestion_ranking_context) {
   if (field_id != query_field_.global_id()) {
     return;
   }
+  suggestion_ranking_context_ = std::move(suggestion_ranking_context);
 
 #if BUILDFLAG(IS_IOS)
   if (!manager_->client().IsLastQueriedField(field_id)) {
@@ -1207,6 +1210,22 @@ AutofillExternalDelegate::GetReopenTriggerSource() const {
                    kShowPromptAfterDialogClosedNonManualFallback;
 }
 
+void AutofillExternalDelegate::LogRankingContextAfterSuggestionAccepted(
+    const Suggestion& accepted_suggestion) {
+  CHECK(accepted_suggestion.type == SuggestionType::kCreditCardEntry);
+  const Suggestion::Guid& suggestion_guid =
+      accepted_suggestion.GetBackendId<Suggestion::Guid>();
+  if (suggestion_ranking_context_ &&
+      suggestion_ranking_context_->RankingsAreDifferent() &&
+      suggestion_ranking_context_->suggestion_rankings_difference_map.contains(
+          suggestion_guid)) {
+    autofill_metrics::LogAutofillRankingSuggestionDifference(
+        suggestion_ranking_context_->suggestion_rankings_difference_map
+            .find(suggestion_guid)
+            ->second);
+  }
+}
+
 void AutofillExternalDelegate::DidAcceptAddressSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
@@ -1303,6 +1322,10 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           position.row,
           GetFillingProductFromSuggestionType(SuggestionType::kCreditCardEntry),
           manager_->client().IsOffTheRecord());
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableRankingFormulaCreditCards)) {
+        LogRankingContextAfterSuggestionAccepted(suggestion);
+      }
       FillAutofillFormData(
           suggestion.type, suggestion.GetPayload<Suggestion::BackendId>(),
           position, /*is_preview=*/false,

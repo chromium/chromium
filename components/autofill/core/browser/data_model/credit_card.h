@@ -169,9 +169,6 @@ class CreditCard : public AutofillDataModel {
   // kVisaCard.
   void SetNetworkForMaskedCard(std::string_view network);
 
-  // AutofillDataModel:
-  double GetRankingScore(base::Time current_time) const override;
-
   PaymentsMetadata GetMetadata() const;
   bool SetMetadata(const PaymentsMetadata& metadata);
 
@@ -261,6 +258,17 @@ class CreditCard : public AutofillDataModel {
 
   // Returns true if expiration date for `this` card is the same as `other`.
   [[nodiscard]] bool HasSameExpirationDateAs(const CreditCard& other) const;
+
+  // Calculates the ranking score used for ranking the card suggestion. If
+  // `use_frecency` is true we use the new ranking algorithm.
+  double GetRankingScore(base::Time current_time,
+                         bool use_frecency = false) const;
+
+  // Compares two credit cards and returns if the current card has a greater
+  // ranking score than `other`.
+  bool HasGreaterRankingThan(const CreditCard& other,
+                             base::Time comparison_time,
+                             bool use_frecency = false) const;
 
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.
