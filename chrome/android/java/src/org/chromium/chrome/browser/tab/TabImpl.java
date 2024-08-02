@@ -476,7 +476,7 @@ class TabImpl implements Tab {
     @CalledByNative
     @Override
     public String getTitle() {
-        if (mTitle == null) updateTitle();
+        if (TextUtils.isEmpty(mTitle)) updateTitle();
         return mTitle;
     }
 
