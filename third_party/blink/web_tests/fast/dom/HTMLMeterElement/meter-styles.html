@@ -44,7 +44,7 @@
   <h2>Providing appearances</h2>
   <div style="background-color: #eee">
   <ul>
-    <li><meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter> has "none" appearance, should render METER content.</li> 
+    <li><meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter> has "none" appearance, should render with fallback style.</li> 
     <li><meter id="appearanceNoneLater" min="0" max="100" low="30" high="60" optimum="100" value="80" >80%</meter> gets "none" appearance after the initial rendering with "meter" appearance.</li>
   </ul>
   </div>
@@ -54,10 +54,7 @@
   </ul>
   </div>
 <script>
-var noneLater = document.getElementById('appearanceNoneLater');
-noneLater.offsetLeft; // Force layout.
-noneLater.setAttribute('style', '-webkit-appearance:none');
-noneLater.offsetLeft; // Force layout.
+appearanceNoneLater.style.appearance = 'none';
 </script>
 </body>
 </html>

@@ -449,7 +449,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
                               ":-internal-is-html",
                               ":-internal-list-box",
                               ":-internal-multi-select-focus",
-                              ":-internal-shadow-host-has-appearance",
+                              ":-internal-shadow-host-has-non-auto-appearance",
                               ":-internal-spatial-navigation-focus",
                               ":-internal-video-persistent",
                               ":-internal-video-persistent-ancestor"};

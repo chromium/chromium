@@ -1,0 +1,13 @@
+<!doctype html>
+<title>meter appearance none rendering</title>
+<link rel="match" href="reference/meter-appearance-none-even-less-good-value-custom-color-rendering-ref.html">
+<style>
+  #target {
+    appearance: none;
+  }
+
+  #target::-webkit-meter-even-less-good-value  {
+    background: crimson;
+  }
+</style>
+<meter value="0.9" low="0.6" high="0.7" id="target"></meter>

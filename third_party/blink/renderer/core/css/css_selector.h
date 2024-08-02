@@ -367,7 +367,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoHighlight,
     kPseudoHost,
     kPseudoHostContext,
-    kPseudoHostHasAppearance,
+    kPseudoHostHasNonAutoAppearance,
     kPseudoIsHtml,
     kPseudoListBox,
     kPseudoMultiSelectFocus,

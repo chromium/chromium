@@ -1,0 +1,13 @@
+<!doctype html>
+<title>meter appearance none rendering</title>
+<link rel="match" href="reference/meter-appearance-none-suboptimum-value-custom-color-rendering-ref.html">
+<style>
+  #target {
+    appearance: none;
+  }
+
+  #target::-webkit-meter-suboptimum-value {
+    background: coral;
+  }
+</style>
+<meter value="0.9" high="0.7" id="target"></meter>

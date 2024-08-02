@@ -1,0 +1,39 @@
+<!doctype html>
+<title>meter rendering</title>
+<style>
+  #meter {
+    block-size: 1em;
+    box-sizing: border-box;
+    display: inline-block;
+    inline-size: 5em;
+    vertical-align: -0.2em;
+  }
+
+  #inner {
+    block-size: 100%;
+    box-sizing: inherit;
+    display: grid;
+    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+    inline-size: 100%;
+    position: relative;
+  }
+
+  #bar {
+    align-self: unsafe center;
+    background: cornflowerblue;
+    block-size: 100%;
+    box-sizing: border-box;
+    grid-row-end: line2;
+    grid-row-start: line1;
+    inline-size: 100%;
+    overflow: hidden;
+    position: absolute;
+  }
+</style>
+
+<div id="meter">
+  <div id="inner">
+    <div id="bar">
+    </div>
+  </div>
+</div>

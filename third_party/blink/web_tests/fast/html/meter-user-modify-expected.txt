@@ -4,6 +4,6 @@ PASS successfullyParsed is true
 TEST COMPLETE
 
 
-The inner element of meter should not be deleteable.
+The meter content doesn't get rendered.
 
-(before)In meter(after)
+(before)(after)
