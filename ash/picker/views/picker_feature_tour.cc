@@ -37,8 +37,6 @@ namespace {
 constexpr char kFeatureTourCompletedPref[] =
     "ash.picker.feature_tour.completed";
 
-bool g_feature_tour_enabled = true;
-
 std::u16string GetHeadingText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
@@ -107,18 +105,10 @@ void PickerFeatureTour::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kFeatureTourCompletedPref, false);
 }
 
-void PickerFeatureTour::DisableFeatureTourForTesting() {
-  g_feature_tour_enabled = false;
-}
-
 bool PickerFeatureTour::MaybeShowForFirstUse(
     PrefService* prefs,
     base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
-  if (!g_feature_tour_enabled) {
-    return false;
-  }
-
   auto* pref = prefs->FindPreference(kFeatureTourCompletedPref);
   // Don't show if `pref` is null (this happens in unit tests that don't call
   // `RegisterProfilePrefs`).

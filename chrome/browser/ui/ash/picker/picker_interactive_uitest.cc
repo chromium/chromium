@@ -8,7 +8,6 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/shell.h"
 #include "base/strings/string_util.h"
@@ -123,7 +122,7 @@ class PickerInteractiveUiTest : public InteractiveAshTest {
 
   PickerInteractiveUiTest() {
     ash::PickerController::DisableFeatureKeyCheckForTesting();
-    ash::PickerFeatureTour::DisableFeatureTourForTesting();
+    ash::PickerController::DisableFeatureTourForTesting();
   }
 
   void SetUpOnMainThread() override {

@@ -130,6 +130,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Disables the feature key checking. Only works in tests.
   static void DisableFeatureKeyCheckForTesting();
+  // Disables the feature tour. Only works in tests.
+  static void DisableFeatureTourForTesting();
 
  private:
   void ShowWidget(base::TimeTicks trigger_event_timestamp);

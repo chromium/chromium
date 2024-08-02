@@ -77,6 +77,7 @@ namespace ash {
 namespace {
 
 bool g_should_check_key = true;
+bool g_feature_tour_enabled = true;
 
 // The hash value for the feature key of the Picker feature, used for
 // development.
@@ -324,6 +325,11 @@ void PickerController::DisableFeatureKeyCheckForTesting() {
   g_should_check_key = false;
 }
 
+void PickerController::DisableFeatureTourForTesting() {
+  CHECK_IS_TEST();
+  g_feature_tour_enabled = false;
+}
+
 void PickerController::SetClient(PickerClient* client) {
   client_ = client;
   // The destructor of `PickerSearchRequest` inside `PickerSearchController` may
@@ -354,7 +360,7 @@ void PickerController::ToggleWidget(
       focused_client != nullptr && focused_client->GetTextInputType() !=
                                        ui::TextInputType::TEXT_INPUT_TYPE_NONE;
   if (PrefService* prefs = client_->GetPrefs();
-      prefs &&
+      g_feature_tour_enabled && prefs &&
       feature_tour_.MaybeShowForFirstUse(
           prefs,
           base::BindRepeating(&PickerController::OnFeatureTourLearnMore,
