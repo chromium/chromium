@@ -15555,7 +15555,6 @@
                         "AdaptiveButtonInTopToolbarCustomizationV2",
                         "AdaptiveButtonInTopToolbarTranslate",
                         "ReadAloudInMultiWindow",
-                        "ReadAloudTapToSeek",
                         "SegmentationPlatformAdaptiveToolbarV2Feature"
                     ]
                 },
@@ -18769,6 +18768,21 @@
                         "ReadAloud",
                         "ReadAloudInOverflowMenuInCCT",
                         "ReadAloudPlayback"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ReadAloudTapToSeek": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReadAloudTapToSeek"
                     ]
                 }
             ]
