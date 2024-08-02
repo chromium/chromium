@@ -1096,17 +1096,17 @@ void WebTransport::OnClosed(
 
   latest_stats_ = ConvertStatsFromMojom(std::move(final_stats));
 
-  WebTransportCloseInfo idl_close_info;
+  auto* idl_close_info = MakeGarbageCollected<WebTransportCloseInfo>();
   if (close_info) {
-    idl_close_info.setCloseCode(close_info->code);
-    idl_close_info.setReason(close_info->reason);
+    idl_close_info->setCloseCode(close_info->code);
+    idl_close_info->setReason(close_info->reason);
   }
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
       WebTransportError::Source::kSession);
 
-  Cleanup(&idl_close_info, error, /*abruptly=*/false);
+  Cleanup(idl_close_info, error, /*abruptly=*/false);
 }
 
 void WebTransport::OnOutgoingStreamClosed(uint32_t stream_id) {

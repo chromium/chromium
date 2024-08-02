@@ -1974,6 +1974,21 @@ TEST_F(WebTransportTest, OnClosed) {
   EXPECT_EQ(close_info->reason(), "reason");
 }
 
+// Regression test for https://crbug.com/347710668.
+TEST_F(WebTransportTest, ClosedAccessorCalledAfterOnClosed) {
+  V8TestingScope scope;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  web_transport->OnClosed(
+      network::mojom::blink::WebTransportCloseInfo::New(99, "reason"),
+      network::mojom::blink::WebTransportStats::New());
+
+  // If this doesn't crash then the test passed.
+  EXPECT_FALSE(web_transport->closed(scope.GetScriptState()).IsEmpty());
+}
+
 TEST_F(WebTransportTest, OnClosedWithNull) {
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
