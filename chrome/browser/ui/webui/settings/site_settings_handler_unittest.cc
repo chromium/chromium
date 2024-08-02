@@ -2999,9 +2999,10 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    // SiteSettingsHandler maintains a HostZoomMap::Subscription internally, so
-    // make sure that's cleared before BrowserContext / profile destruction.
-    handler()->DisallowJavascript();
+    // SiteSettingsHandler maintains a HostZoomMap::Subscription internally and
+    // has a PrefChangeRegistrar that observes the profile's preference, so make
+    // sure that it's cleared before profile destruction.
+    handler_.reset();
 
     // Also destroy `browser2_` before the profile.
     browser2()->tab_strip_model()->CloseAllTabs();
@@ -3894,8 +3895,8 @@ class PersistentPermissionsSiteSettingsHandlerTest
   }
 
  protected:
-  std::unique_ptr<SiteSettingsHandler> handler_;
   TestingProfile profile_;
+  std::unique_ptr<SiteSettingsHandler> handler_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
