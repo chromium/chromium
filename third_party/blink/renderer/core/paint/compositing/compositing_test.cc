@@ -3550,4 +3550,34 @@ TEST_P(CompositingSimTest, NestedBoxReflectCrash) {
   // Passes if no crash.
 }
 
+TEST_P(CompositingSimTest, ScrollbarLayerWithDecompositedTransform) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    GTEST_SKIP();
+  }
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  MainFrame()
+      .GetFrame()
+      ->GetSettings()
+      ->SetPreferCompositingToLCDTextForTesting(false);
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <div style="position: absolute; top: 100px; left: 200px;
+                width: 100px; height: 100px; overflow: auto">
+      <div style="height: 2000px"></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* scrollbar_layer = CcLayersByName(RootCcLayer(), "VerticalScrollbar")[0];
+  EXPECT_EQ(gfx::Vector2dF(285, 100),
+            scrollbar_layer->offset_to_transform_parent());
+  EXPECT_FALSE(scrollbar_layer->subtree_property_changed());
+
+  paint_artifact_compositor()->SetNeedsUpdate();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(gfx::Vector2dF(285, 100),
+            scrollbar_layer->offset_to_transform_parent());
+  EXPECT_FALSE(scrollbar_layer->subtree_property_changed());
+}
+
 }  // namespace blink

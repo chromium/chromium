@@ -617,10 +617,8 @@ void PendingLayer::UpdateScrollbarLayer(PendingLayer* old_pending_layer) {
         std::move(old_pending_layer->cc_layer_).get());
   }
 
-  scrollbar_layer = scrollbar_item.CreateOrReuseLayer(scrollbar_layer.get());
-  scrollbar_layer->SetOffsetToTransformParent(
-      scrollbar_layer->offset_to_transform_parent() +
-      gfx::Vector2dF(offset_of_decomposited_transforms_));
+  scrollbar_layer = scrollbar_item.CreateOrReuseLayer(
+      scrollbar_layer.get(), offset_of_decomposited_transforms_);
   DCHECK(!cc_layer_);
   cc_layer_ = std::move(scrollbar_layer);
 }

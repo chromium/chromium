@@ -73,7 +73,8 @@ bool ScrollbarDisplayItem::NeedsUpdateDisplay() const {
 }
 
 scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
-    cc::ScrollbarLayerBase* existing_layer) const {
+    cc::ScrollbarLayerBase* existing_layer,
+    gfx::Vector2dF offset_of_decomposited_transforms) const {
   DCHECK(!IsTombstone());
   // This function is called when the scrollbar is composited. We don't need
   // record_ which is for non-composited scrollbars.
@@ -90,7 +91,8 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
           ? data_->scroll_translation_->ScrollNode()->GetCompositorElementId()
           : CompositorElementId());
   layer->SetOffsetToTransformParent(
-      gfx::Vector2dF(VisualRect().OffsetFromOrigin()));
+      gfx::Vector2dF(VisualRect().OffsetFromOrigin()) +
+      offset_of_decomposited_transforms);
   layer->SetBounds(VisualRect().size());
 
   // TODO(crbug.com/1414885): This may be duplicate with

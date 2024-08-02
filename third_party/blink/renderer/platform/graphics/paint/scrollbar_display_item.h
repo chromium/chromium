@@ -59,7 +59,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
 
   // Create or reuse the cc scrollbar layer, for composited scrollbar.
   scoped_refptr<cc::ScrollbarLayerBase> CreateOrReuseLayer(
-      cc::ScrollbarLayerBase* existing_layer) const;
+      cc::ScrollbarLayerBase* existing_layer,
+      gfx::Vector2dF offset_of_decomposited_transforms) const;
 
   // Records a scrollbar into a GraphicsContext. Must check
   // PaintController::UseCachedItem() before calling this function.
