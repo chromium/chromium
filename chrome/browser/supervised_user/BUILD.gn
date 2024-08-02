@@ -117,17 +117,6 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.supervised_user"
   }
 
-  android_library("supervised_user_capabilites_java") {
-    deps = [
-      "//chrome/browser/flags:java",
-      "//chrome/browser/profiles/android:java",
-      "//chrome/browser/signin/services/android:java",
-      "//components/signin/public/android:java",
-    ]
-
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserCapabilities.java" ]
-  }
-
   generate_jni("website_parent_approval_jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java" ]
   }
@@ -174,7 +163,6 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/IncognitoSignInInteractionTest.java",
-      "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserCapabilitiesTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserCriticalJourneysIntegrationTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestUtils.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalNativesTest.java",

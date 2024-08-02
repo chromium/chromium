@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.supervised_user.SupervisedUserCapabilities;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -66,6 +65,8 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -338,7 +339,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
 
             mSignOutPreference = (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
-            if (SupervisedUserCapabilities.isSubjectToParentalControls(getProfile())) {
+            if (isSupervisedUser()) {
                 mSignOutPreference.setVisible(false);
             } else {
                 mSignOutPreference.initialize(
@@ -1161,5 +1162,29 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         TemplateUrlService templateUrlService =
                 TemplateUrlServiceFactory.getForProfile(getProfile());
         return templateUrlService.isEeaChoiceCountry();
+    }
+
+    private boolean isSupervisedUser() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID)) {
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(getProfile());
+
+            // SEED_ACCOUNTS_REVAMP is needed for using capabilities, otherwise
+            // findExtendedAccountInfoByEmailAddress is not guaranteed to have the needed account
+            assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP);
+
+            CoreAccountInfo corePrimaryAccountInfo =
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            if (corePrimaryAccountInfo != null) {
+                AccountInfo extendedAccountInfo =
+                        identityManager.findExtendedAccountInfoByEmailAddress(
+                                corePrimaryAccountInfo.getEmail());
+                return extendedAccountInfo.getAccountCapabilities().isSubjectToParentalControls()
+                        == Tribool.TRUE;
+            }
+            return false;
+        }
+        return getProfile().isChild();
     }
 }
