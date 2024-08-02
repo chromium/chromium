@@ -6,10 +6,13 @@
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_rect_cutout_path_builder.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 
@@ -116,6 +119,14 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
         .CutoutInnerCornerRadius(kCutoutInnerCornerRadius);
   }
   image_view_->SetClipPath(builder.Build());
+
+  // Update the accessible description for this view once the selected state
+  // changed.
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
+      is_selected
+          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_SELECTED_ACCESSIBLE_DESCRIPTION
+          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION));
+  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 
   OnPropertyChanged(&is_selected_, views::kPropertyEffectsPaint);
 }
