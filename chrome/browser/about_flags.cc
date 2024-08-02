@@ -7569,6 +7569,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kMostVisitedTilesSelectExistingTab)},
 
+    {"toolbar-phone-cleanup", flag_descriptions::kToolbarPhoneCleanupName,
+     flag_descriptions::kToolbarPhoneCleanupDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kToolbarPhoneCleanup)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"unsafely-treat-insecure-origin-as-secure",

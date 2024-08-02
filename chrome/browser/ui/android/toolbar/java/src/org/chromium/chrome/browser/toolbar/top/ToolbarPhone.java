@@ -115,6 +115,10 @@ public class ToolbarPhone extends ToolbarLayout
     protected static final int ENTERING_TAB_SWITCHER = 2;
     protected static final int EXITING_TAB_SWITCHER = 3;
 
+    // Finch params for code cleanup - default enabled.
+    private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
+            "remove_redundant_ntpupdate_in_lbvisualupdate";
+
     @ViewDebug.ExportedProperty(
             category = "chrome",
             mapping = {
@@ -1050,7 +1054,6 @@ public class ToolbarPhone extends ToolbarLayout
         TraceEvent.begin("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
         if (isInTabSwitcherMode()) return;
 
-        boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
         FrameLayout.LayoutParams locationBarLayoutParams =
                 mLocationBar.getPhoneCoordinator().getFrameLayoutParams();
         int currentLeftMargin = locationBarLayoutParams.leftMargin;
@@ -1102,6 +1105,7 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBarNtpOffsetLeft = 0;
         mLocationBarNtpOffsetRight = 0;
 
+        boolean isLocationBarShownInNtp = isLocationBarShownInNtp();
         Tab currentTab = getToolbarDataProvider().getTab();
         if (currentTab != null) {
             getToolbarDataProvider()
@@ -2518,9 +2522,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void updateVisualsForLocationBarState() {
         TraceEvent.begin("ToolbarPhone.updateVisualsForLocationBarState");
-        // These are used to skip setting state unnecessarily while in the tab switcher.
-        boolean inOrEnteringStaticTab =
-                mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
 
         @VisualState int newVisualState = computeVisualState();
         updateLocationBarForNtp(newVisualState, urlHasFocus());
@@ -2595,10 +2596,16 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (!visualStateChanged) {
-            if (mVisualState == VisualState.NEW_TAB_NORMAL) {
-                updateNtpTransitionAnimation();
-            } else {
-                resetNtpAnimationValues();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_PHONE_CLEANUP)
+                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
+                            PARAM_REMOVE_REDUNDANT_ANIM_CALL,
+                            true)) {
+                if (mVisualState == VisualState.NEW_TAB_NORMAL) {
+                    updateNtpTransitionAnimation();
+                } else {
+                    resetNtpAnimationValues();
+                }
             }
             TraceEvent.end("ToolbarPhone.updateVisualsForLocationBarState");
             return;
@@ -2616,10 +2623,15 @@ public class ToolbarPhone extends ToolbarLayout
 
         mLocationBar.updateVisualsForState();
 
-        // We update the alpha before comparing the visual state as we need to change
-        // its value when entering and exiting TabSwitcher mode.
-        if (isLocationBarShownInNtp() && inOrEnteringStaticTab) {
-            updateNtpTransitionAnimation();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_PHONE_CLEANUP)) {
+            // These are used to skip setting state unnecessarily while in the tab switcher.
+            boolean inOrEnteringStaticTab =
+                    mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
+            // We update the alpha before comparing the visual state as we need to change
+            // its value when entering and exiting TabSwitcher mode.
+            if (isLocationBarShownInNtp() && inOrEnteringStaticTab) {
+                updateNtpTransitionAnimation();
+            }
         }
 
         getMenuButtonCoordinator().setVisibility(true);

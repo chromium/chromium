@@ -31,12 +31,13 @@ import java.util.Map;
  * <p>Chrome-layer {@link CachedFlag}s are instantiated here as well.
  */
 public abstract class ChromeFeatureList {
+
     /** Prevent instantiation. */
     private ChromeFeatureList() {}
 
     /**
-     * Convenience method to check Chrome-layer feature flags, see
-     * {@link FeatureMap#isEnabledInNative(String)}.
+     * Convenience method to check Chrome-layer feature flags, see {@link
+     * FeatureMap#isEnabledInNative(String)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
@@ -505,6 +506,7 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
+    public static final String TOOLBAR_PHONE_CLEANUP = "ToolbarPhoneCleanup";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRACKING_PROTECTION_SETTINGS_LAUNCH =

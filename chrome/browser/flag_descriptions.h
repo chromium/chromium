@@ -2052,6 +2052,9 @@ extern const char kSystemShortcutBehaviorDescription[];
 extern const char kTabDragDropName[];
 extern const char kTabDragDropDescription[];
 
+extern const char kToolbarPhoneCleanupName[];
+extern const char kToolbarPhoneCleanupDescription[];
+
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 

@@ -8727,6 +8727,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "toolbar-phone-cleanup",
+    "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name" : "toolbar-pinning",
     "owners": [ "corising@chromium.org", "josephjoopark@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
     "expiry_milestone" : 135

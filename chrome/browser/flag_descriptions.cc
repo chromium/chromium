@@ -3539,6 +3539,10 @@ const char kTabDragDropName[] = "Tab Drag and Drop via Strip";
 const char kTabDragDropDescription[] =
     "Enables Tab drag and drop UI to move tab on tab-strip across windows.";
 
+const char kToolbarPhoneCleanupName[] = "Toolbar Phone cleanup";
+const char kToolbarPhoneCleanupDescription[] =
+    "Enables cleanup on toolbar phone class.";
+
 const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";

@@ -23569,6 +23569,7 @@ from previous Chrome versions.
   <int value="1369663360"
       label="MayLaunchUrlUsesSeparateStoragePartition:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
+  <int value="1370921804" label="ToolbarPhoneCleanup:enabled"/>
   <int value="1371092708" label="disable-desktop-capture-picker-old-ui"/>
   <int value="1371190773"
       label="AutofillEnableVirtualCardsRiskBasedAuthentication:enabled"/>
@@ -25269,6 +25270,7 @@ from previous Chrome versions.
   <int value="2072057275" label="UpdateHoverAtBeginFrame:disabled"/>
   <int value="2072231406" label="SingleProcessMash:disabled"/>
   <int value="2073113207" label="SensorContentSetting:disabled"/>
+  <int value="2073762173" label="ToolbarPhoneCleanup:disabled"/>
   <int value="2074475824" label="tab-link-drag-drop:enabled"/>
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>
   <int value="2075686131" label="AndroidExtendedKeyboardShortcuts:enabled"/>
