@@ -194,7 +194,7 @@ If you DID intentionally roll submodules, you can resolve this conflict just by
 resetting it:
 `gclient setdep -r {path}@{hash}`
 
-## BETA: Install a hook to help detect unintentional submodule commits
+## Install a hook to help detect unintentional submodule commits
 
 depot_tools provides an opt-in pre-commit hook to detect unintentional submodule
  changes during `git commit` and remove them from the commit.
