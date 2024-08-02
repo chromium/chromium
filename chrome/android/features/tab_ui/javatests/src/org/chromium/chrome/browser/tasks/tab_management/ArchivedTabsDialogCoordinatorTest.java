@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
@@ -64,6 +65,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 /** End-to-end test for ArchivedTabsDialogCoordinator. */
@@ -585,6 +587,30 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     public void testBottomShadowView() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        addArchivedTab(new GURL("https://google.com"), "test 3");
+        addArchivedTab(new GURL("https://google.com"), "test 4");
+        addArchivedTab(new GURL("https://google.com"), "test 5");
+        addArchivedTab(new GURL("https://google.com"), "test 6");
+        addArchivedTab(new GURL("https://google.com"), "test 7");
+        addArchivedTab(new GURL("https://google.com"), "test 8");
+        addArchivedTab(new GURL("https://google.com"), "test 9");
+        addArchivedTab(new GURL("https://google.com"), "test 10");
+        addArchivedTab(new GURL("https://google.com"), "test 11");
+        showDialog(11);
+        onView(withText("11 inactive tabs")).check(matches(isDisplayed()));
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(11);
+
+        // When there is more than a page of tabs, then the bottom container should have a shadow.
+        onView(withId(R.id.close_all_tabs_button_container_shadow)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    // Scrolling all the way down on tablets is flaky.
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testBottomShadowView_DisappersWhenFullyScrolled() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
         addArchivedTab(new GURL("https://google.com"), "test 3");
