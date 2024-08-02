@@ -438,7 +438,7 @@
     Get alerts when the price drops on any site across the web
   </message>
   <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE" desc="The title text for the buying options section of price insights.">
-    Search more buying options
+    Search More Buying Options
   </message>
   <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE" desc="The description text for the BUYING_OPTIONS section of price insights.">
     From other stores across the web
