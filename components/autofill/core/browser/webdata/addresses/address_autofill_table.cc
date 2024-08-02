@@ -313,6 +313,21 @@ time_t GetEndTime(base::Time end) {
   return end.ToTimeT();
 }
 
+// This helper function binds the `profile`s properties to the placeholders in
+// `s`, in the order the columns are defined in the header file.
+void BindAutofillProfileToStatement(const AutofillProfile& profile,
+                                    sql::Statement& s) {
+  int index = 0;
+  s.BindString(index++, profile.guid());
+  s.BindInt64(index++, profile.use_count());
+  s.BindInt64(index++, profile.use_date().ToTimeT());
+  s.BindInt64(index++, profile.modification_date().ToTimeT());
+  s.BindString(index++, profile.language_code());
+  s.BindString(index++, profile.profile_label());
+  s.BindInt(index++, profile.initial_creator_id());
+  s.BindInt(index++, profile.last_modifier_id());
+}
+
 // Local and account profiles are stored in different tables with the same
 // layout. One table contains profile-level metadata, while another table
 // contains the values for every relevant FieldType. The following two
@@ -336,30 +351,18 @@ std::string_view GetProfileTypeTokensTable(AutofillProfile::Source source) {
   NOTREACHED_NORETURN();
 }
 
-// Insert the `profile`'s metadata into `GetProfileMetadataTable()`, returning
-// true if the write succeeded.
-bool AddProfileMetadataToTable(sql::Database* db,
+// Inserts `profile` into `GetProfileMetadataTable()` and
+// `GetProfileTypeTokensTable()`, depending on the profile's source.
+bool AddAutofillProfileToTable(sql::Database* db,
                                const AutofillProfile& profile) {
   sql::Statement s;
   InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
                 {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
                  kLabel, kInitialCreatorId, kLastModifierId});
-  int index = 0;
-  s.BindString(index++, profile.guid());
-  s.BindInt64(index++, profile.use_count());
-  s.BindInt64(index++, profile.use_date().ToTimeT());
-  s.BindInt64(index++, profile.modification_date().ToTimeT());
-  s.BindString(index++, profile.language_code());
-  s.BindString(index++, profile.profile_label());
-  s.BindInt(index++, profile.initial_creator_id());
-  s.BindInt(index++, profile.last_modifier_id());
-  return s.Run();
-}
-
-// Insert the `profile`'s values into `GetProfileTypeTokensTable()`, returning
-// true if the write succeeded.
-bool AddProfileTypeTokensToTable(sql::Database* db,
-                                 const AutofillProfile& profile) {
+  BindAutofillProfileToStatement(profile, s);
+  if (!s.Run()) {
+    return false;
+  }
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForAddressOverflowAndLandmark) &&
@@ -398,7 +401,6 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
       continue;
     }
-    sql::Statement s;
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
@@ -428,15 +430,7 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
                 {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
                  kLabel, kInitialCreatorId, kLastModifierId});
-  int index = 0;
-  s.BindString(index++, profile.guid());
-  s.BindInt64(index++, profile.use_count());
-  s.BindInt64(index++, profile.use_date().ToTimeT());
-  s.BindInt64(index++, profile.modification_date().ToTimeT());
-  s.BindString(index++, profile.language_code());
-  s.BindString(index++, profile.profile_label());
-  s.BindInt(index++, profile.initial_creator_id());
-  s.BindInt(index++, profile.last_modifier_id());
+  BindAutofillProfileToStatement(profile, s);
   if (!s.Run()) {
     return false;
   }
@@ -632,8 +626,8 @@ bool AddressAutofillTable::MigrateToVersion(int version,
 
 bool AddressAutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
   sql::Transaction transaction(db_);
-  return transaction.Begin() && AddProfileMetadataToTable(db_, profile) &&
-         AddProfileTypeTokensToTable(db_, profile) && transaction.Commit();
+  return transaction.Begin() && AddAutofillProfileToTable(db_, profile) &&
+         transaction.Commit();
 }
 
 bool AddressAutofillTable::UpdateAutofillProfile(
@@ -652,13 +646,10 @@ bool AddressAutofillTable::UpdateAutofillProfile(
   // - Simpler code.
   // The possible downside is performance. This is not an issue, as updates
   // happen rarely and asynchronously.
-  // Note that this doesn't reuse `AddAutofillProfile()` to avoid nested
-  // transactions.
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
          RemoveAutofillProfile(profile.guid(), profile.source()) &&
-         AddProfileMetadataToTable(db_, profile) &&
-         AddProfileTypeTokensToTable(db_, profile) && transaction.Commit();
+         AddAutofillProfileToTable(db_, profile) && transaction.Commit();
 }
 
 bool AddressAutofillTable::RemoveAutofillProfile(
