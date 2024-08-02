@@ -38,13 +38,14 @@ mojom("mojom") {
   ]
 }
 
-source_set("test_support") {
+source_set("unit_tests") {
   testonly = true
+
+  sources = [ "app_type_mojom_traits_unittest.cc" ]
 
   deps = [
     ":mojom",
-    "//base/test:test_support",
-    "//chrome/test:test_support",
+    "//components/services/app_service",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
   ]

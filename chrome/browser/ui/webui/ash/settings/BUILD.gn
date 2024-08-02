@@ -73,6 +73,8 @@ static_library("settings") {
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/settings_shared:resources",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/services/auth_factor_config",

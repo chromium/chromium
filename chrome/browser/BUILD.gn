@@ -5277,6 +5277,10 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/sensor_info",
       "//chrome/browser/ui/webui/ash/settings",
       "//chrome/browser/ui/webui/ash/settings/calculator",
+      "//chrome/browser/ui/webui/ash/settings/pages/a11y",
+      "//chrome/browser/ui/webui/ash/settings/pages/about",
+      "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+      "//chrome/browser/ui/webui/ash/settings/pages/date_time",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/vm",
       "//chrome/services/sharing/public/cpp",
@@ -5641,6 +5645,10 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/sensor_info",
       "//chrome/browser/ui/webui/ash/settings",
       "//chrome/browser/ui/webui/ash/settings/calculator",
+      "//chrome/browser/ui/webui/ash/settings/pages/a11y",
+      "//chrome/browser/ui/webui/ash/settings/pages/about",
+      "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+      "//chrome/browser/ui/webui/ash/settings/pages/date_time",
     ]
 
     if (is_chrome_branded) {

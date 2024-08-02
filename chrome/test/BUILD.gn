@@ -1263,15 +1263,17 @@ if (is_chromeos && is_chromeos_device) {
 
       deps += [
         ":ash_integration_test_support",
-        "//chrome/browser/ash:integration_tests",
         "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/file_manager",
         "//chrome/browser/ui/ash",
-        "//chrome/browser/ui/ash:integration_tests",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
         "//ui/events:test_support",
+
+        # Gather tests from other build files:
+        "//chrome/browser/ash:integration_tests",
+        "//chrome/browser/ui/ash:integration_tests",
       ]
 
       data_deps += [
@@ -4749,9 +4751,6 @@ if (!is_android) {
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_password_setup_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_pin_setup_browsertest.cc",
         "../browser/ui/webui/ash/settings/integration_tests/os_settings_recovery_browsertest.cc",
-        "../browser/ui/webui/ash/settings/pages/a11y/accessibility_handler_browsertest.cc",
-        "../browser/ui/webui/ash/settings/pages/a11y/switch_access_handler_browsertest.cc",
-        "../browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/files/google_drive_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler_browsertest.cc",
         "../browser/ui/webui/ash/settings/pages/power/device_power_handler_browsertest.cc",
