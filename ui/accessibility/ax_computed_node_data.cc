@@ -107,6 +107,11 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
     return true;
   }
 
+  return CanComputeAttribute(attribute);
+}
+
+bool AXComputedNodeData::CanComputeAttribute(
+    const ax::mojom::IntAttribute attribute) const {
   if (!::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()) {
     return false;
   }
@@ -171,11 +176,12 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
 
 std::optional<int> AXComputedNodeData::GetOrComputeAttribute(
     const ax::mojom::IntAttribute attribute) const {
-  if (owner_->data().HasIntAttribute(attribute)) {
-    return owner_->data().GetIntAttribute(attribute);
+  int value;
+  if (owner_->data().GetIntAttribute(attribute, &value)) {
+    return value;
   }
 
-  if (!HasOrCanComputeAttribute(attribute)) {
+  if (!CanComputeAttribute(attribute)) {
     return std::nullopt;
   }
 

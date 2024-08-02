@@ -919,8 +919,10 @@ int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
 }
 bool AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute,
                              int* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttribute(attribute).value();
+  std::optional<int> maybe_value =
+      GetComputedNodeData().GetOrComputeAttribute(attribute);
+  if (maybe_value) {
+    *value = maybe_value.value();
     return true;
   }
   return false;

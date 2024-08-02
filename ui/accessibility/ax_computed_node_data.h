@@ -67,6 +67,11 @@ class AX_EXPORT AXComputedNodeData final {
   bool HasOrCanComputeAttribute(
       const ax::mojom::IntListAttribute attribute) const;
 
+  // Given an accessibility attribute, returns whether the attribute can be
+  // computed. Use this version in cases where we already know the attribute
+  // is not currently present to avoid rechecking the current properties.
+  bool CanComputeAttribute(const ax::mojom::IntAttribute attribute) const;
+
   // Given an accessibility attribute, returns the attribute's value. The
   // attribute is computed if not provided by the tree's source, otherwise it is
   // simply returned from the node's data. String and intlist attributes are
