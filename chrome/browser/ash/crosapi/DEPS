@@ -38,7 +38,7 @@ include_rules = [
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/mahi",
   "+chrome/browser/ash/net",
-  "+chrome/browser/ash/network_change_manager_client.h",
+  "+chrome/browser/ash/network_change_manager",
   "+chrome/browser/ash/nonclosable_app_ui_utils.h",
   "+chrome/browser/ash/notifications",
   "+chrome/browser/ash/passkeys",

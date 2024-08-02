@@ -363,6 +363,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/net",
+    "//chrome/browser/ash/network_change_manager",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
