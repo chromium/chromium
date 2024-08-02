@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {QUERY, Query} from './constants.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
+import {SeaPenPaths} from './sea_pen_router_element.js';
 import {isPersonalizationApp} from './sea_pen_utils.js';
 
 const WALLPAPER_FREEFORM = 999;
@@ -86,9 +87,12 @@ export function logSeaPenImageSet(
   chrome.metricsPrivate.recordBoolean(histogramName, true);
 }
 
-export function logSeaPenVisited() {
+export function logSeaPenVisited(path: SeaPenPaths) {
   const appName = isPersonalizationApp() ? 'Wallpaper' : 'VcBackground';
-  chrome.metricsPrivate.recordBoolean(`Ash.SeaPen.${appName}.Visited`, true);
+  const histogramName = path === SeaPenPaths.FREEFORM ?
+      `Ash.SeaPen.Freeform.${appName}.Visited` :
+      `Ash.SeaPen.${appName}.Visited`;
+  chrome.metricsPrivate.recordBoolean(histogramName, true);
 }
 
 export function logSeaPenThumbnailClicked(templateId: SeaPenTemplateId|Query) {

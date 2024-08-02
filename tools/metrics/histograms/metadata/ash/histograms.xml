@@ -7637,6 +7637,17 @@ chromium-metrics-reviews@google.com.
   <token key="AppName" variants="SeaPenAppName"/>
 </histogram>
 
+<histogram name="Ash.SeaPen.Freeform.{AppName}.Visited" enum="BooleanHit"
+    expires_after="2025-07-31">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a user navigates to the Freeform SeaPen page in the {AppName}
+    App.
+  </summary>
+  <token key="AppName" variants="SeaPenAppName"/>
+</histogram>
+
 <histogram name="Ash.SeaPen.Freeform.{AppName}.{Source}.ImageSet"
     enum="BooleanHit" expires_after="2025-06-06">
   <owner>thuongphan@google.com</owner>
@@ -7703,7 +7714,9 @@ chromium-metrics-reviews@google.com.
   <owner>pzliu@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
-    Emitted when a user navigates to the SeaPen page in the {AppName} App.
+    Emitted when a user navigates to the SeaPen page in the {AppName} App. This
+    metric is not emitted for the freeform page -- the freeform page emits
+    `Ash.SeaPen.Freeform.{AppName}.Visited`.
   </summary>
   <token key="AppName" variants="SeaPenAppName"/>
 </histogram>
