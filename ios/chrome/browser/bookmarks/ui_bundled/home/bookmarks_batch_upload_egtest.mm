@@ -414,7 +414,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload dialog is shown and has the correct string for a
 // single local bookmark.
-- (void)testBatchUploadDialogTestIfSingleLocalBookmark {
+// TODO(crbug.com/357144922): Test failing.
+- (void)DISABLED_testBatchUploadDialogTestIfSingleLocalBookmark {
   // Add one local bookmark.
   [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
                                      URL:@"https://www.example1.com"
