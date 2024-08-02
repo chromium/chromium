@@ -50,5 +50,6 @@ static_library("test_support") {
   public_deps = [
     ":calculator",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
   ]
 }

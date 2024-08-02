@@ -1246,7 +1246,6 @@ if (is_chromeos && is_chromeos_device) {
       # Note: for each test case in the below list, add a metadata file
       # in the `crosier_metadata` build rule above.
       sources += [
-        "../browser/ui/webui/ash/settings/pages/printing/integration_tests/printer_settings_integration_test.cc",
         "base/chromeos/crosier/ash_integration_test_test.cc",
         "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
         "base/chromeos/crosier/upstart_test.cc",
@@ -9875,15 +9874,6 @@ test("unit_tests") {
         ]
       } else {
         sources += [ "../browser/ui/webui/print_preview/local_printer_handler_default_unittest.cc" ]
-      }
-
-      if (is_chromeos_ash) {
-        sources += [
-          "../browser/ui/webui/ash/settings/pages/printing/cups_printers_handler_unittest.cc",
-          "../browser/ui/webui/ash/settings/pages/printing/server_printer_url_util_unittest.cc",
-        ]
-
-        deps += [ "//chromeos/ash/components/dbus/printscanmgr:printscanmgr" ]
       }
     } else {
       sources += [ "../browser/printing/print_view_manager_basic_unittest.cc" ]

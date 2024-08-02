@@ -5287,6 +5287,9 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/settings/pages/main",
       "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
       "//chrome/browser/ui/webui/ash/settings/pages/people",
+      "//chrome/browser/ui/webui/ash/settings/pages/printing",
+      "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+      "//chrome/browser/ui/webui/ash/settings/pages/storage",
       "//chrome/browser/ui/webui/ash/smb_shares",
       "//chrome/browser/ui/webui/ash/vm",
       "//chrome/services/sharing/public/cpp",
@@ -5661,6 +5664,9 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/settings/pages/main",
       "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
       "//chrome/browser/ui/webui/ash/settings/pages/people",
+      "//chrome/browser/ui/webui/ash/settings/pages/printing",
+      "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+      "//chrome/browser/ui/webui/ash/settings/pages/storage",
     ]
 
     if (is_chrome_branded) {

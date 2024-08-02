@@ -26,6 +26,7 @@ static_library("people") {
     "//base",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/auth",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",
     "//components/account_manager_core",
@@ -79,6 +80,9 @@ static_library("people") {
     "//ui/gfx",
     "//url",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/settings/pages/privacy" ]
 }
 
 source_set("browser_tests") {

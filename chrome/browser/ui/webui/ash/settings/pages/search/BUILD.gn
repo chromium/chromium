@@ -1,0 +1,67 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("search") {
+  sources = [
+    "google_assistant_handler.cc",
+    "google_assistant_handler.h",
+    "search_section.cc",
+    "search_section.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/components/audio",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/assistant_optin",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/constants",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//content/public/browser",
+    "//third_party/icu:icuuc_public",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "search_engines_handler_unittest.cc" ]
+
+  deps = [
+    "//ash/public/cpp:test_support",
+    "//base",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

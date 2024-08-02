@@ -263,6 +263,10 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/pages/multidevice:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/people:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/personalization:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/search:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
   ]
 }
@@ -316,7 +320,14 @@ source_set("browser_tests") {
   ]
 }
 
-if (!is_chromeos_device) {
+if (is_chromeos_device) {
+  group("integration_tests") {
+    testonly = true
+    deps = [
+      "//chrome/browser/ui/webui/ash/settings/pages/printing/integration_tests",
+    ]
+  }
+} else {
   group("interactive_ui_tests") {
     testonly = true
     deps = [ "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests" ]

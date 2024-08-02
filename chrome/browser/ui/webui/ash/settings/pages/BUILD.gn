@@ -45,6 +45,12 @@ static_library("pages") {
     "//chrome/browser/ui/webui/ash/settings/pages/people",
     "//chrome/browser/ui/webui/ash/settings/pages/personalization",
     "//chrome/browser/ui/webui/ash/settings/pages/power",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/search",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
     "//chromeos/ash/components/phonehub",
     "//ui/base",
   ]
@@ -67,6 +73,12 @@ static_library("pages") {
     "//chrome/browser/ui/webui/ash/settings/pages/people",
     "//chrome/browser/ui/webui/ash/settings/pages/personalization",
     "//chrome/browser/ui/webui/ash/settings/pages/power",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/search",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
     "//chrome/browser/ui/webui/ash/settings/search",
   ]
 }
