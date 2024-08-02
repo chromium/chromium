@@ -162,6 +162,7 @@ void PickerSearchResultsView::ClearSearchResults() {
   StopLoadingAnimation();
   top_results_.clear();
   delegate_->OnSearchResultsViewHeightChanged();
+  UpdateAccessibleName();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
@@ -189,6 +190,7 @@ void PickerSearchResultsView::AppendSearchResults(
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
   delegate_->OnSearchResultsViewHeightChanged();
+  UpdateAccessibleName();
 }
 
 bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
@@ -203,7 +205,7 @@ bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
   delegate_->OnSearchResultsViewHeightChanged();
-  AnnounceNoResultsFound();
+  UpdateAccessibleName();
   return true;
 }
 
@@ -261,15 +263,23 @@ void PickerSearchResultsView::StopLoadingAnimation() {
   delegate_->OnSearchResultsViewHeightChanged();
 }
 
-void PickerSearchResultsView::AnnounceNoResultsFound() {
-  if (num_emoji_results_displayed_ == 0) {
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
-  } else {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-        base::NumberToString16(num_emoji_results_displayed_)));
+void PickerSearchResultsView::UpdateAccessibleName() {
+  if (!section_views_.empty()) {
+    GetViewAccessibility().SetName(u"");
+    return;
   }
+
+  // Avoid announcing the same "no results found" live region consecutively.
+  const std::u16string accessible_name =
+      num_emoji_results_displayed_ == 0
+          ? l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT)
+          : l10n_util::GetStringFUTF16(
+                IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
+                base::NumberToString16(num_emoji_results_displayed_));
+  if (GetAccessibleName() == accessible_name) {
+    return;
+  }
+  GetViewAccessibility().SetName(std::move(accessible_name));
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
 }
 

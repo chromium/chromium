@@ -539,6 +539,26 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
 }
 
 TEST_F(PickerSearchResultsViewTest,
+       StoppingSearchDoesNotAnnounceWhenThereAreResults) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kNone, {}, /*has_more_results=*/false));
+  view->SearchStopped(/*illustration=*/{}, u"");
+
+  EXPECT_EQ(view->GetAccessibleName(), u"");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 0);
+}
+
+TEST_F(PickerSearchResultsViewTest,
        StoppingSearchWithNoEmojisTriggersLiveRegionChange) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -573,6 +593,47 @@ TEST_F(PickerSearchResultsViewTest,
 
   EXPECT_EQ(view->GetAccessibleName(), u"5 emojis. No other results.");
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       StoppingSearchConsecutivelyDoesNotTriggerLiveRegionChange) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->SearchStopped(/*illustration=*/{}, u"");
+  view->SearchStopped(/*illustration=*/{}, u"");
+
+  EXPECT_EQ(view->GetAccessibleName(), u"No results found.");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       StoppingSearchAfterClearingSearchAnnouncesWhenThereAreResults) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  view->SearchStopped(/*illustration=*/{}, u"");
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kNone, {}, /*has_more_results=*/false));
+  view->ClearSearchResults();
+  view->SearchStopped(/*illustration=*/{}, u"");
+
+  EXPECT_EQ(view->GetAccessibleName(), u"No results found.");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 2);
 }
 
 struct PickerSearchResultTestCase {

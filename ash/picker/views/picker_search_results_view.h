@@ -117,7 +117,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
                              const ui::Event& event);
 
   void StopLoadingAnimation();
-  void AnnounceNoResultsFound();
+  void UpdateAccessibleName();
 
   raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
