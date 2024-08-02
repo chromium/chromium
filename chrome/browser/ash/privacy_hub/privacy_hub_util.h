@@ -22,8 +22,22 @@ class PrivacyHubDelegate;
 namespace privacy_hub_util {
 
 using ContentType = content_settings::mojom::ContentSettingsType;
-using ContentBlock = std::vector<ContentType>;
-using ContentBlockCallback = base::RepeatingCallback<void(ContentBlock)>;
+using SystemPermissionChangedCallback =
+    base::RepeatingCallback<void(ContentType /*type*/, bool /*is_blocked*/)>;
+
+// This class is used to maintain observation of the permissions blocked at the
+// system level. The callback provided in the constructor is always called when
+// the system permissions change. The observation will continue until the object
+// is destroyed.
+class ContentBlockObservation {
+ public:
+  ContentBlockObservation(const ContentBlockObservation&) = delete;
+  ContentBlockObservation& operator=(const ContentBlockObservation&) = delete;
+  virtual ~ContentBlockObservation() = default;
+
+ protected:
+  ContentBlockObservation() = default;
+};
 
 // Sets a given frontend handler withing the controller.
 void SetFrontend(PrivacyHubDelegate* ptr);
@@ -75,12 +89,13 @@ std::pair<base::Time, base::Time> SunriseSunsetSchedule();
 // Returns true if the content type is blocked in the OS.
 bool ContentBlocked(ContentType type);
 
-// If the call is successfull, an observer is created that will call the
-// callback always when the set of content types blocked at the OS level
-// changes. It will be also called once immediately to establish the initial
-// value. In case the creation is not succesfull, nullptr is returned.
-std::unique_ptr<base::CheckedObserver> CreateObservationForBlockedContent(
-    ContentBlockCallback callback);
+// If the call is successful, an observer is created that will always call the
+// callback when the set of content types blocked at the OS level
+// changes. It will also be called once for each content type immediately to
+// establish the initial value. In case the creation is not successful, nullptr
+// is returned.
+std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
+    SystemPermissionChangedCallback callback);
 
 // Opens the system settings page that allows OS level control for the provided
 // content type if such settings page exists.

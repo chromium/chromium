@@ -4,6 +4,7 @@
 
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("permissions") {
@@ -164,6 +165,13 @@ source_set("permissions") {
       deps += [ "//third_party/tflite_support" ]
     }
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
+  }
+
+  if (os_level_geolocation_permission_supported) {
+    sources += [
+      "system/geolocation_observation.cc",
+      "system/geolocation_observation.h",
+    ]
   }
 }
 

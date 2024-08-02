@@ -98,6 +98,20 @@ export class SiteDetailsPermissionElement extends
         type: String,
         value: ChooserType.NONE,
       },
+
+      /**
+       * If some permission is blocked on the system level, this will be
+       * populated with the warnings to be shown in the UI.
+       */
+      permissionWarnings_: {
+        type: Object,
+        value: {
+          [ContentSettingsTypes.GEOLOCATION]: null,
+          [ContentSettingsTypes.CAMERA]: null,
+          [ContentSettingsTypes.MIC]: null,
+        },
+        notify: true,
+      },
     };
   }
 
@@ -112,6 +126,7 @@ export class SiteDetailsPermissionElement extends
   site: RawSiteException;
   private chooserExceptions_: ChooserException[];
   chooserType: ChooserType;
+  private permissionWarnings_: Record<ContentSettingsTypes, string|null>;
   private defaultSetting_: ContentSetting;
   label: string;
   icon: string;
@@ -131,6 +146,10 @@ export class SiteDetailsPermissionElement extends
             this.updateChooserExceptions_();
           }
         });
+
+    this.addWebUiListener('osGlobalPermissionChanged', (messages: any) => {
+      this.set('permissionWarnings_', messages);
+    });
   }
 
   /**
@@ -145,6 +164,12 @@ export class SiteDetailsPermissionElement extends
     // processChooserExceptions_.
     this.browserProxy.getChooserExceptionList(this.chooserType)
         .then(exceptionList => this.processChooserExceptions_(exceptionList));
+  }
+
+  private updateOsPermissionWarnings_() {
+    this.browserProxy.getOsGlobalPermissionStatus().then(messages => {
+      this.permissionWarnings_ = messages;
+    });
   }
 
   /**
@@ -196,6 +221,8 @@ export class SiteDetailsPermissionElement extends
     if (!site) {
       return;
     }
+
+    this.updateOsPermissionWarnings_();
 
     if (site.source === SiteSettingSource.DEFAULT) {
       this.defaultSetting_ = site.setting;
@@ -314,15 +341,18 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
+   * @param permissionWarnings The warnings to be displayed for permissions
+   *     blocked at the the system level.
    * @return Whether the permission will have a source string to display.
    */
   private hasPermissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting): boolean {
+      setting: ContentSetting,
+      permissionWarnings: Record<ContentSettingsTypes, string>): boolean {
     // This method assumes that an empty string will be returned for categories
     // that have no permission info string.
     return String(this.permissionInfoString_(
-               source, category, setting,
+               source, category, setting, permissionWarnings,
                // Set all permission info string arguments as null. This is OK
                // because there is no need to know what the information string
                // will be, just whether there is one or not.
@@ -339,27 +369,34 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
+   * @param permissionWarnings The warnings to be displayed for permissions
+   *     blocked at the the system level.
    * @return CSS class applied when there is an additional description string.
    */
   private permissionInfoStringClass_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting): string {
-    return this.hasPermissionInfoString_(source, category, setting) ?
+      setting: ContentSetting,
+      permissionWarnings: Record<ContentSettingsTypes, string>): string {
+    return this.hasPermissionInfoString_(
+               source, category, setting, permissionWarnings) ?
         'two-line' :
         '';
   }
 
   /**
    * @param source The source of the permission.
+   * @param category The permission category.
    * @return Whether this permission can be controlled by the user.
    */
-  private isPermissionUserControlled_(source: SiteSettingSource): boolean {
-    return !(
-        source === SiteSettingSource.ALLOWLIST ||
-        source === SiteSettingSource.POLICY ||
-        source === SiteSettingSource.EXTENSION ||
-        source === SiteSettingSource.KILL_SWITCH ||
-        source === SiteSettingSource.INSECURE_ORIGIN);
+  private isPermissionUserControlled_(
+      source: SiteSettingSource, category: ContentSettingsTypes): boolean {
+    return !(source === SiteSettingSource.ALLOWLIST ||
+             source === SiteSettingSource.POLICY ||
+             source === SiteSettingSource.EXTENSION ||
+             source === SiteSettingSource.KILL_SWITCH ||
+             source === SiteSettingSource.INSECURE_ORIGIN) &&
+        (null ===
+         this.getPermissionWarning_(category, this.permissionWarnings_));
   }
 
   /**
@@ -404,6 +441,19 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
+   * @param category The permission type.
+   * @return The text of the warning. Null if the warning is not to be shown.
+   */
+  private getPermissionWarning_(
+      category: ContentSettingsTypes, _permissionWarnings: Object): string
+      |null {
+    if (category in this.permissionWarnings_) {
+      return this.permissionWarnings_[category];
+    }
+    return null;
+  }
+
+  /**
    * Returns true if the permission is set to a non-default 'ask'. Currently,
    * this only gets called when |this.site| is updated.
    * @param setting The setting of the permission.
@@ -430,6 +480,8 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
+   * @param permissionWarnings The warnings to be displayed for permissions
+   *     blocked at the the system level.
    * @param  allowlistString The string to show if the permission is
    *     allowlisted.
    * @param adsBlocklistString The string to show if the site is
@@ -440,10 +492,11 @@ export class SiteDetailsPermissionElement extends
    */
   private permissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting, allowlistString: string|null,
-      adsBlocklistString: string|null, adsBlockString: string|null,
-      embargoString: string|null, insecureOriginString: string|null,
-      killSwitchString: string|null,
+      setting: ContentSetting,
+      permissionWarnings: Record<ContentSettingsTypes, string>,
+      allowlistString: string|null, adsBlocklistString: string|null,
+      adsBlockString: string|null, embargoString: string|null,
+      insecureOriginString: string|null, killSwitchString: string|null,
       // <if expr="is_win and _google_chrome">
       protectedContentIdentifierAllowedString: string|null,
       // </if>
@@ -454,6 +507,12 @@ export class SiteDetailsPermissionElement extends
     if (source === undefined || category === undefined ||
         setting === undefined) {
       return window.trustedTypes!.emptyHTML;
+    }
+
+    const permissionWarningForCategory: string|null =
+        this.getPermissionWarning_(category, permissionWarnings);
+    if (permissionWarningForCategory !== null) {
+      return sanitizeInnerHtml(permissionWarningForCategory!);
     }
 
     const extensionStrings: {[key: string]: string|null} = {};

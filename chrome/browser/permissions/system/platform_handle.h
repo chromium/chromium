@@ -49,6 +49,14 @@ class PlatformHandle {
   // once the user's decision is made.
   virtual void Request(ContentSettingsType type,
                        SystemPermissionResponseCallback callback) = 0;
+
+  // Creates an observation object that maintains the observation of the system
+  // permission changes. As long as the object is alive, the system permission
+  // changes will be passed to the observer. When the object is destroyed, the
+  // observer will not receive updates any more.
+  // Returns nullptr if the platform does not support observation.
+  virtual std::unique_ptr<ScopedObservation> Observe(
+      SystemPermissionChangedCallback observer) = 0;
 };
 
 }  // namespace system_permission_settings

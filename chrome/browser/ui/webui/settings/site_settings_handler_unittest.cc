@@ -50,6 +50,7 @@
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -6419,5 +6420,60 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_cookie_string=*/"",
       /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
 }
+
+class SiteSettingsGlobalPermissionTest
+    : public SiteSettingsHandlerBaseTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  bool CamBlocked() const { return std::get<0>(GetParam()); }
+  bool MicBlocked() const { return std::get<1>(GetParam()); }
+  bool GeoBlocked() const { return std::get<2>(GetParam()); }
+};
+
+TEST_P(SiteSettingsGlobalPermissionTest, GetOSGlobalPermissionStatus) {
+  system_permission_settings::ScopedSettingsForTesting cam_settings(
+      ContentSettingsType::MEDIASTREAM_CAMERA, CamBlocked());
+  system_permission_settings::ScopedSettingsForTesting mic_settings(
+      ContentSettingsType::MEDIASTREAM_MIC, MicBlocked());
+  system_permission_settings::ScopedSettingsForTesting geo_settings(
+      ContentSettingsType::GEOLOCATION, GeoBlocked());
+
+  base::Value::List args;
+  args.Append(kCallbackId);
+  handler()->HandleGetOSGlobalPermissionStatus(args);
+  EXPECT_LT(0u, CHECK_DEREF(web_ui()).call_data().size());
+  const auto& call_data = *(CHECK_DEREF(web_ui()).call_data().back());
+  EXPECT_EQ(3u, call_data.args().size());
+  EXPECT_EQ(base::Value(kCallbackId), CHECK_DEREF(call_data.arg1()));
+  EXPECT_EQ(base::Value(true), CHECK_DEREF(call_data.arg2()));
+
+  base::Value::Dict expected_result;
+  if (CamBlocked()) {
+    expected_result.Set(
+        "media-stream-camera",
+        base::Value(
+            "To use your camera, give Chrome access in system settings."));
+  }
+  if (MicBlocked()) {
+    expected_result.Set(
+        "media-stream-mic",
+        base::Value("To use your microphone, give Chrome access in "
+                    "system settings."));
+  }
+  if (GeoBlocked()) {
+    expected_result.Set(
+        "location",
+        base::Value(
+            "To use your location, give Chrome access in system settings."));
+  }
+
+  EXPECT_EQ(expected_result, CHECK_DEREF(call_data.arg3()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SiteSettingsGlobalPermissionTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 }  // namespace settings
