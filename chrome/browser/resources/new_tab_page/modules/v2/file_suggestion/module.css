@@ -68,6 +68,7 @@ a:focus-visible {
 .file:first-of-type {
   border-radius: var(--ntp-module-item-border-radius)
       var(--ntp-module-item-border-radius) 0 0;
+  padding-top: var(--ntp-module-first-element-top-padding);
 }
 
 .file:last-of-type {
