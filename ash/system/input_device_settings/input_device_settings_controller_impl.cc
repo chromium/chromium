@@ -673,6 +673,7 @@ void InputDeviceSettingsControllerImpl::Init() {
   input_method::InputMethodManager::Get()->AddObserver(this);
 
   if (features::IsWelcomeExperienceEnabled()) {
+    message_center::MessageCenter::Get()->AddObserver(this);
     device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
         &InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady,
         weak_ptr_factory_.GetWeakPtr()));
@@ -816,6 +817,10 @@ void InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady(
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  if (features::IsWelcomeExperienceEnabled()) {
+    message_center::MessageCenter::Get()->RemoveObserver(this);
+  }
+
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->RemoveObserver(this);
   if (bluetooth_adapter_) {
@@ -1534,7 +1539,15 @@ bool InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     return false;
   }
   RecordSetKeyboardSettingsValidMetric(/*is_valid=*/true);
-
+  auto it =
+      welcome_notification_clicked_device_keys_.find(found_keyboard.device_key);
+  if (it != welcome_notification_clicked_device_keys_.end()) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.WelcomeExperienceNotificationEvent",
+        InputDeviceSettingsMetricsManager::
+            WelcomeExperienceNotificationEventType::kSettingChanged);
+    welcome_notification_clicked_device_keys_.erase(it);
+  }
   const auto old_settings = std::move(found_keyboard.settings);
   found_keyboard.settings = settings.Clone();
   keyboard_pref_handler_->UpdateKeyboardSettings(
@@ -1572,7 +1585,15 @@ bool InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     return false;
   }
   RecordSetTouchpadSettingsValidMetric(/*is_valid=*/true);
-
+  auto it =
+      welcome_notification_clicked_device_keys_.find(found_touchpad.device_key);
+  if (it != welcome_notification_clicked_device_keys_.end()) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.WelcomeExperienceNotificationEvent",
+        InputDeviceSettingsMetricsManager::
+            WelcomeExperienceNotificationEventType::kSettingChanged);
+    welcome_notification_clicked_device_keys_.erase(it);
+  }
   const auto old_settings = std::move(found_touchpad.settings);
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
@@ -1609,7 +1630,15 @@ bool InputDeviceSettingsControllerImpl::SetMouseSettings(
     return false;
   }
   RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
-
+  auto it =
+      welcome_notification_clicked_device_keys_.find(found_mouse.device_key);
+  if (it != welcome_notification_clicked_device_keys_.end()) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.WelcomeExperienceNotificationEvent",
+        InputDeviceSettingsMetricsManager::
+            WelcomeExperienceNotificationEventType::kSettingChanged);
+    welcome_notification_clicked_device_keys_.erase(it);
+  }
   const auto old_settings = std::move(found_mouse.settings);
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(
@@ -1680,6 +1709,15 @@ bool InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
     return false;
   }
 
+  auto it = welcome_notification_clicked_device_keys_.find(
+      found_graphics_tablet.device_key);
+  if (it != welcome_notification_clicked_device_keys_.end()) {
+    base::UmaHistogramEnumeration(
+        "ChromeOS.WelcomeExperienceNotificationEvent",
+        InputDeviceSettingsMetricsManager::
+            WelcomeExperienceNotificationEventType::kSettingChanged);
+    welcome_notification_clicked_device_keys_.erase(it);
+  }
   const auto old_settings = std::move(found_graphics_tablet.settings);
   found_graphics_tablet.settings = settings.Clone();
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
@@ -2398,6 +2436,10 @@ void InputDeviceSettingsControllerImpl::GetDeviceImageDataUrl(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void InputDeviceSettingsControllerImpl::ResetNotificationDeviceTracking() {
+  welcome_notification_clicked_device_keys_.clear();
+}
+
 void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
     DeviceId device_id,
     const mojom::Button& button) {
@@ -2531,6 +2573,17 @@ void InputDeviceSettingsControllerImpl::OnOobeDialogStateChanged(
 void InputDeviceSettingsControllerImpl::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
+}
+
+void InputDeviceSettingsControllerImpl::OnNotificationClicked(
+    const std::string& notification_id,
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
+  const auto device_key =
+      notification_controller_->GetDeviceKeyForNotificationId(notification_id);
+  if (device_key.has_value()) {
+    welcome_notification_clicked_device_keys_.insert(device_key.value());
+  }
 }
 
 void InputDeviceSettingsControllerImpl::OnAppUpdate(

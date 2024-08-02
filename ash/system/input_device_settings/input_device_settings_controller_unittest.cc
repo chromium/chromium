@@ -22,6 +22,7 @@
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
@@ -948,8 +949,10 @@ TEST_F(InputDeviceSettingsControllerTest,
 }
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
+  base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardUsb});
-
+  auto* kb = controller_->GetKeyboard(kSampleKeyboardUsb.id);
+  controller_->AddWelcomeNotificationDeviceKeyForTesting(kb->device_key);
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
 
@@ -959,6 +962,11 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kSettingChanged,
+      /*expected_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, PrefsInitializedBasedOnLoginState) {

@@ -177,6 +177,12 @@ OSSettingsUI::~OSSettingsUI() {
   // background and the state remains stored in the manager, so we will reset
   // that knowledge.
   settingsHatsManager->SetSettingsUsedSearch(false);
+
+  // Resets the tracking of device IDs associated with notification clicks.
+  // This method is called when the Settings app is closed to prevent the
+  // recording of metrics if a user changes settings long after clicking a
+  // notification.
+  InputDeviceSettingsController::Get()->ResetNotificationDeviceTracking();
 }
 
 void OSSettingsUI::BindInterface(

@@ -4486,6 +4486,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.WelcomeExperienceNotificationEvent"
+    enum="WelcomeExperienceNotificationEventType" expires_after="2025-06-30">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when the user is shown or interacts with the first-time connection
+    notification.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.WXMountCount" units="count"
     expires_after="2025-01-05">
   <owner>jorgelo@chromium.org</owner>

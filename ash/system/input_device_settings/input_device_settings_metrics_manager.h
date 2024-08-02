@@ -32,6 +32,17 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
     kMaxValue = kInstalled,
   };
 
+  // This enum is for the ChromeOS.WelcomeExperienceNotificationEvent UMA
+  // histogram and should be kept in sync with the
+  // `WelcomeExperienceNotificationEventType` enum in
+  // tools/metrics/histograms/metadata/chromeos/enums.xml.
+  enum class WelcomeExperienceNotificationEventType {
+    kShown,
+    kClicked,
+    kSettingChanged,
+    kMaxValue = kSettingChanged,
+  };
+
   InputDeviceSettingsMetricsManager();
   InputDeviceSettingsMetricsManager(const InputDeviceSettingsMetricsManager&) =
       delete;

@@ -26,11 +26,13 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -757,6 +759,10 @@ void HandleMouseCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowMouseSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -765,6 +771,10 @@ void HandleKeyboardCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowKeyboardSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -773,6 +783,10 @@ void HandleTouchpadCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowTouchpadSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -789,6 +803,10 @@ void HandleGraphicsTabletCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowGraphicsTabletSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -986,6 +1004,11 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
           base::BindRepeating(&HandleMouseCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] = mouse.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1020,6 +1043,11 @@ void InputDeviceSettingsNotificationController::
           base::BindRepeating(&HandleKeyboardCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] = keyboard.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1054,6 +1082,11 @@ void InputDeviceSettingsNotificationController::
           base::BindRepeating(&HandleTouchpadCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] = touchpad.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1090,6 +1123,12 @@ void InputDeviceSettingsNotificationController::
               &HandleGraphicsTabletCustomizationNotificationClicked,
               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] =
+      graphics_tablet.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1239,6 +1278,16 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
           IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
+}
+
+std::optional<std::string>
+InputDeviceSettingsNotificationController::GetDeviceKeyForNotificationId(
+    const std::string& notification_id) {
+  auto it = notification_id_to_device_key_map_.find(notification_id);
+  if (it == notification_id_to_device_key_map_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace ash
