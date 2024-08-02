@@ -376,7 +376,7 @@
 <translation id="2848086008667475748">在「設定」中設為預設…</translation>
 <translation id="2858204748079866344">為保護個人隱私，Chrome 不會將你的密碼自動填入這個欄位。</translation>
 <translation id="285960592395650245">重新嘗試下載</translation>
-<translation id="286382692684806520">{COUNT,plural, =1{1 個網站 (在已同步的裝置上還有更多網站)}other{# 個網站 (在已同步的裝置上還有更多網站)}}</translation>
+<translation id="286382692684806520">{COUNT,plural, =1{1 個網站 (已同步的裝置上還有其他網站)}other{# 個網站 (已同步的裝置上還有其他網站)}}</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871695793448672541">目前為隱藏狀態的密碼</translation>
 <translation id="2876369937070532032">當網站具有安全性風險時，Chrome 會將你造訪的部分網頁網址傳送給 Google</translation>

@@ -1052,7 +1052,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6040939430773295212">Ailadroddus</translation>
 <translation id="604124094241169006">Awtomatig</translation>
 <translation id="6042308850641462728">Mwy</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Wedi adolygu caniatadau ar gyfer 1 wefan}zero{Wedi adolygu caniatadau ar gyfer {NUM_SITES} gwefan}two{Wedi adolygu caniatadau ar gyfer {NUM_SITES} wefan}few{Wedi adolygu caniatadau ar gyfer {NUM_SITES} gwefan}many{Wedi adolygu caniatadau ar gyfer {NUM_SITES} gwefan}other{Wedi adolygu caniatadau ar gyfer {NUM_SITES} gwefan}}</translation>
 <translation id="604996488070107836">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwall anhysbys.</translation>
 <translation id="605721222689873409">BB</translation>
 <translation id="6059830886158432458">Rheoli eich straeon a'ch gweithgarwch yma</translation>
@@ -1706,7 +1705,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8865415417596392024">Data Chrome yn eich cyfrif</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="8909135823018751308">Rhannu…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Ni chaniateir hysbysiadau ar gyfer 1 wefan}zero{Ni chaniateir hysbysiadau ar gyfer {NUM_SITES} gwefan}two{Ni chaniateir hysbysiadau ar gyfer {NUM_SITES} wefan}few{Ni chaniateir hysbysiadau ar gyfer {NUM_SITES} gwefan}many{Ni chaniateir hysbysiadau ar gyfer {NUM_SITES} gwefan}other{Ni chaniateir hysbysiadau ar gyfer {NUM_SITES} gwefan}}</translation>
 <translation id="8921980840204105660">Cysonwch i gael eich nodau tudalen o'ch dyfeisiau eraill</translation>
 <translation id="8922289737868596582">Lawrlwythwch dudalennau o'r botwm Rhagor o ddewisiadau i'w defnyddio all-lein</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>

@@ -1052,7 +1052,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="6040939430773295212">Endurtekning</translation>
 <translation id="604124094241169006">Sjálfvirkt</translation>
 <translation id="6042308850641462728">Meira</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Farið yfir heimildir fyrir eitt vefsvæði}one{Farið yfir heimildir fyrir {NUM_SITES} vefsvæði}other{Farið yfir heimildir fyrir {NUM_SITES} vefsvæði}}</translation>
 <translation id="604996488070107836">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna óþekktrar villu.</translation>
 <translation id="605721222689873409">ÁÁ</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
@@ -1706,7 +1705,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8865415417596392024">Chrome-gögn á reikningnum þínum</translation>
 <translation id="8898822736010347272">Sendir vefslóðir sumra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna til Google til að hjálpa til við að finna og loka á nýjar ógnir og vernda alla vefnotendur.</translation>
 <translation id="8909135823018751308">Deila…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Tilkynningar eru ekki leyfðar fyrir eitt vefsvæði}one{Tilkynningar eru ekki leyfðar fyrir {NUM_SITES} vefsvæði}other{Tilkynningar eru ekki leyfðar fyrir {NUM_SITES} vefsvæði}}</translation>
 <translation id="8921980840204105660">Samstilltu til að sækja bókamerkin þín úr öðrum tækjum</translation>
 <translation id="8922289737868596582">Náðu í síður með hnappnum „Fleiri valkostir“ til að nota þær án nettengingar</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>

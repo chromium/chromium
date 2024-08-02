@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">पुनरावृत्ती</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
 <translation id="6042308850641462728">अधिक</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{१ साइटसाठी परवानग्यांचे पुनरावलोकन केले}other{{NUM_SITES} साइटसाठी परवानग्यांचे पुनरावलोकन केले}}</translation>
 <translation id="604996488070107836">अज्ञात एररमुळे <ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी झाले.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{१ साइटसाठी सूचनांना अनुमती नाही}other{{NUM_SITES} साइटसाठी सूचनांना अनुमती नाही}}</translation>
 <translation id="8921980840204105660">तुमच्या इतर डिव्हाइसवरून तुमचे बुकमार्क मिळवण्यासाठी सिंक करा</translation>
 <translation id="8922289737868596582">पेज ऑफलाइन वापरता येण्यासाठी ती अधिक पर्यायांमधून डाउनलोड करा</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

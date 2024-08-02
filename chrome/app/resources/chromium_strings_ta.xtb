@@ -21,6 +21,8 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> கணக்கின் மூலம் Gmail, YouTube போன்ற Google சேவைகளில் உள்நுழையும்போது Chromiumமிலும் அதே கணக்கின் மூலம் தானாக நீங்கள் உள்நுழையலாம்.</translation>
 <translation id="1290883685122687410">அமைவுப் பிழை: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">உங்கள் புதிய Chromium சுயவிவரத்தை அமைத்திடுங்கள்</translation>
+<translation id="1324107359134968521">புளூடூத் சாதனங்களைக் கண்டறிய 
+ Chromiumமிற்கு புளூடூத் அணுகல் தேவை. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium தரவையும் நீக்கு (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium இல் உள்நுழைந்துள்ளீர்கள்!</translation>
 <translation id="1478370723027452770">Chrome for Testing தொடர்பான உதவியைப் பெறுங்கள்</translation>

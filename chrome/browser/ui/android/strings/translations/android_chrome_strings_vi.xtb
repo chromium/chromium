@@ -1052,7 +1052,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6040939430773295212">Trùng lặp</translation>
 <translation id="604124094241169006">Tự động</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Đã xem xét các quyền của 1 trang web}other{Đã xem xét các quyền của {NUM_SITES} trang web}}</translation>
 <translation id="604996488070107836">Không tải xuống được <ph name="FILE_NAME" /> do lỗi không xác định.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kiểm soát tin bài và hoạt động của bạn tại đây</translation>
@@ -1706,7 +1705,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8865415417596392024">Dữ liệu Chrome trong tài khoản của bạn</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Không cho phép 1 trang web gửi thông báo}other{Không cho phép {NUM_SITES} trang web gửi thông báo}}</translation>
 <translation id="8921980840204105660">Đồng bộ hoá để lấy dấu trang từ thiết bị khác</translation>
 <translation id="8922289737868596582">Tải trang xuống từ nút Thêm tùy chọn để sử dụng ngoại tuyến</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

@@ -23,6 +23,8 @@
 <translation id="126567311906253476">При најавување на услуги на Google како Gmail или YouTube со <ph name="USER_EMAIL" />, може да се најавувате на Chromium автоматски со истата сметка</translation>
 <translation id="1290883685122687410">Грешка при поставувањето: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
+<translation id="1324107359134968521">Chromium бара пристап до Bluetooth за да открива 
+ уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Избриши ги и податоците од Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>

@@ -1052,7 +1052,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6040939430773295212">내용이 반복됨</translation>
 <translation id="604124094241169006">자동</translation>
 <translation id="6042308850641462728">자세히</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{사이트 1개의 권한이 검토됨}other{사이트 {NUM_SITES}개의 권한이 검토됨}}</translation>
 <translation id="604996488070107836">알 수 없는 오류로 인해 <ph name="FILE_NAME" /> 다운로드에 실패했습니다.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
@@ -1706,7 +1705,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
 <translation id="8898822736010347272">모든 웹 사용자에게 영향을 주는 새로운 위협을 발견하고 사용자를 보호하는 데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8909135823018751308">공유…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{사이트 1개에 알림이 허용되지 않음}other{사이트 {NUM_SITES}개에 알림이 허용되지 않음}}</translation>
 <translation id="8921980840204105660">동기화하여 다른 기기에서 북마크를 가져오세요.</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

@@ -1052,7 +1052,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6040939430773295212">Pasikartoja</translation>
 <translation id="604124094241169006">Automatinis</translation>
 <translation id="6042308850641462728">Daugiau</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Peržiūrėti vienos svetainės leidimai}one{Peržiūrėti {NUM_SITES} svetainės leidimai}few{Peržiūrėti {NUM_SITES} svetainių leidimai}many{Peržiūrėti {NUM_SITES} svetainės leidimai}other{Peržiūrėti {NUM_SITES} svetainių leidimai}}</translation>
 <translation id="604996488070107836">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl nežinomos klaidos.</translation>
 <translation id="605721222689873409">MM</translation>
 <translation id="6059830886158432458">Čia galite valdyti savo pasakojimus ir veiklą</translation>
@@ -1706,7 +1705,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8865415417596392024">„Chrome“ duomenys jūsų paskyroje</translation>
 <translation id="8898822736010347272">„Google“ siunčiami kai kurių lankomų puslapių URL, ribota sistemos informacija ir kai kurių puslapių turinys, kad būtų galima aptikti naujas grėsmes ir apsaugoti visus žiniatinklio naudotojus.</translation>
 <translation id="8909135823018751308">Bendrinti…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Pranešimai neleidžiami vienoje svetainėje}one{Pranešimai neleidžiami {NUM_SITES} svetainėje}few{Pranešimai neleidžiami {NUM_SITES} svetainėse}many{Pranešimai neleidžiami {NUM_SITES} svetainės}other{Pranešimai neleidžiami {NUM_SITES} svetainių}}</translation>
 <translation id="8921980840204105660">Sinchronizuokite, kad gautumėte žymes iš kitų įrenginių</translation>
 <translation id="8922289737868596582">Atsisiųskite puslapius spustelėję mygtuką „Daugiau parinkčių“, kad galėtumėte naudoti juos neprisijungę</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>

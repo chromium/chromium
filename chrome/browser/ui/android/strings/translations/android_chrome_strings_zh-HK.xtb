@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">重複出現</translation>
 <translation id="604124094241169006">自動</translation>
 <translation id="6042308850641462728">更多選項</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{已檢查 1 個網站的權限}other{已檢查 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
 <translation id="8909135823018751308">共用…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 {NUM_SITES} 個網站傳送通知}}</translation>
 <translation id="8921980840204105660">進行同步處理，取得您在其他裝置上的書籤</translation>
 <translation id="8922289737868596582">透過「更多選項」按鈕下載網頁，方便喺離線嗰陣使用</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

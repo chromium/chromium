@@ -23,6 +23,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="126567311906253476">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chromium me të njëjtën llogari</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
+<translation id="1324107359134968521">Chromium ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Fshi po ashtu të dhënat nga Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Je i identifikuar në Chromium!</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>

@@ -21,6 +21,8 @@
 <translation id="126567311906253476">Когато използвате <ph name="USER_EMAIL" /> за вход в услуги на Google, като например Gmail или YouTube, можете автоматично да влизате в Chromium със същия профил</translation>
 <translation id="1290883685122687410">Грешка при настройването: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Настройване на новия ви потребителски профил в Chromium</translation>
+<translation id="1324107359134968521">Chromium се нуждае от достъп до Bluetooth, за да преглежда
+устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Изтриване на данните и от Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Влязохте в Chromium!</translation>
 <translation id="1478370723027452770">Получаване на помощ за Chrome for Testing</translation>

@@ -211,6 +211,7 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Für Google Chrome ist Windows 10 oder höher erforderlich.</translation>
 <translation id="3835168907083856002">Dadurch wird ein neues Chrome-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt</translation>
+<translation id="383928141529488001">Google Chrome benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Schließe alle Google Chrome-Fenster und versuche es erneut.</translation>
 <translation id="3865754807470779944">Chrome-Version <ph name="PRODUCT_VERSION" /> ist installiert</translation>
 <translation id="3873044882194371212">Link in Chrome-Inkognitofenster öffnen</translation>

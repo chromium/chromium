@@ -1052,7 +1052,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6040939430773295212">Давтагдсан</translation>
 <translation id="604124094241169006">Автомат</translation>
 <translation id="6042308850641462728">Илүү их</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 сайтын зөвшөөрлийг хянасан}other{{NUM_SITES} сайтын зөвшөөрлийг хянасан}}</translation>
 <translation id="604996488070107836">Үл мэдэгдэх алдааны улмаас <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Мэдээ, нийтлэл болон үйл ажиллагаагаа энд хянана уу</translation>
@@ -1706,7 +1705,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Мэдэгдлийг 1 сайтад зөвшөөрөөгүй}other{Мэдэгдлийг {NUM_SITES} сайтад зөвшөөрөөгүй}}</translation>
 <translation id="8921980840204105660">Бусад төхөөрөмжөөсөө хавчуургаа авахын тулд синк хийнэ үү</translation>
 <translation id="8922289737868596582">Хуудсыг офлайн үед ашиглахын тулд Бусад сонголт товчлуураас татна уу</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>

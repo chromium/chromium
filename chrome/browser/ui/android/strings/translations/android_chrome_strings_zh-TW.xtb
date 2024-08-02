@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">重複出現</translation>
 <translation id="604124094241169006">自動</translation>
 <translation id="6042308850641462728">更多</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{已檢查 1 個網站的權限}other{已檢查 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">年</translation>
 <translation id="6059830886158432458">請在這裡控管你的報導和活動</translation>
@@ -1594,7 +1593,7 @@
 <translation id="835847953965672673">已還原 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載內容</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8378850197701296741">你在 <ph name="FROM_ACCOUNT" /> 中有書籤、歷史記錄和其他設定。</translation>
-<translation id="8382640928718131148">閒置 <ph name="DAYS_INACTIVE" /> 天的分頁會移到這裡，並在 <ph name="DAYS_ARCHIVED" /> 天後關閉。你隨時可以前往「<ph name="SETTINGS_TITLE" />」進行變更。</translation>
+<translation id="8382640928718131148">閒置 <ph name="DAYS_INACTIVE" /> 天的分頁會移到這裡，並在 <ph name="DAYS_ARCHIVED" /> 天後關閉。你隨時可以前往「<ph name="SETTINGS_TITLE" />」變更。</translation>
 <translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8394720698884623075">可使用儲存在 Chrome 中的不安全網站清單檢查網址</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="8909135823018751308">分享…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 {NUM_SITES} 個網站傳送通知}}</translation>
 <translation id="8921980840204105660">進行同步處理，取得你在其他裝置上的書籤</translation>
 <translation id="8922289737868596582">透過「更多選項」按鈕下載網頁，以便離線存取</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

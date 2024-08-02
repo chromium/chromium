@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">ተደጋጋሚ</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>
 <translation id="6042308850641462728">ተጨማሪ</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{ፈቃዶች ለ1 ጣቢያ ተገምግመዋል}one{ፈቃዶች ለ{NUM_SITES} ጣቢያ ተገምግመዋል}other{ፈቃዶች ለ{NUM_SITES} ጣቢያዎች ተገምግመዋል}}</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" />ን ማውረድ ባልታወቀ ስህተት ምክንያት አልተሳካም።</translation>
 <translation id="605721222689873409">ዓዓ</translation>
 <translation id="6059830886158432458">የእርስዎን ታሪክ እና እንቅስቃሴ እዚህ ይቆጣጠሩ</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">በመለያዎ ውስጥ የChrome ውሂብ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{ማሳወቂያዎች ለ1 ጣቢያ አይፈቀዱም}one{ማሳወቂያዎች ለ{NUM_SITES} ጣቢያ አይፈቀዱም}other{ማሳወቂያዎች ለ{NUM_SITES} ጣቢያዎች አይፈቀዱም}}</translation>
 <translation id="8921980840204105660">የእርስዎን እልባቶች ከሌሎች መሣሪያዎችዎ ለማግኘት ያስምሩ</translation>
 <translation id="8922289737868596582">ገጾችን ከመስመር ውጭ ለመጠቀም ከተጨማሪ አማራጮች አዝራሩ ላይ ያውርዱ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>

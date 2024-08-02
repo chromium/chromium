@@ -1052,7 +1052,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6040939430773295212">Opakuje sa</translation>
 <translation id="604124094241169006">Automatické</translation>
 <translation id="6042308850641462728">Viac</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Boli skontrolované povolenia pre 1 web}few{Povolenia boli skontrolované pre {NUM_SITES} weby}many{Permissions reviewed for {NUM_SITES} sites}other{Povolenia boli skontrolované pre {NUM_SITES} webov}}</translation>
 <translation id="604996488070107836">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu neznámej chyby.</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tu ovládajte svoje príbehy aj aktivitu</translation>
@@ -1706,7 +1705,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>
 <translation id="8909135823018751308">Zdieľať…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Upozornenia nie sú povolené pre 1 web}few{Upozornenia nie sú povolené pre {NUM_SITES} weby}many{Notifications not allowed for {NUM_SITES} sites}other{Upozornenia nie sú povolené pre {NUM_SITES} webov}}</translation>
 <translation id="8921980840204105660">Zapnite synchronizáciu a získajte tak záložky zo svojich ostatných zariadení</translation>
 <translation id="8922289737868596582">Stiahnite si stránky pomocou tlačidla Ďalšie možnosti, aby ste ich mohli použiť offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>

@@ -4550,7 +4550,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4263223596040212967">Provjerite izgled tipkovnice i pokušajte ponovo.</translation>
 <translation id="4263470758446311292">Ostvarite maksimalnu uštedu memorije. Kartice će nakon kraćeg razdoblja postati neaktivne.</translation>
 <translation id="4263824086525632">Polarna svjetlost</translation>
-<translation id="4265096510956307240">Potvrđivanje identiteta</translation>
+<translation id="4265096510956307240">Potvrdite svoj identitet</translation>
 <translation id="4265301768135164545">eSIM profil možete postaviti i <ph name="BEGIN_LINK" />ručno<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">Da biste provjerili ima li ažuriranja, upotrijebite Ethernet, Wi-Fi ili mobilne podatke.</translation>
 <translation id="426652736638196239">Ovaj će se IBAN spremiti samo na ovaj uređaj</translation>
@@ -5027,7 +5027,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4617001782309103936">Prekratko</translation>
 <translation id="4617270414136722281">Opcije proširenja</translation>
 <translation id="4617880081511131945">Uspostavljanje veze nije uspjelo</translation>
-<translation id="4619564267100705184">Potvrđivanje identiteta</translation>
+<translation id="4619564267100705184">Potvrdite svoj identitet</translation>
 <translation id="4619615317237390068">Kartice s drugih uređaja</translation>
 <translation id="4620757807254334872">miš</translation>
 <translation id="4620809267248568679">Ovom postavkom upravlja proširenje.</translation>
@@ -7161,7 +7161,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6206199626856438589">Odjavit ćete se s prikazanih web-lokacija, uključujući otvorene kartice</translation>
 <translation id="6206311232642889873">Kop&amp;iraj sliku</translation>
 <translation id="6207200176136643843">Vraćanje na zadanu razinu zumiranja</translation>
-<translation id="6207937957461833379">Zemlja/regija</translation>
+<translation id="6207937957461833379">Država/regija</translation>
 <translation id="6208521041562685716">U tijeku je aktivacija mobilnih podataka</translation>
 <translation id="6208725777148613371">Spremanje na <ph name="WEB_DRIVE" /> nije uspjelo – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Ažuriranje komponenti</translation>

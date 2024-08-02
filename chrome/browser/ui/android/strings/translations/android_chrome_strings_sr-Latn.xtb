@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1183189057400844278">Da biste bili sigurni da uvek možete da koristite lozinke na Google nalogu, potvrdite svoj identitet</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Obaveštenja nisu dozvoljena za 1 sajt}one{Obaveštenja nisu dozvoljena za # sajt}few{Obaveštenja nisu dozvoljena za # sajta}other{Obaveštenja nisu dozvoljena za # sajtova}}</translation>
 <translation id="1187810343066461819">Izbriši i obeleživače, istoriju i drugo iz ovog automobila</translation>
 <translation id="1193729455103054076">Želite da koristite jaku lozinku?</translation>
 <translation id="1197267115302279827">Premesti obeleživače</translation>
@@ -1052,7 +1053,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="6040939430773295212">Ponavlja se</translation>
 <translation id="604124094241169006">Automatski</translation>
 <translation id="6042308850641462728">Još</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Dozvole su pregledane za 1 sajt}one{Dozvole su pregledane za {NUM_SITES} sajt}few{Dozvole su pregledane za {NUM_SITES} sajta}other{Dozvole su pregledane za {NUM_SITES} sajtova}}</translation>
 <translation id="604996488070107836">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog nepoznate greške.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Ovde kontrolišite priče i aktivnosti</translation>
@@ -1309,6 +1309,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7105047059074518658">Prijavite se da biste lakše pregledali na svim uređajima</translation>
 <translation id="7106762743910369165">Organizacija upravlja pregledačem</translation>
 <translation id="7111394291981742152">Chrome vam pruža veću kontrolu nad oglasima koje vidite i ograničava informacije koje sajtovi mogu da saznaju o vama kada prikazuju personalizovane oglase.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Dozvole su pregledane za 1 sajt}one{Dozvole su pregledane za # sajt}few{Dozvole su pregledane za # sajta}other{Dozvole su pregledane za # sajtova}}</translation>
 <translation id="7138678301420049075">Drugo</translation>
 <translation id="7140829094791862589">Ručno sortiranje</translation>
 <translation id="7146622961999026732">Izgleda da su vam ovi sajtovi i aplikacije važni:</translation>
@@ -1706,7 +1707,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8865415417596392024">Chrome podaci na nalogu</translation>
 <translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
 <translation id="8909135823018751308">Deli...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Obaveštenja nisu dozvoljena za 1 sajt}one{Obaveštenja nisu dozvoljena za {NUM_SITES} sajt}few{Obaveštenja nisu dozvoljena za {NUM_SITES} sajta}other{Obaveštenja nisu dozvoljena za {NUM_SITES} sajtova}}</translation>
 <translation id="8921980840204105660">Sinhronizujte podatke da biste preuzeli obeleživače sa drugih uređaja</translation>
 <translation id="8922289737868596582">Preuzmite stranice pomoću dugmeta Još opcija da biste ih koristili oflajn</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

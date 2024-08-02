@@ -544,7 +544,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="139300021892314943">Omejitev, kdo se lahko prijavi</translation>
 <translation id="1393283411312835250">Sonce in oblaki</translation>
 <translation id="1395730723686586365">Orodje za posodabljanje je zagnano</translation>
-<translation id="1395832189806039783">Označevanje elementa s fokusom tipkovnice</translation>
+<translation id="1395832189806039783">Označitev elementa z izbiro s tipkovnico</translation>
 <translation id="1396120028054416908">Nazaj na mapo <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Napaka pri nastavljanju tiskalnika</translation>
 <translation id="1397500194120344683">Ni ustreznih naprav. <ph name="LINK_BEGIN" />Preberite več o tem.<ph name="LINK_END" /></translation>
@@ -3015,7 +3015,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3117791853215125017">{COUNT,plural, =1{Prilog (<ph name="ATTACHMENTS" />) ni bilo mogoče poslati v napravo <ph name="DEVICE_NAME" />}one{Prilog (<ph name="ATTACHMENTS" />) ni bilo mogoče poslati v napravo <ph name="DEVICE_NAME" />}two{Prilog (<ph name="ATTACHMENTS" />) ni bilo mogoče poslati v napravo <ph name="DEVICE_NAME" />}few{Prilog (<ph name="ATTACHMENTS" />) ni bilo mogoče poslati v napravo <ph name="DEVICE_NAME" />}other{Prilog (<ph name="ATTACHMENTS" />) ni bilo mogoče poslati v napravo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Pomoč za <ph name="PRODUCT_NAME" /> </translation>
 <translation id="3118748462829336648">Odpiranje stranskega podokna</translation>
-<translation id="3119743309973425629">Hitrost utripanja kazalca besedila</translation>
+<translation id="3119743309973425629">Hitrost utripanja kazalca v besedilu</translation>
 <translation id="3119948370277171654">Katero vsebino oziroma kateri URL ste predvajali?</translation>
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3122496702278727796">Imenika s podatki ni bilo mogoče ustvariti</translation>
@@ -3764,7 +3764,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3693415264595406141">Geslo:</translation>
 <translation id="3694027410380121301">Izberi prejšnji zavihek</translation>
 <translation id="3694122362646626770">Spletna mesta</translation>
-<translation id="3694590407685276748">Označevanje kazalca besedila</translation>
+<translation id="3694590407685276748">Označitev kazalca v besedilu</translation>
 <translation id="369489984217678710">Gesla in drugi podatki za prijavo</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Varnostni pregledi so opravljeni. Vaši podatki bodo naloženi.}=1{Varnostni pregledi so opravljeni. Vaša datoteka bo naložena.}one{Varnostni pregledi so opravljeni. Vaše datoteke bodo naložene.}two{Varnostni pregledi so opravljeni. Vaše datoteke bodo naložene.}few{Varnostni pregledi so opravljeni. Vaše datoteke bodo naložene.}other{Varnostni pregledi so opravljeni. Vaše datoteke bodo naložene.}}</translation>
 <translation id="3695339288331169103">Vir: <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
@@ -6157,6 +6157,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5449551289610225147">Neveljavno geslo</translation>
 <translation id="5449588825071916739">Dodaj vse zavihke med zaznamke</translation>
 <translation id="5449716055534515760">Zapri &amp;okno</translation>
+<translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> za raziskovanje naprav Bluetooth</translation>
 <translation id="5450469615146335984">Izbira bližnjice za posamezno dejanje</translation>
 <translation id="545133051331995777">Ni omrežne povezave</translation>
 <translation id="5452446625764825792">Zdaj si lahko ogledate nedavne fotografije, predstavnost in aplikacije telefona</translation>
@@ -10176,7 +10177,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
     <ph name="BEGIN_PARAGRAPH2" />Če potrebujete dodatno pomoč, obiščite g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">Pravilnika ni mogoče najti.</translation>
 <translation id="8387361103813440603">Ni dovoljen ogled lokacije</translation>
-<translation id="8387617938027387193">Preverite, da ste res vi</translation>
+<translation id="8387617938027387193">Potrdite, da ste res vi</translation>
 <translation id="8388770971141403598">Sekundarni profili niso podprti.</translation>
 <translation id="8389492867173948260">Omogočite to razširitev za branje in spreminjanje vseh podatkov na spletnih mestih, ki jih obiščete:</translation>
 <translation id="8390392581097975659">Nameščanje programske opreme optičnega bralnika</translation>

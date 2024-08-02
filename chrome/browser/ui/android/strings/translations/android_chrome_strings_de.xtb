@@ -1052,7 +1052,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6040939430773295212">Wiederholt sich</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6042308850641462728">Mehr</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Berechtigungen für 1 Website überprüft}other{Berechtigungen für {NUM_SITES} Websites überprüft}}</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> konnte aufgrund eines unbekannten Fehlers nicht heruntergeladen werden.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
@@ -1706,7 +1705,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8909135823018751308">Teilen...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Benachrichtigungen für 1 Website nicht zugelassen}other{Benachrichtigungen für {NUM_SITES} Websites nicht zugelassen}}</translation>
 <translation id="8921980840204105660">Synchronisieren, um die Lesezeichen von deinen anderen Geräten abzurufen</translation>
 <translation id="8922289737868596582">Seiten über die Schaltfläche "Weitere Optionen" zur Offline-Ansicht herunterladen</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>

@@ -1053,7 +1053,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6040939430773295212">Repetitivo</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para {NUM_SITES} site}other{Permissões revisadas para {NUM_SITES} sites}}</translation>
 <translation id="604996488070107836">Falha no download do arquivo <ph name="FILE_NAME" /> devido a um erro desconhecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
@@ -1707,7 +1706,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{As notificações de 1 site foram bloqueadas}one{As notificações de {NUM_SITES} site foram bloqueadas}other{As notificações de {NUM_SITES} sites foram bloqueadas}}</translation>
 <translation id="8921980840204105660">Sincronize para acessar seus favoritos de outros dispositivos</translation>
 <translation id="8922289737868596582">Use o botão Mais opções para baixar páginas e acessá-las off-line</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

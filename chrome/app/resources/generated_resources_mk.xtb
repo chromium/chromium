@@ -5244,7 +5244,7 @@
 <translation id="4777813841994368231">Вклучено • програмерот го поништи објавувањето на екстензијава</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Конфигурирање сервери за име на мрежа</translation>
-<translation id="4778630024246633221">Управник со сертификати</translation>
+<translation id="4778630024246633221">Управувач со сертификати</translation>
 <translation id="4778653490315793244">Сѐ уште нема што да се прикаже</translation>
 <translation id="4779083564647765204">Зумирај</translation>
 <translation id="4779136857077979611">Онигири</translation>
@@ -6155,6 +6155,7 @@
 <translation id="5449551289610225147">Погрешна лозинка</translation>
 <translation id="5449588825071916739">Обележи ги сите картички...</translation>
 <translation id="5449716055534515760">Затвори го про&amp;зорецот</translation>
+<translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> за откривање уреди со Bluetooth</translation>
 <translation id="5450469615146335984">Изберете кратенка за секое дејство</translation>
 <translation id="545133051331995777">Нема мрежна врска</translation>
 <translation id="5452446625764825792">Сега можете да ги прегледувате неодамнешните фотографии, аудиовизуелни содржини и апликации од телефонот</translation>

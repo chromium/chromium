@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">પુનરાવર્તિત</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
 <translation id="6042308850641462728">વધુ</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 સાઇટ માટેની પરવાનગીઓનો રિવ્યૂ કર્યો}one{{NUM_SITES} સાઇટ માટેની પરવાનગીઓનો રિવ્યૂ કર્યો}other{{NUM_SITES} સાઇટ માટેની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>
 <translation id="604996488070107836">કોઇ અજાણી ભૂલને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 સાઇટને નોટિફિકેશનની મંજૂરી નથી}one{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}other{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}}</translation>
 <translation id="8921980840204105660">તમારા અન્ય ડિવાઇસમાંના તમારા બધા બુકમાર્ક મેળવવા માટે, સિંક કરો</translation>
 <translation id="8922289737868596582">વધુ વિકલ્પો બટનની મદદથી પેજ ડાઉનલોડ કરો, જેથી તમે ઇન્ટરનેટ વિના પણ તેનો ઉપયોગ કરી શકો</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

@@ -1052,7 +1052,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6040939430773295212">E përsëritur</translation>
 <translation id="604124094241169006">Automatike</translation>
 <translation id="6042308850641462728">Më shumë</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Lejet u rishikuan për 1 sajt}other{Lejet u rishikuan për {NUM_SITES} sajte}}</translation>
 <translation id="604996488070107836">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të një gabimi të panjohur.</translation>
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
@@ -1706,7 +1705,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8865415417596392024">Të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>
 <translation id="8909135823018751308">Ndaj…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Njoftimet nuk lejohen për 1 sajt}other{Njoftimet nuk lejohen për {NUM_SITES} sajte}}</translation>
 <translation id="8921980840204105660">Sinkronizoje për të marrë faqeshënuesit nga pajisjet e tua të tjera</translation>
 <translation id="8922289737868596582">Shkarko faqet nga butoni "Më shumë opsione" për t'i përdorur ato offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

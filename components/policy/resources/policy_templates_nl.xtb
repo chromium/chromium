@@ -1780,7 +1780,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
           Dit beleid is niet geldig als het is ingesteld op Enabled (Aangezet), leeg wordt gelaten of niet wordt ingesteld.</translation>
 <translation id="2292482441027364457">Als je het beleid instelt, bepaal je welke app-ID's <ph name="PRODUCT_OS_NAME" /> toont als vastgezette apps in de Launcher-balk. Deze kunnen niet worden gewijzigd door gebruikers.
 
-Geef Chrome-apps op basis van ID aan, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps; en systeemweb-apps op basis van hun naam in snake_case, zoals <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />;
+Geef Chrome-apps op basis van ID aan, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps; systeemweb-apps op basis van hun naam in snake_case, zoals <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />;
 en geïsoleerde web-apps op basis van hun webbundel-ID, zoals <ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />.
 
 Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps in de Launcher wijzigen.</translation>

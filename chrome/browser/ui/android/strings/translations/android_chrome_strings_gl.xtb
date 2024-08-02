@@ -1052,7 +1052,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6040939430773295212">Contido repetitivo</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Máis</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de {NUM_SITES} sitios}}</translation>
 <translation id="604996488070107836">Produciuse un problema coa descarga de <ph name="FILE_NAME" /> debido a un erro descoñecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
@@ -1706,7 +1705,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8909135823018751308">Compartir...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Non se permiten as notificacións de 1 sitio}other{Non se permiten as notificacións de {NUM_SITES} sitios}}</translation>
 <translation id="8921980840204105660">Sincroniza os datos para obter os marcadores dos teus outros dispositivos</translation>
 <translation id="8922289737868596582">Para ver as páxinas cando non teñas conexión, descárgaas a través do botón Máis opcións</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

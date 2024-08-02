@@ -23,6 +23,8 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="126567311906253476">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in automatiskt i Chromium med samma konto</translation>
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
+<translation id="1324107359134968521">Chromium behöver åtkomst till Bluetooth för att utforska 
+ Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>

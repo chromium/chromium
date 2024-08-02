@@ -1602,7 +1602,7 @@
 <translation id="6696025732084565524">የእርስዎ ተነቃይ የቁልፍ ሰሌዳ ወሳኝ የሆነ ዝማኔ ያስፈልገዋል</translation>
 <translation id="6697913454192220372">አዲስ ዴስክ ያክሉ</translation>
 <translation id="6700713906295497288">የIME ምናሌ አዝራር</translation>
-<translation id="6704375469818246414">AI አመንጪን ሲጠቀሙ ጥራት ሊለያይ ይችላል።</translation>
+<translation id="6704375469818246414">ሰው ሠራሽ አስተውሎት አመንጪን ሲጠቀሙ ጥራት ሊለያይ ይችላል።</translation>
 <translation id="6706742084323792866">ተሰኪ ቁልፍ ሰሌዳ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
@@ -1873,7 +1873,7 @@
 <translation id="7726391492136714301">የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="7727952505535211425">ድር ጣቢያውን በአድራሻ አሞሌው ውስጥ በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
-<translation id="774736258792760908">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ሲያበሩ፣ የመጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና በ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዥ የሆነውን ምርት ለማሻሻል፣ የግብዓት ጽሑፉ እና የሰነድ ይዘት ወደ Google AI አገልጋዮች ይላካል። ግላዊ፣ አደገኛ ወይም ምሥጢራዊ የሆነ ነገር አያካትቱ።</translation>
+<translation id="774736258792760908">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ሲያበሩ፣ የመጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና በ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዥ የሆነውን ምርት ለማሻሻል፣ የግብዓት ጽሑፉ እና የሰነድ ይዘት ወደ Google ሰው ሠራሽ አስተውሎት አገልጋዮች ይላካል። ግላዊ፣ አደገኛ ወይም ምሥጢራዊ የሆነ ነገር አያካትቱ።</translation>
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1886,7 +1886,7 @@
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7787212146956232129">የግብዓት እና የውጽዓት መሣሪያዎች ተቀናብረዋል። ለመቀየር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7792590255364786396">የሚታይ</translation>
-<translation id="7793389284006812057">AI አመንጪ በሙከራ ደረጃ ላይ ያለ፣ በቅድመ ልማት ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።</translation>
+<translation id="7793389284006812057">ሰው ሠራሽ አስተውሎት አመንጪ በሙከራ ደረጃ ላይ ያለ፣ በቅድመ ልማት ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።</translation>
 <translation id="7796735576426975947">አዲስ ማሳወቂያ ተደብቋል</translation>
 <translation id="7798302898096527229">ለመሰረዝ Search ወይም Shift ይጫኑ።</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>

@@ -1052,7 +1052,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6040939430773295212">Korduv</translation>
 <translation id="604124094241169006">Automaatne</translation>
 <translation id="6042308850641462728">Rohkem</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 saidi load on üle vaadatud}other{{NUM_SITES} saidi load on üle vaadatud}}</translation>
 <translation id="604996488070107836">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus tundmatu vea tõttu.</translation>
 <translation id="605721222689873409">aa</translation>
 <translation id="6059830886158432458">Hallake oma lugusid ja tegevusi siin</translation>
@@ -1706,7 +1705,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8865415417596392024">Chrome'i andmed teie kontol</translation>
 <translation id="8898822736010347272">Saadab mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja mõne lehe sisu Google'ile, et aidata avastada uusi ohte ja veebis kõiki kaitsta.</translation>
 <translation id="8909135823018751308">Jaga ...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Märguanded pole 1 saidi puhul lubatud}other{Märguanded pole {NUM_SITES} saidi puhul lubatud}}</translation>
 <translation id="8921980840204105660">Oma muudest seadmetest järjehoidjate hankimiseks sünkroonige</translation>
 <translation id="8922289737868596582">Laadige lehed alla nupu Rohkem valikuid abil, et neid võrguühenduseta kasutada</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

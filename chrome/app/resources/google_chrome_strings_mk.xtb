@@ -215,6 +215,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome бара Windows 10 или понова верзија.</translation>
 <translation id="3835168907083856002">Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome бара пристап до Bluetooth за да открива 
+ уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Затворете ги сите прозорци на Google Chrome и пробајте повторно.</translation>
 <translation id="3865754807470779944">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>

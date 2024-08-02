@@ -23,6 +23,8 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="126567311906253476">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chromium gamit ang parehong account</translation>
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">I-set up ang iyong bagong profile sa Chromium</translation>
+<translation id="1324107359134968521">Kailangan ng Chromium ng access sa Bluetooth para i-explore ang 
+ mga Bluetooth device. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">I-delete din ang data mula sa Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Naka-sign in ka sa Chromium!</translation>
 <translation id="1478370723027452770">Humingi ng tulong para sa Chrome na Pang-test</translation>

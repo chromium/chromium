@@ -23,6 +23,8 @@
 <translation id="126567311906253476">Cando accedas aos servizos de Google, como Gmail ou YouTube, con <ph name="USER_EMAIL" />, poderás iniciar sesión automaticamente en Chromium coa mesma conta</translation>
 <translation id="1290883685122687410">Produciuse un erro durante a configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configura o teu novo perfil de Chromium</translation>
+<translation id="1324107359134968521">Chromium precisa acceso ao Bluetooth para explorar 
+ dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Eliminar tamén datos de Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Iniciaches sesión en Chromium.</translation>
 <translation id="1478370723027452770">Recibir axuda con Chrome for Testing</translation>

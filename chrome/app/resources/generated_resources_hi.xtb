@@ -6152,6 +6152,7 @@
 <translation id="5449551289610225147">गलत पासवर्ड</translation>
 <translation id="5449588825071916739">सभी टैब बुकमार्क करें</translation>
 <translation id="5449716055534515760">विं&amp;डो बंद करें</translation>
+<translation id="5449932659532574495">अपने आस-पास मौजूद ब्लूटूथ डिवाइस ढूंढने के लिए, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="5450469615146335984">हर कार्रवाई के लिए एक शॉर्टकट चुनें</translation>
 <translation id="545133051331995777">कोई इंटरनेट कनेक्शन उपलब्ध नहीं है</translation>
 <translation id="5452446625764825792">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो, मीडिया, और ऐप्लिकेशन देखने का विकल्प है</translation>
@@ -8803,7 +8804,7 @@
 <translation id="7419142833919893307">कोई उपयोगकर्ता नाम नहीं जोड़ा गया</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{गलत पिन. 1 बार और कोशिश की जा सकती है.}one{गलत पिन. # बार और कोशिश की जा सकती है.}other{गलत पिन. # बार और कोशिश की जा सकती है.}}</translation>
 <translation id="7419565702166471774">हमेशा सुरक्षित कनेक्शन इस्तेमाल करें</translation>
-<translation id="7419819959108735624">Google Lens की मदद से खोजने के लिए, कोई भी देश/इलाका चुनें</translation>
+<translation id="7419819959108735624">किसी चीज़ को चुनकर, Google Lens की मदद से उसे खोजें</translation>
 <translation id="742130257665691897">बुकमार्क हटाए गए</translation>
 <translation id="7421925624202799674">पेज का स्रोत &amp;देखें</translation>
 <translation id="7422192691352527311">प्राथमिकताएं...</translation>

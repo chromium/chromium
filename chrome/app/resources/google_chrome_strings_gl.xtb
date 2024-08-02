@@ -215,6 +215,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Para usar Chrome, precísase Windows 10 ou unha versión posterior.</translation>
 <translation id="3835168907083856002">Con esta acción crearase un novo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome precisa acceso ao Bluetooth para explorar 
+ os dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Pecha todas as ventás de Google Chrome e téntao de novo.</translation>
 <translation id="3865754807470779944">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
 <translation id="3873044882194371212">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>

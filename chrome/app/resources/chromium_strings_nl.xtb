@@ -23,6 +23,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="126567311906253476">Als je met <ph name="USER_EMAIL" /> inlogt bij Google-services zoals Gmail of YouTube, kun je met hetzelfde account automatisch inloggen bij Chromium</translation>
 <translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
+<translation id="1324107359134968521">Chromium heeft bluetooth-toegang nodig om bluetooth-apparaten te verkennen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Gegevens ook verwijderen uit Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Je bent ingelogd bij Chromium.</translation>
 <translation id="1478370723027452770">Hulp bij Chrome for Testing</translation>

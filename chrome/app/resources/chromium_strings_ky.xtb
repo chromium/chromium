@@ -23,6 +23,8 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> менен Gmail же YouTube сыяктуу Google кызматтарына киргенде, Chromium'га ошол эле аккаунт менен автоматтык түрдө кире аласыз</translation>
 <translation id="1290883685122687410">Тууралоо катасы: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Жаңы Chromium профилин жөндөп алыңыз</translation>
+<translation id="1324107359134968521">Chromium 
+Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium'дан да (<ph name="URL" />) дайындарды өчүрүү</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>

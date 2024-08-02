@@ -213,6 +213,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">За Google Chrome се изисква Windows 10 или по-нова версия.</translation>
 <translation id="3835168907083856002">Това ще създаде нов потребителски профил в Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome се нуждае от достъп до Bluetooth, за да преглежда
+устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Моля, затворете всички прозорци на Google Chrome и опитайте отново.</translation>
 <translation id="3865754807470779944">Инсталирана е версия <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chrome</translation>

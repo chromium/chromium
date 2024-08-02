@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Personalizzati</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1183189057400844278">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Notifiche non consentite per 1 sito}other{Notifiche non consentite per # siti}}</translation>
 <translation id="1187810343066461819">Elimina anche preferiti, cronologia e altri dati da questa auto</translation>
 <translation id="1193729455103054076">Vuoi usare una password efficace?</translation>
 <translation id="1197267115302279827">Sposta i Preferiti</translation>
@@ -1052,7 +1053,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6040939430773295212">Contenuti ripetitivi</translation>
 <translation id="604124094241169006">Automatico</translation>
 <translation id="6042308850641462728">Altro</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per {NUM_SITES} siti}}</translation>
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
@@ -1309,6 +1309,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7105047059074518658">Accedi per navigare più facilmente su più dispositivi</translation>
 <translation id="7106762743910369165">Il tuo browser è gestito dalla tua organizzazione</translation>
 <translation id="7111394291981742152">Chrome ti offre maggiore controllo sugli annunci che ti vengono mostrati e limita ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>
 <translation id="7146622961999026732">Questi siti e app sembrano importanti per te:</translation>
@@ -1706,7 +1707,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
 <translation id="8909135823018751308">Condividi…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifiche non consentite per 1 sito}other{Notifiche non consentite per {NUM_SITES} siti}}</translation>
 <translation id="8921980840204105660">Attiva la sincronizzazione per recuperare i preferiti dagli altri tuoi dispositivi</translation>
 <translation id="8922289737868596582">Usa il pulsante Altre opzioni per scaricare le pagine da usare offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>

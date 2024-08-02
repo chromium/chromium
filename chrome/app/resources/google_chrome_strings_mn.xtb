@@ -215,6 +215,8 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome нь Windows 10 эсвэл түүнээс дээших хувилбарыг шаарддаг.</translation>
 <translation id="3835168907083856002">Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
+<translation id="383928141529488001">Google Chrome-д Bluetooth төхөөрөмжүүдийг судлахад 
+ Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Бүх Google Chrome-ын цонхнуудыг хааж дахин оролдоно уу.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3873044882194371212">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>

@@ -1052,7 +1052,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6040939430773295212">Herhalend</translation>
 <translation id="604124094241169006">Outomaties</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Toestemmings is vir 1 werf gekontroleer}other{Toestemmings is vir {NUM_SITES} werwe gekontroleer}}</translation>
 <translation id="604996488070107836">Kon <ph name="FILE_NAME" /> weens 'n onbekende fout nie aflaai nie.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Beheer jou stories en aktiwiteit hier</translation>
@@ -1706,7 +1705,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8865415417596392024">Chrome-data in jou rekening</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8909135823018751308">Deel …</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Kennisgewings vir 1 werf word nie toegelaat nie}other{Kennisgewings vir {NUM_SITES} werwe word nie toegelaat nie}}</translation>
 <translation id="8921980840204105660">Sinkroniseer om jou boekmerke van jou ander toestelle af te kry</translation>
 <translation id="8922289737868596582">Laai bladsye vanaf die Meer Opsies-knoppie af om hulle vanlyn te gebruik</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>

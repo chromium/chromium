@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">חוזר על עצמו</translation>
 <translation id="604124094241169006">אוטומטי</translation>
 <translation id="6042308850641462728">עוד</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{ההרשאות של אתר אחד נבדקו}one{ההרשאות של {NUM_SITES} אתרים נבדקו}two{ההרשאות של {NUM_SITES} אתרים נבדקו}other{ההרשאות של {NUM_SITES} אתרים נבדקו}}</translation>
 <translation id="604996488070107836">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאה לא ידועה.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{לאתר אחד אין הרשאה לשליחת התראות}one{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}two{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}other{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}}</translation>
 <translation id="8921980840204105660">אפשר לבצע סנכרון כדי להוסיף את הסימניות מהמכשירים האחרים שלך</translation>
 <translation id="8922289737868596582">כדי להשתמש בדפים במצב אופליין, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>

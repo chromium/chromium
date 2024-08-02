@@ -214,6 +214,8 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome requiert Windows 10 ou version ultérieure.</translation>
 <translation id="3835168907083856002">Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome a besoin d'accéder au Bluetooth pour explorer 
+ les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>

@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1183189057400844278">Bevestig dat jij het bent zodat je de wachtwoorden in je Google-account altijd kunt gebruiken</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Meldingen niet toegestaan voor 1 site}other{Meldingen niet toegestaan voor # sites}}</translation>
 <translation id="1187810343066461819">Ook bookmarks, geschiedenis en meer verwijderen uit deze auto</translation>
 <translation id="1193729455103054076">Sterk wachtwoord gebruiken?</translation>
 <translation id="1197267115302279827">Bookmarks verplaatsen</translation>
@@ -1052,7 +1053,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6040939430773295212">Herhalend</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Rechten beoordeeld voor 1 site}other{Rechten beoordeeld voor {NUM_SITES} sites}}</translation>
 <translation id="604996488070107836">Download van <ph name="FILE_NAME" /> mislukt vanwege een onbekende fout.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Beheer hier je artikelen en activiteiten</translation>
@@ -1309,6 +1309,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7105047059074518658">Log in om makkelijker te browsen op apparaten</translation>
 <translation id="7106762743910369165">Je browser wordt beheerd door je organisatie</translation>
 <translation id="7111394291981742152">Chrome geeft je meer controle over de advertenties die je te zien krijgt en beperkt wat sites over jou te weten kunnen komen als ze je gepersonaliseerde advertenties tonen.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Rechten beoordeeld voor 1 site}other{Rechten beoordeeld voor # sites}}</translation>
 <translation id="7138678301420049075">Overige</translation>
 <translation id="7140829094791862589">Sorteren op handmatige volgorde</translation>
 <translation id="7146622961999026732">Zo te zien zijn deze sites en apps belangrijk voor jou:</translation>
@@ -1706,7 +1707,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8865415417596392024">Chrome-gegevens in je account</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="8909135823018751308">Delen</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Meldingen niet toegestaan voor 1 site}other{Meldingen niet toegestaan voor {NUM_SITES} sites}}</translation>
 <translation id="8921980840204105660">Voer een synchronisatie uit om de bookmarks van je andere apparaten op te halen</translation>
 <translation id="8922289737868596582">Download pagina's via de knop 'Meer opties' om ze offline te gebruiken</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>

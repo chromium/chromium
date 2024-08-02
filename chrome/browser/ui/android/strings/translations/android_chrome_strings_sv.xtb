@@ -1053,7 +1053,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6040939430773295212">Repetitiv</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6042308850641462728">Mer</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för {NUM_SITES} webbplatser}}</translation>
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
@@ -1707,7 +1706,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8909135823018751308">Dela …</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Aviseringar tillåts inte för 1 webbplats}other{Aviseringar tillåts inte för {NUM_SITES} webbplatser}}</translation>
 <translation id="8921980840204105660">Synkronisera om du vill få tillgång till bokmärken från dina andra enheter</translation>
 <translation id="8922289737868596582">Ladda ned sidor via knappen Fler alternativ så att du kan använda dem offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

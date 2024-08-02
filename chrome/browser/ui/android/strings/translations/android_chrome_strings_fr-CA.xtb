@@ -1052,7 +1052,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6040939430773295212">Répétitif</translation>
 <translation id="604124094241169006">Automatique</translation>
 <translation id="6042308850641462728">Plus</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Autorisations examinées pour 1 site}one{Autorisations examinées pour {NUM_SITES} site}other{Autorisations examinées pour {NUM_SITES} sites}}</translation>
 <translation id="604996488070107836">Le téléchargement de <ph name="FILE_NAME" /> a échoué en raison d'une erreur inconnue.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
@@ -1706,7 +1705,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8865415417596392024">Données relatives à Chrome dans votre compte</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
 <translation id="8909135823018751308">Partager...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifications non autorisées pour 1 site}one{Notifications non autorisées pour {NUM_SITES} site}other{Notifications non autorisées pour {NUM_SITES} sites}}</translation>
 <translation id="8921980840204105660">Synchronisez vos données pour ajouter vos favoris de vos autres appareils</translation>
 <translation id="8922289737868596582">Téléchargez des pages à partir du bouton Plus d'options pour les utiliser hors connexion</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

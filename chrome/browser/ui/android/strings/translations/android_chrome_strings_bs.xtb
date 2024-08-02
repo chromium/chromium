@@ -1052,7 +1052,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6040939430773295212">Ponavlja se</translation>
 <translation id="604124094241169006">Automatski</translation>
 <translation id="6042308850641462728">Više</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Pregledana su odobrenja za 1 web lokaciju}one{Pregledana su odobrenja za {NUM_SITES} web lokaciju}few{Pregledana su odobrenja za {NUM_SITES} web lokacije}other{Pregledana su odobrenja za {NUM_SITES} web lokacija}}</translation>
 <translation id="604996488070107836">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate greške.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Upravljajte pričama i aktivnostima ovdje</translation>
@@ -1706,7 +1705,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8865415417596392024">Podaci Chromea na vašem računu</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Obavještenja nisu dozvoljena za 1 web lokaciju}one{Obavještenja nisu dozvoljena za {NUM_SITES} web lokaciju}few{Obavještenja nisu dozvoljena za {NUM_SITES} web lokacije}other{Obavještenja nisu dozvoljena za {NUM_SITES} web lokacija}}</translation>
 <translation id="8921980840204105660">Sinhronizirajte da preuzmete oznake sa svojih drugih uređaja</translation>
 <translation id="8922289737868596582">Preuzmite stranice pomoću dugmeta Više opcija da ih koristite van mreže</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

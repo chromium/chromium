@@ -23,6 +23,8 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="126567311906253476">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chromium gyda'r un cyfrif</translation>
 <translation id="1290883685122687410">Gwall gosod: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Gosod eich proffil Chromium newydd</translation>
+<translation id="1324107359134968521">Mae angen mynediad Bluetooth ar Chromium i archwilio 
+ dyfeisiau Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Dileu data o Chromium hefyd (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Rydych wedi mewngofnodi i Chromium!</translation>
 <translation id="1478370723027452770">Cael help gyda Chrome for Testing</translation>

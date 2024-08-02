@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">重复</translation>
 <translation id="604124094241169006">自动</translation>
 <translation id="6042308850641462728">展开</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{已审核 1 个网站的权限}other{已审核 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
@@ -1704,7 +1703,6 @@
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8909135823018751308">分享…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 个网站不得发送通知}other{{NUM_SITES} 个网站不得发送通知}}</translation>
 <translation id="8921980840204105660">同步即可获取您在其他设备上保存的书签</translation>
 <translation id="8922289737868596582">通过“更多选项”按钮下载网页以供离线查看</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

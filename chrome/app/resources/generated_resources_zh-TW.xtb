@@ -937,7 +937,7 @@
 <translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。你隨時可以依序前往「設定」&gt;「檔案」，變更這項設定。</translation>
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1651609627703324721">這個分頁正在對頭戴式裝置展示 VR 內容</translation>
-<translation id="1652281434788353738">思慮周詳</translation>
+<translation id="1652281434788353738">沉思</translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
 <translation id="1652862280638399816">如要搭配 macOS 鑰匙圈使用密碼管理工具，請重新啟動 Chromium 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="1653958716132599769">將相關分頁歸到同一組</translation>
@@ -1025,7 +1025,7 @@
 <translation id="171826447717908393">隔離網頁應用程式 (Beta 版)</translation>
 <translation id="1718835860248848330">過去 1 小時</translation>
 <translation id="1719312230114180055">注意：使用高強度的密碼或 PIN 碼會比感應指紋來得安全。</translation>
-<translation id="1720244237656138008">印象主義</translation>
+<translation id="1720244237656138008">印象派</translation>
 <translation id="1720318856472900922">TLS WWW 伺服器驗證</translation>
 <translation id="172123215662733643">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="1722460139690167654">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 是由 <ph name="ENROLLMENT_DOMAIN" /> 管理<ph name="END_LINK" /></translation>
@@ -1911,7 +1911,7 @@
 <translation id="2342180549977909852">你的孩子可以使用一組數字 (PIN 碼) 來解鎖這部裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
 <translation id="2342666982755031076">平滑度</translation>
 <translation id="2342740338116612727">已新增書籤</translation>
-<translation id="2343390523044483367">落磯山國家公園</translation>
+<translation id="2343390523044483367">洛磯山國家公園</translation>
 <translation id="2343747224442182863">將焦點移至這個分頁</translation>
 <translation id="2344032937402519675">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。</translation>
 <translation id="234559068082989648">2022 年 12 月之後，舊版 Chrome 應用程式將無法開啟。請與系統管理員聯絡以更新至新版本，或移除這個應用程式。</translation>
@@ -2527,7 +2527,7 @@
 <translation id="2772936498786524345">忍者</translation>
 <translation id="2773288106548584039">舊版瀏覽器支援</translation>
 <translation id="2773621783913034737">設為閒置分頁</translation>
-<translation id="2774876860084746535">理智</translation>
+<translation id="2774876860084746535">知性</translation>
 <translation id="2775104091073479743">編輯指紋</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{擴充功能「<ph name="EXTENSION" />」當時正在存取裝置}=1{擴充功能「<ph name="EXTENSION" />」正在存取 {0} 部裝置}other{擴充功能「<ph name="EXTENSION" />」正在存取 {0} 部裝置}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{移除 1 個不支援的應用程式}other{移除 # 個不支援的應用程式}}</translation>
@@ -5659,7 +5659,7 @@
 <translation id="5097349930204431044">你造訪的網站可以判斷你喜愛的內容，並在接下來的瀏覽過程中顯示建議廣告</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
-<translation id="5098954716528935136">請說明你仍要下載這個檔案的原因</translation>
+<translation id="5098954716528935136">請告訴我們你仍要下載檔案的原因</translation>
 <translation id="5100775515702043594">系統管理員已固定「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="5101398513835324081">新增動作</translation>
 <translation id="5101839224773798795">游標停止時自動點擊</translation>
@@ -6459,7 +6459,7 @@
 <translation id="5679785611070310751">這部 Chromebook 在 <ph name="MONTH_AND_YEAR" />之後就不會再收到安全性更新。如要收到最新的安全性與軟體，請盡快改用新款 Chromebook。適用優惠條款。</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
 <translation id="5681586175480958839">正在開啟檔案</translation>
-<translation id="5682010570533120226">你剛剛刪除了 Chrome 中的資料。我們希望瞭解你的使用體驗，藉以提升 Chrome 服務品質。</translation>
+<translation id="5682010570533120226">你剛剛刪除了 Chrome 中的資料。我們希望瞭解你的使用體驗，以提升 Chrome 的服務品質。</translation>
 <translation id="5684181005476681636">Wi-Fi 詳細資料</translation>
 <translation id="5684661240348539843">資產 ID</translation>
 <translation id="5684950556880280580">你的密碼已更新</translation>
@@ -7402,7 +7402,7 @@
 <translation id="6395423953133416962">傳送<ph name="BEGIN_LINK1" />系統資訊<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" /></translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
-<translation id="639880411171387127">Google 智慧鏡頭選取的項目。按下 Enter 鍵或 Backspace 鍵即可刪除 Google 智慧鏡頭的選取項目</translation>
+<translation id="639880411171387127">你的 Google 智慧鏡頭選取項目。按下 Enter 或 Backspace 鍵即可刪除 Google 智慧鏡頭選取項目</translation>
 <translation id="6399675241776343019">已拒絕</translation>
 <translation id="6399774419735315745">女間諜</translation>
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
@@ -10813,7 +10813,7 @@
 <translation id="8873075098103007382">使用分頁群組保持有條不紊</translation>
 <translation id="8874341931345877644">投放到裝置：</translation>
 <translation id="8874448314264883207">「<ph name="EXTENSION_NAME" />」已關閉</translation>
-<translation id="8874647982044395866">自然</translation>
+<translation id="8874647982044395866">有機</translation>
 <translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表網頁瀏覽保護程度較低，但網站功能較容易正常運作。</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
 <translation id="8875736897340638404">選擇瀏覽權限</translation>

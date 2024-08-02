@@ -264,7 +264,7 @@
 <translation id="2259659629660284697">درحال صادر کردن گذرواژه‌ها…</translation>
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
-<translation id="2286841657746966508">آدرس ارسال صورتحساب</translation>
+<translation id="2286841657746966508">آدرس صورت‌حساب</translation>
 <translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
 <translation id="2297822946037605517">اشتراک‌گذاری این صفحه</translation>
 <translation id="22981027763501686">برای دریافت نشانک‌ها، سابقه، و موارد دیگر در دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
@@ -1052,7 +1052,6 @@
 <translation id="6040939430773295212">تکراری</translation>
 <translation id="604124094241169006">خودکار</translation>
 <translation id="6042308850641462728">بیشتر</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت بررسی شد}one{اجازه‌های {NUM_SITES} سایت بررسی شد}other{اجازه‌های {NUM_SITES} سایت بررسی شد}}</translation>
 <translation id="604996488070107836">به‌دلیل خطایی ناشناس، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
@@ -1706,7 +1705,6 @@
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8909135823018751308">اشتراک‌گذاری‌...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{اعلان‌های ۱ سایت مجاز نیست}one{اعلان‌های {NUM_SITES} سایت مجاز نیست}other{اعلان‌های {NUM_SITES} سایت مجاز نیست}}</translation>
 <translation id="8921980840204105660">برای دریافت نشانک‌هایتان از دستگاه‌های دیگر، همگام‌سازی کنید</translation>
 <translation id="8922289737868596582">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را با دکمه «گزینه‌های بیشتر» بارگیری کنید</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

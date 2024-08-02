@@ -23,6 +23,8 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ilə Gmail və ya YouTube kimi Google xidmətlərinə daxil olduqda eyni hesab ilə Chromium-a avtomatik daxil ola bilərsiniz</translation>
 <translation id="1290883685122687410">Ayarlama xətası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi ayarlayın</translation>
+<translation id="1324107359134968521">Chromium Bluetooth cihazlarını araşdırmaq üçün 
+ Bluetooth-a giriş tələb edir. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Datanı Chromium-dan da silin (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium'a daxil oldunuz!</translation>
 <translation id="1478370723027452770">Sınaq üçün Chrome ilə bağlı kömək alın</translation>

@@ -1052,7 +1052,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6040939430773295212">Takroriy ko‘rsatuv</translation>
 <translation id="604124094241169006">Avtomatik</translation>
 <translation id="6042308850641462728">Yana</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 ta sayt uchun ruxsatlar tekshirilgan}other{{NUM_SITES} ta sayt uchun ruxsatlar tekshirilgan}}</translation>
 <translation id="604996488070107836">Noma’lum xatolik tufayli <ph name="FILE_NAME" /> fayli yuklab olinmadi.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Yangiliklar va faoliyatni shu yerdan boshqaring</translation>
@@ -1706,7 +1705,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8865415417596392024">Hisobingizdagi Chrome maʼlumotlari</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 ta sayt uchun bildirishnomalarga ruxsat berilmagan}other{{NUM_SITES} ta sayt uchun bildirishnomalarga ruxsat berilmagan}}</translation>
 <translation id="8921980840204105660">Boshqa qurilmalardan bukmarklarni olish uchun sinxronlang</translation>
 <translation id="8922289737868596582">Saytlarni oflayn ko‘rish uchun “Boshqa parametrlar” tugmasidan foydalanib, yuklab oling</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>

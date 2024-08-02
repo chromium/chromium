@@ -23,6 +23,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> kontuarekin Google-ren zerbitzuetan saioa hastean (adibidez, Gmail-en edo YouTube-n), Chromium-en ere automatikoki has dezakezu saioa kontu berarekin</translation>
 <translation id="1290883685122687410">Konfigurazio-errorea: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfiguratu Chromium-eko profil berria</translation>
+<translation id="1324107359134968521">Bluetooth bidezko gailuak arakatzeko, Bluetootha erabiltzeko baimena behar du Chromium-ek. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Ezabatu datuak Chromium-etik ere bai (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
 <translation id="1478370723027452770">Lortu Chrome for Testing-en inguruko laguntza</translation>
