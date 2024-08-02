@@ -908,6 +908,14 @@ void FocusModeDetailedView::AdjustInactiveSessionDuration(bool decrement) {
           decrement);
 
   SetInactiveSessionDuration(adjusted_duration);
+
+  // Read the session duration after it is adjusted.
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(
+          base::UTF16ToUTF8(focus_mode_util::GetDurationString(
+              focus_mode_controller->session_duration(),
+              /*digital_format=*/false)));
 }
 
 void FocusModeDetailedView::UpdateTimerSettingViewUI() {
