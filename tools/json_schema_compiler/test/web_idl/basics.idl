@@ -6,6 +6,10 @@
 // This will be added to as support for each features is implemented.
 interface TestWebIdl {
 
+  static void returnsVoid();
+  static boolean returnsBoolean();
+  static double returnsDouble();
+  static long returnsLong();
 };
 
 partial interface Browser {

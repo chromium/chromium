@@ -7,6 +7,7 @@ import json
 import os.path
 import sys
 from typing import Optional
+from json_parse import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
 # understands a certain format describing APIs (either JSON, old extensions IDL
@@ -33,6 +34,7 @@ else:
     sys.path.pop(0)
 
 IDLNode = idl_node.IDLNode  # Used for type hints.
+
 
 def GetChildWithName(node: IDLNode, name: str) -> Optional[IDLNode]:
   """Gets the first child node with a given name from an IDLNode.
@@ -71,7 +73,80 @@ def GetTypeName(node: IDLNode) -> str:
   )
 
 
-class Namespace():
+class Type:
+  """Represents an IDL type and maps it to the corresponding python type.
+
+  Given a Type node representing the type of a dictionary member, function
+  parameter or return, converts it into a Python dictionary the JSON schema
+  compiler expects to see.
+
+  Attributes:
+    node: The IDLNode that represents this type.
+    additional_properties: A dictionary of additional key value pairs to be
+      included on the resulting dictionary after processing.
+  """
+
+  def __init__(self, node: IDLNode, additional_properties: dict) -> None:
+    self.node = node
+    self.additional_properties = additional_properties
+
+  def process(self) -> dict:
+    properties = self.additional_properties
+    primitive_type = self.node.GetOneOf('PrimitiveType')
+    if primitive_type:
+      name = primitive_type.GetName()
+      if name == 'void':
+        # If it's a void return, we bail early.
+        return None
+
+      if name == 'boolean':
+        properties['type'] = 'boolean'
+      elif name == 'double':
+        properties['type'] = 'number'
+      elif name == 'long':
+        properties['type'] = 'integer'
+      else:
+        raise Exception(
+            'Unknown PrimitiveType "%s" on node "%s" in %s(%s)'
+            % (
+                name,
+                self.node.GetName(),
+                primitive_type.GetProperty('FILENAME'),
+                primitive_type.GetProperty('LINENO'),
+            )
+        )
+
+    return properties
+
+
+class Operation:
+  """Represents an API function and processes the details of it.
+
+  Given an IDLNode representing an API function, processes it into a Python
+  dictionary that the JSON schema compiler expects to see.
+
+  Attributes:
+    node: The IDLNode for the Operation definition that represents this
+      function.
+  """
+
+  def __init__(self, node: IDLNode) -> None:
+    self.node = node
+
+  def process(self) -> dict:
+    properties = OrderedDict()
+    properties['name'] = self.node.GetName()
+
+    # Return type processing.
+    type_node = self.node.GetOneOf('Type')
+    return_type = Type(type_node, {'name': self.node.GetName()}).process()
+    if return_type is not None:
+      properties['returns'] = return_type
+
+    return properties
+
+
+class Namespace:
   """Represents an API namespace and processes individual details of it.
 
   Given an IDLNode that is the root of a tree representing an API Interface,
@@ -79,30 +154,33 @@ class Namespace():
   see.
 
   Attributes:
-    name:
-      The name the API namespace will be exposed on.
-    namespace_node:
-      The root IDLNode for the abstract syntax tree representing this namespace.
+    name: The name the API namespace will be exposed on.
+    namespace_node: The root IDLNode for the abstract syntax tree representing
+      this namespace.
   """
 
   def __init__(self, name: str, namespace_node: IDLNode) -> None:
     """Initializes the instance with the namespace name and root IDLNode.
 
     Args:
-      name:
-        The name the API namespace will be exposed on.
-      namespace_node:
-        The root IDLNode for the abstract syntax tree representing this
-        namespace.
+      name: The name the API namespace will be exposed on.
+      namespace_node: The root IDLNode for the abstract syntax tree representing
+        this namespace.
     """
     self.name = name
     self.namespace = namespace_node
 
   def process(self) -> dict:
-    return {'namespace': self.name}
+    functions = []
+    for node in self.namespace.GetListOf('Operation'):
+      functions.append(Operation(node).process())
+    return {
+        'namespace': self.name,
+        'functions': functions,
+    }
 
 
-class IDLSchema():
+class IDLSchema:
   """Holds the entirety of a parsed IDL schema, ready to process further.
 
   Given an abstract syntax tree of IDLNodes and IDLAttributes, converts into a
@@ -160,8 +238,7 @@ def Load(filename):
   dictionary in a format that the JSON schema compiler expects to see.
 
   Args:
-    filename:
-      A string of the filename of the IDL file to be parsed.
+    filename: A string of the filename of the IDL file to be parsed.
 
   Returns:
     A dictionary representing the parsed API schema details.
