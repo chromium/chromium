@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -34,8 +33,6 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,19 +44,6 @@ import java.util.Map;
  * ChromeTabbedActivity}.
  */
 public class TabModelImpl extends TabModelJniBridge {
-    @IntDef({TabCloseType.SINGLE, TabCloseType.MULTIPLE, TabCloseType.ALL})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TabCloseType {
-        /** A single tab is closing. */
-        int SINGLE = 0;
-
-        /** Multiple tabs are closing. This may be a tab group or just a selection of tabs. */
-        int MULTIPLE = 1;
-
-        /** All tabs are closing. */
-        int ALL = 2;
-    }
-
     /**
      * The application ID used for tabs opened from an application that does not specify an app ID
      * in its VIEW intent extras.
