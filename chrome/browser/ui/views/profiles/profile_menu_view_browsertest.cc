@@ -998,6 +998,12 @@ class ProfileMenuClickTest : public SyncTest,
   // This should be called in the test body.
   void RunTest() {
     ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+
+    // A HoverButton may have focused itself if the mouse happened to be over it
+    // when it became visible. Clear the focus now to ensure that we advance to
+    // the right item.
+    profile_menu_view()->GetFocusManager()->ClearFocus();
+
     // These tests don't care about performing the actual menu actions, only
     // about the histogram recorded.
     ASSERT_TRUE(profile_menu_view());

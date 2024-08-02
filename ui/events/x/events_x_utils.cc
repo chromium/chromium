@@ -598,6 +598,10 @@ gfx::Point EventSystemLocationFromXEvent(const x11::Event& xev) {
     return gfx::Point(button->root_x, button->root_y);
   if (auto* motion = xev.As<x11::MotionNotifyEvent>())
     return gfx::Point(motion->root_x, motion->root_y);
+  if (auto* crossing = xev.As<x11::Input::CrossingEvent>()) {
+    return gfx::Point(Fp1616ToDouble(crossing->root_x),
+                      Fp1616ToDouble(crossing->root_y));
+  }
   if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
     return gfx::Point(Fp1616ToDouble(xievent->root_x),
                       Fp1616ToDouble(xievent->root_y));
