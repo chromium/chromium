@@ -340,7 +340,7 @@ ol {
     margin-block-end: 1em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    padding-inline-start: 40px
+    padding-inline-start: 40px;
 }
 
 li {
@@ -670,7 +670,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i] {
     -internal-empty-line-height: fabricated;
     appearance: auto;
     user-select: none;
-    white-space: pre
+    white-space: pre;
 }
 
 input[type="file" i]::-webkit-file-upload-button {
@@ -768,11 +768,11 @@ button:disabled {
 }
 
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
-    border-style: inset
+    border-style: inset;
 }
 
 input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, input[type="reset" i]:active:disabled, input[type="file" i]:active:disabled::-webkit-file-upload-button, button:active:disabled {
-    border-style: outset
+    border-style: outset;
 }
 
 input:disabled, textarea:disabled {
@@ -839,7 +839,7 @@ input[type="color" i]::-webkit-color-swatch-wrapper {
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
     width: 100%;
-    height: 100%
+    height: 100%;
 }
 
 input[type="color" i]::-webkit-color-swatch {
@@ -1107,7 +1107,7 @@ meter::-webkit-meter-optimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#107c10, #74b374)
+    background: light-dark(#107c10, #74b374);
 }
 
 meter::-webkit-meter-suboptimum-value {
@@ -1225,7 +1225,7 @@ nobr {
 }
 
 :focus-visible {
-    outline: auto 1px -webkit-focus-ring-color;
+    outline: auto 1px -webkit-focus-ring-color
 }
 
 html:focus-visible, body:focus-visible {
